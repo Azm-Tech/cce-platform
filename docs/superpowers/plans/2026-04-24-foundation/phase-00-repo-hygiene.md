@@ -524,17 +524,16 @@ Note: add `node_modules/` to `.gitignore` already covered in Task 0.3.
 
 - [ ] **Step 5: Write `.husky/pre-commit`**
 
+Husky v9.x no longer requires the legacy `husky.sh` import — the file under `.husky/pre-commit` is executed directly. Use `gitleaks git --staged` (the v8+ syntax; the older `gitleaks protect` subcommand was removed).
+
 ```bash
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Abort commit if Gitleaks finds any staged secret.
 # --staged limits scan to staged changes only (fast).
 # --redact hides matched values in output.
 # Config: security/gitleaks.toml
 
-gitleaks protect \
-  --staged \
+gitleaks git --staged \
   --redact \
   --config security/gitleaks.toml \
   --verbose
@@ -545,19 +544,27 @@ Make it executable:
 chmod +x .husky/pre-commit
 ```
 
-- [ ] **Step 6: Smoke-test the hook with a fake secret**
+- [ ] **Step 6: Smoke-test the hook with a realistic fake secret**
+
+AWS's published example keys (`AKIAIOSFODNN7EXAMPLE`) are deliberately allowlisted by Gitleaks' default rules. Use a plausible GitHub PAT shape instead — it fires both the default `github-pat` rule and our `cce-generic-client-secret` rule.
 
 Run:
 ```bash
-echo 'AWS_SECRET_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE0"' > /tmp/fake-secret.txt
-cp /tmp/fake-secret.txt ./fake-secret.txt
+printf 'GITHUB_TOKEN="ghp_abcdefghijklmnopqrstuvwxyzABCDEF0123"\n' > ./fake-secret.txt
 git add fake-secret.txt
-git -c commit.gpgsign=false commit -m "chore: test gitleaks" || echo "HOOK BLOCKED COMMIT — EXPECTED"
-# Clean up
+# The commit MUST fail here. If it succeeds, the hook is broken.
+if git -c commit.gpgsign=false commit -m "chore: test gitleaks"; then
+  echo "SMOKE TEST FAILED — commit should have been blocked"
+  git reset --soft HEAD~1
+  exit 1
+else
+  echo "HOOK BLOCKED COMMIT — EXPECTED"
+fi
+# Clean up staged file
 git reset HEAD fake-secret.txt
-rm fake-secret.txt /tmp/fake-secret.txt
+rm fake-secret.txt
 ```
-Expected: final line prints `HOOK BLOCKED COMMIT — EXPECTED`. Gitleaks report shows the leak detected.
+Expected: final line prints `HOOK BLOCKED COMMIT — EXPECTED`. Gitleaks report shows the leak detected (value redacted in output).
 
 - [ ] **Step 7: Commit the hook setup**
 
