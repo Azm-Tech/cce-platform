@@ -12,7 +12,7 @@
 
 ## Phase 01 preamble — divergences from spec (read before starting)
 
-Two changes from spec §4.1 / §5.3, made during planning for this phase. Both are documented as ADR-0016 (arm64 SQL) and ADR-0017 (SIEM stub) in Phase 18.
+Three changes from spec §4.1 / §5.3, made during planning for this phase. All three are documented as ADR-0016 (arm64 SQL), ADR-0017 (SIEM stub), and ADR-0018 (arm64 ClamAV) in Phase 18.
 
 ### Divergence 1 — Azure SQL Edge instead of SQL Server 2022 for local dev
 **Why:** Host is Apple Silicon (arm64) — Microsoft does not publish a native arm64 image for `mcr.microsoft.com/mssql/server`. Running it under Rosetta emulation is slow (2–3× slower startup, intermittent crashes) and blocks CI on arm64 runners. **Azure SQL Edge** publishes native arm64, uses the same T-SQL surface as SQL Server 2022 for everything Foundation needs (DDL, basic triggers, sequences, EF Core migrations). Missing features (SQL Server Agent, full-text search, some FILESTREAM features) aren't used in Foundation.
@@ -22,6 +22,10 @@ Two changes from spec §4.1 / §5.3, made during planning for this phase. Both a
 ### Divergence 2 — Drop Papercut, use Serilog file sink as SIEM stub
 **Why:** Spec §4.1 labeled `papercut:25` as "SIEM stub" — Papercut SMTP is an SMTP server, not a log/security-event collector. Including it would duplicate MailDev's role. A Serilog file sink writing `logs/siem-events.log` in JSON is a more honest dev stand-in; real SIEM shipping lands in sub-project 8.
 **What changes:** no `papercut` service in `docker-compose.yml`. Phase 06/07 wires a Serilog file sink. Real SIEM integration is in the roadmap for sub-project 8.
+
+### Divergence 3 — `clamav/clamav-debian:stable` instead of `clamav/clamav:stable`
+**Why:** The official `clamav/clamav:stable` Alpine-based image publishes amd64 only — on arm64 the daemon never gets pulled (`no matching manifest for linux/arm64/v8`). `clamav/clamav-debian:stable` is maintained by the same ClamAV team, ships true multi-arch manifests (amd64 + arm64), and exposes an identical `clamd` daemon on TCP 3310 with the same `PING`/`PONG` protocol, same signature update mechanism (`freshclam`), and same `/var/lib/clamav` data path. Swap is transparent to any downstream .NET client code.
+**What changes:** Task 1.6 uses `image: clamav/clamav-debian:stable`. Prod can pick either variant depending on host arch; both accept the same config.
 
 ---
 
@@ -472,7 +476,9 @@ git -c commit.gpgsign=false commit -m "feat(phase-01): add MailDev service for S
 ```yaml
 
   clamav:
-    image: clamav/clamav:stable
+    # Multi-arch (amd64 + arm64) Debian-based variant of the official ClamAV image.
+    # See Phase 01 Divergence 3 — `clamav/clamav:stable` is amd64-only.
+    image: clamav/clamav-debian:stable
     container_name: cce-clamav
     environment:
       CLAMD_CONF_FOREGROUND: "yes"
