@@ -1,0 +1,161 @@
+{
+  "id": "cce-external",
+  "realm": "cce-external",
+  "displayName": "CCE — External (Public)",
+  "displayNameHtml": "<strong>CCE</strong> — Public",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 900,
+  "ssoSessionMaxLifespan": 28800,
+  "offlineSessionIdleTimeout": 2592000,
+  "passwordPolicy": "length(10) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername()",
+
+  "roles": {
+    "realm": [
+      {
+        "name": "RegisteredUser",
+        "description": "Foundation seed — baseline role for any publicly registered user.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "cce-external",
+        "attributes": {}
+      },
+      {
+        "name": "StateRepresentative",
+        "description": "Foundation seed — state representatives (BRD §4.1.26). Delegation flow in sub-project 4.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "cce-external",
+        "attributes": {}
+      },
+      {
+        "name": "CommunityExpert",
+        "description": "Foundation seed — registered community experts (BRD §6.2.17). Expert flow in sub-project 4.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "cce-external",
+        "attributes": {}
+      }
+    ]
+  },
+
+  "defaultRoles": ["RegisteredUser"],
+
+  "users": [],
+
+  "clientScopes": [
+    {
+      "name": "adfs-compat",
+      "description": "Claim mappers matching ADFS conventions (symmetry with cce-internal)",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+
+  "defaultDefaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
+
+  "clients": [
+    {
+      "clientId": "cce-web-portal",
+      "name": "CCE Web Portal (Angular)",
+      "description": "Public Angular app at localhost:4200 in dev; backed by CCE.Api.External",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-external-secret-change-me",
+      "redirectUris": [
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "post.logout.redirect.uris": "http://localhost:4200/*"
+      },
+      "fullScopeAllowed": false,
+      "defaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
+      "optionalClientScopes": ["address", "phone", "offline_access"]
+    }
+  ],
+
+  "internationalizationEnabled": true,
+  "supportedLocales": ["ar", "en"],
+  "defaultLocale": "ar"
+}
