@@ -84,18 +84,30 @@ git -c commit.gpgsign=false commit -m "feat(phase-01): add docker-compose.yml sk
 
 **Files:**
 - Modify: `docker-compose.yml`
-- Create: `.env.local` (developer copies from `.env.local.example` if absent)
+- Create: `.env` (developer copies from `.env.example`; `.env` is the filename Compose auto-reads)
 
 **Rationale:** Azure SQL Edge is Microsoft's arm64-native build with a SQL Server 2022-compatible engine (see Phase 01 preamble). Password must meet SQL Server complexity requirements (≥8 chars, 3 of 4: upper/lower/digit/symbol).
 
-- [ ] **Step 1: Verify `.env.local` exists for the developer**
+**Note on env files:** Docker Compose auto-loads `.env` (not `.env.local`). Phase 00 created `.env.example` (tracked) and `.env.local.example` (tracked). `.env.local` is reserved for the Angular apps in later phases. For Compose we use a plain `.env` — copied from `.env.example` + the dev secret from `.env.local.example`. Both `.env` and `.env.local` are gitignored.
+
+- [ ] **Step 1: Create `.env` for Compose by merging the two example files**
 
 Run:
 ```bash
-test -f .env.local || cp .env.local.example .env.local
-grep '^SQL_PASSWORD=' .env.local
+# Start from the shape template
+cp .env.example .env
+# Append/override the dev secrets from the developer template
+grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env
+# Sanity-check
+grep '^SQL_PASSWORD=' .env
 ```
-Expected: prints `SQL_PASSWORD=Strong!Passw0rd` (or whatever the developer set — any value that meets SQL complexity).
+Expected: final grep prints `SQL_PASSWORD=Strong!Passw0rd` (the value from `.env.local.example`).
+
+Verify `.env` is gitignored:
+```bash
+git check-ignore -v .env
+```
+Expected: prints a line mentioning `.gitignore` and the `.env` rule.
 
 - [ ] **Step 2: Add the `sqlserver` service block to `docker-compose.yml`**
 
@@ -113,8 +125,8 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       # SA_PASSWORD must be ≥8 chars with 3 of 4: upper/lower/digit/symbol.
-      # Read from .env.local via host env — never baked into the image.
-      MSSQL_SA_PASSWORD: "${SQL_PASSWORD:?SQL_PASSWORD not set — copy .env.local.example to .env.local}"
+      # Read from .env via host env — never baked into the image.
+      MSSQL_SA_PASSWORD: "${SQL_PASSWORD:?SQL_PASSWORD not set — run: cp .env.example .env && grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env}"
       MSSQL_PID: "Developer"
       MSSQL_COLLATION: "SQL_Latin1_General_CP1_CI_AS"
     ports:
@@ -124,13 +136,11 @@ services:
     networks:
       - cce-net
     healthcheck:
-      # Use sqlcmd to probe. Azure SQL Edge bundles /opt/mssql-tools/bin/sqlcmd on some tags;
-      # if the binary isn't there, the test falls back to a TCP port check via bash.
-      test:
-        - "CMD-SHELL"
-        - |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -Q "SELECT 1" -b >/dev/null 2>&1 \
-            || (bash -c "cat < /dev/tcp/localhost/1433" >/dev/null 2>&1)
+      # Non-blocking TCP probe. Azure SQL Edge 1.0.7 does NOT bundle sqlcmd, so we can't use a real SQL query.
+      # `exec 3<>/dev/tcp/localhost/1433` opens+closes the socket without blocking on EOF (which is what
+      # `cat </dev/tcp/...` would do). The port being accepting-connections means the SQL server process is up.
+      # Phase 06 adds a migration-level test that actually runs a query.
+      test: ["CMD-SHELL", "timeout 3 bash -c 'exec 3<>/dev/tcp/localhost/1433' 2>/dev/null"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -162,15 +172,15 @@ docker compose ps sqlserver
 ```
 Expected: final line shows `cce-sqlserver ... Up ... (healthy)`.
 
-- [ ] **Step 5: Smoke-test a real query against the database**
+- [ ] **Step 5: Smoke-test TCP reachability from another container on the same network**
+
+Azure SQL Edge 1.0.7 ships no CLI tools, and `mcr.microsoft.com/mssql-tools` has no arm64 image. So we verify via a tiny Alpine sidecar that proves the SQL port is reachable by name on the Compose network. A full SQL query smoke test lands in Phase 06 when EF Core + migrations go in.
 
 Run:
 ```bash
-docker exec cce-sqlserver /opt/mssql-tools/bin/sqlcmd \
-  -S localhost -U sa -P "$(grep '^SQL_PASSWORD=' .env.local | cut -d= -f2-)" \
-  -Q "SELECT @@VERSION" 2>&1 | head -5
+docker run --rm --network cce_cce-net alpine:3 sh -c "apk add --quiet --no-cache netcat-openbsd >/dev/null 2>&1; nc -z -w 3 sqlserver 1433 && echo 'SQL TCP OK'"
 ```
-Expected: prints a version banner mentioning `Microsoft SQL Azure` or `SQL Server` (Edge reports as Azure SQL internally).
+Expected: prints `SQL TCP OK`.
 
 - [ ] **Step 6: Commit**
 
@@ -639,11 +649,13 @@ with:
 
 ## Local dev stack (Phase 01 onwards)
 
-Prerequisites: Docker Desktop (or Colima) v26+, Docker Compose v2, `nc`.
+Prerequisites: Docker Engine v26+ (OrbStack / Docker Desktop / Colima), Docker Compose v2, `nc`.
 
 ```bash
-# First-time bootstrap
-cp .env.local.example .env.local   # then edit SQL_PASSWORD if desired
+# First-time bootstrap — create a Compose-readable .env from the two tracked templates
+cp .env.example .env
+grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env
+# Edit .env to change SQL_PASSWORD if desired (must meet SQL Server complexity rules).
 
 # Bring up infrastructure services
 docker compose up -d
