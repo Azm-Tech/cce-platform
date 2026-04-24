@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>cce-api-internal-dev</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
+    <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
