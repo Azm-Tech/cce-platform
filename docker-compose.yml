@@ -107,3 +107,26 @@ services:
       retries: 15
       start_period: 30s
     restart: unless-stopped
+
+  maildev:
+    image: maildev/maildev:2.1.0
+    container_name: cce-maildev
+    environment:
+      MAILDEV_INCOMING_USER: ""
+      MAILDEV_INCOMING_PASS: ""
+      MAILDEV_WEB_PORT: "1080"
+      MAILDEV_SMTP_PORT: "1025"
+    ports:
+      - "1025:1025"   # SMTP
+      - "1080:1080"   # Web UI
+    networks:
+      - cce-net
+    healthcheck:
+      # Use 127.0.0.1 not `localhost` — in the container `localhost` resolves to IPv6 `::1` first,
+      # but MailDev 2.1.0 binds IPv4 only, so wget on `localhost` hits `Connection refused`.
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:1080/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
