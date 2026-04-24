@@ -106,8 +106,11 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): initialize .NET solution 
            CA2007        — "ConfigureAwait" (no SyncContext in ASP.NET Core — rule is obsolete there)
            CA1819        — "properties should not return arrays" (fine for immutable snapshots)
            CA1716        — "identifiers should not match reserved keywords" (affects our DDD domain terms)
+           CA1724        — "type name conflicts with namespace" (static `DependencyInjection` extension
+                            class clashes with Microsoft.Extensions.DependencyInjection namespace —
+                            standard Clean Architecture idiom in ASP.NET Core templates)
       -->
-    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716</NoWarn>
+    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724</NoWarn>
 
     <!-- Output organization -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>
