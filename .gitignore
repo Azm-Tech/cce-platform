@@ -1,0 +1,113 @@
+# CCE — root .gitignore
+# Applies repo-wide; per-tool subdirs may add their own .gitignore later
+
+######################
+# Secrets / env
+######################
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+mkcert/
+
+######################
+# .NET
+######################
+bin/
+obj/
+out/
+artifacts/
+*.user
+*.suo
+*.userprefs
+*.VisualState.xml
+*.nuget.props
+*.nuget.targets
+project.lock.json
+TestResults/
+*.trx
+coverage/
+*.coverage
+*.coveragexml
+*.lcov
+*.opencover.xml
+BenchmarkDotNet.Artifacts/
+
+######################
+# Node / Angular / Nx
+######################
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.nx/cache/
+.nx/workspace-data/
+dist/
+tmp/
+.angular/
+.turbo/
+*.tsbuildinfo
+.cache/
+.parcel-cache/
+
+######################
+# IDE / OS
+######################
+.idea/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.recommended.json
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+######################
+# Logs
+######################
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+######################
+# Test artifacts
+######################
+playwright-report/
+playwright/.cache/
+test-results/
+e2e-results/
+
+######################
+# Docker volumes (bind-mounted)
+######################
+.docker-data/
+volumes/
+
+######################
+# Coverage / security reports
+######################
+coverage-reports/
+sbom/
+trivy-report.json
+zap-report.*
+dependency-check-report.*
+
+######################
+# Generated OpenAPI clients (regenerated; exception per path below)
+######################
+frontend/libs/api-client/src/lib/generated/
+# But keep generated folder in repo if committed intentionally post-CI
+!frontend/libs/api-client/src/lib/generated/.gitkeep
