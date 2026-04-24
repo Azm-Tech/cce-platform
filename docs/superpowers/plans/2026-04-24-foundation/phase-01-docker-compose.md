@@ -413,7 +413,9 @@ git -c commit.gpgsign=false commit -m "feat(phase-01): add Keycloak 25 service w
     networks:
       - cce-net
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://localhost:1080/healthz >/dev/null 2>&1 || exit 1"]
+      # Use 127.0.0.1 not `localhost` — in the container `localhost` resolves to IPv6 `::1` first,
+      # but MailDev 2.1.0 binds IPv4 only, so wget on `localhost` hits `Connection refused`.
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:1080/healthz >/dev/null 2>&1 || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -482,8 +484,9 @@ git -c commit.gpgsign=false commit -m "feat(phase-01): add MailDev service for S
     networks:
       - cce-net
     healthcheck:
-      # clamdtop/clamdscan probes clamd on TCP:3310; PING returns PONG when daemon is ready.
-      test: ["CMD-SHELL", "echo 'PING' | nc -w 1 localhost 3310 | grep -q 'PONG'"]
+      # PING/PONG clamd protocol over TCP:3310. Use 127.0.0.1 not `localhost` to avoid
+      # IPv6-first resolver behavior (ClamAV binds IPv4 only in the default config).
+      test: ["CMD-SHELL", "echo 'PING' | nc -w 1 127.0.0.1 3310 | grep -q 'PONG'"]
       interval: 30s
       timeout: 10s
       retries: 10
