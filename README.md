@@ -20,6 +20,38 @@ A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Eco
 > Full getting-started is added in Phase 18. Until then, follow the plan phases in order:
 > `docs/superpowers/plans/2026-04-24-foundation/phase-XX-*.md`
 
+## Local dev stack (Phase 01 onwards)
+
+Prerequisites: Docker Engine v26+ (OrbStack / Docker Desktop / Colima), Docker Compose v2, `nc`.
+
+```bash
+# First-time bootstrap — create a Compose-readable .env from the two tracked templates
+cp .env.example .env
+grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env
+# Edit .env to change SQL_PASSWORD if desired (must meet SQL Server complexity rules).
+
+# Bring up infrastructure services
+docker compose up -d
+docker compose ps                   # all should report (healthy) within ~2 min
+
+# Host-exposed ports
+#   localhost:1433 — SQL (Azure SQL Edge; SQL Server 2022-compatible)
+#   localhost:6379 — Redis 7
+#   localhost:8080 — Keycloak admin console (user: admin / admin)
+#   localhost:1080 — MailDev inbox UI
+#   localhost:1025 — MailDev SMTP endpoint
+#   localhost:3310 — ClamAV daemon (TCP)
+
+# Tear down
+docker compose down          # keeps volumes
+docker compose down -v       # destroys all local data
+```
+
+**Arch note (macOS arm64):** we use Azure SQL Edge in dev because Microsoft
+doesn't ship arm64 SQL Server images. Engine surface is compatible for our scope;
+prod uses real SQL Server 2022 per HLD §3.3.4. See [ADR-0016](docs/adr/0016-azure-sql-edge-for-arm64-dev.md)
+(added in Phase 18).
+
 ## License
 
 TBD — to be added in Phase 18 per ministry procurement guidance.
