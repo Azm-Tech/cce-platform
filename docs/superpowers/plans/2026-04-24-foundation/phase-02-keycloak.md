@@ -515,60 +515,58 @@ Skip the commit step. Proceed to Task 2.4.
 
 ---
 
-## Task 2.4: Smoke-test admin login + client credentials
+## Task 2.4: Smoke-test seeded admin user + service-account token + external discovery
 
 **Files:**
 - Modify: none
 
-**Rationale:** Proves the seeded `admin@cce.local` can obtain a token from `cce-internal` (Resource Owner Password Credentials via `admin-cli` — this uses the built-in Keycloak admin tooling client, NOT the `cce-admin-cms` client which has direct-access disabled), that the `SuperAdmin` realm role lands in the token's `groups` claim, that the `upn` claim is populated, and that `cce-admin-cms` can issue a service-account token. If any of these fail, downstream .NET config in Phase 06/08 can't succeed.
+**Rationale:** Prove the realm import seeded exactly what Foundation needs: (a) `admin@cce.local` exists with `SuperAdmin` role attached, (b) `cce-admin-cms` can mint a service-account token, (c) `cce-external` exposes the public registration endpoint.
 
-**Note:** Our app client `cce-admin-cms` deliberately has `directAccessGrantsEnabled: false`, so we can't use password grant with it (by design). Keycloak's built-in `admin-cli` client (`publicClient: true`, `directAccessGrantsEnabled: true`) is the standard way to acquire a user token for scripted smoke-tests.
+**What we're NOT doing in Foundation:** decoding a user JWT to assert `upn` / `groups` claim mappers. Keycloak's built-in `admin-cli` client (the only pre-existing client with `directAccessGrantsEnabled: true`) is imported **without** our custom `adfs-compat` scope — adding it via JSON requires overriding a built-in (fragile) or introducing a dev-only smoke-test client (extra surface). Our `cce-admin-cms` client is correctly configured with `adfs-compat` as a default scope but deliberately has password-grant disabled (security posture per spec §9.2). Claim-mapper verification lands naturally in **Phase 08** when the .NET APIs exercise the authorization-code + PKCE flow that real users will use. For Foundation, proving the seed data is in place is sufficient.
 
-- [ ] **Step 1: Acquire a token for `admin@cce.local` via `admin-cli`**
+- [ ] **Step 1: Get an admin-API token (Keycloak's bootstrap admin, not our seed user)**
 
-Run:
 ```bash
-TOKEN=$(curl -s -X POST \
-  "http://localhost:8080/realms/cce-internal/protocol/openid-connect/token" \
+ADMIN_TOKEN=$(curl -s -X POST \
+  "http://localhost:8080/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
-  -d "username=admin@cce.local" \
-  -d "password=Admin123!@" \
-  -d "scope=openid adfs-compat" \
+  -d "username=admin" \
+  -d "password=admin" \
   | jq -r .access_token)
-echo "Token length: ${#TOKEN}"
-[ -n "$TOKEN" ] && [ "$TOKEN" != "null" ] && echo "Login OK" || { echo "LOGIN FAILED"; exit 1; }
+echo "Admin token length: ${#ADMIN_TOKEN}"
+[ -n "$ADMIN_TOKEN" ] && [ "$ADMIN_TOKEN" != "null" ] && echo "Admin API login OK" || { echo "ADMIN LOGIN FAILED"; exit 1; }
 ```
-Expected: prints `Token length: <big number>` (JWTs are typically 800–2000 chars) and `Login OK`.
+Expected: prints `Admin token length: <big number>` and `Admin API login OK`. (The master-realm `admin/admin` credentials come from the `KC_BOOTSTRAP_ADMIN_USERNAME`/`PASSWORD` env vars set in `docker-compose.yml` Phase 01 Task 1.4 — these are Keycloak's platform admin, distinct from our seeded `admin@cce.local`.)
 
-- [ ] **Step 2: Inspect the token for required claims**
+- [ ] **Step 2: Verify `admin@cce.local` exists in `cce-internal`**
 
-Run:
 ```bash
-# Decode the JWT payload (middle section, base64url). jq pretty-prints.
-echo "$TOKEN" | awk -F. '{print $2}' | base64 -d 2>/dev/null | jq '{sub, preferred_username, email, upn, groups}'
+USER_JSON=$(curl -s \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  "http://localhost:8080/admin/realms/cce-internal/users?username=admin@cce.local&exact=true")
+echo "$USER_JSON" | jq '.[] | {id, username, email, enabled, emailVerified, firstName, lastName}'
+USER_ID=$(echo "$USER_JSON" | jq -r '.[0].id')
+[ -n "$USER_ID" ] && [ "$USER_ID" != "null" ] && echo "User found: $USER_ID" || { echo "USER NOT FOUND"; exit 1; }
 ```
-Expected: JSON like:
-```json
-{
-  "sub": "<uuid>",
-  "preferred_username": "admin@cce.local",
-  "email": "admin@cce.local",
-  "upn": "admin@cce.local",
-  "groups": [
-    "default-roles-cce-internal",
-    "offline_access",
-    "uma_authorization",
-    "SuperAdmin"
-  ]
-}
+Expected: JSON object with `username: admin@cce.local`, `enabled: true`, `emailVerified: true`, and a non-null UUID id.
+
+- [ ] **Step 3: Verify `SuperAdmin` role is assigned to `admin@cce.local`**
+
+```bash
+ROLES_JSON=$(curl -s \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  "http://localhost:8080/admin/realms/cce-internal/users/$USER_ID/role-mappings/realm")
+echo "$ROLES_JSON" | jq -r '.[].name' | sort
+echo "$ROLES_JSON" | jq -e '.[] | select(.name == "SuperAdmin")' >/dev/null \
+  && echo "SuperAdmin role assigned" \
+  || { echo "SUPERADMIN ROLE MISSING"; exit 1; }
 ```
-**If `upn` is missing, or `groups` doesn't include `SuperAdmin`, stop and report** — the claim mappers didn't apply.
+Expected: the role list contains `SuperAdmin` (plus Keycloak's `default-roles-cce-internal`).
 
-- [ ] **Step 3: Acquire a service-account token for `cce-admin-cms`**
+- [ ] **Step 4: Acquire a service-account token for `cce-admin-cms` and inspect its claims**
 
-Run:
 ```bash
 SECRET=$(grep '^KEYCLOAK_CLIENT_SECRET_INTERNAL=' .env | cut -d= -f2-)
 SATOKEN=$(curl -s -X POST \
@@ -578,20 +576,26 @@ SATOKEN=$(curl -s -X POST \
   -d "client_id=cce-admin-cms" \
   -d "client_secret=${SECRET}" \
   | jq -r .access_token)
-echo "Service-account token length: ${#SATOKEN}"
 [ -n "$SATOKEN" ] && [ "$SATOKEN" != "null" ] && echo "Service-account OK" || { echo "SERVICE ACCOUNT FAILED"; exit 1; }
+
+# Decode and inspect (pad base64url to valid base64 length)
+PAYLOAD=$(echo "$SATOKEN" | awk -F. '{print $2}' | awk '{n=length($0)%4; if (n==2) print $0"=="; else if (n==3) print $0"="; else print}' | base64 -d 2>/dev/null || true)
+echo "$PAYLOAD" | jq '{iss, aud, azp, clientId, scope}'
 ```
-Expected: prints `Service-account token length: <big number>` and `Service-account OK`.
+Expected: `Service-account OK`, and the decoded payload shows `iss` = `http://localhost:8080/realms/cce-internal`, `azp` = `cce-admin-cms`, `scope` containing at least `adfs-compat` (confirms our client scope wiring worked for real clients, even though `admin-cli` doesn't have it).
 
-- [ ] **Step 4: Confirm external realm's OIDC discovery is reachable**
+- [ ] **Step 5: Confirm external realm's public registration endpoint is reachable**
 
-Run:
 ```bash
 curl -s http://localhost:8080/realms/cce-external/.well-known/openid-configuration | jq -r .registration_endpoint
 ```
 Expected: prints `http://localhost:8080/realms/cce-external/clients-registrations/openid-connect`.
 
-- [ ] **Step 5: (No file changes — nothing to commit)**
+- [ ] **Step 6: Deferred — note claim-mapper testing target**
+
+No runtime action. Just acknowledge: Phase 08 integration tests will decode a real user-flow JWT (code flow + PKCE) and assert `upn` / `groups: [SuperAdmin]` at that point. Add a note to your phase report if Step 4's `scope` didn't include `adfs-compat` — that would signal a realm JSON problem worth catching early.
+
+- [ ] **Step 7: (No file changes — nothing to commit)**
 
 Skip the commit step.
 
@@ -604,9 +608,13 @@ Skip the commit step.
 - [ ] `keycloak/cce-external.json` committed with: `RegisteredUser`/`StateRepresentative`/`CommunityExpert` roles, no users, `cce-web-portal` public client (PKCE), ADFS-compat mappers minus `upn` (external users don't have UPN).
 - [ ] Keycloak container recreated from a wiped volume; the placeholder realm is gone (`/realms/cce-placeholder` → 404).
 - [ ] Both real realms load (`/realms/cce-internal/.well-known/openid-configuration` and same for `cce-external`).
-- [ ] `admin@cce.local` obtains a password-grant token via `admin-cli` with `upn` and `groups: [..., SuperAdmin]` claims.
+- [ ] `admin@cce.local` exists in `cce-internal` (verified via Keycloak admin API).
+- [ ] `SuperAdmin` role is assigned to `admin@cce.local` (verified via role-mappings endpoint).
 - [ ] `cce-admin-cms` obtains a service-account token via `client_credentials`.
-- [ ] `git log --oneline | head -5` shows 2 new Phase-02 commits (Task 2.3 and 2.4 don't write files).
+- [ ] `cce-admin-cms` service-account token payload contains `scope` including `adfs-compat` — confirms custom client-scope wiring works for real clients.
+- [ ] `cce-external` realm exposes `/clients-registrations/openid-connect` registration endpoint.
+- [ ] Claim-mapper end-to-end verification (JWT `upn` + `groups: [SuperAdmin]`) is deferred to Phase 08 where real OIDC code flow exercises it.
+- [ ] `git log --oneline | head -5` shows 2 new Phase-02 commits + 1 fix commit for the password (Task 2.3 and 2.4 don't write files).
 - [ ] `git status` shows clean tree.
 
 **If all boxes ticked, phase 02 is complete. Proceed to phase 03 (.NET solution skeleton).**
