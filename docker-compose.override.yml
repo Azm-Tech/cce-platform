@@ -1,0 +1,40 @@
+# CCE — Local dev overrides (merged on top of docker-compose.yml by default)
+# Ship to CI/prod? No — rename/remove before building prod images.
+# To run WITHOUT this override:
+#   docker compose -f docker-compose.yml up -d
+
+services:
+  sqlserver:
+    # Verbose errors on first-start issues during dev
+    environment:
+      MSSQL_LCID: "1033"
+      MSSQL_MEMORY_LIMIT_MB: "2048"
+
+  redis:
+    # Lower memory footprint for a single dev; override to a larger maxmemory in perf testing
+    command:
+      - "redis-server"
+      - "--save"
+      - "60"
+      - "1000"
+      - "--loglevel"
+      - "notice"
+      - "--maxmemory"
+      - "256mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+
+  keycloak:
+    # Faster first-start logs for dev — set DEBUG to debug realm-import problems
+    environment:
+      KC_LOG_LEVEL: "INFO"
+      # Override to DEBUG to troubleshoot realm import: set via `KC_LOG_LEVEL=DEBUG docker compose up`
+
+  maildev:
+    # No override needed — left explicit so devs know this file is where to add per-service dev tweaks
+
+  clamav:
+    # No dev-time override — the baked /etc/clamav/freshclam.conf defaults are fine.
+    # Note: unprefixed env vars are NOT interpreted by this image's entrypoint (only
+    # CLAMD_CONF_* and FRESHCLAM_CONF_* are), so setting FRESHCLAM_CHECKS here is a no-op.
+    # If you want to tune freshclam in dev, mount a patched freshclam.conf instead.
