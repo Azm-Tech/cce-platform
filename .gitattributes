@@ -1,0 +1,58 @@
+# CCE — Git attributes
+# Enforces consistent line endings across macOS/Linux/Windows checkouts
+
+* text=auto eol=lf
+
+# Explicit text files
+*.cs        text eol=lf diff=csharp
+*.csproj    text eol=lf
+*.sln       text eol=lf
+*.props     text eol=lf
+*.targets   text eol=lf
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.js        text eol=lf
+*.jsx       text eol=lf
+*.json      text eol=lf
+*.jsonc     text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.md        text eol=lf
+*.sh        text eol=lf
+*.html      text eol=lf
+*.scss      text eol=lf
+*.css       text eol=lf
+*.editorconfig text eol=lf
+Dockerfile  text eol=lf
+.env.example text eol=lf
+.gitignore  text eol=lf
+.gitattributes text eol=lf
+
+# Windows-only scripts keep CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binary — prevent line-ending munging
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.webp      binary
+*.svg       text eol=lf
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.gz        binary
+*.tar       binary
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+*.eot       binary
+
+# Generated / lockfiles — mark as generated so GitHub PR diff collapses them
+pnpm-lock.yaml    -diff linguist-generated=true
+package-lock.json -diff linguist-generated=true
+yarn.lock         -diff linguist-generated=true
+contracts/*.json  linguist-generated=true
