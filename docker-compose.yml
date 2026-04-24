@@ -1,0 +1,26 @@
+# CCE — Local development stack (infrastructure services only)
+# Docker Compose v2 syntax. No top-level `version:` key (obsolete in v2).
+# Backend/frontend app services are added in later phases.
+#
+# Usage:
+#   docker compose up -d            # start infra services
+#   docker compose ps               # list running services + health
+#   docker compose logs <service>   # tail logs
+#   docker compose down             # stop services (keeps volumes)
+#   docker compose down -v          # stop + remove volumes (DESTROYS data)
+
+name: cce
+
+networks:
+  # Single internal network all services share. Services resolve each other by service name.
+  cce-net:
+    driver: bridge
+
+volumes:
+  # Named volumes for persistent state. Survive `docker compose down` but not `down -v`.
+  sqlserver-data:
+  redis-data:
+  keycloak-data:
+  clamav-data:
+
+services: {}
