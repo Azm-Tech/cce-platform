@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>cce-api-external-dev</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- No package references in Foundation — Phase 08 adds Swashbuckle, Serilog, JwtBearer, etc. -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
+    <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
