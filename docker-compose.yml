@@ -23,4 +23,35 @@ volumes:
   keycloak-data:
   clamav-data:
 
-services: {}
+services:
+
+  sqlserver:
+    # Azure SQL Edge — native arm64, SQL Server 2022-compatible for our scope.
+    # Prod swaps this for mcr.microsoft.com/mssql/server:2022-latest (amd64).
+    image: mcr.microsoft.com/azure-sql-edge:1.0.7
+    container_name: cce-sqlserver
+    platform: linux/arm64/v8
+    environment:
+      ACCEPT_EULA: "Y"
+      # SA_PASSWORD must be ≥8 chars with 3 of 4: upper/lower/digit/symbol.
+      # Read from .env via host env — never baked into the image.
+      MSSQL_SA_PASSWORD: "${SQL_PASSWORD:?SQL_PASSWORD not set — run: cp .env.example .env && grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env}"
+      MSSQL_PID: "Developer"
+      MSSQL_COLLATION: "SQL_Latin1_General_CP1_CI_AS"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - cce-net
+    healthcheck:
+      # Non-blocking TCP probe. Azure SQL Edge 1.0.7 does NOT bundle sqlcmd, so we can't use a real SQL query.
+      # `exec 3<>/dev/tcp/localhost/1433` opens+closes the socket without blocking on EOF (which is what
+      # `cat </dev/tcp/...` would do). The port being accepting-connections means the SQL server process is up.
+      # Phase 06 adds a migration-level test that actually runs a query.
+      test: ["CMD-SHELL", "timeout 3 bash -c 'exec 3<>/dev/tcp/localhost/1433' 2>/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
