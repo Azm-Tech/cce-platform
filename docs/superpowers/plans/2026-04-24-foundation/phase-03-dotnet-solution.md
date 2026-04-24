@@ -157,7 +157,7 @@ The file pins every package we know we'll need across Foundation (Phases 05–08
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
-  <ItemGroup Label="Core framework & Testing">
+  <ItemGroup Label="Core framework &amp; Testing">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
@@ -607,7 +607,7 @@ Note: `Microsoft.Extensions.DependencyInjection.Abstractions` isn't yet in `Dire
 
 - [ ] **Step 3: Add missing package to CPM**
 
-Append to `backend/Directory.Packages.props` inside the `<ItemGroup Label="Core framework & Testing">` block (after `Microsoft.NET.Test.Sdk`):
+Append to `backend/Directory.Packages.props` inside the `<ItemGroup Label="Core framework &amp; Testing">` block (after `Microsoft.NET.Test.Sdk`):
 
 ```xml
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
