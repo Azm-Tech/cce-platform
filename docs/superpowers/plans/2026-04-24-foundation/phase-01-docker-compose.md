@@ -478,11 +478,12 @@ git -c commit.gpgsign=false commit -m "feat(phase-01): add MailDev service for S
   clamav:
     # Multi-arch (amd64 + arm64) Debian-based variant of the official ClamAV image.
     # See Phase 01 Divergence 3 — `clamav/clamav:stable` is amd64-only.
+    # No `environment:` block — the image's entrypoint treats every CLAMD_CONF_* var as
+    # a line appended to /etc/clamav/clamd.conf. Setting CLAMD_CONF_FOREGROUND=yes breaks
+    # parsing because FOREGROUND is not a valid clamd.conf option. The baked defaults
+    # already run clamd in the foreground and bind 0.0.0.0:3310, which is what we need.
     image: clamav/clamav-debian:stable
     container_name: cce-clamav
-    environment:
-      CLAMD_CONF_FOREGROUND: "yes"
-      # Freshclam signature updates run in the foreground on first startup; allow time.
     ports:
       - "3310:3310"
     volumes:
@@ -584,9 +585,10 @@ services:
     # No override needed — left explicit so devs know this file is where to add per-service dev tweaks
 
   clamav:
-    # ClamAV pulls new signatures every 24h in the foreground. In dev, silence freshclam stdout spam.
-    environment:
-      FRESHCLAM_CHECKS: "1"
+    # No dev-time override — the baked /etc/clamav/freshclam.conf defaults are fine.
+    # Note: unprefixed env vars are NOT interpreted by this image's entrypoint (only
+    # CLAMD_CONF_* and FRESHCLAM_CONF_* are), so setting FRESHCLAM_CHECKS here is a no-op.
+    # If you want to tune freshclam in dev, mount a patched freshclam.conf instead.
 ```
 
 - [ ] **Step 2: Validate merged compose is still well-formed**
