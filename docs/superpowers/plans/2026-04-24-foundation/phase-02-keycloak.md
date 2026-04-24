@@ -113,7 +113,7 @@ Expected: `rm keycloak/realm-export.json` echoed; file deleted from working tree
       "credentials": [
         {
           "type": "password",
-          "value": "Admin123!",
+          "value": "Admin123!@",
           "temporary": false
         }
       ],
@@ -534,7 +534,7 @@ TOKEN=$(curl -s -X POST \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
   -d "username=admin@cce.local" \
-  -d "password=Admin123!" \
+  -d "password=Admin123!@" \
   -d "scope=openid adfs-compat" \
   | jq -r .access_token)
 echo "Token length: ${#TOKEN}"
