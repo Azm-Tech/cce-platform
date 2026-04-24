@@ -331,8 +331,12 @@ secrets via Keycloak admin API or ADFS federation (handled in sub-project 8).
     container_name: cce-keycloak
     command: ["start-dev", "--import-realm"]
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
-      KC_BOOTSTRAP_ADMIN_PASSWORD: "admin"
+      # Use the legacy KEYCLOAK_ADMIN/_PASSWORD vars — in KC 25.0.6 the newer
+      # KC_BOOTSTRAP_ADMIN_* vars don't reliably provision a master-realm admin
+      # under `start-dev`. The legacy vars are deprecated but still create a
+      # permanent admin on empty DB. Real prod uses federated ADFS — sub-project 8.
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_HEALTH_ENABLED: "true"
