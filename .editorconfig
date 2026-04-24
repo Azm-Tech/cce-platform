@@ -1,0 +1,40 @@
+# CCE — EditorConfig (editorconfig.org)
+# Enforced by IDE + .NET SDK + ESLint + Prettier pipelines
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# C# / .NET
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+# Additional C# style rules enforced via .globalconfig per project
+
+# TypeScript / JavaScript / JSON / HTML / SCSS
+[*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,html,scss,css}]
+indent_size = 2
+
+# YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown — preserve trailing whitespace (hard line breaks)
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Makefile, shell — tabs required or idiomatic
+[Makefile]
+indent_style = tab
+[*.sh]
+indent_size = 2
+
+# Windows scripts
+[*.{bat,cmd}]
+end_of_line = crlf
