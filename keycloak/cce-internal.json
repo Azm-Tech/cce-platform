@@ -1,0 +1,185 @@
+{
+  "id": "cce-internal",
+  "realm": "cce-internal",
+  "displayName": "CCE — Internal (Ministry staff)",
+  "displayNameHtml": "<strong>CCE</strong> — Internal",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "accessTokenLifespan": 900,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 900,
+  "ssoSessionMaxLifespan": 28800,
+  "offlineSessionIdleTimeout": 2592000,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "passwordPolicy": "length(10) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername()",
+
+  "roles": {
+    "realm": [
+      {
+        "name": "SuperAdmin",
+        "description": "Foundation seed — full administrative access. Permission matrix lands in sub-project 2.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "cce-internal",
+        "attributes": {}
+      }
+    ]
+  },
+
+  "defaultRoles": [],
+
+  "users": [
+    {
+      "username": "admin@cce.local",
+      "email": "admin@cce.local",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Foundation",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Admin123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["SuperAdmin"],
+      "requiredActions": [],
+      "attributes": {
+        "upn": ["admin@cce.local"],
+        "department": ["IT"]
+      }
+    }
+  ],
+
+  "clientScopes": [
+    {
+      "name": "adfs-compat",
+      "description": "Claim mappers matching ADFS conventions — swapping to real ADFS is a config change",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "upn",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "upn",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "upn",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+
+  "defaultDefaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
+
+  "clients": [
+    {
+      "clientId": "cce-admin-cms",
+      "name": "CCE Admin CMS (Angular)",
+      "description": "Angular admin portal at localhost:4201 in dev; backed by CCE.Api.Internal",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-internal-secret-change-me",
+      "redirectUris": [
+        "http://localhost:4201/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4201"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "tls.client.certificate.bound.access.tokens": "false"
+      },
+      "fullScopeAllowed": false,
+      "defaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
+      "optionalClientScopes": ["address", "phone", "offline_access"]
+    }
+  ],
+
+  "internationalizationEnabled": true,
+  "supportedLocales": ["ar", "en"],
+  "defaultLocale": "ar"
+}
