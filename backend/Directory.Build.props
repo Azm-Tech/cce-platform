@@ -1,0 +1,53 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Language and target framework -->
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Discipline: every warning is an error. Use [SuppressMessage] sparingly and with justification. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+
+    <!-- Analyzers: full set enabled. EnforceCodeStyleInBuild runs .editorconfig C# rules at build time. -->
+    <AnalysisLevel>latest-all</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+
+    <!-- Deterministic builds for reproducibility -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+
+    <!-- Project-level defaults — override per project if needed -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- 1591 = "Missing XML comment for publicly visible type/member" — too noisy pre-API-docs -->
+    <NoWarn>$(NoWarn);1591;CS1591</NoWarn>
+
+    <!-- Output organization -->
+    <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)artifacts/obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+
+    <!-- Root namespace mirrors project name (e.g., CCE.Domain → namespace CCE.Domain) -->
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+
+    <!-- Product metadata — shows up in assembly manifests + NuGet packages -->
+    <Authors>Ministry of Energy — CCE Team</Authors>
+    <Company>Saudi Ministry of Energy</Company>
+    <Product>CCE Knowledge Center</Product>
+    <Copyright>© Saudi Ministry of Energy</Copyright>
+  </PropertyGroup>
+
+  <!-- Test projects opt into a different base namespace via per-project overrides if needed -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or $(MSBuildProjectName.EndsWith('.IntegrationTests'))">
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+    <!-- Test methods commonly use underscores: Should_do_X_when_Y -->
+  </PropertyGroup>
+
+</Project>
