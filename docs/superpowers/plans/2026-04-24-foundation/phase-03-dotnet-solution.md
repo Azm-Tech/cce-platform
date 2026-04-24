@@ -93,8 +93,21 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): initialize .NET solution 
     <!-- Project-level defaults — override per project if needed -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <!-- 1591 = "Missing XML comment for publicly visible type/member" — too noisy pre-API-docs -->
-    <NoWarn>$(NoWarn);1591;CS1591</NoWarn>
+    <!-- Curated NoWarn list — AllEnabledByDefault fires every analyzer rule, many of which are
+         false positives in DDD / ASP.NET Core / DI idioms. Each entry here is a deliberate,
+         justified suppression. Team discipline: don't add to this list without a short comment
+         explaining why the rule doesn't fit our patterns.
+           1591 / CS1591 — "missing XML comment" (too noisy pre-API-docs)
+           CA1030        — "consider making Raise* methods a CLR event" (DDD domain-event pattern)
+           CA1062        — "validate parameter is not null" (overkill for DI-injected services)
+           CA1515        — ".NET 8: make public types internal" (not applicable to cross-project types)
+           CA1812        — "uninstantiated internal class" (DI container instantiates them)
+           CA1848        — "use LoggerMessage delegates" (premature optimization in most handlers)
+           CA2007        — "ConfigureAwait" (no SyncContext in ASP.NET Core — rule is obsolete there)
+           CA1819        — "properties should not return arrays" (fine for immutable snapshots)
+           CA1716        — "identifiers should not match reserved keywords" (affects our DDD domain terms)
+      -->
+    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716</NoWarn>
 
     <!-- Output organization -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>
