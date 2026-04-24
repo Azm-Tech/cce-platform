@@ -1,0 +1,12 @@
+{
+  "name": "cce-root",
+  "private": true,
+  "version": "0.0.0",
+  "description": "CCE Knowledge Center Phase 2 — monorepo root (husky + tooling only)",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6"
+  }
+}

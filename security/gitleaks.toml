@@ -1,0 +1,32 @@
+# CCE Gitleaks config — extends the default ruleset with project-specific allowlist
+# Ref: https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+
+title = "CCE Gitleaks config"
+
+# Use Gitleaks' bundled default rules as the base
+[extend]
+useDefault = true
+
+# Allow-list for known-safe patterns in our repo
+[allowlist]
+description = "CCE allowlist — placeholder values and generated files"
+paths = [
+  '''contracts/.*\.json$''',                       # generated OpenAPI specs
+  '''frontend/libs/api-client/src/lib/generated/''',
+  '''docs/.*''',                                   # documentation may contain example tokens
+  '''keycloak/realm-export.json$''',               # dev-only Keycloak realm with placeholder client secrets
+]
+regexes = [
+  '''dev-internal-secret-change-me''',
+  '''dev-external-secret-change-me''',
+  '''Strong!Passw0rd''',
+  '''Admin123!''',
+  '''no-reply@cce\.local''',
+]
+
+# Project rules (in addition to defaults)
+[[rules]]
+id = "cce-generic-client-secret"
+description = "CCE — generic client secret shape (non-placeholder)"
+regex = '''(?i)(client[_-]?secret|api[_-]?key|token)\s*[:=]\s*['"]?([A-Za-z0-9/+=_-]{32,})['"]?'''
+keywords = ["client_secret", "api_key", "token"]

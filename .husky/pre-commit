@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Abort commit if Gitleaks finds any staged secret.
+# --staged limits scan to staged changes only (fast).
+# --redact hides matched values in output.
+# Config: security/gitleaks.toml
+
+gitleaks git --staged \
+  --redact \
+  --config security/gitleaks.toml \
+  --verbose
