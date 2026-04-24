@@ -79,3 +79,31 @@ services:
       retries: 5
       start_period: 5s
     restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.6
+    container_name: cce-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "admin"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_PORT: "8080"
+      KC_MANAGEMENT_PORT: "9000"
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import:ro
+    networks:
+      - cce-net
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q 'status.*UP'"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: unless-stopped
