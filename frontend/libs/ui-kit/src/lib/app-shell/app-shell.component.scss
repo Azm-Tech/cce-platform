@@ -1,0 +1,21 @@
+.cce-app-shell {
+  &__toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  &__title {
+    font-weight: 600;
+  }
+  &__spacer {
+    flex: 1 1 auto;
+  }
+  &__main {
+    min-height: calc(100vh - 64px);
+    padding: 16px;
+  }
+  &__footer {
+    padding: 16px;
+    text-align: center;
+  }
+}

@@ -1,0 +1,13 @@
+<mat-toolbar color="primary" class="cce-app-shell__toolbar">
+  <span class="cce-app-shell__title">{{ appTitle() }}</span>
+  <span class="cce-app-shell__spacer"></span>
+  <ng-content select="[shellHeaderEnd]" />
+</mat-toolbar>
+
+<main class="cce-app-shell__main">
+  <ng-content />
+</main>
+
+<footer class="cce-app-shell__footer">
+  <ng-content select="[shellFooter]" />
+</footer>
