@@ -1,33 +1,21 @@
-// Angular Material 18 theme (M2 placeholder palette — Phase 10 swaps in DGA tokens).
-@use "@angular/material" as mat;
+// CCE web-portal — global styles
+// Theme + Bootstrap grid imports use the shared ui-kit lib.
 
-// Bootstrap 5 grid + utilities ONLY (not components, per ADR-0003).
-// See _bootstrap-grid.scss for rationale on why this uses @import.
-@use "./bootstrap-grid";
+// SCSS path is relative to the app's project root, so reach into libs/ui-kit/src/lib/styles.
+// Nx's tsconfig path mappings DON'T apply to SCSS — Sass uses the `loadPaths` config from
+// project.json. Phase 09 already set loadPaths to include node_modules; we add libs path here.
+@use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
 
-@include mat.core();
+@include theme.cce-theme;
 
-$cce-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$cce-accent: mat.m2-define-palette(mat.$m2-pink-palette);
-$cce-warn: mat.m2-define-palette(mat.$m2-red-palette);
-$cce-theme: mat.m2-define-light-theme(
-  (
-    color: (
-      primary: $cce-primary,
-      accent: $cce-accent,
-      warn: $cce-warn,
-    ),
-  )
-);
+// Bootstrap 5 — grid + utilities ONLY (per ADR-0003).
+// Per Phase 09 deviation, we use legacy @import inside a partial to side-step Sass module isolation.
+@import "./bootstrap-grid";
 
-@include mat.all-component-themes($cce-theme);
-
-/* Global resets */
-html,
-body {
-  height: 100%;
-}
-body {
+// Document-level resets
+html, body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  padding: 0;
+  height: 100%;
+  background: #fafafa;
 }
