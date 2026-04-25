@@ -1,0 +1,15 @@
+# CCE — Permission matrix
+# Single source of truth for all authorization permissions.
+# Format: <Category>.<Resource>.<Action> — three dot-separated segments.
+# Generated into CCE.Domain.Permissions by the Roslyn source generator at:
+#   backend/src/CCE.Domain.SourceGenerators
+# Adding a permission: append a new line under `permissions:` and rebuild.
+# The full BRD §4.1.31 permission matrix (~70 entries) lands in sub-project 2.
+#
+# Naming rules:
+#   - PascalCase segments only (System, Content, User, etc.)
+#   - Verbs use Read / Create / Update / Delete / Approve / Reject / List / Search
+#   - Stable: never rename — deprecate old + add new instead.
+
+permissions:
+  - System.Health.Read
