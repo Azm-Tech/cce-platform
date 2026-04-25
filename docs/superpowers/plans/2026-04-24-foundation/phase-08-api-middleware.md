@@ -76,8 +76,12 @@ Overwrite `backend/src/CCE.Api.Common/CCE.Api.Common.csproj`:
          a real smell.
          CA1308: BCP 47 language tags are conventionally lowercase ("ar", "en"). The rule
          prefers ToUpperInvariant for security-sensitive normalization (Turkish-i edge case),
-         but locale matching against a lowercase array is the correct lowercase use case. -->
-    <NoWarn>$(NoWarn);CA1031;CA1308</NoWarn>
+         but locale matching against a lowercase array is the correct lowercase use case.
+         CA5404: ValidateAudience=false is a Foundation-only dev relaxation. Keycloak's user
+         tokens often lack `aud`; the ADFS-compat realms validate via `azp` (authorized party).
+         Sub-project 8 (Integration Gateway) MUST replace this with either a configured
+         audience match or a custom AudienceValidator before production deploy. -->
+    <NoWarn>$(NoWarn);CA1031;CA1308;CA5404</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
