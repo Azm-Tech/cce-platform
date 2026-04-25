@@ -20,6 +20,16 @@
           {
             "glob": "**/*",
             "input": "apps/admin-cms/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/admin-cms/src/assets",
+            "output": "assets"
+          },
+          {
+            "glob": "**/*.json",
+            "input": "libs/i18n/src/lib/i18n",
+            "output": "assets/i18n"
           }
         ],
         "styles": ["apps/admin-cms/src/styles.scss"],
