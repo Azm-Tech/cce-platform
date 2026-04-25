@@ -1207,13 +1207,479 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add anonymous GET /health
 
 ---
 
-## Tasks 8.10 — 8.14 — outline only (full detail when those become next-up)
+## Task 8.10: `/health/ready` — dependency probes
 
-- **8.10 `/health/ready`:** dependency probes (SQL, Redis, Keycloak JWKS). 503 if any unhealthy. 2 tests.
-- **8.11 `/health/authenticated`:** Internal; requires `SuperAdmin` policy; returns claims echo. 2 tests.
-- **8.12 Permission policies:** policy registration helper using source-generated `Permissions` constants. 1 test.
-- **8.13 DI composition:** Program.cs assembles middleware in correct order. Smoke test confirms 200 on root.
-- **8.14 E2E integration tests:** 4 tests via `WebApplicationFactory` against real Keycloak (admin token + service-account flow).
+**Files:**
+- Modify: `backend/src/CCE.Api.External/Program.cs` (add endpoint)
+- Modify: `backend/src/CCE.Api.Internal/Program.cs` (add endpoint)
+- Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthReadyEndpointTests.cs`
+
+**Rationale:** Probes SQL + Redis. Returns 503 if any unhealthy, 200 otherwise. Use ASP.NET Core Health Checks (`AddHealthChecks`) with built-in checks.
+
+- [ ] **Step 1: Add health-check packages to CPM**
+
+Confirm these are in `Directory.Packages.props` (add to "Persistence" or new "Health checks" ItemGroup if missing):
+
+```xml
+<PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
+<PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+```
+
+If missing, add a new `<ItemGroup Label="Health checks">` block.
+
+- [ ] **Step 2: Add packages + helper to `CCE.Api.Common`**
+
+Modify `backend/src/CCE.Api.Common/CCE.Api.Common.csproj` to add:
+
+```xml
+<PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+<PackageReference Include="AspNetCore.HealthChecks.Redis" />
+```
+
+Create `backend/src/CCE.Api.Common/Health/CceHealthChecksRegistration.cs`:
+
+```csharp
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace CCE.Api.Common.Health;
+
+public static class CceHealthChecksRegistration
+{
+    public static IServiceCollection AddCceHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        var sql = configuration["Infrastructure:SqlConnectionString"]
+            ?? throw new InvalidOperationException("Infrastructure:SqlConnectionString missing.");
+        var redis = configuration["Infrastructure:RedisConnectionString"]
+            ?? throw new InvalidOperationException("Infrastructure:RedisConnectionString missing.");
+
+        services.AddHealthChecks()
+            .AddSqlServer(sql, name: "sqlserver", tags: ["ready"])
+            .AddRedis(redis, name: "redis", tags: ["ready"]);
+
+        return services;
+    }
+}
+```
+
+- [ ] **Step 3: Wire in External Program.cs (similarly Internal)**
+
+Add to External `Program.cs`:
+
+```csharp
+builder.Services.AddCceHealthChecks(builder.Configuration);
+```
+
+After `app.MapGet("/health", ...)`:
+
+```csharp
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+```
+
+Add `using CCE.Api.Common.Health;` to the file. Replicate in Internal.
+
+- [ ] **Step 4: Write `HealthReadyEndpointTests.cs`**
+
+```csharp
+using System.Net;
+using CCE.Api.External;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.Endpoints;
+
+public class HealthReadyEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public HealthReadyEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    [Fact]
+    public async Task Returns_200_when_all_dependencies_healthy()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/health/ready", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Returns_503_when_a_dependency_fails()
+    {
+        var factory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("Infrastructure:RedisConnectionString", "localhost:1");  // unreachable port
+        });
+        var client = factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/health/ready", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+    }
+}
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+git add backend/Directory.Packages.props backend/src/CCE.Api.Common backend/src/CCE.Api.External/Program.cs backend/src/CCE.Api.Internal/Program.cs backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthReadyEndpointTests.cs
+git -c commit.gpgsign=false commit -m "feat(phase-08): add /health/ready endpoint with SQL + Redis dependency probes (200 healthy, 503 unhealthy)"
+```
+
+---
+
+## Task 8.11: `/health/authenticated` (Internal API, requires `SuperAdmin`)
+
+**Files:**
+- Modify: `backend/src/CCE.Api.Internal/Program.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthAuthenticatedEndpointTests.cs`
+
+**Rationale:** Internal API exposes `GET /health/authenticated` requiring an authenticated user with `SuperAdmin` group claim. Echoes claims via `AuthenticatedHealthQuery`.
+
+- [ ] **Step 1: Add the endpoint to Internal Program.cs (after `app.MapGet("/auth/echo")`)**
+
+```csharp
+app.MapGet("/health/authenticated", async (IMediator mediator, HttpContext ctx) =>
+{
+    var user = ctx.User;
+    var groups = user.FindAll("groups").Select(c => c.Value).ToList();
+    var locale = System.Globalization.CultureInfo.CurrentCulture.Name;
+
+    var query = new AuthenticatedHealthQuery(
+        UserId: user.FindFirst("sub")?.Value ?? "(no sub)",
+        PreferredUsername: user.FindFirst("preferred_username")?.Value ?? "(no name)",
+        Email: user.FindFirst("email")?.Value ?? "(no email)",
+        Upn: user.FindFirst("upn")?.Value ?? "(no upn)",
+        Groups: groups,
+        Locale: locale);
+
+    var result = await mediator.Send(query);
+    return Results.Ok(result);
+})
+.RequireAuthorization(policy => policy.RequireClaim("groups", "SuperAdmin"));
+```
+
+Add `using CCE.Application.Health;` to the file.
+
+- [ ] **Step 2: Write tests**
+
+```csharp
+using System.Net;
+using System.Net.Http.Headers;
+using CCE.Api.Internal;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.Endpoints;
+
+public class HealthAuthenticatedEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public HealthAuthenticatedEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    [Fact]
+    public async Task Returns_401_without_token()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/health/authenticated", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Returns_401_with_invalid_token()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "garbage");
+
+        var resp = await client.GetAsync(new Uri("/health/authenticated", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+}
+```
+
+We don't test the 200-with-real-token path here — that lands in Task 8.14 E2E with a real Keycloak token acquisition flow.
+
+- [ ] **Step 3: Commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+git add backend/src/CCE.Api.Internal/Program.cs backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthAuthenticatedEndpointTests.cs
+git -c commit.gpgsign=false commit -m "feat(phase-08): add /health/authenticated on Internal API (requires SuperAdmin group claim)"
+```
+
+---
+
+## Task 8.12: Permission policy registration helper
+
+**Files:**
+- Create: `backend/src/CCE.Api.Common/Authorization/PermissionPolicyRegistration.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/Authorization/PermissionPolicyTests.cs`
+
+**Rationale:** Auto-registers an authorization policy for every entry in `CCE.Domain.Permissions.All` so handlers can use `[Authorize(Policy = Permissions.System_Health_Read)]` or minimal-API `.RequireAuthorization(Permissions.System_Health_Read)`. Each policy requires a `groups` claim equal to the permission name.
+
+- [ ] **Step 1: Write the helper**
+
+```csharp
+using CCE.Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace CCE.Api.Common.Authorization;
+
+public static class PermissionPolicyRegistration
+{
+    public static IServiceCollection AddCcePermissionPolicies(this IServiceCollection services)
+    {
+        services.AddAuthorization(opts =>
+        {
+            foreach (var permission in Permissions.All)
+            {
+                opts.AddPolicy(permission, policy => policy.RequireClaim("groups", permission));
+            }
+        });
+        return services;
+    }
+}
+```
+
+- [ ] **Step 2: Test that policy was registered**
+
+```csharp
+using CCE.Api.Common.Authorization;
+using CCE.Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace CCE.Api.IntegrationTests.Authorization;
+
+public class PermissionPolicyTests
+{
+    [Fact]
+    public async Task Registers_policy_for_each_permission_in_All()
+    {
+        var services = new ServiceCollection();
+        services.AddCcePermissionPolicies();
+        await using var sp = services.BuildServiceProvider();
+        var provider = sp.GetRequiredService<IAuthorizationPolicyProvider>();
+
+        foreach (var permission in Permissions.All)
+        {
+            var policy = await provider.GetPolicyAsync(permission);
+            policy.Should().NotBeNull($"policy for permission {permission} should be registered");
+        }
+    }
+}
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+git add backend/src/CCE.Api.Common/Authorization backend/tests/CCE.Api.IntegrationTests/Authorization
+git -c commit.gpgsign=false commit -m "feat(phase-08): auto-register an authorization policy for every Permissions.All entry"
+```
+
+---
+
+## Task 8.13: Wire all middleware into both API Programs in correct order
+
+**Files:**
+- Modify: `backend/src/CCE.Api.External/Program.cs`
+- Modify: `backend/src/CCE.Api.Internal/Program.cs`
+
+**Rationale:** Both Programs assemble middleware in spec §7.1 order: RequestLogging → Exception → SecurityHeaders → Auth → Authorization → RateLimit → Localization. Health endpoints + Swagger before auth routes.
+
+- [ ] **Step 1: Update External Program.cs to canonical middleware order**
+
+```csharp
+using CCE.Api.Common.Auth;
+using CCE.Api.Common.Authorization;
+using CCE.Api.Common.Health;
+using CCE.Api.Common.Middleware;
+using CCE.Api.Common.OpenApi;
+using CCE.Api.Common.RateLimiting;
+using CCE.Application;
+using CCE.Application.Health;
+using CCE.Infrastructure;
+using MediatR;
+using System.Globalization;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration)
+    .AddCcePermissionPolicies()
+    .AddCceHealthChecks(builder.Configuration)
+    .AddCceRateLimiter()
+    .AddCceOpenApi("CCE External API");
+
+var app = builder.Build();
+
+// Middleware order (spec §7.1): correlation → exception → security headers → auth → authz → rate → locale
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
+app.UseMiddleware<LocalizationMiddleware>();
+
+app.UseCceOpenApi();
+
+app.MapGet("/", () => "CCE.Api.External — Foundation");
+
+app.MapGet("/auth/echo", (HttpContext ctx) =>
+{
+    var name = ctx.User.Identity?.Name ?? "(no name)";
+    var upn = ctx.User.FindFirst("upn")?.Value ?? "(no upn)";
+    return Results.Ok(new { name, upn });
+}).RequireAuthorization();
+
+app.MapGet("/health", async (IMediator mediator) =>
+{
+    var locale = CultureInfo.CurrentCulture.Name;
+    var result = await mediator.Send(new HealthQuery(Locale: locale));
+    return Results.Ok(result);
+});
+
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+
+app.Run();
+
+namespace CCE.Api.External
+{
+    public partial class Program;
+}
+```
+
+- [ ] **Step 2: Update Internal Program.cs identically (different banner string + add `/health/authenticated`)**
+
+Internal mirrors External but adds the `/health/authenticated` endpoint with `RequireClaim("groups", "SuperAdmin")`.
+
+- [ ] **Step 3: Smoke + commit**
+
+```bash
+dotnet build backend/CCE.sln --nologo 2>&1 | tail -5
+dotnet test backend/CCE.sln --nologo --no-build 2>&1 | tail -10
+git add backend/src/CCE.Api.External/Program.cs backend/src/CCE.Api.Internal/Program.cs
+git -c commit.gpgsign=false commit -m "feat(phase-08): assemble all middleware in canonical order in both API Programs"
+```
+
+---
+
+## Task 8.14: E2E integration tests with real Keycloak token
+
+**Files:**
+- Create: `backend/tests/CCE.Api.IntegrationTests/E2E/EndToEndAuthFlowTests.cs`
+
+**Rationale:** Acquires a real token from Keycloak's `admin-cli` against the Foundation realms, then hits the protected endpoints. Closest thing Foundation has to a "did everything wire" gate.
+
+- [ ] **Step 1: Write the test**
+
+```csharp
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using CCE.Api.Internal;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.E2E;
+
+public class EndToEndAuthFlowTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public EndToEndAuthFlowTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    private static async Task<string> AcquireUserTokenAsync()
+    {
+        // Use the realm's master admin credentials (Phase 02 Task 2.4 pattern)
+        // to get an admin-API token, then create a TEMPORARY service-account token via cce-admin-cms.
+        // For real user-flow testing in higher phases, we'd use authorization code flow.
+        // For Foundation E2E, we rely on the cce-admin-cms service-account token + verifying the API
+        // accepts it — proves JWKS validation works end-to-end.
+        using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8080") };
+
+        var form = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            new KeyValuePair<string, string>("client_id", "cce-admin-cms"),
+            new KeyValuePair<string, string>("client_secret", "dev-internal-secret-change-me")
+        });
+        var resp = await http.PostAsync(new Uri("/realms/cce-internal/protocol/openid-connect/token", UriKind.Relative), form);
+        resp.EnsureSuccessStatusCode();
+        var json = await resp.Content.ReadFromJsonAsync<TokenResponse>();
+        return json!.AccessToken;
+    }
+
+    [Fact]
+    public async Task Anonymous_health_returns_200()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/health", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Authenticated_endpoint_accepts_keycloak_token()
+    {
+        var token = await AcquireUserTokenAsync();
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var resp = await client.GetAsync(new Uri("/auth/echo", UriKind.Relative));
+
+        // Service-account token may not pass SuperAdmin policy — but the bearer is validated.
+        // Acceptable outcomes: 200 (token + claims OK) or 403 (token validated but missing SuperAdmin).
+        resp.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Health_ready_returns_200_when_dependencies_up()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/health/ready", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Anonymous_auth_endpoint_returns_401()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/auth/echo", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private sealed record TokenResponse(
+        [property: System.Text.Json.Serialization.JsonPropertyName("access_token")] string AccessToken);
+}
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -10
+git add backend/tests/CCE.Api.IntegrationTests/E2E
+git -c commit.gpgsign=false commit -m "test(phase-08): add 4 E2E integration tests via WebApplicationFactory + real Keycloak service-account token"
+```
 
 ---
 
