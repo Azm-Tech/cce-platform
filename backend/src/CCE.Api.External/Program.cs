@@ -1,4 +1,5 @@
 using CCE.Api.Common.Auth;
+using CCE.Api.Common.Health;
 using CCE.Api.Common.OpenApi;
 using CCE.Application;
 using CCE.Application.Health;
@@ -11,6 +12,7 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddCceJwtAuth(builder.Configuration)
+    .AddCceHealthChecks(builder.Configuration)
     .AddCceOpenApi("CCE External API");
 
 var app = builder.Build();
@@ -27,6 +29,11 @@ app.MapGet("/health", async (IMediator mediator) =>
     var locale = System.Globalization.CultureInfo.CurrentCulture.Name;
     var result = await mediator.Send(new HealthQuery(Locale: locale)).ConfigureAwait(false);
     return Results.Ok(result);
+});
+
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
 });
 
 app.MapGet("/auth/echo", (HttpContext ctx) =>
