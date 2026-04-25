@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "CCE Knowledge Center",
+    "welcome": "Welcome to the CCE Knowledge Center",
+    "loading": "Loading…",
+    "error": {
+      "notFound": "Page not found",
+      "serverError": "A server error occurred. Please try again later.",
+      "networkError": "Could not reach the server.",
+      "unauthorized": "Please sign in to continue.",
+      "forbidden": "You don't have permission to access this resource."
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signOut": "Sign out",
+      "save": "Save",
+      "cancel": "Cancel",
+      "retry": "Retry"
+    },
+    "locale": {
+      "switchTo": "Switch to",
+      "ar": "العربية",
+      "en": "English"
+    }
+  },
+  "health": {
+    "title": "System Health",
+    "status": "Status",
+    "version": "Version",
+    "ok": "OK"
+  }
+}
