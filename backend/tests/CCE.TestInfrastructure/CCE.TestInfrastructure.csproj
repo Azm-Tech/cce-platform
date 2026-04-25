@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- Not a test project itself — a shared library consumed by all *.Tests projects.
+         Directory.Build.props's test-project-conditional NoWarn (CA1707 underscores) does NOT apply here,
+         so test-style names like FakeSystemClock are still subject to the production analyzer ruleset. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Used so xunit-aware helpers can live here later (collection fixtures, etc.). -->
+    <PackageReference Include="xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CCE.Domain\CCE.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
