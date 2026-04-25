@@ -533,23 +533,387 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add SecurityHeadersMiddle
 
 ---
 
-## Tasks 8.4 — 8.14 — outline only (full detail when those tasks become next-up)
+## Task 8.4: Rate limiting (in-memory fixed-window)
 
-Plan files this large risk drift; I'll spec each remaining task fully when its predecessor commits land. The shape:
+**Files:**
+- Create: `backend/src/CCE.Api.Common/RateLimiting/CceRateLimiterRegistration.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/RateLimiting/RateLimiterTests.cs`
 
-- **8.4 Rate limiting:** ASP.NET Core 8 built-in `RateLimiter` middleware backed by Redis (custom limiter implementation). Anonymous: 60/min. Authenticated: 300/min. Auth endpoints: 10/min. 2 tests (under-limit passes, over-limit returns 429).
-- **8.5 Localization:** middleware reads `Accept-Language`, sets `CultureInfo.CurrentCulture`. 1 test for ar/en switching.
-- **8.6 Swagger:** `AddSwaggerGen` + `UseSwagger` + `UseSwaggerUI`. 1 test asserting `/swagger/v1/swagger.json` returns valid JSON.
+**Rationale:** Foundation uses ASP.NET Core 8's built-in `AddRateLimiter` with fixed-window in-memory counters. Spec §9.6 calls for Redis-backed for multi-instance prod — that's deferred to sub-project 8 with an ADR. Foundation proves rate limiting wires correctly at the limit boundary.
+
+**Limits (per spec §9.6):** 60/min anonymous, 300/min authenticated, 10/min auth endpoints. Foundation tests just verify the "anonymous" policy works — Tasks 8.7–8.8 add authenticated policies once auth lands.
+
+- [ ] **Step 1: Write the failing test**
+
+```csharp
+using System.Net;
+using CCE.Api.Common.RateLimiting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace CCE.Api.IntegrationTests.RateLimiting;
+
+public class RateLimiterTests
+{
+    // Build a host with a tight 3-per-window limit for deterministic tests.
+    private static IHost BuildTestHost() =>
+        new HostBuilder()
+            .ConfigureWebHost(web =>
+            {
+                web.UseTestServer();
+                web.ConfigureServices(s => s.AddCceRateLimiter(testLimit: 3));
+                web.Configure(app =>
+                {
+                    app.UseRateLimiter();
+                    app.MapWhen(_ => true, branch =>
+                    {
+                        branch.Run(c => c.Response.WriteAsync("ok"));
+                    });
+                });
+            })
+            .Start();
+
+    [Fact]
+    public async Task Allows_requests_under_the_limit()
+    {
+        using var host = BuildTestHost();
+        var client = host.GetTestClient();
+
+        for (var i = 0; i < 3; i++)
+        {
+            var resp = await client.GetAsync(new Uri("/", UriKind.Relative));
+            resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+    }
+
+    [Fact]
+    public async Task Returns_429_after_exceeding_the_limit()
+    {
+        using var host = BuildTestHost();
+        var client = host.GetTestClient();
+
+        for (var i = 0; i < 3; i++)
+        {
+            await client.GetAsync(new Uri("/", UriKind.Relative));
+        }
+        var over = await client.GetAsync(new Uri("/", UriKind.Relative));
+
+        over.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+    }
+}
+```
+
+- [ ] **Step 2: Write `backend/src/CCE.Api.Common/RateLimiting/CceRateLimiterRegistration.cs`**
+
+```csharp
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.RateLimiting;
+
+namespace CCE.Api.Common.RateLimiting;
+
+public static class CceRateLimiterRegistration
+{
+    public const string AnonymousPolicy = "anonymous";
+
+    /// <summary>
+    /// Registers the CCE rate limiter with the anonymous policy applied as the global limiter.
+    /// </summary>
+    /// <param name="testLimit">Override the per-window limit (test/dev only). Production uses 60.</param>
+    public static IServiceCollection AddCceRateLimiter(this IServiceCollection services, int testLimit = 60) =>
+        services.AddRateLimiter(opts =>
+        {
+            opts.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            opts.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = testLimit,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+        });
+}
+```
+
+- [ ] **Step 3: Run tests + commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+# Expected: 8 cumulative (2 correlation + 3 ProblemDetails + 1 security + 2 rate-limit)
+git add backend/src/CCE.Api.Common/RateLimiting backend/tests/CCE.Api.IntegrationTests/RateLimiting
+git -c commit.gpgsign=false commit -m "feat(phase-08): add fixed-window rate limiter (60/min anon by default; testable override; 429 on exceed)"
+```
+
+---
+
+## Task 8.5: Localization middleware (Accept-Language → CultureInfo)
+
+**Files:**
+- Create: `backend/src/CCE.Api.Common/Middleware/LocalizationMiddleware.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/Middleware/LocalizationMiddlewareTests.cs`
+
+**Rationale:** Reads `Accept-Language`, picks the best match from `[ar, en]` (default `ar`), sets `CultureInfo.CurrentCulture` for the request scope. Downstream code reads `CultureInfo.CurrentCulture.Name`.
+
+- [ ] **Step 1: Write the failing test**
+
+```csharp
+using System.Globalization;
+using CCE.Api.Common.Middleware;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
+
+namespace CCE.Api.IntegrationTests.Middleware;
+
+public class LocalizationMiddlewareTests
+{
+    private static IHost BuildTestHost() =>
+        new HostBuilder()
+            .ConfigureWebHost(web =>
+            {
+                web.UseTestServer();
+                web.Configure(app =>
+                {
+                    app.UseMiddleware<LocalizationMiddleware>();
+                    app.Run(c => c.Response.WriteAsync(CultureInfo.CurrentCulture.Name));
+                });
+            })
+            .Start();
+
+    [Theory]
+    [InlineData("ar", "ar")]
+    [InlineData("en", "en")]
+    [InlineData("en-US,en;q=0.9,ar;q=0.8", "en")]
+    [InlineData("fr", "ar")]                    // unsupported → default ar
+    [InlineData("", "ar")]                       // empty → default ar
+    public async Task Selects_supported_locale_or_falls_back_to_ar(string acceptLanguage, string expected)
+    {
+        using var host = BuildTestHost();
+        var client = host.GetTestClient();
+        if (!string.IsNullOrEmpty(acceptLanguage))
+        {
+            client.DefaultRequestHeaders.Add("Accept-Language", acceptLanguage);
+        }
+
+        var resp = await client.GetAsync(new Uri("/", UriKind.Relative));
+
+        var body = await resp.Content.ReadAsStringAsync();
+        body.Should().Be(expected);
+    }
+}
+```
+
+- [ ] **Step 2: Write `LocalizationMiddleware.cs`**
+
+```csharp
+using Microsoft.AspNetCore.Http;
+using System.Globalization;
+
+namespace CCE.Api.Common.Middleware;
+
+public sealed class LocalizationMiddleware
+{
+    private static readonly string[] Supported = ["ar", "en"];
+    private const string DefaultLocale = "ar";
+
+    private readonly RequestDelegate _next;
+
+    public LocalizationMiddleware(RequestDelegate next) => _next = next;
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var locale = PickLocale(context.Request.Headers.AcceptLanguage.ToString());
+        var culture = CultureInfo.GetCultureInfo(locale);
+
+        var prevCulture = CultureInfo.CurrentCulture;
+        var prevUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
+        try
+        {
+            await _next(context).ConfigureAwait(false);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = prevCulture;
+            CultureInfo.CurrentUICulture = prevUiCulture;
+        }
+    }
+
+    private static string PickLocale(string acceptLanguage)
+    {
+        if (string.IsNullOrWhiteSpace(acceptLanguage))
+        {
+            return DefaultLocale;
+        }
+        // Parse comma-separated entries, trim quality factors, take first matching supported tag.
+        foreach (var entry in acceptLanguage.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var tag = entry.Split(';', 2)[0].Trim();
+            // "en-US" → "en"
+            var primary = tag.Split('-', 2)[0].ToLowerInvariant();
+            if (Array.IndexOf(Supported, primary) >= 0)
+            {
+                return primary;
+            }
+        }
+        return DefaultLocale;
+    }
+}
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add backend/src/CCE.Api.Common/Middleware/LocalizationMiddleware.cs backend/tests/CCE.Api.IntegrationTests/Middleware/LocalizationMiddlewareTests.cs
+git -c commit.gpgsign=false commit -m "feat(phase-08): add LocalizationMiddleware (Accept-Language → CultureInfo, ar default)"
+```
+
+---
+
+## Task 8.6: Swagger UI + OpenAPI export
+
+**Files:**
+- Create: `backend/src/CCE.Api.Common/OpenApi/CceOpenApiRegistration.cs`
+- Modify: `backend/src/CCE.Api.External/Program.cs`
+- Modify: `backend/src/CCE.Api.Internal/Program.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/OpenApi/SwaggerEndpointTests.cs`
+
+**Rationale:** Swashbuckle generates OpenAPI from controllers + minimal-API endpoint metadata. Phase 13 hooks the export into a contract-bridge step. Foundation just verifies `/swagger/v1/swagger.json` returns valid JSON with at least the root endpoint described.
+
+- [ ] **Step 1: Write the failing test**
+
+```csharp
+using System.Net;
+using System.Text.Json;
+using CCE.Api.External;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.OpenApi;
+
+public class SwaggerEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public SwaggerEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    [Fact]
+    public async Task Swagger_json_is_served_and_well_formed()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/swagger/v1/swagger.json", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await resp.Content.ReadAsStringAsync();
+        var doc = JsonDocument.Parse(body).RootElement;
+        doc.GetProperty("openapi").GetString().Should().StartWith("3.");
+        doc.GetProperty("info").GetProperty("title").GetString().Should().NotBeNullOrWhiteSpace();
+    }
+}
+```
+
+The test references `CCE.Api.External.Program` — that's available because Phase 03 added `public partial class Program;` to the API project.
+
+- [ ] **Step 2: Add reference from IntegrationTests to External and Internal API projects**
+
+(Already added in Phase 03; verify with `grep` and add if missing.)
+
+- [ ] **Step 3: Write `backend/src/CCE.Api.Common/OpenApi/CceOpenApiRegistration.cs`**
+
+```csharp
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+
+namespace CCE.Api.Common.OpenApi;
+
+public static class CceOpenApiRegistration
+{
+    public static IServiceCollection AddCceOpenApi(this IServiceCollection services, string title)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(opts =>
+        {
+            opts.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = title,
+                Version = "v1",
+                Description = "CCE Knowledge Center API — Foundation"
+            });
+        });
+        return services;
+    }
+
+    public static IApplicationBuilder UseCceOpenApi(this IApplicationBuilder app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        return app;
+    }
+}
+```
+
+- [ ] **Step 4: Update `backend/src/CCE.Api.External/Program.cs`**
+
+```csharp
+using CCE.Api.Common.OpenApi;
+using CCE.Application;
+using CCE.Infrastructure;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration)
+    .AddCceOpenApi("CCE External API");
+
+var app = builder.Build();
+
+app.UseCceOpenApi();
+app.MapGet("/", () => "CCE.Api.External — Foundation");
+
+app.Run();
+
+public partial class Program;
+```
+
+- [ ] **Step 5: Update `backend/src/CCE.Api.Internal/Program.cs` (same shape, different title)**
+
+Replace `"CCE External API"` with `"CCE Internal API"`.
+
+- [ ] **Step 6: Run tests + commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+# Expected: 11 cumulative (2 correlation + 3 ProblemDetails + 1 security + 2 rate-limit + 1 locale theory expansion = 5 + 1 swagger = 12)
+git add backend/src/CCE.Api.Common/OpenApi backend/src/CCE.Api.External/Program.cs backend/src/CCE.Api.Internal/Program.cs backend/tests/CCE.Api.IntegrationTests/OpenApi
+git -c commit.gpgsign=false commit -m "feat(phase-08): add Swagger UI + OpenAPI export on /swagger for both APIs"
+```
+
+---
+
+## Tasks 8.7 — 8.14 — outline only (full detail when those become next-up)
+
 - **8.7 External JWT:** `AddAuthentication().AddJwtBearer()` configured for Keycloak `cce-external` realm; claim mapper for `upn`/`groups`/`preferred_username`. 2 tests (valid token → 200, invalid → 401).
-- **8.8 Internal OIDC:** same shape for `cce-internal` realm with full code-flow validation. 2 tests.
+- **8.8 Internal OIDC:** same shape for `cce-internal` realm. 2 tests.
 - **8.9 `/health` endpoint** (External, anonymous): returns `HealthQuery` result. 1 endpoint test.
 - **8.10 `/health/ready`:** dependency probes (SQL, Redis, Keycloak JWKS). 503 if any unhealthy. 2 tests.
-- **8.11 `/health/authenticated`:** Internal API; requires `SuperAdmin` policy; returns claims echo. 2 tests (200 with token, 403 without policy).
-- **8.12 Permission policies:** `[RequirePermission(Permissions.X)]` attribute or policy registration helper using the source-generated `Permissions` constants. 1 test.
-- **8.13 DI composition:** Program.cs of both APIs assembles middleware in correct order. Smoke test (already existing) confirms 200 on root.
-- **8.14 E2E integration tests:** 4 tests against `WebApplicationFactory` covering: anonymous health, locale negotiation ar→en, 401 unauthenticated `/health/authenticated`, 200 authenticated.
-
-**Each remaining task will follow the same pattern: failing test → minimal code → run → commit.**
+- **8.11 `/health/authenticated`:** Internal; requires `SuperAdmin` policy; returns claims echo. 2 tests.
+- **8.12 Permission policies:** policy registration helper using source-generated `Permissions` constants. 1 test.
+- **8.13 DI composition:** Program.cs assembles middleware in correct order. Smoke test confirms 200 on root.
+- **8.14 E2E integration tests:** 4 tests via `WebApplicationFactory`.
 
 ---
 
