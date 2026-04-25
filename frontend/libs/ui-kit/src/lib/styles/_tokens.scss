@@ -1,0 +1,45 @@
+// CCE — DGA design tokens (per Saudi Digital Government Authority UX guidelines).
+// Foundation seeds; refine with the official DGA palette/typography spec when available.
+
+// Color palette
+$cce-primary-50:  #e8f4f1;
+$cce-primary-100: #c5e4dc;
+$cce-primary-300: #6cb5a0;
+$cce-primary-500: #006c4f;   // primary brand — DGA-aligned forest green
+$cce-primary-700: #00513b;
+$cce-primary-900: #00301f;
+
+$cce-accent-500:  #c8a045;   // muted gold accent
+
+$cce-warn-500:    #b71c1c;   // error / warn
+
+$cce-neutral-50:  #fafafa;
+$cce-neutral-100: #f5f5f5;
+$cce-neutral-300: #d4d4d4;
+$cce-neutral-500: #757575;
+$cce-neutral-700: #424242;
+$cce-neutral-900: #212121;
+
+// Typography — Arabic-first
+$cce-font-family-ar: "IBM Plex Sans Arabic", "Frutiger LT Arabic", system-ui, sans-serif;
+$cce-font-family-en: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+// Spacing scale (4px base)
+$cce-space-1: 4px;
+$cce-space-2: 8px;
+$cce-space-3: 12px;
+$cce-space-4: 16px;
+$cce-space-6: 24px;
+$cce-space-8: 32px;
+$cce-space-12: 48px;
+$cce-space-16: 64px;
+
+// Border radii
+$cce-radius-sm: 4px;
+$cce-radius-md: 8px;
+$cce-radius-lg: 16px;
+
+// Elevation (DGA conservative shadow scale)
+$cce-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+$cce-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+$cce-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.10);

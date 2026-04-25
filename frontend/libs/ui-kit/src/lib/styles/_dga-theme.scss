@@ -1,0 +1,54 @@
+@use "@angular/material" as mat;
+@use "./tokens" as t;
+
+// Build a Material 18 (M2 API) light theme using DGA tokens.
+$cce-primary-palette: mat.m2-define-palette((
+  50:  t.$cce-primary-50,
+  100: t.$cce-primary-100,
+  300: t.$cce-primary-300,
+  500: t.$cce-primary-500,
+  700: t.$cce-primary-700,
+  900: t.$cce-primary-900,
+  contrast: (
+    50: rgba(black, 0.87),  100: rgba(black, 0.87),  300: white,
+    500: white,             700: white,              900: white,
+  )
+));
+
+$cce-accent-palette: mat.m2-define-palette((
+  50:  #fff7e6,  100: #ffe6b3,  300: #ffcc66,
+  500: t.$cce-accent-500,  700: #a37c20,  900: #6b4f0e,
+  contrast: (
+    50: rgba(black, 0.87),  100: rgba(black, 0.87),  300: rgba(black, 0.87),
+    500: rgba(black, 0.87), 700: white,              900: white,
+  )
+));
+
+$cce-warn-palette: mat.m2-define-palette(mat.$m2-red-palette);
+
+$cce-typography: mat.m2-define-typography-config(
+  $font-family: t.$cce-font-family-ar,
+);
+
+$cce-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $cce-primary-palette,
+    accent: $cce-accent-palette,
+    warn: $cce-warn-palette,
+  ),
+  typography: $cce-typography,
+  density: 0,
+));
+
+@mixin cce-theme {
+  @include mat.core();
+  @include mat.all-component-themes($cce-theme);
+
+  // RTL fonts when dir=rtl
+  [dir="rtl"] body, body[dir="rtl"] {
+    font-family: t.$cce-font-family-ar;
+  }
+  [dir="ltr"] body, body[dir="ltr"] {
+    font-family: t.$cce-font-family-en;
+  }
+}
