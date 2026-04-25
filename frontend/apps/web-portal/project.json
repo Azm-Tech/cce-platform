@@ -20,6 +20,16 @@
           {
             "glob": "**/*",
             "input": "apps/web-portal/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/web-portal/src/assets",
+            "output": "assets"
+          },
+          {
+            "glob": "**/*.json",
+            "input": "libs/i18n/src/lib/i18n",
+            "output": "assets/i18n"
           }
         ],
         "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "apps/web-portal/src/styles.scss"],
