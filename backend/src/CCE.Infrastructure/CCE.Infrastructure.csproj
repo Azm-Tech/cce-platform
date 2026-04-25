@@ -5,8 +5,11 @@
     <!-- NU1608: transitive Roslyn version mismatch. CCE.Domain.SourceGenerators pins
          Microsoft.CodeAnalysis.* at 4.8 (host-compat); EntityFrameworkCore.Design 8.0.10
          transitively wants 4.5. NuGet's "highest wins" picks 4.8 which is backwards-compatible.
-         This is the documented industry pattern for source-gen + EF Design coexistence. -->
-    <NoWarn>$(NoWarn);NU1608</NoWarn>
+         This is the documented industry pattern for source-gen + EF Design coexistence.
+         CA1861: false positive on EF Core scaffolded migration files. Generated migrations
+         use `new[] { "col1", "col2" }` for index-column lists which CA1861 wants converted to
+         static readonly fields. Migrations are auto-generated; we don't hand-edit them. -->
+    <NoWarn>$(NoWarn);NU1608;CA1861</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
