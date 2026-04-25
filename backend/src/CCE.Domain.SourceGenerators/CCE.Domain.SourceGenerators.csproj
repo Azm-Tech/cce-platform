@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Source generators MUST target netstandard2.0 (Roslyn compiler-host requirement).
+         Overrides Directory.Build.props's net8.0 default. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Mark this as a Roslyn component so analyzers/MSBuild treat it correctly -->
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- Apply the Roslyn-component-specific analyzer rules -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- Generators aren't documented APIs and aren't packed -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+
+    <!-- These NoWarn additions cover Roslyn rules that fire on hobby/internal generators
+         but are designed for shipping public analyzers. Justifications:
+           RS2008 — release tracking (only useful for NuGet-published analyzers)
+           RS1036 — analyzer banned APIs (overkill for in-repo single-purpose generator)
+      -->
+    <NoWarn>$(NoWarn);RS2008;RS1036</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
