@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+    <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
   </ItemGroup>
 
 </Project>
