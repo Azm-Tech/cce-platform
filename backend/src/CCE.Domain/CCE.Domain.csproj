@@ -4,4 +4,16 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Source generator: emits Permissions.g.cs from ../../permissions.yaml at build time -->
+    <ProjectReference Include="..\CCE.Domain.SourceGenerators\CCE.Domain.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Path is relative to this csproj. backend/permissions.yaml is two levels up from src/CCE.Domain/. -->
+    <AdditionalFiles Include="..\..\permissions.yaml" />
+  </ItemGroup>
+
 </Project>
