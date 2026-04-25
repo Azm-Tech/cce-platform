@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+// Angular Material 18 theme (M2 placeholder palette — Phase 10 swaps in DGA tokens).
+@use "@angular/material" as mat;
+
+// Bootstrap 5 grid + utilities ONLY (not components, per ADR-0003).
+// See _bootstrap-grid.scss for rationale on why this uses @import.
+@use "./bootstrap-grid";
+
+@include mat.core();
+
+$cce-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
+$cce-accent: mat.m2-define-palette(mat.$m2-pink-palette);
+$cce-warn: mat.m2-define-palette(mat.$m2-red-palette);
+$cce-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $cce-primary,
+      accent: $cce-accent,
+      warn: $cce-warn,
+    ),
+  )
+);
+
+@include mat.all-component-themes($cce-theme);
+
+/* Global resets */
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

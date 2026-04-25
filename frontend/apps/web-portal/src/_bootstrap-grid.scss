@@ -1,0 +1,12 @@
+// Bootstrap 5 grid + utilities ONLY (not components, per ADR-0003).
+// Uses @import (deprecated but still supported) because Bootstrap 5.3's modular
+// partials are not @use-safe — _variables.scss calls a mixin from _mixins.scss
+// expecting the legacy @import-based scope. Deltas: ~15 KB vs full Bootstrap's ~190 KB.
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/utilities/api";
