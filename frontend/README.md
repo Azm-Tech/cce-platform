@@ -43,3 +43,15 @@ pnpm install
 - Phase 12: admin-cms shell + OIDC login flow
 - Phase 13: OpenAPI client generation pipeline
 - Phase 14: Playwright + axe-core E2E coverage
+
+## Shared libraries (libs/)
+
+| Lib | Purpose |
+|---|---|
+| `ui-kit` | Material theme + DGA tokens + Bootstrap grid + shared components (`app-shell`) |
+| `i18n` | ngx-translate + `LocaleService` (signal-based, RTL/LTR, persisted) |
+| `auth` | OIDC config builder for angular-auth-oidc-client (Keycloak realms) |
+| `api-client` | OpenAPI-generated TS clients (filled in Phase 13) |
+| `contracts` | Hand-written types — `CceEnv` for runtime config |
+
+Apps import via path mappings — e.g., `import { LocaleService } from '@frontend/i18n';` (Nx assigned the `@frontend` workspace prefix at bootstrap).
