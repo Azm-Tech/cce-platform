@@ -254,7 +254,12 @@ The file pins every package we know we'll need across Foundation (Phases 05–08
   </ItemGroup>
 
   <ItemGroup Label="Roslyn source generators (used by Domain.SourceGenerators)">
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <!-- Match the host compiler. .NET 8 SDK 8.0.1xx ships Roslyn 4.8 — referencing a higher
+         Microsoft.CodeAnalysis.CSharp version raises CS9057 ("analyzer references newer compiler").
+         For source generators, the rule of thumb is "pick the LOWEST Roslyn version your generator
+         needs" so generators load on as many host SDKs as possible. 4.8 is the floor for IIncrementalGenerator
+         features we use; bumping requires a coordinated SDK upgrade across the team. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="YamlDotNet" Version="16.2.0" />
   </ItemGroup>

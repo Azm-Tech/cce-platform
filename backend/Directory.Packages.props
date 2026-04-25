@@ -87,7 +87,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Roslyn source generators (used by Domain.SourceGenerators)">
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <!-- Pin to host-compatible Roslyn. SDK 8.0.1xx ships Roslyn 4.8; referencing 4.11 raises CS9057. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="YamlDotNet" Version="16.2.0" />
   </ItemGroup>
