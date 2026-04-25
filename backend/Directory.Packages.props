@@ -8,6 +8,8 @@
   <ItemGroup Label="Core framework &amp; Testing">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="xunit.analyzers" Version="1.16.0" />
@@ -87,7 +89,12 @@
   </ItemGroup>
 
   <ItemGroup Label="Roslyn source generators (used by Domain.SourceGenerators)">
-    <!-- Pin to host-compatible Roslyn. SDK 8.0.1xx ships Roslyn 4.8; referencing 4.11 raises CS9057. -->
+    <!-- Pin to host-compatible Roslyn. SDK 8.0.1xx ships Roslyn 4.8; referencing 4.11 raises CS9057.
+         Microsoft.CodeAnalysis.Common is added explicitly because EF Core 8.0.10's design package
+         pulls in Roslyn 4.5.0 transitively, which conflicts with the source generator's 4.8.0.
+         CPM's CentralPackageTransitivePinningEnabled=true uses this entry to unify transitive
+         resolution at 4.8.0 across the whole solution. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="YamlDotNet" Version="16.2.0" />

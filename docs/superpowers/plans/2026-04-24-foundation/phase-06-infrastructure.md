@@ -53,6 +53,11 @@ Expected: minimal csproj with `Microsoft.Extensions.DependencyInjection.Abstract
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <!-- NU1608: transitive Roslyn version mismatch. CCE.Domain.SourceGenerators pins
+         Microsoft.CodeAnalysis.* at 4.8 (host-compat); EntityFrameworkCore.Design 8.0.10
+         transitively wants 4.5. NuGet's "highest wins" picks 4.8 which is backwards-compatible.
+         This is the documented industry pattern for source-gen + EF Design coexistence. -->
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
