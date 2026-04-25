@@ -4,3 +4,11 @@
 /.nx/cache
 /.nx/workspace-data
 .angular
+
+# CCE additions
+**/*.po
+**/openapi.json
+dist/
+.angular/
+.nx/
+node_modules/
