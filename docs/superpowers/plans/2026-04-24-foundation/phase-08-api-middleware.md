@@ -70,6 +70,11 @@ Overwrite `backend/src/CCE.Api.Common/CCE.Api.Common.csproj`:
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <!-- CA1031: catch (Exception) is the documented pattern for global exception handlers
+         that convert all unhandled errors into RFC 7807 ProblemDetails. Suppressing here
+         (project-scoped) so the rule keeps firing in business-logic projects where it's
+         a real smell. -->
+    <NoWarn>$(NoWarn);CA1031</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
