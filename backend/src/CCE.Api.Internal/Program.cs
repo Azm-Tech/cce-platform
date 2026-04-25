@@ -2,7 +2,9 @@ using CCE.Api.Common.Auth;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.OpenApi;
 using CCE.Application;
+using CCE.Application.Health;
 using CCE.Infrastructure;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,25 @@ app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.Health
 {
     Predicate = check => check.Tags.Contains("ready")
 });
+
+app.MapGet("/health/authenticated", async (IMediator mediator, HttpContext ctx) =>
+{
+    var user = ctx.User;
+    var groups = user.FindAll("groups").Select(c => c.Value).ToList();
+    var locale = System.Globalization.CultureInfo.CurrentCulture.Name;
+
+    var query = new AuthenticatedHealthQuery(
+        UserId: user.FindFirst("sub")?.Value ?? "(no sub)",
+        PreferredUsername: user.FindFirst("preferred_username")?.Value ?? "(no name)",
+        Email: user.FindFirst("email")?.Value ?? "(no email)",
+        Upn: user.FindFirst("upn")?.Value ?? "(no upn)",
+        Groups: groups,
+        Locale: locale);
+
+    var result = await mediator.Send(query).ConfigureAwait(false);
+    return Results.Ok(result);
+})
+.RequireAuthorization(policy => policy.RequireClaim("groups", "SuperAdmin"));
 
 app.Run();
 
