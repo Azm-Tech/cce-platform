@@ -907,16 +907,309 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add Swagger UI + OpenAPI 
 
 ---
 
-## Tasks 8.7 — 8.14 — outline only (full detail when those become next-up)
+## Task 8.7: External API — JWT bearer auth (Keycloak `cce-external`)
 
-- **8.7 External JWT:** `AddAuthentication().AddJwtBearer()` configured for Keycloak `cce-external` realm; claim mapper for `upn`/`groups`/`preferred_username`. 2 tests (valid token → 200, invalid → 401).
-- **8.8 Internal OIDC:** same shape for `cce-internal` realm. 2 tests.
-- **8.9 `/health` endpoint** (External, anonymous): returns `HealthQuery` result. 1 endpoint test.
+**Files:**
+- Create: `backend/src/CCE.Api.Common/Auth/CceJwtAuthRegistration.cs`
+- Modify: `backend/src/CCE.Api.External/Program.cs` (add auth wiring)
+- Modify: `backend/src/CCE.Api.External/appsettings.Development.json` (add `Keycloak` section)
+- Create: `backend/tests/CCE.Api.IntegrationTests/Auth/ExternalJwtAuthTests.cs`
+
+**Rationale:** External API accepts bearer tokens issued by `http://localhost:8080/realms/cce-external`. Validation uses Keycloak's JWKS endpoint. Authority + audience are config-driven so prod can swap to ADFS.
+
+- [ ] **Step 1: Add a protected test endpoint to External API for tests to hit**
+
+This task wires auth but Foundation has no real protected endpoint yet. We add a temporary `/auth/echo` endpoint that requires authentication and returns the user's `upn`/`preferred_username` — Task 8.11's `/health/authenticated` (Internal API) is the real one. The temporary endpoint stays in External for E2E auth tests; Phase 14+ removes it when real endpoints land.
+
+- [ ] **Step 2: Write `backend/src/CCE.Api.Common/Auth/CceJwtAuthRegistration.cs`**
+
+```csharp
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+
+namespace CCE.Api.Common.Auth;
+
+public sealed class CceJwtOptions
+{
+    public const string SectionName = "Keycloak";
+    public string Authority { get; init; } = string.Empty;
+    public string Audience { get; init; } = string.Empty;
+    public bool RequireHttpsMetadata { get; init; }
+}
+
+public static class CceJwtAuthRegistration
+{
+    public static IServiceCollection AddCceJwtAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        var options = configuration.GetSection(CceJwtOptions.SectionName).Get<CceJwtOptions>()
+            ?? throw new InvalidOperationException("Keycloak section missing from configuration.");
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwt =>
+            {
+                jwt.Authority = options.Authority;
+                jwt.Audience = options.Audience;
+                jwt.RequireHttpsMetadata = options.RequireHttpsMetadata;
+                jwt.MapInboundClaims = false;   // keep claim names exactly as Keycloak issues them
+                jwt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = options.Authority,
+                    ValidateAudience = false,   // Keycloak's user tokens often lack `aud`; we validate via `azp` instead
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(5),
+                    NameClaimType = "preferred_username",
+                    RoleClaimType = "groups"
+                };
+            });
+
+        services.AddAuthorization();
+        return services;
+    }
+}
+```
+
+- [ ] **Step 3: Update `backend/src/CCE.Api.External/Program.cs`**
+
+```csharp
+using CCE.Api.Common.Auth;
+using CCE.Api.Common.OpenApi;
+using CCE.Application;
+using CCE.Infrastructure;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration)
+    .AddCceOpenApi("CCE External API");
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseCceOpenApi();
+
+app.MapGet("/", () => "CCE.Api.External — Foundation");
+
+app.MapGet("/auth/echo", (HttpContext ctx) =>
+{
+    var name = ctx.User.Identity?.Name ?? "(no name)";
+    var upn = ctx.User.FindFirst("upn")?.Value ?? "(no upn)";
+    return Results.Ok(new { name, upn });
+}).RequireAuthorization();
+
+app.Run();
+
+namespace CCE.Api.External
+{
+    public partial class Program;
+}
+```
+
+- [ ] **Step 4: Update `backend/src/CCE.Api.External/appsettings.Development.json`**
+
+Add `Keycloak` section:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft.AspNetCore": "Information"
+    }
+  },
+  "Infrastructure": {
+    "SqlConnectionString": "Server=localhost,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=true;",
+    "RedisConnectionString": "localhost:6379"
+  },
+  "Keycloak": {
+    "Authority": "http://localhost:8080/realms/cce-external",
+    "Audience": "cce-web-portal",
+    "RequireHttpsMetadata": false
+  }
+}
+```
+
+- [ ] **Step 5: Write `backend/tests/CCE.Api.IntegrationTests/Auth/ExternalJwtAuthTests.cs`**
+
+```csharp
+using System.Net;
+using System.Net.Http.Headers;
+using CCE.Api.External;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.Auth;
+
+public class ExternalJwtAuthTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public ExternalJwtAuthTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    [Fact]
+    public async Task Returns_401_without_token()
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri("/auth/echo", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Returns_401_with_garbage_token()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "not-a-real-jwt");
+
+        var resp = await client.GetAsync(new Uri("/auth/echo", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+}
+```
+
+We deliberately don't assert a 200 with a real Keycloak token in Foundation — that requires the password-grant flow against Keycloak, which our `cce-web-portal` client deliberately disables (per Phase 02 security posture). Real-token authenticated tests land in Task 8.14 against the Internal API where we use the admin API to acquire test tokens.
+
+- [ ] **Step 6: Run + commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+# Expected: 16 cumulative (14 prior + 2 ExternalJwt)
+git add backend/src/CCE.Api.Common/Auth backend/src/CCE.Api.External/Program.cs backend/src/CCE.Api.External/appsettings.Development.json backend/tests/CCE.Api.IntegrationTests/Auth
+git -c commit.gpgsign=false commit -m "feat(phase-08): add JWT bearer auth on External API (Keycloak cce-external realm) with 2 unauth tests"
+```
+
+---
+
+## Task 8.8: Internal API — JWT bearer for `cce-internal` realm
+
+**Files:**
+- Modify: `backend/src/CCE.Api.Internal/Program.cs`
+- Modify: `backend/src/CCE.Api.Internal/appsettings.Development.json`
+- Create: `backend/tests/CCE.Api.IntegrationTests/Auth/InternalJwtAuthTests.cs`
+
+**Rationale:** Same pattern as Task 8.7, but pointed at `cce-internal` realm. The Internal API's authority + audience are different.
+
+- [ ] **Step 1: Update `backend/src/CCE.Api.Internal/Program.cs`**
+
+Apply the same pattern as External API but with `"CCE Internal API"` title and the `Internal` namespace declaration.
+
+- [ ] **Step 2: Update `backend/src/CCE.Api.Internal/appsettings.Development.json`**
+
+Add `Keycloak` section pointing at `cce-internal`:
+
+```json
+"Keycloak": {
+  "Authority": "http://localhost:8080/realms/cce-internal",
+  "Audience": "cce-admin-cms",
+  "RequireHttpsMetadata": false
+}
+```
+
+- [ ] **Step 3: Write `backend/tests/CCE.Api.IntegrationTests/Auth/InternalJwtAuthTests.cs`**
+
+Same shape as `ExternalJwtAuthTests.cs` but `using CCE.Api.Internal;` and asserts against the Internal API Factory.
+
+- [ ] **Step 4: Run + commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+# Expected: 18 cumulative
+git add backend/src/CCE.Api.Internal backend/tests/CCE.Api.IntegrationTests/Auth
+git -c commit.gpgsign=false commit -m "feat(phase-08): add JWT bearer auth on Internal API (Keycloak cce-internal realm) with 2 unauth tests"
+```
+
+---
+
+## Task 8.9: `/health` endpoint backed by `HealthQuery` (External API)
+
+**Files:**
+- Modify: `backend/src/CCE.Api.External/Program.cs`
+- Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthEndpointTests.cs`
+
+**Rationale:** Anonymous `GET /health` invokes `HealthQuery` via MediatR and returns the result. Locale comes from `CultureInfo.CurrentCulture.Name` (set by LocalizationMiddleware) so the response automatically reflects `Accept-Language`.
+
+- [ ] **Step 1: Add the endpoint to External Program.cs (replace the temporary `MapGet("/")`)**
+
+Insert before `app.Run()`:
+
+```csharp
+app.MapGet("/health", async (IMediator mediator, HttpContext ctx) =>
+{
+    var locale = System.Globalization.CultureInfo.CurrentCulture.Name;
+    var result = await mediator.Send(new HealthQuery(Locale: locale));
+    return Results.Ok(result);
+});
+```
+
+Add `using CCE.Application.Health;` and `using MediatR;` to the file.
+
+Also wire LocalizationMiddleware before the endpoint:
+
+```csharp
+app.UseMiddleware<CCE.Api.Common.Middleware.LocalizationMiddleware>();
+```
+
+(Add right after `app.UseAuthorization();`.)
+
+- [ ] **Step 2: Write `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthEndpointTests.cs`**
+
+```csharp
+using System.Net;
+using System.Text.Json;
+using CCE.Api.External;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace CCE.Api.IntegrationTests.Endpoints;
+
+public class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public HealthEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+
+    [Fact]
+    public async Task Returns_ok_status_with_locale_from_accept_language()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.AcceptLanguage.Clear();
+        client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en");
+
+        var resp = await client.GetAsync(new Uri("/health", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await resp.Content.ReadAsStringAsync();
+        var doc = JsonDocument.Parse(body).RootElement;
+        doc.GetProperty("status").GetString().Should().Be("ok");
+        doc.GetProperty("locale").GetString().Should().Be("en");
+        doc.GetProperty("version").GetString().Should().NotBeNullOrWhiteSpace();
+    }
+}
+```
+
+- [ ] **Step 3: Run + commit**
+
+```bash
+dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -8
+# Expected: 19 cumulative
+git add backend/src/CCE.Api.External/Program.cs backend/tests/CCE.Api.IntegrationTests/Endpoints
+git -c commit.gpgsign=false commit -m "feat(phase-08): add anonymous GET /health endpoint backed by HealthQuery (locale from Accept-Language)"
+```
+
+---
+
+## Tasks 8.10 — 8.14 — outline only (full detail when those become next-up)
+
 - **8.10 `/health/ready`:** dependency probes (SQL, Redis, Keycloak JWKS). 503 if any unhealthy. 2 tests.
 - **8.11 `/health/authenticated`:** Internal; requires `SuperAdmin` policy; returns claims echo. 2 tests.
 - **8.12 Permission policies:** policy registration helper using source-generated `Permissions` constants. 1 test.
 - **8.13 DI composition:** Program.cs assembles middleware in correct order. Smoke test confirms 200 on root.
-- **8.14 E2E integration tests:** 4 tests via `WebApplicationFactory`.
+- **8.14 E2E integration tests:** 4 tests via `WebApplicationFactory` against real Keycloak (admin token + service-account flow).
 
 ---
 
