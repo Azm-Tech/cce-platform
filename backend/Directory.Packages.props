@@ -88,6 +88,8 @@
 
   <ItemGroup Label="MediatR pipeline behaviors">
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup Label="Roslyn source generators (used by Domain.SourceGenerators)">
