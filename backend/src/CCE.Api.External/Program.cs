@@ -1,7 +1,9 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.OpenApi;
 using CCE.Application;
+using CCE.Application.Health;
 using CCE.Infrastructure;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,17 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<CCE.Api.Common.Middleware.LocalizationMiddleware>();
 app.UseCceOpenApi();
 
 app.MapGet("/", () => "CCE.Api.External — Foundation");
+
+app.MapGet("/health", async (IMediator mediator) =>
+{
+    var locale = System.Globalization.CultureInfo.CurrentCulture.Name;
+    var result = await mediator.Send(new HealthQuery(Locale: locale)).ConfigureAwait(false);
+    return Results.Ok(result);
+});
 
 app.MapGet("/auth/echo", (HttpContext ctx) =>
 {
