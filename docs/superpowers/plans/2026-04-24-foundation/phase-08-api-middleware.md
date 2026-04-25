@@ -446,10 +446,9 @@ namespace CCE.Api.IntegrationTests.Middleware;
 
 public class SecurityHeadersMiddlewareTests
 {
-    [Fact]
-    public async Task Adds_baseline_security_headers()
-    {
-        using var host = new HostBuilder()
+    // Synchronous helper — keeps `.Start()` out of async test bodies (CA1849).
+    private static IHost BuildTestHost() =>
+        new HostBuilder()
             .ConfigureWebHost(web =>
             {
                 web.UseTestServer();
@@ -460,6 +459,11 @@ public class SecurityHeadersMiddlewareTests
                 });
             })
             .Start();
+
+    [Fact]
+    public async Task Adds_baseline_security_headers()
+    {
+        using var host = BuildTestHost();
         var client = host.GetTestClient();
 
         var resp = await client.GetAsync(new Uri("/", UriKind.Relative));
