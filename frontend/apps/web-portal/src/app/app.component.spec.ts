@@ -1,25 +1,35 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AppComponent } from './app.component';
-import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, NxWelcomeComponent, RouterModule.forRoot([])],
+      imports: [AppComponent, TranslateModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Welcome web-portal');
-  });
-
-  it(`should have as title 'web-portal'`, () => {
+  it('creates the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('web-portal');
+    expect(app).toBeTruthy();
+  });
+
+  it('renders the cce-app-shell', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const shell = fixture.nativeElement.querySelector('cce-app-shell');
+    expect(shell).toBeTruthy();
+  });
+
+  it('renders the cce-locale-switcher in the header end slot', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const switcher = fixture.nativeElement.querySelector('cce-locale-switcher');
+    expect(switcher).toBeTruthy();
   });
 });
