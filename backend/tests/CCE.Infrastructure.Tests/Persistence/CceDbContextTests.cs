@@ -1,5 +1,6 @@
 using CCE.Domain.Audit;
 using CCE.Infrastructure.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Infrastructure.Tests.Persistence;
@@ -76,9 +77,8 @@ public class CceDbContextTests
         found.Diff.Should().Be("{\"smoke\":true}");
         found.OccurredOn.Should().Be(occurredOn);
 
-        // Cleanup so re-runs are deterministic
-        ctx2.AuditEvents.Remove(found);
-        await ctx2.SaveChangesAsync();
+        // Note: cannot delete the row — audit_events is append-only by design (Task 6.8 trigger).
+        // Each test run uses a fresh Guid id, so re-runs remain deterministic.
     }
 
     [Fact]
@@ -92,5 +92,46 @@ public class CceDbContextTests
 
         indexes.Should().Contain("ix_audit_events_actor_occurred_on");
         indexes.Should().Contain("ix_audit_events_correlation_id");
+    }
+
+    [Fact]
+    public async Task UPDATE_on_audit_events_is_blocked_by_trigger()
+    {
+        await using var ctx = NewContext();
+        var id = Guid.NewGuid();
+        var entity = new AuditEvent(
+            id, DateTimeOffset.UtcNow,
+            actor: "trigger-test", action: "Trigger.Insert", resource: "T",
+            correlationId: Guid.NewGuid(), diff: null);
+        ctx.AuditEvents.Add(entity);
+        await ctx.SaveChangesAsync();
+
+        // Try to update via raw SQL — must throw because of the INSTEAD OF UPDATE trigger
+        var act = async () => await ctx.Database.ExecuteSqlInterpolatedAsync(
+            $"UPDATE audit_events SET actor = 'tampered' WHERE id = {id}");
+
+        await act.Should().ThrowAsync<SqlException>()
+            .Where(e => e.Message.Contains("append-only"));
+
+        // Cleanup via trigger-bypassing direct INSERT-style cleanup not possible — leave for next test cycle
+    }
+
+    [Fact]
+    public async Task DELETE_on_audit_events_is_blocked_by_trigger()
+    {
+        await using var ctx = NewContext();
+        var id = Guid.NewGuid();
+        var entity = new AuditEvent(
+            id, DateTimeOffset.UtcNow,
+            actor: "trigger-delete-test", action: "Trigger.Delete", resource: "T",
+            correlationId: Guid.NewGuid(), diff: null);
+        ctx.AuditEvents.Add(entity);
+        await ctx.SaveChangesAsync();
+
+        var act = async () => await ctx.Database.ExecuteSqlInterpolatedAsync(
+            $"DELETE FROM audit_events WHERE id = {id}");
+
+        await act.Should().ThrowAsync<SqlException>()
+            .Where(e => e.Message.Contains("append-only"));
     }
 }

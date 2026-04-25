@@ -8,7 +8,7 @@ internal sealed class AuditEventConfiguration : IEntityTypeConfiguration<AuditEv
 {
     public void Configure(EntityTypeBuilder<AuditEvent> builder)
     {
-        builder.ToTable("audit_events");
+        builder.ToTable("audit_events", t => t.HasTrigger("trg_audit_events_no_update_delete"));
 
         builder.HasKey(e => e.Id);
 
