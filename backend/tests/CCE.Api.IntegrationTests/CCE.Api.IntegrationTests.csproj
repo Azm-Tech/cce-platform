@@ -28,6 +28,7 @@
     <ProjectReference Include="..\..\src\CCE.Api.External\CCE.Api.External.csproj" />
     <ProjectReference Include="..\..\src\CCE.Api.Internal\CCE.Api.Internal.csproj" />
     <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
+    <ProjectReference Include="..\..\src\CCE.Api.Common\CCE.Api.Common.csproj" />
   </ItemGroup>
 
 </Project>
