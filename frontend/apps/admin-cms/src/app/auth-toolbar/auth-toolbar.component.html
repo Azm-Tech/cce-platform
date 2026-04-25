@@ -1,0 +1,9 @@
+@if (isAuthenticated()) {
+  <button type="button" mat-button shellHeaderEnd (click)="signOut()">
+    {{ "common.actions.signOut" | translate }}
+  </button>
+} @else {
+  <button type="button" mat-raised-button color="accent" shellHeaderEnd (click)="signIn()">
+    {{ "common.actions.signIn" | translate }}
+  </button>
+}

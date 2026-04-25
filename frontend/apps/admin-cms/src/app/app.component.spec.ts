@@ -1,25 +1,41 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
-import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, NxWelcomeComponent, RouterModule.forRoot([])],
+      imports: [AppComponent, TranslateModule.forRoot()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        {
+          provide: OidcSecurityService,
+          useValue: {
+            isAuthenticated$: of({ isAuthenticated: false }),
+            authorize: jest.fn(),
+            logoff: jest.fn().mockReturnValue(of({})),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
-  it('should render title', () => {
+  it('renders the cce-app-shell', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Welcome admin-cms');
+    expect(fixture.nativeElement.querySelector('cce-app-shell')).toBeTruthy();
   });
 
-  it(`should have as title 'admin-cms'`, () => {
+  it('renders the cce-auth-toolbar', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('admin-cms');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('cce-auth-toolbar')).toBeTruthy();
   });
 });
