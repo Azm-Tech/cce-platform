@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@frontend/api-client": ["libs/api-client/src/index.ts"],
       "@frontend/auth": ["libs/auth/src/index.ts"],
+      "@frontend/contracts": ["libs/contracts/src/index.ts"],
       "@frontend/i18n": ["libs/i18n/src/index.ts"],
       "@frontend/ui-kit": ["libs/ui-kit/src/index.ts"]
     }
