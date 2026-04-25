@@ -5,8 +5,11 @@
     <!-- CA1031: catch (Exception) is the documented pattern for global exception handlers
          that convert all unhandled errors into RFC 7807 ProblemDetails. Suppressing here
          (project-scoped) so the rule keeps firing in business-logic projects where it's
-         a real smell. -->
-    <NoWarn>$(NoWarn);CA1031</NoWarn>
+         a real smell.
+         CA1308: BCP 47 language tags are conventionally lowercase ("ar", "en"). The rule
+         prefers ToUpperInvariant for security-sensitive normalization (Turkish-i edge case),
+         but locale matching against a lowercase array is the correct lowercase use case. -->
+    <NoWarn>$(NoWarn);CA1031;CA1308</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
