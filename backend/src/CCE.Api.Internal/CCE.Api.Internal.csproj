@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
     <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+    <ProjectReference Include="..\CCE.Api.Common\CCE.Api.Common.csproj" />
   </ItemGroup>
 
 </Project>
