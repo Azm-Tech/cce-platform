@@ -1,0 +1,20 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Profile</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <dl>
+      <dt>preferred_username</dt><dd>{{ preferredUsername() }}</dd>
+      <dt>email</dt><dd>{{ email() }}</dd>
+      <dt>upn</dt><dd>{{ upn() }}</dd>
+      <dt>groups</dt>
+      <dd>
+        <ul>
+          @for (g of groups(); track g) {
+            <li>{{ g }}</li>
+          }
+        </ul>
+      </dd>
+    </dl>
+  </mat-card-content>
+</mat-card>
