@@ -1,0 +1,2 @@
+# CCE — Trivy ignore list. Each entry: CVE-id with comment + expiry date.
+# Empty for Foundation; sub-projects add as real CVEs surface.
