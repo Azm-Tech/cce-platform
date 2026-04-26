@@ -18,6 +18,7 @@ Two realistic options were on the table: Angular 18 and React 18. Both are viabl
 ## Consequences
 
 ### Positive
+
 - Built-in i18n + RTL support; `dir="rtl"` flips the layout without third-party libs.
 - Reactive Forms is a strong fit for the admin CMS form-density: typed forms, async validators, custom controls.
 - Angular Material 18 ships ARIA roles and density tokens out of the box — meaningful for WCAG 2.1 AA gate (see [ADR-0012](0012-a11y-axe-and-k6-loadtest.md)).
@@ -25,21 +26,25 @@ Two realistic options were on the table: Angular 18 and React 18. Both are viabl
 - Stable LTS cadence aligns with government procurement preferences.
 
 ### Negative
+
 - Larger initial bundle than a hand-tuned React app.
 - Steeper ramp-up for engineers fresh from React.
 - Material is opinionated; deviating from it is more work than in a React + headless-UI stack.
 
 ### Neutral / follow-ups
+
 - State management is Signals + services for Foundation; a richer store (NgRx, etc.) is reconsidered if a sub-project demonstrably needs it ([ADR-0008](0008-version-pins.md)).
 - Component library decisions in [ADR-0003](0003-material-bootstrap-grid-dga-tokens.md).
 
 ## Alternatives considered
 
 ### Option A: React 18
+
 - Pick libraries per concern (router, forms, state, i18n, RTL, a11y).
 - Rejected: more decisions per feature, higher integration tax across two apps over five years, weaker out-of-box RTL story.
 
 ### Option B: Vue 3
+
 - Considered briefly.
 - Rejected: smaller ecosystem for gov/enterprise UIs, weaker Arabic/RTL component coverage at the time of decision.
 

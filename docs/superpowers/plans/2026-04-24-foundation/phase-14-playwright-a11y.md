@@ -22,6 +22,7 @@
 ## Task 14.1: Install `@axe-core/playwright` + add a11y helper
 
 **Files:**
+
 - Modify: `frontend/package.json` (devDependency)
 - Create: `frontend/libs/test-utils-e2e/` library OR a shared spec helper file (depending on Nx layout)
 - Simpler: per-app `support/axe.ts` helper
@@ -41,8 +42,8 @@ cd ..
 Create `frontend/apps/web-portal-e2e/src/support/axe.ts`:
 
 ```typescript
-import type { Page, TestInfo } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import type { Page, TestInfo } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 /**
  * Run axe-core against the current page. Fails the test on any `critical` or `serious`
@@ -50,21 +51,20 @@ import AxeBuilder from '@axe-core/playwright';
  * are logged via attachments for triage.
  */
 export async function expectNoA11yViolations(page: Page, testInfo: TestInfo, scope?: string): Promise<void> {
-  const builder = new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']);
+  const builder = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]);
   if (scope) {
     builder.include(scope);
   }
   const results = await builder.analyze();
 
-  await testInfo.attach('axe-results.json', {
+  await testInfo.attach("axe-results.json", {
     body: JSON.stringify(results, null, 2),
-    contentType: 'application/json',
+    contentType: "application/json",
   });
 
-  const blocking = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
+  const blocking = results.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
   if (blocking.length > 0) {
-    const summary = blocking.map((v) => `${v.id} (${v.impact}): ${v.description}`).join('\n');
+    const summary = blocking.map((v) => `${v.id} (${v.impact}): ${v.description}`).join("\n");
     throw new Error(`a11y violations:\n${summary}`);
   }
 }
@@ -84,6 +84,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-14): install @axe-core/playwri
 ## Task 14.2: web-portal smoke E2E — root render + locale switch
 
 **Files:**
+
 - Replace: `frontend/apps/web-portal-e2e/src/example.spec.ts` (Nx-generated stub) → `frontend/apps/web-portal-e2e/src/smoke.spec.ts`
 
 **Rationale:** Asserts the dev server boots, the shell renders, locale switch flips ar↔en + `dir` attribute, axe-core sees zero blocking violations.
@@ -97,37 +98,45 @@ rm -f frontend/apps/web-portal-e2e/src/example.spec.ts
 - [ ] **Step 2: Write `frontend/apps/web-portal-e2e/src/smoke.spec.ts`**
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { expectNoA11yViolations } from './support/axe';
+import { test, expect } from "@playwright/test";
+import { expectNoA11yViolations } from "./support/axe";
 
-test.describe('web-portal smoke', () => {
-  test('renders root in Arabic with dir=rtl', async ({ page }, testInfo) => {
-    await page.goto('/');
+test.describe("web-portal smoke", () => {
+  test("renders root in Arabic with dir=rtl", async ({ page }, testInfo) => {
+    await page.goto("/");
     await expect(page).toHaveURL(/\/health$/);
-    const html = page.locator('html');
-    await expect(html).toHaveAttribute('dir', 'rtl');
-    await expect(html).toHaveAttribute('lang', 'ar');
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("dir", "rtl");
+    await expect(html).toHaveAttribute("lang", "ar");
     await expectNoA11yViolations(page, testInfo);
   });
 
-  test('locale switcher toggles ar→en and flips dir to ltr', async ({ page }, testInfo) => {
-    await page.goto('/');
-    const html = page.locator('html');
-    await expect(html).toHaveAttribute('dir', 'rtl');
-    const switcher = page.getByRole('button', { name: /English|switchTo/i });
+  test("locale switcher toggles ar→en and flips dir to ltr", async ({ page }, testInfo) => {
+    await page.goto("/");
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("dir", "rtl");
+    const switcher = page.getByRole("button", { name: /English|switchTo/i });
     await switcher.click();
-    await expect(html).toHaveAttribute('dir', 'ltr');
-    await expect(html).toHaveAttribute('lang', 'en');
+    await expect(html).toHaveAttribute("dir", "ltr");
+    await expect(html).toHaveAttribute("lang", "en");
     await expectNoA11yViolations(page, testInfo);
   });
 
-  test('/health page renders status from External API', async ({ page }, testInfo) => {
-    await page.goto('/health');
+  test("/health page renders status from External API", async ({ page }, testInfo) => {
+    await page.goto("/health");
     // Page may show loading first; wait for status text
     await expect(page.locator('dl, [role="alert"]').first()).toBeVisible({ timeout: 10_000 });
     // If the External API isn't running, the page shows an error — assert one of the two outcomes
-    const ok = await page.locator('text=ok').first().isVisible().catch(() => false);
-    const err = await page.locator('[role="alert"]').first().isVisible().catch(() => false);
+    const ok = await page
+      .locator("text=ok")
+      .first()
+      .isVisible()
+      .catch(() => false);
+    const err = await page
+      .locator('[role="alert"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
     expect(ok || err).toBe(true);
     await expectNoA11yViolations(page, testInfo);
   });
@@ -148,6 +157,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-14): web-portal-e2e smoke spec
 ## Task 14.3: admin-cms smoke E2E — root redirects to Keycloak
 
 **Files:**
+
 - Replace: `frontend/apps/admin-cms-e2e/src/example.spec.ts` (Nx-generated stub) → `frontend/apps/admin-cms-e2e/src/smoke.spec.ts`
 
 **Rationale:** Admin app is auth-gated. Foundation E2E asserts the OIDC redirect happens (URL changes to `localhost:8080`) without driving through the full Keycloak login UI (that requires real credentials + form interaction; defer to Phase 18 manual verification).
@@ -161,17 +171,17 @@ rm -f frontend/apps/admin-cms-e2e/src/example.spec.ts
 - [ ] **Step 2: Write `frontend/apps/admin-cms-e2e/src/smoke.spec.ts`**
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { expectNoA11yViolations } from './support/axe';
+import { test, expect } from "@playwright/test";
+import { expectNoA11yViolations } from "./support/axe";
 
-test.describe('admin-cms smoke', () => {
-  test('renders shell with sign-in CTA before login', async ({ page }, testInfo) => {
-    await page.goto('/');
+test.describe("admin-cms smoke", () => {
+  test("renders shell with sign-in CTA before login", async ({ page }, testInfo) => {
+    await page.goto("/");
     // Auto-login guard may immediately redirect; pre-redirect render also works.
     // Assert one of: sign-in button visible OR URL is on Keycloak realm.
-    const onKeycloak = page.url().includes('/realms/cce-internal');
+    const onKeycloak = page.url().includes("/realms/cce-internal");
     if (!onKeycloak) {
-      const signIn = page.getByRole('button', { name: /sign in|تسجيل الدخول/i });
+      const signIn = page.getByRole("button", { name: /sign in|تسجيل الدخول/i });
       await expect(signIn).toBeVisible({ timeout: 10_000 });
       await expectNoA11yViolations(page, testInfo);
     } else {
@@ -180,14 +190,14 @@ test.describe('admin-cms smoke', () => {
     }
   });
 
-  test('clicking sign-in redirects to Keycloak realm', async ({ page }) => {
-    await page.goto('/');
-    if (page.url().includes('/realms/cce-internal')) {
+  test("clicking sign-in redirects to Keycloak realm", async ({ page }) => {
+    await page.goto("/");
+    if (page.url().includes("/realms/cce-internal")) {
       // Already redirected by autoLoginPartialRoutesGuard
       await expect(page).toHaveURL(/\/realms\/cce-internal/);
       return;
     }
-    const signIn = page.getByRole('button', { name: /sign in|تسجيل الدخول/i });
+    const signIn = page.getByRole("button", { name: /sign in|تسجيل الدخول/i });
     await signIn.click();
     await page.waitForURL(/\/realms\/cce-internal/, { timeout: 15_000 });
     await expect(page).toHaveURL(/\/realms\/cce-internal\/protocol\/openid-connect\/auth/);
@@ -207,6 +217,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-14): admin-cms-e2e smoke specs
 ## Task 14.4: Configure Playwright `webServer` to auto-start backend + frontend
 
 **Files:**
+
 - Modify: `frontend/apps/web-portal-e2e/playwright.config.ts`
 - Modify: `frontend/apps/admin-cms-e2e/playwright.config.ts`
 
@@ -220,6 +231,7 @@ For Foundation, just verify the existing Nx-generated webServer block points at 
 grep -A6 webServer frontend/apps/web-portal-e2e/playwright.config.ts
 grep -A6 webServer frontend/apps/admin-cms-e2e/playwright.config.ts
 ```
+
 Expected: each has a `webServer.command` that invokes `pnpm exec nx run <app>:serve` (or similar) on the right port.
 
 If admin-cms-e2e's port doesn't match `4201`, fix it. Same for web-portal-e2e + 4200.
@@ -256,6 +268,7 @@ cd frontend
 pnpm nx e2e web-portal-e2e --reporter=list 2>&1 | tail -25
 cd ..
 ```
+
 Expected: 3 tests pass.
 
 If a11y violations fire, Phase 14's axe scope hit a real issue — DO NOT just suppress; fix the offending template (it's our shell from Phase 11).
@@ -267,6 +280,7 @@ cd frontend
 pnpm nx e2e admin-cms-e2e --reporter=list 2>&1 | tail -25
 cd ..
 ```
+
 Expected: 2 tests pass.
 
 - [ ] **Step 4: Stop the External API**

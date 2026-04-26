@@ -46,23 +46,23 @@ Foundation is the first of nine sub-projects; see §10 and the project roadmap f
 
 These are ratified — ADRs committed as part of Foundation.
 
-| # | Decision |
-|---|---|
-| ADR-0001 | Decomposition into 9 sub-projects, Foundation first |
-| ADR-0002 | Angular 18 chosen over React |
-| ADR-0003 | Angular Material for components + Bootstrap 5 grid/utilities only (no Bootstrap components or theme) + DGA tokens layered on top |
-| ADR-0004 | Single git repo, `backend/` .NET 8 solution + `frontend/` Nx 20 workspace |
-| ADR-0005 | Local-first Docker Compose dev; production hosting target deferred |
-| ADR-0006 | Keycloak as ADFS stand-in via OIDC for internal SSO; ASP.NET Identity for external users |
-| ADR-0007 | Strict TDD for backend Domain/Application/Infrastructure/API; test-after for Angular UI |
-| ADR-0008 | .NET 8 LTS, Angular 18.2, ngx-translate, Signals + services (no NgRx in Foundation) |
-| ADR-0009 | OpenAPI as single contract source; TypeScript clients auto-generated |
-| ADR-0010 | Sentry for error tracking; no self-hosted Sentry in Foundation |
-| ADR-0011 | Security pipeline: CodeQL + Semgrep + SonarCloud + ZAP + Trivy + Gitleaks + Dependency Review |
-| ADR-0012 | a11y gate via axe-core in Playwright + ESLint a11y rules; k6 for load testing |
+| #        | Decision                                                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| ADR-0001 | Decomposition into 9 sub-projects, Foundation first                                                                                   |
+| ADR-0002 | Angular 18 chosen over React                                                                                                          |
+| ADR-0003 | Angular Material for components + Bootstrap 5 grid/utilities only (no Bootstrap components or theme) + DGA tokens layered on top      |
+| ADR-0004 | Single git repo, `backend/` .NET 8 solution + `frontend/` Nx 20 workspace                                                             |
+| ADR-0005 | Local-first Docker Compose dev; production hosting target deferred                                                                    |
+| ADR-0006 | Keycloak as ADFS stand-in via OIDC for internal SSO; ASP.NET Identity for external users                                              |
+| ADR-0007 | Strict TDD for backend Domain/Application/Infrastructure/API; test-after for Angular UI                                               |
+| ADR-0008 | .NET 8 LTS, Angular 18.2, ngx-translate, Signals + services (no NgRx in Foundation)                                                   |
+| ADR-0009 | OpenAPI as single contract source; TypeScript clients auto-generated                                                                  |
+| ADR-0010 | Sentry for error tracking; no self-hosted Sentry in Foundation                                                                        |
+| ADR-0011 | Security pipeline: CodeQL + Semgrep + SonarCloud + ZAP + Trivy + Gitleaks + Dependency Review                                         |
+| ADR-0012 | a11y gate via axe-core in Playwright + ESLint a11y rules; k6 for load testing                                                         |
 | ADR-0013 | Permissions as source-generated enum from `permissions.yaml`, single source of truth for backend policies + OpenAPI + frontend guards |
-| ADR-0014 | Clean Architecture layering in backend (Domain / Application / Infrastructure / Api) |
-| ADR-0015 | OIDC code-flow + PKCE; refresh tokens in httpOnly SameSite=Strict secure cookies (BFF pattern) |
+| ADR-0014 | Clean Architecture layering in backend (Domain / Application / Infrastructure / Api)                                                  |
+| ADR-0015 | OIDC code-flow + PKCE; refresh tokens in httpOnly SameSite=Strict secure cookies (BFF pattern)                                        |
 
 ---
 
@@ -228,46 +228,46 @@ cce/
 
 ### 5.1 Backend (stubs only)
 
-| Component | Contents in Foundation |
-|---|---|
-| `CCE.Domain` | Base classes `AggregateRoot`, `Entity<TId>`, `ValueObject`, `DomainEvent`. Permission enum generated from `permissions.yaml` (seed: `System.Health.Read`). No business entities. |
-| `CCE.Application` | MediatR registered. `HealthQuery` + handler. `AuthenticatedHealthQuery` + handler. FluentValidation wired. |
-| `CCE.Infrastructure` | `CceDbContext` with zero business entities + initial migration creating only `__EFMigrationsHistory` and `AuditEvents`. Redis connection factory. OIDC/JWT config bound from `appsettings`. Serilog + Sentry + Papercut sink. Stubs for Email/SMS/SIEM/ClamAV. |
-| `CCE.Api.External` | `/health`, `/health/ready`, `/health/authenticated` (requires JWT from `cce-external` realm). Swagger UI. CORS for `localhost:4200`. ProblemDetails middleware. Correlation ID middleware. Rate limiting middleware. Localization middleware. Security headers middleware. |
-| `CCE.Api.Internal` | Same as External but CORS for `localhost:4201`. OIDC challenge configured for Keycloak `cce-internal` realm. |
-| `CCE.Integration` | Empty project placeholder. |
-| `tests/CCE.Domain.Tests` | xUnit + FluentAssertions. One green test proving permission enum source-generation works. |
-| `tests/CCE.Application.Tests` | xUnit + NSubstitute. Green tests for both health handlers. |
-| `tests/CCE.Infrastructure.Tests` | xUnit + Testcontainers (SQL Server 2022, Redis). Green tests for DbContext, Redis connection, OIDC token validation. |
-| `tests/CCE.Api.IntegrationTests` | xUnit + `WebApplicationFactory` + Testcontainers. Green tests: `/health` 200 anonymous, `/health/authenticated` 401 without token, 200 with valid token, 403 with missing permission, 400 with invalid Accept-Language. |
+| Component                        | Contents in Foundation                                                                                                                                                                                                                                                     |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CCE.Domain`                     | Base classes `AggregateRoot`, `Entity<TId>`, `ValueObject`, `DomainEvent`. Permission enum generated from `permissions.yaml` (seed: `System.Health.Read`). No business entities.                                                                                           |
+| `CCE.Application`                | MediatR registered. `HealthQuery` + handler. `AuthenticatedHealthQuery` + handler. FluentValidation wired.                                                                                                                                                                 |
+| `CCE.Infrastructure`             | `CceDbContext` with zero business entities + initial migration creating only `__EFMigrationsHistory` and `AuditEvents`. Redis connection factory. OIDC/JWT config bound from `appsettings`. Serilog + Sentry + Papercut sink. Stubs for Email/SMS/SIEM/ClamAV.             |
+| `CCE.Api.External`               | `/health`, `/health/ready`, `/health/authenticated` (requires JWT from `cce-external` realm). Swagger UI. CORS for `localhost:4200`. ProblemDetails middleware. Correlation ID middleware. Rate limiting middleware. Localization middleware. Security headers middleware. |
+| `CCE.Api.Internal`               | Same as External but CORS for `localhost:4201`. OIDC challenge configured for Keycloak `cce-internal` realm.                                                                                                                                                               |
+| `CCE.Integration`                | Empty project placeholder.                                                                                                                                                                                                                                                 |
+| `tests/CCE.Domain.Tests`         | xUnit + FluentAssertions. One green test proving permission enum source-generation works.                                                                                                                                                                                  |
+| `tests/CCE.Application.Tests`    | xUnit + NSubstitute. Green tests for both health handlers.                                                                                                                                                                                                                 |
+| `tests/CCE.Infrastructure.Tests` | xUnit + Testcontainers (SQL Server 2022, Redis). Green tests for DbContext, Redis connection, OIDC token validation.                                                                                                                                                       |
+| `tests/CCE.Api.IntegrationTests` | xUnit + `WebApplicationFactory` + Testcontainers. Green tests: `/health` 200 anonymous, `/health/authenticated` 401 without token, 200 with valid token, 403 with missing permission, 400 with invalid Accept-Language.                                                    |
 
 ### 5.2 Frontend (stubs only)
 
-| Component | Contents in Foundation |
-|---|---|
-| `apps/web-portal` | `<app-root>` with top bar (logo + locale switcher ar/en + sign-in button), router outlet, one route `/` showing localized welcome message, one route `/health` calling external API. RTL toggles `dir="rtl"` on Arabic. |
-| `apps/admin-cms` | Same shell, but calls internal API. Sign-in button triggers Keycloak OIDC flow. Post-login route `/profile` echoes JWT claims. |
-| `libs/ui-kit` | Angular Material 18 theme module; DGA tokens (palette, typography IBM Plex Sans Arabic + Frutiger, spacing scale); imports `bootstrap-grid.min.css` + `bootstrap-utilities.min.css` **only**; shared `<app-shell>` component. |
-| `libs/i18n` | ngx-translate init; `ar.json` + `en.json` with Foundation strings; `LocaleService` (persistence, `dir` attribute update). |
-| `libs/api-client` | Auto-generated from `contracts/openapi.external.json` + `openapi.internal.json` via `openapi-typescript-codegen`. Nx target `generate`. |
-| `libs/auth` | `angular-auth-oidc-client` setup, `AuthGuard`, `BearerInterceptor`, `RefreshInterceptor`, `LoginService`, OIDC callback handler. |
-| `libs/contracts` | Hand-written TS for env config loader (`/assets/env.json`). |
+| Component         | Contents in Foundation                                                                                                                                                                                                        |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web-portal` | `<app-root>` with top bar (logo + locale switcher ar/en + sign-in button), router outlet, one route `/` showing localized welcome message, one route `/health` calling external API. RTL toggles `dir="rtl"` on Arabic.       |
+| `apps/admin-cms`  | Same shell, but calls internal API. Sign-in button triggers Keycloak OIDC flow. Post-login route `/profile` echoes JWT claims.                                                                                                |
+| `libs/ui-kit`     | Angular Material 18 theme module; DGA tokens (palette, typography IBM Plex Sans Arabic + Frutiger, spacing scale); imports `bootstrap-grid.min.css` + `bootstrap-utilities.min.css` **only**; shared `<app-shell>` component. |
+| `libs/i18n`       | ngx-translate init; `ar.json` + `en.json` with Foundation strings; `LocaleService` (persistence, `dir` attribute update).                                                                                                     |
+| `libs/api-client` | Auto-generated from `contracts/openapi.external.json` + `openapi.internal.json` via `openapi-typescript-codegen`. Nx target `generate`.                                                                                       |
+| `libs/auth`       | `angular-auth-oidc-client` setup, `AuthGuard`, `BearerInterceptor`, `RefreshInterceptor`, `LoginService`, OIDC callback handler.                                                                                              |
+| `libs/contracts`  | Hand-written TS for env config loader (`/assets/env.json`).                                                                                                                                                                   |
 
 ### 5.3 Infrastructure root
 
-| File/Dir | Purpose |
-|---|---|
-| `docker-compose.yml` | SQL Server 2022, Redis 7, Keycloak 25 (realm pre-imported), MailDev, Papercut, ClamAV, both APIs, both Angular dev servers, k6 (via `loadtest` profile). |
-| `docker-compose.override.yml` | Local-only overrides (volumes, exposed ports, dev certs). |
-| `keycloak/realm-export.json` | Pre-baked `cce-internal` + `cce-external` realms. Seeded admin user `admin@cce.local / Admin123!` with `SuperAdmin` role. |
-| `.github/workflows/ci.yml` | Three jobs: `backend`, `frontend`, `contracts`. |
-| `.github/workflows/codeql.yml` | CodeQL for C# + TypeScript on PR. |
-| `.github/workflows/zap-nightly.yml` | OWASP ZAP baseline nightly, full scan on main. |
-| `.github/workflows/loadtest.yml` | k6 on manual dispatch. |
-| `.editorconfig`, `.gitignore`, `.gitattributes` | Standard hygiene. |
-| `README.md` | Getting-started for macOS/Linux/Windows. |
-| `CONTRIBUTING.md` | Branch model, commit conventions, PR checklist. |
-| `docs/adr/` | 15 ADRs (§3). |
+| File/Dir                                        | Purpose                                                                                                                                                  |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docker-compose.yml`                            | SQL Server 2022, Redis 7, Keycloak 25 (realm pre-imported), MailDev, Papercut, ClamAV, both APIs, both Angular dev servers, k6 (via `loadtest` profile). |
+| `docker-compose.override.yml`                   | Local-only overrides (volumes, exposed ports, dev certs).                                                                                                |
+| `keycloak/realm-export.json`                    | Pre-baked `cce-internal` + `cce-external` realms. Seeded admin user `admin@cce.local / Admin123!` with `SuperAdmin` role.                                |
+| `.github/workflows/ci.yml`                      | Three jobs: `backend`, `frontend`, `contracts`.                                                                                                          |
+| `.github/workflows/codeql.yml`                  | CodeQL for C# + TypeScript on PR.                                                                                                                        |
+| `.github/workflows/zap-nightly.yml`             | OWASP ZAP baseline nightly, full scan on main.                                                                                                           |
+| `.github/workflows/loadtest.yml`                | k6 on manual dispatch.                                                                                                                                   |
+| `.editorconfig`, `.gitignore`, `.gitattributes` | Standard hygiene.                                                                                                                                        |
+| `README.md`                                     | Getting-started for macOS/Linux/Windows.                                                                                                                 |
+| `CONTRIBUTING.md`                               | Branch model, commit conventions, PR checklist.                                                                                                          |
+| `docs/adr/`                                     | 15 ADRs (§3).                                                                                                                                            |
 
 ---
 
@@ -356,27 +356,27 @@ Every error response returns RFC 7807 ProblemDetails with `correlationId` in bod
 
 ### 7.2 Frontend `HttpErrorInterceptor`
 
-| Status | Behavior |
-|---|---|
-| 400 | Maps field errors to Angular `FormControl` via `setErrors`; form displays them. |
-| 401 | Attempts silent refresh once; on failure, clears session, redirects to login. |
-| 403 | Routes to `/forbidden` page showing attempted permission (ar/en). |
-| 404 | Toast `common.notFound` translation key. |
-| 5xx | Toast `common.serverError` + "copy correlation id" button; logs to console. |
-| Network | Toast `common.networkError`; retries idempotent GETs once with 500 ms backoff. |
+| Status  | Behavior                                                                        |
+| ------- | ------------------------------------------------------------------------------- |
+| 400     | Maps field errors to Angular `FormControl` via `setErrors`; form displays them. |
+| 401     | Attempts silent refresh once; on failure, clears session, redirects to login.   |
+| 403     | Routes to `/forbidden` page showing attempted permission (ar/en).               |
+| 404     | Toast `common.notFound` translation key.                                        |
+| 5xx     | Toast `common.serverError` + "copy correlation id" button; logs to console.     |
+| Network | Toast `common.networkError`; retries idempotent GETs once with 500 ms backoff.  |
 
 All toasts use Material `MatSnackBar` with DGA colors and RTL-aware positioning.
 
 ### 7.3 Observability
 
-| Signal | Tool | Location |
-|---|---|---|
-| Structured logs | Serilog → console + file + Papercut sink | Both APIs |
-| Request tracing | `Activity` with correlation id as trace id | Both APIs |
-| Angular client errors | Override `ErrorHandler` → console + Sentry + POST `/api/client-errors` (stub) | Both apps |
-| Health | `/health` (liveness), `/health/ready` (SQL + Redis + JWKS) | Both APIs |
-| Metrics | `prometheus-net` → `/metrics` (not scraped in Foundation, just wired) | Both APIs |
-| Error tracking | Sentry SDK in both stacks, DSN from env (no-op when empty) | Both APIs + both apps |
+| Signal                | Tool                                                                          | Location              |
+| --------------------- | ----------------------------------------------------------------------------- | --------------------- |
+| Structured logs       | Serilog → console + file + Papercut sink                                      | Both APIs             |
+| Request tracing       | `Activity` with correlation id as trace id                                    | Both APIs             |
+| Angular client errors | Override `ErrorHandler` → console + Sentry + POST `/api/client-errors` (stub) | Both apps             |
+| Health                | `/health` (liveness), `/health/ready` (SQL + Redis + JWKS)                    | Both APIs             |
+| Metrics               | `prometheus-net` → `/metrics` (not scraped in Foundation, just wired)         | Both APIs             |
+| Error tracking        | Sentry SDK in both stacks, DSN from env (no-op when empty)                    | Both APIs + both apps |
 
 ### 7.4 Security headers (baseline)
 
@@ -393,21 +393,21 @@ All toasts use Material `MatSnackBar` with DGA colors and RTL-aware positioning.
 
 ### 8.1 Test-first (strict TDD)
 
-| Layer | Framework | Scope |
-|---|---|---|
-| `CCE.Domain` | xUnit + FluentAssertions | All entity invariants, value objects, permission enum generation |
-| `CCE.Application` | xUnit + NSubstitute + FluentAssertions | All handlers, validators, policies |
-| `CCE.Infrastructure` (critical paths) | xUnit + Testcontainers | EF mappings against real SQL, Redis cache ops, OIDC token validation |
-| `CCE.Api.*` | xUnit + `WebApplicationFactory` + Testcontainers | One integration test per endpoint: happy path + 401 + 403 + 400 |
+| Layer                                 | Framework                                        | Scope                                                                |
+| ------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------- |
+| `CCE.Domain`                          | xUnit + FluentAssertions                         | All entity invariants, value objects, permission enum generation     |
+| `CCE.Application`                     | xUnit + NSubstitute + FluentAssertions           | All handlers, validators, policies                                   |
+| `CCE.Infrastructure` (critical paths) | xUnit + Testcontainers                           | EF mappings against real SQL, Redis cache ops, OIDC token validation |
+| `CCE.Api.*`                           | xUnit + `WebApplicationFactory` + Testcontainers | One integration test per endpoint: happy path + 401 + 403 + 400      |
 
 ### 8.2 Test-after
 
-| Layer | Framework | Scope |
-|---|---|---|
-| Angular services | Jest (via `@nx/jest`) | HTTP interceptors, guards, i18n, error handler, state services |
-| Angular components with logic | Jest + `@angular/testing` | Only components with conditional rendering, form logic, computed signals |
-| Angular pure templates | — | Not tested in isolation |
-| E2E | Playwright | One smoke test per Foundation flow + axe-core a11y + locale switch + 401 refresh |
+| Layer                         | Framework                 | Scope                                                                            |
+| ----------------------------- | ------------------------- | -------------------------------------------------------------------------------- |
+| Angular services              | Jest (via `@nx/jest`)     | HTTP interceptors, guards, i18n, error handler, state services                   |
+| Angular components with logic | Jest + `@angular/testing` | Only components with conditional rendering, form logic, computed signals         |
+| Angular pure templates        | —                         | Not tested in isolation                                                          |
+| E2E                           | Playwright                | One smoke test per Foundation flow + axe-core a11y + locale switch + 401 refresh |
 
 ### 8.3 Coverage gates (CI-enforced)
 
@@ -469,18 +469,18 @@ All toasts use Material `MatSnackBar` with DGA colors and RTL-aware positioning.
 
 ### 9.6 Security scanning pipeline
 
-| Tool | Trigger | Gate |
-|---|---|---|
-| CodeQL (C# + TS) | PR | Blocks on high/critical |
-| Semgrep (OWASP Top Ten + CSharp + TS + security-audit) | PR | Blocks on high/critical |
-| SonarCloud | PR | Quality gate: 0 new bugs, 0 new vulns, 0 unreviewed hotspots |
-| OWASP ZAP baseline | Nightly on `docker compose up` | Artifact, no block |
-| OWASP ZAP full scan | Post-merge on `main` | Auto-opens issues |
-| Trivy (container + fs) | PR | Blocks on high+ CVEs |
-| Gitleaks | Pre-commit + PR | Blocks on any hit |
-| Dependency Review | PR | Blocks on known CVEs or GPL/unknown license |
-| OWASP Dependency-Check | PR | Blocks on high+ |
-| `superpowers:security-review` | Pre-merge ritual | Advisory report |
+| Tool                                                   | Trigger                        | Gate                                                         |
+| ------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------ |
+| CodeQL (C# + TS)                                       | PR                             | Blocks on high/critical                                      |
+| Semgrep (OWASP Top Ten + CSharp + TS + security-audit) | PR                             | Blocks on high/critical                                      |
+| SonarCloud                                             | PR                             | Quality gate: 0 new bugs, 0 new vulns, 0 unreviewed hotspots |
+| OWASP ZAP baseline                                     | Nightly on `docker compose up` | Artifact, no block                                           |
+| OWASP ZAP full scan                                    | Post-merge on `main`           | Auto-opens issues                                            |
+| Trivy (container + fs)                                 | PR                             | Blocks on high+ CVEs                                         |
+| Gitleaks                                               | Pre-commit + PR                | Blocks on any hit                                            |
+| Dependency Review                                      | PR                             | Blocks on known CVEs or GPL/unknown license                  |
+| OWASP Dependency-Check                                 | PR                             | Blocks on high+                                              |
+| `superpowers:security-review`                          | Pre-merge ritual               | Advisory report                                              |
 
 ### 9.7 Threat model
 
@@ -494,17 +494,17 @@ This section is **new and critical** — it ensures every BRD requirement is own
 
 ### 10.1 Sub-project sequence
 
-| # | Sub-project | Key deliverables | BRD sections | Depends on |
-|---|---|---|---|---|
-| 1 | **Foundation** (this spec) | Scaffolding, CI, OIDC stub, roadmap | 4.1.32 (NFR baseline) | — |
-| 2 | **Data & Domain** | All EF entities, migrations, seed data, permission matrix, audit log fully modeled | 4.1.31 (permissions), 4.1.32 | 1 |
-| 3 | **Internal API** | Admin endpoints: user mgmt, content mgmt, news/events, resources, community moderation, country-profile admin, expert registration review, reports | 4.1.19–4.1.29, 6.2.37–6.2.63, 6.4.1–6.4.9 | 2 |
-| 4 | **External API** | Public endpoints: browse homepage, platform info, resources, knowledge maps data, interactive city data, news/events, country profiles, user profile, ratings, personalized suggestions, smart-assistant search, community posts, policies, account/login/forgot-password/logout | 4.1.1–4.1.18, 6.2.1–6.2.36 | 2 |
-| 5 | **Admin / CMS Portal** | Angular admin app — dashboards + all admin screens hitting Internal API, reports UI | 4.1.19–4.1.29, 6.2.37–6.2.63, 6.3.9–6.3.16, 6.4 | 3 |
-| 6 | **External Web Portal** | Angular public app — all user-facing pages hitting External API | 4.1.1–4.1.18, 6.2.1–6.2.36, 6.3.1–6.3.8 | 4 |
-| 7 | **Feature Modules** (each its own sub-brainstorm) | Knowledge Maps visualization, Interactive City 3D simulation, Smart Assistant (NL search + retrieval), rich Knowledge Community | 4.1.4, 4.1.5, 4.1.11, 4.1.12, 4.1.13, 6.2.6–6.2.9, 6.2.19–6.2.31 | 6 |
-| 8 | **Integration Gateway** | KAPSARC connector, ADFS federation (replace Keycloak in non-dev), real Email (SMTP), real SMS, SIEM shipper, iCal generator, MFA provider | 6.5, 7.1, 7.2, §3.1.2–3.1.8 HLD | 3, 4 |
-| 9 | **Mobile (Flutter)** | WebView shell for iOS/Android/Huawei app stores, push notifications, session passthrough | HLD §3.2.2 | 6 |
+| #   | Sub-project                                       | Key deliverables                                                                                                                                                                                                                                                                 | BRD sections                                                     | Depends on |
+| --- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------- |
+| 1   | **Foundation** (this spec)                        | Scaffolding, CI, OIDC stub, roadmap                                                                                                                                                                                                                                              | 4.1.32 (NFR baseline)                                            | —          |
+| 2   | **Data & Domain**                                 | All EF entities, migrations, seed data, permission matrix, audit log fully modeled                                                                                                                                                                                               | 4.1.31 (permissions), 4.1.32                                     | 1          |
+| 3   | **Internal API**                                  | Admin endpoints: user mgmt, content mgmt, news/events, resources, community moderation, country-profile admin, expert registration review, reports                                                                                                                               | 4.1.19–4.1.29, 6.2.37–6.2.63, 6.4.1–6.4.9                        | 2          |
+| 4   | **External API**                                  | Public endpoints: browse homepage, platform info, resources, knowledge maps data, interactive city data, news/events, country profiles, user profile, ratings, personalized suggestions, smart-assistant search, community posts, policies, account/login/forgot-password/logout | 4.1.1–4.1.18, 6.2.1–6.2.36                                       | 2          |
+| 5   | **Admin / CMS Portal**                            | Angular admin app — dashboards + all admin screens hitting Internal API, reports UI                                                                                                                                                                                              | 4.1.19–4.1.29, 6.2.37–6.2.63, 6.3.9–6.3.16, 6.4                  | 3          |
+| 6   | **External Web Portal**                           | Angular public app — all user-facing pages hitting External API                                                                                                                                                                                                                  | 4.1.1–4.1.18, 6.2.1–6.2.36, 6.3.1–6.3.8                          | 4          |
+| 7   | **Feature Modules** (each its own sub-brainstorm) | Knowledge Maps visualization, Interactive City 3D simulation, Smart Assistant (NL search + retrieval), rich Knowledge Community                                                                                                                                                  | 4.1.4, 4.1.5, 4.1.11, 4.1.12, 4.1.13, 6.2.6–6.2.9, 6.2.19–6.2.31 | 6          |
+| 8   | **Integration Gateway**                           | KAPSARC connector, ADFS federation (replace Keycloak in non-dev), real Email (SMTP), real SMS, SIEM shipper, iCal generator, MFA provider                                                                                                                                        | 6.5, 7.1, 7.2, §3.1.2–3.1.8 HLD                                  | 3, 4       |
+| 9   | **Mobile (Flutter)**                              | WebView shell for iOS/Android/Huawei app stores, push notifications, session passthrough                                                                                                                                                                                         | HLD §3.2.2                                                       | 6          |
 
 ### 10.2 Per-sub-project briefs
 
@@ -588,15 +588,15 @@ Moved into their owning sub-projects per §10. Nothing is dropped — everything
 
 ## 13. Risks
 
-| # | Risk | Mitigation |
-|---|---|---|
-| R1 | Keycloak OIDC config diverges subtly from real ADFS (claim names, group claims) | Match claim names explicitly in `realm-export.json` to ADFS conventions (`upn`, `groups`, `preferred_username`); document mapping in ADR-0006. Sub-project 8 includes ADFS parity smoke test. |
-| R2 | DGA UX/typography tokens change before Foundation ships | Tokens isolated to `libs/ui-kit/tokens`; any change is a one-file PR. |
-| R3 | Nx + Angular 18 + Material 18 + ngx-translate version conflicts | Pin all versions; Renovate config groups major upgrades for coordinated PRs. |
-| R4 | SQL Server container licensing for CI | Use `mcr.microsoft.com/mssql/server:2022-latest` dev edition (free, adequate for CI). |
-| R5 | Sentry cloud costs if DSN committed accidentally | DSN always from env var; Gitleaks pattern catches any DSN checked in. |
-| R6 | Solo-developer cadence: Foundation drags past reasonable time | Keep scope strictly to §5; any temptation to add "one more thing" goes to a sub-project brief instead. |
-| R7 | RTL bugs only discovered in real screens (Foundation has almost none) | `libs/i18n` includes an RTL smoke page listing every Material component at locale switch; Playwright+axe run it. |
+| #   | Risk                                                                            | Mitigation                                                                                                                                                                                    |
+| --- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Keycloak OIDC config diverges subtly from real ADFS (claim names, group claims) | Match claim names explicitly in `realm-export.json` to ADFS conventions (`upn`, `groups`, `preferred_username`); document mapping in ADR-0006. Sub-project 8 includes ADFS parity smoke test. |
+| R2  | DGA UX/typography tokens change before Foundation ships                         | Tokens isolated to `libs/ui-kit/tokens`; any change is a one-file PR.                                                                                                                         |
+| R3  | Nx + Angular 18 + Material 18 + ngx-translate version conflicts                 | Pin all versions; Renovate config groups major upgrades for coordinated PRs.                                                                                                                  |
+| R4  | SQL Server container licensing for CI                                           | Use `mcr.microsoft.com/mssql/server:2022-latest` dev edition (free, adequate for CI).                                                                                                         |
+| R5  | Sentry cloud costs if DSN committed accidentally                                | DSN always from env var; Gitleaks pattern catches any DSN checked in.                                                                                                                         |
+| R6  | Solo-developer cadence: Foundation drags past reasonable time                   | Keep scope strictly to §5; any temptation to add "one more thing" goes to a sub-project brief instead.                                                                                        |
+| R7  | RTL bugs only discovered in real screens (Foundation has almost none)           | `libs/i18n` includes an RTL smoke page listing every Material component at locale switch; Playwright+axe run it.                                                                              |
 
 ---
 

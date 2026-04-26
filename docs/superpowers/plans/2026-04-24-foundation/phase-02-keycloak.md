@@ -37,6 +37,7 @@ Spec §9.2 keeps the admin/internal user store **physically separate** from the 
 ## Task 2.1: Replace placeholder with `cce-internal.json`
 
 **Files:**
+
 - Delete: `keycloak/realm-export.json` (the Phase 01 placeholder)
 - Create: `keycloak/cce-internal.json`
 
@@ -47,9 +48,11 @@ Spec §9.2 keeps the admin/internal user store **physically separate** from the 
 - [ ] **Step 1: Delete the Phase 01 placeholder**
 
 Run:
+
 ```bash
 git rm keycloak/realm-export.json
 ```
+
 Expected: `rm keycloak/realm-export.json` echoed; file deleted from working tree + index.
 
 - [ ] **Step 2: Write `keycloak/cce-internal.json`**
@@ -206,12 +209,8 @@ Expected: `rm keycloak/realm-export.json` echoed; file deleted from working tree
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "dev-internal-secret-change-me",
-      "redirectUris": [
-        "http://localhost:4201/*"
-      ],
-      "webOrigins": [
-        "http://localhost:4201"
-      ],
+      "redirectUris": ["http://localhost:4201/*"],
+      "webOrigins": ["http://localhost:4201"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -247,9 +246,11 @@ Note on the secret `dev-internal-secret-change-me`: matches the Gitleaks allowli
 - [ ] **Step 3: Validate JSON syntax**
 
 Run:
+
 ```bash
 jq empty keycloak/cce-internal.json && echo "OK"
 ```
+
 Expected: prints `OK`. (`jq` is bundled with macOS via Xcode CLI tools; `brew install jq` if missing.)
 
 - [ ] **Step 4: Commit**
@@ -264,6 +265,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-02): add cce-internal realm (S
 ## Task 2.2: Add `cce-external.json` realm
 
 **Files:**
+
 - Create: `keycloak/cce-external.json`
 
 **Rationale:** The `cce-external` realm backs public registered users. Self-registration is **enabled** here (unlike internal), MFA is hook-ready but not enforced in Foundation, and the client is a **public client** (Angular SPA uses code-flow + PKCE without a secret). Seeds a `RegisteredUser` realm role. No users seeded — registration comes online in sub-project 4.
@@ -399,12 +401,8 @@ git -c commit.gpgsign=false commit -m "feat(phase-02): add cce-internal realm (S
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "dev-external-secret-change-me",
-      "redirectUris": [
-        "http://localhost:4200/*"
-      ],
-      "webOrigins": [
-        "http://localhost:4200"
-      ],
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -435,15 +433,18 @@ git -c commit.gpgsign=false commit -m "feat(phase-02): add cce-internal realm (S
 ```
 
 Notes:
+
 - **Public client** (`"publicClient": true`) — Angular SPA speaks OIDC code-flow with PKCE, no secret required client-side. The `secret` field is kept for symmetry with the admin realm and matches the `.env` value, but with `publicClient: true` Keycloak does not enforce it for auth.
 - **`directAccessGrantsEnabled: false`** — blocks the Resource Owner Password Credentials flow (never use in production).
 
 - [ ] **Step 2: Validate JSON**
 
 Run:
+
 ```bash
 jq empty keycloak/cce-external.json && echo "OK"
 ```
+
 Expected: `OK`.
 
 - [ ] **Step 3: Commit**
@@ -458,6 +459,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-02): add cce-external realm (R
 ## Task 2.3: Recreate Keycloak and verify both realms import
 
 **Files:**
+
 - Modify: none (just restart)
 
 **Rationale:** Keycloak only reads the import directory at **container start** — editing mounted JSON has no effect on a running container. We recreate the container so the new realm JSONs are imported, and we **drop the `keycloak-data` volume** to wipe the Phase 01 placeholder realm from the embedded H2 database. (Subsequent restarts without `-v` will reuse the realms from the DB.)
@@ -465,6 +467,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-02): add cce-external realm (R
 - [ ] **Step 1: Recreate keycloak with a clean data volume**
 
 Run:
+
 ```bash
 # Stop and remove the container and its named volume (keeps other services running)
 docker compose stop keycloak
@@ -480,15 +483,19 @@ for i in $(seq 1 18); do
 done
 docker compose ps keycloak
 ```
+
 Expected: `cce-keycloak ... (healthy)` within 90 seconds.
 
 - [ ] **Step 2: Confirm `cce-internal` realm is loaded**
 
 Run:
+
 ```bash
 curl -s http://localhost:8080/realms/cce-internal/.well-known/openid-configuration | jq -r '{issuer, authorization_endpoint, token_endpoint}'
 ```
+
 Expected: prints a JSON object with:
+
 - `issuer`: `http://localhost:8080/realms/cce-internal`
 - `authorization_endpoint`: `http://localhost:8080/realms/cce-internal/protocol/openid-connect/auth`
 - `token_endpoint`: `http://localhost:8080/realms/cce-internal/protocol/openid-connect/token`
@@ -496,17 +503,21 @@ Expected: prints a JSON object with:
 - [ ] **Step 3: Confirm `cce-external` realm is loaded**
 
 Run:
+
 ```bash
 curl -s http://localhost:8080/realms/cce-external/.well-known/openid-configuration | jq -r '{issuer, authorization_endpoint, token_endpoint}'
 ```
+
 Expected: same shape but for `cce-external`.
 
 - [ ] **Step 4: Confirm the Phase 01 placeholder realm is gone**
 
 Run:
+
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/realms/cce-placeholder/.well-known/openid-configuration
 ```
+
 Expected: prints `404`.
 
 - [ ] **Step 5: (No file changes — nothing to commit in this task)**
@@ -518,6 +529,7 @@ Skip the commit step. Proceed to Task 2.4.
 ## Task 2.4: Smoke-test seeded admin user + service-account token + external discovery
 
 **Files:**
+
 - Modify: none
 
 **Rationale:** Prove the realm import seeded exactly what Foundation needs: (a) `admin@cce.local` exists with `SuperAdmin` role attached, (b) `cce-admin-cms` can mint a service-account token, (c) `cce-external` exposes the public registration endpoint.
@@ -538,6 +550,7 @@ ADMIN_TOKEN=$(curl -s -X POST \
 echo "Admin token length: ${#ADMIN_TOKEN}"
 [ -n "$ADMIN_TOKEN" ] && [ "$ADMIN_TOKEN" != "null" ] && echo "Admin API login OK" || { echo "ADMIN LOGIN FAILED"; exit 1; }
 ```
+
 Expected: prints `Admin token length: <big number>` and `Admin API login OK`. (The master-realm `admin/admin` credentials come from the `KC_BOOTSTRAP_ADMIN_USERNAME`/`PASSWORD` env vars set in `docker-compose.yml` Phase 01 Task 1.4 — these are Keycloak's platform admin, distinct from our seeded `admin@cce.local`.)
 
 - [ ] **Step 2: Verify `admin@cce.local` exists in `cce-internal`**
@@ -550,6 +563,7 @@ echo "$USER_JSON" | jq '.[] | {id, username, email, enabled, emailVerified, firs
 USER_ID=$(echo "$USER_JSON" | jq -r '.[0].id')
 [ -n "$USER_ID" ] && [ "$USER_ID" != "null" ] && echo "User found: $USER_ID" || { echo "USER NOT FOUND"; exit 1; }
 ```
+
 Expected: JSON object with `username: admin@cce.local`, `enabled: true`, `emailVerified: true`, and a non-null UUID id.
 
 - [ ] **Step 3: Verify `SuperAdmin` role is assigned to `admin@cce.local`**
@@ -563,6 +577,7 @@ echo "$ROLES_JSON" | jq -e '.[] | select(.name == "SuperAdmin")' >/dev/null \
   && echo "SuperAdmin role assigned" \
   || { echo "SUPERADMIN ROLE MISSING"; exit 1; }
 ```
+
 Expected: the role list contains `SuperAdmin` (plus Keycloak's `default-roles-cce-internal`).
 
 - [ ] **Step 4: Acquire a service-account token for `cce-admin-cms` and inspect its claims**
@@ -582,6 +597,7 @@ SATOKEN=$(curl -s -X POST \
 PAYLOAD=$(echo "$SATOKEN" | awk -F. '{print $2}' | awk '{n=length($0)%4; if (n==2) print $0"=="; else if (n==3) print $0"="; else print}' | base64 -d 2>/dev/null || true)
 echo "$PAYLOAD" | jq '{iss, aud, azp, clientId, scope}'
 ```
+
 Expected: `Service-account OK`, and the decoded payload shows `iss` = `http://localhost:8080/realms/cce-internal`, `azp` = `cce-admin-cms`, `scope` containing at least `adfs-compat` (confirms our client scope wiring worked for real clients, even though `admin-cli` doesn't have it).
 
 - [ ] **Step 5: Confirm external realm's public registration endpoint is reachable**
@@ -589,6 +605,7 @@ Expected: `Service-account OK`, and the decoded payload shows `iss` = `http://lo
 ```bash
 curl -s http://localhost:8080/realms/cce-external/.well-known/openid-configuration | jq -r .registration_endpoint
 ```
+
 Expected: prints `http://localhost:8080/realms/cce-external/clients-registrations/openid-connect`.
 
 - [ ] **Step 6: Deferred — note claim-mapper testing target**

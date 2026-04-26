@@ -29,24 +29,29 @@ Domain  ←  Application  ←  Infrastructure
 ## Consequences
 
 ### Positive
+
 - Domain is unit-testable in isolation, in milliseconds — no DB, no HTTP, no DI container.
 - Swapping an Infrastructure adapter (Redis → Memcached, EF → Dapper) is a constrained change.
 - Layer boundaries are enforceable in CI (architecture tests assert no `Domain → Infrastructure` references).
 
 ### Negative
+
 - More projects in the solution; ramp-up cost for engineers new to Clean Architecture.
 - "Where does this go" friction on edge cases (cross-cutting, e.g., a clock).
 
 ### Neutral / follow-ups
+
 - Architecture-test enforcement (e.g., NetArchTest) is wired in sub-project 2.
 - The same layering applies to the Internal and External APIs — they share Domain + Application.
 
 ## Alternatives considered
 
 ### Option A: Folder-per-feature, no project layers
+
 - Rejected: layer leakage is invisible in CI; degrades over time.
 
 ### Option B: Hexagonal / Ports & Adapters with different naming
+
 - Effectively the same shape; we use Clean Architecture's naming because it's the more common convention in the .NET community.
 
 ## Related

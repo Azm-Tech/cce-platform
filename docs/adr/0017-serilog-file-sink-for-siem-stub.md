@@ -20,28 +20,34 @@ A genuine dev SIEM stand-in is a structured log sink that backend code can write
 ## Consequences
 
 ### Positive
+
 - The dev stub matches the role: a place to write structured security events.
 - Engineers can `tail -f logs/siem-events.log | jq` and see exactly what would ship to a real SIEM.
 - No misleading service in `docker-compose.yml`.
 - One less container in dev.
 
 ### Negative
+
 - The file sink is not durable across `docker compose down -v` if logs live inside a container; we keep `logs/` host-mounted so the file survives.
 - Engineers must remember that the file is a stub — sub-project 8 swaps to network shipping.
 
 ### Neutral / follow-ups
+
 - Sub-project 8 owns real SIEM ship (Splunk HEC or equivalent).
 - Event schema (`siem-event` shape) is finalized in sub-project 2 / 8; Foundation uses a minimal first draft.
 
 ## Alternatives considered
 
 ### Option A: Keep Papercut, ignore the label mismatch
+
 - Rejected: the spec was wrong; document the correction here.
 
 ### Option B: Run a local Splunk/ELK in Compose
+
 - Rejected: heavy (1–2 GB RAM minimum); not Foundation's job; better to stub.
 
 ### Option C: Console-only logging
+
 - Rejected: doesn't give a tangible "events file" to point engineers at; harder to demo SIEM-shape thinking.
 
 ## Related

@@ -28,25 +28,30 @@ The full project is decomposed into **nine sub-projects**, each with its own bra
 ## Consequences
 
 ### Positive
+
 - Each cycle has a single coherent goal and a testable Definition of Done.
 - Risk is staged: hosting/infra decisions ride sub-project 1 only; CMS UX risk lives in 5; integration-credential risk lives in 8.
 - Sub-project boundaries match natural ownership lines for future contributors.
 
 ### Negative
+
 - Cross-cutting concerns (e.g., a permission used by Internal API + Admin CMS) require coordinating across two cycles.
 - Sub-projects 1–4 must complete in order before 5–9 unblock fully.
 
 ### Neutral / follow-ups
+
 - Sub-project order and dependencies tracked in [`roadmap.md`](../roadmap.md).
 - BRD-to-sub-project mapping in [`requirements-trace.csv`](../requirements-trace.csv).
 
 ## Alternatives considered
 
 ### Option A: Single big-bang plan
+
 - One brainstorm → one spec → one plan covering everything.
 - Rejected: scope-check rule fails; spec would exceed any useful review surface; coupling unrelated risks.
 
 ### Option B: Two-cycle split (backend / frontend)
+
 - Backend monolith first, then frontend monolith.
 - Rejected: hides integration friction until late; doesn't isolate feature-module UX risk.
 

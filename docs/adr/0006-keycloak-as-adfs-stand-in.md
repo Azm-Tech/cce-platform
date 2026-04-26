@@ -18,28 +18,34 @@ Production CCE federates with the ministry's **ADFS** for authentication via OID
 ## Consequences
 
 ### Positive
+
 - Local devs run a single `docker compose up -d` and get a working OIDC IdP.
 - Claim-shape parity means JWT validation, role mapping, and middleware logic don't branch per environment.
 - Keycloak is tracked in git via realm export ([phase 02 plan](../superpowers/plans/2026-04-24-foundation/phase-02-keycloak.md)) so realm state is reproducible.
 - ADFS swap is a config change, not a code change.
 
 ### Negative
+
 - Two systems' quirks to know (Keycloak admin console, ADFS claim rules); engineers must understand the contract, not just one implementation.
 - Realm export drift requires diligence — Keycloak admin UI changes that aren't exported don't survive `docker compose down -v`.
 
 ### Neutral / follow-ups
+
 - Production realm/issuer/clientId values are environment variables, never committed.
 - Any new claim required by a feature must be added to **both** Keycloak realm export and the ADFS claim-rule documentation (sub-project 8).
 
 ## Alternatives considered
 
 ### Option A: Mock OIDC server (e.g., handcrafted JWT issuer)
+
 - Rejected: doesn't exercise real authorization-code + PKCE; behavior diverges from ADFS in subtle ways.
 
 ### Option B: Use ADFS in dev too
+
 - Rejected: requires AD + Windows Server + per-laptop trust; impractical.
 
 ### Option C: Use a hosted IdP (Auth0, Azure AD)
+
 - Rejected: per-developer accounts, costs, network dependency; doesn't model the on-prem ADFS topology.
 
 ## Related

@@ -23,28 +23,34 @@ Every endpoint, UI guard, and audit-log entry references a permission. Hard-code
 ## Consequences
 
 ### Positive
+
 - Renaming a permission is a refactor, not a search-replace.
 - Adding a permission is a single YAML edit, regenerated automatically on build.
 - Typos at use sites become compile errors.
 - Audit-log entries reference the same enum — no manual string sync.
 
 ### Negative
+
 - Source generators are a learning curve; debugging requires understanding the analyzer pipeline.
 - YAML format must be locked early; later schema changes touch the generator.
 
 ### Neutral / follow-ups
+
 - Frontend codegen lands in sub-project 5 / 6.
 - A test verifies that every C# `[HasPermission(...)]` reference resolves to a YAML entry (catches dangling refs).
 
 ## Alternatives considered
 
 ### Option A: Hand-maintained `Permissions` static class
+
 - Rejected: it gets out of sync with whatever lives in the database / config.
 
 ### Option B: Database-driven permissions only
+
 - Rejected: no compile-time safety; every reference is a string.
 
 ### Option C: T4 templates instead of Roslyn source generator
+
 - Rejected: T4 is legacy in modern .NET; source generators integrate better with Rider / VS / build pipeline.
 
 ## Related

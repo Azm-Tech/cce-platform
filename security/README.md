@@ -2,13 +2,13 @@
 
 ## Layered defenses
 
-| Layer | Tool | When |
-|---|---|---|
-| Pre-commit | Gitleaks (Phase 00) | every commit, fast-path |
-| PR gate | CI (build/test/lint), CodeQL, Semgrep, Trivy fs+config, Dependency Review, Gitleaks history | every PR |
-| Nightly / weekly | OWASP ZAP baseline (nightly), Dependency-Check (weekly), Semgrep / Trivy / Gitleaks (weekly cron) | scheduled |
-| Per-release | CycloneDX SBOM | tag push |
-| Quality | SonarCloud | every PR (gated on `SONAR_TOKEN` secret) |
+| Layer            | Tool                                                                                              | When                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Pre-commit       | Gitleaks (Phase 00)                                                                               | every commit, fast-path                  |
+| PR gate          | CI (build/test/lint), CodeQL, Semgrep, Trivy fs+config, Dependency Review, Gitleaks history       | every PR                                 |
+| Nightly / weekly | OWASP ZAP baseline (nightly), Dependency-Check (weekly), Semgrep / Trivy / Gitleaks (weekly cron) | scheduled                                |
+| Per-release      | CycloneDX SBOM                                                                                    | tag push                                 |
+| Quality          | SonarCloud                                                                                        | every PR (gated on `SONAR_TOKEN` secret) |
 
 ## Files in this directory
 
@@ -34,6 +34,7 @@ Each suppression must be **time-bounded** and **explained**.
 ## Manual security review
 
 Before merging any PR that touches:
+
 - AuthN/AuthZ code paths
 - File upload paths
 - External integration code

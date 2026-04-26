@@ -21,6 +21,7 @@
 ## Task 17.1: Semgrep workflow + ruleset
 
 **Files:**
+
 - Create: `.github/workflows/semgrep.yml`
 - Create: `security/semgrep.yml`
 
@@ -35,7 +36,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "17 5 * * 2"   # weekly Tue 05:17 UTC
+    - cron: "17 5 * * 2" # weekly Tue 05:17 UTC
   workflow_dispatch:
 
 permissions:
@@ -126,6 +127,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): Semgrep CI workflow + pro
 ## Task 17.2: Trivy filesystem + container scan
 
 **Files:**
+
 - Create: `.github/workflows/trivy.yml`
 - Create: `security/trivyignore` (ignore list)
 
@@ -140,7 +142,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "44 6 * * 3"   # weekly Wed 06:44 UTC
+    - cron: "44 6 * * 3" # weekly Wed 06:44 UTC
   workflow_dispatch:
 
 permissions:
@@ -211,6 +213,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): Trivy filesystem + IaC co
 ## Task 17.3: SonarCloud config
 
 **Files:**
+
 - Create: `sonar-project.properties`
 - Create: `.github/workflows/sonarcloud.yml`
 
@@ -312,6 +315,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): SonarCloud config + workf
 ## Task 17.4: OWASP Dependency-Check workflow
 
 **Files:**
+
 - Create: `.github/workflows/dep-check.yml`
 - Create: `security/dependency-check-suppression.xml`
 
@@ -322,7 +326,7 @@ name: Dependency-Check
 
 on:
   schedule:
-    - cron: "0 7 * * 4"   # weekly Thu 07:00 UTC
+    - cron: "0 7 * * 4" # weekly Thu 07:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -389,6 +393,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): OWASP Dependency-Check we
 ## Task 17.5: CycloneDX SBOM generation
 
 **Files:**
+
 - Create: `.github/workflows/sbom.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -462,6 +467,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): CycloneDX SBOM workflow (
 ## Task 17.6: Gitleaks CI workflow (full-history scan)
 
 **Files:**
+
 - Create: `.github/workflows/gitleaks.yml`
 
 **Rationale:** Phase 00 wired pre-commit Gitleaks; this adds a CI version that scans ALL of git history (catches secrets that may have slipped into older commits). Runs on push to main + weekly.
@@ -477,7 +483,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "11 8 * * 5"   # weekly Fri 08:11 UTC
+    - cron: "11 8 * * 5" # weekly Fri 08:11 UTC
   workflow_dispatch:
 
 permissions:
@@ -490,7 +496,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history
+          fetch-depth: 0 # full history
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
@@ -513,6 +519,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): Gitleaks CI workflow (ful
 ## Task 17.7: Security overview README
 
 **Files:**
+
 - Create: `security/README.md`
 
 - [ ] **Step 1: Write the README**
@@ -522,13 +529,13 @@ git -c commit.gpgsign=false commit -m "feat(phase-17): Gitleaks CI workflow (ful
 
 ## Layered defenses
 
-| Layer | Tool | When |
-|---|---|---|
-| Pre-commit | Gitleaks (Phase 00) | every commit, fast-path |
-| PR gate | CI (build/test/lint), CodeQL, Semgrep, Trivy fs+config, Dependency Review, Gitleaks history | every PR |
-| Nightly / weekly | OWASP ZAP baseline (nightly), Dependency-Check (weekly), Semgrep / Trivy / Gitleaks (weekly cron) | scheduled |
-| Per-release | CycloneDX SBOM | tag push |
-| Quality | SonarCloud | every PR (gated on `SONAR_TOKEN` secret) |
+| Layer            | Tool                                                                                              | When                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Pre-commit       | Gitleaks (Phase 00)                                                                               | every commit, fast-path                  |
+| PR gate          | CI (build/test/lint), CodeQL, Semgrep, Trivy fs+config, Dependency Review, Gitleaks history       | every PR                                 |
+| Nightly / weekly | OWASP ZAP baseline (nightly), Dependency-Check (weekly), Semgrep / Trivy / Gitleaks (weekly cron) | scheduled                                |
+| Per-release      | CycloneDX SBOM                                                                                    | tag push                                 |
+| Quality          | SonarCloud                                                                                        | every PR (gated on `SONAR_TOKEN` secret) |
 
 ## Files in this directory
 
@@ -554,6 +561,7 @@ Each suppression must be **time-bounded** and **explained**.
 ## Manual security review
 
 Before merging any PR that touches:
+
 - AuthN/AuthZ code paths
 - File upload paths
 - External integration code

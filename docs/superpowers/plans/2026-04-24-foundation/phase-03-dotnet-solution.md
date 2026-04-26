@@ -15,7 +15,7 @@
 1. **.NET SDK 8.0.x installed.** Run: `dotnet --list-sdks | grep '^8\.'` → must print at least one 8.0.x SDK. If missing, `brew install --cask dotnet-sdk@8` (macOS) or use the installer. Stop and report if not available.
 2. **.NET 8.0 runtime for test host.** Run: `dotnet --list-runtimes | grep 'Microsoft.NETCore.App 8\.'` → must print at least one. Usually bundled with SDK.
 3. **No existing `backend/` directory with conflicting content.** Run: `test ! -e backend/CCE.sln && echo OK` → prints `OK`. If `backend/CCE.sln` already exists, a prior partial run happened — stop and report.
-4. **Git identity configured or auto-detected.** Any existing commits from Phase 00–02 will show the committer identity; no change needed. Just confirm `git config user.email` returns *something* non-empty.
+4. **Git identity configured or auto-detected.** Any existing commits from Phase 00–02 will show the committer identity; no change needed. Just confirm `git config user.email` returns _something_ non-empty.
 
 If any check fails, stop and report.
 
@@ -24,12 +24,14 @@ If any check fails, stop and report.
 ## Task 3.1: Create the backend directory and empty solution
 
 **Files:**
+
 - Create: `backend/CCE.sln`
 - Create: `backend/.gitkeep` (if dotnet doesn't create anything else)
 
 - [ ] **Step 1: Create the backend directory and initialize the solution**
 
 Run:
+
 ```bash
 mkdir -p backend
 cd backend
@@ -37,14 +39,17 @@ dotnet new sln --name CCE
 cd ..
 ls -la backend/
 ```
+
 Expected: `backend/CCE.sln` exists. `ls` shows at least `CCE.sln`.
 
 - [ ] **Step 2: Validate the solution file is parseable**
 
 Run:
+
 ```bash
 dotnet sln backend/CCE.sln list
 ```
+
 Expected: prints header `Project(s)` followed by "No projects found in the solution." (or similar — an empty solution).
 
 - [ ] **Step 3: Commit**
@@ -59,6 +64,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): initialize .NET solution 
 ## Task 3.2: Add `Directory.Build.props` — shared build settings
 
 **Files:**
+
 - Create: `backend/Directory.Build.props`
 
 **Rationale:** A single file at the backend root injects MSBuild properties into every `.csproj` under `backend/`. Eliminates boilerplate duplication across 10 projects and locks discipline (nullable, analyzers, warnings-as-errors) centrally.
@@ -140,9 +146,11 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): initialize .NET solution 
 - [ ] **Step 2: Verify MSBuild parses it without error (no projects yet, so nothing to build)**
 
 Run:
+
 ```bash
 cd backend && dotnet msbuild -nologo -version >/dev/null && echo "MSBuild OK" && cd ..
 ```
+
 Expected: `MSBuild OK`.
 
 - [ ] **Step 3: Commit**
@@ -157,6 +165,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add backend/Directory.Bui
 ## Task 3.3: Add `Directory.Packages.props` — Central Package Management
 
 **Files:**
+
 - Create: `backend/Directory.Packages.props`
 
 **Rationale:** Central Package Management (MSBuild 17+ / .NET 8) pins every package version in one place. Individual `.csproj` files use `<PackageReference Include="X" />` without a version. Prevents the "wait, which project pulled in FluentValidation 11.10 vs 11.9?" drift that plagues multi-project .NET solutions.
@@ -270,9 +279,11 @@ The file pins every package we know we'll need across Foundation (Phases 05–08
 - [ ] **Step 2: Verify NuGet accepts the CPM file (will re-verify after first project is added)**
 
 Run:
+
 ```bash
 cd backend && dotnet msbuild -nologo /t:_CheckForInvalidConfigurationAndPlatform 2>&1 | head -20 && cd ..
 ```
+
 Expected: either no output or a clean build-check output. Any version parse errors would surface as MSBuild warnings — none should appear since no `.csproj` yet references these packages.
 
 - [ ] **Step 3: Commit**
@@ -287,6 +298,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add backend/Directory.Pac
 ## Task 3.4: Create `CCE.Domain` — base classes only
 
 **Files:**
+
 - Create: `backend/src/CCE.Domain/CCE.Domain.csproj`
 - Create: `backend/src/CCE.Domain/Common/Entity.cs`
 - Create: `backend/src/CCE.Domain/Common/AggregateRoot.cs`
@@ -299,11 +311,13 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add backend/Directory.Pac
 - [ ] **Step 1: Create the project**
 
 Run:
+
 ```bash
 dotnet new classlib -n CCE.Domain -o backend/src/CCE.Domain --framework net8.0 --force
 rm -f backend/src/CCE.Domain/Class1.cs
 dotnet sln backend/CCE.sln add backend/src/CCE.Domain/CCE.Domain.csproj
 ```
+
 Expected: `Project ... added to the solution.`
 
 - [ ] **Step 2: Overwrite `backend/src/CCE.Domain/CCE.Domain.csproj` with minimal content**
@@ -458,9 +472,11 @@ public interface ISystemClock
 - [ ] **Step 8: Build to verify no errors**
 
 Run:
+
 ```bash
 dotnet build backend/src/CCE.Domain/CCE.Domain.csproj --nologo -c Debug
 ```
+
 Expected: `Build succeeded.` with 0 errors. Analyzer warnings-as-errors are enabled — any analyzer violation will fail the build. If the build fails, read the error carefully: it's usually a missing override equals/gethashcode (CA1067/CA1815) or similar. Fix per the analyzer hint before proceeding.
 
 - [ ] **Step 9: Commit**
@@ -475,6 +491,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Domain project wi
 ## Task 3.5: Create `CCE.Application` — MediatR host + abstractions
 
 **Files:**
+
 - Create: `backend/src/CCE.Application/CCE.Application.csproj`
 - Create: `backend/src/CCE.Application/DependencyInjection.cs`
 - Create: `backend/src/CCE.Application/Common/Interfaces/ICceDbContext.cs`
@@ -572,6 +589,7 @@ public static class DependencyInjection
 ```bash
 dotnet build backend/src/CCE.Application/CCE.Application.csproj --nologo -c Debug
 ```
+
 Expected: `Build succeeded.` with 0 errors.
 
 - [ ] **Step 6: Commit**
@@ -586,6 +604,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Application proje
 ## Task 3.6: Create `CCE.Infrastructure` — stub only
 
 **Files:**
+
 - Create: `backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj`
 - Create: `backend/src/CCE.Infrastructure/SystemClock.cs`
 - Create: `backend/src/CCE.Infrastructure/DependencyInjection.cs`
@@ -680,6 +699,7 @@ public static class DependencyInjection
 ```bash
 dotnet build backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj --nologo -c Debug
 ```
+
 Expected: `Build succeeded.`.
 
 - [ ] **Step 7: Commit**
@@ -694,6 +714,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Infrastructure pr
 ## Task 3.7: Create `CCE.Api.External` — minimal web API scaffold
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.External/CCE.Api.External.csproj`
 - Create: `backend/src/CCE.Api.External/Program.cs`
 - Create: `backend/src/CCE.Api.External/appsettings.json`
@@ -804,11 +825,13 @@ public partial class Program;
 ```bash
 dotnet build backend/src/CCE.Api.External/CCE.Api.External.csproj --nologo -c Debug
 ```
+
 Expected: `Build succeeded.`.
 
 - [ ] **Step 8: Smoke-test the API boots + responds**
 
 Run:
+
 ```bash
 # Run in background, wait for it to bind, curl, kill
 dotnet run --project backend/src/CCE.Api.External --no-build --urls http://localhost:5001 > /tmp/api-external.log 2>&1 &
@@ -824,6 +847,7 @@ echo "Response: $RESPONSE"
 kill $API_PID 2>/dev/null; wait $API_PID 2>/dev/null
 [ "$RESPONSE" = "CCE.Api.External — Foundation" ] && echo "SMOKE OK" || { echo "SMOKE FAILED"; cat /tmp/api-external.log; exit 1; }
 ```
+
 Expected: prints `Response: CCE.Api.External — Foundation` and `SMOKE OK`.
 
 - [ ] **Step 9: Commit**
@@ -838,6 +862,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Api.External proj
 ## Task 3.8: Create `CCE.Api.Internal` — mirror of External on port 5002
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Internal/CCE.Api.Internal.csproj`
 - Create: `backend/src/CCE.Api.Internal/Program.cs`
 - Create: `backend/src/CCE.Api.Internal/appsettings.json`
@@ -941,6 +966,7 @@ public partial class Program;
 - [ ] **Step 7: Build + smoke-test on port 5002**
 
 Run:
+
 ```bash
 dotnet build backend/src/CCE.Api.Internal/CCE.Api.Internal.csproj --nologo -c Debug
 dotnet run --project backend/src/CCE.Api.Internal --no-build --urls http://localhost:5002 > /tmp/api-internal.log 2>&1 &
@@ -956,6 +982,7 @@ echo "Response: $RESPONSE"
 kill $API_PID 2>/dev/null; wait $API_PID 2>/dev/null
 [ "$RESPONSE" = "CCE.Api.Internal — Foundation" ] && echo "SMOKE OK" || { echo "SMOKE FAILED"; cat /tmp/api-internal.log; exit 1; }
 ```
+
 Expected: `Response: CCE.Api.Internal — Foundation` + `SMOKE OK`.
 
 - [ ] **Step 8: Commit**
@@ -970,6 +997,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Api.Internal proj
 ## Task 3.9: Create `CCE.Integration` — empty placeholder
 
 **Files:**
+
 - Create: `backend/src/CCE.Integration/CCE.Integration.csproj`
 - Create: `backend/src/CCE.Integration/.gitkeep`
 
@@ -1005,6 +1033,7 @@ dotnet sln backend/CCE.sln add backend/src/CCE.Integration/CCE.Integration.cspro
 ```bash
 dotnet build backend/src/CCE.Integration/CCE.Integration.csproj --nologo -c Debug
 ```
+
 Expected: `Build succeeded.` (empty projects build cleanly).
 
 - [ ] **Step 4: Commit**
@@ -1019,6 +1048,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-03): add CCE.Integration empty
 ## Task 3.10: Create 4 test projects + one green xUnit test
 
 **Files:**
+
 - Create: `backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj`
 - Create: `backend/tests/CCE.Domain.Tests/Common/EntityTests.cs`
 - Create: `backend/tests/CCE.Domain.Tests/GlobalUsings.cs`
@@ -1086,7 +1116,7 @@ global using Xunit;
 
 - [ ] **Step 4: Write `backend/tests/CCE.Domain.Tests/Common/EntityTests.cs`**
 
-This is Foundation's *single green test*. It exercises `Entity<TId>` equality to prove the xUnit pipeline runs end-to-end.
+This is Foundation's _single green test_. It exercises `Entity<TId>` equality to prove the xUnit pipeline runs end-to-end.
 
 ```csharp
 using CCE.Domain.Common;
@@ -1128,6 +1158,7 @@ public class EntityTests
 ```bash
 dotnet test backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj --nologo -c Debug
 ```
+
 Expected: `Passed!  - Failed: 0, Passed: 2, Skipped: 0` (the two Fact methods).
 
 - [ ] **Step 6: Create Application.Tests (stub)**
@@ -1291,7 +1322,9 @@ global using Xunit;
 dotnet build backend/CCE.sln --nologo -c Debug
 dotnet test backend/CCE.sln --nologo -c Debug --no-build
 ```
+
 Expected:
+
 - Build: `Build succeeded.` with 0 errors across all 10 projects.
 - Test: two tests pass (from `EntityTests`); other three test projects have zero tests and report `No test matches the given testcase filter` or `Passed! - Failed: 0, Passed: 0` — that's expected for now.
 
@@ -1300,6 +1333,7 @@ Expected:
 ```bash
 dotnet sln backend/CCE.sln list
 ```
+
 Expected: lists 10 projects — 6 `src/` + 4 `tests/`.
 
 - [ ] **Step 11: Add `backend/.gitignore` for dotnet artifacts inside backend/**
@@ -1309,6 +1343,7 @@ The root `.gitignore` from Phase 00 Task 0.3 already excludes `bin/`, `obj/`, an
 ```bash
 git check-ignore -v backend/src/CCE.Domain/bin/Debug/net8.0/CCE.Domain.dll || echo "not ignored"
 ```
+
 Expected: prints a line like `.gitignore:<line>:bin/ backend/src/CCE.Domain/bin/Debug/net8.0/CCE.Domain.dll` — the match comes from the root `.gitignore`.
 
 If the file prints `not ignored`, add `bin/` and `obj/` patterns to the root `.gitignore` before committing (they should already be there from Phase 00).

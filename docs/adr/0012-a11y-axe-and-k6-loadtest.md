@@ -14,11 +14,13 @@ Likewise, response time is a stated NFR; we need a baseline gate that catches re
 ## Decision
 
 ### Accessibility
+
 - **Tool:** axe-core, embedded in Playwright E2E tests for both `web-portal-e2e` and `admin-cms-e2e`.
 - **Gate:** Zero `critical` or `serious` WCAG 2.1 AA violations on the smoke E2E pass.
 - **Manual checklist:** [`docs/a11y-checklist.md`](../a11y-checklist.md) covers what axe can't catch.
 
 ### Load testing
+
 - **Tool:** [k6](https://k6.io), scripts in `loadtest/`.
 - **Thresholds:**
   - `/health` (anonymous): p95 < 100 ms
@@ -28,27 +30,33 @@ Likewise, response time is a stated NFR; we need a baseline gate that catches re
 ## Consequences
 
 ### Positive
+
 - A11y regressions visible in PR before merge; fixes are cheaper at PR time.
 - Load thresholds catch the worst regressions (a 10× slowdown can't sneak through).
 - k6 scripts are versioned alongside code — SLOs evolve as features land.
 
 ### Negative
+
 - E2E + axe runtime is non-trivial; CI minutes go up.
 - "Zero critical/serious" is strict — third-party widgets occasionally trigger violations that need scoped suppressions.
 
 ### Neutral / follow-ups
+
 - Coverage of WCAG criteria expands as feature surface grows; sub-projects 5/6 own the broader a11y test plan.
 - k6 thresholds widen to cover real endpoints in sub-projects 3/4.
 
 ## Alternatives considered
 
 ### Option A: Lighthouse CI only
+
 - Rejected: weaker a11y rule coverage than axe.
 
 ### Option B: Manual a11y review only
+
 - Rejected: doesn't scale; regressions slip through.
 
 ### Option C: JMeter over k6
+
 - Rejected: k6's JS scripting + Prometheus output fits CI better.
 
 ## Related

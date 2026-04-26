@@ -24,22 +24,22 @@ If any fail, stop and report.
 
 ## Phase 08 task index
 
-| # | Task | Tests added |
-|---|---|---|
-| 8.1 | Correlation-ID middleware | 2 |
-| 8.2 | ProblemDetails / exception handler middleware | 3 |
-| 8.3 | Security headers middleware | 1 |
-| 8.4 | Redis-backed rate limiting | 2 |
-| 8.5 | Localization middleware (Accept-Language → CultureInfo) | 1 |
-| 8.6 | Add Swashbuckle + Swagger UI | 1 |
-| 8.7 | External API: JWT bearer auth + claim mappings | 2 |
-| 8.8 | Internal API: OIDC code-flow validation + claim mappings | 2 |
-| 8.9 | `/health` endpoint (External) backed by HealthQuery | 1 |
-| 8.10 | `/health/ready` endpoint (both APIs) — SQL + Redis + JWKS probes | 2 |
-| 8.11 | `/health/authenticated` endpoint (Internal) requiring `SuperAdmin` policy | 2 |
-| 8.12 | Permission policy registration helpers | 1 |
-| 8.13 | API DI composition: wire all middleware in correct order | 0 (smoke only) |
-| 8.14 | End-to-end integration tests via `WebApplicationFactory` | 4 |
+| #    | Task                                                                      | Tests added    |
+| ---- | ------------------------------------------------------------------------- | -------------- |
+| 8.1  | Correlation-ID middleware                                                 | 2              |
+| 8.2  | ProblemDetails / exception handler middleware                             | 3              |
+| 8.3  | Security headers middleware                                               | 1              |
+| 8.4  | Redis-backed rate limiting                                                | 2              |
+| 8.5  | Localization middleware (Accept-Language → CultureInfo)                   | 1              |
+| 8.6  | Add Swashbuckle + Swagger UI                                              | 1              |
+| 8.7  | External API: JWT bearer auth + claim mappings                            | 2              |
+| 8.8  | Internal API: OIDC code-flow validation + claim mappings                  | 2              |
+| 8.9  | `/health` endpoint (External) backed by HealthQuery                       | 1              |
+| 8.10 | `/health/ready` endpoint (both APIs) — SQL + Redis + JWKS probes          | 2              |
+| 8.11 | `/health/authenticated` endpoint (Internal) requiring `SuperAdmin` policy | 2              |
+| 8.12 | Permission policy registration helpers                                    | 1              |
+| 8.13 | API DI composition: wire all middleware in correct order                  | 0 (smoke only) |
+| 8.14 | End-to-end integration tests via `WebApplicationFactory`                  | 4              |
 
 **Estimated total tests added: ~24** (Application.Tests + Api.IntegrationTests). Final solution test count after Phase 08: ~58.
 
@@ -52,6 +52,7 @@ Tasks 8.1–8.6 add packages and code to **both** `CCE.Api.External` and `CCE.Ap
 ### Task 8.0 (preliminary): Create `CCE.Api.Common` library
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/CCE.Api.Common.csproj`
 
 ```bash
@@ -106,12 +107,15 @@ Overwrite `backend/src/CCE.Api.Common/CCE.Api.Common.csproj`:
 ```
 
 Build to verify:
+
 ```bash
 dotnet build backend/CCE.sln --nologo -c Debug 2>&1 | tail -5
 ```
+
 Expected: 0 errors.
 
 Commit:
+
 ```bash
 git add backend/src/CCE.Api.Common backend/src/CCE.Api.External backend/src/CCE.Api.Internal backend/CCE.sln
 git -c commit.gpgsign=false commit -m "feat(phase-08): add CCE.Api.Common shared library + wire both API projects to reference it"
@@ -122,6 +126,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add CCE.Api.Common shared
 ## Task 8.1: Correlation-ID middleware
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Middleware/CorrelationIdMiddleware.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Middleware/CorrelationIdMiddlewareTests.cs`
 
@@ -249,6 +254,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add CorrelationIdMiddlewa
 ## Task 8.2: ProblemDetails / exception-handler middleware
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Middleware/ExceptionHandlingMiddleware.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Middleware/ExceptionHandlingMiddlewareTests.cs`
 
@@ -434,6 +440,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add ExceptionHandlingMidd
 ## Task 8.3: Security headers middleware
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Middleware/SecurityHeadersMiddleware.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Middleware/SecurityHeadersMiddlewareTests.cs`
 
@@ -531,6 +538,7 @@ public sealed class SecurityHeadersMiddleware
 ```bash
 dotnet test backend/tests/CCE.Api.IntegrationTests --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 6 passed cumulative (2 correlation + 3 exception + 1 security).
 
 ```bash
@@ -543,6 +551,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add SecurityHeadersMiddle
 ## Task 8.4: Rate limiting (in-memory fixed-window)
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/RateLimiting/CceRateLimiterRegistration.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/RateLimiting/RateLimiterTests.cs`
 
@@ -665,6 +674,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add fixed-window rate lim
 ## Task 8.5: Localization middleware (Accept-Language → CultureInfo)
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Middleware/LocalizationMiddleware.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Middleware/LocalizationMiddlewareTests.cs`
 
@@ -792,6 +802,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add LocalizationMiddlewar
 ## Task 8.6: Swagger UI + OpenAPI export
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/OpenApi/CceOpenApiRegistration.cs`
 - Modify: `backend/src/CCE.Api.External/Program.cs`
 - Modify: `backend/src/CCE.Api.Internal/Program.cs`
@@ -914,6 +925,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add Swagger UI + OpenAPI 
 ## Task 8.7: External API — JWT bearer auth (Keycloak `cce-external`)
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Auth/CceJwtAuthRegistration.cs`
 - Modify: `backend/src/CCE.Api.External/Program.cs` (add auth wiring)
 - Modify: `backend/src/CCE.Api.External/appsettings.Development.json` (add `Keycloak` section)
@@ -1093,6 +1105,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add JWT bearer auth on Ex
 ## Task 8.8: Internal API — JWT bearer for `cce-internal` realm
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.Internal/Program.cs`
 - Modify: `backend/src/CCE.Api.Internal/appsettings.Development.json`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Auth/InternalJwtAuthTests.cs`
@@ -1133,6 +1146,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add JWT bearer auth on In
 ## Task 8.9: `/health` endpoint backed by `HealthQuery` (External API)
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.External/Program.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthEndpointTests.cs`
 
@@ -1210,6 +1224,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add anonymous GET /health
 ## Task 8.10: `/health/ready` — dependency probes
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.External/Program.cs` (add endpoint)
 - Modify: `backend/src/CCE.Api.Internal/Program.cs` (add endpoint)
 - Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthReadyEndpointTests.cs`
@@ -1335,6 +1350,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add /health/ready endpoin
 ## Task 8.11: `/health/authenticated` (Internal API, requires `SuperAdmin`)
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.Internal/Program.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Endpoints/HealthAuthenticatedEndpointTests.cs`
 
@@ -1419,6 +1435,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): add /health/authenticated
 ## Task 8.12: Permission policy registration helper
 
 **Files:**
+
 - Create: `backend/src/CCE.Api.Common/Authorization/PermissionPolicyRegistration.cs`
 - Create: `backend/tests/CCE.Api.IntegrationTests/Authorization/PermissionPolicyTests.cs`
 
@@ -1491,6 +1508,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): auto-register an authoriz
 ## Task 8.13: Wire all middleware into both API Programs in correct order
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.External/Program.cs`
 - Modify: `backend/src/CCE.Api.Internal/Program.cs`
 
@@ -1582,6 +1600,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-08): assemble all middleware i
 ## Task 8.14: E2E integration tests with real Keycloak token
 
 **Files:**
+
 - Create: `backend/tests/CCE.Api.IntegrationTests/E2E/EndToEndAuthFlowTests.cs`
 
 **Rationale:** Acquires a real token from Keycloak's `admin-cli` against the Foundation realms, then hits the protected endpoints. Closest thing Foundation has to a "did everything wire" gate.

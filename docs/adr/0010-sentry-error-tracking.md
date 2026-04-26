@@ -21,27 +21,33 @@ A self-hosted Sentry instance is operationally heavy (Postgres, Redis, ClickHous
 ## Consequences
 
 ### Positive
+
 - Uniform error pipeline dev → staging → prod.
 - DSN-empty no-op means contributors don't need a Sentry account to run the stack.
 - Release tagging ties errors to specific git refs once CI uploads release metadata (sub-project 8 / Ops).
 
 ### Negative
+
 - Hosted Sentry costs money and ships data off-prem; ministry policy may require a self-hosted instance later.
 - A self-host swap is a service stand-up + DSN re-issue, but requires no code change (DSN is just a URL).
 
 ### Neutral / follow-ups
+
 - Re-evaluate self-hosted vs SaaS in sub-project 8 (Integration Gateway / Ops).
 - PII scrubbing is configured in the SDK — verify against gov data-handling rules in sub-project 8.
 
 ## Alternatives considered
 
 ### Option A: Application Insights / OpenTelemetry only
+
 - Rejected: AI is Azure-coupled; OTel without a backend is incomplete.
 
 ### Option B: Self-hosted Sentry
+
 - Rejected for Foundation: out of scope; revisit when hosting target is decided.
 
 ### Option C: No error tracking in Foundation
+
 - Rejected: error visibility is a security gate (silent 500s hide auth or input issues); see [ADR-0011](0011-security-scanning-pipeline.md).
 
 ## Related

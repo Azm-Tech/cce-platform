@@ -42,6 +42,7 @@ Phase 16 wires the CI workflow; Phase 13 builds the local pipeline.
 ## Task 13.1: Export `openapi.json` from both backend APIs
 
 **Files:**
+
 - Create: `contracts/.gitkeep` (so the directory exists in git)
 - Create: `scripts/generate-openapi.sh` (run-and-curl approach)
 
@@ -121,6 +122,7 @@ chmod +x scripts/generate-openapi.sh
 ```bash
 ./scripts/generate-openapi.sh 2>&1 | tail -10
 ```
+
 Expected: prints "done" + lists both `openapi.*.json` files with non-zero size.
 
 - [ ] **Step 4: Sanity-check the JSON has expected paths**
@@ -129,6 +131,7 @@ Expected: prints "done" + lists both `openapi.*.json` files with non-zero size.
 jq -r '.paths | keys[]' contracts/openapi.external.json
 jq -r '.paths | keys[]' contracts/openapi.internal.json
 ```
+
 Expected (External): `/`, `/auth/echo`, `/health`. (Note: `/health/ready` is registered via `MapHealthChecks` which Swashbuckle's default discovery doesn't pick up — that's fine; it's a runtime probe, not a public API surface.)
 Expected (Internal): `/`, `/auth/echo`, `/health`, `/health/authenticated`.
 
@@ -146,6 +149,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-13): export OpenAPI specs to c
 ## Task 13.2: Install `@hey-api/openapi-ts` and configure for both APIs
 
 **Files:**
+
 - Modify: `frontend/package.json` (add devDependency)
 - Create: `frontend/libs/api-client/openapi-ts.config.ts`
 - Modify: `frontend/libs/api-client/src/lib/generated/.gitkeep` (replaced after generation)
@@ -165,26 +169,18 @@ cd ..
 `@hey-api/openapi-ts` 0.61 supports a single config or an array. We use an array to emit two clients:
 
 ```typescript
-import { defineConfig } from '@hey-api/openapi-ts';
+import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig([
   {
-    input: '../../contracts/openapi.external.json',
-    output: 'src/lib/generated/external',
-    plugins: [
-      '@hey-api/typescript',
-      '@hey-api/sdk',
-      '@hey-api/client-fetch',
-    ],
+    input: "../../contracts/openapi.external.json",
+    output: "src/lib/generated/external",
+    plugins: ["@hey-api/typescript", "@hey-api/sdk", "@hey-api/client-fetch"],
   },
   {
-    input: '../../contracts/openapi.internal.json',
-    output: 'src/lib/generated/internal',
-    plugins: [
-      '@hey-api/typescript',
-      '@hey-api/sdk',
-      '@hey-api/client-fetch',
-    ],
+    input: "../../contracts/openapi.internal.json",
+    output: "src/lib/generated/internal",
+    plugins: ["@hey-api/typescript", "@hey-api/sdk", "@hey-api/client-fetch"],
   },
 ]);
 ```
@@ -199,6 +195,7 @@ pnpm exec openapi-ts 2>&1 | tail -20
 ls -la src/lib/generated/
 cd ../../..
 ```
+
 Expected: prints "Successfully generated" or similar; `external/` and `internal/` subdirectories appear with `index.ts`, `types.gen.ts`, `sdk.gen.ts`, etc.
 
 If the config can't be found, run with explicit path: `pnpm exec openapi-ts --file openapi-ts.config.ts`.
@@ -215,6 +212,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-13): add @hey-api/openapi-ts c
 ## Task 13.3: Add Nx `generate` target for `api-client` + smoke test
 
 **Files:**
+
 - Modify: `frontend/libs/api-client/project.json` (add `generate` target)
 - Modify: `frontend/libs/api-client/src/index.ts` (re-export generated)
 - Create: `frontend/libs/api-client/src/lib/api-client.spec.ts` (smoke import test)
@@ -245,8 +243,8 @@ Append:
 ```typescript
 // Generated TypeScript clients from contracts/openapi.{external,internal}.json
 // Regenerate via: pnpm nx run api-client:generate
-export * as ExternalApi from './lib/generated/external';
-export * as InternalApi from './lib/generated/internal';
+export * as ExternalApi from "./lib/generated/external";
+export * as InternalApi from "./lib/generated/internal";
 ```
 
 - [ ] **Step 3: Write the smoke import test**
@@ -254,18 +252,18 @@ export * as InternalApi from './lib/generated/internal';
 `frontend/libs/api-client/src/lib/api-client.spec.ts`:
 
 ```typescript
-import { ExternalApi, InternalApi } from '../index';
+import { ExternalApi, InternalApi } from "../index";
 
-describe('api-client', () => {
-  it('exports ExternalApi namespace', () => {
+describe("api-client", () => {
+  it("exports ExternalApi namespace", () => {
     expect(ExternalApi).toBeDefined();
   });
 
-  it('exports InternalApi namespace', () => {
+  it("exports InternalApi namespace", () => {
     expect(InternalApi).toBeDefined();
   });
 
-  it('ExternalApi exposes at least one symbol from the generated SDK', () => {
+  it("ExternalApi exposes at least one symbol from the generated SDK", () => {
     expect(Object.keys(ExternalApi).length).toBeGreaterThan(0);
   });
 });
@@ -280,6 +278,7 @@ pnpm nx test api-client --watch=false 2>&1 | tail -8
 pnpm nx build api-client 2>&1 | tail -5
 cd ..
 ```
+
 Expected: all 3 commands succeed. 3 tests pass (the placeholder default test from Phase 10 + 3 new ones = 4 in api-client.spec.ts and possibly the prior placeholder).
 
 If TypeScript compile errors come from generated code (e.g., a missing type), the spec parser may have produced an inconsistent JSON — re-run `./scripts/generate-openapi.sh` and `pnpm nx run api-client:generate`.
@@ -296,6 +295,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-13): add Nx generate target + 
 ## Task 13.4: Add drift-check script + manual verification
 
 **Files:**
+
 - Create: `scripts/check-contracts-clean.sh`
 
 **Rationale:** A bash script that regenerates and asserts `git diff` is clean. Phase 16 wires this to GitHub Actions; Foundation lets devs run it locally before opening a PR.
@@ -339,6 +339,7 @@ chmod +x scripts/check-contracts-clean.sh
 ```bash
 ./scripts/check-contracts-clean.sh
 ```
+
 Expected: prints `OK — contracts and generated clients match committed state.`. Exit 0.
 
 - [ ] **Step 3: Negative test — induce drift to verify the check catches it**
@@ -361,6 +362,7 @@ mv backend/src/CCE.Api.External/Program.cs.bak backend/src/CCE.Api.External/Prog
 # Verify clean tree
 git status --porcelain contracts/ frontend/libs/api-client/src/lib/generated/
 ```
+
 Expected: middle command prints `OK — drift was caught`. Final `git status` prints nothing (clean).
 
 - [ ] **Step 4: Commit**

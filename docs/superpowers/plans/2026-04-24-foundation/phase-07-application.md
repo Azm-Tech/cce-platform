@@ -35,6 +35,7 @@ Both behaviors live in the Application layer because they're business-logic conc
 ## Task 7.1: Add `LoggingBehavior` to the MediatR pipeline
 
 **Files:**
+
 - Create: `backend/src/CCE.Application/Common/Behaviors/LoggingBehavior.cs`
 - Create: `backend/tests/CCE.Application.Tests/Common/Behaviors/LoggingBehaviorTests.cs`
 
@@ -87,6 +88,7 @@ public class LoggingBehaviorTests
 ```bash
 dotnet test backend/tests/CCE.Application.Tests/CCE.Application.Tests.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: build error mentioning `LoggingBehavior`.
 
 - [ ] **Step 3: Add reference from Application.Tests to Application**
@@ -143,6 +145,7 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 ```bash
 grep -c 'Microsoft.Extensions.Logging.Abstractions' backend/src/CCE.Application/CCE.Application.csproj
 ```
+
 If 0, add inside the existing `<ItemGroup>` for packages. (It's pinned in CPM already.)
 
 - [ ] **Step 6: Run tests — expect 2 passed**
@@ -150,6 +153,7 @@ If 0, add inside the existing `<ItemGroup>` for packages. (It's pinned in CPM al
 ```bash
 dotnet test backend/tests/CCE.Application.Tests/CCE.Application.Tests.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: 2 passed.
 
 - [ ] **Step 7: Commit**
@@ -164,6 +168,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-07): add MediatR LoggingBehavi
 ## Task 7.2: Add `ValidationBehavior`
 
 **Files:**
+
 - Create: `backend/src/CCE.Application/Common/Behaviors/ValidationBehavior.cs`
 - Create: `backend/tests/CCE.Application.Tests/Common/Behaviors/ValidationBehaviorTests.cs`
 
@@ -234,6 +239,7 @@ public class ValidationBehaviorTests
 ```bash
 dotnet test backend/tests/CCE.Application.Tests/CCE.Application.Tests.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: build error referencing `ValidationBehavior`.
 
 - [ ] **Step 3: Write `backend/src/CCE.Application/Common/Behaviors/ValidationBehavior.cs`**
@@ -286,6 +292,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 ```bash
 dotnet test backend/tests/CCE.Application.Tests/CCE.Application.Tests.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 5 total in Application.Tests (2 LoggingBehavior + 3 ValidationBehavior), all passed.
 
 - [ ] **Step 5: Commit**
@@ -300,6 +307,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-07): add MediatR ValidationBeh
 ## Task 7.3: `HealthQuery` + handler (anonymous health endpoint backing)
 
 **Files:**
+
 - Create: `backend/src/CCE.Application/Health/HealthQuery.cs`
 - Create: `backend/src/CCE.Application/Health/HealthQueryHandler.cs`
 - Create: `backend/src/CCE.Application/Health/HealthResult.cs`
@@ -428,6 +436,7 @@ public sealed class HealthQueryHandler : IRequestHandler<HealthQuery, HealthResu
 ```bash
 dotnet test backend/tests/CCE.Application.Tests --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 8 total in Application.Tests (5 prior + 3 HealthQuery), all passed.
 
 - [ ] **Step 7: Commit**
@@ -442,6 +451,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-07): add HealthQuery + handler
 ## Task 7.4: `AuthenticatedHealthQuery` + handler (claims echo)
 
 **Files:**
+
 - Create: `backend/src/CCE.Application/Health/AuthenticatedHealthQuery.cs`
 - Create: `backend/src/CCE.Application/Health/AuthenticatedHealthQueryHandler.cs`
 - Create: `backend/src/CCE.Application/Health/AuthenticatedHealthResult.cs`
@@ -582,6 +592,7 @@ public sealed class AuthenticatedHealthQueryHandler
 ```bash
 dotnet test backend/tests/CCE.Application.Tests --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 10 total in Application.Tests (5 behaviors + 3 HealthQuery + 2 AuthenticatedHealthQuery).
 
 - [ ] **Step 7: Commit**
@@ -596,6 +607,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-07): add AuthenticatedHealthQu
 ## Task 7.5: Wire pipeline behaviors into `AddApplication` + integration smoke test
 
 **Files:**
+
 - Modify: `backend/src/CCE.Application/DependencyInjection.cs`
 - Create: `backend/tests/CCE.Application.Tests/DependencyInjectionTests.cs`
 
@@ -694,6 +706,7 @@ public class DependencyInjectionTests
 ```bash
 dotnet test backend/tests/CCE.Application.Tests --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 12 total in Application.Tests, all passed.
 
 - [ ] **Step 4: Final solution-wide test run**
@@ -702,6 +715,7 @@ Expected: 12 total in Application.Tests, all passed.
 dotnet build backend/CCE.sln --nologo 2>&1 | tail -5
 dotnet test backend/CCE.sln --nologo --no-build 2>&1 | tail -10
 ```
+
 Expected: build 0 errors, total 34 passed (16 Domain + 12 Application + 6 Infrastructure).
 
 - [ ] **Step 5: Commit**

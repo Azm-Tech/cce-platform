@@ -19,27 +19,33 @@ The same upstream ClamAV maintainers publish `clamav/clamav-debian:stable` with 
 ## Consequences
 
 ### Positive
+
 - Pulls cleanly on both amd64 and arm64.
 - Identical clamd protocol means downstream .NET client code is unchanged (no branching on arch).
 - Identical freshclam signature pipeline — no signature update behavior diverges.
 
 ### Negative
+
 - Slightly larger image than the Alpine variant (~200 MB more on disk).
 - Maintained alongside the Alpine variant by the same team; future deprecation possible but unannounced as of decision date.
 
 ### Neutral / follow-ups
+
 - Trivy scans both variants identically ([ADR-0011](0011-security-scanning-pipeline.md)); no special handling needed.
 - If upstream publishes a multi-arch Alpine variant later, revisit.
 
 ## Alternatives considered
 
 ### Option A: Run amd64 `clamav/clamav:stable` under emulation
+
 - Rejected: emulation is slow for AV scanning; defeats the purpose; arm64 CI runners can't run it.
 
 ### Option B: Skip ClamAV in dev, mock the AV client
+
 - Rejected: file-upload tests should exercise the real protocol; mocking would let real bugs through.
 
 ### Option C: Build a custom multi-arch ClamAV image
+
 - Rejected: maintenance burden; the official `clamav-debian` variant covers it.
 
 ## Related

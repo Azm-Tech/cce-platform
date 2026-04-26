@@ -21,11 +21,13 @@
 ## Task 15.1: Create `loadtest/` scenarios
 
 **Files:**
+
 - Create: `loadtest/scenarios/health-anonymous.js`
 - Create: `loadtest/scenarios/health-authenticated.js`
 - Create: `loadtest/README.md`
 
 **Rationale:** Foundation thresholds per spec §8.3:
+
 - `/health` (anonymous): p95 < 100ms at 100 VUs × 60s
 - `/health/authenticated` (Internal): p95 < 200ms at 50 VUs × 60s
 
@@ -44,32 +46,32 @@ mkdir -p loadtest/scenarios
 // Run: k6 run loadtest/scenarios/health-anonymous.js
 // Or via Docker:  docker compose --profile loadtest run --rm k6 run /scenarios/health-anonymous.js
 
-import http from 'k6/http';
-import { check } from 'k6';
+import http from "k6/http";
+import { check } from "k6";
 
-const API_BASE_URL = __ENV.API_BASE_URL || 'http://api-external:5001';
+const API_BASE_URL = __ENV.API_BASE_URL || "http://api-external:5001";
 
 export const options = {
   scenarios: {
     anonymous_health: {
-      executor: 'constant-vus',
+      executor: "constant-vus",
       vus: 100,
-      duration: '60s',
+      duration: "60s",
     },
   },
   thresholds: {
-    http_req_failed: ['rate<0.01'],          // <1% errors
-    http_req_duration: ['p(95)<100'],        // p95 below 100ms
+    http_req_failed: ["rate<0.01"], // <1% errors
+    http_req_duration: ["p(95)<100"], // p95 below 100ms
   },
 };
 
 export default function () {
   const res = http.get(`${API_BASE_URL}/health`, {
-    headers: { 'Accept-Language': 'ar' },
+    headers: { "Accept-Language": "ar" },
   });
   check(res, {
-    'status 200': (r) => r.status === 200,
-    'has status:ok': (r) => typeof r.body === 'string' && r.body.includes('"status":"ok"'),
+    "status 200": (r) => r.status === 200,
+    "has status:ok": (r) => typeof r.body === "string" && r.body.includes('"status":"ok"'),
   });
 }
 ```
@@ -81,25 +83,25 @@ export default function () {
 // Acquires a service-account token from Keycloak's cce-admin-cms client once at setup,
 // then reuses it across all VUs.
 
-import http from 'k6/http';
-import { check } from 'k6';
+import http from "k6/http";
+import { check } from "k6";
 
-const API_BASE_URL = __ENV.API_BASE_URL || 'http://api-internal:5002';
-const KEYCLOAK_URL = __ENV.KEYCLOAK_URL || 'http://keycloak:8080';
-const CLIENT_ID = __ENV.OIDC_CLIENT_ID || 'cce-admin-cms';
-const CLIENT_SECRET = __ENV.OIDC_CLIENT_SECRET || 'dev-internal-secret-change-me';
+const API_BASE_URL = __ENV.API_BASE_URL || "http://api-internal:5002";
+const KEYCLOAK_URL = __ENV.KEYCLOAK_URL || "http://keycloak:8080";
+const CLIENT_ID = __ENV.OIDC_CLIENT_ID || "cce-admin-cms";
+const CLIENT_SECRET = __ENV.OIDC_CLIENT_SECRET || "dev-internal-secret-change-me";
 
 export const options = {
   scenarios: {
     authenticated_health: {
-      executor: 'constant-vus',
+      executor: "constant-vus",
       vus: 50,
-      duration: '60s',
+      duration: "60s",
     },
   },
   thresholds: {
-    http_req_failed: ['rate<0.01'],
-    http_req_duration: ['p(95)<200'],
+    http_req_failed: ["rate<0.01"],
+    http_req_duration: ["p(95)<200"],
   },
 };
 
@@ -107,11 +109,11 @@ export function setup() {
   const tokenResp = http.post(
     `${KEYCLOAK_URL}/realms/cce-internal/protocol/openid-connect/token`,
     {
-      grant_type: 'client_credentials',
+      grant_type: "client_credentials",
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
     },
-    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
   );
   if (tokenResp.status !== 200) {
     throw new Error(`token acquisition failed: ${tokenResp.status} ${tokenResp.body}`);
@@ -126,7 +128,7 @@ export default function (data) {
     headers: { Authorization: `Bearer ${data.token}` },
   });
   check(res, {
-    'status 200 or 403': (r) => r.status === 200 || r.status === 403,
+    "status 200 or 403": (r) => r.status === 200 || r.status === 403,
   });
 }
 ```
@@ -135,7 +137,7 @@ Note: `/health/authenticated` requires `groups: SuperAdmin` claim which a servic
 
 - [ ] **Step 4: Write `loadtest/README.md`**
 
-```markdown
+````markdown
 # CCE Load Tests (k6)
 
 ## Run via Docker Compose (no host install)
@@ -144,6 +146,7 @@ Note: `/health/authenticated` requires `groups: SuperAdmin` claim which a servic
 docker compose --profile loadtest run --rm k6 run /scenarios/health-anonymous.js
 docker compose --profile loadtest run --rm k6 run /scenarios/health-authenticated.js
 ```
+````
 
 ## Run via host k6 (requires `brew install k6`)
 
@@ -155,26 +158,28 @@ API_BASE_URL=http://localhost:5002 KEYCLOAK_URL=http://localhost:8080 k6 run loa
 
 ## Thresholds
 
-| Scenario | VUs | Duration | p95 threshold | Error rate |
-|---|---|---|---|---|
-| `health-anonymous` | 100 | 60s | < 100 ms | < 1% |
-| `health-authenticated` | 50 | 60s | < 200 ms | < 1% |
+| Scenario               | VUs | Duration | p95 threshold | Error rate |
+| ---------------------- | --- | -------- | ------------- | ---------- |
+| `health-anonymous`     | 100 | 60s      | < 100 ms      | < 1%       |
+| `health-authenticated` | 50  | 60s      | < 200 ms      | < 1%       |
 
 CI runs these on manual dispatch only (Phase 16).
-```
+
+````
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add loadtest/
 git -c commit.gpgsign=false commit -m "feat(phase-15): add k6 scenarios for /health (anonymous) + /auth/echo (authenticated) with thresholds"
-```
+````
 
 ---
 
 ## Task 15.2: Add `loadtest` profile to `docker-compose.yml`
 
 **Files:**
+
 - Modify: `docker-compose.yml`
 
 **Rationale:** Adds a `k6` service gated by Compose's `--profile loadtest` flag so it doesn't spin up on normal `docker compose up`. Mounts the scenarios as a volume; uses the official `grafana/k6` image.
@@ -184,21 +189,20 @@ git -c commit.gpgsign=false commit -m "feat(phase-15): add k6 scenarios for /hea
 Add inside the `services:` section (after `clamav`):
 
 ```yaml
-
-  k6:
-    image: grafana/k6:0.55.0
-    profiles: ["loadtest"]
-    container_name: cce-k6
-    networks:
-      - cce-net
-    volumes:
-      - ./loadtest/scenarios:/scenarios:ro
-    environment:
-      API_BASE_URL: "http://api-external:5001"
-      KEYCLOAK_URL: "http://keycloak:8080"
-      OIDC_CLIENT_ID: "cce-admin-cms"
-      OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET_INTERNAL:-dev-internal-secret-change-me}"
-    # No `command` — passed at run time via `docker compose --profile loadtest run k6 run /scenarios/...`
+k6:
+  image: grafana/k6:0.55.0
+  profiles: ["loadtest"]
+  container_name: cce-k6
+  networks:
+    - cce-net
+  volumes:
+    - ./loadtest/scenarios:/scenarios:ro
+  environment:
+    API_BASE_URL: "http://api-external:5001"
+    KEYCLOAK_URL: "http://keycloak:8080"
+    OIDC_CLIENT_ID: "cce-admin-cms"
+    OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET_INTERNAL:-dev-internal-secret-change-me}"
+  # No `command` — passed at run time via `docker compose --profile loadtest run k6 run /scenarios/...`
 ```
 
 Note: this references `api-external` and `api-internal` services. Foundation's `docker-compose.yml` doesn't yet include those services (they're added in a deployment phase later). For now, k6 inside the cce-net can reach the host's APIs via `host.docker.internal` — we'll fall back to that.
@@ -206,13 +210,13 @@ Note: this references `api-external` and `api-internal` services. Foundation's `
 Update the env vars to use host.docker.internal:
 
 ```yaml
-    environment:
-      API_BASE_URL: "http://host.docker.internal:5001"
-      KEYCLOAK_URL: "http://host.docker.internal:8080"
-      OIDC_CLIENT_ID: "cce-admin-cms"
-      OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET_INTERNAL:-dev-internal-secret-change-me}"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+environment:
+  API_BASE_URL: "http://host.docker.internal:5001"
+  KEYCLOAK_URL: "http://host.docker.internal:8080"
+  OIDC_CLIENT_ID: "cce-admin-cms"
+  OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET_INTERNAL:-dev-internal-secret-change-me}"
+extra_hosts:
+  - "host.docker.internal:host-gateway"
 ```
 
 - [ ] **Step 2: Validate compose syntax**
@@ -220,6 +224,7 @@ Update the env vars to use host.docker.internal:
 ```bash
 docker compose config --quiet && echo "OK"
 ```
+
 Expected: `OK`. The new k6 service should appear under `services` but only when the `loadtest` profile is active.
 
 - [ ] **Step 3: Verify k6 image is reachable (pull manually first since it doesn't auto-pull without the profile flag)**
@@ -227,6 +232,7 @@ Expected: `OK`. The new k6 service should appear under `services` but only when 
 ```bash
 docker pull grafana/k6:0.55.0 2>&1 | tail -3
 ```
+
 Expected: image pulled or already present.
 
 - [ ] **Step 4: Commit**
@@ -255,6 +261,7 @@ sleep 6
 curl -s -o /dev/null -w "external=%{http_code} " http://localhost:5001/health
 curl -s -o /dev/null -w "internal=%{http_code}\n" http://localhost:5002/
 ```
+
 Expected: both return 200.
 
 - [ ] **Step 2: Run anonymous scenario via Docker**
@@ -262,18 +269,21 @@ Expected: both return 200.
 ```bash
 docker compose --profile loadtest run --rm k6 run /scenarios/health-anonymous.js 2>&1 | tail -25
 ```
+
 Expected: thresholds met (p95 < 100ms, error rate < 1%). Last line shows `running (1m00.0s/1m00s)` then thresholds report.
 
 If thresholds fail:
+
 - p95 high → API performance issue (rare for `/health` which is in-memory).
 - error rate high → API not running or unreachable.
-Stop and inspect the API logs.
+  Stop and inspect the API logs.
 
 - [ ] **Step 3: Run authenticated scenario via Docker**
 
 ```bash
 docker compose --profile loadtest run --rm k6 run /scenarios/health-authenticated.js 2>&1 | tail -25
 ```
+
 Expected: token acquisition succeeds in setup, then 60s of authenticated load against `/auth/echo`. Thresholds met.
 
 - [ ] **Step 4: Stop the APIs**

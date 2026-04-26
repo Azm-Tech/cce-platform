@@ -20,27 +20,33 @@ Azure SQL Edge ships native arm64, uses the same T-SQL engine surface as SQL Ser
 ## Consequences
 
 ### Positive
+
 - Native arm64 dev — fast startup, stable.
 - Production engine unchanged.
 - Engine swap is a one-line image change in compose / helm.
 
 ### Negative
+
 - Two engines in scope (dev vs prod); the parity test is mandatory ongoing work.
 - Engineers must avoid SQL Server-only features that Edge doesn't support (Agent, FILESTREAM specifics, full-text). For Foundation through sub-project 2, these aren't used.
 
 ### Neutral / follow-ups
+
 - The parity test runs on every PR that touches `Migrations/` or schema-relevant code.
 - If a future sub-project genuinely needs an Edge-incompatible feature, this ADR is revisited.
 
 ## Alternatives considered
 
 ### Option A: Run amd64 SQL Server image under Rosetta
+
 - Rejected: 2–3× slower; intermittent crashes; can't run on arm64 CI runners.
 
 ### Option B: Use PostgreSQL in dev, SQL Server in prod
+
 - Rejected: too much engine drift; EF migrations would diverge; defeats the parity goal.
 
 ### Option C: Skip local SQL, use a hosted dev DB
+
 - Rejected: violates [ADR-0005](0005-local-first-docker-compose.md); per-developer DB cost / network dependency.
 
 ## Related

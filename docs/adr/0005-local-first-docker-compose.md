@@ -18,25 +18,30 @@ Foundation targets **local Docker Compose** as the canonical dev environment. Pr
 ## Consequences
 
 ### Positive
+
 - A single `docker compose up -d` brings the whole infra stack online; no manual SQL Server install, no per-laptop Keycloak.
 - Stack stays portable: same images run on macOS, Linux, and CI runners.
 - Production hosting decision is unblocked from Foundation timeline.
 - Container hardening (Trivy scans, image pinning) is a single, uniform exercise.
 
 ### Negative
+
 - Compose is not production: HA, secrets management, network policies, and orchestration are not modeled.
 - Some services have arm64 substitutes (Azure SQL Edge, clamav-debian) that don't run in prod — see [ADR-0016](0016-azure-sql-edge-for-arm64-dev.md), [ADR-0018](0018-clamav-debian-for-arm64.md).
 
 ### Neutral / follow-ups
+
 - Compose remains the dev stack into sub-projects 2–9; production hosting picks up in a later cycle.
 - A migration-compatibility test (sub-project 2) covers the dev-vs-prod database engine gap.
 
 ## Alternatives considered
 
 ### Option A: Pick a prod target now (e.g., AKS, Kubernetes-in-Docker locally)
+
 - Rejected: blocks Foundation on a ministry decision; over-models infra concerns at the wrong stage.
 
 ### Option B: Bare-metal local installs (SQL Server, Redis, Keycloak directly on host)
+
 - Rejected: per-laptop drift; unrealistic for non-Linux contributors; no clean way to mirror in CI.
 
 ## Related

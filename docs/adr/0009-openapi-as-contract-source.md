@@ -21,27 +21,33 @@ We need a contract source that is generated from one side, consumed by the other
 ## Consequences
 
 ### Positive
+
 - Backend types and frontend types share one definition — diffing the YAML is the canonical way to review API changes.
 - A breaking API change is impossible to commit silently — CI fails on the drift check.
 - The api-client lib is regenerated, never hand-edited.
 
 ### Negative
+
 - Adds a generation step both sides must run before pushing.
 - Swashbuckle annotations for non-trivial schemas (polymorphism, oneOf) take some care.
 
 ### Neutral / follow-ups
+
 - Permission constraints can be projected into the OpenAPI as a custom extension (`x-permission`) — frontend can use this for guard generation in a later sub-project ([ADR-0013](0013-permissions-source-generated-enum.md)).
 - Treat OpenAPI changes as PR-worthy on their own; reviewers should diff the YAML.
 
 ## Alternatives considered
 
 ### Option A: Hand-written DTOs on both sides
+
 - Rejected: drifts on every change; no automated detection.
 
 ### Option B: NSwag instead of Swashbuckle + hey-api
+
 - Rejected: NSwag's TS generation is opinionated in ways that don't fit the Nx + Angular Material + signals stack we use.
 
 ### Option C: gRPC / GraphQL contract
+
 - Rejected: BRD spells out REST + JSON; gov consumers expect HTTP/JSON; gRPC/GraphQL increase ops complexity disproportionately.
 
 ## Related

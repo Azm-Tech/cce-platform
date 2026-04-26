@@ -24,17 +24,19 @@ If any fail, stop and report.
 ## Why a separate test infrastructure project?
 
 Three reasons:
+
 1. **Shared `FakeSystemClock`** — the same fake is used by Domain, Application, Infrastructure, and API integration tests. Duplicating it across 4 test projects is the kind of drift Foundation explicitly fights.
 2. **Future Testcontainers fixtures** — Phase 06 wires SQL Server + Redis + Keycloak fixtures via `IClassFixture<T>`. Those are heavy (containers boot per fixture lifetime); sharing them across test classes via an `xunit ICollectionFixture` from one location is significantly faster than per-project duplicates.
 3. **Builders & deterministic data** — sub-project 2 will add `Bogus`-driven test data builders. One project keeps them centralized.
 
-CCE.TestInfrastructure depends on `CCE.Domain` (so it can implement `ISystemClock` for fakes) but nothing else. It's *not* a test project itself — it's a class library with `IsTestProject=false`.
+CCE.TestInfrastructure depends on `CCE.Domain` (so it can implement `ISystemClock` for fakes) but nothing else. It's _not_ a test project itself — it's a class library with `IsTestProject=false`.
 
 ---
 
 ## Task 5.1: Create `CCE.TestInfrastructure` project
 
 **Files:**
+
 - Create: `backend/tests/CCE.TestInfrastructure/CCE.TestInfrastructure.csproj`
 
 - [ ] **Step 1: Create project**
@@ -77,6 +79,7 @@ dotnet add backend/tests/CCE.TestInfrastructure/CCE.TestInfrastructure.csproj re
 ```bash
 dotnet build backend/tests/CCE.TestInfrastructure/CCE.TestInfrastructure.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: `Build succeeded. 0 Error(s)`.
 
 - [ ] **Step 4: Commit**
@@ -91,6 +94,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-05): add CCE.TestInfrastructur
 ## Task 5.2: Implement `FakeSystemClock`
 
 **Files:**
+
 - Create: `backend/tests/CCE.TestInfrastructure/Time/FakeSystemClock.cs`
 
 **Rationale:** Tests that exercise time MUST use a deterministic clock. Real `DateTimeOffset.UtcNow` makes tests flaky around midnight, daylight savings, leap seconds, and CI-vs-local timing. `FakeSystemClock` lets tests advance time explicitly with `Advance(TimeSpan)` and inspect it via `UtcNow`.
@@ -176,6 +180,7 @@ Replace `private readonly Lock _gate = new();` with `private readonly object _ga
 ```bash
 dotnet build backend/tests/CCE.TestInfrastructure/CCE.TestInfrastructure.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: `Build succeeded. 0 Error(s)`.
 
 - [ ] **Step 4: Commit**
@@ -190,6 +195,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-05): add FakeSystemClock test 
 ## Task 5.3: Add tests for `FakeSystemClock` (TDD-style verification)
 
 **Files:**
+
 - Modify: `backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj` (add reference to TestInfrastructure)
 - Create: `backend/tests/CCE.Domain.Tests/Time/FakeSystemClockTests.cs`
 
@@ -268,10 +274,13 @@ public class FakeSystemClockTests
 ```bash
 dotnet test backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected:
+
 ```
 Passed!  - Failed: 0, Passed: 10, Skipped: 0
 ```
+
 (10 = 2 existing Entity + 3 Permissions + 5 new FakeSystemClock.)
 
 - [ ] **Step 4: Commit**
@@ -286,6 +295,7 @@ git -c commit.gpgsign=false commit -m "test(phase-05): add 5 FakeSystemClock tes
 ## Task 5.4: Wire remaining test projects to TestInfrastructure (no new tests yet)
 
 **Files:**
+
 - Modify: `backend/tests/CCE.Application.Tests/CCE.Application.Tests.csproj`
 - Modify: `backend/tests/CCE.Infrastructure.Tests/CCE.Infrastructure.Tests.csproj`
 - Modify: `backend/tests/CCE.Api.IntegrationTests/CCE.Api.IntegrationTests.csproj`
@@ -308,6 +318,7 @@ for proj in CCE.Application.Tests CCE.Infrastructure.Tests CCE.Api.IntegrationTe
   grep -A1 'CCE.TestInfrastructure' backend/tests/$proj/$proj.csproj | head -2
 done
 ```
+
 Expected: each prints a `<ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />` line.
 
 - [ ] **Step 3: Full solution build + test**
@@ -316,7 +327,9 @@ Expected: each prints a `<ProjectReference Include="..\CCE.TestInfrastructure\CC
 dotnet build backend/CCE.sln --nologo -c Debug 2>&1 | tail -5
 dotnet test backend/CCE.sln --nologo --no-build 2>&1 | tail -8
 ```
+
 Expected:
+
 - Build: `0 Error(s)`.
 - Test: `Passed: 10, Failed: 0` (no new tests; the 3 stub projects still report "No test is available").
 

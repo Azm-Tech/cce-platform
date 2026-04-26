@@ -20,29 +20,35 @@ DGA publishes design tokens (color, spacing, typography) that government service
 ## Consequences
 
 ### Positive
+
 - Material covers ARIA, focus management, RTL flips, and density tokens out of the box.
 - Bootstrap's `container`/`row`/`col` is the most economical responsive grid; utilities (spacing, flex helpers) avoid one-off SCSS for trivial layout.
 - DGA tokens provide a single, swappable theme layer; rebrand is a token file, not a refactor.
 
 ### Negative
+
 - Two CSS dependencies must stay in sync version-wise; a Bootstrap upgrade that ships new component CSS (which we don't use) bloats the bundle if not pruned.
 - Engineers must be disciplined: no `<button class="btn btn-primary">` — always use `<button mat-raised-button>`.
 
 ### Neutral / follow-ups
+
 - Lint rule / PR-review item: forbid `class="btn"`, `class="card"`, `class="navbar"` patterns in templates (Bootstrap component classes).
 - DGA token file lives in `frontend/libs/ui-tokens/` (sub-project 5/6 will formalize).
 
 ## Alternatives considered
 
 ### Option A: Material only (no Bootstrap)
+
 - Use `@angular/flex-layout` or pure CSS Grid for layout.
 - Rejected: `@angular/flex-layout` is deprecated; pure CSS Grid is fine but requires more bespoke utility work for spacing/alignment than Bootstrap utilities give for free.
 
 ### Option B: Bootstrap only
+
 - Use Bootstrap components and theme.
 - Rejected: weaker a11y/RTL story, no density tokens, more work to meet DGA visual identity.
 
 ### Option C: Tailwind + headless components
+
 - Rejected: ramp-up cost, less alignment with Material/Angular idioms used by the rest of the stack.
 
 ## Related

@@ -27,6 +27,7 @@ If any fail, stop and report.
 ## Foundation database scope
 
 Per spec §5.1 and §10 (project roadmap), Foundation's SQL schema contains exactly:
+
 - `__EFMigrationsHistory` (managed by EF Core)
 - `audit_events` (append-only via SQL trigger)
 
@@ -37,6 +38,7 @@ Every business entity (User, Resource, Post, Country, etc.) lands in **sub-proje
 ## Task 6.1: Add EF Core packages and naming-convention setup to Infrastructure
 
 **Files:**
+
 - Modify: `backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj`
 
 - [ ] **Step 1: Read current csproj**
@@ -44,6 +46,7 @@ Every business entity (User, Resource, Post, Country, etc.) lands in **sub-proje
 ```bash
 cat backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj
 ```
+
 Expected: minimal csproj with `Microsoft.Extensions.DependencyInjection.Abstractions`, `Microsoft.Extensions.Logging.Abstractions`, refs to Application + Domain.
 
 - [ ] **Step 2: Overwrite the csproj**
@@ -93,6 +96,7 @@ The plan's CPM file from Phase 03 covers most of these. Verify these two specifi
 ```bash
 grep 'Microsoft.Extensions.Configuration.Abstractions\|Microsoft.Extensions.Options' backend/Directory.Packages.props
 ```
+
 Expected: prints both lines. If either is missing, add to the appropriate `<ItemGroup>`:
 
 ```xml
@@ -105,6 +109,7 @@ Expected: prints both lines. If either is missing, add to the appropriate `<Item
 ```bash
 dotnet build backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: 0 errors. NuGet restore may take 1–3 minutes for first-time download of EF Core packages.
 
 - [ ] **Step 5: Commit**
@@ -119,6 +124,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): add EF Core 8 + StackExch
 ## Task 6.2: Define `AuditEvent` entity in Domain
 
 **Files:**
+
 - Create: `backend/src/CCE.Domain/Audit/AuditEvent.cs`
 
 **Rationale:** `AuditEvent` is the only Foundation entity. It captures every security-relevant action: actor, resource, verb, correlation id, timestamp, optional diff. Append-only (no updates, no deletes) — enforced by SQL trigger in Task 6.5.
@@ -214,6 +220,7 @@ public class AuditEventTests
 ```bash
 dotnet test backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj --nologo -c Debug --filter FullyQualifiedName~AuditEventTests 2>&1 | tail -10
 ```
+
 Expected: build error — `AuditEvent` doesn't exist yet. That's the failure we want.
 
 - [ ] **Step 3: Write `backend/src/CCE.Domain/Audit/AuditEvent.cs`**
@@ -290,6 +297,7 @@ public sealed class AuditEvent : Entity<Guid>
 ```bash
 dotnet test backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: 14 passed (10 existing + 4 new AuditEvent tests).
 
 - [ ] **Step 5: Commit**
@@ -304,6 +312,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): add AuditEvent domain ent
 ## Task 6.3: Add `CceDbContext` with snake_case naming + `AuditEvents` set
 
 **Files:**
+
 - Create: `backend/src/CCE.Infrastructure/Persistence/CceDbContext.cs`
 - Create: `backend/src/CCE.Infrastructure/Persistence/Configurations/AuditEventConfiguration.cs`
 
@@ -395,6 +404,7 @@ internal sealed class AuditEventConfiguration : IEntityTypeConfiguration<AuditEv
 ```bash
 dotnet build backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 0 errors.
 
 - [ ] **Step 4: Commit**
@@ -409,6 +419,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): add CceDbContext with Aud
 ## Task 6.4: Wire `CceDbContext` into DI with snake_case + connection-string config
 
 **Files:**
+
 - Modify: `backend/src/CCE.Infrastructure/DependencyInjection.cs`
 - Create: `backend/src/CCE.Infrastructure/CceInfrastructureOptions.cs`
 
@@ -491,6 +502,7 @@ public static class DependencyInjection
 ```bash
 dotnet build backend/src/CCE.Infrastructure/CCE.Infrastructure.csproj --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 0 errors.
 
 - [ ] **Step 4: Commit**
@@ -505,6 +517,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): wire CceDbContext + Redis
 ## Task 6.5: Create the initial EF migration
 
 **Files:**
+
 - Create: `backend/src/CCE.Infrastructure/Persistence/Migrations/*` (auto-generated)
 
 **Rationale:** EF Core scaffolds C# migration code from the model snapshot. This is committed so production deploys apply migrations without local model evaluation.
@@ -515,6 +528,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): wire CceDbContext + Redis
 dotnet tool install --global dotnet-ef --version 8.0.10 || dotnet tool update --global dotnet-ef --version 8.0.10
 dotnet ef --version
 ```
+
 Expected: prints `Entity Framework Core .NET Command-line Tools 8.0.10`. The tool installs to `~/.dotnet/tools` — ensure that's on PATH (it usually is, but `export PATH="$HOME/.dotnet/tools:$PATH"` if not).
 
 - [ ] **Step 2: Generate the migration**
@@ -563,7 +577,9 @@ dotnet ef migrations add InitialAuditEvents \
   --verbose 2>&1 | tail -15
 cd ../../..
 ```
+
 Expected: prints `Done.` and creates 3 files in `backend/src/CCE.Infrastructure/Persistence/Migrations/`:
+
 - `<timestamp>_InitialAuditEvents.cs`
 - `<timestamp>_InitialAuditEvents.Designer.cs`
 - `CceDbContextModelSnapshot.cs`
@@ -574,6 +590,7 @@ Expected: prints `Done.` and creates 3 files in `backend/src/CCE.Infrastructure/
 ls backend/src/CCE.Infrastructure/Persistence/Migrations/
 grep 'audit_events\|occurred_on\|correlation_id' backend/src/CCE.Infrastructure/Persistence/Migrations/*_InitialAuditEvents.cs | head -10
 ```
+
 Expected: prints lines referencing `audit_events`, `occurred_on`, `correlation_id` — confirms snake_case mapping is in the migration SQL.
 
 - [ ] **Step 4: Apply the migration to the running SQL container**
@@ -587,6 +604,7 @@ dotnet ef database update \
   --verbose 2>&1 | tail -10
 cd ../../..
 ```
+
 Expected: prints `Done.` (or "No migrations were applied" if previously run). Database `CCE` and table `audit_events` now exist in the running SQL Edge container.
 
 - [ ] **Step 5: Verify the table from the host**
@@ -605,6 +623,7 @@ docker run --rm --network cce_cce-net alpine:3 sh -c "
   echo 'Tables created (verify below): audit_events, __EFMigrationsHistory'
 "
 ```
+
 Note: `mcr.microsoft.com/azure-sql-edge` is arm64-native but its bundled `sqlcmd` may be amd64-only. If both attempts fail, we'll verify via integration test in Task 6.6 — that's authoritative.
 
 If you prefer a quick host-side check, install `sqlcmd` natively: `brew install sqlcmd` (or use any GUI client — DBeaver, Azure Data Studio).
@@ -621,6 +640,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): scaffold InitialAuditEven
 ## Task 6.6: Integration test: write + read AuditEvent through CceDbContext
 
 **Files:**
+
 - Create: `backend/tests/CCE.Infrastructure.Tests/Persistence/CceDbContextTests.cs`
 
 **Rationale:** Proves the persistence pipeline works end-to-end against the live SQL container. This is the canonical Phase 06 success test.
@@ -737,6 +757,7 @@ dotnet add backend/tests/CCE.Infrastructure.Tests/CCE.Infrastructure.Tests.cspro
 ```bash
 dotnet test backend/tests/CCE.Infrastructure.Tests/CCE.Infrastructure.Tests.csproj --nologo -c Debug 2>&1 | tail -10
 ```
+
 Expected: 2 passed.
 
 - [ ] **Step 4: Commit**
@@ -751,6 +772,7 @@ git -c commit.gpgsign=false commit -m "test(phase-06): add CceDbContext integrat
 ## Task 6.7: Update API Programs to use new `AddInfrastructure(configuration)` signature
 
 **Files:**
+
 - Modify: `backend/src/CCE.Api.External/Program.cs`
 - Modify: `backend/src/CCE.Api.Internal/Program.cs`
 - Modify: `backend/src/CCE.Api.External/appsettings.Development.json`
@@ -826,6 +848,7 @@ Note: the password placeholder `Strong!Passw0rd` matches the default `.env.local
 ```bash
 dotnet build backend/CCE.sln --nologo -c Debug 2>&1 | tail -6
 ```
+
 Expected: 0 errors.
 
 - [ ] **Step 6: Smoke-test API still boots**
@@ -843,6 +866,7 @@ RESPONSE=$(curl -s http://localhost:5001/)
 kill $API_PID 2>/dev/null; wait $API_PID 2>/dev/null
 [ "$RESPONSE" = "CCE.Api.External — Foundation" ] && echo "SMOKE OK" || { echo "SMOKE FAILED"; tail -30 /tmp/api-external.log; exit 1; }
 ```
+
 Expected: `SMOKE OK`.
 
 - [ ] **Step 7: Commit**
@@ -857,6 +881,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): wire AddInfrastructure(co
 ## Task 6.8: Add append-only SQL trigger for `audit_events`
 
 **Files:**
+
 - Create: `backend/src/CCE.Infrastructure/Persistence/Migrations/<timestamp>_AuditEventsAppendOnlyTrigger.cs` (manual migration)
 
 **Rationale:** Per spec §9.3 — `AuditEvents` table append-only via SQL trigger + domain event. The trigger blocks UPDATE and DELETE on `audit_events` at the database level, so even a misconfigured app or a DBA running raw SQL can't tamper.
@@ -871,6 +896,7 @@ dotnet ef migrations add AuditEventsAppendOnlyTrigger \
   --context CceDbContext 2>&1 | tail -3
 cd ../../..
 ```
+
 Expected: creates `<timestamp>_AuditEventsAppendOnlyTrigger.cs` (and `.Designer.cs`).
 
 - [ ] **Step 2: Open the new migration `*_AuditEventsAppendOnlyTrigger.cs` and replace the empty `Up`/`Down` with raw SQL:**
@@ -906,6 +932,7 @@ dotnet ef database update \
   --context CceDbContext 2>&1 | tail -5
 cd ../../..
 ```
+
 Expected: `Done.`
 
 - [ ] **Step 4: Add a test proving UPDATE and DELETE are blocked**
@@ -962,6 +989,7 @@ Note: tests leave audit_events rows behind — by design (append-only). Sub-proj
 ```bash
 dotnet test backend/tests/CCE.Infrastructure.Tests --nologo -c Debug 2>&1 | tail -10
 ```
+
 Expected: 4 passed (2 prior + 2 trigger blockers).
 
 - [ ] **Step 6: Commit**
@@ -976,6 +1004,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-06): add SQL trigger blocking 
 ## Task 6.9: Redis smoke test through `IConnectionMultiplexer`
 
 **Files:**
+
 - Create: `backend/tests/CCE.Infrastructure.Tests/Redis/RedisConnectionTests.cs`
 
 **Rationale:** Quick proof that the multiplexer registered in DI can SET/GET a key against the running Redis container. Foundation needs this to confirm the wiring; Phase 08 adds rate limiting and session storage on top.
@@ -1026,6 +1055,7 @@ public class RedisConnectionTests
 ```bash
 dotnet test backend/tests/CCE.Infrastructure.Tests --nologo -c Debug 2>&1 | tail -10
 ```
+
 Expected: 6 passed (4 prior + 2 Redis).
 
 - [ ] **Step 3: Final solution-wide test run**
@@ -1033,6 +1063,7 @@ Expected: 6 passed (4 prior + 2 Redis).
 ```bash
 dotnet test backend/CCE.sln --nologo --no-build 2>&1 | tail -10
 ```
+
 Expected: total 20 passed (10 Domain + 6 Infrastructure + 0 Application + 0 IntegrationTests + 4 just added).
 
 Wait — let me recount: Domain.Tests has 14 (10 prior + 4 AuditEventTests), Infrastructure.Tests has 6 (2 round-trip + 2 trigger + 2 Redis), Application.Tests + IntegrationTests still empty. Total = 20.

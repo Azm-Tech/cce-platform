@@ -21,6 +21,7 @@
 ## Task 16.1: Main CI workflow — backend + frontend + contracts
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 **Rationale:** Single workflow runs three parallel jobs on every PR + push to main. Each job is fail-fast for its own scope; cross-job dependencies are minimal because the OpenAPI contract bridge is already established.
@@ -110,7 +111,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # Nx affected commands need git history
+          fetch-depth: 0 # Nx affected commands need git history
       - uses: actions/setup-node@v4
         with:
           node-version: 20.18.1
@@ -155,6 +156,7 @@ jobs:
 ```bash
 yamllint -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, truthy: {check-keys: false}}}" .github/workflows/ci.yml
 ```
+
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -169,6 +171,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): main CI workflow (backend +
 ## Task 16.2: CodeQL static analysis
 
 **Files:**
+
 - Create: `.github/workflows/codeql.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -182,7 +185,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "23 4 * * 1"   # weekly Monday 04:23 UTC
+    - cron: "23 4 * * 1" # weekly Monday 04:23 UTC
   workflow_dispatch:
 
 permissions:
@@ -238,6 +241,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): CodeQL static analysis (C# 
 ## Task 16.3: OWASP ZAP nightly scan
 
 **Files:**
+
 - Create: `.github/workflows/zap-nightly.yml`
 
 **Rationale:** Brings the docker-compose stack up, runs ZAP baseline scan against the External API + web-portal, fails on high-severity findings.
@@ -249,12 +253,12 @@ name: ZAP Nightly
 
 on:
   schedule:
-    - cron: "0 2 * * *"   # nightly 02:00 UTC
+    - cron: "0 2 * * *" # nightly 02:00 UTC
   workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write   # to file findings as issues (optional)
+  issues: write # to file findings as issues (optional)
 
 jobs:
   zap:
@@ -324,6 +328,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): nightly OWASP ZAP baseline 
 ## Task 16.4: k6 load test workflow (manual dispatch)
 
 **Files:**
+
 - Create: `.github/workflows/loadtest.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -410,6 +415,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): k6 load test workflow (manu
 ## Task 16.5: Dependency Review on PRs
 
 **Files:**
+
 - Create: `.github/workflows/dep-review.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -449,6 +455,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): GitHub dependency-review-ac
 ## Task 16.6: Dependabot config
 
 **Files:**
+
 - Create: `.github/dependabot.yml`
 
 - [ ] **Step 1: Write `.github/dependabot.yml`**
@@ -519,6 +526,7 @@ git -c commit.gpgsign=false commit -m "ci(phase-16): Dependabot config (NuGet + 
 ## Task 16.7: PR template + final lint sweep
 
 **Files:**
+
 - Create: `.github/pull_request_template.md`
 
 - [ ] **Step 1: Write the template**
@@ -559,6 +567,7 @@ for f in .github/workflows/*.yml; do
 done
 yamllint -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, truthy: {check-keys: false}}}" .github/dependabot.yml
 ```
+
 Expected: no errors anywhere.
 
 - [ ] **Step 3: Commit**

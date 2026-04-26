@@ -23,25 +23,30 @@ Cross-cutting tooling (Husky, Gitleaks, Prettier, root scripts) lives at the rep
 ## Consequences
 
 ### Positive
+
 - A single PR can update the OpenAPI contract, the backend implementation, and the frontend client lib together — atomic.
 - Each ecosystem keeps native conventions: `dotnet`, `pnpm`, native test runners, native lint stacks.
 - One CI pipeline, one issue tracker, one branch model.
 
 ### Negative
+
 - The root has two big subtrees with independent dependency graphs; tooling must avoid leaking concerns (no Nx targets that shell out to `dotnet`).
 - A `git clone` is larger than a per-ecosystem checkout.
 
 ### Neutral / follow-ups
+
 - Future split is feasible if a sub-project genuinely needs it (e.g., mobile sub-project 9 may live in its own repo).
 - Cross-workspace contract drift is detected by `scripts/check-contracts-clean.sh` ([ADR-0009](0009-openapi-as-contract-source.md)).
 
 ## Alternatives considered
 
 ### Option A: Nx-monorepo-everything (Nx swallows .NET too)
+
 - Use Nx targets to drive the .NET build.
 - Rejected: Nx's .NET plugin is second-class; you fight Nx on idiomatic .NET workflows; .NET engineers lose familiar tooling.
 
 ### Option B: Four separate repos (backend, frontend, contracts, infra)
+
 - Each with its own publish/version cycle.
 - Rejected: heavy NuGet/npm publish overhead, no atomic cross-cutting PRs, contract drift hard to detect.
 

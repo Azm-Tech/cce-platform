@@ -26,7 +26,7 @@ If any check fails, stop and report.
 
 Three reasons it pays off:
 
-1. **Single source of truth.** Permissions live in YAML, owned by domain experts/business analysts. Devs touch C# only when they need a *new* check — not when permission *names* change.
+1. **Single source of truth.** Permissions live in YAML, owned by domain experts/business analysts. Devs touch C# only when they need a _new_ check — not when permission _names_ change.
 2. **No drift between layers.** The same generated `Permissions.System_Health_Read` constant flows to backend policies, OpenAPI extensions, and (in Phase 13) the Angular `api-client` lib's TS enum.
 3. **Compile-time safety.** Typos like `Permissions.Health.System.Read` (wrong order) become compile errors, not runtime 403s.
 
@@ -37,6 +37,7 @@ Foundation deliberately keeps the generator simple — it's ~80 lines, parses a 
 ## Task 4.1: Create `backend/permissions.yaml` with the seed permission
 
 **Files:**
+
 - Create: `backend/permissions.yaml`
 
 **Rationale:** A flat YAML list is the smallest schema that supports adding more permissions without churning the parser. Nested groups/categories are deliberately not modeled — sub-project 2 adds them once we know the real shape.
@@ -64,12 +65,14 @@ permissions:
 - [ ] **Step 2: Verify YAML parses**
 
 Run:
+
 ```bash
 python3 -c "import yaml; print(yaml.safe_load(open('backend/permissions.yaml')))" 2>/dev/null \
   || (command -v yq >/dev/null && yq '.permissions' backend/permissions.yaml) \
   || (echo "yaml.safe_load (Python) and yq both unavailable — falling back to grep check"; \
       grep -E '^\s*-\s+[A-Z][A-Za-z0-9]*(\.[A-Z][A-Za-z0-9]*)+$' backend/permissions.yaml)
 ```
+
 Expected: prints a Python list/dict, a yq array, or one matching grep line for `- System.Health.Read`.
 
 - [ ] **Step 3: Commit**
@@ -84,11 +87,13 @@ git -c commit.gpgsign=false commit -m "feat(phase-04): add backend/permissions.y
 ## Task 4.2: Create `CCE.Domain.SourceGenerators` project (netstandard2.0)
 
 **Files:**
+
 - Create: `backend/src/CCE.Domain.SourceGenerators/CCE.Domain.SourceGenerators.csproj`
 
 **Rationale:** Roslyn source generators **must** target `netstandard2.0` — the compiler runs them in the C# language service, which still hosts an old runtime. This project overrides the `<TargetFramework>net8.0</TargetFramework>` set by `Directory.Build.props`. The generator project never references `CCE.Domain` (that would be circular).
 
 **Important:** This project disables a few Directory.Build.props defaults that don't apply to source generators:
+
 - Code analysis full-set (replaced with focused Roslyn analyzer rules).
 - XML doc generation (generators aren't documented APIs).
 - The output assembly itself isn't shipped with the consuming project — it's loaded by the compiler as an analyzer.
@@ -152,6 +157,7 @@ dotnet sln backend/CCE.sln add backend/src/CCE.Domain.SourceGenerators/CCE.Domai
 ```bash
 dotnet build backend/src/CCE.Domain.SourceGenerators/CCE.Domain.SourceGenerators.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: `Build succeeded.` with 0 errors. (The empty project compiles to a tiny analyzer assembly with no [Generator]-attributed types yet — that's fine.)
 
 If the restore stalls (Microsoft.CodeAnalysis.CSharp 4.11.0 is a large package), wait up to 5 minutes; previous phases hit similar stalls and they resolved on retry.
@@ -168,6 +174,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-04): add CCE.Domain.SourceGene
 ## Task 4.3: Implement `PermissionsGenerator` (IIncrementalGenerator)
 
 **Files:**
+
 - Create: `backend/src/CCE.Domain.SourceGenerators/PermissionsGenerator.cs`
 
 **Rationale:** `IIncrementalGenerator` is the modern Roslyn API (introduced 2022) — it caches intermediate results and only re-runs the necessary stages when inputs change, making rebuilds fast. The generator:
@@ -341,6 +348,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
 ```bash
 dotnet build backend/src/CCE.Domain.SourceGenerators/CCE.Domain.SourceGenerators.csproj --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: `Build succeeded. 0 Error(s)`. Any analyzer hit not in the project's NoWarn list (RS2008, RS1036) → STOP and report.
 
 - [ ] **Step 3: Commit**
@@ -355,9 +363,11 @@ git -c commit.gpgsign=false commit -m "feat(phase-04): implement PermissionsGene
 ## Task 4.4: Wire generator into `CCE.Domain` and add YAML as `AdditionalFiles`
 
 **Files:**
+
 - Modify: `backend/src/CCE.Domain/CCE.Domain.csproj`
 
 **Rationale:** Connecting the generator to its consumer is two MSBuild items in `CCE.Domain.csproj`:
+
 - `<ProjectReference>` with `OutputItemType="Analyzer"` and `ReferenceOutputAssembly="false"` — tells MSBuild "this project is an analyzer, load it into the compiler, but don't reference its output assembly at runtime."
 - `<AdditionalFiles Include="..\..\permissions.yaml" />` — exposes the YAML to the generator's `AdditionalTextsProvider`.
 
@@ -366,6 +376,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-04): implement PermissionsGene
 ```bash
 cat backend/src/CCE.Domain/CCE.Domain.csproj
 ```
+
 Expected: a minimal csproj from Phase 03 Task 3.4 with just `<IsPackable>false</IsPackable>`.
 
 - [ ] **Step 2: Overwrite `backend/src/CCE.Domain/CCE.Domain.csproj`**
@@ -397,6 +408,7 @@ Expected: a minimal csproj from Phase 03 Task 3.4 with just `<IsPackable>false</
 ```bash
 dotnet build backend/src/CCE.Domain/CCE.Domain.csproj --nologo -c Debug 2>&1 | tail -10
 ```
+
 Expected: `Build succeeded. 0 Error(s)`.
 
 After the build, the generator emits the source into a virtual file (not on disk by default). To make it inspectable, set `EmitCompilerGeneratedFiles=true` for one verification build. **Don't commit this property** — it's just for verification.
@@ -409,13 +421,16 @@ dotnet build backend/src/CCE.Domain/CCE.Domain.csproj --nologo -c Debug \
 # Look for the generated file
 find backend/src/CCE.Domain/Generated -name "Permissions.g.cs" 2>/dev/null | head -1
 ```
+
 Expected: prints a path like `backend/src/CCE.Domain/Generated/CCE.Domain.SourceGenerators/CCE.Domain.SourceGenerators.PermissionsGenerator/Permissions.g.cs`.
 
 Inspect:
+
 ```bash
 GENPATH=$(find backend/src/CCE.Domain/Generated -name "Permissions.g.cs" 2>/dev/null | head -1)
 [ -n "$GENPATH" ] && cat "$GENPATH" | head -25
 ```
+
 Expected: prints the auto-generated header + a `public static class Permissions { public const string System_Health_Read = "System.Health.Read"; ... }` block.
 
 - [ ] **Step 4: Clean up the inspection artifacts (don't commit Generated/)**
@@ -431,6 +446,7 @@ The root `.gitignore` already excludes `bin/` and `obj/` so the in-memory genera
 ```bash
 dotnet build backend/CCE.sln --nologo -c Debug 2>&1 | tail -8
 ```
+
 Expected: `Build succeeded. 0 Error(s)`.
 
 - [ ] **Step 6: Commit**
@@ -445,6 +461,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-04): wire PermissionsGenerator
 ## Task 4.5: Add green tests proving the generated `Permissions` class is usable
 
 **Files:**
+
 - Create: `backend/tests/CCE.Domain.Tests/PermissionsTests.cs`
 
 **Rationale:** Two `[Fact]` tests prove (a) the generator ran, (b) the constant value matches the YAML literal, and (c) the `All` collection is populated. This is the **only** verification that catches generator regressions — without these tests, a broken generator would silently produce an empty `Permissions` class and any consumer code would break instead.
@@ -487,10 +504,13 @@ Since the generator already wired in Task 4.4, the tests pass on first compile (
 ```bash
 dotnet test backend/tests/CCE.Domain.Tests/CCE.Domain.Tests.csproj --nologo -c Debug 2>&1 | tail -10
 ```
+
 Expected:
+
 ```
 Passed!  - Failed: 0, Passed: 5, Skipped: 0
 ```
+
 (5 = 2 from `EntityTests` + 3 from `PermissionsTests`.)
 
 - [ ] **Step 3: Verify whole solution test count**
@@ -498,6 +518,7 @@ Passed!  - Failed: 0, Passed: 5, Skipped: 0
 ```bash
 dotnet test backend/CCE.sln --nologo --no-build 2>&1 | tail -10
 ```
+
 Expected: 5 passed, 0 failed.
 
 - [ ] **Step 4: Commit**

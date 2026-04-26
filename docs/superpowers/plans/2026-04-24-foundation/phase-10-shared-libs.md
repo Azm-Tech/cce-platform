@@ -23,19 +23,20 @@ If any fail, stop and report.
 
 ## Library overview
 
-| Lib | Purpose | Foundation seed |
-|---|---|---|
-| `ui-kit` | Angular Material + DGA tokens + Bootstrap grid wrappers + shared components | `app-shell` shell component |
-| `i18n` | ngx-translate config, ar/en translations, `LocaleService` with RTL toggle | `LocaleService` + ar.json + en.json |
-| `auth` | OIDC config, guards, interceptors | placeholder — fills in Phase 12 |
-| `api-client` | Auto-generated TS clients from OpenAPI | placeholder — generates in Phase 13 |
-| `contracts` | Hand-written TS types not in OpenAPI (env config, feature flags) | empty `.gitkeep` |
+| Lib          | Purpose                                                                     | Foundation seed                     |
+| ------------ | --------------------------------------------------------------------------- | ----------------------------------- |
+| `ui-kit`     | Angular Material + DGA tokens + Bootstrap grid wrappers + shared components | `app-shell` shell component         |
+| `i18n`       | ngx-translate config, ar/en translations, `LocaleService` with RTL toggle   | `LocaleService` + ar.json + en.json |
+| `auth`       | OIDC config, guards, interceptors                                           | placeholder — fills in Phase 12     |
+| `api-client` | Auto-generated TS clients from OpenAPI                                      | placeholder — generates in Phase 13 |
+| `contracts`  | Hand-written TS types not in OpenAPI (env config, feature flags)            | empty `.gitkeep`                    |
 
 ---
 
 ## Task 10.1: Generate `ui-kit` library
 
 **Files:**
+
 - Auto-generated: `frontend/libs/ui-kit/`
 
 - [ ] **Step 1: Generate the lib**
@@ -55,6 +56,7 @@ pnpm nx generate @nx/angular:library ui-kit \
   --no-interactive 2>&1 | tail -10
 cd ..
 ```
+
 Expected: prints CREATE messages, generates ~10 files.
 
 - [ ] **Step 2: Verify the lib builds**
@@ -64,6 +66,7 @@ cd frontend
 pnpm nx build ui-kit 2>&1 | tail -5
 cd ..
 ```
+
 Expected: `Successfully ran target build for project ui-kit`.
 
 - [ ] **Step 3: Commit**
@@ -78,6 +81,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate ui-kit shared li
 ## Task 10.2: Add DGA color/typography tokens to `ui-kit`
 
 **Files:**
+
 - Create: `frontend/libs/ui-kit/src/lib/styles/_tokens.scss`
 - Create: `frontend/libs/ui-kit/src/lib/styles/_dga-theme.scss`
 - Modify: `frontend/libs/ui-kit/src/index.ts` (export the styles path)
@@ -91,18 +95,18 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate ui-kit shared li
 // Foundation seeds; refine with the official DGA palette/typography spec when available.
 
 // Color palette
-$cce-primary-50:  #e8f4f1;
+$cce-primary-50: #e8f4f1;
 $cce-primary-100: #c5e4dc;
 $cce-primary-300: #6cb5a0;
-$cce-primary-500: #006c4f;   // primary brand — DGA-aligned forest green
+$cce-primary-500: #006c4f; // primary brand — DGA-aligned forest green
 $cce-primary-700: #00513b;
 $cce-primary-900: #00301f;
 
-$cce-accent-500:  #c8a045;   // muted gold accent
+$cce-accent-500: #c8a045; // muted gold accent
 
-$cce-warn-500:    #b71c1c;   // error / warn
+$cce-warn-500: #b71c1c; // error / warn
 
-$cce-neutral-50:  #fafafa;
+$cce-neutral-50: #fafafa;
 $cce-neutral-100: #f5f5f5;
 $cce-neutral-300: #d4d4d4;
 $cce-neutral-500: #757575;
@@ -131,7 +135,7 @@ $cce-radius-lg: 16px;
 // Elevation (DGA conservative shadow scale)
 $cce-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
 $cce-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-$cce-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.10);
+$cce-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1);
 ```
 
 - [ ] **Step 2: Write `_dga-theme.scss`**
@@ -141,27 +145,43 @@ $cce-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.10);
 @use "./tokens" as t;
 
 // Build a Material 18 (M2 API) light theme using DGA tokens.
-$cce-primary-palette: mat.m2-define-palette((
-  50:  t.$cce-primary-50,
-  100: t.$cce-primary-100,
-  300: t.$cce-primary-300,
-  500: t.$cce-primary-500,
-  700: t.$cce-primary-700,
-  900: t.$cce-primary-900,
-  contrast: (
-    50: rgba(black, 0.87),  100: rgba(black, 0.87),  300: white,
-    500: white,             700: white,              900: white,
+$cce-primary-palette: mat.m2-define-palette(
+  (
+    50: t.$cce-primary-50,
+    100: t.$cce-primary-100,
+    300: t.$cce-primary-300,
+    500: t.$cce-primary-500,
+    700: t.$cce-primary-700,
+    900: t.$cce-primary-900,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      300: white,
+      500: white,
+      700: white,
+      900: white,
+    ),
   )
-));
+);
 
-$cce-accent-palette: mat.m2-define-palette((
-  50:  #fff7e6,  100: #ffe6b3,  300: #ffcc66,
-  500: t.$cce-accent-500,  700: #a37c20,  900: #6b4f0e,
-  contrast: (
-    50: rgba(black, 0.87),  100: rgba(black, 0.87),  300: rgba(black, 0.87),
-    500: rgba(black, 0.87), 700: white,              900: white,
+$cce-accent-palette: mat.m2-define-palette(
+  (
+    50: #fff7e6,
+    100: #ffe6b3,
+    300: #ffcc66,
+    500: t.$cce-accent-500,
+    700: #a37c20,
+    900: #6b4f0e,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      300: rgba(black, 0.87),
+      500: rgba(black, 0.87),
+      700: white,
+      900: white,
+    ),
   )
-));
+);
 
 $cce-warn-palette: mat.m2-define-palette(mat.$m2-red-palette);
 
@@ -169,25 +189,29 @@ $cce-typography: mat.m2-define-typography-config(
   $font-family: t.$cce-font-family-ar,
 );
 
-$cce-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $cce-primary-palette,
-    accent: $cce-accent-palette,
-    warn: $cce-warn-palette,
-  ),
-  typography: $cce-typography,
-  density: 0,
-));
+$cce-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $cce-primary-palette,
+      accent: $cce-accent-palette,
+      warn: $cce-warn-palette,
+    ),
+    typography: $cce-typography,
+    density: 0,
+  )
+);
 
 @mixin cce-theme {
   @include mat.core();
   @include mat.all-component-themes($cce-theme);
 
   // RTL fonts when dir=rtl
-  [dir="rtl"] body, body[dir="rtl"] {
+  [dir="rtl"] body,
+  body[dir="rtl"] {
     font-family: t.$cce-font-family-ar;
   }
-  [dir="ltr"] body, body[dir="ltr"] {
+  [dir="ltr"] body,
+  body[dir="ltr"] {
     font-family: t.$cce-font-family-en;
   }
 }
@@ -210,6 +234,7 @@ cd frontend
 pnpm nx build ui-kit 2>&1 | tail -5
 cd ..
 ```
+
 Expected: success.
 
 - [ ] **Step 5: Commit**
@@ -224,6 +249,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add DGA color/typography/
 ## Task 10.3: Generate `i18n` library + seed translations
 
 **Files:**
+
 - Auto-generated: `frontend/libs/i18n/`
 - Create: `frontend/libs/i18n/src/lib/i18n/ar.json`
 - Create: `frontend/libs/i18n/src/lib/i18n/en.json`
@@ -332,6 +358,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate i18n library + a
 ## Task 10.4: Add `LocaleService` to `i18n` lib (RTL toggle, persistence)
 
 **Files:**
+
 - Create: `frontend/libs/i18n/src/lib/locale.service.ts`
 - Create: `frontend/libs/i18n/src/lib/locale.service.spec.ts`
 - Modify: `frontend/libs/i18n/src/index.ts` (export LocaleService)
@@ -343,54 +370,54 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate i18n library + a
 `frontend/libs/i18n/src/lib/locale.service.spec.ts`:
 
 ```typescript
-import { TestBed } from '@angular/core/testing';
-import { LocaleService, SUPPORTED_LOCALES, type SupportedLocale } from './locale.service';
+import { TestBed } from "@angular/core/testing";
+import { LocaleService, SUPPORTED_LOCALES, type SupportedLocale } from "./locale.service";
 
-describe('LocaleService', () => {
+describe("LocaleService", () => {
   let service: LocaleService;
 
   beforeEach(() => {
     localStorage.clear();
-    document.documentElement.removeAttribute('dir');
-    document.documentElement.removeAttribute('lang');
+    document.documentElement.removeAttribute("dir");
+    document.documentElement.removeAttribute("lang");
     TestBed.configureTestingModule({ providers: [LocaleService] });
     service = TestBed.inject(LocaleService);
   });
 
-  it('defaults to ar when no preference stored', () => {
-    expect(service.locale()).toBe('ar');
+  it("defaults to ar when no preference stored", () => {
+    expect(service.locale()).toBe("ar");
   });
 
-  it('sets dir=rtl on html when locale is ar', () => {
-    service.setLocale('ar');
-    expect(document.documentElement.getAttribute('dir')).toBe('rtl');
-    expect(document.documentElement.getAttribute('lang')).toBe('ar');
+  it("sets dir=rtl on html when locale is ar", () => {
+    service.setLocale("ar");
+    expect(document.documentElement.getAttribute("dir")).toBe("rtl");
+    expect(document.documentElement.getAttribute("lang")).toBe("ar");
   });
 
-  it('sets dir=ltr on html when locale is en', () => {
-    service.setLocale('en');
-    expect(document.documentElement.getAttribute('dir')).toBe('ltr');
-    expect(document.documentElement.getAttribute('lang')).toBe('en');
+  it("sets dir=ltr on html when locale is en", () => {
+    service.setLocale("en");
+    expect(document.documentElement.getAttribute("dir")).toBe("ltr");
+    expect(document.documentElement.getAttribute("lang")).toBe("en");
   });
 
-  it('persists locale to localStorage', () => {
-    service.setLocale('en');
-    expect(localStorage.getItem('cce.locale')).toBe('en');
+  it("persists locale to localStorage", () => {
+    service.setLocale("en");
+    expect(localStorage.getItem("cce.locale")).toBe("en");
   });
 
-  it('reads persisted locale on instantiation', () => {
-    localStorage.setItem('cce.locale', 'en');
+  it("reads persisted locale on instantiation", () => {
+    localStorage.setItem("cce.locale", "en");
     const fresh = TestBed.runInInjectionContext(() => new LocaleService());
-    expect(fresh.locale()).toBe('en');
+    expect(fresh.locale()).toBe("en");
   });
 
-  it('rejects unsupported locales (falls back to ar)', () => {
-    service.setLocale('fr' as SupportedLocale);
-    expect(service.locale()).toBe('ar');
+  it("rejects unsupported locales (falls back to ar)", () => {
+    service.setLocale("fr" as SupportedLocale);
+    expect(service.locale()).toBe("ar");
   });
 
-  it('exposes the supported locale list', () => {
-    expect(SUPPORTED_LOCALES).toEqual(['ar', 'en']);
+  it("exposes the supported locale list", () => {
+    expect(SUPPORTED_LOCALES).toEqual(["ar", "en"]);
   });
 });
 ```
@@ -402,25 +429,26 @@ cd frontend
 pnpm nx test i18n --watch=false 2>&1 | tail -8
 cd ..
 ```
+
 Expected: build error referring to missing `LocaleService`.
 
 - [ ] **Step 3: Write `frontend/libs/i18n/src/lib/locale.service.ts`**
 
 ```typescript
-import { Injectable, signal, type Signal } from '@angular/core';
+import { Injectable, signal, type Signal } from "@angular/core";
 
-export const SUPPORTED_LOCALES = ['ar', 'en'] as const;
+export const SUPPORTED_LOCALES = ["ar", "en"] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
-const STORAGE_KEY = 'cce.locale';
-const DEFAULT_LOCALE: SupportedLocale = 'ar';
+const STORAGE_KEY = "cce.locale";
+const DEFAULT_LOCALE: SupportedLocale = "ar";
 
 /**
  * Source of truth for the user's locale. Writes `dir="rtl"|"ltr"` and `lang` to
  * `<html>` so CSS `[dir="rtl"]` selectors and screen readers see the right value.
  * Persists to localStorage so the choice survives reload.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class LocaleService {
   private readonly _locale = signal<SupportedLocale>(this.readPersisted());
 
@@ -455,12 +483,12 @@ export class LocaleService {
   }
 
   private applyToDom(locale: SupportedLocale): void {
-    if (typeof document === 'undefined') {
+    if (typeof document === "undefined") {
       return;
     }
     const html = document.documentElement;
-    html.setAttribute('lang', locale);
-    html.setAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
+    html.setAttribute("lang", locale);
+    html.setAttribute("dir", locale === "ar" ? "rtl" : "ltr");
   }
 }
 ```
@@ -468,7 +496,7 @@ export class LocaleService {
 - [ ] **Step 4: Update `frontend/libs/i18n/src/index.ts`**
 
 ```typescript
-export * from './lib/locale.service';
+export * from "./lib/locale.service";
 ```
 
 - [ ] **Step 5: Run tests + commit**
@@ -478,6 +506,7 @@ cd frontend
 pnpm nx test i18n --watch=false 2>&1 | tail -8
 cd ..
 ```
+
 Expected: 7 passed.
 
 ```bash
@@ -490,6 +519,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add LocaleService with si
 ## Task 10.5: Generate `auth` library
 
 **Files:**
+
 - Auto-generated: `frontend/libs/auth/`
 
 - [ ] **Step 1: Generate**
@@ -522,6 +552,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate auth shared libr
 ## Task 10.6: Add OIDC config builder to `auth` lib
 
 **Files:**
+
 - Create: `frontend/libs/auth/src/lib/cce-oidc.config.ts`
 - Create: `frontend/libs/auth/src/lib/cce-oidc.config.spec.ts`
 - Modify: `frontend/libs/auth/src/index.ts`
@@ -533,35 +564,35 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate auth shared libr
 `frontend/libs/auth/src/lib/cce-oidc.config.spec.ts`:
 
 ```typescript
-import { buildCceOidcConfig, type CceAuthEnv } from './cce-oidc.config';
+import { buildCceOidcConfig, type CceAuthEnv } from "./cce-oidc.config";
 
-describe('buildCceOidcConfig', () => {
+describe("buildCceOidcConfig", () => {
   const env: CceAuthEnv = {
-    authority: 'http://localhost:8080/realms/cce-internal',
-    clientId: 'cce-admin-cms',
-    redirectUri: 'http://localhost:4201/auth/callback',
-    postLogoutRedirectUri: 'http://localhost:4201',
+    authority: "http://localhost:8080/realms/cce-internal",
+    clientId: "cce-admin-cms",
+    redirectUri: "http://localhost:4201/auth/callback",
+    postLogoutRedirectUri: "http://localhost:4201",
   };
 
-  it('produces a config with code-flow + PKCE + 256', () => {
+  it("produces a config with code-flow + PKCE + 256", () => {
     const cfg = buildCceOidcConfig(env);
 
     expect(cfg.authority).toBe(env.authority);
     expect(cfg.clientId).toBe(env.clientId);
-    expect(cfg.responseType).toBe('code');
+    expect(cfg.responseType).toBe("code");
     expect(cfg.usePushedAuthorisationRequests).toBe(false); // PAR not configured in Foundation
-    expect(cfg.scope).toContain('openid');
-    expect(cfg.scope).toContain('profile');
+    expect(cfg.scope).toContain("openid");
+    expect(cfg.scope).toContain("profile");
   });
 
-  it('sets refresh token rotation', () => {
+  it("sets refresh token rotation", () => {
     const cfg = buildCceOidcConfig(env);
 
     expect(cfg.useRefreshToken).toBe(true);
     expect(cfg.silentRenew).toBe(true);
   });
 
-  it('disables auto-login (apps trigger login explicitly)', () => {
+  it("disables auto-login (apps trigger login explicitly)", () => {
     const cfg = buildCceOidcConfig(env);
 
     expect(cfg.triggerAuthorizationResultEvent).toBe(true);
@@ -572,7 +603,7 @@ describe('buildCceOidcConfig', () => {
 - [ ] **Step 2: Write `frontend/libs/auth/src/lib/cce-oidc.config.ts`**
 
 ```typescript
-import type { OpenIdConfiguration } from 'angular-auth-oidc-client';
+import type { OpenIdConfiguration } from "angular-auth-oidc-client";
 
 export interface CceAuthEnv {
   authority: string;
@@ -592,8 +623,8 @@ export function buildCceOidcConfig(env: CceAuthEnv): OpenIdConfiguration {
     redirectUrl: env.redirectUri,
     postLogoutRedirectUri: env.postLogoutRedirectUri,
     clientId: env.clientId,
-    scope: 'openid profile email adfs-compat offline_access',
-    responseType: 'code',
+    scope: "openid profile email adfs-compat offline_access",
+    responseType: "code",
     silentRenew: true,
     useRefreshToken: true,
     renewTimeBeforeTokenExpiresInSeconds: 30,
@@ -607,7 +638,7 @@ export function buildCceOidcConfig(env: CceAuthEnv): OpenIdConfiguration {
 - [ ] **Step 3: Update `frontend/libs/auth/src/index.ts`**
 
 ```typescript
-export * from './lib/cce-oidc.config';
+export * from "./lib/cce-oidc.config";
 ```
 
 - [ ] **Step 4: Run + commit**
@@ -625,6 +656,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add buildCceOidcConfig he
 ## Task 10.7: Generate `api-client`, `contracts` libs (placeholders)
 
 **Files:**
+
 - Auto-generated: `frontend/libs/api-client/`
 - Auto-generated: `frontend/libs/contracts/`
 - Create: `frontend/libs/api-client/src/lib/generated/.gitkeep`
@@ -665,6 +697,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): generate api-client + con
 ## Task 10.8: Add `EnvService` + runtime-loaded env to `contracts`
 
 **Files:**
+
 - Create: `frontend/libs/contracts/src/lib/env.types.ts`
 - Modify: `frontend/libs/contracts/src/index.ts`
 
@@ -698,7 +731,7 @@ export interface CceEnv {
 - [ ] **Step 2: Update `frontend/libs/contracts/src/index.ts`**
 
 ```typescript
-export * from './lib/env.types';
+export * from "./lib/env.types";
 ```
 
 - [ ] **Step 3: Build + commit**
@@ -716,6 +749,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add CceEnv runtime-config
 ## Task 10.9: Add `appShell` standalone component to `ui-kit`
 
 **Files:**
+
 - Create: `frontend/libs/ui-kit/src/lib/app-shell/app-shell.component.ts`
 - Create: `frontend/libs/ui-kit/src/lib/app-shell/app-shell.component.html`
 - Create: `frontend/libs/ui-kit/src/lib/app-shell/app-shell.component.scss`
@@ -727,10 +761,10 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add CceEnv runtime-config
 - [ ] **Step 1: Write the failing component test**
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppShellComponent } from './app-shell.component';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { AppShellComponent } from "./app-shell.component";
 
-describe('AppShellComponent', () => {
+describe("AppShellComponent", () => {
   let component: AppShellComponent;
   let fixture: ComponentFixture<AppShellComponent>;
 
@@ -738,17 +772,17 @@ describe('AppShellComponent', () => {
     await TestBed.configureTestingModule({ imports: [AppShellComponent] }).compileComponents();
     fixture = TestBed.createComponent(AppShellComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('appTitle', 'Test App');
+    fixture.componentRef.setInput("appTitle", "Test App");
     fixture.detectChanges();
   });
 
-  it('renders the appTitle input in the toolbar', () => {
-    const toolbar = fixture.nativeElement.querySelector('mat-toolbar');
-    expect(toolbar?.textContent).toContain('Test App');
+  it("renders the appTitle input in the toolbar", () => {
+    const toolbar = fixture.nativeElement.querySelector("mat-toolbar");
+    expect(toolbar?.textContent).toContain("Test App");
   });
 
-  it('exposes a content projection slot for main content', () => {
-    expect(fixture.nativeElement.querySelector('main')).not.toBeNull();
+  it("exposes a content projection slot for main content", () => {
+    expect(fixture.nativeElement.querySelector("main")).not.toBeNull();
   });
 });
 ```
@@ -756,21 +790,21 @@ describe('AppShellComponent', () => {
 - [ ] **Step 2: Write the component .ts**
 
 ```typescript
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
 
 /**
  * Shared chrome — Material toolbar with app title slot, content projection for main, footer slot.
  * Both Foundation apps consume this; later phases add more slots as needed.
  */
 @Component({
-  selector: 'cce-app-shell',
+  selector: "cce-app-shell",
   standalone: true,
   imports: [MatToolbarModule, MatButtonModule, MatIconModule],
-  templateUrl: './app-shell.component.html',
-  styleUrl: './app-shell.component.scss',
+  templateUrl: "./app-shell.component.html",
+  styleUrl: "./app-shell.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {
@@ -825,7 +859,7 @@ export class AppShellComponent {
 - [ ] **Step 5: Update `frontend/libs/ui-kit/src/index.ts`**
 
 ```typescript
-export * from './lib/app-shell/app-shell.component';
+export * from "./lib/app-shell/app-shell.component";
 ```
 
 - [ ] **Step 6: Run + commit**
@@ -843,6 +877,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-10): add cce-app-shell standal
 ## Task 10.10: Verify path mappings exist for all 5 libs in `tsconfig.base.json`
 
 **Files:**
+
 - Verify (Nx auto-managed): `frontend/tsconfig.base.json`
 
 **Rationale:** Nx adds path mappings like `@cce-frontend/ui-kit → libs/ui-kit/src/index.ts` automatically when you generate libs. Verify all 5 are present.
@@ -854,6 +889,7 @@ cd frontend
 node -e "const c = require('./tsconfig.base.json'); console.log(JSON.stringify(c.compilerOptions.paths, null, 2));"
 cd ..
 ```
+
 Expected: prints an object with 5 entries — one per lib. Names follow Nx workspace name convention (e.g., `@cce-frontend/ui-kit`, depending on the bootstrap workspace name from Phase 09).
 
 - [ ] **Step 2: Quick import smoke test from web-portal**
@@ -872,6 +908,7 @@ cd frontend
 pnpm tsc --noEmit -p tsconfig.base.json 2>&1 | head -10
 cd ..
 ```
+
 Expected: no errors related to module resolution for our libs.
 
 - [ ] **Step 3: (No commit — verification only)**
@@ -891,6 +928,7 @@ pnpm nx run-many -t lint --projects=ui-kit,i18n,auth,api-client,contracts 2>&1 |
 pnpm nx run-many -t test --projects=ui-kit,i18n,auth,api-client,contracts --watch=false 2>&1 | tail -15
 cd ..
 ```
+
 Expected: all build, lint clean, total 12 tests pass (3 oidc-config + 7 LocaleService + 2 AppShell + 0 contracts/api-client).
 
 - [ ] **Step 2: Append a libs section to `frontend/README.md`**
@@ -898,16 +936,15 @@ Expected: all build, lint clean, total 12 tests pass (3 oidc-config + 7 LocaleSe
 Append after the existing content:
 
 ```markdown
-
 ## Shared libraries (libs/)
 
-| Lib | Purpose |
-|---|---|
-| `ui-kit` | Material theme + DGA tokens + Bootstrap grid + shared components (`app-shell`) |
-| `i18n` | ngx-translate + `LocaleService` (signal-based, RTL/LTR, persisted) |
-| `auth` | OIDC config builder for angular-auth-oidc-client (Keycloak realms) |
-| `api-client` | OpenAPI-generated TS clients (filled in Phase 13) |
-| `contracts` | Hand-written types — `CceEnv` for runtime config |
+| Lib          | Purpose                                                                        |
+| ------------ | ------------------------------------------------------------------------------ |
+| `ui-kit`     | Material theme + DGA tokens + Bootstrap grid + shared components (`app-shell`) |
+| `i18n`       | ngx-translate + `LocaleService` (signal-based, RTL/LTR, persisted)             |
+| `auth`       | OIDC config builder for angular-auth-oidc-client (Keycloak realms)             |
+| `api-client` | OpenAPI-generated TS clients (filled in Phase 13)                              |
+| `contracts`  | Hand-written types — `CceEnv` for runtime config                               |
 
 Apps import via path mappings — e.g., `import { LocaleService } from '@cce-frontend/i18n';` (replace `@cce-frontend` with whatever Nx named your workspace at bootstrap).
 ```

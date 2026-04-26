@@ -22,13 +22,14 @@
 ## Task 19.1: Run all functional + quality gates and capture results
 
 **Files:**
+
 - Create: `docs/foundation-completion.md`
 
 **Rationale:** A single document records what was actually verified, with timestamps and command outputs. This is the auditable proof Foundation is done.
 
 - [ ] **Step 1: Run each gate and capture output**
 
-```bash
+````bash
 # Capture machine + tool versions for the report header
 {
   echo "## Tooling versions"
@@ -74,7 +75,7 @@ sleep 6
   echo "/swagger/v1/swagger.json: $(curl -s -o /dev/null -w '%{http_code}' http://localhost:5001/swagger/v1/swagger.json)"
 } > /tmp/dod-endpoints.log
 kill $EXT_PID 2>/dev/null; wait $EXT_PID 2>/dev/null
-```
+````
 
 - [ ] **Step 2: Write `docs/foundation-completion.md`**
 
@@ -93,35 +94,36 @@ kill $EXT_PID 2>/dev/null; wait $EXT_PID 2>/dev/null
 
 Spec §11 has 23 items. Each is checked here against actual evidence.
 
-| # | DoD item | Status | Evidence |
-|---|---|---|---|
-| 1 | `docker compose up` brings every service to healthy within 90s | ✅ | `docker compose ps` shows 5 healthy services |
-| 2 | web-portal renders ar default + en toggle + RTL | ✅ | Phase 11 + 14 (web-portal-e2e smoke specs) |
-| 3 | admin-cms redirects to Keycloak, login + claims | ✅ | Phase 12 + 14 (admin-cms-e2e smoke + manual login) |
-| 4 | External API `/health` + `/health/ready` | ✅ | curl from this run: 200/200 |
-| 5 | Internal API `/health/authenticated` | ✅ | Phase 08 Task 8.11 + integration tests |
-| 6 | Swagger + OpenAPI export + TS client regen | ✅ | Phase 13: contracts/openapi.{external,internal}.json + libs/api-client/src/lib/generated/ |
-| 7 | `dotnet test` green with coverage gates | ✅ | (paste backend test count from /tmp/dod-backend-test.log) |
-| 8 | `nx test` green with coverage gates | ✅ | (paste frontend test count from /tmp/dod-frontend-test.log) |
-| 9 | `nx lint` zero warnings, a11y rules enforced | ✅ | /tmp/dod-frontend-lint.log |
-| 10 | Playwright + axe-core green | ✅ | Phase 14 (15 E2E tests passing across 3 browsers) |
-| 11 | k6 `/health` thresholds | ✅ | Phase 15: p95=11.1ms (target <100ms), 0% errors |
-| 12 | k6 `/health/authenticated` thresholds | ✅ | Phase 15: p95=1.39ms (target <200ms), 0% errors |
-| 13 | Security scans wired (CodeQL, Semgrep, SonarCloud, Trivy, Gitleaks, Dependency-Check, Dependency Review, ZAP, SBOM) | ✅ | Phase 16 + 17 — 11 workflows under .github/workflows/ |
-| 14 | `docs/threat-model.md` v1 | ✅ | Phase 18 |
-| 15 | `.env.example` present, `.env.local` gitignored | ✅ | Phase 00 |
-| 16 | 18 ADRs committed (15 from spec + 3 divergence ADRs) | ✅ | docs/adr/0001-...0018-*.md |
-| 17 | `roadmap.md` + 9 sub-project briefs | ✅ | docs/roadmap.md + docs/subprojects/01-...09-*.md |
-| 18 | `requirements-trace.csv` seeded | ✅ | docs/requirements-trace.csv (203 rows) |
-| 19 | `README.md` getting-started | ✅ | Phase 18 (full version replacing Phase 00 stub) |
-| 20 | `CONTRIBUTING.md` | ✅ | Phase 18 |
-| 21 | `docs/a11y-checklist.md` | ✅ | Phase 18 |
-| 22 | Tag `foundation-v0.1.0` | ⏳ | created in Task 19.4 |
-| 23 | CI fully green at tag | ⏳ | activates when remote is pushed (Foundation has no remote yet — local-only repo) |
+| #   | DoD item                                                                                                            | Status | Evidence                                                                                  |
+| --- | ------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| 1   | `docker compose up` brings every service to healthy within 90s                                                      | ✅     | `docker compose ps` shows 5 healthy services                                              |
+| 2   | web-portal renders ar default + en toggle + RTL                                                                     | ✅     | Phase 11 + 14 (web-portal-e2e smoke specs)                                                |
+| 3   | admin-cms redirects to Keycloak, login + claims                                                                     | ✅     | Phase 12 + 14 (admin-cms-e2e smoke + manual login)                                        |
+| 4   | External API `/health` + `/health/ready`                                                                            | ✅     | curl from this run: 200/200                                                               |
+| 5   | Internal API `/health/authenticated`                                                                                | ✅     | Phase 08 Task 8.11 + integration tests                                                    |
+| 6   | Swagger + OpenAPI export + TS client regen                                                                          | ✅     | Phase 13: contracts/openapi.{external,internal}.json + libs/api-client/src/lib/generated/ |
+| 7   | `dotnet test` green with coverage gates                                                                             | ✅     | (paste backend test count from /tmp/dod-backend-test.log)                                 |
+| 8   | `nx test` green with coverage gates                                                                                 | ✅     | (paste frontend test count from /tmp/dod-frontend-test.log)                               |
+| 9   | `nx lint` zero warnings, a11y rules enforced                                                                        | ✅     | /tmp/dod-frontend-lint.log                                                                |
+| 10  | Playwright + axe-core green                                                                                         | ✅     | Phase 14 (15 E2E tests passing across 3 browsers)                                         |
+| 11  | k6 `/health` thresholds                                                                                             | ✅     | Phase 15: p95=11.1ms (target <100ms), 0% errors                                           |
+| 12  | k6 `/health/authenticated` thresholds                                                                               | ✅     | Phase 15: p95=1.39ms (target <200ms), 0% errors                                           |
+| 13  | Security scans wired (CodeQL, Semgrep, SonarCloud, Trivy, Gitleaks, Dependency-Check, Dependency Review, ZAP, SBOM) | ✅     | Phase 16 + 17 — 11 workflows under .github/workflows/                                     |
+| 14  | `docs/threat-model.md` v1                                                                                           | ✅     | Phase 18                                                                                  |
+| 15  | `.env.example` present, `.env.local` gitignored                                                                     | ✅     | Phase 00                                                                                  |
+| 16  | 18 ADRs committed (15 from spec + 3 divergence ADRs)                                                                | ✅     | docs/adr/0001-...0018-\*.md                                                               |
+| 17  | `roadmap.md` + 9 sub-project briefs                                                                                 | ✅     | docs/roadmap.md + docs/subprojects/01-...09-\*.md                                         |
+| 18  | `requirements-trace.csv` seeded                                                                                     | ✅     | docs/requirements-trace.csv (203 rows)                                                    |
+| 19  | `README.md` getting-started                                                                                         | ✅     | Phase 18 (full version replacing Phase 00 stub)                                           |
+| 20  | `CONTRIBUTING.md`                                                                                                   | ✅     | Phase 18                                                                                  |
+| 21  | `docs/a11y-checklist.md`                                                                                            | ✅     | Phase 18                                                                                  |
+| 22  | Tag `foundation-v0.1.0`                                                                                             | ⏳     | created in Task 19.4                                                                      |
+| 23  | CI fully green at tag                                                                                               | ⏳     | activates when remote is pushed (Foundation has no remote yet — local-only repo)          |
 
 ## Cross-phase patches captured
 
 During execution, Foundation hit ~30 plan patches. Each is a real-world tooling quirk caught and documented in commit history. Notable categories:
+
 - arm64 image substitutions (3): SQL → Azure SQL Edge, ClamAV → clamav-debian, …
 - IPv4/IPv6 healthcheck behavior in containers
 - Tool-version ratchets: gitleaks v8 subcommand, KEYCLOAK_ADMIN env vars, Roslyn version pin, CA1031/CA1308/CA1724/CA5404/CA1861 NoWarn list growth
@@ -152,6 +154,7 @@ During execution, Foundation hit ~30 plan patches. Each is a real-world tooling 
 ## Sub-project 2 (Data & Domain) entry points
 
 When picking up sub-project 2:
+
 - Read `docs/subprojects/02-data-domain.md` brief.
 - Open `permissions.yaml` and start adding the BRD §4.1.31 permission matrix.
 - New entities go under `backend/src/CCE.Domain/<aggregate>/`.
@@ -189,6 +192,7 @@ cd frontend
 pnpm prettier --check ../docs/ ../README.md ../CONTRIBUTING.md ../security/README.md 2>&1 | tail -5
 cd ..
 ```
+
 Expected: "All matched files use Prettier code style!"
 
 - [ ] **Step 3: Commit (only if there are changes)**
@@ -207,6 +211,7 @@ fi
 ## Task 19.3: Generate `CHANGELOG.md` from commit history
 
 **Files:**
+
 - Create: `CHANGELOG.md`
 
 - [ ] **Step 1: Generate the changelog**

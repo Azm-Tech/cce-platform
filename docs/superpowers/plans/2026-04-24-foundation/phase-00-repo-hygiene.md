@@ -13,6 +13,7 @@
 ## Task 0.1: Add `.editorconfig`
 
 **Files:**
+
 - Create: `.editorconfig`
 
 - [ ] **Step 1: Write `.editorconfig`**
@@ -77,6 +78,7 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): add .editorconfig with L
 ## Task 0.2: Add `.gitattributes`
 
 **Files:**
+
 - Create: `.gitattributes`
 
 - [ ] **Step 1: Write `.gitattributes`**
@@ -159,6 +161,7 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): add .gitattributes with 
 ## Task 0.3: Add `.gitignore`
 
 **Files:**
+
 - Create: `.gitignore`
 
 - [ ] **Step 1: Write `.gitignore`**
@@ -299,6 +302,7 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): add .gitignore covering 
 ## Task 0.4: Add `.env.example` and `.env.local.example`
 
 **Files:**
+
 - Create: `.env.example`
 - Create: `.env.local.example`
 
@@ -418,9 +422,11 @@ SENTRY_DSN=
 - [ ] **Step 3: Verify neither file contains secret-looking patterns that would trip Gitleaks**
 
 Run:
+
 ```bash
 grep -E '(password|secret|key)\s*=\s*[^[:space:]].{4,}' .env.example .env.local.example || echo "OK — no inline secret values found"
 ```
+
 Expected: prints `OK — no inline secret values found` (values in `.env.local.example` are explicitly placeholder strings like `dev-internal-secret-change-me` that Gitleaks won't treat as real; confirmed in Task 0.5).
 
 - [ ] **Step 4: Commit**
@@ -435,6 +441,7 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): add .env.example and .en
 ## Task 0.5: Install Gitleaks pre-commit hook
 
 **Files:**
+
 - Create: `security/gitleaks.toml`
 - Create: `.husky/pre-commit`
 - Create: `.husky/_/.gitignore`
@@ -445,10 +452,12 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): add .env.example and .en
 - [ ] **Step 1: Ensure Gitleaks is installed locally**
 
 Run:
+
 ```bash
 which gitleaks || brew install gitleaks
 gitleaks version
 ```
+
 Expected: prints a version like `v8.x.x` or higher.
 
 - [ ] **Step 2: Write `security/gitleaks.toml`**
@@ -514,10 +523,12 @@ keywords = ["client_secret", "api_key", "token"]
 - [ ] **Step 4: Install Husky**
 
 Run:
+
 ```bash
 # Use npm at repo root (pnpm workspace lives under frontend/)
 npm install
 ```
+
 Expected: `husky` installed under `node_modules/`, `.husky/` directory exists.
 
 Note: add `node_modules/` to `.gitignore` already covered in Task 0.3.
@@ -540,6 +551,7 @@ gitleaks git --staged \
 ```
 
 Make it executable:
+
 ```bash
 chmod +x .husky/pre-commit
 ```
@@ -549,6 +561,7 @@ chmod +x .husky/pre-commit
 AWS's published example keys (`AKIAIOSFODNN7EXAMPLE`) are deliberately allowlisted by Gitleaks' default rules. Use a plausible GitHub PAT shape instead — it fires both the default `github-pat` rule and our `cce-generic-client-secret` rule.
 
 Run:
+
 ```bash
 printf 'GITHUB_TOKEN="ghp_abcdefghijklmnopqrstuvwxyzABCDEF0123"\n' > ./fake-secret.txt
 git add fake-secret.txt
@@ -564,6 +577,7 @@ fi
 git reset HEAD fake-secret.txt
 rm fake-secret.txt
 ```
+
 Expected: final line prints `HOOK BLOCKED COMMIT — EXPECTED`. Gitleaks report shows the leak detected (value redacted in output).
 
 - [ ] **Step 7: Commit the hook setup**
@@ -578,13 +592,14 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): install Gitleaks pre-com
 ## Task 0.6: Add placeholder root `README.md`
 
 **Files:**
+
 - Create: `README.md`
 
 **Rationale:** Root README exists from Task 0.1 onward so GitHub shows a project landing page. Full getting-started content is written in Phase 18 after every tool is wired; this task writes only a stub.
 
 - [ ] **Step 1: Write `README.md` stub**
 
-````markdown
+```markdown
 # CCE — Circular Carbon Economy Knowledge Center (Phase 2)
 
 **Client:** Saudi Ministry of Energy — Sustainability & Climate Change Agency
@@ -610,7 +625,7 @@ A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Eco
 ## License
 
 TBD — to be added in Phase 18 per ministry procurement guidance.
-````
+```
 
 - [ ] **Step 2: Verify renders**
 

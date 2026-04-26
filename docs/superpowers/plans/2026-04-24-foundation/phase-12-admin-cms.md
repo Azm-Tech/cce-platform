@@ -25,6 +25,7 @@ If any fail, stop and report.
 ## Task 12.1: Apply DGA theme + Bootstrap grid + env.json to admin-cms
 
 **Files:**
+
 - Modify: `frontend/apps/admin-cms/src/styles.scss`
 - Create: `frontend/apps/admin-cms/src/_bootstrap-grid.scss`
 - Create: `frontend/apps/admin-cms/src/assets/env.json`
@@ -43,7 +44,8 @@ If any fail, stop and report.
 
 @import "./bootstrap-grid";
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -102,6 +104,7 @@ ls dist/apps/admin-cms/assets/i18n/ 2>/dev/null
 ls dist/apps/admin-cms/assets/ 2>/dev/null | head
 cd ..
 ```
+
 Expected: build green; `assets/i18n/ar.json`, `assets/i18n/en.json`, `assets/env.json` all present in dist.
 
 - [ ] **Step 6: Commit**
@@ -116,6 +119,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-12): apply DGA theme + Bootstr
 ## Task 12.2: Add `EnvService` to admin-cms
 
 **Files:**
+
 - Create: `frontend/apps/admin-cms/src/app/core/env.service.ts`
 - Create: `frontend/apps/admin-cms/src/app/core/env.service.spec.ts`
 
@@ -151,6 +155,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-12): add EnvService to admin-c
 ## Task 12.3: Wire OIDC + ngx-translate in admin-cms `app.config.ts`
 
 **Files:**
+
 - Modify: `frontend/apps/admin-cms/src/app/app.config.ts`
 - Create: `frontend/apps/admin-cms/src/app/core/translate-loader.factory.ts`
 
@@ -165,18 +170,18 @@ cp frontend/apps/web-portal/src/app/core/translate-loader.factory.ts frontend/ap
 - [ ] **Step 2: Replace `frontend/apps/admin-cms/src/app/app.config.ts`**
 
 ```typescript
-import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { provideAuth } from 'angular-auth-oidc-client';
-import { firstValueFrom } from 'rxjs';
-import { LocaleService } from '@frontend/i18n';
-import { buildCceOidcConfig } from '@frontend/auth';
-import { appRoutes } from './app.routes';
-import { EnvService } from './core/env.service';
-import { ngxTranslateHttpLoaderFactory } from './core/translate-loader.factory';
+import { provideHttpClient, withInterceptorsFromDi, HttpClient } from "@angular/common/http";
+import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from "@angular/core";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { provideRouter } from "@angular/router";
+import { TranslateLoader, TranslateModule, TranslateService } from "@ngx-translate/core";
+import { provideAuth } from "angular-auth-oidc-client";
+import { firstValueFrom } from "rxjs";
+import { LocaleService } from "@frontend/i18n";
+import { buildCceOidcConfig } from "@frontend/auth";
+import { appRoutes } from "./app.routes";
+import { EnvService } from "./core/env.service";
+import { ngxTranslateHttpLoaderFactory } from "./core/translate-loader.factory";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -184,22 +189,22 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync(),
-    ...TranslateModule.forRoot({
+    ...(TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: ngxTranslateHttpLoaderFactory,
         deps: [HttpClient],
       },
-      defaultLanguage: 'ar',
-    }).providers ?? [],
+      defaultLanguage: "ar",
+    }).providers ?? []),
     // OIDC config is built dynamically AFTER env.json loads, so provideAuth uses a placeholder
     // here and we re-configure it inside provideAppInitializer once env is available.
     provideAuth({
       config: buildCceOidcConfig({
-        authority: 'http://localhost:8080/realms/cce-internal',
-        clientId: 'cce-admin-cms',
-        redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : 'http://localhost:4201/auth/callback',
-        postLogoutRedirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4201',
+        authority: "http://localhost:8080/realms/cce-internal",
+        clientId: "cce-admin-cms",
+        redirectUri: typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "http://localhost:4201/auth/callback",
+        postLogoutRedirectUri: typeof window !== "undefined" ? window.location.origin : "http://localhost:4201",
       }),
     }),
     provideAppInitializer(async () => {
@@ -207,7 +212,7 @@ export const appConfig: ApplicationConfig = {
       await env.load();
       const translate = inject(TranslateService);
       const locale = inject(LocaleService);
-      translate.setDefaultLang('ar');
+      translate.setDefaultLang("ar");
       await firstValueFrom(translate.use(locale.locale()));
     }),
   ],
@@ -223,6 +228,7 @@ cd frontend
 pnpm nx build admin-cms 2>&1 | tail -8
 cd ..
 ```
+
 Expected: build succeeds.
 
 - [ ] **Step 4: Commit**
@@ -237,6 +243,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-12): wire ngx-translate + OIDC
 ## Task 12.4: Login/logout buttons + `cce-app-shell` in `AppComponent`
 
 **Files:**
+
 - Modify: `frontend/apps/admin-cms/src/app/app.component.ts`
 - Modify: `frontend/apps/admin-cms/src/app/app.component.html`
 - Modify: `frontend/apps/admin-cms/src/app/app.component.spec.ts`
@@ -257,16 +264,16 @@ cp -r frontend/apps/web-portal/src/app/locale-switcher frontend/apps/admin-cms/s
 `frontend/apps/admin-cms/src/app/auth-toolbar/auth-toolbar.component.spec.ts`:
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { of } from 'rxjs';
-import { AuthToolbarComponent } from './auth-toolbar.component';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { TranslateModule } from "@ngx-translate/core";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import { of } from "rxjs";
+import { AuthToolbarComponent } from "./auth-toolbar.component";
 
-describe('AuthToolbarComponent', () => {
+describe("AuthToolbarComponent", () => {
   let fixture: ComponentFixture<AuthToolbarComponent>;
   let component: AuthToolbarComponent;
-  let oidc: jest.Mocked<Pick<OidcSecurityService, 'authorize' | 'logoff'>>;
+  let oidc: jest.Mocked<Pick<OidcSecurityService, "authorize" | "logoff">>;
 
   beforeEach(async () => {
     oidc = { authorize: jest.fn(), logoff: jest.fn().mockReturnValue(of({})) } as any;
@@ -279,12 +286,12 @@ describe('AuthToolbarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('signIn() invokes oidc.authorize()', () => {
+  it("signIn() invokes oidc.authorize()", () => {
     component.signIn();
     expect(oidc.authorize).toHaveBeenCalledTimes(1);
   });
 
-  it('signOut() invokes oidc.logoff()', () => {
+  it("signOut() invokes oidc.logoff()", () => {
     component.signOut();
     expect(oidc.logoff).toHaveBeenCalledTimes(1);
   });
@@ -296,29 +303,26 @@ describe('AuthToolbarComponent', () => {
 `frontend/apps/admin-cms/src/app/auth-toolbar/auth-toolbar.component.ts`:
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { TranslateModule } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { MatButtonModule } from "@angular/material/button";
+import { TranslateModule } from "@ngx-translate/core";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { map } from "rxjs";
 
 @Component({
-  selector: 'cce-auth-toolbar',
+  selector: "cce-auth-toolbar",
   standalone: true,
   imports: [CommonModule, MatButtonModule, TranslateModule],
-  templateUrl: './auth-toolbar.component.html',
+  templateUrl: "./auth-toolbar.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthToolbarComponent {
   private readonly oidc = inject(OidcSecurityService);
 
   // isAuthenticated$ is provided by angular-auth-oidc-client; map to a plain bool signal.
-  readonly isAuthenticated = toSignal(
-    this.oidc.isAuthenticated$.pipe(map((v) => v.isAuthenticated)),
-    { initialValue: false },
-  );
+  readonly isAuthenticated = toSignal(this.oidc.isAuthenticated$.pipe(map((v) => v.isAuthenticated)), { initialValue: false });
 
   signIn(): void {
     this.oidc.authorize();
@@ -334,36 +338,32 @@ export class AuthToolbarComponent {
 
 ```html
 @if (isAuthenticated()) {
-  <button type="button" mat-button shellHeaderEnd (click)="signOut()">
-    {{ "common.actions.signOut" | translate }}
-  </button>
+<button type="button" mat-button shellHeaderEnd (click)="signOut()">{{ "common.actions.signOut" | translate }}</button>
 } @else {
-  <button type="button" mat-raised-button color="accent" shellHeaderEnd (click)="signIn()">
-    {{ "common.actions.signIn" | translate }}
-  </button>
+<button type="button" mat-raised-button color="accent" shellHeaderEnd (click)="signIn()">{{ "common.actions.signIn" | translate }}</button>
 }
 ```
 
 - [ ] **Step 4: Replace `frontend/apps/admin-cms/src/app/app.component.ts`**
 
 ```typescript
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AppShellComponent } from '@frontend/ui-kit';
-import { LocaleSwitcherComponent } from './locale-switcher/locale-switcher.component';
-import { AuthToolbarComponent } from './auth-toolbar/auth-toolbar.component';
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { AppShellComponent } from "@frontend/ui-kit";
+import { LocaleSwitcherComponent } from "./locale-switcher/locale-switcher.component";
+import { AuthToolbarComponent } from "./auth-toolbar/auth-toolbar.component";
 
 @Component({
-  selector: 'cce-root',
+  selector: "cce-root",
   standalone: true,
   imports: [RouterOutlet, AppShellComponent, LocaleSwitcherComponent, AuthToolbarComponent, TranslateModule],
-  templateUrl: './app.component.html',
+  templateUrl: "./app.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   private readonly translate = inject(TranslateService);
-  readonly title = this.translate.instant('common.appName') || 'CCE Admin';
+  readonly title = this.translate.instant("common.appName") || "CCE Admin";
 }
 ```
 
@@ -381,16 +381,16 @@ export class AppComponent {
 - [ ] **Step 5: Update `app.component.spec.ts`**
 
 ```typescript
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { of } from 'rxjs';
-import { AppComponent } from './app.component';
+import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { TestBed } from "@angular/core/testing";
+import { provideRouter } from "@angular/router";
+import { TranslateModule } from "@ngx-translate/core";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import { of } from "rxjs";
+import { AppComponent } from "./app.component";
 
-describe('AppComponent', () => {
+describe("AppComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent, TranslateModule.forRoot()],
@@ -410,16 +410,16 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('renders the cce-app-shell', () => {
+  it("renders the cce-app-shell", () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('cce-app-shell')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector("cce-app-shell")).toBeTruthy();
   });
 
-  it('renders the cce-auth-toolbar', () => {
+  it("renders the cce-auth-toolbar", () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('cce-auth-toolbar')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector("cce-auth-toolbar")).toBeTruthy();
   });
 });
 ```
@@ -442,6 +442,7 @@ git -c commit.gpgsign=false commit -m "feat(phase-12): replace admin-cms shell w
 ## Task 12.5: Add `/profile` page showing claims after login
 
 **Files:**
+
 - Create: `frontend/apps/admin-cms/src/app/profile/profile.page.ts`
 - Create: `frontend/apps/admin-cms/src/app/profile/profile.page.html`
 - Create: `frontend/apps/admin-cms/src/app/profile/profile.page.spec.ts`
@@ -452,13 +453,13 @@ git -c commit.gpgsign=false commit -m "feat(phase-12): replace admin-cms shell w
 - [ ] **Step 1: Write the failing test**
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { of } from 'rxjs';
-import { ProfilePage } from './profile.page';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { TranslateModule } from "@ngx-translate/core";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import { of } from "rxjs";
+import { ProfilePage } from "./profile.page";
 
-describe('ProfilePage', () => {
+describe("ProfilePage", () => {
   let fixture: ComponentFixture<ProfilePage>;
 
   beforeEach(async () => {
@@ -470,10 +471,10 @@ describe('ProfilePage', () => {
           useValue: {
             userData$: of({
               userData: {
-                preferred_username: 'admin@cce.local',
-                email: 'admin@cce.local',
-                upn: 'admin@cce.local',
-                groups: ['SuperAdmin'],
+                preferred_username: "admin@cce.local",
+                email: "admin@cce.local",
+                upn: "admin@cce.local",
+                groups: ["SuperAdmin"],
               },
             }),
           },
@@ -484,12 +485,12 @@ describe('ProfilePage', () => {
     fixture.detectChanges();
   });
 
-  it('renders preferred_username from userData', () => {
-    expect(fixture.nativeElement.textContent).toContain('admin@cce.local');
+  it("renders preferred_username from userData", () => {
+    expect(fixture.nativeElement.textContent).toContain("admin@cce.local");
   });
 
-  it('renders SuperAdmin group', () => {
-    expect(fixture.nativeElement.textContent).toContain('SuperAdmin');
+  it("renders SuperAdmin group", () => {
+    expect(fixture.nativeElement.textContent).toContain("SuperAdmin");
   });
 });
 ```
@@ -497,32 +498,29 @@ describe('ProfilePage', () => {
 - [ ] **Step 2: Write the page**
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { MatCardModule } from "@angular/material/card";
+import { TranslateModule } from "@ngx-translate/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import { map } from "rxjs";
 
 @Component({
-  selector: 'cce-profile-page',
+  selector: "cce-profile-page",
   standalone: true,
   imports: [CommonModule, MatCardModule, TranslateModule],
-  templateUrl: './profile.page.html',
+  templateUrl: "./profile.page.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilePage {
   private readonly oidc = inject(OidcSecurityService);
 
-  readonly userData = toSignal(
-    this.oidc.userData$.pipe(map((u) => u?.userData ?? null)),
-    { initialValue: null },
-  );
+  readonly userData = toSignal(this.oidc.userData$.pipe(map((u) => u?.userData ?? null)), { initialValue: null });
 
-  readonly preferredUsername = computed(() => this.userData()?.preferred_username ?? '');
-  readonly email = computed(() => this.userData()?.email ?? '');
-  readonly upn = computed(() => this.userData()?.upn ?? '');
+  readonly preferredUsername = computed(() => this.userData()?.preferred_username ?? "");
+  readonly email = computed(() => this.userData()?.email ?? "");
+  readonly upn = computed(() => this.userData()?.upn ?? "");
   readonly groups = computed<string[]>(() => {
     const g = this.userData()?.groups;
     return Array.isArray(g) ? g : [];
@@ -537,14 +535,17 @@ export class ProfilePage {
   </mat-card-header>
   <mat-card-content>
     <dl>
-      <dt>preferred_username</dt><dd>{{ preferredUsername() }}</dd>
-      <dt>email</dt><dd>{{ email() }}</dd>
-      <dt>upn</dt><dd>{{ upn() }}</dd>
+      <dt>preferred_username</dt>
+      <dd>{{ preferredUsername() }}</dd>
+      <dt>email</dt>
+      <dd>{{ email() }}</dd>
+      <dt>upn</dt>
+      <dd>{{ upn() }}</dd>
       <dt>groups</dt>
       <dd>
         <ul>
           @for (g of groups(); track g) {
-            <li>{{ g }}</li>
+          <li>{{ g }}</li>
           }
         </ul>
       </dd>
@@ -556,13 +557,13 @@ export class ProfilePage {
 - [ ] **Step 3: Update `frontend/apps/admin-cms/src/app/app.routes.ts`**
 
 ```typescript
-import { Route } from '@angular/router';
-import { autoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
-import { ProfilePage } from './profile/profile.page';
+import { Route } from "@angular/router";
+import { autoLoginPartialRoutesGuard } from "angular-auth-oidc-client";
+import { ProfilePage } from "./profile/profile.page";
 
 export const appRoutes: Route[] = [
-  { path: '', pathMatch: 'full', redirectTo: 'profile' },
-  { path: 'profile', component: ProfilePage, canActivate: [autoLoginPartialRoutesGuard], title: 'CCE — Profile' },
+  { path: "", pathMatch: "full", redirectTo: "profile" },
+  { path: "profile", component: ProfilePage, canActivate: [autoLoginPartialRoutesGuard], title: "CCE — Profile" },
 ];
 ```
 
@@ -590,6 +591,7 @@ cd frontend
 pnpm nx lint admin-cms 2>&1 | tail -10
 cd ..
 ```
+
 Expected: 0 warnings/errors. The new templates use `mat-button`, `dl/dt/dd`, and `<ul>` which conform to the `@angular-eslint/template/*` a11y rules wired in Phase 09.
 
 If anything fires (e.g., `interactive-supports-focus`), fix the offending template (it's our scaffold) before continuing.
@@ -629,6 +631,7 @@ echo "env.json:"    ; curl -s -o /dev/null -w "%{http_code}\n" http://localhost:
 echo "ar.json:"     ; curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4201/assets/i18n/ar.json
 echo "en.json:"     ; curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4201/assets/i18n/en.json
 ```
+
 Expected: each prints `200`.
 
 - [ ] **Step 3: Confirm the realm's authorization endpoint returns the Keycloak login HTML when the redirect URL matches a registered client redirect URI**
@@ -637,6 +640,7 @@ Expected: each prints `200`.
 curl -s -o /dev/null -w "%{http_code}\n" \
   "http://localhost:8080/realms/cce-internal/protocol/openid-connect/auth?client_id=cce-admin-cms&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A4201%2Fauth%2Fcallback&scope=openid+profile&state=test"
 ```
+
 Expected: `200` (Keycloak renders its login form). If it's `400` or shows "invalid_redirect_uri", the realm config from Phase 02 has a problem — STOP and report.
 
 - [ ] **Step 4: Stop the dev server**
@@ -649,6 +653,7 @@ wait $DEV_PID 2>/dev/null
 - [ ] **Step 5: Smoke summary**
 
 If all checks pass, manual login round-trip works in a real browser:
+
 1. Open `http://localhost:4201/` in a browser.
 2. App redirects to Keycloak login.
 3. Enter `admin@cce.local` / `Admin123!@`.
