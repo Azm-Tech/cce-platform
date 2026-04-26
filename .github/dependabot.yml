@@ -1,0 +1,51 @@
+version: 2
+
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      microsoft-ext:
+        patterns:
+          - "Microsoft.Extensions.*"
+          - "Microsoft.AspNetCore.*"
+      ef-core:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "EFCore.*"
+      observability:
+        patterns:
+          - "Serilog*"
+          - "Sentry*"
+          - "prometheus-net*"
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@nx/*"
+      hey-api:
+        patterns:
+          - "@hey-api/*"
+      ngx-translate:
+        patterns:
+          - "@ngx-translate/*"
+      playwright:
+        patterns:
+          - "@playwright/*"
+          - "playwright"
+          - "@axe-core/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
