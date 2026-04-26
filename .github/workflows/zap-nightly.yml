@@ -1,0 +1,50 @@
+name: ZAP Nightly
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # nightly 02:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write   # to file findings as issues (optional)
+
+jobs:
+  zap:
+    name: ZAP baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Start backend API
+        env:
+          Infrastructure__SqlConnectionString: "Server=localhost,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=true;"
+          Infrastructure__RedisConnectionString: "localhost:6379"
+          Keycloak__Authority: "http://localhost:8080/realms/cce-external"
+          Keycloak__Audience: "cce-web-portal"
+          Keycloak__RequireHttpsMetadata: "false"
+        run: |
+          dotnet run --project backend/src/CCE.Api.External --urls http://localhost:5001 > /tmp/api.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5001/health | grep -q 200 && break
+            sleep 2
+          done
+      - name: ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          target: http://localhost:5001
+          fail_action: false
+          rules_file_name: security/zap-rules.tsv
+          allow_issue_writing: false
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline-report
+          path: |
+            report_html.html
+            report_md.md
+            report_json.json
