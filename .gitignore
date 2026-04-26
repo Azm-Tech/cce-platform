@@ -106,8 +106,9 @@ zap-report.*
 dependency-check-report.*
 
 ######################
-# Generated OpenAPI clients (regenerated; exception per path below)
+# Generated OpenAPI clients
 ######################
-frontend/libs/api-client/src/lib/generated/
-# But keep generated folder in repo if committed intentionally post-CI
-!frontend/libs/api-client/src/lib/generated/.gitkeep
+# Foundation policy reversed in Phase 13: generated TS clients ARE committed
+# so the drift check (scripts/check-contracts-clean.sh) can compare against
+# the committed snapshot. Only ignore openapi-ts CLI error logs.
+frontend/libs/api-client/openapi-ts-error-*.log
