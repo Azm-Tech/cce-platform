@@ -41,9 +41,9 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAppInitializer(async () => {
       const env = inject(EnvService);
-      await env.load();
       const translate = inject(TranslateService);
       const locale = inject(LocaleService);
+      await env.load();
       translate.setDefaultLang('ar');
       await firstValueFrom(translate.use(locale.locale()));
     }),
