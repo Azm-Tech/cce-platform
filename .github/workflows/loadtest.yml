@@ -1,0 +1,66 @@
+name: Load test (k6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Which scenario to run"
+        required: true
+        default: "health-anonymous"
+        type: choice
+        options:
+          - health-anonymous
+          - health-authenticated
+
+permissions:
+  contents: read
+
+jobs:
+  loadtest:
+    name: ${{ github.event.inputs.scenario }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.7
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: Strong!Passw0rd
+        ports: [1433:1433]
+      redis:
+        image: redis:7-alpine
+        ports: [6379:6379]
+      keycloak:
+        image: quay.io/keycloak/keycloak:25.0.6
+        env:
+          KEYCLOAK_ADMIN: admin
+          KEYCLOAK_ADMIN_PASSWORD: admin
+          KC_HTTP_ENABLED: "true"
+        ports: [8080:8080]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Start API
+        env:
+          RateLimiter__PermitLimit: "10000000"
+          Infrastructure__SqlConnectionString: "Server=localhost,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=true;"
+          Infrastructure__RedisConnectionString: "localhost:6379"
+          Keycloak__Authority: "http://localhost:8080/realms/cce-external"
+          Keycloak__Audience: "cce-web-portal"
+          Keycloak__RequireHttpsMetadata: "false"
+        run: |
+          dotnet run --project backend/src/CCE.Api.External --urls http://localhost:5001 > /tmp/api.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5001/health | grep -q 200 && break
+            sleep 2
+          done
+      - name: Run k6
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: loadtest/scenarios/${{ github.event.inputs.scenario }}.js
+        env:
+          API_BASE_URL: http://localhost:5001
+          KEYCLOAK_URL: http://localhost:8080
+          OIDC_CLIENT_SECRET: dev-internal-secret-change-me
