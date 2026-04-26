@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <!-- Empty for Foundation. Each suppression must include a CVE id, justification,
+       and a notBefore date so it expires and forces re-review. -->
+</suppressions>
