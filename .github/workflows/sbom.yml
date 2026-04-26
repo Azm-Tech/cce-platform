@@ -1,0 +1,53 @@
+name: SBOM
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-sbom:
+    name: .NET SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Install CycloneDX tool
+        run: dotnet tool install --global CycloneDX --version 4.4.0
+      - name: Generate
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          mkdir -p sbom
+          dotnet-CycloneDX backend/CCE.sln -o sbom/ -j -fn cce-backend.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-sbom
+          path: sbom/cce-backend.cdx.json
+
+  frontend-sbom:
+    name: npm SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.1
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@9.15.4 --activate
+      - name: Install
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Generate SBOM
+        working-directory: frontend
+        run: |
+          npx --yes @cyclonedx/cyclonedx-npm@2.0.0 --output-file ../sbom/cce-frontend.cdx.json --output-format JSON
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-sbom
+          path: sbom/cce-frontend.cdx.json
