@@ -160,3 +160,20 @@ services:
       retries: 10
       start_period: 120s
     restart: unless-stopped
+
+  k6:
+    image: grafana/k6:0.55.0
+    profiles: ["loadtest"]
+    container_name: cce-k6
+    networks:
+      - cce-net
+    volumes:
+      - ./loadtest/scenarios:/scenarios:ro
+    environment:
+      API_BASE_URL: "http://host.docker.internal:5001"
+      KEYCLOAK_URL: "http://host.docker.internal:8080"
+      OIDC_CLIENT_ID: "cce-admin-cms"
+      OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET_INTERNAL:-dev-internal-secret-change-me}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # No `command` — passed at run time via `docker compose --profile loadtest run k6 run /scenarios/...`
