@@ -18,7 +18,7 @@ builder.Services
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
     .AddCceHealthChecks(builder.Configuration)
-    .AddCceRateLimiter()
+    .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE External API");
 
 var app = builder.Build();
