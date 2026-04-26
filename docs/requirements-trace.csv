@@ -1,0 +1,206 @@
+# requirements-trace.csv — BRD section -> sub-project mapping (Phase 18 seed)
+# Simplified columns: title_ar and dod_anchor omitted in this seed; refined per sub-project cycle.
+brd_ref,title_en,subproject_id,subproject_name,status
+§4.1.1,Public landing and informational content,4,External API,pending
+§4.1.1,Public landing and informational content,6,External Web Portal,pending
+§4.1.2,Public content browsing and search,4,External API,pending
+§4.1.2,Public content browsing and search,6,External Web Portal,pending
+§4.1.3,Bilingual content (Arabic / English),4,External API,pending
+§4.1.3,Bilingual content (Arabic / English),6,External Web Portal,pending
+§4.1.4,Knowledge Maps,7,Feature Modules,pending
+§4.1.5,Interactive City,7,Feature Modules,pending
+§4.1.6,Public events and calendar,4,External API,pending
+§4.1.6,Public events and calendar,6,External Web Portal,pending
+§4.1.7,Public registration and profile,4,External API,pending
+§4.1.7,Public registration and profile,6,External Web Portal,pending
+§4.1.8,Public news and announcements,4,External API,pending
+§4.1.8,Public news and announcements,6,External Web Portal,pending
+§4.1.9,Resource library access,4,External API,pending
+§4.1.9,Resource library access,6,External Web Portal,pending
+§4.1.10,Public reports and data downloads,4,External API,pending
+§4.1.10,Public reports and data downloads,6,External Web Portal,pending
+§4.1.11,Smart Assistant,7,Feature Modules,pending
+§4.1.12,Community discussion / posts,7,Feature Modules,pending
+§4.1.13,Community moderation surfaces,7,Feature Modules,pending
+§4.1.14,Public notifications,4,External API,pending
+§4.1.14,Public notifications,6,External Web Portal,pending
+§4.1.15,Public feedback and contact,4,External API,pending
+§4.1.15,Public feedback and contact,6,External Web Portal,pending
+§4.1.16,Public surveys / polls,4,External API,pending
+§4.1.16,Public surveys / polls,6,External Web Portal,pending
+§4.1.17,Public newsletter subscription,4,External API,pending
+§4.1.17,Public newsletter subscription,6,External Web Portal,pending
+§4.1.18,Public service catalogue,4,External API,pending
+§4.1.18,Public service catalogue,6,External Web Portal,pending
+§4.1.19,Admin user management,3,Internal API,pending
+§4.1.19,Admin user management,5,Admin / CMS Portal,pending
+§4.1.20,Admin role and permission management,3,Internal API,pending
+§4.1.20,Admin role and permission management,5,Admin / CMS Portal,pending
+§4.1.21,Admin content management (CMS),3,Internal API,pending
+§4.1.21,Admin content management (CMS),5,Admin / CMS Portal,pending
+§4.1.22,Admin taxonomy management,3,Internal API,pending
+§4.1.22,Admin taxonomy management,5,Admin / CMS Portal,pending
+§4.1.23,Admin media library,3,Internal API,pending
+§4.1.23,Admin media library,5,Admin / CMS Portal,pending
+§4.1.24,Admin translations management,3,Internal API,pending
+§4.1.24,Admin translations management,5,Admin / CMS Portal,pending
+§4.1.25,Admin community moderation,3,Internal API,pending
+§4.1.25,Admin community moderation,5,Admin / CMS Portal,pending
+§4.1.26,Admin events management,3,Internal API,pending
+§4.1.26,Admin events management,5,Admin / CMS Portal,pending
+§4.1.27,Admin notifications and alerts,3,Internal API,pending
+§4.1.27,Admin notifications and alerts,5,Admin / CMS Portal,pending
+§4.1.28,Admin settings and configuration,3,Internal API,pending
+§4.1.28,Admin settings and configuration,5,Admin / CMS Portal,pending
+§4.1.29,Admin audit log query,3,Internal API,pending
+§4.1.29,Admin audit log query,5,Admin / CMS Portal,pending
+§4.1.30,Reporting / analytics platform,3,Internal API,pending
+§4.1.30,Reporting / analytics platform,5,Admin / CMS Portal,pending
+§4.1.31,Data persistence (SQL Server),2,Data & Domain,pending
+§4.1.32,Non-functional requirements (perf / a11y / security / i18n),1,Foundation,in-progress
+§6.2.1,User story 1,4,External API,pending
+§6.2.1,User story 1,6,External Web Portal,pending
+§6.2.2,User story 2,4,External API,pending
+§6.2.2,User story 2,6,External Web Portal,pending
+§6.2.3,User story 3,4,External API,pending
+§6.2.3,User story 3,6,External Web Portal,pending
+§6.2.4,User story 4,4,External API,pending
+§6.2.4,User story 4,6,External Web Portal,pending
+§6.2.5,User story 5,4,External API,pending
+§6.2.5,User story 5,6,External Web Portal,pending
+§6.2.6,User story 6,7,Feature Modules,pending
+§6.2.7,User story 7,7,Feature Modules,pending
+§6.2.8,User story 8,7,Feature Modules,pending
+§6.2.9,User story 9,7,Feature Modules,pending
+§6.2.10,User story 10,4,External API,pending
+§6.2.10,User story 10,6,External Web Portal,pending
+§6.2.11,User story 11,4,External API,pending
+§6.2.11,User story 11,6,External Web Portal,pending
+§6.2.12,User story 12,4,External API,pending
+§6.2.12,User story 12,6,External Web Portal,pending
+§6.2.13,User story 13,4,External API,pending
+§6.2.13,User story 13,6,External Web Portal,pending
+§6.2.14,User story 14,4,External API,pending
+§6.2.14,User story 14,6,External Web Portal,pending
+§6.2.15,User story 15,4,External API,pending
+§6.2.15,User story 15,6,External Web Portal,pending
+§6.2.16,User story 16,4,External API,pending
+§6.2.16,User story 16,6,External Web Portal,pending
+§6.2.17,User story 17,4,External API,pending
+§6.2.17,User story 17,6,External Web Portal,pending
+§6.2.18,User story 18,4,External API,pending
+§6.2.18,User story 18,6,External Web Portal,pending
+§6.2.19,User story 19,7,Feature Modules,pending
+§6.2.20,User story 20,7,Feature Modules,pending
+§6.2.21,User story 21,7,Feature Modules,pending
+§6.2.22,User story 22,7,Feature Modules,pending
+§6.2.23,User story 23,7,Feature Modules,pending
+§6.2.24,User story 24,7,Feature Modules,pending
+§6.2.25,User story 25,7,Feature Modules,pending
+§6.2.26,User story 26,7,Feature Modules,pending
+§6.2.27,User story 27,7,Feature Modules,pending
+§6.2.28,User story 28,7,Feature Modules,pending
+§6.2.29,User story 29,7,Feature Modules,pending
+§6.2.30,User story 30,7,Feature Modules,pending
+§6.2.31,User story 31,7,Feature Modules,pending
+§6.2.32,User story 32,4,External API,pending
+§6.2.32,User story 32,6,External Web Portal,pending
+§6.2.33,User story 33,4,External API,pending
+§6.2.33,User story 33,6,External Web Portal,pending
+§6.2.34,User story 34,4,External API,pending
+§6.2.34,User story 34,6,External Web Portal,pending
+§6.2.35,User story 35,4,External API,pending
+§6.2.35,User story 35,6,External Web Portal,pending
+§6.2.36,User story 36,4,External API,pending
+§6.2.36,User story 36,6,External Web Portal,pending
+§6.2.37,User story 37,3,Internal API,pending
+§6.2.37,User story 37,5,Admin / CMS Portal,pending
+§6.2.38,User story 38,3,Internal API,pending
+§6.2.38,User story 38,5,Admin / CMS Portal,pending
+§6.2.39,User story 39,3,Internal API,pending
+§6.2.39,User story 39,5,Admin / CMS Portal,pending
+§6.2.40,User story 40,3,Internal API,pending
+§6.2.40,User story 40,5,Admin / CMS Portal,pending
+§6.2.41,User story 41,3,Internal API,pending
+§6.2.41,User story 41,5,Admin / CMS Portal,pending
+§6.2.42,User story 42,3,Internal API,pending
+§6.2.42,User story 42,5,Admin / CMS Portal,pending
+§6.2.43,User story 43,3,Internal API,pending
+§6.2.43,User story 43,5,Admin / CMS Portal,pending
+§6.2.44,User story 44,3,Internal API,pending
+§6.2.44,User story 44,5,Admin / CMS Portal,pending
+§6.2.45,User story 45,3,Internal API,pending
+§6.2.45,User story 45,5,Admin / CMS Portal,pending
+§6.2.46,User story 46,3,Internal API,pending
+§6.2.46,User story 46,5,Admin / CMS Portal,pending
+§6.2.47,User story 47,3,Internal API,pending
+§6.2.47,User story 47,5,Admin / CMS Portal,pending
+§6.2.48,User story 48,3,Internal API,pending
+§6.2.48,User story 48,5,Admin / CMS Portal,pending
+§6.2.49,User story 49,3,Internal API,pending
+§6.2.49,User story 49,5,Admin / CMS Portal,pending
+§6.2.50,User story 50,3,Internal API,pending
+§6.2.50,User story 50,5,Admin / CMS Portal,pending
+§6.2.51,User story 51,3,Internal API,pending
+§6.2.51,User story 51,5,Admin / CMS Portal,pending
+§6.2.52,User story 52,3,Internal API,pending
+§6.2.52,User story 52,5,Admin / CMS Portal,pending
+§6.2.53,User story 53,3,Internal API,pending
+§6.2.53,User story 53,5,Admin / CMS Portal,pending
+§6.2.54,User story 54,3,Internal API,pending
+§6.2.54,User story 54,5,Admin / CMS Portal,pending
+§6.2.55,User story 55,3,Internal API,pending
+§6.2.55,User story 55,5,Admin / CMS Portal,pending
+§6.2.56,User story 56,3,Internal API,pending
+§6.2.56,User story 56,5,Admin / CMS Portal,pending
+§6.2.57,User story 57,3,Internal API,pending
+§6.2.57,User story 57,5,Admin / CMS Portal,pending
+§6.2.58,User story 58,3,Internal API,pending
+§6.2.58,User story 58,5,Admin / CMS Portal,pending
+§6.2.59,User story 59,3,Internal API,pending
+§6.2.59,User story 59,5,Admin / CMS Portal,pending
+§6.2.60,User story 60,3,Internal API,pending
+§6.2.60,User story 60,5,Admin / CMS Portal,pending
+§6.2.61,User story 61,3,Internal API,pending
+§6.2.61,User story 61,5,Admin / CMS Portal,pending
+§6.2.62,User story 62,3,Internal API,pending
+§6.2.62,User story 62,5,Admin / CMS Portal,pending
+§6.2.63,User story 63,3,Internal API,pending
+§6.2.63,User story 63,5,Admin / CMS Portal,pending
+§6.3.1,Form 1,6,External Web Portal,pending
+§6.3.2,Form 2,6,External Web Portal,pending
+§6.3.3,Form 3,6,External Web Portal,pending
+§6.3.4,Form 4,6,External Web Portal,pending
+§6.3.5,Form 5,6,External Web Portal,pending
+§6.3.6,Form 6,6,External Web Portal,pending
+§6.3.7,Form 7,6,External Web Portal,pending
+§6.3.8,Form 8,6,External Web Portal,pending
+§6.3.9,Form 9,5,Admin / CMS Portal,pending
+§6.3.10,Form 10,5,Admin / CMS Portal,pending
+§6.3.11,Form 11,5,Admin / CMS Portal,pending
+§6.3.12,Form 12,5,Admin / CMS Portal,pending
+§6.3.13,Form 13,5,Admin / CMS Portal,pending
+§6.3.14,Form 14,5,Admin / CMS Portal,pending
+§6.3.15,Form 15,5,Admin / CMS Portal,pending
+§6.3.16,Form 16,5,Admin / CMS Portal,pending
+§6.4.1,Report 1,3,Internal API,pending
+§6.4.1,Report 1,5,Admin / CMS Portal,pending
+§6.4.2,Report 2,3,Internal API,pending
+§6.4.2,Report 2,5,Admin / CMS Portal,pending
+§6.4.3,Report 3,3,Internal API,pending
+§6.4.3,Report 3,5,Admin / CMS Portal,pending
+§6.4.4,Report 4,3,Internal API,pending
+§6.4.4,Report 4,5,Admin / CMS Portal,pending
+§6.4.5,Report 5,3,Internal API,pending
+§6.4.5,Report 5,5,Admin / CMS Portal,pending
+§6.4.6,Report 6,3,Internal API,pending
+§6.4.6,Report 6,5,Admin / CMS Portal,pending
+§6.4.7,Report 7,3,Internal API,pending
+§6.4.7,Report 7,5,Admin / CMS Portal,pending
+§6.4.8,Report 8,3,Internal API,pending
+§6.4.8,Report 8,5,Admin / CMS Portal,pending
+§6.4.9,Report 9,3,Internal API,pending
+§6.4.9,Report 9,5,Admin / CMS Portal,pending
+§6.5,Integration touchpoints (KAPSARC / ADFS / Email / SMS / SIEM / iCal),8,Integration Gateway,pending
+§7.1,Internal messages,8,Integration Gateway,pending
+§7.2,Alerts,8,Integration Gateway,pending
