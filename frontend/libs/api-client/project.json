@@ -31,6 +31,18 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/lib/generated"],
+      "options": {
+        "commands": [
+          "./node_modules/.bin/openapi-ts -i ../contracts/openapi.external.json -o libs/api-client/src/lib/generated/external -c @hey-api/client-fetch",
+          "./node_modules/.bin/openapi-ts -i ../contracts/openapi.internal.json -o libs/api-client/src/lib/generated/internal -c @hey-api/client-fetch",
+          "for f in libs/api-client/src/lib/generated/external/*.ts libs/api-client/src/lib/generated/internal/*.ts; do head -1 \"$f\" | grep -q '@ts-nocheck' || (printf '// @ts-nocheck\\n'; cat \"$f\") > \"$f.tmp\" && mv \"$f.tmp\" \"$f\"; done"
+        ],
+        "parallel": false
+      }
     }
   }
 }
