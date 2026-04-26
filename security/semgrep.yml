@@ -1,0 +1,45 @@
+rules:
+  - id: cce-no-direct-datetime
+    pattern: DateTimeOffset.UtcNow
+    message: |
+      Use ISystemClock from the DI container instead of DateTimeOffset.UtcNow directly.
+      This makes time-dependent code testable via FakeSystemClock.
+    languages: [csharp]
+    severity: WARNING
+    paths:
+      include:
+        - "backend/src/CCE.Domain/**"
+        - "backend/src/CCE.Application/**"
+      exclude:
+        - "backend/src/CCE.Infrastructure/SystemClock.cs"
+
+  - id: cce-no-string-secrets
+    pattern-either:
+      - pattern: var $X = "$SECRET";
+      - pattern: const string $X = "$SECRET";
+    message: |
+      Possible hardcoded secret. Move to .env.local or appsettings.Development.json (gitignored)
+      or read from configuration.
+    languages: [csharp]
+    severity: WARNING
+    metavariable-pattern:
+      metavariable: $SECRET
+      pattern-regex: "^[A-Za-z0-9]{32,}$"
+
+  - id: cce-no-console-log-in-production
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.debug(...)
+    message: |
+      Production code should use a structured logger or Sentry.captureException.
+      console.* output is lost in deployed Angular apps.
+    languages: [typescript]
+    severity: INFO
+    paths:
+      include:
+        - "frontend/apps/**/src/**"
+        - "frontend/libs/**/src/**"
+      exclude:
+        - "**/*.spec.ts"
+        - "**/test/**"
+        - "**/*.test.ts"
