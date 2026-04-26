@@ -39,64 +39,77 @@ Phase 16 wires the CI workflow; Phase 13 builds the local pipeline.
 
 ---
 
-## Task 13.1: Export `openapi.json` from both backend APIs at build time
+## Task 13.1: Export `openapi.json` from both backend APIs
 
 **Files:**
-- Modify: `backend/src/CCE.Api.External/CCE.Api.External.csproj` (add post-build target)
-- Modify: `backend/src/CCE.Api.Internal/CCE.Api.Internal.csproj` (same)
 - Create: `contracts/.gitkeep` (so the directory exists in git)
-- Create: `scripts/generate-openapi.sh` (manual fallback)
+- Create: `scripts/generate-openapi.sh` (run-and-curl approach)
 
-**Rationale:** The Swashbuckle CLI tool reads the compiled API assembly + entry point + Swagger config and dumps the OpenAPI spec to a file. Hooking it into MSBuild ensures every backend build refreshes the contracts.
+**Rationale (revised from earlier draft):** The original plan called for `Swashbuckle.AspNetCore.Cli` as a local dotnet tool. In practice that install proved flaky on the build host (NuGet metadata timeout against `api.nuget.org`), and the CLI tool itself can fail to load namespaced top-level-statement Programs (Phase 12 wrapped both Programs in `CCE.Api.External` / `CCE.Api.Internal` namespaces). Switching to **run-the-API-on-a-port-and-curl-/swagger** is simpler, faster, and uses the exact same Swashbuckle code path Swagger UI uses at runtime — guaranteed to match what real clients see.
 
-- [ ] **Step 1: Install Swashbuckle.AspNetCore.Cli as a local tool**
-
-```bash
-cd backend
-dotnet new tool-manifest --force 2>&1 | tail -3
-dotnet tool install Swashbuckle.AspNetCore.Cli --version 6.8.1 2>&1 | tail -3
-cd ..
-```
-
-This creates `backend/.config/dotnet-tools.json` pinning the CLI version. Local-tools approach beats global because the version travels with the repo.
-
-- [ ] **Step 2: Create `contracts/.gitkeep` and the script**
+- [ ] **Step 1: Create `contracts/.gitkeep`**
 
 ```bash
 mkdir -p contracts
 touch contracts/.gitkeep
 ```
 
-`scripts/generate-openapi.sh`:
+- [ ] **Step 2: Write `scripts/generate-openapi.sh`**
 
 ```bash
 #!/usr/bin/env bash
-# Manually regenerate OpenAPI specs from the built backend assemblies.
+# Regenerate OpenAPI specs by running each API on a port and curling /swagger/v1/swagger.json.
 # Phase 16 CI runs this and asserts the working tree is clean afterwards.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+EXT_PORT="${EXT_PORT:-15001}"
+INT_PORT="${INT_PORT:-15002}"
+
+cleanup() {
+  if [[ -n "${EXT_PID:-}" ]] && kill -0 "$EXT_PID" 2>/dev/null; then
+    kill "$EXT_PID" 2>/dev/null || true
+    wait "$EXT_PID" 2>/dev/null || true
+  fi
+  if [[ -n "${INT_PID:-}" ]] && kill -0 "$INT_PID" 2>/dev/null; then
+    kill "$INT_PID" 2>/dev/null || true
+    wait "$INT_PID" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
 echo "==> dotnet build backend (Debug)"
 dotnet build backend/CCE.sln --nologo -c Debug >/dev/null
 
-echo "==> exporting openapi.external.json"
-(cd backend && dotnet tool run swagger tofile \
-  --output ../contracts/openapi.external.json \
-  --serializeasv2 false \
-  artifacts/bin/CCE.Api.External/Debug/net8.0/CCE.Api.External.dll \
-  v1)
+echo "==> starting CCE.Api.External on port $EXT_PORT"
+dotnet run --project backend/src/CCE.Api.External --no-build --urls "http://localhost:$EXT_PORT" \
+  > /tmp/cce-api-external-export.log 2>&1 &
+EXT_PID=$!
 
-echo "==> exporting openapi.internal.json"
-(cd backend && dotnet tool run swagger tofile \
-  --output ../contracts/openapi.internal.json \
-  --serializeasv2 false \
-  artifacts/bin/CCE.Api.Internal/Debug/net8.0/CCE.Api.Internal.dll \
-  v1)
+echo "==> starting CCE.Api.Internal on port $INT_PORT"
+dotnet run --project backend/src/CCE.Api.Internal --no-build --urls "http://localhost:$INT_PORT" \
+  > /tmp/cce-api-internal-export.log 2>&1 &
+INT_PID=$!
+
+echo "==> waiting for swagger endpoints to be ready"
+for i in $(seq 1 30); do
+  ext_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$EXT_PORT/swagger/v1/swagger.json" || echo 000)
+  int_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$INT_PORT/swagger/v1/swagger.json" || echo 000)
+  if [[ "$ext_ok" == "200" ]] && [[ "$int_ok" == "200" ]]; then
+    break
+  fi
+  sleep 2
+done
+
+echo "==> exporting contracts/openapi.external.json"
+curl -s "http://localhost:$EXT_PORT/swagger/v1/swagger.json" | jq --sort-keys . > contracts/openapi.external.json
+echo "==> exporting contracts/openapi.internal.json"
+curl -s "http://localhost:$INT_PORT/swagger/v1/swagger.json" | jq --sort-keys . > contracts/openapi.internal.json
 
 echo "==> done"
-ls -l contracts/
+ls -l contracts/openapi.*.json
 ```
 
 ```bash
@@ -108,7 +121,7 @@ chmod +x scripts/generate-openapi.sh
 ```bash
 ./scripts/generate-openapi.sh 2>&1 | tail -10
 ```
-Expected: prints "done" + lists `openapi.external.json` and `openapi.internal.json` with non-zero size.
+Expected: prints "done" + lists both `openapi.*.json` files with non-zero size.
 
 - [ ] **Step 4: Sanity-check the JSON has expected paths**
 
@@ -116,39 +129,16 @@ Expected: prints "done" + lists `openapi.external.json` and `openapi.internal.js
 jq -r '.paths | keys[]' contracts/openapi.external.json
 jq -r '.paths | keys[]' contracts/openapi.internal.json
 ```
-Expected (External): `/`, `/auth/echo`, `/health`, `/health/ready` (paths from Phase 08).
-Expected (Internal): same structure plus `/health/authenticated`.
+Expected (External): `/`, `/auth/echo`, `/health`. (Note: `/health/ready` is registered via `MapHealthChecks` which Swashbuckle's default discovery doesn't pick up — that's fine; it's a runtime probe, not a public API surface.)
+Expected (Internal): `/`, `/auth/echo`, `/health`, `/health/authenticated`.
 
-- [ ] **Step 5: Add MSBuild post-build hook (optional but useful for CI)**
+No MSBuild post-build hook is wired — Phase 16 invokes `scripts/generate-openapi.sh` directly from CI, and devs run it manually before commits that touch the API surface.
 
-Append to `backend/src/CCE.Api.External/CCE.Api.External.csproj` before `</Project>`:
-
-```xml
-  <Target Name="ExportOpenApiSpec" AfterTargets="Build" Condition="'$(SkipOpenApiExport)' != 'true' AND '$(Configuration)' == 'Debug'">
-    <Exec Command="dotnet tool run swagger tofile --output $(MSBuildThisFileDirectory)../../../contracts/openapi.external.json --serializeasv2 false $(MSBuildThisFileDirectory)../../artifacts/bin/CCE.Api.External/Debug/net8.0/CCE.Api.External.dll v1"
-          WorkingDirectory="$(MSBuildThisFileDirectory)../.."
-          ContinueOnError="true" />
-  </Target>
-```
-
-Same block in `CCE.Api.Internal.csproj` with paths swapped (`internal` instead of `external` in two places).
-
-`ContinueOnError="true"` and the `Configuration='Debug'` guard prevent this from breaking release builds (e.g., when packaging in CI without the local tool installed).
-
-- [ ] **Step 6: Verify a backend build refreshes the spec**
+- [ ] **Step 5: Commit**
 
 ```bash
-rm -f contracts/openapi.*.json
-cd backend && dotnet build CCE.sln --nologo -c Debug 2>&1 | tail -5 && cd ..
-ls -l contracts/openapi.*.json
-```
-Expected: both files regenerated.
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add backend/.config backend/src/CCE.Api.External/CCE.Api.External.csproj backend/src/CCE.Api.Internal/CCE.Api.Internal.csproj contracts/ scripts/generate-openapi.sh
-git -c commit.gpgsign=false commit -m "feat(phase-13): export OpenAPI specs to contracts/ via Swashbuckle CLI + MSBuild post-build target"
+git add contracts/ scripts/generate-openapi.sh
+git -c commit.gpgsign=false commit -m "feat(phase-13): export OpenAPI specs to contracts/ via run-and-curl helper script"
 ```
 
 ---

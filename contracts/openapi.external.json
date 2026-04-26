@@ -1,0 +1,54 @@
+{
+  "components": {},
+  "info": {
+    "description": "CCE Knowledge Center API — Foundation",
+    "title": "CCE External API",
+    "version": "v1"
+  },
+  "openapi": "3.0.1",
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CCE.Api.External"
+        ]
+      }
+    },
+    "/auth/echo": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CCE.Api.External"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CCE.Api.External"
+        ]
+      }
+    }
+  }
+}
