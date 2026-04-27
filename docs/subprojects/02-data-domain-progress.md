@@ -36,7 +36,7 @@
 
 ## Cross-phase notes
 
-(none yet)
+- **2026-04-27 — IDD v1.1 review:** Brand stays "CCE Knowledge Center" (do NOT rename to "Taqah" despite IDD's DNS hostnames). Treat IDD's listed "port 433" as a typo for 443 (HTTPS). Prod DNS hostnames `taqah-ext`/`taqah-int`/`api.taqah`/`Api.admin-portal` baked into env config in sub-project 8.
 
 ## Release tag
 
