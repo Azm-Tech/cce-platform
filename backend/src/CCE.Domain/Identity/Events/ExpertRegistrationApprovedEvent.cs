@@ -12,5 +12,5 @@ public sealed record ExpertRegistrationApprovedEvent(
     System.Guid ApprovedById,
     string RequestedBioAr,
     string RequestedBioEn,
-    IReadOnlyList<string> RequestedTags,
+    IList<string> RequestedTags,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

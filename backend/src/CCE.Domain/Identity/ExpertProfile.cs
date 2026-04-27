@@ -16,7 +16,7 @@ public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
         System.Guid userId,
         string bioAr,
         string bioEn,
-        IReadOnlyList<string> tags,
+        IList<string> expertiseTags,
         string academicTitleAr,
         string academicTitleEn,
         System.DateTimeOffset approvedOn,
@@ -25,7 +25,7 @@ public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
         UserId = userId;
         BioAr = bioAr;
         BioEn = bioEn;
-        ExpertiseTags = tags;
+        ExpertiseTags = expertiseTags;
         AcademicTitleAr = academicTitleAr;
         AcademicTitleEn = academicTitleEn;
         ApprovedOn = approvedOn;
@@ -38,7 +38,7 @@ public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
 
     public string BioEn { get; private set; } = string.Empty;
 
-    public IReadOnlyList<string> ExpertiseTags { get; private set; } = System.Array.Empty<string>();
+    public IList<string> ExpertiseTags { get; private set; } = new List<string>();
 
     public string AcademicTitleAr { get; private set; } = string.Empty;
 
@@ -82,7 +82,7 @@ public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
             userId: request.RequestedById,
             bioAr: request.RequestedBioAr,
             bioEn: request.RequestedBioEn,
-            tags: request.RequestedTags,
+            expertiseTags: request.RequestedTags,
             academicTitleAr: academicTitleAr,
             academicTitleEn: academicTitleEn,
             approvedOn: request.ProcessedOn.Value,

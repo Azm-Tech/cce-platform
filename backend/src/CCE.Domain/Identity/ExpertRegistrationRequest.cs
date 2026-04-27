@@ -17,7 +17,7 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
         System.Guid requestedById,
         string requestedBioAr,
         string requestedBioEn,
-        IReadOnlyList<string> requestedTags,
+        IList<string> requestedTags,
         System.DateTimeOffset submittedOn) : base(id)
     {
         RequestedById = requestedById;
@@ -34,7 +34,7 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
 
     public string RequestedBioEn { get; private set; } = string.Empty;
 
-    public IReadOnlyList<string> RequestedTags { get; private set; } = System.Array.Empty<string>();
+    public IList<string> RequestedTags { get; private set; } = new List<string>();
 
     public System.DateTimeOffset SubmittedOn { get; private set; }
 
