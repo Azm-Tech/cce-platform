@@ -17,6 +17,8 @@
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="coverlet.collector" />
+    <!-- Identity.Stores is referenced by CCE.Domain; tests need it on the runtime path too. -->
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
   </ItemGroup>
 
   <ItemGroup>

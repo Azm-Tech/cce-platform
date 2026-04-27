@@ -42,7 +42,9 @@
                             class clashes with Microsoft.Extensions.DependencyInjection namespace —
                             standard Clean Architecture idiom in ASP.NET Core templates)
       -->
-    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724</NoWarn>
+    <!-- CA1056 — "URI properties should be System.Uri" (we store URLs as nvarchar in DB; converting to Uri at the boundary is the API/DTO layer's job)
+         CA1002 — "Do not expose generic Lists" (EF entities use List<T> for JSON-mapped collections; Collection<T> doesn't roundtrip through JSON converters as cleanly) -->
+    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724;CA1056;CA1002</NoWarn>
 
     <!-- Output organization -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>
