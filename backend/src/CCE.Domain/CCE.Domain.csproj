@@ -16,4 +16,9 @@
     <AdditionalFiles Include="..\..\permissions.yaml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- IdentityUser&lt;TKey&gt; / IdentityRole&lt;TKey&gt; without EF dependency. -->
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
+  </ItemGroup>
+
 </Project>
