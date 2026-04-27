@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Identity.EFCore runtime — required transitively for Infrastructure DI. -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
     <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
     <ProjectReference Include="..\CCE.Api.Common\CCE.Api.Common.csproj" />

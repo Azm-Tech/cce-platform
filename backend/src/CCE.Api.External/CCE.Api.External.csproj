@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- No package references in Foundation — Phase 08 adds Swashbuckle, Serilog, JwtBearer, etc. -->
+    <!-- Identity.EFCore runtime needs to be on the host's bin path because Infrastructure
+         references it but the runtime asset doesn't flow transitively in this CPM setup. -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
   </ItemGroup>
 
   <ItemGroup>

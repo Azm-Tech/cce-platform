@@ -1,9 +1,11 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Persistence;
+using CCE.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
@@ -27,12 +29,22 @@ public static class DependencyInjection
         // Clock
         services.AddSingleton<ISystemClock, SystemClock>();
 
-        // EF Core — SQL Server with snake_case naming
+        // Default current-user accessor — API hosts override with HttpContext-based impl.
+        services.TryAddScoped<ICurrentUserAccessor, SystemCurrentUserAccessor>();
+
+        // Interceptors
+        services.AddScoped<AuditingInterceptor>();
+        services.AddScoped<DomainEventDispatcher>();
+
+        // EF Core — SQL Server with snake_case naming + audit + domain-event interceptors
         services.AddDbContext<CceDbContext>((sp, opts) =>
         {
             var infraOpts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
             opts.UseSqlServer(infraOpts.SqlConnectionString);
             opts.UseSnakeCaseNamingConvention();
+            opts.AddInterceptors(
+                sp.GetRequiredService<AuditingInterceptor>(),
+                sp.GetRequiredService<DomainEventDispatcher>());
         });
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
 
@@ -44,5 +56,15 @@ public static class DependencyInjection
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// Fallback <see cref="ICurrentUserAccessor"/> for non-HTTP contexts (seeders, background jobs).
+    /// API hosts register an HttpContext-based implementation that overrides this.
+    /// </summary>
+    private sealed class SystemCurrentUserAccessor : ICurrentUserAccessor
+    {
+        public string GetActor() => "system";
+        public System.Guid GetCorrelationId() => System.Guid.Empty;
     }
 }

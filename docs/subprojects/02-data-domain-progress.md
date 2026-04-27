@@ -15,7 +15,7 @@
 | 04 | Country | ✅ Done |
 | 05 | Community | ✅ Done |
 | 06 | Knowledge Maps + City + Notif + Surveys | ✅ Done |
-| 07 | Persistence wiring | ⏳ Pending |
+| 07 | Persistence wiring | ✅ Done |
 | 08 | Migration | ⏳ Pending |
 | 09 | Seeder | ⏳ Pending |
 | 10 | Architecture tests + ADRs + release | ⏳ Pending |
@@ -26,11 +26,11 @@
 |---|---|---|---|
 | Domain | 16 | 284 | ~136 |
 | Application | 12 | 12 | ~72 |
-| Infrastructure | 6 | 6 | ~46 |
+| Infrastructure | 6 | 13 | ~46 |
 | Architecture | 0 | 0 | ~15 |
 | Source generator | 0 | 10 | ~20 |
 | Api Integration | 28 | 28 | ~38 |
-| **Cumulative** | **62** (backend) | **340** | **~327** (backend) |
+| **Cumulative** | **62** (backend) | **347** | **~327** (backend) |
 
 (Frontend test counts unchanged — sub-project 2 is backend-only.)
 
