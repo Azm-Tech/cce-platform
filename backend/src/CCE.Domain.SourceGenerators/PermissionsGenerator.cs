@@ -8,20 +8,37 @@ using System.Text;
 namespace CCE.Domain.SourceGenerators;
 
 /// <summary>
-/// Roslyn incremental source generator that turns <c>backend/permissions.yaml</c> into a
-/// strongly-typed <see cref="Permissions"/> static class in <c>CCE.Domain</c>.
-/// Triggered automatically on every build of any project that adds this generator as an analyzer
-/// and adds <c>permissions.yaml</c> as an <c>AdditionalFiles</c> item.
+/// Roslyn incremental source generator that turns <c>backend/permissions.yaml</c> into:
+/// (1) a strongly-typed <c>Permissions</c> static class with a constant per permission and an
+/// <c>All</c> read-only list, and
+/// (2) a <c>RolePermissionMap</c> static class with one read-only list per known role.
+///
+/// Two YAML schemas are supported:
+/// - <strong>Flat</strong> (Foundation): top-level <c>permissions:</c> list; no role mappings.
+///   In this mode, <c>RolePermissionMap</c> is still emitted but every role's collection is empty.
+/// - <strong>Nested</strong> (sub-project 2): top-level <c>groups:</c> with arbitrary indented
+///   sub-groups; each leaf has <c>description:</c> + <c>roles: [Role1, Role2]</c>.
+///
+/// The list of known roles is fixed at <see cref="KnownRoles"/> — adding a role requires a generator
+/// change. This is intentional: roles are a domain-modelling decision, not a YAML-author decision.
 /// </summary>
 [Generator]
 public sealed class PermissionsGenerator : IIncrementalGenerator
 {
     private const string YamlFileName = "permissions.yaml";
 
+    private static readonly string[] KnownRoles =
+    {
+        "SuperAdmin",
+        "ContentManager",
+        "StateRepresentative",
+        "CommunityExpert",
+        "RegisteredUser",
+        "Anonymous",
+    };
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Match permissions.yaml under any path. Compare by filename so subdirectory layout
-        // (backend/permissions.yaml vs ./permissions.yaml) doesn't matter to the generator.
         var yamlContent = context.AdditionalTextsProvider
             .Where(static file => file.Path.EndsWith(YamlFileName, StringComparison.OrdinalIgnoreCase))
             .Select(static (file, ct) => file.GetText(ct)?.ToString() ?? string.Empty)
@@ -29,36 +46,81 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(yamlContent, static (spc, contents) =>
         {
-            // If multiple permissions.yaml files match (shouldn't happen but defensive), use the first non-empty.
             var yaml = contents.FirstOrDefault(c => !string.IsNullOrWhiteSpace(c)) ?? string.Empty;
-            var permissions = ParsePermissions(yaml);
-            var source = GenerateSource(permissions);
+            var entries = ParseYaml(yaml);
+            var source = GenerateSource(entries);
             spc.AddSource("Permissions.g.cs", SourceText.From(source, Encoding.UTF8));
         });
     }
 
-    /// <summary>
-    /// Hand-rolled parser for the flat-list YAML format used by <c>permissions.yaml</c>.
-    /// Recognizes lines of the form <c>  - Some.Permission.Name</c> (inside a top-level list).
-    /// Ignores blank lines, comment lines (starting with <c>#</c>), and the <c>permissions:</c> header.
-    /// Quotes around the name are stripped.
-    /// </summary>
-    private static List<string> ParsePermissions(string yaml)
+    /// <summary>One generated permission with its role mapping.</summary>
+    internal readonly struct PermissionEntry
     {
-        var result = new List<string>();
+        public PermissionEntry(string name, IReadOnlyList<string> roles)
+        {
+            Name = name;
+            Roles = roles;
+        }
+        public string Name { get; }
+        public IReadOnlyList<string> Roles { get; }
+    }
+
+    /// <summary>
+    /// Returns parsed permissions in declaration order. Empty list if the YAML is empty,
+    /// is whitespace-only, or starts with neither <c>groups:</c> nor <c>permissions:</c>.
+    /// </summary>
+    private static List<PermissionEntry> ParseYaml(string yaml)
+    {
         if (string.IsNullOrWhiteSpace(yaml))
         {
-            return result;
+            return new List<PermissionEntry>();
         }
 
+        var schema = DetectSchema(yaml);
+        return schema switch
+        {
+            Schema.Flat => ParseFlatSchema(yaml),
+            Schema.Nested => ParseNestedSchema(yaml),
+            _ => new List<PermissionEntry>(),
+        };
+    }
+
+    private enum Schema { Unknown, Flat, Nested }
+
+    private static Schema DetectSchema(string yaml)
+    {
         foreach (var raw in yaml.Split('\n'))
         {
-            var line = raw.Trim();
-            if (line.Length == 0)
+            var line = raw.TrimEnd('\r').Trim();
+            if (line.Length == 0 || line[0] == '#')
             {
                 continue;
             }
-            if (line[0] == '#')
+            if (line.StartsWith("groups:", StringComparison.Ordinal))
+            {
+                return Schema.Nested;
+            }
+            if (line.StartsWith("permissions:", StringComparison.Ordinal))
+            {
+                return Schema.Flat;
+            }
+            return Schema.Unknown;
+        }
+        return Schema.Unknown;
+    }
+
+    /// <summary>
+    /// Foundation-format parser. Matches lines of the form <c>  - Some.Permission.Name</c>.
+    /// Roles list is empty for flat-schema permissions.
+    /// </summary>
+    private static List<PermissionEntry> ParseFlatSchema(string yaml)
+    {
+        var result = new List<PermissionEntry>();
+        var emptyRoles = Array.Empty<string>();
+        foreach (var raw in yaml.Split('\n'))
+        {
+            var line = raw.TrimEnd('\r').Trim();
+            if (line.Length == 0 || line[0] == '#')
             {
                 continue;
             }
@@ -67,16 +129,140 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
                 continue;
             }
             var name = line.Substring(2).Trim().Trim('"', '\'').Trim();
-            if (name.Length == 0)
+            if (name.Length == 0 || !IsValidPermissionName(name))
             {
                 continue;
             }
-            // Defensive validation: only accept dot-separated PascalCase tokens.
-            if (!IsValidPermissionName(name))
+            result.Add(new PermissionEntry(name, emptyRoles));
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Sub-project 2 nested-groups parser. Walks lines tracking indent depth; each leaf entry
+    /// (one whose direct children include <c>description:</c> + <c>roles:</c>) emits a permission
+    /// whose dotted name is the path of group keys from the root to the leaf key.
+    /// </summary>
+    private static List<PermissionEntry> ParseNestedSchema(string yaml)
+    {
+        var result = new List<PermissionEntry>();
+        var lines = yaml.Split('\n');
+
+        var stack = new List<(int Indent, string Key)>();
+        string? pendingPermissionPath = null;
+        List<string>? pendingRoles = null;
+        bool sawDescription = false;
+
+        void Flush()
+        {
+            if (pendingPermissionPath != null && pendingRoles != null && sawDescription)
+            {
+                result.Add(new PermissionEntry(pendingPermissionPath, pendingRoles));
+            }
+            pendingPermissionPath = null;
+            pendingRoles = null;
+            sawDescription = false;
+        }
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var raw = lines[i].TrimEnd('\r');
+            if (raw.Length == 0)
             {
                 continue;
             }
-            result.Add(name);
+
+            int indent = 0;
+            while (indent < raw.Length && raw[indent] == ' ')
+            {
+                indent++;
+            }
+
+            var content = raw.Substring(indent);
+            if (content.Length == 0 || content[0] == '#')
+            {
+                continue;
+            }
+
+            if (indent == 0 && content.StartsWith("groups:", StringComparison.Ordinal))
+            {
+                Flush();
+                stack.Clear();
+                continue;
+            }
+
+            if (content.StartsWith("description:", StringComparison.Ordinal))
+            {
+                sawDescription = true;
+                continue;
+            }
+
+            if (content.StartsWith("roles:", StringComparison.Ordinal))
+            {
+                pendingRoles = ParseInlineRoles(content);
+                Flush();
+                continue;
+            }
+
+            if (!content.EndsWith(":", StringComparison.Ordinal))
+            {
+                continue;
+            }
+            var key = content.Substring(0, content.Length - 1).Trim();
+            if (key.Length == 0)
+            {
+                continue;
+            }
+
+            while (stack.Count > 0 && stack[stack.Count - 1].Indent >= indent)
+            {
+                stack.RemoveAt(stack.Count - 1);
+            }
+
+            // If a previous pending permission was never completed (no roles line), drop it.
+            // pendingRoles is always null here because the only assignment happens in the roles:
+            // branch which calls Flush() before falling through to other line kinds.
+            if (pendingPermissionPath != null)
+            {
+                pendingPermissionPath = null;
+                sawDescription = false;
+            }
+
+            var pathParts = stack.Select(s => s.Key).Concat(new[] { key }).ToArray();
+            var fullPath = string.Join(".", pathParts);
+
+            pendingPermissionPath = IsValidPermissionName(fullPath) ? fullPath : null;
+            pendingRoles = null;
+            sawDescription = false;
+
+            stack.Add((indent, key));
+        }
+
+        Flush();
+        return result;
+    }
+
+    /// <summary>
+    /// Parses the roles list from a line of the form <c>roles: [Role1, Role2]</c>.
+    /// Returns an empty list for malformed/empty role lists.
+    /// </summary>
+    private static List<string> ParseInlineRoles(string content)
+    {
+        var result = new List<string>();
+        var open = content.IndexOf('[');
+        var close = content.LastIndexOf(']');
+        if (open < 0 || close < 0 || close <= open)
+        {
+            return result;
+        }
+        var inside = content.Substring(open + 1, close - open - 1);
+        foreach (var part in inside.Split(','))
+        {
+            var role = part.Trim().Trim('"', '\'').Trim();
+            if (role.Length > 0)
+            {
+                result.Add(role);
+            }
         }
         return result;
     }
@@ -90,18 +276,13 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         }
         foreach (var seg in segments)
         {
-            if (seg.Length == 0)
-            {
-                return false;
-            }
-            if (!char.IsUpper(seg[0]))
+            if (seg.Length == 0 || !char.IsUpper(seg[0]))
             {
                 return false;
             }
             for (var i = 1; i < seg.Length; i++)
             {
-                var c = seg[i];
-                if (!char.IsLetterOrDigit(c))
+                if (!char.IsLetterOrDigit(seg[i]))
                 {
                     return false;
                 }
@@ -110,7 +291,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         return true;
     }
 
-    private static string GenerateSource(List<string> permissions)
+    private static string GenerateSource(List<PermissionEntry> entries)
     {
         var sb = new StringBuilder();
         sb.AppendLine("// <auto-generated>");
@@ -123,29 +304,68 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine("namespace CCE.Domain;");
         sb.AppendLine();
+
         sb.AppendLine("/// <summary>");
         sb.AppendLine("/// Strongly-typed permission name constants generated from <c>permissions.yaml</c>.");
         sb.AppendLine("/// Use these constants in policy registrations and <c>[RequirePermission(...)]</c> attributes.");
         sb.AppendLine("/// </summary>");
         sb.AppendLine("public static class Permissions");
         sb.AppendLine("{");
-
-        foreach (var p in permissions)
+        foreach (var e in entries)
         {
-            var memberName = ToMemberName(p);
-            sb.AppendLine($"    /// <summary>The <c>{p}</c> permission.</summary>");
-            sb.AppendLine($"    public const string {memberName} = \"{p}\";");
+            var memberName = ToMemberName(e.Name);
+            sb.AppendLine($"    /// <summary>The <c>{e.Name}</c> permission.</summary>");
+            sb.AppendLine($"    public const string {memberName} = \"{e.Name}\";");
             sb.AppendLine();
         }
-
         sb.AppendLine("    /// <summary>Every permission, in YAML declaration order.</summary>");
-        sb.AppendLine("    public static IReadOnlyList<string> All { get; } = new[]");
-        sb.AppendLine("    {");
-        foreach (var p in permissions)
+        if (entries.Count == 0)
         {
-            sb.AppendLine($"        {ToMemberName(p)},");
+            sb.AppendLine("    public static IReadOnlyList<string> All { get; } = System.Array.Empty<string>();");
         }
-        sb.AppendLine("    };");
+        else
+        {
+            sb.AppendLine("    public static IReadOnlyList<string> All { get; } = new[]");
+            sb.AppendLine("    {");
+            foreach (var e in entries)
+            {
+                sb.AppendLine($"        {ToMemberName(e.Name)},");
+            }
+            sb.AppendLine("    };");
+        }
+        sb.AppendLine("}");
+        sb.AppendLine();
+
+        sb.AppendLine("/// <summary>");
+        sb.AppendLine("/// Maps each role to the permissions assigned to it in <c>permissions.yaml</c>.");
+        sb.AppendLine("/// One <see cref=\"IReadOnlyList{T}\"/> per known role; empty when the role has no assignments.");
+        sb.AppendLine("/// </summary>");
+        sb.AppendLine("public static class RolePermissionMap");
+        sb.AppendLine("{");
+        for (int r = 0; r < KnownRoles.Length; r++)
+        {
+            var role = KnownRoles[r];
+            var matches = entries.Where(e => e.Roles.Contains(role)).Select(e => e.Name).ToArray();
+            sb.AppendLine($"    /// <summary>Permissions assigned to the <c>{role}</c> role.</summary>");
+            if (matches.Length == 0)
+            {
+                sb.AppendLine($"    public static IReadOnlyList<string> {role} {{ get; }} = System.Array.Empty<string>();");
+            }
+            else
+            {
+                sb.AppendLine($"    public static IReadOnlyList<string> {role} {{ get; }} = new[]");
+                sb.AppendLine("    {");
+                foreach (var name in matches)
+                {
+                    sb.AppendLine($"        \"{name}\",");
+                }
+                sb.AppendLine("    };");
+            }
+            if (r < KnownRoles.Length - 1)
+            {
+                sb.AppendLine();
+            }
+        }
         sb.AppendLine("}");
 
         return sb.ToString();
