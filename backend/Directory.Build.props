@@ -43,8 +43,9 @@
                             standard Clean Architecture idiom in ASP.NET Core templates)
       -->
     <!-- CA1056 — "URI properties should be System.Uri" (we store URLs as nvarchar in DB; converting to Uri at the boundary is the API/DTO layer's job)
+         CA1054 — "URI parameters should be System.Uri" (same rationale — domain mutators take strings to align with persistence)
          CA1002 — "Do not expose generic Lists" (EF entities use List<T> for JSON-mapped collections; Collection<T> doesn't roundtrip through JSON converters as cleanly) -->
-    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724;CA1056;CA1002</NoWarn>
+    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724;CA1056;CA1054;CA1002</NoWarn>
 
     <!-- Output organization -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>
@@ -64,8 +65,9 @@
   <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or $(MSBuildProjectName.EndsWith('.IntegrationTests'))">
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CA1707</NoWarn>
-    <!-- Test methods commonly use underscores: Should_do_X_when_Y -->
+    <!-- CA1707 — Test methods use underscores (Should_do_X_when_Y).
+         CA1861 — Inline arrays in test assertions are everywhere; static-readonly extraction adds noise without value. -->
+    <NoWarn>$(NoWarn);CA1707;CA1861</NoWarn>
   </PropertyGroup>
 
 </Project>
