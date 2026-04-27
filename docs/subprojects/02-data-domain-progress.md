@@ -16,7 +16,7 @@
 | 05 | Community | ✅ Done |
 | 06 | Knowledge Maps + City + Notif + Surveys | ✅ Done |
 | 07 | Persistence wiring | ✅ Done |
-| 08 | Migration | ⏳ Pending |
+| 08 | Migration | ✅ Done |
 | 09 | Seeder | ⏳ Pending |
 | 10 | Architecture tests + ADRs + release | ⏳ Pending |
 
