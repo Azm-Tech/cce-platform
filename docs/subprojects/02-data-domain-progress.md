@@ -10,7 +10,7 @@
 |---|---|---|
 | 00 | Bootstrap | ✅ Done |
 | 01 | Permissions YAML + source-gen | ✅ Done |
-| 02 | Identity | ⏳ Pending |
+| 02 | Identity | ✅ Done |
 | 03 | Content | ⏳ Pending |
 | 04 | Country | ⏳ Pending |
 | 05 | Community | ⏳ Pending |
@@ -24,13 +24,13 @@
 
 | Layer | At start | Current | Target |
 |---|---|---|---|
-| Domain | 16 | 29 | ~136 |
+| Domain | 16 | 78 | ~136 |
 | Application | 12 | 12 | ~72 |
 | Infrastructure | 6 | 6 | ~46 |
 | Architecture | 0 | 0 | ~15 |
 | Source generator | 0 | 10 | ~20 |
 | Api Integration | 28 | 28 | ~38 |
-| **Cumulative** | **62** (backend) | **85** | **~327** (backend) |
+| **Cumulative** | **62** (backend) | **134** | **~327** (backend) |
 
 (Frontend test counts unchanged — sub-project 2 is backend-only.)
 
