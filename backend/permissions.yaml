@@ -1,15 +1,165 @@
 # CCE — Permission matrix
-# Single source of truth for all authorization permissions.
-# Format: <Category>.<Resource>.<Action> — three dot-separated segments.
-# Generated into CCE.Domain.Permissions by the Roslyn source generator at:
-#   backend/src/CCE.Domain.SourceGenerators
-# Adding a permission: append a new line under `permissions:` and rebuild.
-# The full BRD §4.1.31 permission matrix (~70 entries) lands in sub-project 2.
+# Single source of truth for all authorization permissions. Generated into
+# `CCE.Domain.Permissions` and `CCE.Domain.RolePermissionMap` by:
+#   backend/src/CCE.Domain.SourceGenerators/PermissionsGenerator.cs
+#
+# Schema:
+#   groups:
+#     <Group>:
+#       <SubGroupOrAction>:
+#         description: <human-readable description>
+#         roles: [<Role1>, <Role2>, ...]
 #
 # Naming rules:
-#   - PascalCase segments only (System, Content, User, etc.)
-#   - Verbs use Read / Create / Update / Delete / Approve / Reject / List / Search
+#   - PascalCase segments only.
+#   - Verbs: Read / Create / Update / Delete / Approve / Reject / List / Search / Edit / Manage
+#     / Restore / Run / Submit / Publish / View / Assign / Moderate / Follow / Rate / Reply.
 #   - Stable: never rename — deprecate old + add new instead.
+#
+# Known roles (defined in PermissionsGenerator.KnownRoles):
+#   SuperAdmin, ContentManager, StateRepresentative, CommunityExpert, RegisteredUser, Anonymous
 
-permissions:
-  - System.Health.Read
+groups:
+  System:
+    Health:
+      Read:
+        description: Read system health probe
+        roles: [SuperAdmin]
+  User:
+    Read:
+      description: Read user profiles
+      roles: [SuperAdmin, ContentManager]
+    Create:
+      description: Create user accounts (admin path)
+      roles: [SuperAdmin]
+    Update:
+      description: Update user profile fields (admin path)
+      roles: [SuperAdmin]
+    Delete:
+      description: Soft-delete a user
+      roles: [SuperAdmin]
+    Restore:
+      description: Undelete a previously soft-deleted user
+      roles: [SuperAdmin]
+  Role:
+    Assign:
+      description: Assign a role to a user
+      roles: [SuperAdmin]
+  Resource:
+    Center:
+      Upload:
+        description: Upload a center-managed resource
+        roles: [SuperAdmin, ContentManager]
+      Update:
+        description: Edit a center-managed resource
+        roles: [SuperAdmin, ContentManager]
+      Delete:
+        description: Soft-delete a center resource
+        roles: [SuperAdmin, ContentManager]
+    Country:
+      Approve:
+        description: Approve a country resource request
+        roles: [SuperAdmin, ContentManager]
+      Reject:
+        description: Reject a country resource request
+        roles: [SuperAdmin, ContentManager]
+      Submit:
+        description: State rep submits a country resource for approval
+        roles: [StateRepresentative]
+  News:
+    Publish:
+      description: Publish news articles
+      roles: [SuperAdmin, ContentManager]
+    Update:
+      description: Edit news article
+      roles: [SuperAdmin, ContentManager]
+    Delete:
+      description: Soft-delete news article
+      roles: [SuperAdmin, ContentManager]
+  Event:
+    Manage:
+      description: Create/update/delete events
+      roles: [SuperAdmin, ContentManager]
+  Page:
+    Edit:
+      description: Edit static pages (about, terms, privacy)
+      roles: [SuperAdmin, ContentManager]
+  Country:
+    Profile:
+      Update:
+        description: Edit country profile content
+        roles: [SuperAdmin, ContentManager, StateRepresentative]
+  Community:
+    Post:
+      Create:
+        description: Create a community post
+        roles: [RegisteredUser, CommunityExpert, StateRepresentative, SuperAdmin]
+      Reply:
+        description: Reply to a community post
+        roles: [RegisteredUser, CommunityExpert, StateRepresentative, SuperAdmin]
+      Rate:
+        description: Rate a community post
+        roles: [RegisteredUser, CommunityExpert, StateRepresentative, SuperAdmin]
+      Moderate:
+        description: Soft-delete or restore a community post (moderation)
+        roles: [SuperAdmin, ContentManager]
+      Follow:
+        description: Follow posts/topics/users
+        roles: [RegisteredUser, CommunityExpert, StateRepresentative, SuperAdmin]
+    Expert:
+      RegisterRequest:
+        description: Submit expert registration request
+        roles: [RegisteredUser]
+      ApproveRequest:
+        description: Approve or reject an expert registration request
+        roles: [SuperAdmin, ContentManager]
+  KnowledgeMap:
+    View:
+      description: View knowledge maps
+      roles: [Anonymous, RegisteredUser, CommunityExpert, StateRepresentative, ContentManager, SuperAdmin]
+    Manage:
+      description: Create/update/delete knowledge maps
+      roles: [SuperAdmin, ContentManager]
+  InteractiveCity:
+    Run:
+      description: Run an Interactive City simulation
+      roles: [Anonymous, RegisteredUser, CommunityExpert, StateRepresentative, ContentManager, SuperAdmin]
+    SaveScenario:
+      description: Save a scenario to user profile
+      roles: [RegisteredUser, CommunityExpert, StateRepresentative, ContentManager, SuperAdmin]
+  Survey:
+    Submit:
+      description: Submit a service rating
+      roles: [Anonymous, RegisteredUser, CommunityExpert, StateRepresentative, ContentManager, SuperAdmin]
+    ReadAll:
+      description: Read all survey responses
+      roles: [SuperAdmin]
+  Notification:
+    TemplateManage:
+      description: Manage notification templates
+      roles: [SuperAdmin]
+  Report:
+    UserRegistrations:
+      description: Generate user-registration report
+      roles: [SuperAdmin]
+    ExpertList:
+      description: Generate community-experts report
+      roles: [SuperAdmin]
+    SatisfactionSurvey:
+      description: Generate satisfaction-survey report
+      roles: [SuperAdmin]
+    CommunityPosts:
+      description: Generate community-posts report
+      roles: [SuperAdmin]
+    News:
+      description: Generate news report
+      roles: [SuperAdmin]
+    Events:
+      description: Generate events report
+      roles: [SuperAdmin]
+    Resources:
+      description: Generate resources report
+      roles: [SuperAdmin]
+    CountryProfiles:
+      description: Generate country profiles report
+      roles: [SuperAdmin]
