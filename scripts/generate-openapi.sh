@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerate OpenAPI specs by running each API on a port and curling /swagger/v1/swagger.json.
+# Regenerate OpenAPI specs by running each API on a port and curling its tagged swagger URL.
 # Avoids the Swashbuckle.AspNetCore.Cli local tool (NuGet install proved flaky on the build host).
 # Phase 16 CI runs this and asserts the working tree is clean afterwards.
 

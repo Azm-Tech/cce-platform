@@ -19,7 +19,7 @@ builder.Services
     .AddCcePermissionPolicies()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
-    .AddCceOpenApi("CCE External API", apiTag: "external");
+    .AddCceOpenApi("CCE External API");
 
 var app = builder.Build();
 

@@ -21,7 +21,7 @@ builder.Services
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
-    .AddCceOpenApi("CCE Internal API", apiTag: "internal");
+    .AddCceOpenApi("CCE Internal API");
 
 var app = builder.Build();
 

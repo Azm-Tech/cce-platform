@@ -6,7 +6,7 @@ namespace CCE.Api.Common.OpenApi;
 
 public static class CceOpenApiRegistration
 {
-    public static IServiceCollection AddCceOpenApi(this IServiceCollection services, string title, string apiTag = "v1")
+    public static IServiceCollection AddCceOpenApi(this IServiceCollection services, string title)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(opts =>
