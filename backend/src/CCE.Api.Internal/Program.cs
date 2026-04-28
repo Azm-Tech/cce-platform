@@ -1,6 +1,7 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.Authorization;
 using CCE.Api.Common.Health;
+using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
@@ -17,6 +18,7 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
+    .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE Internal API");
@@ -29,6 +31,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCceUserSync();
 app.UseRateLimiter();
 app.UseMiddleware<LocalizationMiddleware>();
 

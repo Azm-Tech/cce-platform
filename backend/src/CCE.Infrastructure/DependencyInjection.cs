@@ -1,5 +1,7 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Identity;
 using CCE.Domain.Common;
+using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Persistence;
 using CCE.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +49,7 @@ public static class DependencyInjection
                 sp.GetRequiredService<DomainEventDispatcher>());
         });
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
+        services.AddScoped<IUserSyncService, UserSyncService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
