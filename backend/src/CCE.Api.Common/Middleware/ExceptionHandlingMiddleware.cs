@@ -1,3 +1,4 @@
+using CCE.Domain.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,21 +28,22 @@ public sealed class ExceptionHandlingMiddleware
         {
             await WriteValidationProblemAsync(context, ex).ConfigureAwait(false);
         }
-        catch (CCE.Domain.Common.ConcurrencyException ex)
+        // Expected business outcomes — not logged (not server errors).
+        catch (ConcurrencyException ex)
         {
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 title: "Concurrent edit",
                 detail: ex.Message,
                 type: "https://cce.moenergy.gov.sa/problems/concurrency").ConfigureAwait(false);
         }
-        catch (CCE.Domain.Common.DuplicateException ex)
+        catch (DuplicateException ex)
         {
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 title: "Duplicate value",
                 detail: ex.Message,
                 type: "https://cce.moenergy.gov.sa/problems/duplicate").ConfigureAwait(false);
         }
-        catch (CCE.Domain.Common.DomainException ex)
+        catch (DomainException ex)
         {
             await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
                 title: "Invariant violated",

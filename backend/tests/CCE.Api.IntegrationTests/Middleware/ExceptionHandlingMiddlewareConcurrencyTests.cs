@@ -58,6 +58,7 @@ public class ExceptionHandlingMiddlewareConcurrencyTests
         doc.GetProperty("status").GetInt32().Should().Be(409);
         doc.GetProperty("title").GetString().Should().Be("Duplicate value");
         doc.GetProperty("type").GetString().Should().Be("https://cce.moenergy.gov.sa/problems/duplicate");
+        doc.GetProperty("detail").GetString().Should().Be("dup conflict");
     }
 
     [Fact]
