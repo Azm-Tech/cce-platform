@@ -5,6 +5,7 @@ using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
+using CCE.Api.Internal.Endpoints;
 using CCE.Application;
 using CCE.Application.Health;
 using CCE.Infrastructure;
@@ -36,6 +37,8 @@ app.UseRateLimiter();
 app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "internal");
+
+app.MapIdentityEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 

@@ -32,4 +32,16 @@ public static class PaginationExtensions
             : query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         return new PagedResult<T>(items, page, pageSize, total);
     }
+
+    /// <summary>
+    /// Materialises an <see cref="IQueryable{T}"/> as a list, dispatching to EF's
+    /// <c>ToListAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>ToList</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<List<T>> ToListAsyncEither<T>(this IQueryable<T> query, CancellationToken ct)
+    {
+        return query is IAsyncEnumerable<T>
+            ? await query.ToListAsync(ct).ConfigureAwait(false)
+            : query.ToList();
+    }
 }

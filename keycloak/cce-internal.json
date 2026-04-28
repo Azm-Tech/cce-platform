@@ -1,8 +1,8 @@
 {
   "id": "cce-internal",
   "realm": "cce-internal",
-  "displayName": "CCE — Internal (Ministry staff)",
-  "displayNameHtml": "<strong>CCE</strong> — Internal",
+  "displayName": "CCE \u2014 Internal (Ministry staff)",
+  "displayNameHtml": "<strong>CCE</strong> \u2014 Internal",
   "enabled": true,
   "sslRequired": "none",
   "registrationAllowed": false,
@@ -29,12 +29,11 @@
   "actionTokenGeneratedByAdminLifespan": 43200,
   "actionTokenGeneratedByUserLifespan": 300,
   "passwordPolicy": "length(10) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername()",
-
   "roles": {
     "realm": [
       {
         "name": "SuperAdmin",
-        "description": "Foundation seed — full administrative access. Permission matrix lands in sub-project 2.",
+        "description": "Foundation seed \u2014 full administrative access. Permission matrix lands in sub-project 2.",
         "composite": false,
         "clientRole": false,
         "containerId": "cce-internal",
@@ -42,9 +41,7 @@
       }
     ]
   },
-
   "defaultRoles": [],
-
   "users": [
     {
       "username": "admin@cce.local",
@@ -60,19 +57,32 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["SuperAdmin"],
+      "realmRoles": [
+        "SuperAdmin"
+      ],
       "requiredActions": [],
       "attributes": {
-        "upn": ["admin@cce.local"],
-        "department": ["IT"]
+        "upn": [
+          "admin@cce.local"
+        ],
+        "department": [
+          "IT"
+        ]
       }
+    },
+    {
+      "username": "service-account-cce-admin-cms",
+      "enabled": true,
+      "serviceAccountClientId": "cce-admin-cms",
+      "realmRoles": [
+        "SuperAdmin"
+      ]
     }
   ],
-
   "clientScopes": [
     {
       "name": "adfs-compat",
-      "description": "Claim mappers matching ADFS conventions — swapping to real ADFS is a config change",
+      "description": "Claim mappers matching ADFS conventions \u2014 swapping to real ADFS is a config change",
       "protocol": "openid-connect",
       "attributes": {
         "include.in.token.scope": "true",
@@ -138,9 +148,13 @@
       ]
     }
   ],
-
-  "defaultDefaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
-
+  "defaultDefaultClientScopes": [
+    "adfs-compat",
+    "web-origins",
+    "profile",
+    "email",
+    "roles"
+  ],
   "clients": [
     {
       "clientId": "cce-admin-cms",
@@ -174,12 +188,41 @@
         "tls.client.certificate.bound.access.tokens": "false"
       },
       "fullScopeAllowed": false,
-      "defaultClientScopes": ["adfs-compat", "web-origins", "profile", "email", "roles"],
-      "optionalClientScopes": ["address", "phone", "offline_access"]
+      "defaultClientScopes": [
+        "adfs-compat",
+        "web-origins",
+        "profile",
+        "email",
+        "roles"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access"
+      ],
+      "protocolMappers": [
+        {
+          "name": "groups-sa",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.value": "SuperAdmin",
+            "userinfo.token.claim": "false",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "jsonType.label": "String",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
     }
   ],
-
   "internationalizationEnabled": true,
-  "supportedLocales": ["ar", "en"],
+  "supportedLocales": [
+    "ar",
+    "en"
+  ],
   "defaultLocale": "ar"
 }
