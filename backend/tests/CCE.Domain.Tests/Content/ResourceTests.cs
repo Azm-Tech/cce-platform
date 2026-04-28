@@ -114,4 +114,32 @@ public class ResourceTests
         r.DeletedById.Should().Be(deleter);
         r.DeletedOn.Should().Be(clock.UtcNow);
     }
+
+    [Fact]
+    public void UpdateContent_mutates_editable_fields_when_inputs_valid()
+    {
+        var clock = NewClock();
+        var r = NewDraft(clock);
+        var newCategoryId = System.Guid.NewGuid();
+
+        r.UpdateContent("new-ar", "new-en", "new-desc-ar", "new-desc-en", ResourceType.Video, newCategoryId);
+
+        r.TitleAr.Should().Be("new-ar");
+        r.TitleEn.Should().Be("new-en");
+        r.DescriptionAr.Should().Be("new-desc-ar");
+        r.DescriptionEn.Should().Be("new-desc-en");
+        r.ResourceType.Should().Be(ResourceType.Video);
+        r.CategoryId.Should().Be(newCategoryId);
+    }
+
+    [Fact]
+    public void UpdateContent_throws_DomainException_when_titleAr_empty()
+    {
+        var clock = NewClock();
+        var r = NewDraft(clock);
+
+        var act = () => r.UpdateContent("", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid());
+
+        act.Should().Throw<DomainException>().WithMessage("*TitleAr*");
+    }
 }

@@ -108,6 +108,30 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
             OccurredOn: PublishedOn.Value));
     }
 
+    /// <summary>
+    /// Mutates the editable content fields. Audited via the existing AuditingInterceptor.
+    /// </summary>
+    public void UpdateContent(
+        string titleAr,
+        string titleEn,
+        string descriptionAr,
+        string descriptionEn,
+        ResourceType resourceType,
+        System.Guid categoryId)
+    {
+        if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
+        if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
+        if (string.IsNullOrWhiteSpace(descriptionAr)) throw new DomainException("DescriptionAr is required.");
+        if (string.IsNullOrWhiteSpace(descriptionEn)) throw new DomainException("DescriptionEn is required.");
+        if (categoryId == System.Guid.Empty) throw new DomainException("CategoryId is required.");
+        TitleAr = titleAr;
+        TitleEn = titleEn;
+        DescriptionAr = descriptionAr;
+        DescriptionEn = descriptionEn;
+        ResourceType = resourceType;
+        CategoryId = categoryId;
+    }
+
     public void IncrementViewCount() => ViewCount++;
 
     public void SoftDelete(System.Guid deletedById, ISystemClock clock)

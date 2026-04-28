@@ -68,4 +68,41 @@ public class ResourcesEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task Put_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new
+        {
+            titleAr = "ar", titleEn = "en",
+            descriptionAr = "desc-ar", descriptionEn = "desc-en",
+            resourceType = 0,
+            categoryId = System.Guid.NewGuid(),
+            rowVersion = System.Convert.ToBase64String(new byte[8]),
+        });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/resources/{System.Guid.NewGuid()}", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Put_with_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = JsonContent.Create(new
+        {
+            titleAr = "ar", titleEn = "en",
+            descriptionAr = "desc-ar", descriptionEn = "desc-en",
+            resourceType = 0,
+            categoryId = System.Guid.NewGuid(),
+            rowVersion = System.Convert.ToBase64String(new byte[8]),
+        });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/resources/{System.Guid.NewGuid()}", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

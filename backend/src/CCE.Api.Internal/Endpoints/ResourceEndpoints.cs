@@ -1,4 +1,5 @@
 using CCE.Application.Content.Commands.CreateResource;
+using CCE.Application.Content.Commands.UpdateResource;
 using CCE.Application.Content.Queries.ListResources;
 using CCE.Domain;
 using CCE.Domain.Content;
@@ -47,6 +48,26 @@ public static class ResourceEndpoints
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("CreateResource");
 
+        resources.MapPut("/{id:guid}", async (
+            System.Guid id,
+            UpdateResourceRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
+                ? System.Array.Empty<byte>()
+                : System.Convert.FromBase64String(body.RowVersion);
+            var cmd = new UpdateResourceCommand(
+                id,
+                body.TitleAr, body.TitleEn,
+                body.DescriptionAr, body.DescriptionEn,
+                body.ResourceType, body.CategoryId,
+                rowVersion);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Update)
+        .WithName("UpdateResource");
+
         return app;
     }
 }
@@ -60,3 +81,12 @@ public sealed record CreateResourceRequest(
     System.Guid CategoryId,
     System.Guid? CountryId,
     System.Guid AssetFileId);
+
+public sealed record UpdateResourceRequest(
+    string TitleAr,
+    string TitleEn,
+    string DescriptionAr,
+    string DescriptionEn,
+    CCE.Domain.Content.ResourceType ResourceType,
+    System.Guid CategoryId,
+    string RowVersion);
