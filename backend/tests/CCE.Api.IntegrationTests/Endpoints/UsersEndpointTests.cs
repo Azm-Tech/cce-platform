@@ -53,4 +53,25 @@ public class UsersEndpointTests :
         doc.GetProperty("pageSize").GetInt32().Should().Be(20);
         doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
+
+    [Fact]
+    public async Task GetById_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetById_with_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.GetAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

@@ -1,3 +1,4 @@
+using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListUsers;
 using CCE.Domain;
 using MediatR;
@@ -31,6 +32,16 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.User_Read)
         .WithName("ListUsers");
+
+        users.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var dto = await mediator.Send(new GetUserByIdQuery(id), ct).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.User_Read)
+        .WithName("GetUserById");
 
         return app;
     }
