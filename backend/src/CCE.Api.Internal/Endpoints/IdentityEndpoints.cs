@@ -1,5 +1,6 @@
 using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
+using CCE.Application.Identity.Commands.RevokeStateRepAssignment;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
 using CCE.Application.Identity.Queries.ListUsers;
@@ -86,6 +87,16 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("CreateStateRepAssignment");
+
+        assignments.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            await mediator.Send(new RevokeStateRepAssignmentCommand(id), cancellationToken).ConfigureAwait(false);
+            return Results.NoContent();
+        })
+        .RequireAuthorization(Permissions.Role_Assign)
+        .WithName("RevokeStateRepAssignment");
 
         return app;
     }
