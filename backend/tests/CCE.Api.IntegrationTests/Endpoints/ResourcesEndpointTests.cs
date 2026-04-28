@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using CCE.Api.IntegrationTests.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
+using JsonContent = System.Net.Http.Json.JsonContent;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
@@ -46,5 +48,24 @@ public class ResourcesEndpointTests :
         doc.GetProperty("page").GetInt32().Should().Be(1);
         doc.GetProperty("pageSize").GetInt32().Should().Be(20);
         doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Fact]
+    public async Task Post_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new
+        {
+            titleAr = "عنوان", titleEn = "Title",
+            descriptionAr = "وصف", descriptionEn = "Description",
+            resourceType = 0,
+            categoryId = System.Guid.NewGuid(),
+            countryId = (System.Guid?)null,
+            assetFileId = System.Guid.NewGuid(),
+        });
+
+        var resp = await client.PostAsync(new Uri("/api/admin/resources", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

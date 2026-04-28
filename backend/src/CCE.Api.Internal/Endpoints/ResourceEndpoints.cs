@@ -1,5 +1,7 @@
+using CCE.Application.Content.Commands.CreateResource;
 using CCE.Application.Content.Queries.ListResources;
 using CCE.Domain;
+using CCE.Domain.Content;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +33,30 @@ public static class ResourceEndpoints
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("ListResources");
 
+        resources.MapPost("", async (
+            CreateResourceRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var cmd = new CreateResourceCommand(
+                body.TitleAr, body.TitleEn,
+                body.DescriptionAr, body.DescriptionEn,
+                body.ResourceType, body.CategoryId, body.CountryId, body.AssetFileId);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return Results.Created($"/api/admin/resources/{dto.Id}", dto);
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Upload)
+        .WithName("CreateResource");
+
         return app;
     }
 }
+
+public sealed record CreateResourceRequest(
+    string TitleAr,
+    string TitleEn,
+    string DescriptionAr,
+    string DescriptionEn,
+    CCE.Domain.Content.ResourceType ResourceType,
+    System.Guid CategoryId,
+    System.Guid? CountryId,
+    System.Guid AssetFileId);

@@ -61,6 +61,7 @@ public static class DependencyInjection
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddScoped<IAssetService, AssetService>();
+        services.AddScoped<IResourceService, ResourceService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
