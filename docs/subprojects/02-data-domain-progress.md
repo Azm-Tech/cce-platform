@@ -17,7 +17,7 @@
 | 06 | Knowledge Maps + City + Notif + Surveys | ✅ Done |
 | 07 | Persistence wiring | ✅ Done |
 | 08 | Migration | ✅ Done |
-| 09 | Seeder | ⏳ Pending |
+| 09 | Seeder | ✅ Done |
 | 10 | Architecture tests + ADRs + release | ⏳ Pending |
 
 ## Test totals
@@ -26,11 +26,11 @@
 |---|---|---|---|
 | Domain | 16 | 284 | ~136 |
 | Application | 12 | 12 | ~72 |
-| Infrastructure | 6 | 13 | ~46 |
+| Infrastructure | 6 | 30 | ~46 |
 | Architecture | 0 | 0 | ~15 |
 | Source generator | 0 | 10 | ~20 |
 | Api Integration | 28 | 28 | ~38 |
-| **Cumulative** | **62** (backend) | **347** | **~327** (backend) |
+| **Cumulative** | **62** (backend) | **364** | **~327** (backend) |
 
 (Frontend test counts unchanged — sub-project 2 is backend-only.)
 
