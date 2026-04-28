@@ -27,6 +27,27 @@ public sealed class ExceptionHandlingMiddleware
         {
             await WriteValidationProblemAsync(context, ex).ConfigureAwait(false);
         }
+        catch (CCE.Domain.Common.ConcurrencyException ex)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
+                title: "Concurrent edit",
+                detail: ex.Message,
+                type: "https://cce.moenergy.gov.sa/problems/concurrency").ConfigureAwait(false);
+        }
+        catch (CCE.Domain.Common.DuplicateException ex)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
+                title: "Duplicate value",
+                detail: ex.Message,
+                type: "https://cce.moenergy.gov.sa/problems/duplicate").ConfigureAwait(false);
+        }
+        catch (CCE.Domain.Common.DomainException ex)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
+                title: "Invariant violated",
+                detail: ex.Message,
+                type: "https://cce.moenergy.gov.sa/problems/invariant").ConfigureAwait(false);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
@@ -52,6 +73,24 @@ public sealed class ExceptionHandlingMiddleware
         problem.Extensions["correlationId"] = GetCorrelationId(ctx);
 
         ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
+        ctx.Response.ContentType = "application/problem+json";
+        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
+    }
+
+    private static async Task WriteProblemAsync(
+        HttpContext ctx, int statusCode, string title, string detail, string type)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = statusCode,
+            Type = type,
+            Title = title,
+            Detail = detail,
+            Instance = ctx.Request.Path,
+        };
+        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
+
+        ctx.Response.StatusCode = statusCode;
         ctx.Response.ContentType = "application/problem+json";
         await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
     }
