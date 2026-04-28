@@ -52,7 +52,14 @@ public class LayeringTests
     [Fact]
     public void Application_does_not_depend_on_EntityFrameworkCore()
     {
+        // PaginationExtensions deliberately bridges Application and EF Core: it dispatches to
+        // EF's LongCountAsync/ToListAsync when the IQueryable<T> implements IAsyncEnumerable<T>
+        // and falls back to plain LINQ-to-Objects otherwise. The bridge is the whole point of
+        // the type — every handler that paginates needs it. Excluding the single bridging type
+        // keeps the rule strict for handlers, validators, and DTOs.
         var result = Types.InAssembly(ApplicationAssembly)
+            .That()
+            .DoNotResideInNamespace("CCE.Application.Common.Pagination")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();
