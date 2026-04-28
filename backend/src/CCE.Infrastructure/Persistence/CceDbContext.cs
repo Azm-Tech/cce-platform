@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Linq.Expressions;
 using CCE.Application.Common.Interfaces;
 using CCE.Domain.Audit;
@@ -10,6 +11,7 @@ using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Notifications;
 using CCE.Domain.Surveys;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,6 +79,14 @@ public sealed class CceDbContext
     // ─── Surveys ───
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
+
+    // ─── ICceDbContext explicit interface implementations ───
+    // DbSet<T> implements IQueryable<T>; the inherited Identity DbSets (Users/Roles/UserRoles)
+    // and the domain DbSet below satisfy the interface through these explicit projections.
+    IQueryable<User> ICceDbContext.Users => Users;
+    IQueryable<Role> ICceDbContext.Roles => Roles;
+    IQueryable<IdentityUserRole<System.Guid>> ICceDbContext.UserRoles => UserRoles;
+    IQueryable<StateRepresentativeAssignment> ICceDbContext.StateRepresentativeAssignments => StateRepresentativeAssignments;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
