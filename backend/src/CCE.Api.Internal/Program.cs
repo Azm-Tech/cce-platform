@@ -6,10 +6,13 @@ using CCE.Api.Common.Middleware;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Api.Internal.Endpoints;
+using CCE.Api.Internal.Identity;
 using CCE.Application;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,9 @@ builder.Services
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE Internal API");
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 
 var app = builder.Build();
 

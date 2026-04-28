@@ -50,6 +50,13 @@ public sealed class ExceptionHandlingMiddleware
                 detail: ex.Message,
                 type: "https://cce.moenergy.gov.sa/problems/invariant").ConfigureAwait(false);
         }
+        catch (System.Collections.Generic.KeyNotFoundException ex)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status404NotFound,
+                title: "Resource not found",
+                detail: ex.Message,
+                type: "https://cce.moenergy.gov.sa/problems/not-found").ConfigureAwait(false);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");

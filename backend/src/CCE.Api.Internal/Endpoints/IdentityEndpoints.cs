@@ -1,4 +1,5 @@
 using CCE.Application.Identity.Commands.AssignUserRoles;
+using CCE.Application.Identity.Commands.CreateStateRepAssignment;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
 using CCE.Application.Identity.Queries.ListUsers;
@@ -75,9 +76,23 @@ public static class IdentityEndpoints
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("ListStateRepAssignments");
 
+        assignments.MapPost("", async (
+            CreateStateRepAssignmentRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var cmd = new CreateStateRepAssignmentCommand(body.UserId, body.CountryId);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return Results.Created($"/api/admin/state-rep-assignments/{dto.Id}", dto);
+        })
+        .RequireAuthorization(Permissions.Role_Assign)
+        .WithName("CreateStateRepAssignment");
+
         return app;
     }
 }
 
 /// <summary>Body shape for PUT /api/admin/users/{id}/roles.</summary>
 public sealed record AssignUserRolesRequest(IReadOnlyList<string>? Roles);
+
+/// <summary>Body shape for POST /api/admin/state-rep-assignments.</summary>
+public sealed record CreateStateRepAssignmentRequest(System.Guid UserId, System.Guid CountryId);

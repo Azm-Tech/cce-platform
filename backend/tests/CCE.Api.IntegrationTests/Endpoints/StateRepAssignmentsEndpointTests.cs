@@ -47,4 +47,27 @@ public class StateRepAssignmentsEndpointTests :
         doc.GetProperty("pageSize").GetInt32().Should().Be(20);
         doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
+
+    [Fact]
+    public async Task Post_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = System.Net.Http.Json.JsonContent.Create(new { userId = System.Guid.NewGuid(), countryId = System.Guid.NewGuid() });
+
+        var resp = await client.PostAsync(new Uri("/api/admin/state-rep-assignments", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Post_with_unknown_user_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = System.Net.Http.Json.JsonContent.Create(new { userId = System.Guid.NewGuid(), countryId = System.Guid.NewGuid() });
+
+        var resp = await client.PostAsync(new Uri("/api/admin/state-rep-assignments", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

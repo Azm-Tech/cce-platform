@@ -1,4 +1,5 @@
 using System.Linq;
+using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,6 +19,7 @@ public interface ICceDbContext
     IQueryable<Role> Roles { get; }
     IQueryable<IdentityUserRole<System.Guid>> UserRoles { get; }
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
+    IQueryable<Country> Countries { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

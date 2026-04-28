@@ -51,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
+        services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
@@ -70,5 +71,6 @@ public static class DependencyInjection
     {
         public string GetActor() => "system";
         public System.Guid GetCorrelationId() => System.Guid.Empty;
+        public System.Guid? GetUserId() => null;
     }
 }

@@ -17,4 +17,7 @@ public interface ICurrentUserAccessor
 
     /// <summary>Optional correlation id (e.g., trace id). Returns <see cref="System.Guid.Empty"/> when none.</summary>
     System.Guid GetCorrelationId();
+
+    /// <summary>The acting user's Guid, parsed from the JWT sub claim. <c>null</c> for system / seeders / unparseable claims.</summary>
+    System.Guid? GetUserId();
 }
