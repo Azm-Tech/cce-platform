@@ -63,7 +63,7 @@
   </PropertyGroup>
 
   <!-- Test projects opt into a different base namespace via per-project overrides if needed -->
-  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or $(MSBuildProjectName.EndsWith('.IntegrationTests'))">
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or $(MSBuildProjectName.EndsWith('.IntegrationTests')) Or $(MSBuildProjectName.EndsWith('ArchitectureTests'))">
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <!-- CA1707 — Test methods use underscores (Should_do_X_when_Y).
