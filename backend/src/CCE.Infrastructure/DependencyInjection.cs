@@ -50,6 +50,7 @@ public static class DependencyInjection
         });
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
         services.AddScoped<IUserSyncService, UserSyncService>();
+        services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>

@@ -74,4 +74,27 @@ public class UsersEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Put_roles_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new { roles = new[] { "ContentManager" } });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}/roles", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Put_roles_with_unknown_user_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = JsonContent.Create(new { roles = new[] { "ContentManager" } });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}/roles", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

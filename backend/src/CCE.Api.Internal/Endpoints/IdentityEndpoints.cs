@@ -1,3 +1,4 @@
+using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListUsers;
 using CCE.Domain;
@@ -43,6 +44,21 @@ public static class IdentityEndpoints
         .RequireAuthorization(Permissions.User_Read)
         .WithName("GetUserById");
 
+        users.MapPut("/{id:guid}/roles", async (
+            System.Guid id,
+            AssignUserRolesRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var cmd = new AssignUserRolesCommand(id, body.Roles ?? System.Array.Empty<string>());
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Role_Assign)
+        .WithName("AssignUserRoles");
+
         return app;
     }
 }
+
+/// <summary>Body shape for PUT /api/admin/users/{id}/roles.</summary>
+public sealed record AssignUserRolesRequest(IReadOnlyList<string>? Roles);
