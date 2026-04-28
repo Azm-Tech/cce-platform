@@ -1,5 +1,6 @@
 using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Queries.GetUserById;
+using CCE.Application.Identity.Queries.ListStateRepAssignments;
 using CCE.Application.Identity.Queries.ListUsers;
 using CCE.Domain;
 using MediatR;
@@ -55,6 +56,24 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("AssignUserRoles");
+
+        var assignments = app.MapGroup("/api/admin/state-rep-assignments").WithTags("Identity");
+
+        assignments.MapGet("", async (
+            int? page, int? pageSize, System.Guid? userId, System.Guid? countryId, bool? active,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var query = new ListStateRepAssignmentsQuery(
+                Page: page ?? 1,
+                PageSize: pageSize ?? 20,
+                UserId: userId,
+                CountryId: countryId,
+                Active: active ?? true);
+            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return Results.Ok(result);
+        })
+        .RequireAuthorization(Permissions.Role_Assign)
+        .WithName("ListStateRepAssignments");
 
         return app;
     }
