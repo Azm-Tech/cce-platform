@@ -26,4 +26,14 @@ public class AssetsEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.I
 
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task GetById_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.GetAsync(new Uri($"/api/admin/assets/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

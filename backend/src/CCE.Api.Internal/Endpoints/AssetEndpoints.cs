@@ -1,4 +1,5 @@
 using CCE.Application.Content.Commands.UploadAsset;
+using CCE.Application.Content.Queries.GetAssetById;
 using CCE.Domain;
 using CCE.Infrastructure;
 using MediatR;
@@ -51,6 +52,16 @@ public static class AssetEndpoints
         .WithName("UploadAsset")
         .DisableAntiforgery()
         .WithMetadata(new RequestSizeLimitMetadataImpl(MaxRequestSizeBytes));
+
+        assets.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var dto = await mediator.Send(new GetAssetByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Upload)
+        .WithName("GetAssetById");
 
         return app;
     }
