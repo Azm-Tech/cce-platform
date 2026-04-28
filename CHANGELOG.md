@@ -4,6 +4,41 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [data-domain-v0.1.0] — 2026-04-28
+
+The Data & Domain sub-project — full entity model, persistence layer, migration, seeders, architecture invariants.
+
+### Highlights
+
+- 36 domain entities across 8 bounded contexts (Identity, Content, Country, Community, KnowledgeMaps, InteractiveCity, Notifications, Surveys)
+- ASP.NET Identity tables coexisting with CCE entities (one DbContext, one transaction)
+- 41 permissions × 6 roles wired through the Roslyn source generator (extended in Phase 01 from Foundation's flat schema)
+- Soft-delete via `ISoftDeletable` + reflection-based global query filter
+- `AuditingInterceptor` writing `AuditEvent` for every `[Audited]` entity change in same transaction
+- `DomainEventDispatcher` publishing events via MediatR `IPublisher` post-commit
+- `DbExceptionMapper` translating SQL 2601/2627 + concurrency errors to domain exceptions
+- `DataDomainInitial` migration: 40 tables + 55 indexes + RowVersion columns + filtered unique indexes; 804-line DDL snapshot
+- 4 idempotent seeders (`RolesAndPermissionsSeeder`, `ReferenceDataSeeder`, `KnowledgeMapSeeder`, `DemoDataSeeder`) using deterministic SHA-256 GUIDs
+- 12 NetArchTest architecture rules enforcing Clean Architecture layering + sealed aggregates + `[Audited]` coverage
+
+### Tests
+
+- Domain: 284, Application: 12, Infrastructure: 30 (+ 1 skipped), Architecture: 12, Source-gen: 10, Api-integration: 28
+- **Cumulative backend: 376 + 1 skipped**
+- (Frontend test counts unchanged — sub-project 2 is backend-only.)
+
+### Documentation
+
+- 8 new ADRs (0019-0026) covering DbContext design, soft-delete, auditing, domain events, migration strategy, Identity coexistence, deterministic GUIDs, architecture tests
+- `docs/data-domain-completion.md` — DoD verification report
+- `docs/subprojects/02-data-domain-progress.md` — phase tracker (11/11 phases ✅)
+
+### Tooling
+
+- `dotnet-ef 8.0.10` pinned in `.config/dotnet-tools.json`
+- New CPM packages: `Microsoft.Extensions.Identity.Stores`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `MediatR`, `Microsoft.EntityFrameworkCore.InMemory`, `NetArchTest.Rules`
+- New `NoWarn` entries: CA1056, CA1054, CA1002, CA1308 (URL/list patterns), CA1861 (test-only)
+
 ## [foundation-v0.1.0] — 2026-04-24
 
 The Foundation sub-project — scaffolding for all subsequent sub-projects.
