@@ -1,5 +1,6 @@
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
+using CCE.Application.Identity.Queries.ListExpertProfiles;
 using CCE.Application.Identity.Queries.ListExpertRequests;
 using CCE.Domain;
 using CCE.Domain.Identity;
@@ -54,6 +55,22 @@ public static class ExpertEndpoints
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("RejectExpertRequest");
+
+        var profiles = app.MapGroup("/api/admin/expert-profiles").WithTags("Experts");
+
+        profiles.MapGet("", async (
+            int? page, int? pageSize, string? search,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var query = new ListExpertProfilesQuery(
+                Page: page ?? 1,
+                PageSize: pageSize ?? 20,
+                Search: search);
+            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return Results.Ok(result);
+        })
+        .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
+        .WithName("ListExpertProfiles");
 
         return app;
     }
