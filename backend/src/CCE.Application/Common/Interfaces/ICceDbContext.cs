@@ -20,6 +20,8 @@ public interface ICceDbContext
     IQueryable<IdentityUserRole<System.Guid>> UserRoles { get; }
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
     IQueryable<Country> Countries { get; }
+    IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
+    IQueryable<ExpertProfile> ExpertProfiles { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

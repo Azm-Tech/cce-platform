@@ -88,6 +88,8 @@ public sealed class CceDbContext
     IQueryable<IdentityUserRole<System.Guid>> ICceDbContext.UserRoles => UserRoles;
     IQueryable<StateRepresentativeAssignment> ICceDbContext.StateRepresentativeAssignments => StateRepresentativeAssignments;
     IQueryable<CCE.Domain.Country.Country> ICceDbContext.Countries => Countries;
+    IQueryable<ExpertRegistrationRequest> ICceDbContext.ExpertRegistrationRequests => ExpertRegistrationRequests;
+    IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

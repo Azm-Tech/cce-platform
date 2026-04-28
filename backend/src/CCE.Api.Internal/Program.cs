@@ -45,6 +45,7 @@ app.UseMiddleware<LocalizationMiddleware>();
 app.UseCceOpenApi(apiTag: "internal");
 
 app.MapIdentityEndpoints();
+app.MapExpertEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
