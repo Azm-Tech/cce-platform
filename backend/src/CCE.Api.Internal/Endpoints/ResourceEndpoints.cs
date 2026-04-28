@@ -1,4 +1,5 @@
 using CCE.Application.Content.Commands.CreateResource;
+using CCE.Application.Content.Commands.PublishResource;
 using CCE.Application.Content.Commands.UpdateResource;
 using CCE.Application.Content.Queries.ListResources;
 using CCE.Domain;
@@ -67,6 +68,16 @@ public static class ResourceEndpoints
         })
         .RequireAuthorization(Permissions.Resource_Center_Update)
         .WithName("UpdateResource");
+
+        resources.MapPost("/{id:guid}/publish", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var dto = await mediator.Send(new PublishResourceCommand(id), cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Upload)
+        .WithName("PublishResource");
 
         return app;
     }
