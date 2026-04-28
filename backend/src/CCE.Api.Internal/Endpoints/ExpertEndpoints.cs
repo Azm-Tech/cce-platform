@@ -1,3 +1,4 @@
+using CCE.Application.Identity.Commands.ApproveExpertRequest;
 using CCE.Application.Identity.Queries.ListExpertRequests;
 using CCE.Domain;
 using CCE.Domain.Identity;
@@ -29,6 +30,20 @@ public static class ExpertEndpoints
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertRequests");
 
+        requests.MapPost("/{id:guid}/approve", async (
+            System.Guid id,
+            ApproveExpertRequestRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var cmd = new ApproveExpertRequestCommand(id, body.AcademicTitleAr, body.AcademicTitleEn);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
+        .WithName("ApproveExpertRequest");
+
         return app;
     }
 }
+
+public sealed record ApproveExpertRequestRequest(string AcademicTitleAr, string AcademicTitleEn);

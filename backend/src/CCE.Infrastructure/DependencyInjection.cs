@@ -52,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
+        services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
