@@ -18,7 +18,7 @@
 | 07 | Persistence wiring | ✅ Done |
 | 08 | Migration | ✅ Done |
 | 09 | Seeder | ✅ Done |
-| 10 | Architecture tests + ADRs + release | ⏳ Pending |
+| 10 | Architecture tests + ADRs + release | ✅ Done |
 
 ## Test totals
 
@@ -26,11 +26,11 @@
 |---|---|---|---|
 | Domain | 16 | 284 | ~136 |
 | Application | 12 | 12 | ~72 |
-| Infrastructure | 6 | 30 | ~46 |
-| Architecture | 0 | 0 | ~15 |
+| Infrastructure | 6 | 30 (+ 1 skipped) | ~46 |
+| Architecture | 0 | 12 | ~15 |
 | Source generator | 0 | 10 | ~20 |
 | Api Integration | 28 | 28 | ~38 |
-| **Cumulative** | **62** (backend) | **364** | **~327** (backend) |
+| **Cumulative** | **62** (backend) | **376** + 1 skipped | **~327** (backend) |
 
 (Frontend test counts unchanged — sub-project 2 is backend-only.)
 
@@ -40,4 +40,6 @@
 
 ## Release tag
 
-`data-domain-v0.1.0` will be tagged at end of Phase 10.
+`data-domain-v0.1.0` annotated tag created 2026-04-28.
+
+Sub-project 2 is **complete** (11/11 phases). See [`docs/data-domain-completion.md`](../data-domain-completion.md) for the full DoD verification report.
