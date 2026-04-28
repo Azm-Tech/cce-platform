@@ -1,6 +1,8 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Content;
 using CCE.Application.Identity;
 using CCE.Domain.Common;
+using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Persistence;
 using CCE.Infrastructure.Persistence.Interceptors;
@@ -53,6 +55,10 @@ public static class DependencyInjection
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
         services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
+
+        // File storage + virus scanning
+        services.AddSingleton<IFileStorage, LocalFileStorage>();
+        services.AddTransient<IClamAvScanner, ClamAvScanner>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
