@@ -64,6 +64,20 @@ public class UserSyncMiddlewareTests
             default, default!, default!, default!, default);
     }
 
+    [Fact]
+    public async Task Authenticated_request_with_unparseable_sub_does_not_invoke_sync_service()
+    {
+        var sync = Substitute.For<IUserSyncService>();
+        using var host = BuildHost(sync, authenticated: true, sub: "not-a-guid");
+        var client = host.GetTestClient();
+
+        var resp = await client.GetAsync(new Uri("/", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        await sync.DidNotReceiveWithAnyArgs().EnsureUserExistsAsync(
+            default, default!, default!, default!, default);
+    }
+
     private static IHost BuildHost(IUserSyncService sync, bool authenticated, string sub = "")
     {
         return new HostBuilder()

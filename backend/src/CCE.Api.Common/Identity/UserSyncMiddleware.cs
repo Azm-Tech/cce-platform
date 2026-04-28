@@ -56,6 +56,7 @@ public sealed class UserSyncMiddleware
         var preferredUsername = context.User.FindFirstValue("preferred_username") ?? email;
         var groups = context.User.FindAll("groups").Select(c => c.Value)
             .Concat(context.User.FindAll(ClaimTypes.Role).Select(c => c.Value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         await syncService.EnsureUserExistsAsync(userId, email, preferredUsername, groups, context.RequestAborted)

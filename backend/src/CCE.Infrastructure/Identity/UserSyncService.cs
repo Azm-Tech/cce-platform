@@ -56,8 +56,9 @@ public sealed class UserSyncService : IUserSyncService
                 continue;
             }
 
+            var normalizedRoleName = roleName.ToUpperInvariant();
             var role = await _db.Roles
-                .FirstOrDefaultAsync(r => r.Name == roleName, ct)
+                .FirstOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, ct)
                 .ConfigureAwait(false);
             if (role is null)
             {
