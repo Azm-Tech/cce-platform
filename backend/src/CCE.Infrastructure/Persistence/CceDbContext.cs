@@ -92,6 +92,7 @@ public sealed class CceDbContext
     IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles;
     IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles;
     IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources;
+    IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

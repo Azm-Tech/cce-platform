@@ -25,6 +25,7 @@ public interface ICceDbContext
     IQueryable<ExpertProfile> ExpertProfiles { get; }
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<Resource> Resources { get; }
+    IQueryable<CountryResourceRequest> CountryResourceRequests { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

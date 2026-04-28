@@ -48,6 +48,7 @@ app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();
 app.MapResourceEndpoints();
+app.MapCountryResourceRequestEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
