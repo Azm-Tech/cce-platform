@@ -47,6 +47,7 @@ app.UseCceOpenApi(apiTag: "internal");
 app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();
+app.MapResourceEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
