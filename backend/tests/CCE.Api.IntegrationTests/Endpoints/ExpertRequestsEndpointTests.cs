@@ -72,4 +72,29 @@ public class ExpertRequestsEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Reject_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = System.Net.Http.Json.JsonContent.Create(new { rejectionReasonAr = "غير مؤهل", rejectionReasonEn = "Insufficient evidence." });
+
+        var resp = await client.PostAsync(
+            new Uri($"/api/admin/expert-requests/{System.Guid.NewGuid()}/reject", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Reject_with_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = System.Net.Http.Json.JsonContent.Create(new { rejectionReasonAr = "غير مؤهل", rejectionReasonEn = "Insufficient evidence." });
+
+        var resp = await client.PostAsync(
+            new Uri($"/api/admin/expert-requests/{System.Guid.NewGuid()}/reject", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }
