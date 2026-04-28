@@ -138,6 +138,10 @@ groups:
     TemplateManage:
       description: Manage notification templates
       roles: [SuperAdmin]
+  Audit:
+    Read:
+      description: Query the audit-event log
+      roles: [SuperAdmin]
   Report:
     UserRegistrations:
       description: Generate user-registration report

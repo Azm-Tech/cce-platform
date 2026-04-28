@@ -45,6 +45,7 @@ public class PermissionsYamlSchemaTests
         "Survey.Submit",
         "Notification.TemplateManage",
         "Report.UserRegistrations",
+        "Audit.Read",
     };
 
     private static readonly string[] ExpectedRoleNames =
@@ -71,7 +72,7 @@ public class PermissionsYamlSchemaTests
     [Fact]
     public void Permissions_All_count_matches_BRD_matrix()
     {
-        Permissions.All.Count.Should().Be(41);
+        Permissions.All.Count.Should().Be(42);
     }
 
     [Fact]
