@@ -39,8 +39,8 @@ INT_PID=$!
 
 echo "==> waiting for swagger endpoints to be ready"
 for i in $(seq 1 30); do
-  ext_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$EXT_PORT/swagger/v1/swagger.json" || echo 000)
-  int_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$INT_PORT/swagger/v1/swagger.json" || echo 000)
+  ext_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$EXT_PORT/swagger/external/v1/swagger.json" || echo 000)
+  int_ok=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$INT_PORT/swagger/internal/v1/swagger.json" || echo 000)
   if [[ "$ext_ok" == "200" ]] && [[ "$int_ok" == "200" ]]; then
     break
   fi
@@ -58,9 +58,9 @@ if [[ "$int_ok" != "200" ]]; then
 fi
 
 echo "==> exporting contracts/openapi.external.json"
-curl -s "http://localhost:$EXT_PORT/swagger/v1/swagger.json" | jq --sort-keys . > contracts/openapi.external.json
+curl -s "http://localhost:$EXT_PORT/swagger/external/v1/swagger.json" | jq --sort-keys . > contracts/openapi.external.json
 echo "==> exporting contracts/openapi.internal.json"
-curl -s "http://localhost:$INT_PORT/swagger/v1/swagger.json" | jq --sort-keys . > contracts/openapi.internal.json
+curl -s "http://localhost:$INT_PORT/swagger/internal/v1/swagger.json" | jq --sort-keys . > contracts/openapi.internal.json
 
 echo "==> done"
 ls -l contracts/openapi.*.json

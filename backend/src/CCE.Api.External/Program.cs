@@ -19,7 +19,7 @@ builder.Services
     .AddCcePermissionPolicies()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
-    .AddCceOpenApi("CCE External API");
+    .AddCceOpenApi("CCE External API", apiTag: "external");
 
 var app = builder.Build();
 
@@ -32,7 +32,7 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.UseMiddleware<LocalizationMiddleware>();
 
-app.UseCceOpenApi();
+app.UseCceOpenApi(apiTag: "external");
 
 app.MapGet("/", () => "CCE.Api.External — Foundation");
 

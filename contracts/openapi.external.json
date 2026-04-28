@@ -1,7 +1,7 @@
 {
   "components": {},
   "info": {
-    "description": "CCE Knowledge Center API — Foundation",
+    "description": "CCE Knowledge Center — CCE External API",
     "title": "CCE External API",
     "version": "v1"
   },

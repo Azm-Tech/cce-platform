@@ -21,7 +21,7 @@ builder.Services
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
-    .AddCceOpenApi("CCE Internal API");
+    .AddCceOpenApi("CCE Internal API", apiTag: "internal");
 
 var app = builder.Build();
 
@@ -35,7 +35,7 @@ app.UseCceUserSync();
 app.UseRateLimiter();
 app.UseMiddleware<LocalizationMiddleware>();
 
-app.UseCceOpenApi();
+app.UseCceOpenApi(apiTag: "internal");
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
