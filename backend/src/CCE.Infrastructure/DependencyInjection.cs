@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Identity;
+using CCE.Infrastructure.Content;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
@@ -59,6 +60,7 @@ public static class DependencyInjection
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
+        services.AddScoped<IAssetService, AssetService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>

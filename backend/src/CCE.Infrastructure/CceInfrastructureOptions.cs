@@ -22,4 +22,10 @@ public sealed class CceInfrastructureOptions
 
     /// <summary>ClamAV daemon TCP port. Default 3310.</summary>
     public int ClamAvPort { get; init; } = 3310;
+
+    /// <summary>
+    /// Allowed MIME types for asset uploads. Defaults to a curated PDF/image/video/zip whitelist.
+    /// </summary>
+    public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } =
+        new[] { "application/pdf", "image/png", "image/jpeg", "image/svg+xml", "video/mp4", "application/zip" };
 }

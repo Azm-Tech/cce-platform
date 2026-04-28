@@ -1,4 +1,5 @@
 using System.Linq;
+using CCE.Domain.Content;
 using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,7 @@ public interface ICceDbContext
     IQueryable<Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
+    IQueryable<AssetFile> AssetFiles { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
