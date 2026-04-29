@@ -116,4 +116,18 @@ public class HomepageSectionsEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Reorder_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new
+        {
+            assignments = new[] { new { id = System.Guid.NewGuid(), orderIndex = 0 } }
+        });
+
+        var resp = await client.PostAsync(new Uri("/api/admin/homepage-sections/reorder", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

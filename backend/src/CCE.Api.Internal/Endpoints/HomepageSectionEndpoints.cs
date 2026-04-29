@@ -1,5 +1,6 @@
 using CCE.Application.Content.Commands.CreateHomepageSection;
 using CCE.Application.Content.Commands.DeleteHomepageSection;
+using CCE.Application.Content.Commands.ReorderHomepageSections;
 using CCE.Application.Content.Commands.UpdateHomepageSection;
 using CCE.Application.Content.Queries.ListHomepageSections;
 using CCE.Domain;
@@ -55,6 +56,19 @@ public static class HomepageSectionEndpoints
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("DeleteHomepageSection");
 
+        sections.MapPost("/reorder", async (
+            ReorderHomepageSectionsRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var assignments = body.Assignments
+                .Select(a => new HomepageSectionOrderAssignment(a.Id, a.OrderIndex))
+                .ToList();
+            await mediator.Send(new ReorderHomepageSectionsCommand(assignments), cancellationToken).ConfigureAwait(false);
+            return Results.NoContent();
+        })
+        .RequireAuthorization(Permissions.Page_Edit)
+        .WithName("ReorderHomepageSections");
+
         return app;
     }
 }
@@ -69,3 +83,8 @@ public sealed record UpdateHomepageSectionRequest(
     string ContentAr,
     string ContentEn,
     bool IsActive);
+
+public sealed record ReorderHomepageSectionsRequest(
+    System.Collections.Generic.IReadOnlyList<ReorderHomepageSectionAssignmentRequest> Assignments);
+
+public sealed record ReorderHomepageSectionAssignmentRequest(System.Guid Id, int OrderIndex);
