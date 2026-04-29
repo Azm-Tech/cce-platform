@@ -97,11 +97,17 @@ public static class DependencyInjection
         services.AddScoped<IResourceReportService, ResourceReportService>();
         services.AddScoped<ICountryProfilesReportService, CountryProfilesReportService>();
 
-        // Redis — singleton multiplexer
+        // Redis — singleton multiplexer.
+        // AbortOnConnectFail=false: Connect returns a degraded multiplexer instead of throwing
+        // when the server is unreachable at startup. This lets the host start cleanly even with
+        // a bad connection string, so the /health/ready health-check can probe Redis lazily
+        // and return 503 (degraded) as expected, rather than crashing the host.
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var infraOpts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
-            return ConnectionMultiplexer.Connect(infraOpts.RedisConnectionString);
+            var config = ConfigurationOptions.Parse(infraOpts.RedisConnectionString);
+            config.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(config);
         });
 
         return services;
