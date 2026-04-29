@@ -16,6 +16,7 @@ test.describe('admin-cms smoke', () => {
     await page.goto('/');
     // Let the app fully bootstrap (app initializer loads env.json + translations) and
     // give the OIDC guard time to either resolve auth state or trigger its redirect.
+    // eslint-disable-next-line playwright/no-networkidle -- waiting on OIDC redirect chain that has no single deterministic selector
     await page.waitForLoadState('networkidle');
 
     const finalUrl = page.url();
@@ -50,6 +51,7 @@ test.describe('admin-cms smoke', () => {
     });
 
     await page.goto('/');
+    // eslint-disable-next-line playwright/no-networkidle -- waiting on OIDC redirect chain that has no single deterministic selector
     await page.waitForLoadState('networkidle');
 
     // If the auto-login guard already redirected through Keycloak, we're done — the

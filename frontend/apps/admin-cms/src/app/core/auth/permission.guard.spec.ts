@@ -1,6 +1,5 @@
 import { Route } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
-import { runInInjectionContext } from '@angular/core';
 import { AuthService } from './auth.service';
 import { permissionGuard } from './permission.guard';
 

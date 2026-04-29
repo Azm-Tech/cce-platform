@@ -19,8 +19,8 @@ export interface ConfirmDialogData {
     <h2 mat-dialog-title>{{ data.titleKey | translate }}</h2>
     <mat-dialog-content>{{ data.messageKey | translate }}</mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">{{ (data.cancelKey ?? 'common.actions.cancel') | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onConfirm()">{{ (data.confirmKey ?? 'common.actions.save') | translate }}</button>
+      <button type="button" mat-button (click)="onCancel()">{{ (data.cancelKey ?? 'common.actions.cancel') | translate }}</button>
+      <button type="button" mat-flat-button color="primary" (click)="onConfirm()">{{ (data.confirmKey ?? 'common.actions.save') | translate }}</button>
     </mat-dialog-actions>
   `,
 })

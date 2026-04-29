@@ -8,7 +8,7 @@ import { PermissionDirective } from './permission.directive';
 @Component({
   standalone: true,
   imports: [PermissionDirective],
-  template: `<button *ccePermission="'User.Read'">edit</button>`,
+  template: `<button type="button" *ccePermission="'User.Read'">edit</button>`,
 })
 class HostComponent {}
 
