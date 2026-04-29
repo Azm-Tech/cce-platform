@@ -26,6 +26,7 @@ builder.Services
     .AddCceTieredRateLimiter(builder.Configuration)
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
+    .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
     .AddCceOpenApi("CCE External API");
 
@@ -44,6 +45,7 @@ app.UseCceBff();
 app.UseCceOutputCache();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCceUserSync();
 app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "external");
@@ -59,6 +61,7 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
 
 app.MapBffAuthEndpoints();
 
+app.MapProfileEndpoints();
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();
 app.MapResourcesPublicEndpoints();

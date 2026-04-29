@@ -6,6 +6,7 @@ using CCE.Application.Content;
 using CCE.Application.Content.Public;
 using CCE.Application.Country;
 using CCE.Application.Identity;
+using CCE.Application.Identity.Public;
 using CCE.Application.Notifications;
 using CCE.Application.Reports;
 using CCE.Application.Search;
@@ -71,6 +72,7 @@ public static class DependencyInjection
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
+        services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
         services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
 
