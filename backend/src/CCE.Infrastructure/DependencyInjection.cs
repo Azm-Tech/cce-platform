@@ -1,4 +1,5 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
 using CCE.Application.Country;
@@ -7,6 +8,7 @@ using CCE.Application.Notifications;
 using CCE.Application.Reports;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
+using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Reports;
@@ -68,6 +70,7 @@ public static class DependencyInjection
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
+        services.AddSingleton<IHtmlSanitizer, HtmlSanitizerWrapper>();
         services.AddScoped<IAssetService, AssetService>();
         services.AddScoped<IResourceCategoryService, ResourceCategoryService>();
         services.AddScoped<IResourceService, ResourceService>();

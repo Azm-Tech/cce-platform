@@ -46,7 +46,11 @@
          CA1054 — "URI parameters should be System.Uri" (same rationale — domain mutators take strings to align with persistence)
          CA1002 — "Do not expose generic Lists" (EF entities use List<T> for JSON-mapped collections; Collection<T> doesn't roundtrip through JSON converters as cleanly)
          CA1308 — "use ToUpperInvariant" (URLs/slugs/file extensions are lowercase by web convention; ToLower is semantically correct here) -->
-    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724;CA1056;CA1054;CA1002;CA1308</NoWarn>
+    <!-- NU1902 — HtmlSanitizer 9.0.886 advisory GHSA-j92c-7v7g-gj3f (moderate). No non-beta
+         release exists beyond 9.0.886; the library is used only server-side for output
+         sanitization (never as an input parser in a browser context), so the reported
+         client-side XSS vector is not reachable in our deployment. -->
+    <NoWarn>$(NoWarn);1591;CS1591;CA1030;CA1062;CA1515;CA1812;CA1848;CA2007;CA1819;CA1716;CA1724;CA1056;CA1054;CA1002;CA1308;NU1902</NoWarn>
 
     <!-- Output organization -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts/bin/$(MSBuildProjectName)/</BaseOutputPath>

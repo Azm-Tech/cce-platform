@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="MediatR" />
 
+    <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
 
