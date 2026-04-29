@@ -28,6 +28,7 @@ public interface ICceDbContext
     IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }
     IQueryable<DomainCountry.CountryResourceRequest> CountryResourceRequests { get; }
+    IQueryable<DomainCountry.CountryProfile> CountryProfiles { get; }
     IQueryable<News> News { get; }
     IQueryable<Event> Events { get; }
     IQueryable<Page> Pages { get; }

@@ -73,6 +73,7 @@ public static class DependencyInjection
         services.AddScoped<IHomepageSectionService, HomepageSectionService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
         services.AddScoped<ICountryAdminService, CountryAdminService>();
+        services.AddScoped<ICountryProfileService, CountryProfileService>();
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
 

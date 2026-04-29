@@ -51,6 +51,7 @@ app.MapResourceEndpoints();
 app.MapResourceCategoryEndpoints();
 app.MapCountryResourceRequestEndpoints();
 app.MapCountryEndpoints();
+app.MapCountryProfileEndpoints();
 app.MapNewsEndpoints();
 app.MapEventEndpoints();
 app.MapPageEndpoints();
