@@ -62,6 +62,7 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
 app.MapBffAuthEndpoints();
 
 app.MapProfileEndpoints();
+app.MapNotificationsEndpoints();
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();
 app.MapResourcesPublicEndpoints();

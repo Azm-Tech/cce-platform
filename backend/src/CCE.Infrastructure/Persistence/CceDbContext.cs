@@ -103,6 +103,7 @@ public sealed class CceDbContext
     IQueryable<Post> ICceDbContext.Posts => Posts;
     IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies;
     IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates;
+    IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications;
     IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings;
     IQueryable<AuditEvent> ICceDbContext.AuditEvents => AuditEvents;
 

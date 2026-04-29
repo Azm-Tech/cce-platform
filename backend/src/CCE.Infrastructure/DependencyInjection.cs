@@ -8,6 +8,7 @@ using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Public;
 using CCE.Application.Notifications;
+using CCE.Application.Notifications.Public;
 using CCE.Application.Reports;
 using CCE.Application.Search;
 using CCE.Infrastructure.Community;
@@ -95,6 +96,7 @@ public static class DependencyInjection
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
         services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
+        services.AddScoped<IUserNotificationService, UserNotificationService>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();

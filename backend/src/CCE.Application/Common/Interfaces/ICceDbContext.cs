@@ -40,6 +40,7 @@ public interface ICceDbContext
     IQueryable<Post> Posts { get; }
     IQueryable<PostReply> PostReplies { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
+    IQueryable<UserNotification> UserNotifications { get; }
     IQueryable<ServiceRating> ServiceRatings { get; }
     IQueryable<AuditEvent> AuditEvents { get; }
 

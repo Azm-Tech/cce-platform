@@ -44,4 +44,14 @@ public static class PaginationExtensions
             ? await query.ToListAsync(ct).ConfigureAwait(false)
             : query.ToList();
     }
+
+    /// <summary>
+    /// Counts the elements of an <see cref="IQueryable{T}"/>, dispatching to EF's
+    /// <c>CountAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>Count</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<int> CountAsyncEither<T>(this IQueryable<T> query, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.CountAsync(ct).ConfigureAwait(false)
+            : query.Count();
 }
