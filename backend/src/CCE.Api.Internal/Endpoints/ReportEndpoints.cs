@@ -80,6 +80,57 @@ public static class ReportEndpoints
         .RequireAuthorization(Permissions.Report_CommunityPosts)
         .WithName("CommunityPostsReport");
 
+        reports.MapGet("/news.csv", async (
+            HttpContext httpContext,
+            System.DateTimeOffset? from,
+            System.DateTimeOffset? to,
+            INewsReportService service,
+            ICsvStreamWriter writer,
+            CancellationToken cancellationToken) =>
+        {
+            var filename = $"news-{System.DateTimeOffset.UtcNow:yyyy-MM-dd}.csv";
+            httpContext.Response.ContentType = "text/csv; charset=utf-8";
+            httpContext.Response.Headers.ContentDisposition = $"attachment; filename=\"{filename}\"";
+            var rows = service.QueryAsync(from, to, cancellationToken);
+            await writer.WriteAsync(httpContext.Response.Body, rows, cancellationToken).ConfigureAwait(false);
+        })
+        .RequireAuthorization(Permissions.Report_News)
+        .WithName("NewsReport");
+
+        reports.MapGet("/events.csv", async (
+            HttpContext httpContext,
+            System.DateTimeOffset? from,
+            System.DateTimeOffset? to,
+            IEventReportService service,
+            ICsvStreamWriter writer,
+            CancellationToken cancellationToken) =>
+        {
+            var filename = $"events-{System.DateTimeOffset.UtcNow:yyyy-MM-dd}.csv";
+            httpContext.Response.ContentType = "text/csv; charset=utf-8";
+            httpContext.Response.Headers.ContentDisposition = $"attachment; filename=\"{filename}\"";
+            var rows = service.QueryAsync(from, to, cancellationToken);
+            await writer.WriteAsync(httpContext.Response.Body, rows, cancellationToken).ConfigureAwait(false);
+        })
+        .RequireAuthorization(Permissions.Report_Events)
+        .WithName("EventsReport");
+
+        reports.MapGet("/resources.csv", async (
+            HttpContext httpContext,
+            System.DateTimeOffset? from,
+            System.DateTimeOffset? to,
+            IResourceReportService service,
+            ICsvStreamWriter writer,
+            CancellationToken cancellationToken) =>
+        {
+            var filename = $"resources-{System.DateTimeOffset.UtcNow:yyyy-MM-dd}.csv";
+            httpContext.Response.ContentType = "text/csv; charset=utf-8";
+            httpContext.Response.Headers.ContentDisposition = $"attachment; filename=\"{filename}\"";
+            var rows = service.QueryAsync(from, to, cancellationToken);
+            await writer.WriteAsync(httpContext.Response.Body, rows, cancellationToken).ConfigureAwait(false);
+        })
+        .RequireAuthorization(Permissions.Report_Resources)
+        .WithName("ResourcesReport");
+
         return app;
     }
 }

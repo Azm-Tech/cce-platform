@@ -112,4 +112,73 @@ public class ReportsEndpointTests :
         body.Split('\n')[0].Should().Contain("Id");
         body.Split('\n')[0].Should().Contain("AuthorId");
     }
+
+    [Fact]
+    public async Task News_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/news.csv", UriKind.Relative));
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task News_super_admin_returns_csv()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/news.csv", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        resp.Content.Headers.ContentType!.MediaType.Should().Be("text/csv");
+        var body = await resp.Content.ReadAsStringAsync();
+        body.Split('\n')[0].Should().Contain("Id");
+        body.Split('\n')[0].Should().Contain("Slug");
+    }
+
+    [Fact]
+    public async Task Events_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/events.csv", UriKind.Relative));
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Events_super_admin_returns_csv()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/events.csv", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        resp.Content.Headers.ContentType!.MediaType.Should().Be("text/csv");
+        var body = await resp.Content.ReadAsStringAsync();
+        body.Split('\n')[0].Should().Contain("Id");
+        body.Split('\n')[0].Should().Contain("ICalUid");
+    }
+
+    [Fact]
+    public async Task Resources_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/resources.csv", UriKind.Relative));
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Resources_super_admin_returns_csv()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/resources.csv", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        resp.Content.Headers.ContentType!.MediaType.Should().Be("text/csv");
+        var body = await resp.Content.ReadAsStringAsync();
+        body.Split('\n')[0].Should().Contain("Id");
+        body.Split('\n')[0].Should().Contain("ResourceType");
+    }
 }

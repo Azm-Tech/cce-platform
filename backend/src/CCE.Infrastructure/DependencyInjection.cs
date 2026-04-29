@@ -85,6 +85,9 @@ public static class DependencyInjection
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();
         services.AddScoped<ICommunityPostReportService, CommunityPostReportService>();
+        services.AddScoped<INewsReportService, NewsReportService>();
+        services.AddScoped<IEventReportService, EventReportService>();
+        services.AddScoped<IResourceReportService, ResourceReportService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
