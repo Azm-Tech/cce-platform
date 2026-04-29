@@ -61,6 +61,7 @@ public static class DependencyInjection
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddScoped<IAssetService, AssetService>();
+        services.AddScoped<IResourceCategoryService, ResourceCategoryService>();
         services.AddScoped<IResourceService, ResourceService>();
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<IEventService, EventService>();

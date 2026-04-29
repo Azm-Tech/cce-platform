@@ -24,6 +24,7 @@ public interface ICceDbContext
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
     IQueryable<AssetFile> AssetFiles { get; }
+    IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }
     IQueryable<CountryResourceRequest> CountryResourceRequests { get; }
     IQueryable<News> News { get; }

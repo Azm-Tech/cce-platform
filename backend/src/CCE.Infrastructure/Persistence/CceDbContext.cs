@@ -91,6 +91,7 @@ public sealed class CceDbContext
     IQueryable<ExpertRegistrationRequest> ICceDbContext.ExpertRegistrationRequests => ExpertRegistrationRequests;
     IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles;
     IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles;
+    IQueryable<ResourceCategory> ICceDbContext.ResourceCategories => ResourceCategories;
     IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources;
     IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests;
     IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News;
