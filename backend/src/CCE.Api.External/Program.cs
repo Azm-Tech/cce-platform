@@ -67,6 +67,7 @@ app.MapHomepageSectionsPublicEndpoints();
 app.MapTopicsPublicEndpoints();
 app.MapCategoriesPublicEndpoints();
 app.MapCountriesPublicEndpoints();
+app.MapSearchEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {
