@@ -108,4 +108,42 @@ public class EventTests
 
         e.ICalUid.Should().Be(uid);
     }
+
+    [Fact]
+    public void UpdateContent_mutates_editable_fields_when_inputs_valid()
+    {
+        var clock = NewClock();
+        var e = NewEvent(clock);
+
+        e.UpdateContent(
+            "عنوان جديد", "New Title",
+            "وصف جديد", "New Description",
+            "جدة", "Jeddah",
+            "https://meet.example.com/room",
+            "https://img.example.com/banner.jpg");
+
+        e.TitleAr.Should().Be("عنوان جديد");
+        e.TitleEn.Should().Be("New Title");
+        e.DescriptionAr.Should().Be("وصف جديد");
+        e.DescriptionEn.Should().Be("New Description");
+        e.LocationAr.Should().Be("جدة");
+        e.LocationEn.Should().Be("Jeddah");
+        e.OnlineMeetingUrl.Should().Be("https://meet.example.com/room");
+        e.FeaturedImageUrl.Should().Be("https://img.example.com/banner.jpg");
+    }
+
+    [Fact]
+    public void UpdateContent_throws_DomainException_when_meeting_url_not_https()
+    {
+        var clock = NewClock();
+        var e = NewEvent(clock);
+
+        var act = () => e.UpdateContent(
+            "ا", "x", "ا", "x",
+            null, null,
+            "http://insecure.example.com",
+            null);
+
+        act.Should().Throw<DomainException>().WithMessage("*https*");
+    }
 }

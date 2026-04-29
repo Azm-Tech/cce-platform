@@ -96,6 +96,40 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         return ev;
     }
 
+    public void UpdateContent(
+        string titleAr,
+        string titleEn,
+        string descriptionAr,
+        string descriptionEn,
+        string? locationAr,
+        string? locationEn,
+        string? onlineMeetingUrl,
+        string? featuredImageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
+        if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
+        if (string.IsNullOrWhiteSpace(descriptionAr)) throw new DomainException("DescriptionAr is required.");
+        if (string.IsNullOrWhiteSpace(descriptionEn)) throw new DomainException("DescriptionEn is required.");
+        if (onlineMeetingUrl is not null
+            && !onlineMeetingUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DomainException("OnlineMeetingUrl must use https://.");
+        }
+        if (featuredImageUrl is not null
+            && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DomainException("FeaturedImageUrl must use https://.");
+        }
+        TitleAr = titleAr;
+        TitleEn = titleEn;
+        DescriptionAr = descriptionAr;
+        DescriptionEn = descriptionEn;
+        LocationAr = locationAr;
+        LocationEn = locationEn;
+        OnlineMeetingUrl = onlineMeetingUrl;
+        FeaturedImageUrl = featuredImageUrl;
+    }
+
     public void Reschedule(System.DateTimeOffset startsOn, System.DateTimeOffset endsOn)
     {
         if (endsOn <= startsOn)
