@@ -1,3 +1,4 @@
+using CCE.Application.Assistant;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
@@ -12,6 +13,8 @@ using CCE.Application.Notifications;
 using CCE.Application.Notifications.Public;
 using CCE.Application.Reports;
 using CCE.Application.Search;
+using CCE.Application.Surveys;
+using CCE.Infrastructure.Assistant;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.InteractiveCity;
@@ -19,6 +22,7 @@ using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Reports;
+using CCE.Infrastructure.Surveys;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
@@ -108,6 +112,12 @@ public static class DependencyInjection
         services.AddScoped<IEventReportService, EventReportService>();
         services.AddScoped<IResourceReportService, ResourceReportService>();
         services.AddScoped<ICountryProfilesReportService, CountryProfilesReportService>();
+
+        // Surveys
+        services.AddScoped<IServiceRatingService, ServiceRatingService>();
+
+        // Smart assistant (stub — real LLM deferred to Sub-8)
+        services.AddScoped<ISmartAssistantClient, SmartAssistantClient>();
 
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();

@@ -4,6 +4,23 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [external-api-v0.1.0] — 2026-04-29
+
+### Added
+- ~55 public REST endpoints under `/api/...` and BFF auth under `/auth/...`.
+- BFF cookie + Bearer dual-mode auth (`BffSessionMiddleware` decrypts cookie → synthesises Bearer header).
+- Redis output cache (60s TTL, anonymous-only; authenticated requests bypass).
+- Tiered rate limiter (Anonymous / Authenticated / SearchAndWrite, config-driven via `RateLimiter:PermitLimit`).
+- Meilisearch search backend (`ISearchClient` abstraction + `MeilisearchClient` + `MeilisearchIndexer` hosted service).
+- HtmlSanitizer for user-submitted content (`IHtmlSanitizer` / `HtmlSanitizerWrapper`, mganss NuGet).
+- `ICountryScopeAccessor` + `HttpContextCountryScopeAccessor` for StateRep-scoped reads.
+- Smart-assistant stub endpoint (`POST /api/assistant/query`; LLM integration deferred to Sub-8).
+- KAPSARC snapshot read (`GET /api/kapsarc/snapshots/{countryId}`; ingest pipeline deferred to Sub-8).
+- Service rating submit (`POST /api/surveys/service-rating`; anonymous OK, returns 201 + id).
+- `IServiceRatingService` + `ServiceRatingService` Infrastructure implementation.
+- 5 new ADRs (0030–0034): country-scoped query pattern, BFF/Bearer dual auth, Meilisearch, Redis output cache, HtmlSanitizer.
+- Net new tests: +232 (Application +146, Api Integration +73, Infrastructure +13).
+
 ## [internal-api-v0.1.0] — 2026-04-29
 
 ### Added

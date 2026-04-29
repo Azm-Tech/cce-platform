@@ -95,6 +95,7 @@ public sealed class CceDbContext
     IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources;
     IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests;
     IQueryable<CountryProfile> ICceDbContext.CountryProfiles => CountryProfiles;
+    IQueryable<CountryKapsarcSnapshot> ICceDbContext.CountryKapsarcSnapshots => CountryKapsarcSnapshots;
     IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News;
     IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events;
     IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages;
