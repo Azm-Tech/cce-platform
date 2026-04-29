@@ -1,9 +1,11 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community;
 using CCE.Application.Content;
+using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
+using CCE.Infrastructure.Country;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
@@ -70,6 +72,7 @@ public static class DependencyInjection
         services.AddScoped<IPageService, PageService>();
         services.AddScoped<IHomepageSectionService, HomepageSectionService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
+        services.AddScoped<ICountryAdminService, CountryAdminService>();
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
 

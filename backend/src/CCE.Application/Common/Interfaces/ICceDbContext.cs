@@ -1,9 +1,9 @@
 using System.Linq;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
-using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
+using DomainCountry = CCE.Domain.Country;
 
 namespace CCE.Application.Common.Interfaces;
 
@@ -21,13 +21,13 @@ public interface ICceDbContext
     IQueryable<Role> Roles { get; }
     IQueryable<IdentityUserRole<System.Guid>> UserRoles { get; }
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
-    IQueryable<Country> Countries { get; }
+    IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }
-    IQueryable<CountryResourceRequest> CountryResourceRequests { get; }
+    IQueryable<DomainCountry.CountryResourceRequest> CountryResourceRequests { get; }
     IQueryable<News> News { get; }
     IQueryable<Event> Events { get; }
     IQueryable<Page> Pages { get; }

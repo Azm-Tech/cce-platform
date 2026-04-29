@@ -50,6 +50,7 @@ app.MapAssetEndpoints();
 app.MapResourceEndpoints();
 app.MapResourceCategoryEndpoints();
 app.MapCountryResourceRequestEndpoints();
+app.MapCountryEndpoints();
 app.MapNewsEndpoints();
 app.MapEventEndpoints();
 app.MapPageEndpoints();

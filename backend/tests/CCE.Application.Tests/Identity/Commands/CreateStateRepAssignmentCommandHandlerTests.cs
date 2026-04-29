@@ -2,7 +2,6 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
 using CCE.Domain.Common;
-using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +13,7 @@ public class CreateStateRepAssignmentCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_user_missing()
     {
-        var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<Country>());
+        var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
             db, Substitute.For<IStateRepAssignmentService>(), BuildCurrentUser(), new FakeSystemClock());
 
@@ -30,7 +29,7 @@ public class CreateStateRepAssignmentCommandHandlerTests
     {
         var aliceId = System.Guid.NewGuid();
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
-        var db = BuildDb(users, System.Array.Empty<Country>());
+        var db = BuildDb(users, System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
             db, Substitute.For<IStateRepAssignmentService>(), BuildCurrentUser(), new FakeSystemClock());
 
@@ -92,7 +91,7 @@ public class CreateStateRepAssignmentCommandHandlerTests
         return stub;
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<User> users, IEnumerable<Country> countries)
+    private static ICceDbContext BuildDb(IEnumerable<User> users, IEnumerable<CCE.Domain.Country.Country> countries)
     {
         var db = Substitute.For<ICceDbContext>();
         db.Users.Returns(users.AsQueryable());
@@ -106,9 +105,9 @@ public class CreateStateRepAssignmentCommandHandlerTests
     private static User BuildUser(System.Guid id, string email, string userName) =>
         new() { Id = id, Email = email, UserName = userName, NormalizedEmail = email.ToUpperInvariant(), NormalizedUserName = userName.ToUpperInvariant() };
 
-    private static Country BuildCountry()
+    private static CCE.Domain.Country.Country BuildCountry()
     {
-        var instance = (Country)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(Country));
+        var instance = (CCE.Domain.Country.Country)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(CCE.Domain.Country.Country));
         // Initialize the backing _domainEvents field (inline-initialized in Entity<T> ctor, skipped by GetUninitializedObject).
         var eventsField = typeof(CCE.Domain.Common.Entity<System.Guid>)
             .GetField("_domainEvents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
