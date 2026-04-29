@@ -114,6 +114,9 @@ public sealed class CceDbContext
     IQueryable<KnowledgeMapNode> ICceDbContext.KnowledgeMapNodes => KnowledgeMapNodes;
     IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges;
     IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations;
+    IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios;
+    IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies;
+    IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

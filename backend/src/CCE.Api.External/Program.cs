@@ -75,6 +75,7 @@ app.MapSearchEndpoints();
 app.MapCommunityPublicEndpoints();
 app.MapCommunityWriteEndpoints();
 app.MapKnowledgeMapEndpoints();
+app.MapInteractiveCityEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

@@ -3,6 +3,7 @@ using CCE.Domain.Audit;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Identity;
+using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Notifications;
 using CCE.Domain.Surveys;
@@ -52,6 +53,9 @@ public interface ICceDbContext
     IQueryable<KnowledgeMapNode> KnowledgeMapNodes { get; }
     IQueryable<KnowledgeMapEdge> KnowledgeMapEdges { get; }
     IQueryable<KnowledgeMapAssociation> KnowledgeMapAssociations { get; }
+    IQueryable<CityScenario> CityScenarios { get; }
+    IQueryable<CityTechnology> CityTechnologies { get; }
+    IQueryable<CityScenarioResult> CityScenarioResults { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

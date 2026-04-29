@@ -7,12 +7,14 @@ using CCE.Application.Content.Public;
 using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Public;
+using CCE.Application.InteractiveCity;
 using CCE.Application.Notifications;
 using CCE.Application.Notifications.Public;
 using CCE.Application.Reports;
 using CCE.Application.Search;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
+using CCE.Infrastructure.InteractiveCity;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
@@ -106,6 +108,9 @@ public static class DependencyInjection
         services.AddScoped<IEventReportService, EventReportService>();
         services.AddScoped<IResourceReportService, ResourceReportService>();
         services.AddScoped<ICountryProfilesReportService, CountryProfilesReportService>();
+
+        // Interactive City
+        services.AddScoped<ICityScenarioService, CityScenarioService>();
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();
