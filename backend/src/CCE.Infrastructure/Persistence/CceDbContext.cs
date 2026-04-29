@@ -102,6 +102,7 @@ public sealed class CceDbContext
     IQueryable<Topic> ICceDbContext.Topics => Topics;
     IQueryable<Post> ICceDbContext.Posts => Posts;
     IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies;
+    IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
