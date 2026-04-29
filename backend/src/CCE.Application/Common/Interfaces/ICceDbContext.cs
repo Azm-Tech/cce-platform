@@ -27,6 +27,7 @@ public interface ICceDbContext
     IQueryable<Resource> Resources { get; }
     IQueryable<CountryResourceRequest> CountryResourceRequests { get; }
     IQueryable<News> News { get; }
+    IQueryable<Event> Events { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
