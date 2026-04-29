@@ -181,4 +181,27 @@ public class ReportsEndpointTests :
         body.Split('\n')[0].Should().Contain("Id");
         body.Split('\n')[0].Should().Contain("ResourceType");
     }
+
+    [Fact]
+    public async Task CountryProfiles_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/country-profiles.csv", UriKind.Relative));
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CountryProfiles_super_admin_returns_csv()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.GetAsync(new Uri("/api/admin/reports/country-profiles.csv", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        resp.Content.Headers.ContentType!.MediaType.Should().Be("text/csv");
+        var body = await resp.Content.ReadAsStringAsync();
+        body.Split('\n')[0].Should().Contain("CountryId");
+        body.Split('\n')[0].Should().Contain("IsoAlpha3");
+    }
 }

@@ -131,6 +131,23 @@ public static class ReportEndpoints
         .RequireAuthorization(Permissions.Report_Resources)
         .WithName("ResourcesReport");
 
+        reports.MapGet("/country-profiles.csv", async (
+            HttpContext httpContext,
+            System.DateTimeOffset? from,
+            System.DateTimeOffset? to,
+            ICountryProfilesReportService service,
+            ICsvStreamWriter writer,
+            CancellationToken cancellationToken) =>
+        {
+            var filename = $"country-profiles-{System.DateTimeOffset.UtcNow:yyyy-MM-dd}.csv";
+            httpContext.Response.ContentType = "text/csv; charset=utf-8";
+            httpContext.Response.Headers.ContentDisposition = $"attachment; filename=\"{filename}\"";
+            var rows = service.QueryAsync(from, to, cancellationToken);
+            await writer.WriteAsync(httpContext.Response.Body, rows, cancellationToken).ConfigureAwait(false);
+        })
+        .RequireAuthorization(Permissions.Report_CountryProfiles)
+        .WithName("CountryProfilesReport");
+
         return app;
     }
 }
