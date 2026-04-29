@@ -17,22 +17,26 @@ public class MeilisearchClientTests
         var sut = NewClient();
         await sut.EnsureIndexAsync(SearchableType.News, CancellationToken.None);
 
+        // Use a unique token in the content so we don't collide with documents accumulated
+        // from Phase 2.1's indexer or prior test runs.
+        var uniqueToken = $"zzcarbontest{System.Guid.NewGuid():N}";
         var doc = new SearchableDocument
         {
             Id = System.Guid.NewGuid().ToString(),
-            TitleEn = "Carbon capture breakthrough",
+            TitleEn = $"Carbon capture breakthrough {uniqueToken}",
             TitleAr = "اختراق احتجاز الكربون",
-            ContentEn = "A new method for carbon sequestration was announced today.",
+            ContentEn = $"A new method for carbon sequestration was announced today. {uniqueToken}",
             ContentAr = "أُعلن اليوم عن طريقة جديدة لاحتجاز الكربون.",
         };
         await sut.UpsertAsync(SearchableType.News, doc, CancellationToken.None);
 
-        // Meilisearch indexing is async; allow up to 5 seconds for the document to appear.
-        var deadline = System.DateTimeOffset.UtcNow.AddSeconds(5);
+        // Meilisearch indexing is eventually consistent; allow up to 30 seconds for the document
+        // to appear.
+        var deadline = System.DateTimeOffset.UtcNow.AddSeconds(30);
         CCE.Application.Common.Pagination.PagedResult<SearchHitDto>? result = null;
         while (System.DateTimeOffset.UtcNow < deadline)
         {
-            result = await sut.SearchAsync("carbon", SearchableType.News, 1, 10, CancellationToken.None);
+            result = await sut.SearchAsync(uniqueToken, SearchableType.News, 1, 10, CancellationToken.None);
             if (result.Items.Any(h => h.Id.ToString() == doc.Id)) break;
             await Task.Delay(200);
         }
