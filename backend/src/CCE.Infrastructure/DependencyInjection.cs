@@ -71,6 +71,7 @@ public static class DependencyInjection
         services.AddScoped<IHomepageSectionService, HomepageSectionService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
         services.AddScoped<ITopicService, TopicService>();
+        services.AddScoped<ICommunityModerationService, CommunityModerationService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>

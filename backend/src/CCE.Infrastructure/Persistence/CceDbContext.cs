@@ -99,6 +99,8 @@ public sealed class CceDbContext
     IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages;
     IQueryable<HomepageSection> ICceDbContext.HomepageSections => HomepageSections;
     IQueryable<Topic> ICceDbContext.Topics => Topics;
+    IQueryable<Post> ICceDbContext.Posts => Posts;
+    IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

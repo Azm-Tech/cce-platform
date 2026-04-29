@@ -33,6 +33,8 @@ public interface ICceDbContext
     IQueryable<Page> Pages { get; }
     IQueryable<HomepageSection> HomepageSections { get; }
     IQueryable<Topic> Topics { get; }
+    IQueryable<Post> Posts { get; }
+    IQueryable<PostReply> PostReplies { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
