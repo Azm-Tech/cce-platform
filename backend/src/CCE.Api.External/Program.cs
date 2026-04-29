@@ -6,6 +6,7 @@ using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
+using CCE.Api.External.Endpoints;
 using CCE.Application;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
@@ -57,6 +58,9 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
 }).RequireAuthorization();
 
 app.MapBffAuthEndpoints();
+
+app.MapNewsPublicEndpoints();
+app.MapEventsPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {
