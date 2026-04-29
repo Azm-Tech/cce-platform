@@ -123,4 +123,48 @@ public class NewsEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Delete_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Delete_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Publish_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new { });
+
+        var resp = await client.PostAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}/publish", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Publish_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = JsonContent.Create(new { });
+
+        var resp = await client.PostAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}/publish", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

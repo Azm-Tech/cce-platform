@@ -1,4 +1,6 @@
 using CCE.Application.Content.Commands.CreateNews;
+using CCE.Application.Content.Commands.DeleteNews;
+using CCE.Application.Content.Commands.PublishNews;
 using CCE.Application.Content.Commands.UpdateNews;
 using CCE.Application.Content.Queries.GetNewsById;
 using CCE.Application.Content.Queries.ListNews;
@@ -65,6 +67,26 @@ public static class NewsEndpoints
         })
         .RequireAuthorization(Permissions.News_Update)
         .WithName("UpdateNews");
+
+        news.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            await mediator.Send(new DeleteNewsCommand(id), cancellationToken).ConfigureAwait(false);
+            return Results.NoContent();
+        })
+        .RequireAuthorization(Permissions.News_Delete)
+        .WithName("DeleteNews");
+
+        news.MapPost("/{id:guid}/publish", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var dto = await mediator.Send(new PublishNewsCommand(id), cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.News_Publish)
+        .WithName("PublishNews");
 
         return app;
     }
