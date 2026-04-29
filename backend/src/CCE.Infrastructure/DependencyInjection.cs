@@ -103,6 +103,7 @@ public static class DependencyInjection
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();
+        services.AddScoped<ISearchQueryLogger, SearchQueryLogger>();
 
         // Redis — singleton multiplexer.
         // AbortOnConnectFail=false: Connect returns a degraded multiplexer instead of throwing
