@@ -110,6 +110,10 @@ public sealed class CceDbContext
     IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications;
     IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings;
     IQueryable<AuditEvent> ICceDbContext.AuditEvents => AuditEvents;
+    IQueryable<KnowledgeMap> ICceDbContext.KnowledgeMaps => KnowledgeMaps;
+    IQueryable<KnowledgeMapNode> ICceDbContext.KnowledgeMapNodes => KnowledgeMapNodes;
+    IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges;
+    IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

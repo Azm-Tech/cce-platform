@@ -3,6 +3,7 @@ using CCE.Domain.Audit;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Identity;
+using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Notifications;
 using CCE.Domain.Surveys;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +48,10 @@ public interface ICceDbContext
     IQueryable<UserNotification> UserNotifications { get; }
     IQueryable<ServiceRating> ServiceRatings { get; }
     IQueryable<AuditEvent> AuditEvents { get; }
+    IQueryable<KnowledgeMap> KnowledgeMaps { get; }
+    IQueryable<KnowledgeMapNode> KnowledgeMapNodes { get; }
+    IQueryable<KnowledgeMapEdge> KnowledgeMapEdges { get; }
+    IQueryable<KnowledgeMapAssociation> KnowledgeMapAssociations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
