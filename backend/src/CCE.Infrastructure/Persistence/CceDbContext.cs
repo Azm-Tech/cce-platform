@@ -95,6 +95,7 @@ public sealed class CceDbContext
     IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests;
     IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News;
     IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events;
+    IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
