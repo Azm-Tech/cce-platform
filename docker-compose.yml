@@ -22,6 +22,7 @@ volumes:
   redis-data:
   keycloak-data:
   clamav-data:
+  meilisearch-data:
 
 services:
 
@@ -160,6 +161,20 @@ services:
       retries: 10
       start_period: 120s
     restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    container_name: cce-meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_ENV: development
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: dev-meili-master-key-change-me
+    volumes:
+      - meilisearch-data:/meili_data
+    networks:
+      - cce-net
 
   k6:
     image: grafana/k6:0.55.0

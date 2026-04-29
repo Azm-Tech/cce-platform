@@ -28,4 +28,13 @@ public sealed class CceInfrastructureOptions
     /// </summary>
     public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } =
         new[] { "application/pdf", "image/png", "image/jpeg", "image/svg+xml", "video/mp4", "application/zip" };
+
+    /// <summary>Meilisearch HTTP base URL. Default <c>http://localhost:7700</c>.</summary>
+    public string MeilisearchUrl { get; init; } = "http://localhost:7700";
+
+    /// <summary>Meilisearch master key. Required for indexing/search; optional for health probes.</summary>
+    public string MeilisearchMasterKey { get; init; } = string.Empty;
+
+    /// <summary>Output-cache TTL in seconds for anonymous reads. Default 60.</summary>
+    public int OutputCacheTtlSeconds { get; init; } = 60;
 }
