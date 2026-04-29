@@ -26,6 +26,7 @@ public interface ICceDbContext
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<Resource> Resources { get; }
     IQueryable<CountryResourceRequest> CountryResourceRequests { get; }
+    IQueryable<News> News { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

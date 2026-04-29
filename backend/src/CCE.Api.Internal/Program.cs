@@ -49,6 +49,7 @@ app.MapExpertEndpoints();
 app.MapAssetEndpoints();
 app.MapResourceEndpoints();
 app.MapCountryResourceRequestEndpoints();
+app.MapNewsEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
