@@ -28,5 +28,27 @@
     "status": "Status",
     "version": "Version",
     "ok": "OK"
+  },
+  "errors": {
+    "server": "Server error. Try again later.",
+    "forbidden": "You don't have permission for this action.",
+    "network": "Network error. Check your connection.",
+    "concurrency": "Item was modified by another user. Reload and try again.",
+    "duplicate": "Duplicate value — this item already exists.",
+    "validation": "Please correct the highlighted fields."
+  },
+  "nav": {
+    "users": "Users",
+    "experts": "Experts",
+    "resources": "Resources",
+    "news": "News",
+    "events": "Events",
+    "pages": "Pages",
+    "taxonomies": "Taxonomies",
+    "community": "Community moderation",
+    "countries": "Countries",
+    "notifications": "Notifications",
+    "reports": "Reports",
+    "audit": "Audit log"
   }
 }
