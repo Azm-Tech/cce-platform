@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
+    .AddCceBff(builder.Configuration)
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
     .AddCceHealthChecks(builder.Configuration)
@@ -35,6 +36,7 @@ var app = builder.Build();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseCceBff();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -50,6 +52,8 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
     var upn = ctx.User.FindFirst("upn")?.Value ?? "(no upn)";
     return Results.Ok(new { name, upn });
 }).RequireAuthorization();
+
+app.MapBffAuthEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {
