@@ -1,4 +1,5 @@
 using System.Linq;
+using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Country;
 using CCE.Domain.Identity;
@@ -31,6 +32,7 @@ public interface ICceDbContext
     IQueryable<Event> Events { get; }
     IQueryable<Page> Pages { get; }
     IQueryable<HomepageSection> HomepageSections { get; }
+    IQueryable<Topic> Topics { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

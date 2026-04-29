@@ -1,6 +1,8 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Community;
 using CCE.Application.Content;
 using CCE.Application.Identity;
+using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Files;
@@ -68,6 +70,7 @@ public static class DependencyInjection
         services.AddScoped<IPageService, PageService>();
         services.AddScoped<IHomepageSectionService, HomepageSectionService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
+        services.AddScoped<ITopicService, TopicService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>

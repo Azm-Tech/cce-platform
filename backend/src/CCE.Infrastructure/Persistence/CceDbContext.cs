@@ -98,6 +98,7 @@ public sealed class CceDbContext
     IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events;
     IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages;
     IQueryable<HomepageSection> ICceDbContext.HomepageSections => HomepageSections;
+    IQueryable<Topic> ICceDbContext.Topics => Topics;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
