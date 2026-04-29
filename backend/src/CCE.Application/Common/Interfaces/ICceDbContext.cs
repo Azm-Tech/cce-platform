@@ -39,6 +39,7 @@ public interface ICceDbContext
     IQueryable<Topic> Topics { get; }
     IQueryable<Post> Posts { get; }
     IQueryable<PostReply> PostReplies { get; }
+    IQueryable<PostRating> PostRatings { get; }
     IQueryable<TopicFollow> TopicFollows { get; }
     IQueryable<UserFollow> UserFollows { get; }
     IQueryable<PostFollow> PostFollows { get; }

@@ -95,6 +95,7 @@ public static class DependencyInjection
         services.AddScoped<ICountryProfileService, CountryProfileService>();
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
+        services.AddScoped<ICommunityWriteService, CommunityWriteService>();
         services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
