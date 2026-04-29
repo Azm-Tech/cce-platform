@@ -1,3 +1,4 @@
+using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
@@ -46,6 +47,9 @@ public static class DependencyInjection
 
         // Default current-user accessor — API hosts override with HttpContext-based impl.
         services.TryAddScoped<ICurrentUserAccessor, SystemCurrentUserAccessor>();
+
+        // Default country-scope accessor — API hosts override with HttpContext-based impl.
+        services.TryAddScoped<ICountryScopeAccessor, SystemCountryScopeAccessor>();
 
         // Interceptors
         services.AddScoped<AuditingInterceptor>();

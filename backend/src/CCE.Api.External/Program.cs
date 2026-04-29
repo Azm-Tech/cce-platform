@@ -1,13 +1,17 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.Authorization;
 using CCE.Api.Common.Health;
+using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Application;
+using CCE.Application.Common.CountryScope;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +24,10 @@ builder.Services
     .AddCceHealthChecks(builder.Configuration)
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE External API");
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
+builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
 
 var app = builder.Build();
 

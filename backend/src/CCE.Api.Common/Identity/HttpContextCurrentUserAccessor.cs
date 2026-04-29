@@ -2,10 +2,10 @@ using System.Security.Claims;
 using CCE.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace CCE.Api.Internal.Identity;
+namespace CCE.Api.Common.Identity;
 
 /// <summary>
-/// HttpContext-backed implementation of <see cref="ICurrentUserAccessor"/> for the Internal API host.
+/// HttpContext-backed implementation of <see cref="ICurrentUserAccessor"/> for both API hosts.
 /// Reads the JWT <c>sub</c> claim (with <c>NameIdentifier</c> fallback) for both the actor string
 /// and the user Guid. Returns <c>"system"</c> / <c>null</c> for unauthenticated requests.
 /// </summary>
