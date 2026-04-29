@@ -1,5 +1,738 @@
 {
-  "components": {},
+  "components": {
+    "schemas": {
+      "ApproveCountryResourceRequestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "adminNotesAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "adminNotesEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApproveExpertRequestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "academicTitleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "academicTitleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AssignUserRolesRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "CreateEventRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "endsOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "featuredImageUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locationAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locationEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "onlineMeetingUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "startsOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateHomepageSectionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "sectionType": {
+            "$ref": "#/components/schemas/HomepageSectionType"
+          }
+        },
+        "type": "object"
+      },
+      "CreateNewsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "featuredImageUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "slug": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateNotificationTemplateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bodyAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "bodyEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/NotificationChannel"
+          },
+          "code": {
+            "nullable": true,
+            "type": "string"
+          },
+          "subjectAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "subjectEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "variableSchemaJson": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreatePageRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "pageType": {
+            "$ref": "#/components/schemas/PageType"
+          },
+          "slug": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateResourceCategoryRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "slug": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateResourceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "assetFileId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "categoryId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "countryId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "resourceType": {
+            "$ref": "#/components/schemas/ResourceType"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateStateRepAssignmentRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "countryId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "userId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateTopicRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "iconUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "slug": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ExpertRegistrationStatus": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "HomepageSectionType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          99
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "NotificationChannel": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "PageType": {
+        "enum": [
+          0,
+          1,
+          2,
+          99
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "RejectCountryResourceRequestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "adminNotesAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "adminNotesEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RejectExpertRequestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "rejectionReasonAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rejectionReasonEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReorderHomepageSectionAssignmentRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ReorderHomepageSectionsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/ReorderHomepageSectionAssignmentRequest"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "RescheduleEventRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "endsOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "startsOn": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResourceType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "UpdateCountryRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "isActive": {
+            "type": "boolean"
+          },
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "regionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "regionEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateEventRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "featuredImageUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locationAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locationEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "onlineMeetingUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateHomepageSectionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateNewsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "featuredImageUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "slug": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateNotificationTemplateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bodyAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "bodyEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "subjectAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "subjectEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdatePageRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateResourceCategoryRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "isActive": {
+            "type": "boolean"
+          },
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateResourceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "categoryId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "resourceType": {
+            "$ref": "#/components/schemas/ResourceType"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "titleEn": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateTopicRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "orderIndex": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "UpsertCountryProfileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contactInfoAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contactInfoEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "descriptionEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "keyInitiativesAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "keyInitiativesEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rowVersion": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
   "info": {
     "description": "CCE Knowledge Center — CCE Internal API",
     "title": "CCE Internal API",
@@ -23,6 +756,2172 @@
         },
         "tags": [
           "CCE.Api.Internal"
+        ]
+      }
+    },
+    "/api/admin/assets": {
+      "post": {
+        "operationId": "UploadAsset",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Assets"
+        ]
+      }
+    },
+    "/api/admin/assets/{id}": {
+      "get": {
+        "operationId": "GetAssetById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Assets"
+        ]
+      }
+    },
+    "/api/admin/audit-events": {
+      "get": {
+        "operationId": "ListAuditEvents",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actor",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actionPrefix",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resourceType",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "correlationId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Audit"
+        ]
+      }
+    },
+    "/api/admin/community/posts/{id}": {
+      "delete": {
+        "operationId": "SoftDeletePost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CommunityModeration"
+        ]
+      }
+    },
+    "/api/admin/community/replies/{id}": {
+      "delete": {
+        "operationId": "SoftDeleteReply",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CommunityModeration"
+        ]
+      }
+    },
+    "/api/admin/countries": {
+      "get": {
+        "operationId": "ListCountries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      }
+    },
+    "/api/admin/countries/{countryId}/profile": {
+      "get": {
+        "operationId": "GetCountryProfile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "countryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      },
+      "put": {
+        "operationId": "UpsertCountryProfile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "countryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertCountryProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      }
+    },
+    "/api/admin/countries/{id}": {
+      "get": {
+        "operationId": "GetCountryById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateCountry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCountryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      }
+    },
+    "/api/admin/country-resource-requests/{id}/approve": {
+      "post": {
+        "operationId": "ApproveCountryResourceRequest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveCountryResourceRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CountryResourceRequests"
+        ]
+      }
+    },
+    "/api/admin/country-resource-requests/{id}/reject": {
+      "post": {
+        "operationId": "RejectCountryResourceRequest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectCountryResourceRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CountryResourceRequests"
+        ]
+      }
+    },
+    "/api/admin/events": {
+      "get": {
+        "operationId": "ListEvents",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fromDate",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "toDate",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      },
+      "post": {
+        "operationId": "CreateEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/admin/events/{id}": {
+      "delete": {
+        "operationId": "DeleteEvent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      },
+      "get": {
+        "operationId": "GetEventById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateEvent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/admin/events/{id}/reschedule": {
+      "post": {
+        "operationId": "RescheduleEvent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/admin/expert-profiles": {
+      "get": {
+        "operationId": "ListExpertProfiles",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Experts"
+        ]
+      }
+    },
+    "/api/admin/expert-requests": {
+      "get": {
+        "operationId": "ListExpertRequests",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "$ref": "#/components/schemas/ExpertRegistrationStatus"
+            }
+          },
+          {
+            "in": "query",
+            "name": "requestedById",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Experts"
+        ]
+      }
+    },
+    "/api/admin/expert-requests/{id}/approve": {
+      "post": {
+        "operationId": "ApproveExpertRequest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveExpertRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Experts"
+        ]
+      }
+    },
+    "/api/admin/expert-requests/{id}/reject": {
+      "post": {
+        "operationId": "RejectExpertRequest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectExpertRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Experts"
+        ]
+      }
+    },
+    "/api/admin/homepage-sections": {
+      "get": {
+        "operationId": "ListHomepageSections",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepageSections"
+        ]
+      },
+      "post": {
+        "operationId": "CreateHomepageSection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHomepageSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepageSections"
+        ]
+      }
+    },
+    "/api/admin/homepage-sections/reorder": {
+      "post": {
+        "operationId": "ReorderHomepageSections",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderHomepageSectionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepageSections"
+        ]
+      }
+    },
+    "/api/admin/homepage-sections/{id}": {
+      "delete": {
+        "operationId": "DeleteHomepageSection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepageSections"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateHomepageSection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHomepageSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepageSections"
+        ]
+      }
+    },
+    "/api/admin/news": {
+      "get": {
+        "operationId": "ListNews",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isPublished",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isFeatured",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      },
+      "post": {
+        "operationId": "CreateNews",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/admin/news/{id}": {
+      "delete": {
+        "operationId": "DeleteNews",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      },
+      "get": {
+        "operationId": "GetNewsById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateNews",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNewsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/admin/news/{id}/publish": {
+      "post": {
+        "operationId": "PublishNews",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/admin/notification-templates": {
+      "get": {
+        "operationId": "ListNotificationTemplates",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "channel",
+            "schema": {
+              "$ref": "#/components/schemas/NotificationChannel"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "NotificationTemplates"
+        ]
+      },
+      "post": {
+        "operationId": "CreateNotificationTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNotificationTemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "NotificationTemplates"
+        ]
+      }
+    },
+    "/api/admin/notification-templates/{id}": {
+      "get": {
+        "operationId": "GetNotificationTemplateById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "NotificationTemplates"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateNotificationTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationTemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "NotificationTemplates"
+        ]
+      }
+    },
+    "/api/admin/pages": {
+      "get": {
+        "operationId": "ListPages",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageType",
+            "schema": {
+              "$ref": "#/components/schemas/PageType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      },
+      "post": {
+        "operationId": "CreatePage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/admin/pages/{id}": {
+      "delete": {
+        "operationId": "DeletePage",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      },
+      "get": {
+        "operationId": "GetPageById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      },
+      "put": {
+        "operationId": "UpdatePage",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/admin/reports/community-posts.csv": {
+      "get": {
+        "operationId": "CommunityPostsReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/country-profiles.csv": {
+      "get": {
+        "operationId": "CountryProfilesReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/events.csv": {
+      "get": {
+        "operationId": "EventsReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/experts.csv": {
+      "get": {
+        "operationId": "ExpertsReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/news.csv": {
+      "get": {
+        "operationId": "NewsReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/resources.csv": {
+      "get": {
+        "operationId": "ResourcesReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/satisfaction-survey.csv": {
+      "get": {
+        "operationId": "SatisfactionSurveyReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/reports/users-registrations.csv": {
+      "get": {
+        "operationId": "UsersRegistrationsReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/admin/resource-categories": {
+      "get": {
+        "operationId": "ListResourceCategories",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "ResourceCategories"
+        ]
+      },
+      "post": {
+        "operationId": "CreateResourceCategory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateResourceCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "ResourceCategories"
+        ]
+      }
+    },
+    "/api/admin/resource-categories/{id}": {
+      "delete": {
+        "operationId": "DeleteResourceCategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "ResourceCategories"
+        ]
+      },
+      "get": {
+        "operationId": "GetResourceCategoryById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "ResourceCategories"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateResourceCategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateResourceCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "ResourceCategories"
+        ]
+      }
+    },
+    "/api/admin/resources": {
+      "get": {
+        "operationId": "ListResources",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "countryId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isPublished",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      },
+      "post": {
+        "operationId": "CreateResource",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateResourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/admin/resources/{id}": {
+      "put": {
+        "operationId": "UpdateResource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateResourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/admin/resources/{id}/publish": {
+      "post": {
+        "operationId": "PublishResource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/admin/state-rep-assignments": {
+      "get": {
+        "operationId": "ListStateRepAssignments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "countryId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "active",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      },
+      "post": {
+        "operationId": "CreateStateRepAssignment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStateRepAssignmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/api/admin/state-rep-assignments/{id}": {
+      "delete": {
+        "operationId": "RevokeStateRepAssignment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/api/admin/topics": {
+      "get": {
+        "operationId": "ListTopics",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Topics"
+        ]
+      },
+      "post": {
+        "operationId": "CreateTopic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTopicRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Topics"
+        ]
+      }
+    },
+    "/api/admin/topics/{id}": {
+      "delete": {
+        "operationId": "DeleteTopic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Topics"
+        ]
+      },
+      "get": {
+        "operationId": "GetTopicById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Topics"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateTopic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTopicRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Topics"
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "ListUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {
+        "operationId": "GetUserById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/api/admin/users/{id}/roles": {
+      "put": {
+        "operationId": "AssignUserRoles",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignUserRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Identity"
         ]
       }
     },

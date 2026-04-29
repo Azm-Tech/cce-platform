@@ -1,5 +1,261 @@
 {
-  "components": {},
+  "components": {
+    "schemas": {
+      "AskAssistantRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "nullable": true,
+            "type": "string"
+          },
+          "question": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CityType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "CreatePostRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "nullable": true,
+            "type": "string"
+          },
+          "isAnswerable": {
+            "type": "boolean"
+          },
+          "locale": {
+            "nullable": true,
+            "type": "string"
+          },
+          "topicId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateReplyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locale": {
+            "nullable": true,
+            "type": "string"
+          },
+          "parentReplyId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EditReplyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "KnowledgeLevel": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "MarkAnswerRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "replyId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NotificationStatus": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "RatePostRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "stars": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ResourceType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "RunScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "cityType": {
+            "$ref": "#/components/schemas/CityType"
+          },
+          "configurationJson": {
+            "nullable": true,
+            "type": "string"
+          },
+          "targetYear": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SaveScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "cityType": {
+            "$ref": "#/components/schemas/CityType"
+          },
+          "configurationJson": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "targetYear": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SearchableType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "format": "int32",
+        "type": "integer"
+      },
+      "ServiceRatingRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "commentAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "commentEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "locale": {
+            "nullable": true,
+            "type": "string"
+          },
+          "page": {
+            "nullable": true,
+            "type": "string"
+          },
+          "rating": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SubmitExpertRequestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "requestedBioAr": {
+            "nullable": true,
+            "type": "string"
+          },
+          "requestedBioEn": {
+            "nullable": true,
+            "type": "string"
+          },
+          "requestedTags": {
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateMyProfileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "avatarUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "countryId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "knowledgeLevel": {
+            "$ref": "#/components/schemas/KnowledgeLevel"
+          },
+          "localePreference": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
   "info": {
     "description": "CCE Knowledge Center — CCE External API",
     "title": "CCE External API",
@@ -26,6 +282,1304 @@
         ]
       }
     },
+    "/api/assistant/query": {
+      "post": {
+        "operationId": "AskAssistant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskAssistantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Assistant"
+        ]
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "operationId": "ListPublicCategories",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CategoriesPublic"
+        ]
+      }
+    },
+    "/api/community/posts": {
+      "post": {
+        "operationId": "CreatePost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/posts/{id}": {
+      "get": {
+        "operationId": "GetPublicPostById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/posts/{id}/mark-answer": {
+      "post": {
+        "operationId": "MarkPostAnswered",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkAnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/posts/{id}/rate": {
+      "post": {
+        "operationId": "RatePost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatePostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/posts/{id}/replies": {
+      "get": {
+        "operationId": "ListPublicPostReplies",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      },
+      "post": {
+        "operationId": "CreateReply",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReplyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/replies/{id}": {
+      "put": {
+        "operationId": "EditReply",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditReplyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/topics/{id}/posts": {
+      "get": {
+        "operationId": "ListPublicPostsInTopic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/topics/{slug}": {
+      "get": {
+        "operationId": "GetPublicTopicBySlug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/countries": {
+      "get": {
+        "operationId": "ListPublicCountries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CountriesPublic"
+        ]
+      }
+    },
+    "/api/countries/{id}/profile": {
+      "get": {
+        "operationId": "GetPublicCountryProfile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "CountriesPublic"
+        ]
+      }
+    },
+    "/api/events": {
+      "get": {
+        "operationId": "ListPublicEvents",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}": {
+      "get": {
+        "operationId": "GetPublicEventById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}.ics": {
+      "get": {
+        "operationId": "GetPublicEventIcs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/homepage-sections": {
+      "get": {
+        "operationId": "ListPublicHomepageSections",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "HomepagePublic"
+        ]
+      }
+    },
+    "/api/interactive-city/scenarios/run": {
+      "post": {
+        "operationId": "RunScenario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunScenarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "InteractiveCity"
+        ]
+      }
+    },
+    "/api/interactive-city/technologies": {
+      "get": {
+        "operationId": "ListCityTechnologies",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "InteractiveCity"
+        ]
+      }
+    },
+    "/api/kapsarc/snapshots/{countryId}": {
+      "get": {
+        "operationId": "GetLatestKapsarcSnapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "countryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Kapsarc"
+        ]
+      }
+    },
+    "/api/knowledge-maps": {
+      "get": {
+        "operationId": "ListKnowledgeMaps",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "KnowledgeMap"
+        ]
+      }
+    },
+    "/api/knowledge-maps/{id}": {
+      "get": {
+        "operationId": "GetKnowledgeMapById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "KnowledgeMap"
+        ]
+      }
+    },
+    "/api/knowledge-maps/{id}/edges": {
+      "get": {
+        "operationId": "ListKnowledgeMapEdges",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "KnowledgeMap"
+        ]
+      }
+    },
+    "/api/knowledge-maps/{id}/nodes": {
+      "get": {
+        "operationId": "ListKnowledgeMapNodes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "KnowledgeMap"
+        ]
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "GetMyProfile",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateMyProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMyProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/me/expert-status": {
+      "get": {
+        "operationId": "GetMyExpertStatus",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/me/follows": {
+      "get": {
+        "operationId": "GetMyFollows",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/me/follows/posts/{postId}": {
+      "delete": {
+        "operationId": "UnfollowPost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      },
+      "post": {
+        "operationId": "FollowPost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/me/follows/topics/{topicId}": {
+      "delete": {
+        "operationId": "UnfollowTopic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "topicId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      },
+      "post": {
+        "operationId": "FollowTopic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "topicId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/me/follows/users/{userId}": {
+      "delete": {
+        "operationId": "UnfollowUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      },
+      "post": {
+        "operationId": "FollowUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/me/interactive-city/scenarios": {
+      "get": {
+        "operationId": "ListMyScenarios",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "InteractiveCity"
+        ]
+      },
+      "post": {
+        "operationId": "SaveMyScenario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveScenarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "InteractiveCity"
+        ]
+      }
+    },
+    "/api/me/interactive-city/scenarios/{id}": {
+      "delete": {
+        "operationId": "DeleteMyScenario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "InteractiveCity"
+        ]
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "operationId": "ListMyNotifications",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "$ref": "#/components/schemas/NotificationStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/mark-all-read": {
+      "post": {
+        "operationId": "MarkAllNotificationsRead",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/unread-count": {
+      "get": {
+        "operationId": "GetMyUnreadNotificationCount",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/{id}/mark-read": {
+      "post": {
+        "operationId": "MarkNotificationRead",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/news": {
+      "get": {
+        "operationId": "ListPublicNews",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isFeatured",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/news/{slug}": {
+      "get": {
+        "operationId": "GetPublicNewsBySlug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/pages/{slug}": {
+      "get": {
+        "operationId": "GetPublicPageBySlug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "PagesPublic"
+        ]
+      }
+    },
+    "/api/resources": {
+      "get": {
+        "operationId": "ListPublicResources",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "countryId",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resourceType",
+            "schema": {
+              "$ref": "#/components/schemas/ResourceType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/{id}": {
+      "get": {
+        "operationId": "GetPublicResourceById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/resources/{id}/download": {
+      "get": {
+        "operationId": "DownloadPublicResource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Resources"
+        ]
+      }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "Search",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "$ref": "#/components/schemas/SearchableType"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Search"
+        ]
+      }
+    },
+    "/api/surveys/service-rating": {
+      "post": {
+        "operationId": "SubmitServiceRating",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRatingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Surveys"
+        ]
+      }
+    },
+    "/api/topics": {
+      "get": {
+        "operationId": "ListPublicTopics",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "TopicsPublic"
+        ]
+      }
+    },
+    "/api/users/expert-request": {
+      "post": {
+        "operationId": "SubmitExpertRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitExpertRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "operationId": "RegisterUser",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/auth/callback": {
+      "get": {
+        "operationId": "BffCallback",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/echo": {
       "get": {
         "responses": {
@@ -35,6 +1589,54 @@
         },
         "tags": [
           "CCE.Api.External"
+        ]
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "operationId": "BffLogin",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "returnUrl",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "BffLogout",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "BffRefresh",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Auth"
         ]
       }
     },
