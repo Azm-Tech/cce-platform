@@ -60,6 +60,7 @@ app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
 app.MapReportEndpoints();
+app.MapAuditEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 

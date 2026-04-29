@@ -4,6 +4,20 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [internal-api-v0.1.0] — 2026-04-29
+
+### Added
+- ~47 admin REST endpoints under `/api/admin/*` (users, roles, expert workflow, content, taxonomies, country admin, notifications, reports, audit log).
+- JIT user-sync middleware (Keycloak `sub` → `users` row, IMemoryCache 5min TTL).
+- `IFileStorage` abstraction + `LocalFileStorage` (dev) + `IClamAvScanner` synchronous TCP scan.
+- 8 streaming-CSV reports under `/api/admin/reports/*.csv`.
+- `Audit.Read` permission + `GET /api/admin/audit-events` query.
+- `RoleToPermissionClaimsTransformer` (flattens role-name groups to permission claims).
+- `HttpContextCurrentUserAccessor` (reads JWT sub on Internal API).
+- 3 new ADRs (0027–0029).
+- Permission count: 41 → 42.
+- Net new tests: +418 (Application +266, Api Integration +139, Domain +6, Infrastructure +7).
+
 ## [data-domain-v0.1.0] — 2026-04-28
 
 The Data & Domain sub-project — full entity model, persistence layer, migration, seeders, architecture invariants.

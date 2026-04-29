@@ -1,4 +1,5 @@
 using System.Linq;
+using CCE.Domain.Audit;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Identity;
@@ -40,6 +41,7 @@ public interface ICceDbContext
     IQueryable<PostReply> PostReplies { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
     IQueryable<ServiceRating> ServiceRatings { get; }
+    IQueryable<AuditEvent> AuditEvents { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
