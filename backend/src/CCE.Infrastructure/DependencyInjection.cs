@@ -75,6 +75,7 @@ public static class DependencyInjection
         services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
         services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
+        services.AddScoped<IExpertRequestSubmissionService, ExpertRequestSubmissionService>();
 
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();

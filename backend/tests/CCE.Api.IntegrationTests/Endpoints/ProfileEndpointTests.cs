@@ -40,4 +40,21 @@ public class ProfileEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.
         var resp = await client.PutAsync(new Uri("/api/me", UriKind.Relative), content);
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task Submit_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var content = new System.Net.Http.StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+        var resp = await client.PostAsync(new Uri("/api/users/expert-request", UriKind.Relative), content);
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Status_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        var resp = await client.GetAsync(new Uri("/api/me/expert-status", UriKind.Relative));
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

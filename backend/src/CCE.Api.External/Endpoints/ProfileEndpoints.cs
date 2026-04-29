@@ -1,6 +1,8 @@
 using CCE.Api.Common.Auth;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
+using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
 using CCE.Domain.Identity;
 using MediatR;
@@ -31,6 +33,22 @@ public static class ProfileEndpoints
         .AllowAnonymous()
         .WithName("RegisterUser");
 
+        var usersAuth = app.MapGroup("/api/users").WithTags("Profile").RequireAuthorization();
+        usersAuth.MapPost("/expert-request", async (
+            SubmitExpertRequestRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var cmd = new SubmitExpertRequestCommand(
+                userId, body.RequestedBioAr, body.RequestedBioEn,
+                body.RequestedTags ?? System.Array.Empty<string>());
+            var dto = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return Results.Created("/api/me/expert-status", dto);
+        })
+        .WithName("SubmitExpertRequest");
+
         var me = app.MapGroup("/api/me").WithTags("Profile").RequireAuthorization();
 
         me.MapGet("", async (
@@ -60,6 +78,17 @@ public static class ProfileEndpoints
         })
         .WithName("UpdateMyProfile");
 
+        me.MapGet("/expert-status", async (
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var dto = await mediator.Send(new GetMyExpertStatusQuery(userId), ct).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .WithName("GetMyExpertStatus");
+
         return app;
     }
 }
@@ -70,3 +99,8 @@ public sealed record UpdateMyProfileRequest(
     IReadOnlyList<string>? Interests,
     string? AvatarUrl,
     System.Guid? CountryId);
+
+public sealed record SubmitExpertRequestRequest(
+    string RequestedBioAr,
+    string RequestedBioEn,
+    IReadOnlyList<string>? RequestedTags);
