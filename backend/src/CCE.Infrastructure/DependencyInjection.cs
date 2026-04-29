@@ -7,6 +7,7 @@ using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Application.Notifications;
 using CCE.Application.Reports;
+using CCE.Application.Search;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.Sanitization;
@@ -18,6 +19,7 @@ using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Persistence;
 using CCE.Infrastructure.Persistence.Interceptors;
+using CCE.Infrastructure.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,6 +98,9 @@ public static class DependencyInjection
         services.AddScoped<IEventReportService, EventReportService>();
         services.AddScoped<IResourceReportService, ResourceReportService>();
         services.AddScoped<ICountryProfilesReportService, CountryProfilesReportService>();
+
+        // Search
+        services.AddScoped<ISearchClient, MeilisearchClient>();
 
         // Redis — singleton multiplexer.
         // AbortOnConnectFail=false: Connect returns a degraded multiplexer instead of throwing
