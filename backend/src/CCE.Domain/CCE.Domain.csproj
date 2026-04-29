@@ -19,6 +19,8 @@
   <ItemGroup>
     <!-- IdentityUser&lt;TKey&gt; / IdentityRole&lt;TKey&gt; without EF dependency. -->
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
+    <!-- IDomainEvent extends INotification so MediatR INotificationHandler<T> can dispatch events. -->
+    <PackageReference Include="MediatR" />
   </ItemGroup>
 
 </Project>

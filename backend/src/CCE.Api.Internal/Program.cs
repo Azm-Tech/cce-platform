@@ -11,6 +11,7 @@ using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
+using CCE.Infrastructure.Search;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
@@ -20,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
+    .AddCceMeilisearchIndexer()
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
     .AddCceUserSync()
