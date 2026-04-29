@@ -3,6 +3,7 @@ using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.Domain.Notifications;
+using CCE.Domain.Surveys;
 using Microsoft.AspNetCore.Identity;
 using DomainCountry = CCE.Domain.Country;
 
@@ -38,6 +39,7 @@ public interface ICceDbContext
     IQueryable<Post> Posts { get; }
     IQueryable<PostReply> PostReplies { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
+    IQueryable<ServiceRating> ServiceRatings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
