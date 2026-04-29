@@ -1,5 +1,6 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.Authorization;
+using CCE.Api.Common.Caching;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
@@ -20,10 +21,11 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddCceBff(builder.Configuration)
+    .AddCceOutputCache(builder.Configuration)
+    .AddCceTieredRateLimiter(builder.Configuration)
     .AddCceJwtAuth(builder.Configuration)
     .AddCcePermissionPolicies()
     .AddCceHealthChecks(builder.Configuration)
-    .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE External API");
 
 builder.Services.AddHttpContextAccessor();
@@ -32,14 +34,15 @@ builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpCon
 
 var app = builder.Build();
 
-// Middleware order (spec §7.1): correlation → exception → security headers → auth → authz → rate → locale
+// Middleware order (spec §7.1): correlation → exception → security headers → rate → auth → output-cache → authz → locale
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseCceTieredRateLimiter();
 app.UseCceBff();
+app.UseCceOutputCache();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRateLimiter();
 app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "external");
