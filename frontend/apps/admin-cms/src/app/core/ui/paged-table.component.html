@@ -1,0 +1,22 @@
+@if (loading) {
+  <mat-progress-bar mode="indeterminate" class="cce-paged-table__progress" />
+}
+
+<table mat-table [dataSource]="rows" class="cce-paged-table">
+  @for (col of columns; track col.key) {
+    <ng-container [matColumnDef]="col.key">
+      <th mat-header-cell *matHeaderCellDef>{{ col.labelKey | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ col.cell(row) }}</td>
+    </ng-container>
+  }
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator
+  [length]="total"
+  [pageIndex]="pageIndex"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onPage($event)"
+/>
