@@ -59,6 +59,7 @@ app.MapHomepageSectionEndpoints();
 app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
+app.MapReportEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 

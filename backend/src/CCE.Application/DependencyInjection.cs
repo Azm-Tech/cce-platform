@@ -22,6 +22,8 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly);
 
+        services.AddSingleton<Reports.ICsvStreamWriter, Reports.CsvStreamWriter>();
+
         return services;
     }
 }

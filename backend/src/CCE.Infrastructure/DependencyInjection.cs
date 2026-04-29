@@ -4,10 +4,12 @@ using CCE.Application.Content;
 using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Application.Notifications;
+using CCE.Application.Reports;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
+using CCE.Infrastructure.Reports;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
@@ -79,6 +81,7 @@ public static class DependencyInjection
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
         services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
+        services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
 
         // Redis — singleton multiplexer
         services.AddSingleton<IConnectionMultiplexer>(sp =>
