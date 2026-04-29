@@ -84,6 +84,35 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
             featuredImageUrl: featuredImageUrl);
     }
 
+    public void UpdateContent(
+        string titleAr,
+        string titleEn,
+        string contentAr,
+        string contentEn,
+        string slug,
+        string? featuredImageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
+        if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
+        if (string.IsNullOrWhiteSpace(contentAr)) throw new DomainException("ContentAr is required.");
+        if (string.IsNullOrWhiteSpace(contentEn)) throw new DomainException("ContentEn is required.");
+        if (string.IsNullOrWhiteSpace(slug) || !SlugPattern.IsMatch(slug))
+        {
+            throw new DomainException($"slug '{slug}' must be kebab-case.");
+        }
+        if (featuredImageUrl is not null
+            && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DomainException("FeaturedImageUrl must use https://.");
+        }
+        TitleAr = titleAr;
+        TitleEn = titleEn;
+        ContentAr = contentAr;
+        ContentEn = contentEn;
+        Slug = slug;
+        FeaturedImageUrl = featuredImageUrl;
+    }
+
     public void Publish(ISystemClock clock)
     {
         if (IsPublished) return;

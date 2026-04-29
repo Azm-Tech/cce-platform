@@ -1,3 +1,5 @@
+using CCE.Application.Content.Commands.CreateNews;
+using CCE.Application.Content.Commands.UpdateNews;
 using CCE.Application.Content.Queries.GetNewsById;
 using CCE.Application.Content.Queries.ListNews;
 using CCE.Domain;
@@ -40,6 +42,38 @@ public static class NewsEndpoints
         .RequireAuthorization(Permissions.News_Update)
         .WithName("GetNewsById");
 
+        news.MapPost("", async (
+            CreateNewsRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var cmd = new CreateNewsCommand(body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.Slug, body.FeaturedImageUrl);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return Results.Created($"/api/admin/news/{dto.Id}", dto);
+        })
+        .RequireAuthorization(Permissions.News_Update)
+        .WithName("CreateNews");
+
+        news.MapPut("/{id:guid}", async (
+            System.Guid id,
+            UpdateNewsRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var rowVersion = string.IsNullOrEmpty(body.RowVersion) ? System.Array.Empty<byte>() : System.Convert.FromBase64String(body.RowVersion);
+            var cmd = new UpdateNewsCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.Slug, body.FeaturedImageUrl, rowVersion);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.News_Update)
+        .WithName("UpdateNews");
+
         return app;
     }
 }
+
+public sealed record CreateNewsRequest(
+    string TitleAr, string TitleEn, string ContentAr, string ContentEn,
+    string Slug, string? FeaturedImageUrl);
+
+public sealed record UpdateNewsRequest(
+    string TitleAr, string TitleEn, string ContentAr, string ContentEn,
+    string Slug, string? FeaturedImageUrl, string RowVersion);

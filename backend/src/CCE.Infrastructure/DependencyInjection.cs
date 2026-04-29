@@ -62,6 +62,7 @@ public static class DependencyInjection
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddScoped<IAssetService, AssetService>();
         services.AddScoped<IResourceService, ResourceService>();
+        services.AddScoped<INewsService, NewsService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
 
         // Redis — singleton multiplexer

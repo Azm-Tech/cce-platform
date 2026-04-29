@@ -86,4 +86,37 @@ public class NewsTests
         n.SoftDelete(System.Guid.NewGuid(), clock);
         n.IsDeleted.Should().BeTrue();
     }
+
+    [Fact]
+    public void UpdateContent_mutates_editable_fields_when_inputs_valid()
+    {
+        var clock = NewClock();
+        var n = NewDraft(clock);
+
+        n.UpdateContent(
+            titleAr: "خبر جديد",
+            titleEn: "New News",
+            contentAr: "محتوى جديد",
+            contentEn: "New Content",
+            slug: "new-slug",
+            featuredImageUrl: "https://example.com/image.jpg");
+
+        n.TitleAr.Should().Be("خبر جديد");
+        n.TitleEn.Should().Be("New News");
+        n.ContentAr.Should().Be("محتوى جديد");
+        n.ContentEn.Should().Be("New Content");
+        n.Slug.Should().Be("new-slug");
+        n.FeaturedImageUrl.Should().Be("https://example.com/image.jpg");
+    }
+
+    [Fact]
+    public void UpdateContent_throws_DomainException_when_slug_not_kebab_case()
+    {
+        var clock = NewClock();
+        var n = NewDraft(clock);
+
+        var act = () => n.UpdateContent("خبر", "News", "محتوى", "Content", "Bad Slug!", null);
+
+        act.Should().Throw<DomainException>().WithMessage("*slug*");
+    }
 }
