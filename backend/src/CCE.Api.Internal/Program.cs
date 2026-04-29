@@ -52,6 +52,7 @@ app.MapCountryResourceRequestEndpoints();
 app.MapNewsEndpoints();
 app.MapEventEndpoints();
 app.MapPageEndpoints();
+app.MapHomepageSectionEndpoints();
 
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 

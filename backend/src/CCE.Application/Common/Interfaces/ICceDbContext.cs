@@ -29,6 +29,7 @@ public interface ICceDbContext
     IQueryable<News> News { get; }
     IQueryable<Event> Events { get; }
     IQueryable<Page> Pages { get; }
+    IQueryable<HomepageSection> HomepageSections { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
