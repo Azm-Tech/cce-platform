@@ -1,4 +1,6 @@
 using CCE.Application.Content.Commands.CreatePage;
+using CCE.Application.Content.Commands.DeletePage;
+using CCE.Application.Content.Commands.UpdatePage;
 using CCE.Application.Content.Queries.GetPageById;
 using CCE.Application.Content.Queries.ListPages;
 using CCE.Domain;
@@ -44,9 +46,37 @@ public static class PageEndpoints
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("CreatePage");
 
+        pages.MapPut("/{id:guid}", async (
+            System.Guid id,
+            UpdatePageRequest body,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var rowVersion = string.IsNullOrEmpty(body.RowVersion) ? System.Array.Empty<byte>() : System.Convert.FromBase64String(body.RowVersion);
+            var cmd = new UpdatePageCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, rowVersion);
+            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization(Permissions.Page_Edit)
+        .WithName("UpdatePage");
+
+        pages.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            await mediator.Send(new DeletePageCommand(id), cancellationToken).ConfigureAwait(false);
+            return Results.NoContent();
+        })
+        .RequireAuthorization(Permissions.Page_Edit)
+        .WithName("DeletePage");
+
         return app;
     }
 }
+
+public sealed record UpdatePageRequest(
+    string TitleAr, string TitleEn,
+    string ContentAr, string ContentEn,
+    string RowVersion);
 
 public sealed record CreatePageRequest(
     string Slug,

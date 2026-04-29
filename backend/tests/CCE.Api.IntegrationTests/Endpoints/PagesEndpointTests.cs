@@ -88,4 +88,62 @@ public class PagesEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task Put_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new
+        {
+            titleAr = "عنوان",
+            titleEn = "Title",
+            contentAr = "محتوى",
+            contentEn = "Content",
+            rowVersion = System.Convert.ToBase64String(new byte[8]),
+        });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/pages/{System.Guid.NewGuid()}", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Put_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = JsonContent.Create(new
+        {
+            titleAr = "عنوان",
+            titleEn = "Title",
+            contentAr = "محتوى",
+            contentEn = "Content",
+            rowVersion = System.Convert.ToBase64String(new byte[8]),
+        });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/pages/{System.Guid.NewGuid()}", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Delete_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/pages/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Delete_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/pages/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }
