@@ -102,6 +102,9 @@ public sealed class CceDbContext
     IQueryable<Topic> ICceDbContext.Topics => Topics;
     IQueryable<Post> ICceDbContext.Posts => Posts;
     IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies;
+    IQueryable<TopicFollow> ICceDbContext.TopicFollows => TopicFollows;
+    IQueryable<UserFollow> ICceDbContext.UserFollows => UserFollows;
+    IQueryable<PostFollow> ICceDbContext.PostFollows => PostFollows;
     IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates;
     IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications;
     IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings;
