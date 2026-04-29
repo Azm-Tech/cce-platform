@@ -61,6 +61,7 @@ app.MapBffAuthEndpoints();
 
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();
+app.MapResourcesPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

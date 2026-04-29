@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <UserSecretsId>cce-api-external-dev</UserSecretsId>
+    <!-- CA1031: fire-and-forget view-count increment in the download endpoint intentionally
+         swallows all exceptions (best-effort, must not affect the streaming response). -->
+    <NoWarn>$(NoWarn);CA1031</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

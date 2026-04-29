@@ -3,6 +3,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
+using CCE.Application.Content.Public;
 using CCE.Application.Country;
 using CCE.Application.Identity;
 using CCE.Application.Notifications;
@@ -85,6 +86,7 @@ public static class DependencyInjection
         services.AddScoped<IPageService, PageService>();
         services.AddScoped<IHomepageSectionService, HomepageSectionService>();
         services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
+        services.AddScoped<IResourceViewCountService, ResourceViewCountService>();
         services.AddScoped<ICountryAdminService, CountryAdminService>();
         services.AddScoped<ICountryProfileService, CountryProfileService>();
         services.AddScoped<ITopicService, TopicService>();
