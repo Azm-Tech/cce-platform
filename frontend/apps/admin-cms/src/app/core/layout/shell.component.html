@@ -1,0 +1,12 @@
+<mat-sidenav-container class="cce-shell">
+  <mat-sidenav mode="side" opened class="cce-shell__sidenav">
+    <cce-side-nav />
+  </mat-sidenav>
+  <mat-sidenav-content class="cce-shell__content">
+    <cce-app-shell [appTitle]="title">
+      <cce-locale-switcher shellHeaderEnd />
+      <cce-auth-toolbar shellHeaderEnd />
+      <router-outlet />
+    </cce-app-shell>
+  </mat-sidenav-content>
+</mat-sidenav-container>

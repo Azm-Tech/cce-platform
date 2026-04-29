@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+.cce-shell {
+  height: 100%;
+}
+.cce-shell__sidenav {
+  width: 240px;
+}
+.cce-shell__content {
+  display: flex;
+  flex-direction: column;
+}

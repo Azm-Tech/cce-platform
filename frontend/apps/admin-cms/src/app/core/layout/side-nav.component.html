@@ -1,0 +1,14 @@
+<mat-nav-list class="cce-side-nav">
+  @for (item of items; track item.route) {
+    <a
+      *ccePermission="item.permission"
+      mat-list-item
+      [routerLink]="item.route"
+      routerLinkActive="cce-side-nav__item--active"
+      class="cce-side-nav__item"
+    >
+      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+      <span matListItemTitle>{{ item.labelKey | translate }}</span>
+    </a>
+  }
+</mat-nav-list>
