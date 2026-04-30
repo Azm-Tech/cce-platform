@@ -1,5 +1,8 @@
-import { provideHttpClient, withInterceptorsFromDi, HttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from '@angular/core';
+import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
+import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
+import { serverErrorInterceptor } from './core/http/server-error.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -13,7 +16,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([correlationIdInterceptor, bffCredentialsInterceptor, serverErrorInterceptor]),
+    ),
     provideAnimationsAsync(),
     ...(TranslateModule.forRoot({
       loader: {
