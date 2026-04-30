@@ -1,36 +1,61 @@
-import { Route, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
-import { authGuard } from './auth.guard';
+import { authGuard, _resetAuthGuardForTest } from './auth.guard';
 
 describe('authGuard', () => {
-  let auth: { isAuthenticated: jest.Mock; signIn: jest.Mock };
-  let router: { url: string };
+  let auth: { isAuthenticated: jest.Mock; signIn: jest.Mock; refresh: jest.Mock };
+  let state: RouterStateSnapshot;
 
   beforeEach(() => {
-    auth = { isAuthenticated: jest.fn(), signIn: jest.fn() };
-    router = { url: '/protected' };
+    _resetAuthGuardForTest();
+    auth = {
+      isAuthenticated: jest.fn(),
+      signIn: jest.fn(),
+      refresh: jest.fn().mockResolvedValue(undefined),
+    };
+    state = { url: '/me/profile' } as RouterStateSnapshot;
     TestBed.configureTestingModule({
-      providers: [
-        { provide: AuthService, useValue: auth },
-        { provide: Router, useValue: router },
-      ],
+      providers: [{ provide: AuthService, useValue: auth }],
     });
   });
 
-  function run(): boolean {
-    return TestBed.runInInjectionContext(() => authGuard({} as Route, []) as boolean);
+  function run(): Promise<boolean> {
+    return TestBed.runInInjectionContext(
+      () => authGuard({} as ActivatedRouteSnapshot, state) as Promise<boolean>,
+    );
   }
 
-  it('returns true when user is authenticated', () => {
+  it('authenticated user returns true and does not refresh or signIn', async () => {
     auth.isAuthenticated.mockReturnValue(true);
-    expect(run()).toBe(true);
+    await expect(run()).resolves.toBe(true);
+    expect(auth.refresh).not.toHaveBeenCalled();
     expect(auth.signIn).not.toHaveBeenCalled();
   });
 
-  it('returns false and calls signIn(router.url) when not authenticated', () => {
+  it('cold-start path: unauthenticated then refresh resolves to authenticated -> proceed', async () => {
+    auth.isAuthenticated
+      .mockReturnValueOnce(false)  // first call (pre-refresh)
+      .mockReturnValueOnce(true);  // second call (post-refresh)
+    await expect(run()).resolves.toBe(true);
+    expect(auth.refresh).toHaveBeenCalledTimes(1);
+    expect(auth.signIn).not.toHaveBeenCalled();
+  });
+
+  it('truly unauthenticated: refresh runs, still anonymous -> signIn(state.url) + false', async () => {
     auth.isAuthenticated.mockReturnValue(false);
-    expect(run()).toBe(false);
-    expect(auth.signIn).toHaveBeenCalledWith('/protected');
+    await expect(run()).resolves.toBe(false);
+    expect(auth.refresh).toHaveBeenCalledTimes(1);
+    expect(auth.signIn).toHaveBeenCalledWith('/me/profile');
+  });
+
+  it('idempotent: a second invocation does NOT re-call refresh', async () => {
+    auth.isAuthenticated.mockReturnValue(false);
+    await run();
+    auth.refresh.mockClear();
+    auth.signIn.mockClear();
+    await run();
+    expect(auth.refresh).not.toHaveBeenCalled();
+    expect(auth.signIn).toHaveBeenCalledWith('/me/profile');
   });
 });
