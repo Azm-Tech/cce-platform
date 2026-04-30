@@ -1,0 +1,14 @@
+:host { display: block; }
+
+.cce-sign-in-cta {
+  background: rgba(21, 101, 192, 0.05);
+  border: 1px dashed rgba(21, 101, 192, 0.25);
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.cce-sign-in-cta__message {
+  margin: 0 0 0.75rem 0;
+  color: rgba(0, 0, 0, 0.72);
+}
