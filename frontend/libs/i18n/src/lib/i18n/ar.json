@@ -85,6 +85,48 @@
     "openButton": "تعيين الأدوار",
     "saved": "تم تحديث الأدوار."
   },
+  "experts": {
+    "status": { "Pending": "قيد الانتظار", "Approved": "معتمد", "Rejected": "مرفوض" },
+    "requests": {
+      "title": "طلبات الخبراء",
+      "col": {
+        "user": "مقدم الطلب",
+        "submitted": "تاريخ التقديم",
+        "tags": "وسوم الخبرة",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "filter": { "status": "الحالة", "allStatuses": "كل الحالات" },
+      "action": { "approve": "موافقة", "reject": "رفض" }
+    },
+    "approve": {
+      "title": "اعتماد طلب الخبير",
+      "titleAr": "اللقب الأكاديمي (عربي)",
+      "titleEn": "اللقب الأكاديمي (إنجليزي)",
+      "save": "اعتماد",
+      "toast": "تم اعتماد طلب الخبير."
+    },
+    "reject": {
+      "title": "رفض طلب الخبير",
+      "reasonAr": "سبب الرفض (عربي)",
+      "reasonEn": "سبب الرفض (إنجليزي)",
+      "save": "رفض",
+      "toast": "تم رفض طلب الخبير."
+    },
+    "profiles": {
+      "title": "ملفات الخبراء",
+      "viewProfilesButton": "عرض الملفات",
+      "viewRequestsButton": "عرض الطلبات",
+      "filter": { "search": "بحث بالمستخدم" },
+      "col": {
+        "user": "المستخدم",
+        "titleAr": "اللقب (عربي)",
+        "titleEn": "اللقب (إنجليزي)",
+        "tags": "الخبرة",
+        "approvedOn": "تاريخ الاعتماد"
+      }
+    }
+  },
   "stateRep": {
     "title": "تعيينات ممثلي الدول",
     "filter": { "activeOnly": "النشطة فقط" },

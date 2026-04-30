@@ -23,4 +23,10 @@ export const appRoutes: Route[] = [
       import('./features/identity/state-rep-routes').then((m) => m.STATE_REP_ROUTES),
     title: 'CCE — State-Rep Assignments',
   },
+  {
+    path: 'experts',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/experts/routes').then((m) => m.EXPERTS_ROUTES),
+    title: 'CCE — Experts',
+  },
 ];

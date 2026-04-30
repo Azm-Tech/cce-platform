@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>{{ 'experts.reject.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <p class="cce-reject-expert__requester">{{ data.requesterName ?? data.requestId }}</p>
+  <form [formGroup]="form" class="cce-reject-expert__form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'experts.reject.reasonAr' | translate }}</mat-label>
+      <textarea matInput formControlName="rejectionReasonAr" rows="3"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'experts.reject.reasonEn' | translate }}</mat-label>
+      <textarea matInput formControlName="rejectionReasonEn" rows="3"></textarea>
+    </mat-form-field>
+
+    @if (errorKind(); as kind) {
+      <div class="cce-reject-expert__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="warn"
+    (click)="save()"
+    [disabled]="saving() || form.invalid"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ 'experts.reject.save' | translate }}
+    }
+  </button>
+</mat-dialog-actions>

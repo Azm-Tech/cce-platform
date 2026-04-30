@@ -85,6 +85,48 @@
     "openButton": "Assign roles",
     "saved": "Roles updated."
   },
+  "experts": {
+    "status": { "Pending": "Pending", "Approved": "Approved", "Rejected": "Rejected" },
+    "requests": {
+      "title": "Expert requests",
+      "col": {
+        "user": "Requested by",
+        "submitted": "Submitted",
+        "tags": "Expertise tags",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "filter": { "status": "Status", "allStatuses": "All statuses" },
+      "action": { "approve": "Approve", "reject": "Reject" }
+    },
+    "approve": {
+      "title": "Approve expert request",
+      "titleAr": "Academic title (Arabic)",
+      "titleEn": "Academic title (English)",
+      "save": "Approve",
+      "toast": "Expert request approved."
+    },
+    "reject": {
+      "title": "Reject expert request",
+      "reasonAr": "Rejection reason (Arabic)",
+      "reasonEn": "Rejection reason (English)",
+      "save": "Reject",
+      "toast": "Expert request rejected."
+    },
+    "profiles": {
+      "title": "Expert profiles",
+      "viewProfilesButton": "View profiles",
+      "viewRequestsButton": "View requests",
+      "filter": { "search": "Search by user" },
+      "col": {
+        "user": "User",
+        "titleAr": "Title (Arabic)",
+        "titleEn": "Title (English)",
+        "tags": "Expertise",
+        "approvedOn": "Approved on"
+      }
+    }
+  },
   "stateRep": {
     "title": "State-rep assignments",
     "filter": { "activeOnly": "Active only" },

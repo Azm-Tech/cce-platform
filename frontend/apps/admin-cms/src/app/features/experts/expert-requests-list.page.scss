@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+}
+
+.cce-expert-requests__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-expert-requests__title {
+  margin: 0;
+}
+
+.cce-expert-requests__filters {
+  margin-bottom: 1rem;
+}
+
+.cce-expert-requests__filter {
+  min-width: 240px;
+}
+
+.cce-expert-requests__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.cce-expert-requests__table {
+  width: 100%;
+}

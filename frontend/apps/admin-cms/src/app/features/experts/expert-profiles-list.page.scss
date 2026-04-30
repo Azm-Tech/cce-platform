@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+}
+
+.cce-expert-profiles__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-expert-profiles__title {
+  margin: 0;
+}
+
+.cce-expert-profiles__filters {
+  margin-bottom: 1rem;
+}
+
+.cce-expert-profiles__filter {
+  min-width: 240px;
+}
+
+.cce-expert-profiles__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.cce-expert-profiles__table {
+  width: 100%;
+}

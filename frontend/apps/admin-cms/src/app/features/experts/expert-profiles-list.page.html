@@ -1,0 +1,60 @@
+<div class="cce-expert-profiles__header">
+  <h1 class="cce-expert-profiles__title">{{ 'experts.profiles.title' | translate }}</h1>
+  <a mat-button routerLink="/experts">
+    {{ 'experts.profiles.viewRequestsButton' | translate }}
+  </a>
+</div>
+
+<div class="cce-expert-profiles__filters">
+  <mat-form-field appearance="outline" class="cce-expert-profiles__filter">
+    <mat-label>{{ 'experts.profiles.filter.search' | translate }}</mat-label>
+    <input
+      matInput
+      type="search"
+      [ngModel]="searchInput()"
+      (ngModelChange)="searchInput.set($event)"
+      (keyup.enter)="onSearch()"
+    />
+  </mat-form-field>
+</div>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (errorKind(); as kind) {
+  <div class="cce-expert-profiles__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-expert-profiles__table">
+  <ng-container matColumnDef="user">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.profiles.col.user' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.userName ?? row.userId }}</td>
+  </ng-container>
+  <ng-container matColumnDef="titleAr">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.profiles.col.titleAr' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.academicTitleAr }}</td>
+  </ng-container>
+  <ng-container matColumnDef="titleEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.profiles.col.titleEn' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.academicTitleEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="tags">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.profiles.col.tags' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.expertiseTags.join(', ') || '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="approvedOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.profiles.col.approvedOn' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.approvedOn | date:'medium' }}</td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator
+  [length]="total()"
+  [pageIndex]="page() - 1"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]"
+  (page)="onPage($event)"
+/>

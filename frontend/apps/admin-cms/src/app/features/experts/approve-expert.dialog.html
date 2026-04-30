@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>{{ 'experts.approve.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <p class="cce-approve-expert__requester">{{ data.requesterName ?? data.requestId }}</p>
+  <form [formGroup]="form" class="cce-approve-expert__form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'experts.approve.titleAr' | translate }}</mat-label>
+      <input matInput formControlName="academicTitleAr" autocomplete="off" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'experts.approve.titleEn' | translate }}</mat-label>
+      <input matInput formControlName="academicTitleEn" autocomplete="off" />
+    </mat-form-field>
+
+    @if (errorKind(); as kind) {
+      <div class="cce-approve-expert__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving() || form.invalid"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ 'experts.approve.save' | translate }}
+    }
+  </button>
+</mat-dialog-actions>
