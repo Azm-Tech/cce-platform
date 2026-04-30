@@ -4,6 +4,20 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [admin-cms-v0.1.0] — 2026-04-30
+
+### Added
+- ~30 admin screens in `apps/admin-cms` covering BRD §4.1.19–§4.1.29: identity (users + roles + state-rep assignments), expert workflow (requests + approve/reject + profiles), content (resources CRUD + asset upload + publish, country-resource-requests by-id), content publishing (news + events + pages + homepage sections), taxonomies (resource categories + topics), community moderation (soft-delete by-id), country admin (list + detail + profile editor), notification templates (list + create + edit), reports (8 streaming-CSV downloads), audit log query.
+- Cross-cutting: 3 functional `HttpInterceptorFn` (auth, server-error, correlation-id), `AuthService` (signals + `/api/me` bootstrap), `permissionGuard` (`CanMatchFn`), `*ccePermission` structural directive, `ToastService` + `ConfirmDialogService` + `ErrorFormatter` (`toFeatureError` mapping), `<cce-shell>` layout with `mat-sidenav-container` + `<cce-side-nav>` (14 role-gated nav items), generic `<cce-paged-table>`.
+- 4 new ADRs (0035–0038): standalone components + signals-first, hybrid HTTP error handling, permission gating, by-ID power-user forms for missing list endpoints.
+- 238 admin-cms Jest tests; Playwright + `@axe-core/playwright` smoke + layout regression spec; lint clean; production build clean.
+- `contracts/openapi.{internal,external}.json` regenerated (Sub-3/Sub-4 had not re-run `generate-openapi.sh` after shipping endpoints); `libs/api-client` regenerated to expose 75+ internal operations + 90+ external operations.
+
+### Notes
+- The auth model deviates from the spec (BFF cookies were specified; Foundation shipped `angular-auth-oidc-client` directly). Sub-5 layers `AuthService` on top of the existing OIDC client; rotating to BFF cookies is a future migration.
+- E2E uses Playwright (Foundation choice) instead of the spec's Cypress, with `@axe-core/playwright` providing equivalent axe coverage.
+- Several backend gaps are documented in `docs/admin-cms-completion.md`: missing list endpoints for country-resource-requests and community moderation flags, missing `Produces<T>()` annotations causing the generated client to emit `Response = unknown` (worked around by hand-defined DTOs in each feature `*.types.ts`).
+
 ## [external-api-v0.1.0] — 2026-04-29
 
 ### Added
