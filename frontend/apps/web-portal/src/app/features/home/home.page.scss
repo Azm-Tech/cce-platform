@@ -1,0 +1,27 @@
+:host { display: block; }
+.cce-home { display: flex; flex-direction: column; }
+.cce-home__loading,
+.cce-home__error {
+  padding: 1.5rem;
+  text-align: center;
+}
+.cce-home__error {
+  background: #fdecea;
+  color: #b00020;
+  margin: 1rem;
+  border-radius: 4px;
+}
+.cce-home__section {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &--hero {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.06));
+    padding: 4rem 1.5rem;
+    text-align: center;
+  }
+}
+.cce-home__content {
+  max-width: 1200px;
+  margin: 0 auto;
+}

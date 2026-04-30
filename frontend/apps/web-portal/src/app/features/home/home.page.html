@@ -1,0 +1,13 @@
+<section class="cce-home">
+  @if (loading()) {
+    <p class="cce-home__loading">{{ 'common.loading' | translate }}</p>
+  }
+  @if (errorKind(); as kind) {
+    <div class="cce-home__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+  @for (section of localizedSections(); track section.id) {
+    <article [class]="'cce-home__section cce-home__section--' + section.sectionType.toLowerCase()">
+      <div class="cce-home__content" [innerHTML]="section.content"></div>
+    </article>
+  }
+</section>
