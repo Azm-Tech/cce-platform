@@ -99,4 +99,10 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('./features/reports/routes').then((m) => m.REPORTS_ROUTES),
     title: 'CCE — Reports',
   },
+  {
+    path: 'audit',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/audit/routes').then((m) => m.AUDIT_ROUTES),
+    title: 'CCE — Audit log',
+  },
 ];

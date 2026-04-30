@@ -1,0 +1,71 @@
+<h1 class="cce-audit__title">{{ 'audit.title' | translate }}</h1>
+
+<form class="cce-audit__filters" (submit)="$event.preventDefault(); applyFilters()">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.actor' | translate }}</mat-label>
+    <input matInput [ngModel]="actor()" (ngModelChange)="actor.set($event)" name="actor" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.actionPrefix' | translate }}</mat-label>
+    <input matInput [ngModel]="actionPrefix()" (ngModelChange)="actionPrefix.set($event)" name="actionPrefix" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.resourceType' | translate }}</mat-label>
+    <input matInput [ngModel]="resourceType()" (ngModelChange)="resourceType.set($event)" name="resourceType" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.correlationId' | translate }}</mat-label>
+    <input matInput [ngModel]="correlationId()" (ngModelChange)="correlationId.set($event)" name="correlationId" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.from' | translate }}</mat-label>
+    <input matInput type="datetime-local" [ngModel]="from()" (ngModelChange)="from.set($event)" name="from" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'audit.filter.to' | translate }}</mat-label>
+    <input matInput type="datetime-local" [ngModel]="to()" (ngModelChange)="to.set($event)" name="to" />
+  </mat-form-field>
+  <div class="cce-audit__filter-actions">
+    <button type="submit" mat-flat-button color="primary">
+      {{ 'audit.filter.apply' | translate }}
+    </button>
+    <button type="button" mat-button (click)="clearFilters()">
+      {{ 'audit.filter.clear' | translate }}
+    </button>
+  </div>
+</form>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-audit__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<mat-accordion class="cce-audit__accordion" multi>
+  @for (row of rows(); track row.id) {
+    <mat-expansion-panel class="cce-audit__panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="cce-audit__action">{{ row.action }}</mat-panel-title>
+        <mat-panel-description>
+          {{ row.actor }} ·
+          {{ row.resource }} ·
+          {{ row.occurredOn | date:'medium' }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <dl class="cce-audit__details">
+        <dt>{{ 'audit.col.correlationId' | translate }}</dt>
+        <dd><code>{{ row.correlationId }}</code></dd>
+        <dt>{{ 'audit.col.diff' | translate }}</dt>
+        <dd>
+          @if (row.diff) {
+            <pre class="cce-audit__diff">{{ row.diff }}</pre>
+          } @else {
+            <span class="cce-audit__none">{{ 'audit.col.noDiff' | translate }}</span>
+          }
+        </dd>
+      </dl>
+    </mat-expansion-panel>
+  }
+</mat-accordion>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
+  [pageSizeOptions]="[25, 50, 100, 200]" (page)="onPage($event)" />

@@ -351,5 +351,27 @@
     "events": { "title": "الفعاليات", "description": "جميع الفعاليات وعدد المشاركين." },
     "resources": { "title": "الموارد", "description": "مكتبة الموارد وعدد المشاهدات." },
     "countryProfiles": { "title": "ملفات الدول", "description": "حالة تحرير ملفات الدول." }
+  },
+  "audit": {
+    "title": "سجل التدقيق",
+    "filter": {
+      "actor": "المستخدم",
+      "actionPrefix": "بادئة الإجراء",
+      "resourceType": "نوع المورد",
+      "correlationId": "معرّف الارتباط",
+      "from": "من",
+      "to": "إلى",
+      "apply": "تطبيق",
+      "clear": "مسح"
+    },
+    "col": {
+      "occurredOn": "حدث في",
+      "actor": "المستخدم",
+      "action": "الإجراء",
+      "resource": "المورد",
+      "correlationId": "معرّف الارتباط",
+      "diff": "الفرق",
+      "noDiff": "لا يوجد فرق مسجّل."
+    }
   }
 }

@@ -1,0 +1,39 @@
+:host { display: block; padding: 1.5rem; }
+.cce-audit__title { margin: 0 0 1rem; }
+.cce-audit__filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.cce-audit__filter-actions {
+  display: flex; gap: 0.5rem; align-items: center;
+  grid-column: 1 / -1;
+}
+.cce-audit__error {
+  background: #fdecea; color: #b00020; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+}
+.cce-audit__accordion {
+  display: block;
+  margin-bottom: 1rem;
+}
+.cce-audit__action { font-family: monospace; }
+.cce-audit__details {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+
+  dt { color: rgba(0, 0, 0, 0.6); }
+  dd { margin: 0; }
+}
+.cce-audit__diff {
+  font-family: monospace;
+  font-size: 0.85em;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.75rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0;
+}
+.cce-audit__none { color: rgba(0, 0, 0, 0.4); font-style: italic; }
