@@ -1,0 +1,51 @@
+<article class="cce-resource-detail">
+  <a class="cce-resource-detail__back" routerLink="/knowledge-center">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'resources.back' | translate }}
+  </a>
+
+  @if (loading()) {
+    <p class="cce-resource-detail__loading">{{ 'common.loading' | translate }}</p>
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-resource-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+
+  @if (resource(); as r) {
+    <mat-card class="cce-resource-detail__card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>{{ iconFor(r.resourceType) }}</mat-icon>
+        <mat-card-title>{{ title() }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ ('resources.type.' + r.resourceType) | translate }}
+          @if (r.publishedOn) {
+            · {{ 'resources.publishedOn' | translate }} {{ r.publishedOn | date: 'mediumDate' }}
+          }
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="cce-resource-detail__description">{{ description() }}</p>
+        <p class="cce-resource-detail__meta">
+          {{ 'resources.viewCount' | translate: { count: r.viewCount } }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          (click)="download()"
+          [disabled]="downloading()"
+        >
+          @if (downloading()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            <mat-icon>download</mat-icon>
+            {{ 'resources.download.openButton' | translate }}
+          }
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</article>
