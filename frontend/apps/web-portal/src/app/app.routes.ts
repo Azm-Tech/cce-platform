@@ -35,7 +35,7 @@ export const appRoutes: Route[] = [
   {
     path: 'search',
     loadComponent: () =>
-      import('./features/search/search-placeholder.page').then((m) => m.SearchPlaceholderPage),
+      import('./features/search/search-results.page').then((m) => m.SearchResultsPage),
     title: 'CCE — Search',
   },
   { path: 'health', component: HealthPage, title: 'CCE — Health' },

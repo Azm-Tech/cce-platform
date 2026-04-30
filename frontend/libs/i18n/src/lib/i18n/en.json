@@ -83,7 +83,22 @@
     "placeholder": "Search the Knowledge Center…",
     "title": "Search",
     "submit": "Search",
-    "coming": "Search results land in Phase 5."
+    "score": "Relevance score",
+    "resultsForPrefix": "Results for",
+    "totalCountSuffix": "results",
+    "emptyPrefix": "No matches for",
+    "typeAQuery": "Type a query in the search box above.",
+    "facets": {
+      "title": "Filter by type",
+      "clear": "Clear filter"
+    }
+  },
+  "searchType": {
+    "News": "News",
+    "Events": "Events",
+    "Resources": "Resources",
+    "Pages": "Pages",
+    "KnowledgeMaps": "Knowledge maps"
   },
   "users": {
     "title": "Users",

@@ -83,7 +83,22 @@
     "placeholder": "ابحث في مركز المعرفة…",
     "title": "البحث",
     "submit": "بحث",
-    "coming": "نتائج البحث ستصدر في المرحلة 5."
+    "score": "درجة الصلة",
+    "resultsForPrefix": "نتائج لـ",
+    "totalCountSuffix": "نتيجة",
+    "emptyPrefix": "لا توجد نتائج لـ",
+    "typeAQuery": "اكتب استعلامك في مربع البحث في الأعلى.",
+    "facets": {
+      "title": "تصفية حسب النوع",
+      "clear": "مسح المرشح"
+    }
+  },
+  "searchType": {
+    "News": "الأخبار",
+    "Events": "الفعاليات",
+    "Resources": "الموارد",
+    "Pages": "الصفحات",
+    "KnowledgeMaps": "خرائط المعرفة"
   },
   "users": {
     "title": "المستخدمون",
