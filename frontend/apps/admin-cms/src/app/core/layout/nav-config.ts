@@ -7,6 +7,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.users', route: '/users', permission: 'User.Read', icon: 'people' },
+  { labelKey: 'nav.stateReps', route: '/state-rep-assignments', permission: 'Role.Assign', icon: 'badge' },
   { labelKey: 'nav.experts', route: '/experts', permission: 'Community.Expert.ApproveRequest', icon: 'school' },
   { labelKey: 'nav.resources', route: '/resources', permission: 'Resource.Center.Upload', icon: 'description' },
   { labelKey: 'nav.news', route: '/news', permission: 'News.Update', icon: 'feed' },

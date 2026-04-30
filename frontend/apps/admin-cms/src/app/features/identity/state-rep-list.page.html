@@ -1,0 +1,80 @@
+<div class="cce-state-rep-list__header">
+  <h1 class="cce-state-rep-list__title">{{ 'stateRep.title' | translate }}</h1>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    *ccePermission="'Role.Assign'"
+    (click)="openCreate()"
+  >
+    <mat-icon>add</mat-icon>
+    {{ 'stateRep.create.openButton' | translate }}
+  </button>
+</div>
+
+<div class="cce-state-rep-list__filters">
+  <mat-checkbox
+    [ngModel]="activeOnly()"
+    (ngModelChange)="onActiveToggle($event)"
+  >
+    {{ 'stateRep.filter.activeOnly' | translate }}
+  </mat-checkbox>
+</div>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" class="cce-state-rep-list__progress" />
+}
+
+@if (errorKind(); as kind) {
+  <div class="cce-state-rep-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-state-rep-list__table">
+  <ng-container matColumnDef="userName">
+    <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.user' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.userName ?? row.userId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="countryId">
+    <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.country' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.countryId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="assignedOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.assignedOn' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.assignedOn | date:'medium' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="isActive">
+    <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.active' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.isActive ? '✓' : '✗' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let row">
+      @if (row.isActive) {
+        <button
+          type="button"
+          mat-button
+          color="warn"
+          *ccePermission="'Role.Assign'"
+          (click)="revoke(row)"
+        >
+          {{ 'stateRep.revoke.openButton' | translate }}
+        </button>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator
+  [length]="total()"
+  [pageIndex]="page() - 1"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]"
+  (page)="onPage($event)"
+/>

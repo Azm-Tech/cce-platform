@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ 'stateRep.create.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-state-rep-create__form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'stateRep.create.user' | translate }}</mat-label>
+      <input matInput formControlName="userId" autocomplete="off" />
+      @if (form.controls.userId.touched && form.controls.userId.invalid) {
+        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'stateRep.create.country' | translate }}</mat-label>
+      <input matInput formControlName="countryId" autocomplete="off" />
+      @if (form.controls.countryId.touched && form.controls.countryId.invalid) {
+        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorKind(); as kind) {
+      <div class="cce-state-rep-create__error" role="alert">
+        {{ ('errors.' + kind) | translate }}
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving() || form.invalid"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ 'stateRep.create.save' | translate }}
+    }
+  </button>
+</mat-dialog-actions>

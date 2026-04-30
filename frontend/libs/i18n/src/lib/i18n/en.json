@@ -41,6 +41,7 @@
   },
   "nav": {
     "users": "Users",
+    "stateReps": "State reps",
     "experts": "Experts",
     "resources": "Resources",
     "news": "News",
@@ -83,5 +84,32 @@
     "roles": "Roles",
     "openButton": "Assign roles",
     "saved": "Roles updated."
+  },
+  "stateRep": {
+    "title": "State-rep assignments",
+    "filter": { "activeOnly": "Active only" },
+    "col": {
+      "user": "User",
+      "country": "Country",
+      "assignedOn": "Assigned on",
+      "active": "Active",
+      "actions": "Actions"
+    },
+    "create": {
+      "title": "New state-rep assignment",
+      "openButton": "New assignment",
+      "user": "User ID",
+      "country": "Country ID",
+      "save": "Create",
+      "invalidGuid": "Enter a valid GUID.",
+      "toast": "Assignment created."
+    },
+    "revoke": {
+      "openButton": "Revoke",
+      "title": "Revoke assignment",
+      "message": "Revoke this assignment? It can be re-created later, and the audit trail records the revocation.",
+      "confirm": "Revoke",
+      "toast": "Assignment revoked."
+    }
   }
 }

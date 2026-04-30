@@ -47,7 +47,7 @@ describe('SideNavComponent', () => {
     expect(links).toHaveLength(0);
   });
 
-  it('renders all 12 nav links when user has all permissions', () => {
+  it('renders one link per NAV_ITEM when user has every permission', () => {
     const allPermissions = [...new Set(NAV_ITEMS.map((i) => i.permission))];
     TestBed.runInInjectionContext(() =>
       userSig.set({ id: '1', email: 'admin@test.com', userName: 'admin', permissions: allPermissions }),
@@ -55,7 +55,7 @@ describe('SideNavComponent', () => {
     fixture.detectChanges();
 
     const links = fixture.nativeElement.querySelectorAll('a[mat-list-item]');
-    expect(links).toHaveLength(12);
+    expect(links).toHaveLength(NAV_ITEMS.length);
   });
 
   it('renders only the Users link when user only has User.Read', () => {

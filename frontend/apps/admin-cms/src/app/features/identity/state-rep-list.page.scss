@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+}
+
+.cce-state-rep-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-state-rep-list__title {
+  margin: 0;
+}
+
+.cce-state-rep-list__filters {
+  margin-bottom: 1rem;
+}
+
+.cce-state-rep-list__progress {
+  margin-bottom: 0.5rem;
+}
+
+.cce-state-rep-list__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.cce-state-rep-list__table {
+  width: 100%;
+}
