@@ -1,0 +1,53 @@
+<article class="cce-event-detail">
+  <a class="cce-event-detail__back" routerLink="/events">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'events.back' | translate }}
+  </a>
+
+  @if (loading()) { <p class="cce-event-detail__loading">{{ 'common.loading' | translate }}</p> }
+  @if (errorKind(); as kind) {
+    <div class="cce-event-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+
+  @if (event(); as e) {
+    <mat-card class="cce-event-detail__card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>{{ e.onlineMeetingUrl ? 'videocam' : 'event' }}</mat-icon>
+        <mat-card-title>{{ title() }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ 'events.startsOn' | translate }}: {{ e.startsOn | date:'medium' }}
+          ·
+          {{ 'events.endsOn' | translate }}: {{ e.endsOn | date:'medium' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      @if (e.featuredImageUrl) {
+        <img mat-card-image [src]="e.featuredImageUrl" [alt]="title()" />
+      }
+      <mat-card-content>
+        <p class="cce-event-detail__description">{{ description() }}</p>
+        @if (location(); as loc) {
+          <p class="cce-event-detail__location">
+            <mat-icon>{{ e.onlineMeetingUrl ? 'link' : 'place' }}</mat-icon>
+            {{ loc }}
+          </p>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          (click)="exportToCalendar()"
+          [disabled]="downloading()"
+        >
+          @if (downloading()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            <mat-icon>event_available</mat-icon>
+            {{ 'events.export.openButton' | translate }}
+          }
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</article>
