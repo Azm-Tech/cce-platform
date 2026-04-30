@@ -277,17 +277,27 @@
     "create": { "openButton": "خبر جديد", "title": "خبر جديد", "save": "إنشاء", "toast": "تم إنشاء الخبر." },
     "edit": { "openButton": "تعديل", "title": "تعديل الخبر", "save": "حفظ", "toast": "تم تحديث الخبر." },
     "publish": { "openButton": "نشر", "title": "نشر الخبر", "message": "هل تريد نشر هذا الخبر؟ سيصبح ظاهرًا للجميع فورًا.", "confirm": "نشر", "toast": "تم نشر الخبر." },
-    "delete": { "openButton": "حذف", "title": "حذف الخبر", "message": "هل تريد حذف هذا الخبر؟ لا يمكن التراجع.", "confirm": "حذف", "toast": "تم حذف الخبر." }
+    "delete": { "openButton": "حذف", "title": "حذف الخبر", "message": "هل تريد حذف هذا الخبر؟ لا يمكن التراجع.", "confirm": "حذف", "toast": "تم حذف الخبر." },
+    "empty": "لا توجد أخبار منشورة بعد.",
+    "back": "العودة إلى الأخبار",
+    "publishedOn": "نُشر في",
+    "featured": { "toggle": "عرض المميزة فقط" }
   },
   "events": {
     "title": "الفعاليات",
     "col": { "title": "العنوان", "startsOn": "البداية", "endsOn": "النهاية", "location": "المكان", "actions": "الإجراءات" },
-    "filter": { "search": "بحث" },
+    "filter": { "search": "بحث", "from": "من", "to": "إلى" },
     "field": { "titleAr": "العنوان (عربي)", "titleEn": "العنوان (إنجليزي)", "descriptionAr": "الوصف (عربي)", "descriptionEn": "الوصف (إنجليزي)", "startsOn": "تاريخ البدء", "endsOn": "تاريخ الانتهاء", "locationAr": "المكان (عربي)", "locationEn": "المكان (إنجليزي)", "onlineMeetingUrl": "رابط الاجتماع الإلكتروني", "featuredImageUrl": "رابط الصورة المميزة" },
     "create": { "openButton": "فعالية جديدة", "title": "فعالية جديدة", "save": "إنشاء", "toast": "تم إنشاء الفعالية." },
     "edit": { "openButton": "تعديل", "title": "تعديل الفعالية", "save": "حفظ", "toast": "تم تحديث الفعالية." },
     "reschedule": { "openButton": "إعادة جدولة", "title": "إعادة جدولة الفعالية", "save": "إعادة جدولة", "toast": "تم تعديل المواعيد." },
-    "delete": { "openButton": "حذف", "title": "حذف الفعالية", "message": "هل تريد حذف هذه الفعالية؟ سيتم إخطار المسجلين.", "confirm": "حذف", "toast": "تم حذف الفعالية." }
+    "delete": { "openButton": "حذف", "title": "حذف الفعالية", "message": "هل تريد حذف هذه الفعالية؟ سيتم إخطار المسجلين.", "confirm": "حذف", "toast": "تم حذف الفعالية." },
+    "empty": "لا توجد فعاليات قادمة.",
+    "back": "العودة إلى الفعاليات",
+    "startsOn": "البداية",
+    "endsOn": "النهاية",
+    "location": { "online": "عبر الإنترنت", "tba": "المكان قيد التحديد" },
+    "export": { "openButton": "إضافة إلى التقويم", "toast": "تم تنزيل دعوة التقويم." }
   },
   "pages": {
     "title": "الصفحات",

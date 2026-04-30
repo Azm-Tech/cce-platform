@@ -277,17 +277,27 @@
     "create": { "openButton": "New article", "title": "New news article", "save": "Create", "toast": "News article created." },
     "edit": { "openButton": "Edit", "title": "Edit news article", "save": "Save", "toast": "News article updated." },
     "publish": { "openButton": "Publish", "title": "Publish article", "message": "Publish this article? It will become visible to all users immediately.", "confirm": "Publish", "toast": "News article published." },
-    "delete": { "openButton": "Delete", "title": "Delete article", "message": "Delete this article? This cannot be undone.", "confirm": "Delete", "toast": "News article deleted." }
+    "delete": { "openButton": "Delete", "title": "Delete article", "message": "Delete this article? This cannot be undone.", "confirm": "Delete", "toast": "News article deleted." },
+    "empty": "No news articles published yet.",
+    "back": "Back to news",
+    "publishedOn": "Published",
+    "featured": { "toggle": "Show featured only" }
   },
   "events": {
     "title": "Events",
     "col": { "title": "Title", "startsOn": "Starts", "endsOn": "Ends", "location": "Location", "actions": "Actions" },
-    "filter": { "search": "Search" },
+    "filter": { "search": "Search", "from": "From", "to": "To" },
     "field": { "titleAr": "Title (Arabic)", "titleEn": "Title (English)", "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)", "startsOn": "Starts on", "endsOn": "Ends on", "locationAr": "Location (Arabic)", "locationEn": "Location (English)", "onlineMeetingUrl": "Online meeting URL", "featuredImageUrl": "Featured image URL" },
     "create": { "openButton": "New event", "title": "New event", "save": "Create", "toast": "Event created." },
     "edit": { "openButton": "Edit", "title": "Edit event", "save": "Save", "toast": "Event updated." },
     "reschedule": { "openButton": "Reschedule", "title": "Reschedule event", "save": "Reschedule", "toast": "Event rescheduled." },
-    "delete": { "openButton": "Delete", "title": "Delete event", "message": "Delete this event? Registered attendees will be notified.", "confirm": "Delete", "toast": "Event deleted." }
+    "delete": { "openButton": "Delete", "title": "Delete event", "message": "Delete this event? Registered attendees will be notified.", "confirm": "Delete", "toast": "Event deleted." },
+    "empty": "No events scheduled.",
+    "back": "Back to events",
+    "startsOn": "Starts",
+    "endsOn": "Ends",
+    "location": { "online": "Online", "tba": "Location TBA" },
+    "export": { "openButton": "Add to calendar", "toast": "Calendar invite downloaded." }
   },
   "pages": {
     "title": "Pages",

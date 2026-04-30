@@ -18,6 +18,16 @@ export const appRoutes: Route[] = [
     title: 'CCE — Knowledge Center',
   },
   {
+    path: 'news',
+    loadChildren: () => import('./features/news/routes').then((m) => m.NEWS_ROUTES),
+    title: 'CCE — News',
+  },
+  {
+    path: 'events',
+    loadChildren: () => import('./features/events/routes').then((m) => m.EVENTS_ROUTES),
+    title: 'CCE — Events',
+  },
+  {
     path: 'search',
     loadComponent: () =>
       import('./features/search/search-placeholder.page').then((m) => m.SearchPlaceholderPage),
