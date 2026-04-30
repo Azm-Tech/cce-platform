@@ -1,4 +1,4 @@
-import { Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { authGuard } from './auth.guard';
@@ -13,15 +13,9 @@ describe('authGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: auth },
-        { provide: 'Router', useValue: router },
+        { provide: Router, useValue: router },
       ],
     });
-    // Provide Router in the correct token form
-    TestBed.overrideProvider(
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require('@angular/router').Router,
-      { useValue: router },
-    );
   });
 
   function run(): boolean {

@@ -8,7 +8,7 @@ import { IfAuthenticatedDirective } from './if-authenticated.directive';
 @Component({
   standalone: true,
   imports: [IfAuthenticatedDirective],
-  template: `<button type="button" *ifAuthenticated>edit</button>`,
+  template: `<button type="button" *cceIfAuthenticated>edit</button>`,
 })
 class HostComponent {}
 

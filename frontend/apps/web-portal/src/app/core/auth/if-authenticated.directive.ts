@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
  * or render the inline "Sign in to continue" affordance inside an *ngIf.
  */
 @Directive({
-  selector: '[ifAuthenticated]',
+  selector: '[cceIfAuthenticated]',
   standalone: true,
 })
 export class IfAuthenticatedDirective {
