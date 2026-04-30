@@ -420,6 +420,62 @@
     "unavailable": "Latest snapshot not yet published.",
     "error": "Could not load KAPSARC snapshot."
   },
+  "account": {
+    "register": {
+      "title": "Create your CCE account",
+      "body": "We'll redirect you to the secure sign-up screen. After completing it, you'll come back here signed in.",
+      "continueButton": "Continue to sign-up",
+      "alreadySignedIn": "You're already signed in.",
+      "openProfile": "Open my profile"
+    },
+    "profile": {
+      "title": "My profile",
+      "notProvisioned": "We're still setting up your profile. Please retry in a moment.",
+      "field": {
+        "email": "Email",
+        "userName": "User name",
+        "localePreference": "Language preference",
+        "knowledgeLevel": "Knowledge level",
+        "interests": "Interests",
+        "country": "Country",
+        "avatarUrl": "Avatar URL"
+      },
+      "editButton": "Edit",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "toast": { "saved": "Profile saved." }
+    },
+    "knowledgeLevel": {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced"
+    },
+    "expert": {
+      "title": "Become an expert",
+      "body": "Submit your bio and the topics you focus on. An admin will review your request.",
+      "field": {
+        "bioAr": "Biography (Arabic)",
+        "bioEn": "Biography (English)",
+        "tags": "Topics (comma-separated)"
+      },
+      "submitButton": "Submit request",
+      "resubmitButton": "Submit a new request",
+      "banner": {
+        "pending": "Your request was submitted on {{date}}. Awaiting review.",
+        "approved": "Your expert profile is active.",
+        "rejected": "Your previous request was declined: {{reason}}"
+      },
+      "toast": { "submitted": "Request submitted." }
+    },
+    "serviceRating": {
+      "openButton": "Rate this page",
+      "title": "Rate your experience",
+      "commentLabel": "Optional comment",
+      "submitButton": "Submit",
+      "starLabel": "{{n}} of 5 stars",
+      "toast": { "thanks": "Thanks for your feedback." }
+    }
+  },
   "notifications": {
     "title": "Notification templates",
     "filter": { "channel": "Channel", "allChannels": "All channels" },

@@ -420,6 +420,62 @@
     "unavailable": "لم يتم نشر أحدث لقطة بعد.",
     "error": "تعذّر تحميل لقطة كابسارك."
   },
+  "account": {
+    "register": {
+      "title": "أنشئ حسابك في CCE",
+      "body": "سنقوم بتحويلك إلى شاشة التسجيل الآمنة. بعد إكمالها، ستعود إلى هنا وقد تم تسجيل دخولك.",
+      "continueButton": "متابعة إلى التسجيل",
+      "alreadySignedIn": "أنت مسجل الدخول بالفعل.",
+      "openProfile": "فتح ملفي الشخصي"
+    },
+    "profile": {
+      "title": "ملفي الشخصي",
+      "notProvisioned": "لا نزال نُعِدّ ملفك الشخصي. يُرجى إعادة المحاولة بعد لحظات.",
+      "field": {
+        "email": "البريد الإلكتروني",
+        "userName": "اسم المستخدم",
+        "localePreference": "تفضيل اللغة",
+        "knowledgeLevel": "مستوى المعرفة",
+        "interests": "الاهتمامات",
+        "country": "الدولة",
+        "avatarUrl": "رابط الصورة الشخصية"
+      },
+      "editButton": "تعديل",
+      "saveButton": "حفظ",
+      "cancelButton": "إلغاء",
+      "toast": { "saved": "تم حفظ الملف الشخصي." }
+    },
+    "knowledgeLevel": {
+      "Beginner": "مبتدئ",
+      "Intermediate": "متوسط",
+      "Advanced": "متقدم"
+    },
+    "expert": {
+      "title": "كن خبيرًا",
+      "body": "أرسل سيرتك الذاتية والمواضيع التي تركز عليها. سيقوم المسؤول بمراجعة طلبك.",
+      "field": {
+        "bioAr": "السيرة (عربي)",
+        "bioEn": "السيرة (إنجليزي)",
+        "tags": "المواضيع (مفصولة بفواصل)"
+      },
+      "submitButton": "إرسال الطلب",
+      "resubmitButton": "إرسال طلب جديد",
+      "banner": {
+        "pending": "تم إرسال طلبك في {{date}}. في انتظار المراجعة.",
+        "approved": "ملف الخبير الخاص بك مُفعّل.",
+        "rejected": "تم رفض طلبك السابق: {{reason}}"
+      },
+      "toast": { "submitted": "تم إرسال الطلب." }
+    },
+    "serviceRating": {
+      "openButton": "قيّم هذه الصفحة",
+      "title": "قيّم تجربتك",
+      "commentLabel": "تعليق اختياري",
+      "submitButton": "إرسال",
+      "starLabel": "{{n}} من 5 نجوم",
+      "toast": { "thanks": "شكرًا على ملاحظاتك." }
+    }
+  },
   "notifications": {
     "title": "قوالب الإشعارات",
     "filter": { "channel": "القناة", "allChannels": "كل القنوات" },

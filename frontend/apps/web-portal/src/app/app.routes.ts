@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { HealthPage } from './health/health.page';
+import { authGuard } from './core/auth/auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -37,6 +38,19 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./features/search/search-results.page').then((m) => m.SearchResultsPage),
     title: 'CCE — Search',
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/account/register.page').then((m) => m.RegisterPage),
+    title: 'CCE — Register',
+  },
+  {
+    path: 'me',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/account/routes').then((m) => m.ACCOUNT_ROUTES),
+    title: 'CCE — My account',
   },
   { path: 'health', component: HealthPage, title: 'CCE — Health' },
 ];
