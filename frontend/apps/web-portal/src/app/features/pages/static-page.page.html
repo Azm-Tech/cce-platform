@@ -1,0 +1,12 @@
+<article class="cce-static-page">
+  @if (loading()) {
+    <p class="cce-static-page__loading">{{ 'common.loading' | translate }}</p>
+  }
+  @if (errorKind(); as kind) {
+    <div class="cce-static-page__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+  @if (page()) {
+    <h1 class="cce-static-page__title">{{ title() }}</h1>
+    <div class="cce-static-page__content" [innerHTML]="content()"></div>
+  }
+</article>
