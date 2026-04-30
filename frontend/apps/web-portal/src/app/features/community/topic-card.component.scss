@@ -1,0 +1,31 @@
+:host { display: block; }
+
+.cce-topic-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  mat-card { transition: box-shadow 0.2s; height: 100%; }
+  &:hover mat-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+}
+
+.cce-topic-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cce-topic-card__icon-fallback {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #1565c0;
+}
+
+.cce-topic-card__description {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.9em;
+  line-height: 1.4;
+}

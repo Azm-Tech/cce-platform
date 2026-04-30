@@ -1,0 +1,24 @@
+<section class="cce-topics-list">
+  <h1 class="cce-topics-list__title">{{ 'community.title' | translate }}</h1>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-topics-list__error" role="alert">
+      <span>{{ ('errors.' + kind) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (empty()) {
+    <p class="cce-topics-list__empty">{{ 'community.empty.topics' | translate }}</p>
+  }
+
+  <div class="cce-topics-list__grid">
+    @for (topic of sortedRows(); track topic.id) {
+      <cce-topic-card [topic]="topic" [locale]="locale()" />
+    }
+  </div>
+</section>
