@@ -10,5 +10,14 @@ export const ACCOUNT_ROUTES: Routes = [
     loadComponent: () =>
       import('./expert-request.page').then((m) => m.ExpertRequestPage),
   },
-  // 'follows' lives in Phase 07
+  {
+    path: 'follows',
+    loadComponent: () =>
+      import('../follows/follows.page').then((m) => m.FollowsPage),
+  },
+  {
+    path: 'notifications',
+    loadComponent: () =>
+      import('../notifications/notifications-page.page').then((m) => m.NotificationsPage),
+  },
 ];

@@ -477,7 +477,19 @@
     }
   },
   "notifications": {
-    "title": "Notification templates",
+    "title": "Notifications",
+    "templatesTitle": "Notification templates",
+    "empty": "You have no notifications.",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark as read",
+    "markedToast": "Marked {{n}} as read.",
+    "unreadBadge": "Unread",
+    "bellLabel": "Open notifications",
+    "channel": {
+      "Email": "Email",
+      "Sms": "SMS",
+      "InApp": "In-app"
+    },
     "filter": { "channel": "Channel", "allChannels": "All channels" },
     "col": { "code": "Code", "channel": "Channel", "subject": "Subject", "active": "Active", "actions": "Actions" },
     "field": {
@@ -488,6 +500,24 @@
     },
     "create": { "openButton": "New template", "title": "New notification template", "save": "Create", "toast": "Template created." },
     "edit": { "openButton": "Edit", "title": "Edit notification template", "save": "Save", "toast": "Template updated." }
+  },
+  "follows": {
+    "title": "My follows",
+    "section": {
+      "topics": "Topics",
+      "users": "Experts I follow",
+      "posts": "Posts"
+    },
+    "empty": {
+      "topics": "You don't follow any topics yet.",
+      "users": "You don't follow any users yet.",
+      "posts": "You don't follow any posts yet."
+    },
+    "unfollow": "Unfollow",
+    "followButton": "Follow",
+    "followingButton": "Following",
+    "unfollowToast": "Unfollowed.",
+    "errorToast": "Couldn't update follow status. Try again."
   },
   "reports": {
     "title": "Reports",
