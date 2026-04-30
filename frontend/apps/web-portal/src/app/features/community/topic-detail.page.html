@@ -1,0 +1,80 @@
+<section class="cce-topic-detail">
+  <a class="cce-topic-detail__back" routerLink="/community">
+    ← {{ 'community.title' | translate }}
+  </a>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (notFound()) {
+    <div class="cce-topic-detail__notfound" role="alert">
+      <h1>{{ 'community.notFound' | translate }}</h1>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-topic-detail__error" role="alert">
+      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (topic(); as t) {
+    <header class="cce-topic-detail__header">
+      <div class="cce-topic-detail__title-row">
+        @if (t.iconUrl) {
+          <img class="cce-topic-detail__icon" [src]="t.iconUrl" alt="" width="48" height="48" />
+        } @else {
+          <mat-icon class="cce-topic-detail__icon-fallback" aria-hidden="true">forum</mat-icon>
+        }
+        <h1 class="cce-topic-detail__name">{{ topicName() }}</h1>
+      </div>
+      <p class="cce-topic-detail__description">{{ topicDescription() }}</p>
+
+      <div class="cce-topic-detail__actions">
+        @if (isAuthenticated()) {
+          <button
+            type="button"
+            mat-stroked-button
+            cceFollow
+            entityType="topic"
+            [entityId]="t.id"
+          >
+            {{ 'follows.followButton' | translate }}
+          </button>
+          <button
+            type="button"
+            mat-flat-button
+            color="primary"
+            (click)="openComposeDialog()"
+          >
+            {{ 'community.newPostButton' | translate }}
+          </button>
+        } @else {
+          <cce-sign-in-cta messageKey="community.signInToPost" />
+        }
+      </div>
+    </header>
+
+    <article class="cce-topic-detail__posts">
+      @if (!loading() && posts().length === 0) {
+        <p class="cce-topic-detail__empty">
+          {{ 'community.empty.posts' | translate }}
+        </p>
+      }
+
+      @for (p of posts(); track p.id) {
+        <cce-post-summary [post]="p" />
+      }
+
+      @if (total() > pageSize()) {
+        <mat-paginator
+          [length]="total()"
+          [pageIndex]="page() - 1"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="[10, 20, 50]"
+          (page)="onPage($event)"
+        />
+      }
+    </article>
+  }
+</section>

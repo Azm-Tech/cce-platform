@@ -1,0 +1,79 @@
+:host { display: block; padding: 1.5rem; max-width: 960px; margin: 0 auto; }
+
+.cce-topic-detail__back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #1565c0;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.cce-topic-detail__notfound,
+.cce-topic-detail__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cce-topic-detail__header {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
+}
+
+.cce-topic-detail__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cce-topic-detail__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cce-topic-detail__icon-fallback {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #1565c0;
+}
+
+.cce-topic-detail__name { margin: 0; }
+
+.cce-topic-detail__description {
+  margin: 0.5rem 0;
+  color: rgba(0, 0, 0, 0.72);
+  line-height: 1.5;
+}
+
+.cce-topic-detail__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+
+  cce-sign-in-cta { flex: 1 1 auto; }
+}
+
+.cce-topic-detail__posts {
+  display: block;
+}
+
+.cce-topic-detail__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.55);
+}
