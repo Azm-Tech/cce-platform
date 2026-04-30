@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'pages.edit.title' : 'pages.create.title') | translate }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-page-form">
+    <div class="cce-page-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.slug' | translate }}</mat-label>
+        <input matInput formControlName="slug" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.pageType' | translate }}</mat-label>
+        <mat-select formControlName="pageType">
+          @for (t of pageTypes; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="cce-page-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.titleAr' | translate }}</mat-label>
+        <input matInput formControlName="titleAr" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.titleEn' | translate }}</mat-label>
+        <input matInput formControlName="titleEn" />
+      </mat-form-field>
+    </div>
+    <div class="cce-page-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.contentAr' | translate }}</mat-label>
+        <textarea matInput formControlName="contentAr" rows="6"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'pages.field.contentEn' | translate }}</mat-label>
+        <textarea matInput formControlName="contentEn" rows="6"></textarea>
+      </mat-form-field>
+    </div>
+    @if (errorKind(); as kind) {
+      <div class="cce-page-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    @if (saving()) { <mat-spinner diameter="20" /> }
+    @else { {{ (isEdit ? 'pages.edit.save' : 'pages.create.save') | translate }} }
+  </button>
+</mat-dialog-actions>

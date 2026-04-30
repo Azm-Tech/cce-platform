@@ -1,0 +1,12 @@
+:host { display: block; padding: 1.5rem; }
+.cce-events-list__header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;
+}
+.cce-events-list__title { margin: 0; }
+.cce-events-list__filters { margin-bottom: 1rem; }
+.cce-events-list__filter { min-width: 240px; }
+.cce-events-list__error {
+  background: #fdecea; color: #b00020; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+}
+.cce-events-list__table { width: 100%; }

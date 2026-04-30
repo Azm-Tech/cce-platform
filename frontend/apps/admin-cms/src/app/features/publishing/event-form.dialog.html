@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'events.edit.title' : 'events.create.title') | translate }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-event-form">
+    <div class="cce-event-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.titleAr' | translate }}</mat-label>
+        <input matInput formControlName="titleAr" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.titleEn' | translate }}</mat-label>
+        <input matInput formControlName="titleEn" />
+      </mat-form-field>
+    </div>
+    <div class="cce-event-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.descriptionAr' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.descriptionEn' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+    @if (!isEdit) {
+      <div class="cce-event-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'events.field.startsOn' | translate }}</mat-label>
+          <input matInput type="datetime-local" formControlName="startsOn" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'events.field.endsOn' | translate }}</mat-label>
+          <input matInput type="datetime-local" formControlName="endsOn" />
+        </mat-form-field>
+      </div>
+    }
+    <div class="cce-event-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.locationAr' | translate }}</mat-label>
+        <input matInput formControlName="locationAr" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.locationEn' | translate }}</mat-label>
+        <input matInput formControlName="locationEn" />
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'events.field.onlineMeetingUrl' | translate }}</mat-label>
+      <input matInput formControlName="onlineMeetingUrl" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'events.field.featuredImageUrl' | translate }}</mat-label>
+      <input matInput formControlName="featuredImageUrl" />
+    </mat-form-field>
+    @if (errorKind(); as kind) {
+      <div class="cce-event-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    @if (saving()) { <mat-spinner diameter="20" /> }
+    @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | translate }} }
+  </button>
+</mat-dialog-actions>

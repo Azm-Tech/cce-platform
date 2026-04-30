@@ -1,0 +1,68 @@
+<div class="cce-news-list__header">
+  <h1 class="cce-news-list__title">{{ 'news.title' | translate }}</h1>
+  <button type="button" mat-flat-button color="primary"
+    *ccePermission="'News.Update'" (click)="openCreate()">
+    <mat-icon>add</mat-icon>
+    {{ 'news.create.openButton' | translate }}
+  </button>
+</div>
+
+<div class="cce-news-list__filters">
+  <mat-form-field appearance="outline" class="cce-news-list__filter">
+    <mat-label>{{ 'news.filter.search' | translate }}</mat-label>
+    <input matInput type="search" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)" (keyup.enter)="onSearch()" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="cce-news-list__filter">
+    <mat-label>{{ 'news.filter.published' | translate }}</mat-label>
+    <mat-select [ngModel]="publishedFilter()" (ngModelChange)="onPublishedFilter($event)">
+      <mat-option value="">{{ 'news.filter.all' | translate }}</mat-option>
+      <mat-option value="true">{{ 'news.filter.publishedOnly' | translate }}</mat-option>
+      <mat-option value="false">{{ 'news.filter.draft' | translate }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-news-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-news-list__table">
+  <ng-container matColumnDef="titleEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'news.col.title' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.titleEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="slug">
+    <th mat-header-cell *matHeaderCellDef>{{ 'news.col.slug' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.slug }}</td>
+  </ng-container>
+  <ng-container matColumnDef="isPublished">
+    <th mat-header-cell *matHeaderCellDef>{{ 'news.col.published' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.isPublished ? '✓' : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="publishedOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'news.col.publishedOn' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.publishedOn ? (r.publishedOn | date:'medium') : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'news.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let r">
+      <button type="button" mat-button *ccePermission="'News.Update'" (click)="openEdit(r)">
+        {{ 'news.edit.openButton' | translate }}
+      </button>
+      @if (!r.isPublished) {
+        <button type="button" mat-button color="primary" *ccePermission="'News.Publish'" (click)="publish(r)">
+          {{ 'news.publish.openButton' | translate }}
+        </button>
+      }
+      <button type="button" mat-button color="warn" *ccePermission="'News.Delete'" (click)="delete(r)">
+        {{ 'news.delete.openButton' | translate }}
+      </button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />

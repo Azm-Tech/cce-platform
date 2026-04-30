@@ -43,4 +43,28 @@ export const appRoutes: Route[] = [
       import('./features/content/routes').then((m) => m.COUNTRY_RESOURCE_REQUEST_ROUTES),
     title: 'CCE — Country resource requests',
   },
+  {
+    path: 'news',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/publishing/routes').then((m) => m.NEWS_ROUTES),
+    title: 'CCE — News',
+  },
+  {
+    path: 'events',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/publishing/routes').then((m) => m.EVENTS_ROUTES),
+    title: 'CCE — Events',
+  },
+  {
+    path: 'pages',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/publishing/routes').then((m) => m.PAGES_ROUTES),
+    title: 'CCE — Pages',
+  },
+  {
+    path: 'homepage',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/publishing/routes').then((m) => m.HOMEPAGE_ROUTES),
+    title: 'CCE — Homepage',
+  },
 ];

@@ -1,0 +1,87 @@
+<h1 class="cce-homepage__title">{{ 'homepage.title' | translate }}</h1>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-homepage__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<div class="cce-homepage__list">
+  @for (section of rows(); track section.id; let i = $index) {
+    <mat-card class="cce-homepage__card">
+      <mat-card-header>
+        <mat-card-title>
+          {{ section.sectionType }} <span class="cce-homepage__order">#{{ i + 1 }}</span>
+        </mat-card-title>
+        <span class="cce-homepage__spacer"></span>
+        <button type="button" mat-icon-button *ccePermission="'Page.Edit'" [disabled]="i === 0" (click)="moveUp(section)">
+          <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button type="button" mat-icon-button *ccePermission="'Page.Edit'" [disabled]="i === rows().length - 1" (click)="moveDown(section)">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <button type="button" mat-icon-button color="warn" *ccePermission="'Page.Edit'" (click)="delete(section)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="cce-homepage__field">
+          <mat-label>{{ 'homepage.field.contentAr' | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            [ngModel]="section.contentAr"
+            (ngModelChange)="update(section, { contentAr: $event })"
+          ></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-homepage__field">
+          <mat-label>{{ 'homepage.field.contentEn' | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            [ngModel]="section.contentEn"
+            (ngModelChange)="update(section, { contentEn: $event })"
+          ></textarea>
+        </mat-form-field>
+        <mat-checkbox
+          [ngModel]="section.isActive"
+          (ngModelChange)="update(section, { isActive: $event })"
+        >
+          {{ 'homepage.field.isActive' | translate }}
+        </mat-checkbox>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+<mat-card class="cce-homepage__create" *ccePermission="'Page.Edit'">
+  <mat-card-header>
+    <mat-card-title>{{ 'homepage.create.title' | translate }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field appearance="outline" class="cce-homepage__field">
+      <mat-label>{{ 'homepage.field.sectionType' | translate }}</mat-label>
+      <mat-select [ngModel]="newSectionType()" (ngModelChange)="newSectionType.set($event)">
+        @for (t of sectionTypes; track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="cce-homepage__field">
+      <mat-label>{{ 'homepage.field.contentAr' | translate }}</mat-label>
+      <textarea matInput rows="3"
+        [ngModel]="newContentAr()"
+        (ngModelChange)="newContentAr.set($event)"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="cce-homepage__field">
+      <mat-label>{{ 'homepage.field.contentEn' | translate }}</mat-label>
+      <textarea matInput rows="3"
+        [ngModel]="newContentEn()"
+        (ngModelChange)="newContentEn.set($event)"></textarea>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button type="button" mat-flat-button color="primary" (click)="create()">
+      {{ 'homepage.create.save' | translate }}
+    </button>
+  </mat-card-actions>
+</mat-card>

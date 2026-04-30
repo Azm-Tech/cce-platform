@@ -1,0 +1,12 @@
+:host { display: block; padding: 1.5rem; }
+.cce-news-list__header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;
+}
+.cce-news-list__title { margin: 0; }
+.cce-news-list__filters { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.cce-news-list__filter { min-width: 240px; }
+.cce-news-list__error {
+  background: #fdecea; color: #b00020; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+}
+.cce-news-list__table { width: 100%; }

@@ -14,6 +14,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.news', route: '/news', permission: 'News.Update', icon: 'feed' },
   { labelKey: 'nav.events', route: '/events', permission: 'Event.Manage', icon: 'event' },
   { labelKey: 'nav.pages', route: '/pages', permission: 'Page.Edit', icon: 'web' },
+  { labelKey: 'nav.homepage', route: '/homepage', permission: 'Page.Edit', icon: 'home' },
   { labelKey: 'nav.taxonomies', route: '/taxonomies', permission: 'Resource.Center.Upload', icon: 'category' },
   { labelKey: 'nav.community', route: '/community-moderation', permission: 'Community.Post.Moderate', icon: 'forum' },
   { labelKey: 'nav.countries', route: '/countries', permission: 'Country.Profile.Update', icon: 'public' },

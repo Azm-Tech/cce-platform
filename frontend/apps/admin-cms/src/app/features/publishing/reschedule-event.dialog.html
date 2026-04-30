@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>{{ 'events.reschedule.title' | translate }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'events.field.startsOn' | translate }}</mat-label>
+      <input matInput type="datetime-local" formControlName="startsOn" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'events.field.endsOn' | translate }}</mat-label>
+      <input matInput type="datetime-local" formControlName="endsOn" />
+    </mat-form-field>
+    @if (errorKind(); as kind) {
+      <div class="cce-reschedule__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    {{ 'events.reschedule.save' | translate }}
+  </button>
+</mat-dialog-actions>

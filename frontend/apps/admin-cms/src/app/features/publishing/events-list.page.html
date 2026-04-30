@@ -1,0 +1,58 @@
+<div class="cce-events-list__header">
+  <h1 class="cce-events-list__title">{{ 'events.title' | translate }}</h1>
+  <button type="button" mat-flat-button color="primary"
+    *ccePermission="'Event.Manage'" (click)="openCreate()">
+    <mat-icon>add</mat-icon>
+    {{ 'events.create.openButton' | translate }}
+  </button>
+</div>
+
+<div class="cce-events-list__filters">
+  <mat-form-field appearance="outline" class="cce-events-list__filter">
+    <mat-label>{{ 'events.filter.search' | translate }}</mat-label>
+    <input matInput type="search" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)" (keyup.enter)="onSearch()" />
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-events-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-events-list__table">
+  <ng-container matColumnDef="titleEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'events.col.title' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.titleEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="startsOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'events.col.startsOn' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.startsOn | date:'medium' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="endsOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'events.col.endsOn' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.endsOn | date:'medium' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="location">
+    <th mat-header-cell *matHeaderCellDef>{{ 'events.col.location' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.locationEn ?? r.onlineMeetingUrl ?? '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'events.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let r">
+      <button type="button" mat-button *ccePermission="'Event.Manage'" (click)="openEdit(r)">
+        {{ 'events.edit.openButton' | translate }}
+      </button>
+      <button type="button" mat-button color="primary" *ccePermission="'Event.Manage'" (click)="reschedule(r)">
+        {{ 'events.reschedule.openButton' | translate }}
+      </button>
+      <button type="button" mat-button color="warn" *ccePermission="'Event.Manage'" (click)="delete(r)">
+        {{ 'events.delete.openButton' | translate }}
+      </button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />
