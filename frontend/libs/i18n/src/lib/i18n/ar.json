@@ -302,5 +302,40 @@
       "confirm": "حذف",
       "toast": "تم حذف الرد."
     }
+  },
+  "countries": {
+    "title": "الدول",
+    "filter": { "search": "بحث" },
+    "col": { "flag": "العلم", "iso": "ISO", "name": "الاسم", "region": "المنطقة", "active": "نشط", "actions": "الإجراءات" },
+    "field": {
+      "nameAr": "الاسم (عربي)", "nameEn": "الاسم (إنجليزي)",
+      "regionAr": "المنطقة (عربي)", "regionEn": "المنطقة (إنجليزي)",
+      "isActive": "نشط",
+      "descriptionAr": "الوصف (عربي)", "descriptionEn": "الوصف (إنجليزي)",
+      "keyInitiativesAr": "المبادرات الرئيسية (عربي)", "keyInitiativesEn": "المبادرات الرئيسية (إنجليزي)",
+      "contactInfoAr": "بيانات التواصل (عربي)", "contactInfoEn": "بيانات التواصل (إنجليزي)"
+    },
+    "edit": { "save": "حفظ", "toast": "تم تحديث بيانات الدولة." },
+    "detail": { "openButton": "تعديل", "back": "العودة إلى الدول", "subtitle": "تعديل البيانات والملف" },
+    "profile": {
+      "title": "ملف الدولة",
+      "missing": "لا يوجد ملف بعد — أكمل الحقول لإنشائه.",
+      "lastUpdatedOn": "آخر تحديث",
+      "save": "حفظ الملف",
+      "toast": "تم حفظ ملف الدولة."
+    }
+  },
+  "notifications": {
+    "title": "قوالب الإشعارات",
+    "filter": { "channel": "القناة", "allChannels": "كل القنوات" },
+    "col": { "code": "الرمز", "channel": "القناة", "subject": "العنوان", "active": "نشط", "actions": "الإجراءات" },
+    "field": {
+      "code": "الرمز", "channel": "القناة",
+      "subjectAr": "العنوان (عربي)", "subjectEn": "العنوان (إنجليزي)",
+      "bodyAr": "النص (عربي)", "bodyEn": "النص (إنجليزي)",
+      "variableSchemaJson": "مخطط المتغيرات (JSON)", "isActive": "نشط"
+    },
+    "create": { "openButton": "قالب جديد", "title": "قالب إشعار جديد", "save": "إنشاء", "toast": "تم إنشاء القالب." },
+    "edit": { "openButton": "تعديل", "title": "تعديل قالب الإشعار", "save": "حفظ", "toast": "تم تحديث القالب." }
   }
 }

@@ -80,4 +80,17 @@ export const appRoutes: Route[] = [
       import('./features/community-moderation/routes').then((m) => m.COMMUNITY_MODERATION_ROUTES),
     title: 'CCE — Community moderation',
   },
+  {
+    path: 'countries',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/countries/routes').then((m) => m.COUNTRIES_ROUTES),
+    title: 'CCE — Countries',
+  },
+  {
+    path: 'notifications',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () =>
+      import('./features/notifications/routes').then((m) => m.NOTIFICATIONS_ROUTES),
+    title: 'CCE — Notifications',
+  },
 ];

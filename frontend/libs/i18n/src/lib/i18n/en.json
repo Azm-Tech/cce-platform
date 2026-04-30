@@ -302,5 +302,40 @@
       "confirm": "Soft-delete",
       "toast": "Reply soft-deleted."
     }
+  },
+  "countries": {
+    "title": "Countries",
+    "filter": { "search": "Search" },
+    "col": { "flag": "Flag", "iso": "ISO", "name": "Name", "region": "Region", "active": "Active", "actions": "Actions" },
+    "field": {
+      "nameAr": "Name (Arabic)", "nameEn": "Name (English)",
+      "regionAr": "Region (Arabic)", "regionEn": "Region (English)",
+      "isActive": "Active",
+      "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)",
+      "keyInitiativesAr": "Key initiatives (Arabic)", "keyInitiativesEn": "Key initiatives (English)",
+      "contactInfoAr": "Contact info (Arabic)", "contactInfoEn": "Contact info (English)"
+    },
+    "edit": { "save": "Save", "toast": "Country updated." },
+    "detail": { "openButton": "Edit", "back": "Back to countries", "subtitle": "Edit metadata + profile" },
+    "profile": {
+      "title": "Country profile",
+      "missing": "No profile yet — fill in to create.",
+      "lastUpdatedOn": "Last updated",
+      "save": "Save profile",
+      "toast": "Country profile saved."
+    }
+  },
+  "notifications": {
+    "title": "Notification templates",
+    "filter": { "channel": "Channel", "allChannels": "All channels" },
+    "col": { "code": "Code", "channel": "Channel", "subject": "Subject", "active": "Active", "actions": "Actions" },
+    "field": {
+      "code": "Code", "channel": "Channel",
+      "subjectAr": "Subject (Arabic)", "subjectEn": "Subject (English)",
+      "bodyAr": "Body (Arabic)", "bodyEn": "Body (English)",
+      "variableSchemaJson": "Variable schema (JSON)", "isActive": "Active"
+    },
+    "create": { "openButton": "New template", "title": "New notification template", "save": "Create", "toast": "Template created." },
+    "edit": { "openButton": "Edit", "title": "Edit notification template", "save": "Save", "toast": "Template updated." }
   }
 }

@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'notifications.edit.title' : 'notifications.create.title') | translate }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-notification-form">
+    <div class="cce-notification-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.code' | translate }}</mat-label>
+        <input matInput formControlName="code" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.channel' | translate }}</mat-label>
+        <mat-select formControlName="channel">
+          @for (c of channels; track c) {
+            <mat-option [value]="c">{{ c }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="cce-notification-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.subjectAr' | translate }}</mat-label>
+        <input matInput formControlName="subjectAr" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.subjectEn' | translate }}</mat-label>
+        <input matInput formControlName="subjectEn" />
+      </mat-form-field>
+    </div>
+    <div class="cce-notification-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.bodyAr' | translate }}</mat-label>
+        <textarea matInput formControlName="bodyAr" rows="5"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'notifications.field.bodyEn' | translate }}</mat-label>
+        <textarea matInput formControlName="bodyEn" rows="5"></textarea>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'notifications.field.variableSchemaJson' | translate }}</mat-label>
+      <textarea matInput formControlName="variableSchemaJson" rows="3"></textarea>
+    </mat-form-field>
+    @if (isEdit) {
+      <mat-checkbox formControlName="isActive">{{ 'notifications.field.isActive' | translate }}</mat-checkbox>
+    }
+    @if (errorKind(); as kind) {
+      <div class="cce-notification-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    {{ (isEdit ? 'notifications.edit.save' : 'notifications.create.save') | translate }}
+  </button>
+</mat-dialog-actions>

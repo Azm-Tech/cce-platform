@@ -1,0 +1,50 @@
+<h1 class="cce-countries__title">{{ 'countries.title' | translate }}</h1>
+
+<mat-form-field appearance="outline" class="cce-countries__filter">
+  <mat-label>{{ 'countries.filter.search' | translate }}</mat-label>
+  <input matInput type="search" [ngModel]="searchInput()"
+    (ngModelChange)="searchInput.set($event)" (keyup.enter)="onSearch()" />
+</mat-form-field>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-countries__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-countries__table">
+  <ng-container matColumnDef="flag">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.flag' | translate }}</th>
+    <td mat-cell *matCellDef="let r">
+      @if (r.flagUrl) {
+        <img [src]="r.flagUrl" [alt]="r.nameEn + ' flag'" class="cce-countries__flag" />
+      }
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="iso">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.iso' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.isoAlpha3 }}</td>
+  </ng-container>
+  <ng-container matColumnDef="nameEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.name' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.nameEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="region">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.region' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.regionEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="isActive">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.active' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.isActive ? '✓' : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let r">
+      <a mat-button [routerLink]="['/countries', r.id]">{{ 'countries.detail.openButton' | translate }}</a>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />

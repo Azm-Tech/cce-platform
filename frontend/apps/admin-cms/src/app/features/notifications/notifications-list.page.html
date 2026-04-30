@@ -1,0 +1,55 @@
+<div class="cce-notifications__header">
+  <h1>{{ 'notifications.title' | translate }}</h1>
+  <button type="button" mat-flat-button color="primary"
+    *ccePermission="'Notification.TemplateManage'" (click)="openCreate()">
+    <mat-icon>add</mat-icon>
+    {{ 'notifications.create.openButton' | translate }}
+  </button>
+</div>
+
+<mat-form-field appearance="outline" class="cce-notifications__filter">
+  <mat-label>{{ 'notifications.filter.channel' | translate }}</mat-label>
+  <mat-select [ngModel]="channelFilter()" (ngModelChange)="onChannelFilter($event)">
+    <mat-option value="">{{ 'notifications.filter.allChannels' | translate }}</mat-option>
+    @for (c of channels; track c) {
+      <mat-option [value]="c">{{ c }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-notifications__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-notifications__table">
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.code' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.code }}</td>
+  </ng-container>
+  <ng-container matColumnDef="channel">
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.channel' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.channel }}</td>
+  </ng-container>
+  <ng-container matColumnDef="subjectEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.subject' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.subjectEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="isActive">
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.active' | translate }}</th>
+    <td mat-cell *matCellDef="let r">{{ r.isActive ? '✓' : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let r">
+      <button type="button" mat-button *ccePermission="'Notification.TemplateManage'" (click)="openEdit(r)">
+        {{ 'notifications.edit.openButton' | translate }}
+      </button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />

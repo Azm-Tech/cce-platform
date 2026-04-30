@@ -1,0 +1,102 @@
+<div class="cce-country-detail__header">
+  <a mat-button routerLink="/countries">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'countries.detail.back' | translate }}
+  </a>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+@if (errorKind(); as kind) {
+  <div class="cce-country-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+@if (country(); as c) {
+  <mat-card class="cce-country-detail__card">
+    <mat-card-header>
+      <mat-card-title>{{ c.nameEn }} ({{ c.isoAlpha3 }})</mat-card-title>
+      <mat-card-subtitle>{{ 'countries.detail.subtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="countryForm" class="cce-country-detail__form">
+        <div class="cce-country-detail__row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.nameAr' | translate }}</mat-label>
+            <input matInput formControlName="nameAr" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.nameEn' | translate }}</mat-label>
+            <input matInput formControlName="nameEn" />
+          </mat-form-field>
+        </div>
+        <div class="cce-country-detail__row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.regionAr' | translate }}</mat-label>
+            <input matInput formControlName="regionAr" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.regionEn' | translate }}</mat-label>
+            <input matInput formControlName="regionEn" />
+          </mat-form-field>
+        </div>
+        <mat-checkbox formControlName="isActive">{{ 'countries.field.isActive' | translate }}</mat-checkbox>
+      </form>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button type="button" mat-flat-button color="primary" (click)="saveCountry()" [disabled]="savingCountry()">
+        {{ 'countries.edit.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card class="cce-country-detail__card">
+    <mat-card-header>
+      <mat-card-title>{{ 'countries.profile.title' | translate }}</mat-card-title>
+      <mat-card-subtitle>
+        @if (profile(); as p) {
+          {{ 'countries.profile.lastUpdatedOn' | translate }}: {{ p.lastUpdatedOn | date:'medium' }}
+        } @else if (profileMissing()) {
+          {{ 'countries.profile.missing' | translate }}
+        }
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="profileForm" class="cce-country-detail__form">
+        <div class="cce-country-detail__row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.descriptionAr' | translate }}</mat-label>
+            <textarea matInput formControlName="descriptionAr" rows="4"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.descriptionEn' | translate }}</mat-label>
+            <textarea matInput formControlName="descriptionEn" rows="4"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="cce-country-detail__row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.keyInitiativesAr' | translate }}</mat-label>
+            <textarea matInput formControlName="keyInitiativesAr" rows="3"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.keyInitiativesEn' | translate }}</mat-label>
+            <textarea matInput formControlName="keyInitiativesEn" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="cce-country-detail__row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.contactInfoAr' | translate }}</mat-label>
+            <input matInput formControlName="contactInfoAr" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.contactInfoEn' | translate }}</mat-label>
+            <input matInput formControlName="contactInfoEn" />
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button type="button" mat-flat-button color="primary" (click)="saveProfile()" [disabled]="savingProfile()">
+        {{ 'countries.profile.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}
