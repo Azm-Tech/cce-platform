@@ -1,0 +1,44 @@
+<article
+  class="cce-reply"
+  [class.cce-reply--accepted]="isAccepted()"
+>
+  <mat-card>
+    <mat-card-content>
+      @if (isAccepted()) {
+        <header class="cce-reply__accepted-banner">
+          <mat-icon aria-hidden="true">check_circle</mat-icon>
+          {{ 'community.acceptedAnswer' | translate }}
+        </header>
+      }
+
+      <div class="cce-reply__meta">
+        <span class="cce-reply__author">{{ reply().authorId }}</span>
+        @if (reply().isByExpert) {
+          <span class="cce-reply__expert">
+            {{ 'community.expertBadge' | translate }}
+          </span>
+        }
+        @if (showLanguageBadge()) {
+          <span class="cce-reply__lang">
+            {{ 'community.languageBadge' | translate:{ locale: reply().locale } }}
+          </span>
+        }
+        <small class="cce-reply__date">
+          {{ reply().createdOn | date:'medium' }}
+        </small>
+      </div>
+
+      <p class="cce-reply__content">{{ reply().content }}</p>
+
+      @if (markableForPostId(); as postId) {
+        <footer class="cce-reply__footer">
+          <cce-mark-answer-button
+            [postId]="postId"
+            [replyId]="reply().id"
+            (marked)="answerMarked.emit()"
+          />
+        </footer>
+      }
+    </mat-card-content>
+  </mat-card>
+</article>

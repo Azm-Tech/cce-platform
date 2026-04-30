@@ -1,0 +1,91 @@
+<section class="cce-post-detail">
+  <a class="cce-post-detail__back" routerLink="/community">
+    ← {{ 'community.title' | translate }}
+  </a>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (notFound()) {
+    <div class="cce-post-detail__notfound" role="alert">
+      <h1>{{ 'community.notFound' | translate }}</h1>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-post-detail__error" role="alert">
+      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (post(); as p) {
+    <article class="cce-post-detail__post">
+      <header class="cce-post-detail__post-header">
+        <span class="cce-post-detail__author">{{ p.authorId }}</span>
+        @if (postShowLangBadge()) {
+          <span class="cce-post-detail__lang">
+            {{ 'community.languageBadge' | translate:{ locale: p.locale } }}
+          </span>
+        }
+        <small class="cce-post-detail__date">
+          {{ p.createdOn | date:'medium' }}
+        </small>
+      </header>
+
+      <p class="cce-post-detail__content">{{ p.content }}</p>
+
+      <div class="cce-post-detail__actions">
+        @if (isAuthenticated()) {
+          <button
+            type="button"
+            mat-stroked-button
+            cceFollow
+            entityType="post"
+            [entityId]="p.id"
+          >
+            {{ 'follows.followButton' | translate }}
+          </button>
+        }
+        <cce-rate-post-control [postId]="p.id" />
+      </div>
+    </article>
+
+    <section class="cce-post-detail__compose">
+      @if (isAuthenticated()) {
+        <cce-compose-reply-form
+          [postId]="p.id"
+          (replyCreated)="onReplyCreated()"
+        />
+      } @else {
+        <cce-sign-in-cta messageKey="community.signInToReply" />
+      }
+    </section>
+
+    <section class="cce-post-detail__replies">
+      @if (!loading() && replies().length === 0) {
+        <p class="cce-post-detail__empty">
+          {{ 'community.empty.replies' | translate }}
+        </p>
+      }
+
+      @for (r of orderedReplies(); track r.id) {
+        <cce-reply
+          [reply]="r"
+          [isAccepted]="r.id === p.answeredReplyId"
+          [markableForPostId]="canMarkAnswer() && r.id !== p.answeredReplyId ? p.id : null"
+          (answerMarked)="onAnswerMarked()"
+        />
+      }
+
+      @if (total() > pageSize()) {
+        <mat-paginator
+          [length]="total()"
+          [pageIndex]="page() - 1"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="[10, 20, 50]"
+          (page)="onPage($event)"
+        />
+      }
+    </section>
+  }
+</section>
