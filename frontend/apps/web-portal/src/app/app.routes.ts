@@ -52,5 +52,11 @@ export const appRoutes: Route[] = [
       import('./features/account/routes').then((m) => m.ACCOUNT_ROUTES),
     title: 'CCE — My account',
   },
+  {
+    path: 'community',
+    loadChildren: () =>
+      import('./features/community/routes').then((m) => m.COMMUNITY_ROUTES),
+    title: 'CCE — Community',
+  },
   { path: 'health', component: HealthPage, title: 'CCE — Health' },
 ];

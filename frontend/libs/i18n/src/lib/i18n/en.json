@@ -519,6 +519,43 @@
     "unfollowToast": "Unfollowed.",
     "errorToast": "Couldn't update follow status. Try again."
   },
+  "community": {
+    "title": "Community",
+    "newPostButton": "New post",
+    "signInToPost": "Sign in to post.",
+    "signInToReply": "Sign in to reply.",
+    "signInToRate": "Sign in to rate.",
+    "signInButton": "Sign in",
+    "acceptedAnswer": "Accepted answer",
+    "expertBadge": "Expert",
+    "languageBadge": "in {{locale}}",
+    "notFound": "Topic / post not found.",
+    "empty": {
+      "topics": "No topics yet.",
+      "posts": "No posts in this topic yet. Be the first.",
+      "replies": "No replies yet."
+    },
+    "compose": {
+      "title": "Compose new post",
+      "content": "Content",
+      "locale": "Language",
+      "isAnswerable": "Allow replies to be marked as accepted answer",
+      "submit": "Post",
+      "toast": "Post created."
+    },
+    "reply": {
+      "placeholder": "Write a reply…",
+      "submit": "Reply",
+      "toast": "Reply posted."
+    },
+    "rate": {
+      "toast": "Rated."
+    },
+    "markAnswer": {
+      "button": "Mark as accepted answer",
+      "toast": "Marked as accepted answer."
+    }
+  },
   "reports": {
     "title": "Reports",
     "subtitle": "Streaming CSV downloads. Apply an optional date range and click Download.",
