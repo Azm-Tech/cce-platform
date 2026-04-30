@@ -12,6 +12,12 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('./features/pages/routes').then((m) => m.STATIC_PAGES_ROUTES),
   },
   {
+    path: 'knowledge-center',
+    loadChildren: () =>
+      import('./features/knowledge-center/routes').then((m) => m.KNOWLEDGE_CENTER_ROUTES),
+    title: 'CCE — Knowledge Center',
+  },
+  {
     path: 'search',
     loadComponent: () =>
       import('./features/search/search-placeholder.page').then((m) => m.SearchPlaceholderPage),

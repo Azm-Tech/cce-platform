@@ -207,7 +207,11 @@
       "search": "Search",
       "published": "Status",
       "all": "All",
-      "draft": "Draft"
+      "draft": "Draft",
+      "country": "Country",
+      "resourceType": "Type",
+      "allTypes": "All types",
+      "allCategories": "All categories"
     },
     "field": {
       "titleAr": "Title (Arabic)",
@@ -237,6 +241,21 @@
       "message": "Publish this resource? It will become visible to all users immediately.",
       "confirm": "Publish",
       "toast": "Resource published."
+    },
+    "empty": "No resources match your filters.",
+    "publishedOn": "Published on",
+    "viewCount": "{{count}} views",
+    "back": "Back to all resources",
+    "type": {
+      "Pdf": "PDF",
+      "Video": "Video",
+      "Image": "Image",
+      "Link": "Link",
+      "Document": "Document"
+    },
+    "download": {
+      "openButton": "Download",
+      "toast": "Download started."
     }
   },
   "countryResourceRequest": {

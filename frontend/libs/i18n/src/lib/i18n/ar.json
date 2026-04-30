@@ -207,7 +207,11 @@
       "search": "بحث",
       "published": "الحالة",
       "all": "الكل",
-      "draft": "مسودة"
+      "draft": "مسودة",
+      "country": "الدولة",
+      "resourceType": "النوع",
+      "allTypes": "كل الأنواع",
+      "allCategories": "كل التصنيفات"
     },
     "field": {
       "titleAr": "العنوان (عربي)",
@@ -237,6 +241,21 @@
       "message": "هل تريد نشر هذا المورد؟ سيصبح ظاهرًا لجميع المستخدمين فورًا.",
       "confirm": "نشر",
       "toast": "تم نشر المورد."
+    },
+    "empty": "لا توجد موارد تطابق المرشحات الحالية.",
+    "publishedOn": "تاريخ النشر",
+    "viewCount": "{{count}} مشاهدات",
+    "back": "العودة إلى كل الموارد",
+    "type": {
+      "Pdf": "PDF",
+      "Video": "فيديو",
+      "Image": "صورة",
+      "Link": "رابط",
+      "Document": "مستند"
+    },
+    "download": {
+      "openButton": "تنزيل",
+      "toast": "بدأ التنزيل."
     }
   },
   "countryResourceRequest": {
