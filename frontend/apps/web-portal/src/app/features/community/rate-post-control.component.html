@@ -1,0 +1,24 @@
+@if (isAuthenticated()) {
+  <div
+    class="cce-rate-post"
+    role="radiogroup"
+    [attr.aria-label]="'community.rate.toast' | translate"
+  >
+    @for (s of stars; track s) {
+      <button
+        type="button"
+        class="cce-rate-post__star"
+        [class.cce-rate-post__star--filled]="isStarFilled(s)"
+        role="radio"
+        [attr.aria-checked]="displayedRating() === s"
+        [attr.aria-label]="starLabel(s)"
+        (click)="setRating(s)"
+        (keydown)="onKey(s, $event)"
+      >
+        <mat-icon>{{ isStarFilled(s) ? 'star' : 'star_border' }}</mat-icon>
+      </button>
+    }
+  </div>
+} @else {
+  <cce-sign-in-cta messageKey="community.signInToRate" />
+}

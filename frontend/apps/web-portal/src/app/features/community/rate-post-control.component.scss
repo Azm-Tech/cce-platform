@@ -1,0 +1,31 @@
+:host { display: block; }
+
+.cce-rate-post {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.cce-rate-post__star {
+  background: transparent;
+  border: 0;
+  padding: 0.15rem;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  transition: color 0.15s, transform 0.1s;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  &:hover { transform: scale(1.05); }
+  &:focus-visible {
+    outline: 2px solid #1565c0;
+    outline-offset: 2px;
+  }
+}
+
+.cce-rate-post__star--filled { color: #fbc02d; }
