@@ -1,7 +1,7 @@
 # CCE — Circular Carbon Economy Knowledge Center (Phase 2)
 
 **Client:** Saudi Ministry of Energy — Sustainability & Climate Change Agency
-**Status:** Foundation sub-project (1 of 9) complete; sub-projects 2–9 to follow.
+**Status:** Sub-projects 1–5 complete (`foundation-v0.1.0`, `data-domain-v0.1.0`, `internal-api-v0.1.0`, `external-api-v0.1.0`, `admin-cms-v0.1.0`); sub-projects 6–9 to follow.
 
 A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Economy, meeting Saudi **DGA** UX and accessibility standards. The full project decomposes into nine sub-projects — see the [roadmap](docs/roadmap.md).
 
@@ -9,7 +9,7 @@ A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Eco
 
 - [Roadmap](docs/roadmap.md) — sub-project map, status, BRD references.
 - [Foundation design spec](docs/superpowers/specs/2026-04-24-foundation-design.md)
-- [Architecture Decision Records](docs/adr/) — 18 ADRs covering every Foundation decision.
+- [Architecture Decision Records](docs/adr/) — 38 ADRs covering Foundation through Sub-5 decisions.
 - [Sub-project briefs](docs/subprojects/)
 - [Requirements traceability](docs/requirements-trace.csv) — BRD section → sub-project mapping.
 - [Threat model](docs/threat-model.md) — STRIDE.
