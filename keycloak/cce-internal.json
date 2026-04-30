@@ -159,10 +159,9 @@
     {
       "clientId": "cce-admin-cms",
       "name": "CCE Admin CMS (Angular)",
-      "description": "Angular admin portal at localhost:4201 in dev; backed by CCE.Api.Internal",
+      "description": "Angular admin portal at localhost:4201 in dev; backed by CCE.Api.Internal. Public SPA client (PKCE, no secret).",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "dev-internal-secret-change-me",
       "redirectUris": [
         "http://localhost:4201/*"
       ],
@@ -175,8 +174,8 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": true,
-      "publicClient": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
       "frontchannelLogout": true,
       "protocol": "openid-connect",
       "attributes": {
