@@ -1,9 +1,15 @@
 import { Route } from '@angular/router';
 import { autoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
+import { AuthCallbackPage } from './auth-callback/auth-callback.page';
 import { ProfilePage } from './profile/profile.page';
 
 export const appRoutes: Route[] = [
   { path: '', pathMatch: 'full', redirectTo: 'profile' },
+  // Public OIDC redirect target — must NOT have autoLoginPartialRoutesGuard.
+  // angular-auth-oidc-client reads the URL params from this page and
+  // navigates the user to the originally-requested route once tokens
+  // are stored.
+  { path: 'auth/callback', component: AuthCallbackPage, title: 'CCE — Signing in…' },
   {
     path: 'profile',
     component: ProfilePage,
