@@ -10,4 +10,10 @@ export const appRoutes: Route[] = [
     canActivate: [autoLoginPartialRoutesGuard],
     title: 'CCE — Profile',
   },
+  {
+    path: 'users',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/identity/routes').then((m) => m.IDENTITY_ROUTES),
+    title: 'CCE — Users',
+  },
 ];

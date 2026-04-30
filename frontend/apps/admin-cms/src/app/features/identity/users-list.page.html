@@ -1,0 +1,40 @@
+<h1 class="cce-users-list__title">{{ 'users.title' | translate }}</h1>
+
+<div class="cce-users-list__filters">
+  <mat-form-field appearance="outline" class="cce-users-list__filter">
+    <mat-label>{{ 'users.filter.search' | translate }}</mat-label>
+    <input
+      matInput
+      type="search"
+      [ngModel]="searchInput()"
+      (ngModelChange)="searchInput.set($event)"
+      (keyup.enter)="onSearch()"
+    />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="cce-users-list__filter">
+    <mat-label>{{ 'users.filter.role' | translate }}</mat-label>
+    <mat-select
+      [ngModel]="roleFilter()"
+      (ngModelChange)="onRoleFilter($event)"
+    >
+      <mat-option value="">{{ 'users.filter.allRoles' | translate }}</mat-option>
+      @for (role of knownRoles; track role) {
+        <mat-option [value]="role">{{ role }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (errorKind(); as kind) {
+  <div class="cce-users-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<cce-paged-table
+  [columns]="columns"
+  [rows]="rows()"
+  [total]="total()"
+  [page]="page()"
+  [pageSize]="pageSize()"
+  [loading]="loading()"
+  (pageChange)="onPage($event)"
+/>

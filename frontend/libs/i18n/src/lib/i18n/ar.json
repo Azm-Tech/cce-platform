@@ -50,5 +50,19 @@
     "notifications": "الإشعارات",
     "reports": "التقارير",
     "audit": "سجل التدقيق"
+  },
+  "users": {
+    "title": "المستخدمون",
+    "col": {
+      "userName": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "roles": "الأدوار",
+      "isActive": "نشط"
+    },
+    "filter": {
+      "search": "بحث",
+      "role": "الدور",
+      "allRoles": "كل الأدوار"
+    }
   }
 }

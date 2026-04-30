@@ -50,5 +50,19 @@
     "notifications": "Notifications",
     "reports": "Reports",
     "audit": "Audit log"
+  },
+  "users": {
+    "title": "Users",
+    "col": {
+      "userName": "User name",
+      "email": "Email",
+      "roles": "Roles",
+      "isActive": "Active"
+    },
+    "filter": {
+      "search": "Search",
+      "role": "Role",
+      "allRoles": "All roles"
+    }
   }
 }
