@@ -53,4 +53,20 @@ describe('authInterceptor', () => {
     req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
     expect(assignMock).not.toHaveBeenCalled();
   });
+
+  it('does NOT add withCredentials to cross-origin requests', () => {
+    http.get('http://localhost:8080/realms/cce-internal/.well-known/openid-configuration').subscribe();
+    const req = httpTesting.expectOne(
+      'http://localhost:8080/realms/cce-internal/.well-known/openid-configuration',
+    );
+    expect(req.request.withCredentials).toBe(false);
+    req.flush({});
+  });
+
+  it('does NOT redirect on 401 for cross-origin URLs', () => {
+    http.get('http://localhost:8080/x').subscribe({ error: () => undefined });
+    const req = httpTesting.expectOne('http://localhost:8080/x');
+    req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+    expect(assignMock).not.toHaveBeenCalled();
+  });
 });

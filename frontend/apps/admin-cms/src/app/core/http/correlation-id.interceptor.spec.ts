@@ -33,4 +33,21 @@ describe('correlationIdInterceptor', () => {
     expect(req.request.headers.get('X-Correlation-Id')).toBe('abc-123');
     req.flush({});
   });
+
+  it('does NOT stamp the header on cross-origin requests', () => {
+    http.get('http://localhost:8080/realms/cce-internal/.well-known/openid-configuration').subscribe();
+    const req = httpTesting.expectOne(
+      'http://localhost:8080/realms/cce-internal/.well-known/openid-configuration',
+    );
+    expect(req.request.headers.has('X-Correlation-Id')).toBe(false);
+    req.flush({});
+  });
+
+  it('stamps the header on absolute same-origin URLs', () => {
+    const sameOrigin = `${window.location.origin}/api/admin/users`;
+    http.get(sameOrigin).subscribe();
+    const req = httpTesting.expectOne(sameOrigin);
+    expect(req.request.headers.get('X-Correlation-Id')).toBeTruthy();
+    req.flush({});
+  });
 });
