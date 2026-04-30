@@ -28,6 +28,11 @@ export const appRoutes: Route[] = [
     title: 'CCE — Events',
   },
   {
+    path: 'countries',
+    loadChildren: () => import('./features/countries/routes').then((m) => m.COUNTRIES_ROUTES),
+    title: 'CCE — Countries',
+  },
+  {
     path: 'search',
     loadComponent: () =>
       import('./features/search/search-placeholder.page').then((m) => m.SearchPlaceholderPage),

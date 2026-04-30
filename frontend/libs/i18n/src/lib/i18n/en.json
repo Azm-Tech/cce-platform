@@ -37,7 +37,8 @@
     "duplicate": "Duplicate value — this item already exists.",
     "validation": "Please correct the highlighted fields.",
     "not-found": "Item not found.",
-    "unknown": "Unexpected error. Try again."
+    "unknown": "Unexpected error. Try again.",
+    "retry": "Retry"
   },
   "nav": {
     "home": "Home",
@@ -81,6 +82,7 @@
   "search": {
     "placeholder": "Search the Knowledge Center…",
     "title": "Search",
+    "submit": "Search",
     "coming": "Search results land in Phase 5."
   },
   "users": {
@@ -361,6 +363,10 @@
   },
   "countries": {
     "title": "Countries",
+    "search": { "placeholder": "Search countries…" },
+    "empty": "No countries available.",
+    "back": "Back to countries",
+    "notFound": "Country not found.",
     "filter": { "search": "Search" },
     "col": { "flag": "Flag", "iso": "ISO", "name": "Name", "region": "Region", "active": "Active", "actions": "Actions" },
     "field": {
@@ -372,7 +378,15 @@
       "contactInfoAr": "Contact info (Arabic)", "contactInfoEn": "Contact info (English)"
     },
     "edit": { "save": "Save", "toast": "Country updated." },
-    "detail": { "openButton": "Edit", "back": "Back to countries", "subtitle": "Edit metadata + profile" },
+    "detail": {
+      "openButton": "Edit",
+      "back": "Back to countries",
+      "subtitle": "Edit metadata + profile",
+      "description": "Description",
+      "keyInitiatives": "Key initiatives",
+      "contactInfo": "Contact information",
+      "lastUpdated": "Last updated"
+    },
     "profile": {
       "title": "Country profile",
       "missing": "No profile yet — fill in to create.",
@@ -380,6 +394,16 @@
       "save": "Save profile",
       "toast": "Country profile saved."
     }
+  },
+  "kapsarc": {
+    "title": "KAPSARC snapshot",
+    "classification": "Classification",
+    "performanceScore": "Performance score",
+    "totalIndex": "Total index",
+    "snapshotTakenOn": "Snapshot taken on",
+    "sourceVersion": "Source version",
+    "unavailable": "Latest snapshot not yet published.",
+    "error": "Could not load KAPSARC snapshot."
   },
   "notifications": {
     "title": "Notification templates",
