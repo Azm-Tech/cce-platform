@@ -10,7 +10,7 @@ import {
   PagedTableColumn,
   PagedTableComponent,
   PagedTablePageChange,
-} from '../../core/ui/paged-table.component';
+} from '@frontend/ui-kit';
 import { IdentityApiService } from './identity-api.service';
 import { KNOWN_ROLES, type UserListItem } from './identity.types';
 
