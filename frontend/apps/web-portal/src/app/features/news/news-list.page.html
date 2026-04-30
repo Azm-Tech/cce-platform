@@ -1,0 +1,33 @@
+<section class="cce-news-list">
+  <div class="cce-news-list__header">
+    <h1 class="cce-news-list__title">{{ 'nav.news' | translate }}</h1>
+    <mat-checkbox
+      [ngModel]="featuredOnly()"
+      (ngModelChange)="onFeaturedToggle($event)"
+    >
+      {{ 'news.featured.toggle' | translate }}
+    </mat-checkbox>
+  </div>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (errorKind(); as kind) {
+    <div class="cce-news-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+  @if (empty()) {
+    <p class="cce-news-list__empty">{{ 'news.empty' | translate }}</p>
+  }
+
+  <div class="cce-news-list__grid">
+    @for (article of rows(); track article.id) {
+      <cce-news-card [article]="article" [locale]="locale()" />
+    }
+  </div>
+
+  <mat-paginator
+    [length]="total()"
+    [pageIndex]="page() - 1"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[6, 12, 24, 48]"
+    (page)="onPage($event)"
+  />
+</section>
