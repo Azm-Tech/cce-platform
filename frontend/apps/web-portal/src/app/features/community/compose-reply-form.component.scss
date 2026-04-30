@@ -1,0 +1,30 @@
+:host { display: block; }
+
+.cce-compose-reply {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+
+  mat-form-field { width: 100%; }
+}
+
+.cce-compose-reply__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-compose-reply__locale {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cce-compose-reply__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}

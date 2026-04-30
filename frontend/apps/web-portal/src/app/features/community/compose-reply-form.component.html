@@ -1,0 +1,37 @@
+<form
+  class="cce-compose-reply"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+>
+  @if (errorKind()) {
+    <div class="cce-compose-reply__error" role="alert">
+      {{ ('errors.' + errorKind()) | translate }}
+    </div>
+  }
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'community.reply.placeholder' | translate }}</mat-label>
+    <textarea
+      matInput
+      formControlName="content"
+      rows="3"
+      maxlength="5000"
+    ></textarea>
+  </mat-form-field>
+
+  <div class="cce-compose-reply__row">
+    <mat-radio-group formControlName="locale" class="cce-compose-reply__locale">
+      <mat-radio-button value="en">English</mat-radio-button>
+      <mat-radio-button value="ar">العربية</mat-radio-button>
+    </mat-radio-group>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid || submitting()"
+    >
+      {{ 'community.reply.submit' | translate }}
+    </button>
+  </div>
+</form>
