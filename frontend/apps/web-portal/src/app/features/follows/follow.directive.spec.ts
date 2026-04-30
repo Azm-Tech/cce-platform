@@ -19,7 +19,7 @@ function ok<T>(value: T): Result<T> {
   standalone: true,
   imports: [FollowDirective],
   template: `
-    <button cceFollow type="topic" [entityId]="id"></button>
+    <button type="button" cceFollow entityType="topic" [entityId]="id">Toggle</button>
   `,
 })
 class HostComponent {

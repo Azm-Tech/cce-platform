@@ -9,7 +9,7 @@ import type { FollowEntityType } from './follows.types';
  * optimistic updates against the shared FollowsRegistryService.
  *
  * Usage:
- *   <button mat-button cceFollow type="topic" entityId="t1">…</button>
+ *   <button mat-button cceFollow entityType="topic" entityId="t1">…</button>
  *
  * Templates that need the current state in their content can read
  * `directive.isFollowing()` via a template reference variable, or
@@ -24,11 +24,11 @@ export class FollowDirective implements OnInit {
   private readonly api = inject(FollowsApiService);
   private readonly registry = inject(FollowsRegistryService);
 
-  readonly type = input.required<FollowEntityType>();
+  readonly entityType = input.required<FollowEntityType>();
   readonly entityId = input.required<string>();
 
   readonly isFollowing = computed(() =>
-    this.registry.isFollowing(this.type(), this.entityId()),
+    this.registry.isFollowing(this.entityType(), this.entityId()),
   );
 
   ngOnInit(): void {
@@ -37,20 +37,20 @@ export class FollowDirective implements OnInit {
 
   @HostListener('click')
   async onClick(): Promise<void> {
-    const type = this.type();
+    const t = this.entityType();
     const id = this.entityId();
-    const wasFollowing = this.registry.isFollowing(type, id);
+    const wasFollowing = this.registry.isFollowing(t, id);
 
     // Optimistic flip.
-    this.registry.setFollowing(type, id, !wasFollowing);
+    this.registry.setFollowing(t, id, !wasFollowing);
 
     const res = wasFollowing
-      ? await this.api.unfollow(type, id)
-      : await this.api.follow(type, id);
+      ? await this.api.unfollow(t, id)
+      : await this.api.follow(t, id);
 
     if (!res.ok) {
       // Revert on failure.
-      this.registry.setFollowing(type, id, wasFollowing);
+      this.registry.setFollowing(t, id, wasFollowing);
     }
   }
 }
