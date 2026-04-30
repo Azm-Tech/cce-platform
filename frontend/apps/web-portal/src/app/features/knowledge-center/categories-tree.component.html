@@ -1,0 +1,40 @@
+<nav class="cce-cat-tree" role="tree">
+  <button
+    type="button"
+    class="cce-cat-tree__item cce-cat-tree__item--all"
+    [class.cce-cat-tree__item--selected]="selected() === null"
+    (click)="select(null)"
+  >
+    {{ 'resources.filter.allCategories' | translate }}
+  </button>
+  <ul class="cce-cat-tree__list">
+    @for (root of roots(); track root.id) {
+      <li class="cce-cat-tree__node">
+        <button
+          type="button"
+          class="cce-cat-tree__item"
+          [class.cce-cat-tree__item--selected]="selected() === root.id"
+          (click)="select(root.id)"
+        >
+          {{ labelOf(root) }}
+        </button>
+        @if (childrenOf(root.id).length > 0) {
+          <ul class="cce-cat-tree__list cce-cat-tree__list--nested">
+            @for (child of childrenOf(root.id); track child.id) {
+              <li class="cce-cat-tree__node">
+                <button
+                  type="button"
+                  class="cce-cat-tree__item cce-cat-tree__item--child"
+                  [class.cce-cat-tree__item--selected]="selected() === child.id"
+                  (click)="select(child.id)"
+                >
+                  {{ labelOf(child) }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </li>
+    }
+  </ul>
+</nav>
