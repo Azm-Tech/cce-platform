@@ -40,6 +40,8 @@
     "unknown": "Unexpected error. Try again."
   },
   "nav": {
+    "home": "Home",
+    "knowledgeCenter": "Knowledge Center",
     "users": "Users",
     "stateReps": "State reps",
     "experts": "Experts",
@@ -50,11 +52,36 @@
     "pages": "Pages",
     "homepage": "Homepage",
     "taxonomies": "Taxonomies",
-    "community": "Community moderation",
+    "community": "Community",
+    "communityModeration": "Community moderation",
     "countries": "Countries",
     "notifications": "Notifications",
     "reports": "Reports",
     "audit": "Audit log"
+  },
+  "header": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "profile": "My profile",
+    "notifications": "Notifications",
+    "follows": "Follows",
+    "menu": "Menu"
+  },
+  "footer": {
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "ministryAttribution": "Ministry of Energy — Sustainability & Climate Change Agency"
+  },
+  "filter": {
+    "title": "Filters",
+    "openButton": "Filters"
+  },
+  "search": {
+    "placeholder": "Search the Knowledge Center…",
+    "title": "Search",
+    "coming": "Search results land in Phase 5."
   },
   "users": {
     "title": "Users",

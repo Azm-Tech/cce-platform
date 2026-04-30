@@ -40,6 +40,8 @@
     "unknown": "خطأ غير متوقع. حاول مرة أخرى."
   },
   "nav": {
+    "home": "الرئيسية",
+    "knowledgeCenter": "مركز المعرفة",
     "users": "المستخدمون",
     "stateReps": "ممثلو الدول",
     "experts": "الخبراء",
@@ -50,11 +52,36 @@
     "pages": "الصفحات",
     "homepage": "الصفحة الرئيسية",
     "taxonomies": "التصنيفات",
-    "community": "إدارة المجتمع",
+    "community": "المجتمع",
+    "communityModeration": "إدارة المجتمع",
     "countries": "الدول",
     "notifications": "الإشعارات",
     "reports": "التقارير",
     "audit": "سجل التدقيق"
+  },
+  "header": {
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "profile": "ملفي الشخصي",
+    "notifications": "الإشعارات",
+    "follows": "المتابعات",
+    "menu": "القائمة"
+  },
+  "footer": {
+    "about": "حول",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "contact": "تواصل معنا",
+    "ministryAttribution": "وزارة الطاقة — وكالة الاستدامة وتغير المناخ"
+  },
+  "filter": {
+    "title": "المرشحات",
+    "openButton": "المرشحات"
+  },
+  "search": {
+    "placeholder": "ابحث في مركز المعرفة…",
+    "title": "البحث",
+    "coming": "نتائج البحث ستصدر في المرحلة 5."
   },
   "users": {
     "title": "المستخدمون",
