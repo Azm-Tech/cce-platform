@@ -1,0 +1,29 @@
+:host { display: block; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+.cce-events-list__title { margin: 0 0 1.5rem; }
+.cce-events-list__layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+.cce-events-list__filter { width: 100%; margin-top: 1rem; }
+.cce-events-list__content { display: flex; flex-direction: column; gap: 1rem; }
+.cce-events-list__error {
+  background: #fdecea; color: #b00020;
+  padding: 0.75rem 1rem; border-radius: 4px;
+}
+.cce-events-list__empty { text-align: center; padding: 2rem; color: rgba(0, 0, 0, 0.6); }
+.cce-events-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.cce-events-list__card-link {
+  text-decoration: none; color: inherit;
+  mat-card { transition: box-shadow 0.2s; }
+  &:hover mat-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+}
+.cce-events-list__location { margin: 0; color: rgba(0, 0, 0, 0.7); }
+
+@media (max-width: 768px) {
+  .cce-events-list__layout { grid-template-columns: 1fr; }
+}

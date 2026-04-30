@@ -1,0 +1,61 @@
+<section class="cce-events-list">
+  <h1 class="cce-events-list__title">{{ 'nav.events' | translate }}</h1>
+
+  <div class="cce-events-list__layout">
+    <cce-filter-rail>
+      <mat-form-field appearance="outline" class="cce-events-list__filter">
+        <mat-label>{{ 'events.filter.from' | translate }}</mat-label>
+        <input matInput type="date" [ngModel]="from()" (ngModelChange)="onFromChange($event)" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="cce-events-list__filter">
+        <mat-label>{{ 'events.filter.to' | translate }}</mat-label>
+        <input matInput type="date" [ngModel]="to()" (ngModelChange)="onToChange($event)" />
+      </mat-form-field>
+    </cce-filter-rail>
+
+    <div class="cce-events-list__content">
+      @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+      @if (errorKind(); as kind) {
+        <div class="cce-events-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      }
+      @if (empty()) {
+        <p class="cce-events-list__empty">{{ 'events.empty' | translate }}</p>
+      }
+
+      <div class="cce-events-list__grid">
+        @for (event of rows(); track event.id) {
+          <a [routerLink]="['/events', event.id]" class="cce-events-list__card-link">
+            <mat-card>
+              <mat-card-header>
+                <mat-icon mat-card-avatar>{{ event.onlineMeetingUrl ? 'videocam' : 'event' }}</mat-icon>
+                <mat-card-title>{{ titleOf(event) }}</mat-card-title>
+                <mat-card-subtitle>
+                  {{ event.startsOn | date:'medium' }}
+                </mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="cce-events-list__location">
+                  @if (event.onlineMeetingUrl) {
+                    {{ 'events.location.online' | translate }}
+                  } @else if (locationOf(event)) {
+                    {{ locationOf(event) }}
+                  } @else {
+                    {{ 'events.location.tba' | translate }}
+                  }
+                </p>
+              </mat-card-content>
+            </mat-card>
+          </a>
+        }
+      </div>
+
+      <mat-paginator
+        [length]="total()"
+        [pageIndex]="page() - 1"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[6, 12, 24, 48]"
+        (page)="onPage($event)"
+      />
+    </div>
+  </div>
+</section>
