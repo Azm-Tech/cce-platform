@@ -1,0 +1,35 @@
+<h1 class="cce-crr__title">{{ 'countryResourceRequest.title' | translate }}</h1>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ 'countryResourceRequest.subtitle' | translate }}</mat-card-title>
+    <mat-card-subtitle>{{ 'countryResourceRequest.byIdNote' | translate }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" class="cce-crr__form">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'countryResourceRequest.requestId' | translate }}</mat-label>
+        <input matInput formControlName="requestId" autocomplete="off" />
+        @if (form.controls.requestId.touched && form.controls.requestId.invalid) {
+          <mat-error>{{ 'countryResourceRequest.invalidGuid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'countryResourceRequest.notesAr' | translate }}</mat-label>
+        <textarea matInput formControlName="adminNotesAr" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'countryResourceRequest.notesEn' | translate }}</mat-label>
+        <textarea matInput formControlName="adminNotesEn" rows="3"></textarea>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button type="button" mat-button color="warn" (click)="reject()" [disabled]="busy()">
+      {{ 'countryResourceRequest.reject.action' | translate }}
+    </button>
+    <button type="button" mat-flat-button color="primary" (click)="approve()" [disabled]="busy()">
+      {{ 'countryResourceRequest.approve.action' | translate }}
+    </button>
+  </mat-card-actions>
+</mat-card>

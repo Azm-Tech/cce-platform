@@ -44,6 +44,7 @@
     "stateReps": "State reps",
     "experts": "Experts",
     "resources": "Resources",
+    "countryResourceRequests": "Country resource requests",
     "news": "News",
     "events": "Events",
     "pages": "Pages",
@@ -153,5 +154,72 @@
       "confirm": "Revoke",
       "toast": "Assignment revoked."
     }
+  },
+  "asset": {
+    "choose": "Choose file",
+    "clear": "Clear file",
+    "scan": {
+      "Pending": "Scanning…",
+      "Clean": "Clean",
+      "Infected": "Infected",
+      "Failed": "Scan failed"
+    }
+  },
+  "resources": {
+    "title": "Resources",
+    "col": {
+      "title": "Title",
+      "type": "Type",
+      "published": "Published",
+      "publishedOn": "Published on",
+      "views": "Views",
+      "actions": "Actions"
+    },
+    "filter": {
+      "search": "Search",
+      "published": "Status",
+      "all": "All",
+      "draft": "Draft"
+    },
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "resourceType": "Type",
+      "categoryId": "Category ID",
+      "countryId": "Country ID (optional)",
+      "asset": "File"
+    },
+    "create": {
+      "openButton": "New resource",
+      "title": "New resource",
+      "save": "Create",
+      "toast": "Resource created."
+    },
+    "edit": {
+      "openButton": "Edit",
+      "title": "Edit resource",
+      "save": "Save",
+      "toast": "Resource updated."
+    },
+    "publish": {
+      "openButton": "Publish",
+      "title": "Publish resource",
+      "message": "Publish this resource? It will become visible to all users immediately.",
+      "confirm": "Publish",
+      "toast": "Resource published."
+    }
+  },
+  "countryResourceRequest": {
+    "title": "Country resource requests",
+    "subtitle": "Approve / reject by request ID",
+    "byIdNote": "The Internal API does not yet expose a list endpoint; enter the GUID of the request you want to process.",
+    "requestId": "Request ID",
+    "notesAr": "Admin notes (Arabic)",
+    "notesEn": "Admin notes (English)",
+    "invalidGuid": "Enter a valid GUID.",
+    "approve": { "action": "Approve", "toast": "Request approved." },
+    "reject": { "action": "Reject", "toast": "Request rejected.", "notesRequired": "Both Arabic and English notes are required to reject." }
   }
 }

@@ -1,0 +1,100 @@
+<div class="cce-resources-list__header">
+  <h1 class="cce-resources-list__title">{{ 'resources.title' | translate }}</h1>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    *ccePermission="'Resource.Center.Upload'"
+    (click)="openCreate()"
+  >
+    <mat-icon>add</mat-icon>
+    {{ 'resources.create.openButton' | translate }}
+  </button>
+</div>
+
+<div class="cce-resources-list__filters">
+  <mat-form-field appearance="outline" class="cce-resources-list__filter">
+    <mat-label>{{ 'resources.filter.search' | translate }}</mat-label>
+    <input
+      matInput
+      type="search"
+      [ngModel]="searchInput()"
+      (ngModelChange)="searchInput.set($event)"
+      (keyup.enter)="onSearch()"
+    />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="cce-resources-list__filter">
+    <mat-label>{{ 'resources.filter.published' | translate }}</mat-label>
+    <mat-select
+      [ngModel]="publishedFilter()"
+      (ngModelChange)="onPublishedFilter($event)"
+    >
+      @for (opt of publishedFilters; track opt.value) {
+        <mat-option [value]="opt.value">{{ opt.labelKey | translate }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+@if (errorKind(); as kind) {
+  <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+}
+
+<table mat-table [dataSource]="rows()" class="cce-resources-list__table">
+  <ng-container matColumnDef="titleEn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.title' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.titleEn }}</td>
+  </ng-container>
+  <ng-container matColumnDef="resourceType">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.type' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.resourceType }}</td>
+  </ng-container>
+  <ng-container matColumnDef="isPublished">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.published' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.isPublished ? '✓' : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="publishedOn">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.publishedOn' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.publishedOn ? (row.publishedOn | date:'medium') : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="views">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.views' | translate }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.viewCount }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.actions' | translate }}</th>
+    <td mat-cell *matCellDef="let row">
+      <button
+        type="button"
+        mat-button
+        *ccePermission="'Resource.Center.Update'"
+        (click)="openEdit(row)"
+      >
+        {{ 'resources.edit.openButton' | translate }}
+      </button>
+      @if (!row.isPublished) {
+        <button
+          type="button"
+          mat-button
+          color="primary"
+          *ccePermission="'Resource.Center.Upload'"
+          (click)="publish(row)"
+        >
+          {{ 'resources.publish.openButton' | translate }}
+        </button>
+      }
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<mat-paginator
+  [length]="total()"
+  [pageIndex]="page() - 1"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[10, 20, 50, 100]"
+  (page)="onPage($event)"
+/>

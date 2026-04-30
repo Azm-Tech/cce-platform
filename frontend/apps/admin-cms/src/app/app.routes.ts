@@ -29,4 +29,18 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('./features/experts/routes').then((m) => m.EXPERTS_ROUTES),
     title: 'CCE — Experts',
   },
+  {
+    path: 'resources',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () =>
+      import('./features/content/routes').then((m) => m.RESOURCES_ROUTES),
+    title: 'CCE — Resources',
+  },
+  {
+    path: 'country-resource-requests',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () =>
+      import('./features/content/routes').then((m) => m.COUNTRY_RESOURCE_REQUEST_ROUTES),
+    title: 'CCE — Country resource requests',
+  },
 ];

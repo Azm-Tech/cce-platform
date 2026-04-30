@@ -10,6 +10,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.stateReps', route: '/state-rep-assignments', permission: 'Role.Assign', icon: 'badge' },
   { labelKey: 'nav.experts', route: '/experts', permission: 'Community.Expert.ApproveRequest', icon: 'school' },
   { labelKey: 'nav.resources', route: '/resources', permission: 'Resource.Center.Upload', icon: 'description' },
+  { labelKey: 'nav.countryResourceRequests', route: '/country-resource-requests', permission: 'Resource.Country.Approve', icon: 'flag' },
   { labelKey: 'nav.news', route: '/news', permission: 'News.Update', icon: 'feed' },
   { labelKey: 'nav.events', route: '/events', permission: 'Event.Manage', icon: 'event' },
   { labelKey: 'nav.pages', route: '/pages', permission: 'Page.Edit', icon: 'web' },

@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'resources.edit.title' : 'resources.create.title') | translate }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-resource-form">
+    <div class="cce-resource-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.titleAr' | translate }}</mat-label>
+        <input matInput formControlName="titleAr" autocomplete="off" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.titleEn' | translate }}</mat-label>
+        <input matInput formControlName="titleEn" autocomplete="off" />
+      </mat-form-field>
+    </div>
+
+    <div class="cce-resource-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.descriptionAr' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.descriptionEn' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="cce-resource-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.resourceType' | translate }}</mat-label>
+        <mat-select formControlName="resourceType">
+          @for (t of resourceTypes; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.categoryId' | translate }}</mat-label>
+        <input matInput formControlName="categoryId" autocomplete="off" />
+      </mat-form-field>
+    </div>
+
+    @if (!isEdit) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resources.field.countryId' | translate }}</mat-label>
+        <input matInput formControlName="countryId" autocomplete="off" />
+      </mat-form-field>
+      <div class="cce-resource-form__asset">
+        <span class="cce-resource-form__asset-label">{{ 'resources.field.asset' | translate }}</span>
+        <cce-asset-upload (uploaded)="onAssetUploaded($event)" />
+      </div>
+    }
+
+    @if (errorKind(); as kind) {
+      <div class="cce-resource-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving() || form.invalid"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ (isEdit ? 'resources.edit.save' : 'resources.create.save') | translate }}
+    }
+  </button>
+</mat-dialog-actions>

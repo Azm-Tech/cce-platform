@@ -1,0 +1,34 @@
+<div class="cce-asset-upload">
+  @if (asset(); as a) {
+    <div class="cce-asset-upload__preview">
+      <mat-icon>insert_drive_file</mat-icon>
+      <span class="cce-asset-upload__name">{{ a.originalFileName }}</span>
+      <span class="cce-asset-upload__size">{{ a.sizeBytes }} B · {{ a.mimeType }}</span>
+      <span class="cce-asset-upload__scan">{{ ('asset.scan.' + a.virusScanStatus) | translate }}</span>
+      <button type="button" mat-icon-button (click)="clear()" [attr.aria-label]="'asset.clear' | translate">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  } @else {
+    <label class="cce-asset-upload__picker">
+      <input
+        type="file"
+        class="cce-asset-upload__input"
+        (change)="onFile($event)"
+        [disabled]="uploading()"
+      />
+      <span class="cce-asset-upload__cta">
+        <mat-icon>upload_file</mat-icon>
+        {{ 'asset.choose' | translate }}
+      </span>
+    </label>
+  }
+
+  @if (uploading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-asset-upload__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+</div>
