@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { CountryApiService } from './country-api.service';
 import type { Country, CountryProfile } from './country.types';
 

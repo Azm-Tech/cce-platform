@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { EnvironmentInjector, inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { ToastService } from '../ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 
 /**
  * Lazy-resolve ToastService only when an error fires. Eager `inject(ToastService)`

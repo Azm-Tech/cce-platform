@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import type { FeatureError } from '@frontend/ui-kit';
 import { IdentityApiService } from './identity-api.service';
 import { RoleAssignDialogComponent, type RoleAssignDialogData } from './role-assign.dialog';

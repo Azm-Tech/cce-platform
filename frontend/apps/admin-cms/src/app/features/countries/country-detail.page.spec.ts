@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { CountryApiService, type Result } from './country-api.service';
 import { CountryDetailPage } from './country-detail.page';
 import type { Country, CountryProfile } from './country.types';

@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { ExpertApiService, type Result } from './expert-api.service';
 import type { ExpertRequest, PagedResult } from './expert.types';
 import { ExpertRequestsListPage } from './expert-requests-list.page';

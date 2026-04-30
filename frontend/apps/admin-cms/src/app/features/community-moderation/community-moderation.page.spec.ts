@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { ConfirmDialogService } from '../../core/ui/confirm-dialog.service';
-import { ToastService } from '../../core/ui/toast.service';
+import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
 import { CommunityModerationPage } from './community-moderation.page';
 

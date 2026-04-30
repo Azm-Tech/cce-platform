@@ -13,8 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ConfirmDialogService } from '../../core/ui/confirm-dialog.service';
-import { ToastService } from '../../core/ui/toast.service';
+import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from './content-api.service';
 import {
   ResourceFormDialogComponent,

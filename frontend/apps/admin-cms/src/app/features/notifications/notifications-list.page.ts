@@ -12,7 +12,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { NotificationApiService } from './notification-api.service';
 import { NotificationFormDialogComponent } from './notification-form.dialog';
 import {

@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { REPORTS, type ReportConfig } from './reports-config';
 import { ReportsApiService } from './reports-api.service';
 

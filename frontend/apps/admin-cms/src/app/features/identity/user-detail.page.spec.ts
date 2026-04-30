@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { IdentityApiService, type Result } from './identity-api.service';
 import type { UserDetail } from './identity.types';
 import { UserDetailPage } from './user-detail.page';

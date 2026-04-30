@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { ToastService } from '../../core/ui/toast.service';
+import { ToastService } from '@frontend/ui-kit';
 import { ApproveExpertDialogComponent, type ApproveExpertDialogData } from './approve-expert.dialog';
 import { ExpertApiService } from './expert-api.service';
 import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } from './expert.types';

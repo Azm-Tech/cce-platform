@@ -11,8 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ConfirmDialogService } from '../../core/ui/confirm-dialog.service';
-import { ToastService } from '../../core/ui/toast.service';
+import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { PublishingApiService } from './publishing-api.service';
 import {
   HOMEPAGE_SECTION_TYPES,
