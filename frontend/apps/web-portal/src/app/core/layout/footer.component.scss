@@ -1,0 +1,11 @@
+.cce-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  text-align: center;
+}
+.cce-footer__links {
+  display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem;
+  a { color: rgba(0, 0, 0, 0.7); text-decoration: none; &:hover { color: inherit; } }
+}
+.cce-footer__attrib { color: rgba(0, 0, 0, 0.5); font-size: 0.85em; margin: 0; }

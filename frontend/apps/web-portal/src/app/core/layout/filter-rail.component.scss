@@ -1,0 +1,18 @@
+.cce-filter-rail__toggle { display: none; }
+.cce-filter-rail {
+  width: 240px;
+  padding: 1rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+.cce-filter-rail__title {
+  font-size: 1rem; margin: 0 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .cce-filter-rail__toggle { display: inline-flex; }
+  .cce-filter-rail {
+    display: none;
+    &.cce-filter-rail--open { display: block; }
+    width: 100%; border-right: none; border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+}

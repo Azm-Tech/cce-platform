@@ -1,0 +1,37 @@
+<header class="cce-header" role="banner">
+  <a routerLink="/" class="cce-header__logo">CCE</a>
+
+  <nav class="cce-header__primary" [class.cce-header__primary--open]="mobileMenuOpen()" role="navigation">
+    @for (item of nav; track item.route) {
+      <a [routerLink]="item.route" routerLinkActive="cce-header__link--active"
+         [routerLinkActiveOptions]="{ exact: item.route === '/' }">
+        {{ item.labelKey | translate }}
+      </a>
+    }
+  </nav>
+
+  <cce-search-box class="cce-header__search" />
+  <cce-locale-switcher class="cce-header__locale" />
+
+  @if (isAuthenticated()) {
+    <button mat-button [matMenuTriggerFor]="userMenu" class="cce-header__user">
+      <mat-icon>account_circle</mat-icon>
+      <span>{{ userLabel() }}</span>
+    </button>
+    <mat-menu #userMenu>
+      <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | translate }}</a>
+      <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | translate }}</a>
+      <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | translate }}</a>
+      <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | translate }}</button>
+    </mat-menu>
+  } @else {
+    <button type="button" mat-flat-button color="primary" (click)="signIn()" class="cce-header__signin">
+      {{ 'header.signIn' | translate }}
+    </button>
+  }
+
+  <button type="button" mat-icon-button class="cce-header__hamburger" (click)="toggleMobileMenu()"
+    [attr.aria-label]="'header.menu' | translate">
+    <mat-icon>menu</mat-icon>
+  </button>
+</header>
