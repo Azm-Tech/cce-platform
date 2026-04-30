@@ -1,0 +1,82 @@
+:host { display: block; padding: 1.5rem; max-width: 720px; margin: 0 auto; }
+
+.cce-profile__title { margin: 0 0 1rem 0; }
+
+.cce-profile__not-provisioned {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cce-profile__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cce-profile__card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.cce-profile__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cce-profile__avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cce-profile__avatar-fallback {
+  font-size: 96px;
+  width: 96px;
+  height: 96px;
+  color: rgba(0, 0, 0, 0.32);
+}
+
+.cce-profile__user-name { margin: 0; }
+.cce-profile__email { margin: 0.25rem 0 0 0; color: rgba(0, 0, 0, 0.55); }
+
+.cce-profile__fields { margin: 0; display: grid; gap: 1rem; }
+.cce-profile__field {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: baseline;
+  gap: 1rem;
+
+  dt {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.9rem;
+  }
+  dd { margin: 0; }
+}
+
+.cce-profile__badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: #e3f2fd;
+  color: #0d47a1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}

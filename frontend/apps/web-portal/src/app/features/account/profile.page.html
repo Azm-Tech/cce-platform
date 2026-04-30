@@ -1,0 +1,72 @@
+<section class="cce-profile">
+  <h1 class="cce-profile__title">{{ 'account.profile.title' | translate }}</h1>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (notProvisioned()) {
+    <div class="cce-profile__not-provisioned" role="alert">
+      <p>{{ 'account.profile.notProvisioned' | translate }}</p>
+      <button mat-stroked-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-profile__error" role="alert">
+      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (profile(); as p) {
+    <article class="cce-profile__card">
+      <header class="cce-profile__header">
+        @if (p.avatarUrl) {
+          <img class="cce-profile__avatar" [src]="p.avatarUrl" alt="" width="96" height="96" />
+        } @else {
+          <mat-icon class="cce-profile__avatar-fallback" aria-hidden="true">account_circle</mat-icon>
+        }
+        <div>
+          <h2 class="cce-profile__user-name">{{ p.userName ?? p.email ?? p.id }}</h2>
+          @if (p.email) {
+            <p class="cce-profile__email">{{ p.email }}</p>
+          }
+        </div>
+      </header>
+
+      <dl class="cce-profile__fields">
+        <div class="cce-profile__field">
+          <dt>{{ 'account.profile.field.localePreference' | translate }}</dt>
+          <dd>{{ p.localePreference }}</dd>
+        </div>
+        <div class="cce-profile__field">
+          <dt>{{ 'account.profile.field.knowledgeLevel' | translate }}</dt>
+          <dd>
+            <span class="cce-profile__badge">
+              {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | translate }}
+            </span>
+          </dd>
+        </div>
+        <div class="cce-profile__field">
+          <dt>{{ 'account.profile.field.country' | translate }}</dt>
+          <dd>{{ countryName() }}</dd>
+        </div>
+        <div class="cce-profile__field">
+          <dt>{{ 'account.profile.field.interests' | translate }}</dt>
+          <dd>
+            @if (p.interests.length) {
+              <mat-chip-set>
+                @for (interest of p.interests; track interest) {
+                  <mat-chip>{{ interest }}</mat-chip>
+                }
+              </mat-chip-set>
+            } @else {
+              —
+            }
+          </dd>
+        </div>
+      </dl>
+    </article>
+  }
+</section>
