@@ -1,0 +1,39 @@
+:host { display: block; }
+
+.cce-search-hit {
+  display: block;
+  margin-bottom: 0.75rem;
+
+  mat-card { transition: box-shadow 0.2s; }
+}
+
+.cce-search-hit--linked {
+  text-decoration: none;
+  color: inherit;
+  &:hover mat-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+}
+
+.cce-search-hit__type {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: #e8eaf6;
+  color: #283593;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cce-search-hit__score {
+  margin-inline-start: 0.75rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.8rem;
+}
+
+.cce-search-hit__excerpt {
+  margin: 0.5rem 0 0 0;
+  color: rgba(0, 0, 0, 0.72);
+  font-size: 0.95em;
+  line-height: 1.5;
+}

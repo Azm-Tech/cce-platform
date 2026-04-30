@@ -1,0 +1,86 @@
+:host { display: block; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+
+.cce-search-results__header { margin-bottom: 1rem; }
+.cce-search-results__header h1 { margin: 0; }
+.cce-search-results__query {
+  color: #1565c0;
+  font-style: italic;
+}
+.cce-search-results__count {
+  margin: 0.25rem 0 0 0;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cce-search-results__hint {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cce-search-results__layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cce-search-results__facets {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+  padding: 1rem;
+  align-self: start;
+}
+
+.cce-search-results__facets-title {
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.cce-search-results__facets-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li { margin-bottom: 0.25rem; }
+}
+
+.cce-search-results__facet-btn {
+  width: 100%;
+  text-align: inline-start;
+  justify-content: flex-start;
+}
+
+.cce-search-results__facet-btn--active {
+  background: rgba(21, 101, 192, 0.1);
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.cce-search-results__facet-clear {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.cce-search-results__main {
+  min-width: 0;
+}
+
+.cce-search-results__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cce-search-results__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.6);
+}

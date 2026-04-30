@@ -1,0 +1,88 @@
+<section class="cce-search-results">
+  <header class="cce-search-results__header">
+    @if (q()) {
+      <h1>
+        {{ 'search.resultsForPrefix' | translate }}
+        <span class="cce-search-results__query">{{ q() }}</span>
+      </h1>
+      @if (!loading() && !errorKind() && total() > 0) {
+        <p class="cce-search-results__count">
+          {{ total() }} {{ 'search.totalCountSuffix' | translate }}
+        </p>
+      }
+    } @else {
+      <h1>{{ 'search.title' | translate }}</h1>
+    }
+  </header>
+
+  @if (noQuery()) {
+    <p class="cce-search-results__hint">{{ 'search.typeAQuery' | translate }}</p>
+  } @else {
+    <div class="cce-search-results__layout">
+      <aside class="cce-search-results__facets" [attr.aria-label]="'search.facets.title' | translate">
+        <h2 class="cce-search-results__facets-title">
+          {{ 'search.facets.title' | translate }}
+        </h2>
+        <ul class="cce-search-results__facets-list">
+          @for (t of facetTypes; track t) {
+            <li>
+              <button
+                type="button"
+                mat-button
+                class="cce-search-results__facet-btn"
+                [class.cce-search-results__facet-btn--active]="type() === t"
+                (click)="toggleType(t)"
+              >
+                {{ ('searchType.' + t) | translate }}
+              </button>
+            </li>
+          }
+        </ul>
+        @if (type()) {
+          <button
+            type="button"
+            mat-stroked-button
+            class="cce-search-results__facet-clear"
+            (click)="clearType()"
+          >
+            {{ 'search.facets.clear' | translate }}
+          </button>
+        }
+      </aside>
+
+      <main class="cce-search-results__main">
+        @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+        @if (errorKind(); as kind) {
+          <div class="cce-search-results__error" role="alert">
+            <span>{{ ('errors.' + kind) | translate }}</span>
+            <button mat-button type="button" (click)="retry()">
+              {{ 'errors.retry' | translate }}
+            </button>
+          </div>
+        }
+
+        @if (empty()) {
+          <p class="cce-search-results__empty">
+            {{ 'search.emptyPrefix' | translate }}
+            <span class="cce-search-results__query">{{ q() }}</span>.
+          </p>
+        }
+
+        @for (hit of rows(); track hit.id) {
+          <cce-search-hit [hit]="hit" [locale]="locale()" />
+        }
+
+        @if (total() > pageSize()) {
+          <mat-paginator
+            [length]="total()"
+            [pageIndex]="page() - 1"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            (page)="onPage($event)"
+          />
+        }
+      </main>
+    </div>
+  }
+</section>
