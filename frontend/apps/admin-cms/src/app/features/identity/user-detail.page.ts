@@ -10,7 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ToastService } from '../../core/ui/toast.service';
-import type { FeatureError } from '../../core/ui/error-formatter';
+import type { FeatureError } from '@frontend/ui-kit';
 import { IdentityApiService } from './identity-api.service';
 import { RoleAssignDialogComponent, type RoleAssignDialogData } from './role-assign.dialog';
 import type { UserDetail } from './identity.types';

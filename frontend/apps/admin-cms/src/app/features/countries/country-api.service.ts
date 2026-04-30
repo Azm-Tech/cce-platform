@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { toFeatureError, type FeatureError } from '../../core/ui/error-formatter';
+import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   Country,
   CountryProfile,
