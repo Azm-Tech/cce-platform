@@ -1,0 +1,24 @@
+<article class="cce-news-detail">
+  <a class="cce-news-detail__back" routerLink="/news">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'news.back' | translate }}
+  </a>
+
+  @if (loading()) { <p class="cce-news-detail__loading">{{ 'common.loading' | translate }}</p> }
+  @if (errorKind(); as kind) {
+    <div class="cce-news-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  }
+
+  @if (article(); as a) {
+    <h1 class="cce-news-detail__title">{{ title() }}</h1>
+    @if (a.publishedOn) {
+      <p class="cce-news-detail__date">
+        {{ 'news.publishedOn' | translate }} {{ a.publishedOn | date:'mediumDate' }}
+      </p>
+    }
+    @if (a.featuredImageUrl) {
+      <img [src]="a.featuredImageUrl" [alt]="title()" class="cce-news-detail__image" />
+    }
+    <div class="cce-news-detail__content" [innerHTML]="content()"></div>
+  }
+</article>
