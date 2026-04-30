@@ -61,6 +61,9 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "proxyConfig": "apps/web-portal/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "web-portal:build:production"
