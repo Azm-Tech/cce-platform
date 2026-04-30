@@ -35,7 +35,9 @@
     "network": "Network error. Check your connection.",
     "concurrency": "Item was modified by another user. Reload and try again.",
     "duplicate": "Duplicate value — this item already exists.",
-    "validation": "Please correct the highlighted fields."
+    "validation": "Please correct the highlighted fields.",
+    "not-found": "Item not found.",
+    "unknown": "Unexpected error. Try again."
   },
   "nav": {
     "users": "Users",
@@ -63,6 +65,23 @@
       "search": "Search",
       "role": "Role",
       "allRoles": "All roles"
+    },
+    "detail": {
+      "back": "Back to users",
+      "field": {
+        "locale": "Locale preference",
+        "knowledgeLevel": "Knowledge level",
+        "interests": "Interests",
+        "country": "Country",
+        "roles": "Roles",
+        "isActive": "Active"
+      }
     }
+  },
+  "roleAssign": {
+    "title": "Assign roles",
+    "roles": "Roles",
+    "openButton": "Assign roles",
+    "saved": "Roles updated."
   }
 }

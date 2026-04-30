@@ -1,0 +1,70 @@
+<div class="cce-user-detail__header">
+  <a mat-button routerLink="/users">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'users.detail.back' | translate }}
+  </a>
+</div>
+
+@if (loading()) {
+  <div class="cce-user-detail__status">{{ 'common.loading' | translate }}</div>
+}
+
+@if (error(); as err) {
+  <div class="cce-user-detail__error" role="alert">{{ ('errors.' + err.kind) | translate }}</div>
+}
+
+@if (user(); as u) {
+  <mat-card class="cce-user-detail__card">
+    <mat-card-header>
+      <mat-card-title>{{ u.userName ?? u.email ?? u.id }}</mat-card-title>
+      <mat-card-subtitle>{{ u.email ?? '—' }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <dl class="cce-user-detail__list">
+        <dt>{{ 'users.detail.field.locale' | translate }}</dt>
+        <dd>{{ u.localePreference }}</dd>
+        <dt>{{ 'users.detail.field.knowledgeLevel' | translate }}</dt>
+        <dd>{{ u.knowledgeLevel }}</dd>
+        <dt>{{ 'users.detail.field.interests' | translate }}</dt>
+        <dd>
+          @if (u.interests.length) {
+            <mat-chip-set>
+              @for (i of u.interests; track i) {
+                <mat-chip>{{ i }}</mat-chip>
+              }
+            </mat-chip-set>
+          } @else {
+            —
+          }
+        </dd>
+        <dt>{{ 'users.detail.field.country' | translate }}</dt>
+        <dd>{{ u.countryId ?? '—' }}</dd>
+        <dt>{{ 'users.detail.field.roles' | translate }}</dt>
+        <dd>
+          @if (u.roles.length) {
+            <mat-chip-set>
+              @for (r of u.roles; track r) {
+                <mat-chip>{{ r }}</mat-chip>
+              }
+            </mat-chip-set>
+          } @else {
+            —
+          }
+        </dd>
+        <dt>{{ 'users.detail.field.isActive' | translate }}</dt>
+        <dd>{{ u.isActive ? '✓' : '✗' }}</dd>
+      </dl>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        *ccePermission="'Role.Assign'"
+        (click)="openRoleAssign()"
+      >
+        {{ 'roleAssign.openButton' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}

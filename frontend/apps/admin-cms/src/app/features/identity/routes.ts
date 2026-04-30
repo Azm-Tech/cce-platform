@@ -13,4 +13,10 @@ export const IDENTITY_ROUTES: Routes = [
     data: { permission: 'User.Read' },
     canMatch: [permissionGuard],
   },
+  {
+    path: ':id',
+    loadComponent: () => import('./user-detail.page').then((m) => m.UserDetailPage),
+    data: { permission: 'User.Read' },
+    canMatch: [permissionGuard],
+  },
 ];
