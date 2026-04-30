@@ -1,0 +1,75 @@
+<section class="cce-country-detail">
+  <a class="cce-country-detail__back" routerLink="/countries">
+    ← {{ 'countries.back' | translate }}
+  </a>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (errorKind() === 'not-found') {
+    <div class="cce-country-detail__notfound" role="alert">
+      <h1>{{ 'countries.notFound' | translate }}</h1>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-country-detail__error" role="alert">
+      {{ ('errors.' + errorKind()) | translate }}
+    </div>
+  }
+
+  @if (profile(); as p) {
+    <header class="cce-country-detail__header">
+      @if (country(); as c) {
+        <img
+          class="cce-country-detail__flag"
+          [src]="c.flagUrl"
+          [alt]="headerName()"
+          width="64"
+          height="48"
+          loading="lazy"
+        />
+      }
+      <div>
+        <h1 class="cce-country-detail__name">
+          {{ headerName() || ('countries.title' | translate) }}
+        </h1>
+        <p class="cce-country-detail__updated">
+          <small>
+            {{ 'countries.detail.lastUpdated' | translate }}:
+            {{ p.lastUpdatedOn | date:'mediumDate' }}
+          </small>
+        </p>
+      </div>
+    </header>
+
+    <article class="cce-country-detail__section">
+      <h2>{{ 'countries.detail.description' | translate }}</h2>
+      <div class="cce-country-detail__body" [innerHTML]="description()"></div>
+    </article>
+
+    <article class="cce-country-detail__section">
+      <h2>{{ 'countries.detail.keyInitiatives' | translate }}</h2>
+      <div class="cce-country-detail__body" [innerHTML]="keyInitiatives()"></div>
+    </article>
+
+    @if (contactInfo(); as contact) {
+      <article class="cce-country-detail__section">
+        <h2>{{ 'countries.detail.contactInfo' | translate }}</h2>
+        <div class="cce-country-detail__body" [innerHTML]="contact"></div>
+      </article>
+    }
+
+    <article class="cce-country-detail__section">
+      <h2>{{ 'kapsarc.title' | translate }}</h2>
+      @if (snapshot(); as snap) {
+        <cce-kapsarc-snapshot [snapshot]="snap" [locale]="locale()" />
+      } @else if (snapshotErrorKind()) {
+        <p class="cce-country-detail__kapsarc-error">
+          {{ 'kapsarc.error' | translate }}
+        </p>
+      } @else {
+        <p class="cce-country-detail__kapsarc-empty">
+          {{ 'kapsarc.unavailable' | translate }}
+        </p>
+      }
+    </article>
+  }
+</section>

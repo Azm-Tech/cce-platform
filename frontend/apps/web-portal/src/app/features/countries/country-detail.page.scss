@@ -1,0 +1,66 @@
+:host { display: block; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+
+.cce-country-detail__back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #1565c0;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.cce-country-detail__notfound,
+.cce-country-detail__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.cce-country-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cce-country-detail__flag {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.cce-country-detail__name { margin: 0; }
+.cce-country-detail__updated { margin: 0.25rem 0 0 0; color: rgba(0, 0, 0, 0.55); }
+
+.cce-country-detail__section {
+  margin: 1.5rem 0;
+
+  h2 {
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem 0;
+  }
+}
+
+.cce-country-detail__body {
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.82);
+
+  ::ng-deep p { margin: 0 0 0.75rem 0; }
+  ::ng-deep ul, ::ng-deep ol { padding-inline-start: 1.5rem; }
+}
+
+.cce-country-detail__kapsarc-empty,
+.cce-country-detail__kapsarc-error {
+  color: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+}
+
+.cce-country-detail__kapsarc-error { color: #b00020; background: #fdecea; }
