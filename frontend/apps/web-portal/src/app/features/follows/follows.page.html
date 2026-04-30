@@ -1,0 +1,51 @@
+<section class="cce-follows">
+  <h1 class="cce-follows__title">{{ 'follows.title' | translate }}</h1>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-follows__error" role="alert">
+      <span>{{ ('errors.' + kind) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (state()) {
+    @for (section of sections(); track section.type) {
+      <article class="cce-follows__section">
+        <h2 class="cce-follows__section-title">
+          {{ section.titleKey | translate }}
+          <small>({{ section.ids.length }})</small>
+        </h2>
+
+        @if (section.ids.length === 0) {
+          <p class="cce-follows__empty">{{ section.emptyKey | translate }}</p>
+        } @else {
+          <ul class="cce-follows__chips">
+            @for (id of section.ids; track id) {
+              <li class="cce-follows__chip">
+                <a
+                  class="cce-follows__chip-id"
+                  [routerLink]="[section.routePrefix, id]"
+                >
+                  {{ id }}
+                </a>
+                <button
+                  type="button"
+                  mat-icon-button
+                  class="cce-follows__chip-unfollow"
+                  [attr.aria-label]="'follows.unfollow' | translate"
+                  (click)="unfollow(section.type, id)"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </article>
+    }
+  }
+</section>
