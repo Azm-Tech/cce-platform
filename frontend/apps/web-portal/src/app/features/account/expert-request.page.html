@@ -1,0 +1,86 @@
+<section class="cce-expert-request">
+  <h1 class="cce-expert-request__title">{{ 'account.expert.title' | translate }}</h1>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (errorKind()) {
+    <div class="cce-expert-request__error" role="alert">
+      {{ ('errors.' + errorKind()) | translate }}
+    </div>
+  }
+
+  @if (status(); as s) {
+    @if (s.status === 'Pending') {
+      <div class="cce-expert-request__banner cce-expert-request__banner--pending" role="status">
+        <p>
+          {{ 'account.expert.banner.pending' | translate:{ date: (s.submittedOn | date:'mediumDate') } }}
+        </p>
+      </div>
+    } @else if (s.status === 'Approved') {
+      <div class="cce-expert-request__banner cce-expert-request__banner--approved" role="status">
+        <p>{{ 'account.expert.banner.approved' | translate }}</p>
+      </div>
+    } @else if (s.status === 'Rejected' && !showForm()) {
+      <div class="cce-expert-request__banner cce-expert-request__banner--rejected" role="status">
+        <p>
+          {{ 'account.expert.banner.rejected' | translate:{ reason: rejectionReason() } }}
+        </p>
+        <button mat-stroked-button type="button" (click)="resubmit()">
+          {{ 'account.expert.resubmitButton' | translate }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (showForm()) {
+    <p class="cce-expert-request__body">{{ 'account.expert.body' | translate }}</p>
+
+    <form
+      class="cce-expert-request__form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+    >
+      @if (submitErrorKind()) {
+        <div class="cce-expert-request__error" role="alert">
+          {{ ('errors.' + submitErrorKind()) | translate }}
+        </div>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'account.expert.field.bioAr' | translate }}</mat-label>
+        <textarea
+          matInput
+          formControlName="requestedBioAr"
+          rows="5"
+          maxlength="2000"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'account.expert.field.bioEn' | translate }}</mat-label>
+        <textarea
+          matInput
+          formControlName="requestedBioEn"
+          rows="5"
+          maxlength="2000"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'account.expert.field.tags' | translate }}</mat-label>
+        <input matInput type="text" formControlName="requestedTags" placeholder="waste, water, carbon" />
+      </mat-form-field>
+
+      <div class="cce-expert-request__form-actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || submitting()"
+        >
+          {{ 'account.expert.submitButton' | translate }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
