@@ -1,0 +1,61 @@
+<section class="cce-resources-list">
+  <h1 class="cce-resources-list__title">{{ 'resources.title' | translate }}</h1>
+
+  <div class="cce-resources-list__layout">
+    <cce-filter-rail>
+      <cce-categories-tree
+        [categories]="categories()"
+        [selectedId]="categoryId()"
+        [locale]="locale()"
+        (selectionChange)="onCategoryChange($event)"
+      />
+
+      <mat-form-field appearance="outline" class="cce-resources-list__filter">
+        <mat-label>{{ 'resources.filter.country' | translate }}</mat-label>
+        <input matInput
+          [ngModel]="countryId()"
+          (ngModelChange)="onCountryChange($event)"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="cce-resources-list__filter">
+        <mat-label>{{ 'resources.filter.resourceType' | translate }}</mat-label>
+        <mat-select
+          [ngModel]="resourceType()"
+          (ngModelChange)="onResourceTypeChange($event)"
+        >
+          <mat-option [value]="''">{{ 'resources.filter.allTypes' | translate }}</mat-option>
+          @for (t of resourceTypes; track t) {
+            <mat-option [value]="t">{{ ('resources.type.' + t) | translate }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </cce-filter-rail>
+
+    <div class="cce-resources-list__content">
+      @if (loading()) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+      @if (errorKind(); as kind) {
+        <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      }
+      @if (empty()) {
+        <p class="cce-resources-list__empty">{{ 'resources.empty' | translate }}</p>
+      }
+
+      <div class="cce-resources-list__grid">
+        @for (resource of rows(); track resource.id) {
+          <cce-resource-card [resource]="resource" [locale]="locale()" />
+        }
+      </div>
+
+      <mat-paginator
+        [length]="total()"
+        [pageIndex]="page() - 1"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[10, 20, 50, 100]"
+        (page)="onPage($event)"
+      />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+:host { display: block; }
+.cce-resources-list {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.cce-resources-list__title { margin: 0 0 1.5rem; }
+.cce-resources-list__layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+.cce-resources-list__filter {
+  width: 100%;
+  margin-top: 1rem;
+}
+.cce-resources-list__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.cce-resources-list__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+}
+.cce-resources-list__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+.cce-resources-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .cce-resources-list__layout {
+    grid-template-columns: 1fr;
+  }
+}
