@@ -1,0 +1,55 @@
+:host { display: block; }
+
+.cce-notification-row {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 0.5rem;
+  align-items: start;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cce-notification-row__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  margin-top: 0.5rem;
+}
+
+.cce-notification-row--unread .cce-notification-row__dot {
+  background: #1565c0;
+}
+
+.cce-notification-row__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.cce-notification-row__subject {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.cce-notification-row__channel {
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+.cce-notification-row__excerpt {
+  margin: 0.25rem 0 0 0;
+  color: rgba(0, 0, 0, 0.72);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.cce-notification-row__date {
+  margin: 0.25rem 0 0 0;
+  color: rgba(0, 0, 0, 0.45);
+}

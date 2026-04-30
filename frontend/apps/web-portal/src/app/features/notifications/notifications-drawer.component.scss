@@ -1,0 +1,36 @@
+:host { display: block; min-width: 360px; max-width: 420px; }
+
+.cce-notifications-drawer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.cce-notifications-drawer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.cce-notifications-drawer__title { margin: 0; font-size: 1.1rem; }
+
+.cce-notifications-drawer__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cce-notifications-drawer__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cce-notifications-drawer__list { flex: 1; }

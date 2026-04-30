@@ -1,0 +1,52 @@
+<section class="cce-notifications-drawer" role="region" [attr.aria-label]="'notifications.title' | translate">
+  <header class="cce-notifications-drawer__header">
+    <h2 class="cce-notifications-drawer__title">{{ 'notifications.title' | translate }}</h2>
+    @if (hasUnread()) {
+      <button
+        type="button"
+        mat-stroked-button
+        class="cce-notifications-drawer__mark-all"
+        (click)="onMarkAllRead()"
+      >
+        {{ 'notifications.markAllRead' | translate }}
+      </button>
+    }
+  </header>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-notifications-drawer__error" role="alert">
+      <span>{{ ('errors.' + kind) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (empty()) {
+    <p class="cce-notifications-drawer__empty">
+      {{ 'notifications.empty' | translate }}
+    </p>
+  }
+
+  <div class="cce-notifications-drawer__list" role="list">
+    @for (n of rows(); track n.id) {
+      <cce-notification-row
+        [notification]="n"
+        [locale]="locale()"
+        (markRead)="onMarkRead($event)"
+      />
+    }
+  </div>
+
+  @if (total() > pageSize()) {
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="page() - 1"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+    />
+  }
+</section>

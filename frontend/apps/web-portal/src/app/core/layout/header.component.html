@@ -14,6 +14,19 @@
   <cce-locale-switcher class="cce-header__locale" />
 
   @if (isAuthenticated()) {
+    <button
+      type="button"
+      mat-icon-button
+      class="cce-header__bell"
+      [attr.aria-label]="'notifications.bellLabel' | translate"
+      [matBadge]="unreadCount()"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      [matBadgeHidden]="badgeHidden()"
+      (click)="openNotifications()"
+    >
+      <mat-icon>notifications</mat-icon>
+    </button>
     <button type="button" mat-button [matMenuTriggerFor]="userMenu" class="cce-header__user">
       <mat-icon>account_circle</mat-icon>
       <span>{{ userLabel() }}</span>
