@@ -1,6 +1,14 @@
 :host { display: block; padding: 1.5rem; max-width: 720px; margin: 0 auto; }
 
-.cce-profile__title { margin: 0 0 1rem 0; }
+.cce-profile__title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1rem 0;
+  flex-wrap: wrap;
+}
+.cce-profile__title { margin: 0; }
 
 .cce-profile__not-provisioned {
   background: #fff3cd;
@@ -79,4 +87,22 @@
   color: #0d47a1;
   font-weight: 600;
   font-size: 0.85rem;
+}
+
+.cce-profile__form {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: grid;
+  gap: 0.5rem;
+
+  mat-form-field { width: 100%; }
+}
+
+.cce-profile__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }

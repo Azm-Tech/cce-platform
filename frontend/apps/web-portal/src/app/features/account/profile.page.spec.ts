@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
+import { ToastService } from '@frontend/ui-kit';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountApiService, type Result } from './account-api.service';
 import { CountriesApiService } from '../countries/countries-api.service';
@@ -33,7 +34,9 @@ describe('ProfilePage', () => {
   let fixture: ComponentFixture<ProfilePage>;
   let page: ProfilePage;
   let getProfile: jest.Mock;
+  let updateProfile: jest.Mock;
   let listCountries: jest.Mock;
+  let toastSuccess: jest.Mock;
   let localeSig: ReturnType<typeof signal<'ar' | 'en'>>;
 
   function ok<T>(value: T): Result<T> {
@@ -42,7 +45,9 @@ describe('ProfilePage', () => {
 
   beforeEach(async () => {
     getProfile = jest.fn().mockResolvedValue(ok(PROFILE));
+    updateProfile = jest.fn().mockResolvedValue(ok(PROFILE));
     listCountries = jest.fn().mockResolvedValue(ok([JO]));
+    toastSuccess = jest.fn();
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
@@ -52,15 +57,18 @@ describe('ProfilePage', () => {
         provideNoopAnimations(),
         {
           provide: AccountApiService,
-          useValue: { getProfile, updateProfile: jest.fn() },
+          useValue: { getProfile, updateProfile },
         },
         { provide: CountriesApiService, useValue: { listCountries } },
         { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
+        { provide: ToastService, useValue: { success: toastSuccess, error: jest.fn() } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ProfilePage);
     page = fixture.componentInstance;
   });
+
+  // ====== Read mode (Phase 6.3) ======
 
   it('loads profile + countries on init and binds DOM', async () => {
     fixture.detectChanges();
@@ -95,5 +103,78 @@ describe('ProfilePage', () => {
     expect(page.countryName()).toBe('Jordan');
     localeSig.set('ar');
     expect(page.countryName()).toBe('الأردن');
+  });
+
+  // ====== Edit mode (Phase 6.4) ======
+
+  it('enterEditMode patches the form from the current profile and switches mode', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.mode()).toBe('view');
+    page.enterEditMode();
+    expect(page.mode()).toBe('edit');
+    const v = page.form.getRawValue();
+    expect(v.localePreference).toBe('en');
+    expect(v.knowledgeLevel).toBe('Beginner');
+    expect(v.interests).toBe('waste');
+    expect(v.countryId).toBe('c1');
+    expect(v.avatarUrl).toBeNull();
+  });
+
+  it('save() with valid form calls updateProfile with the parsed payload', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    page.enterEditMode();
+    page.form.patchValue({
+      localePreference: 'ar',
+      knowledgeLevel: 'Intermediate',
+      interests: 'waste, water,  carbon , water', // dup + whitespace test
+      countryId: null,
+      avatarUrl: 'https://example.test/a.png',
+    });
+    await page.save();
+    expect(updateProfile).toHaveBeenCalledWith({
+      localePreference: 'ar',
+      knowledgeLevel: 'Intermediate',
+      interests: ['waste', 'water', 'carbon'],
+      avatarUrl: 'https://example.test/a.png',
+      countryId: null,
+    });
+  });
+
+  it('on success: profile updates, mode reverts to view, toast.success fired', async () => {
+    const updated: UserProfile = { ...PROFILE, knowledgeLevel: 'Advanced' };
+    updateProfile.mockResolvedValueOnce(ok(updated));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    page.enterEditMode();
+    page.form.patchValue({ knowledgeLevel: 'Advanced' });
+    await page.save();
+    expect(page.profile()).toEqual(updated);
+    expect(page.mode()).toBe('view');
+    expect(toastSuccess).toHaveBeenCalledWith('account.profile.toast.saved');
+  });
+
+  it('on error: error banner renders, mode stays edit, profile is unchanged', async () => {
+    updateProfile.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    page.enterEditMode();
+    await page.save();
+    expect(page.saveErrorKind()).toBe('server');
+    expect(page.mode()).toBe('edit');
+    expect(page.profile()).toEqual(PROFILE);
+    expect(toastSuccess).not.toHaveBeenCalled();
+  });
+
+  it('cancelEdit reverts to view mode without saving', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    page.enterEditMode();
+    page.form.patchValue({ knowledgeLevel: 'Advanced' });
+    page.cancelEdit();
+    expect(page.mode()).toBe('view');
+    expect(page.profile()).toEqual(PROFILE);
+    expect(updateProfile).not.toHaveBeenCalled();
   });
 });
