@@ -1,0 +1,44 @@
+<h1 class="cce-cm__title">{{ 'communityModeration.title' | translate }}</h1>
+<p class="cce-cm__byid">{{ 'communityModeration.byIdNote' | translate }}</p>
+
+<form [formGroup]="form" class="cce-cm__forms">
+  <mat-card class="cce-cm__card">
+    <mat-card-header>
+      <mat-card-title>{{ 'communityModeration.post.title' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.post.id' | translate }}</mat-label>
+        <input matInput formControlName="postId" autocomplete="off" />
+        @if (form.controls.postId.touched && form.controls.postId.invalid) {
+          <mat-error>{{ 'communityModeration.invalidGuid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button type="button" mat-flat-button color="warn" (click)="deletePost()" [disabled]="busy()">
+        {{ 'communityModeration.post.openButton' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card class="cce-cm__card">
+    <mat-card-header>
+      <mat-card-title>{{ 'communityModeration.reply.title' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.reply.id' | translate }}</mat-label>
+        <input matInput formControlName="replyId" autocomplete="off" />
+        @if (form.controls.replyId.touched && form.controls.replyId.invalid) {
+          <mat-error>{{ 'communityModeration.invalidGuid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button type="button" mat-flat-button color="warn" (click)="deleteReply()" [disabled]="busy()">
+        {{ 'communityModeration.reply.openButton' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>

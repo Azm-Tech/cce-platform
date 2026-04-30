@@ -67,4 +67,17 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('./features/publishing/routes').then((m) => m.HOMEPAGE_ROUTES),
     title: 'CCE — Homepage',
   },
+  {
+    path: 'taxonomies',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/taxonomies/routes').then((m) => m.TAXONOMIES_ROUTES),
+    title: 'CCE — Taxonomies',
+  },
+  {
+    path: 'community-moderation',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () =>
+      import('./features/community-moderation/routes').then((m) => m.COMMUNITY_MODERATION_ROUTES),
+    title: 'CCE — Community moderation',
+  },
 ];

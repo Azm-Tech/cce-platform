@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'taxonomies.topic.edit.title' : 'taxonomies.topic.create.title') | translate }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-topic-form">
+    <div class="cce-topic-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.nameAr' | translate }}</mat-label>
+        <input matInput formControlName="nameAr" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.nameEn' | translate }}</mat-label>
+        <input matInput formControlName="nameEn" />
+      </mat-form-field>
+    </div>
+    <div class="cce-topic-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.descriptionAr' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.descriptionEn' | translate }}</mat-label>
+        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="cce-topic-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.slug' | translate }}</mat-label>
+        <input matInput formControlName="slug" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'taxonomies.field.parentId' | translate }}</mat-label>
+        <input matInput formControlName="parentId" />
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'taxonomies.field.iconUrl' | translate }}</mat-label>
+      <input matInput formControlName="iconUrl" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'taxonomies.field.orderIndex' | translate }}</mat-label>
+      <input matInput type="number" formControlName="orderIndex" />
+    </mat-form-field>
+    @if (isEdit) {
+      <mat-checkbox formControlName="isActive">{{ 'taxonomies.field.isActive' | translate }}</mat-checkbox>
+    }
+    @if (errorKind(); as kind) {
+      <div class="cce-topic-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | translate }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    {{ (isEdit ? 'taxonomies.topic.edit.save' : 'taxonomies.topic.create.save') | translate }}
+  </button>
+</mat-dialog-actions>

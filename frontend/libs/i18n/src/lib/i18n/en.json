@@ -259,5 +259,48 @@
     "edit": { "toast": "Section updated." },
     "delete": { "title": "Delete section", "message": "Delete this homepage section?", "confirm": "Delete", "toast": "Section deleted." },
     "reorder": { "toast": "Section order updated." }
+  },
+  "taxonomies": {
+    "col": { "name": "Name", "slug": "Slug", "order": "Order", "active": "Active", "actions": "Actions" },
+    "field": {
+      "nameAr": "Name (Arabic)", "nameEn": "Name (English)",
+      "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)",
+      "slug": "Slug", "parentId": "Parent ID (optional)",
+      "iconUrl": "Icon URL (optional)", "orderIndex": "Order index", "isActive": "Active"
+    },
+    "category": {
+      "title": "Resource categories",
+      "create": { "openButton": "New category", "title": "New category", "save": "Create", "toast": "Category created." },
+      "edit": { "openButton": "Edit", "title": "Edit category", "save": "Save", "toast": "Category updated." },
+      "delete": { "openButton": "Delete", "title": "Delete category", "message": "Delete this category? Any resources still attached to it will be orphaned.", "confirm": "Delete", "toast": "Category deleted." }
+    },
+    "topic": {
+      "title": "Topics",
+      "filter": { "search": "Search" },
+      "create": { "openButton": "New topic", "title": "New topic", "save": "Create", "toast": "Topic created." },
+      "edit": { "openButton": "Edit", "title": "Edit topic", "save": "Save", "toast": "Topic updated." },
+      "delete": { "openButton": "Delete", "title": "Delete topic", "message": "Delete this topic? Posts attached to it will lose their tag.", "confirm": "Delete", "toast": "Topic deleted." }
+    }
+  },
+  "communityModeration": {
+    "title": "Community moderation",
+    "byIdNote": "The Internal API exposes only soft-delete endpoints; enter the GUID of the post or reply to remove. A flag-queue UI lands in v0.2.0.",
+    "invalidGuid": "Enter a valid GUID.",
+    "post": {
+      "title": "Soft-delete post",
+      "id": "Post ID",
+      "openButton": "Soft-delete post",
+      "message": "Soft-delete this post? Authors and replies see a tombstone; the row is preserved for audit.",
+      "confirm": "Soft-delete",
+      "toast": "Post soft-deleted."
+    },
+    "reply": {
+      "title": "Soft-delete reply",
+      "id": "Reply ID",
+      "openButton": "Soft-delete reply",
+      "message": "Soft-delete this reply? It is hidden from the thread but preserved for audit.",
+      "confirm": "Soft-delete",
+      "toast": "Reply soft-deleted."
+    }
   }
 }

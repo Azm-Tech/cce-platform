@@ -1,0 +1,8 @@
+:host { display: block; padding: 1.5rem; max-width: 960px; }
+.cce-cm__title { margin: 0 0 0.5rem; }
+.cce-cm__byid { color: rgba(0, 0, 0, 0.6); margin-bottom: 1rem; }
+.cce-cm__forms { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 720px) {
+  .cce-cm__forms { grid-template-columns: 1fr; }
+}
+.cce-cm__card { width: 100%; }
