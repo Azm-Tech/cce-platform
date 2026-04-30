@@ -1,0 +1,52 @@
+<section class="cce-countries-grid">
+  <div class="cce-countries-grid__header">
+    <h1 class="cce-countries-grid__title">{{ 'countries.title' | translate }}</h1>
+    <form
+      class="cce-countries-grid__search"
+      (ngSubmit)="onSearchSubmit()"
+      role="search"
+    >
+      <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
+        <mat-label>{{ 'countries.search.placeholder' | translate }}</mat-label>
+        <input
+          matInput
+          type="search"
+          name="q"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">
+        {{ 'search.submit' | translate }}
+      </button>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-countries-grid__error" role="alert">
+      <span>{{ ('errors.' + kind) | translate }}</span>
+      <button mat-button type="button" (click)="retry()">
+        {{ 'errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (empty()) {
+    <p class="cce-countries-grid__empty">{{ 'countries.empty' | translate }}</p>
+  }
+
+  @for (group of groups(); track group.region) {
+    <section class="cce-countries-grid__region">
+      <h2 class="cce-countries-grid__region-title">{{ group.region }}</h2>
+      <div class="cce-countries-grid__cards">
+        @for (country of group.countries; track country.id) {
+          <cce-country-card [country]="country" [locale]="locale()" />
+        }
+      </div>
+    </section>
+  }
+</section>

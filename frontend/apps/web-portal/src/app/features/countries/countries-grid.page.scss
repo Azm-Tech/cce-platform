@@ -1,0 +1,54 @@
+:host { display: block; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+
+.cce-countries-grid__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cce-countries-grid__title { margin: 0; }
+
+.cce-countries-grid__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cce-countries-grid__search-field { min-width: 240px; }
+
+.cce-countries-grid__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cce-countries-grid__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cce-countries-grid__region { margin-bottom: 2rem; }
+
+.cce-countries-grid__region-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cce-countries-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
