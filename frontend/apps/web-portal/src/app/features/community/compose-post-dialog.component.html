@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ 'community.compose.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="cce-compose-post" (ngSubmit)="submit()">
+    @if (errorKind()) {
+      <div class="cce-compose-post__error" role="alert">
+        {{ ('errors.' + errorKind()) | translate }}
+      </div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'community.compose.content' | translate }}</mat-label>
+      <textarea
+        matInput
+        formControlName="content"
+        rows="6"
+        maxlength="5000"
+      ></textarea>
+    </mat-form-field>
+
+    <mat-radio-group formControlName="locale" class="cce-compose-post__locale">
+      <span class="cce-compose-post__label">{{ 'community.compose.locale' | translate }}:</span>
+      <mat-radio-button value="en">English</mat-radio-button>
+      <mat-radio-button value="ar">العربية</mat-radio-button>
+    </mat-radio-group>
+
+    <mat-checkbox formControlName="isAnswerable" class="cce-compose-post__checkbox">
+      {{ 'community.compose.isAnswerable' | translate }}
+    </mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" [disabled]="submitting()" (click)="cancel()">
+    {{ 'account.profile.cancelButton' | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="form.invalid || submitting()"
+    (click)="submit()"
+  >
+    {{ 'community.compose.submit' | translate }}
+  </button>
+</mat-dialog-actions>

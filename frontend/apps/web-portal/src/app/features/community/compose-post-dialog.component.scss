@@ -1,0 +1,31 @@
+:host { display: block; }
+
+.cce-compose-post {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 480px;
+  max-width: 640px;
+
+  mat-form-field { width: 100%; }
+}
+
+.cce-compose-post__locale {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-compose-post__label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
+
+.cce-compose-post__checkbox { margin-top: 0.25rem; }
+
+.cce-compose-post__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}
