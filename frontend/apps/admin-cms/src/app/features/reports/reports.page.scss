@@ -1,0 +1,15 @@
+:host { display: block; padding: 1.5rem; }
+.cce-reports__title { margin: 0 0 0.5rem; }
+.cce-reports__subtitle { color: rgba(0, 0, 0, 0.6); margin-bottom: 1.5rem; }
+.cce-reports__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1rem;
+}
+.cce-reports__card { display: flex; flex-direction: column; }
+.cce-reports__filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  mat-form-field { flex: 1; min-width: 140px; }
+}

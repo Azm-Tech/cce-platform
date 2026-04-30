@@ -93,4 +93,10 @@ export const appRoutes: Route[] = [
       import('./features/notifications/routes').then((m) => m.NOTIFICATIONS_ROUTES),
     title: 'CCE — Notifications',
   },
+  {
+    path: 'reports',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadChildren: () => import('./features/reports/routes').then((m) => m.REPORTS_ROUTES),
+    title: 'CCE — Reports',
+  },
 ];

@@ -337,5 +337,19 @@
     },
     "create": { "openButton": "New template", "title": "New notification template", "save": "Create", "toast": "Template created." },
     "edit": { "openButton": "Edit", "title": "Edit notification template", "save": "Save", "toast": "Template updated." }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Streaming CSV downloads. Apply an optional date range and click Download.",
+    "filter": { "from": "From", "to": "To" },
+    "download": { "openButton": "Download CSV", "toast": "Report downloaded." },
+    "usersRegistrations": { "title": "User registrations", "description": "All sign-ups and account activity." },
+    "experts": { "title": "Expert profiles", "description": "Approved experts with bios + tags." },
+    "satisfactionSurvey": { "title": "Satisfaction survey", "description": "User satisfaction responses." },
+    "communityPosts": { "title": "Community posts", "description": "Forum posts + replies + reaction counts." },
+    "news": { "title": "News articles", "description": "All news items + publication state." },
+    "events": { "title": "Events", "description": "All events + attendance counts." },
+    "resources": { "title": "Resources", "description": "Resource library + view counts." },
+    "countryProfiles": { "title": "Country profiles", "description": "Profile editorial state per country." }
   }
 }

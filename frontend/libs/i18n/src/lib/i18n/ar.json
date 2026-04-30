@@ -337,5 +337,19 @@
     },
     "create": { "openButton": "قالب جديد", "title": "قالب إشعار جديد", "save": "إنشاء", "toast": "تم إنشاء القالب." },
     "edit": { "openButton": "تعديل", "title": "تعديل قالب الإشعار", "save": "حفظ", "toast": "تم تحديث القالب." }
+  },
+  "reports": {
+    "title": "التقارير",
+    "subtitle": "تنزيل CSV متدفق. حدّد نطاق التاريخ اختياريًا ثم اضغط تنزيل.",
+    "filter": { "from": "من", "to": "إلى" },
+    "download": { "openButton": "تنزيل CSV", "toast": "تم تنزيل التقرير." },
+    "usersRegistrations": { "title": "تسجيلات المستخدمين", "description": "جميع التسجيلات ونشاط الحسابات." },
+    "experts": { "title": "ملفات الخبراء", "description": "الخبراء المعتمدون مع السيرة والوسوم." },
+    "satisfactionSurvey": { "title": "استبيان الرضا", "description": "إجابات استبيان رضا المستخدمين." },
+    "communityPosts": { "title": "منشورات المجتمع", "description": "المنشورات والردود وعدد التفاعلات." },
+    "news": { "title": "مقالات الأخبار", "description": "جميع الأخبار وحالة النشر." },
+    "events": { "title": "الفعاليات", "description": "جميع الفعاليات وعدد المشاركين." },
+    "resources": { "title": "الموارد", "description": "مكتبة الموارد وعدد المشاهدات." },
+    "countryProfiles": { "title": "ملفات الدول", "description": "حالة تحرير ملفات الدول." }
   }
 }
