@@ -30,11 +30,13 @@
       </small>
     </header>
 
-    <div
-      class="cce-map-viewer__placeholder"
-      data-testid="graph-placeholder"
-    >
-      <p>{{ 'knowledgeMaps.viewerPlaceholder' | translate }}</p>
-    </div>
+    <cce-graph-canvas
+      [nodes]="tab.nodes"
+      [edges]="tab.edges"
+      [locale]="locale()"
+      [mirrored]="mirrored()"
+      [selectedId]="store.selectedNodeId()"
+      (nodeClick)="onNodeClick($event)"
+    />
   }
 </section>
