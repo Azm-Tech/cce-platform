@@ -20,6 +20,9 @@
     "@ngx-translate/http-loader": "16",
     "angular-auth-oidc-client": "18",
     "bootstrap": "5.3.3",
+    "cytoscape": "^3.30.0",
+    "cytoscape-svg": "^0.4.0",
+    "jspdf": "^2.5.1",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
   },
@@ -48,6 +51,7 @@
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
+    "@types/cytoscape": "^3.21.0",
     "@types/jest": "^29.5.12",
     "@types/node": "18.16.9",
     "@typescript-eslint/utils": "^8.19.0",
