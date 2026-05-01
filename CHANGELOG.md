@@ -4,6 +4,26 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [web-portal-v0.1.0] — 2026-05-01
+
+### Added
+- Public-facing Angular SPA at `apps/web-portal` consuming the Sub-4 External API. ~62 tasks across 9 phases. Anonymous-first browsing across Home, Knowledge Center, News, Events, Country profiles, Search, Community; authenticated flows for account (register, /me/profile read+edit, expert request, service rating), notifications drawer + bell badge with 60s unread-count poll, follows page + `[cceFollow]` directive backed by signal-cached `FollowsRegistryService`, community write (compose post dialog, inline reply form, 1-5 star rating, mark-as-answer for post authors).
+- BFF cookie auth without `angular-auth-oidc-client`. AuthService bootstraps via `/api/me`, tolerates 401 silently for anonymous users; signIn calls `window.location.assign('/auth/login?returnUrl=...')`. Production-grade `authGuard` with one-time cold-start refresh.
+- Three same-origin scoped HTTP interceptors (correlation-id, bff-credentials, server-error) — codified from day 1, with `isInternalUrl()` guard so cross-origin requests pass through untouched (mid-Sub-5 lesson absorbed).
+- Hybrid layout: `PortalShellComponent` with top horizontal nav (Header) + collapsible left filter rail per browse page. Bell-icon notifications dialog (right-aligned). RTL flips automatically.
+- Sub-7 placeholder entry-points: `/knowledge-maps`, `/interactive-city`, `/assistant` consume real endpoints today (`GET /api/knowledge-maps`, `GET /api/interactive-city/technologies`, `POST /api/assistant/query`) with "Coming in Sub-7" notices for the deferred UX.
+- Anonymous-friendly community write affordances: `cce-sign-in-cta` block replaces compose / reply / rate / mark-answer controls when not authenticated, with return-URL preservation.
+- Single-locale community content per post/reply (`content` + `locale`) with "in {{locale}}" badge when locale ≠ active LocaleService — cross-language threads are a feature.
+- 4 new ADRs (0039–0042): BFF cookie auth anonymous-first, hybrid layout, same-origin interceptors, anonymous write affordances.
+- 265 web-portal Jest tests across 60 suites; Playwright + axe-core smoke specs at `apps/web-portal-e2e/src/` (smoke, layout, knowledge-center, news-events, countries, search, account, notifications-follows, community).
+- Promoted from `apps/admin-cms` to `libs/ui-kit` in Phase 0.6: paged-table, error-formatter (`toFeatureError`), feedback (ToastService, ConfirmDialogService, ConfirmDialogComponent). Both apps now share the same primitives.
+- `i18n/{en,ar}.json` extended with `nav.*`, `header.*`, `footer.*`, `filter.*`, `search.*`, `searchType.*`, `errors.*` (added `retry`), `resources.*`, `news.*`, `events.*`, `countries.*` (public sub-keys merged with admin's existing block), `kapsarc.*`, `account.*`, `notifications.*` (renamed admin's `notifications.title` → `notifications.templatesTitle` to free the public-portal slot), `follows.*`, `community.*`, `knowledgeMaps.*`, `interactiveCity.*`, `assistant.*`. Full ar mirroring throughout.
+
+### Notes
+- Maps / City / Assistant ship as skeletons consuming real list endpoints; the full graph view, scenario builder, and conversational threading defer to Sub-7.
+- Phase 9 polish backlog (8 items) documented in `docs/web-portal-completion.md`: profile concurrency token, search hit linking for News/Pages, follow-chip + community author hydration, threaded replies, edit-own-reply, topic tree, real-time notification push, Lighthouse audit deferred to deployment verification.
+- Bundle-size budget bumped from 500kb/1mb to 1mb/1.5mb in Phase 7.6 after the MatDialog dependency for the notifications drawer pushed initial above the prior 1mb cap.
+
 ## [admin-cms-v0.1.0] — 2026-04-30
 
 ### Added
