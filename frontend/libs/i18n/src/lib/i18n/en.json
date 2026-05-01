@@ -559,7 +559,9 @@
   "knowledgeMaps": {
     "title": "Knowledge maps",
     "comingSoon": "Detailed graph view coming in Sub-7. Today: browse the available maps.",
-    "empty": "No knowledge maps available yet."
+    "empty": "No knowledge maps available yet.",
+    "notFound": "Knowledge map not found.",
+    "viewerPlaceholder": "Graph viewer mounts here once Phase 02 lands."
   },
   "interactiveCity": {
     "title": "Interactive city",
