@@ -58,5 +58,23 @@ export const appRoutes: Route[] = [
       import('./features/community/routes').then((m) => m.COMMUNITY_ROUTES),
     title: 'CCE — Community',
   },
+  {
+    path: 'knowledge-maps',
+    loadChildren: () =>
+      import('./features/knowledge-maps/routes').then((m) => m.KNOWLEDGE_MAPS_ROUTES),
+    title: 'CCE — Knowledge Maps',
+  },
+  {
+    path: 'interactive-city',
+    loadChildren: () =>
+      import('./features/interactive-city/routes').then((m) => m.INTERACTIVE_CITY_ROUTES),
+    title: 'CCE — Interactive City',
+  },
+  {
+    path: 'assistant',
+    loadChildren: () =>
+      import('./features/assistant/routes').then((m) => m.ASSISTANT_ROUTES),
+    title: 'CCE — Assistant',
+  },
   { path: 'health', component: HealthPage, title: 'CCE — Health' },
 ];

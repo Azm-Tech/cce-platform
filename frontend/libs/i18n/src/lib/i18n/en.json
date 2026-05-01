@@ -556,6 +556,24 @@
       "toast": "Marked as accepted answer."
     }
   },
+  "knowledgeMaps": {
+    "title": "Knowledge maps",
+    "comingSoon": "Detailed graph view coming in Sub-7. Today: browse the available maps.",
+    "empty": "No knowledge maps available yet."
+  },
+  "interactiveCity": {
+    "title": "Interactive city",
+    "comingSoon": "Scenario builder coming in Sub-7. Today: browse available technologies.",
+    "empty": "No technologies catalogued yet."
+  },
+  "assistant": {
+    "title": "Assistant",
+    "comingSoon": "Conversational threading + streaming + citations coming in Sub-7.",
+    "inputPlaceholder": "Ask a question…",
+    "sendButton": "Send",
+    "thinking": "Thinking…",
+    "emptyReply": "No response yet."
+  },
   "reports": {
     "title": "Reports",
     "subtitle": "Streaming CSV downloads. Apply an optional date range and click Download.",

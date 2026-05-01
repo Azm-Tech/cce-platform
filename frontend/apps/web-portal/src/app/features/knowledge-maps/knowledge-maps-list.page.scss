@@ -1,0 +1,45 @@
+:host { display: block; padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+
+.cce-km-list__title { margin: 0 0 1rem 0; }
+
+.cce-km-list__notice {
+  background: #e3f2fd;
+  color: #0d47a1;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cce-km-list__error {
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cce-km-list__empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cce-km-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.cce-km-list__card mat-icon[mat-card-avatar] {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #1565c0;
+}
