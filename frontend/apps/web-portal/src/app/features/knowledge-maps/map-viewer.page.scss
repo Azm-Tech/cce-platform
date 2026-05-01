@@ -36,17 +36,19 @@
   small { color: rgba(0, 0, 0, 0.55); }
 }
 
-.cce-map-viewer__placeholder {
-  background: rgba(0, 0, 0, 0.02);
-  border: 2px dashed rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: rgba(0, 0, 0, 0.55);
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.cce-map-viewer__split {
+  display: grid;
+  gap: 1rem;
 
-  p { margin: 0; font-size: 0.95rem; }
+  /* Single column on mobile (panel falls below the canvas as a sheet). */
+  grid-template-columns: 1fr;
+
+  /* Side-by-side on desktop: canvas grows, panel fixed-width. */
+  @media (min-width: 720px) {
+    grid-template-columns: 1fr 380px;
+    align-items: start;
+  }
 }
+
+.cce-map-viewer__canvas { min-width: 0; }
+.cce-map-viewer__panel  { min-width: 0; }

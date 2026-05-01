@@ -30,13 +30,26 @@
       </small>
     </header>
 
-    <cce-graph-canvas
-      [nodes]="tab.nodes"
-      [edges]="tab.edges"
-      [locale]="locale()"
-      [mirrored]="mirrored()"
-      [selectedId]="store.selectedNodeId()"
-      (nodeClick)="onNodeClick($event)"
-    />
+    <div class="cce-map-viewer__split">
+      <cce-graph-canvas
+        class="cce-map-viewer__canvas"
+        [nodes]="tab.nodes"
+        [edges]="tab.edges"
+        [locale]="locale()"
+        [mirrored]="mirrored()"
+        [selectedId]="store.selectedNodeId()"
+        (nodeClick)="onNodeClick($event)"
+      />
+
+      <cce-node-detail-panel
+        class="cce-map-viewer__panel"
+        [node]="store.selectedNode()"
+        [outboundEdges]="outboundEdges()"
+        [outboundTargets]="outboundTargets()"
+        [locale]="locale()"
+        (closed)="onPanelClosed()"
+        (nodeSelected)="onPanelNodeSelected($event)"
+      />
+    </div>
   }
 </section>

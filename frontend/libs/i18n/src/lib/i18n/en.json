@@ -561,7 +561,23 @@
     "comingSoon": "Detailed graph view coming in Sub-7. Today: browse the available maps.",
     "empty": "No knowledge maps available yet.",
     "notFound": "Knowledge map not found.",
-    "viewerPlaceholder": "Graph viewer mounts here once Phase 02 lands."
+    "viewerPlaceholder": "Graph viewer mounts here once Phase 02 lands.",
+    "detail": {
+      "description": "Description",
+      "outboundEdges": "Outbound connections",
+      "noEdges": "No outbound connections.",
+      "close": "Close",
+      "nodeType": {
+        "Technology": "Technology",
+        "Sector": "Sector",
+        "SubTopic": "Subtopic"
+      },
+      "relationshipType": {
+        "ParentOf": "Parent of",
+        "RelatedTo": "Related to",
+        "RequiredBy": "Required by"
+      }
+    }
   },
   "interactiveCity": {
     "title": "Interactive city",
