@@ -6,4 +6,8 @@ export const KNOWLEDGE_MAPS_ROUTES: Routes = [
     loadComponent: () =>
       import('./knowledge-maps-list.page').then((m) => m.KnowledgeMapsListPage),
   },
+  {
+    path: ':id',
+    loadComponent: () => import('./map-viewer.page').then((m) => m.MapViewerPage),
+  },
 ];
