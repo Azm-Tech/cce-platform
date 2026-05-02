@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +14,7 @@ import type { KnowledgeMap } from './knowledge-maps.types';
   selector: 'cce-knowledge-maps-list-page',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, RouterLink,
     MatButtonModule, MatCardModule, MatIconModule, MatProgressBarModule,
     TranslateModule,
   ],

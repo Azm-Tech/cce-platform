@@ -57,6 +57,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
   @ViewChild('host', { static: true }) hostRef!: ElementRef<HTMLDivElement>;
 
   private cy: Core | null = null;
+  /** Set when the elements rebuild needs a fresh fit (initial mount, locale flip). */
+  private shouldRefit = false;
 
   /** Computed elements — recomputes when nodes / edges / locale / mirrored change. */
   private readonly elements = computed(() =>
@@ -72,13 +74,30 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
       const els = this.elements();
       const cy = this.cy;
       if (!cy) return;
-      // Preserve viewport state across rebuilds so users don't lose place.
+      // Preserve viewport state across rebuilds so users don't lose place
+      // — but only after the user has interacted (post-initial-fit).
       const zoom = cy.zoom();
       const pan = cy.pan();
       cy.elements().remove();
       cy.add(els);
-      cy.zoom(zoom);
-      cy.pan(pan);
+      // If this rebuild happened because the locale flipped (mirrored
+      // changes x signs), the previous pan/zoom is no longer valid —
+      // re-fit so the graph stays in view.
+      if (this.shouldRefit) {
+        cy.fit(undefined, 40);
+        this.shouldRefit = false;
+      } else {
+        cy.zoom(zoom);
+        cy.pan(pan);
+      }
+    });
+
+    // Re-fit on locale flip — the elements rebuild swaps x signs and
+    // would otherwise leave the user staring at empty canvas.
+    effect(() => {
+      // Subscribe to mirrored() so this effect fires on locale flips.
+      this.mirrored();
+      this.shouldRefit = true;
     });
 
     // ─── Effect 2: apply selectedId input ───
@@ -136,6 +155,11 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
     // Apply current input states post-mount.
     this.applySelectedId(untracked(() => this.selectedId()));
     this.applyDimmedIds(untracked(() => this.dimmedIds()));
+
+    // Fit the viewport to the rendered graph with a small padding so users
+    // don't have to manually zoom in. Without this, server-driven layouts
+    // tend to render compressed in a corner of the canvas.
+    this.cy.fit(undefined, 40);
   }
 
   ngOnDestroy(): void {

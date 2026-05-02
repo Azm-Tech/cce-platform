@@ -58,7 +58,10 @@
     "countries": "الدول",
     "notifications": "الإشعارات",
     "reports": "التقارير",
-    "audit": "سجل التدقيق"
+    "audit": "سجل التدقيق",
+    "knowledgeMaps": "الخرائط المعرفية",
+    "interactiveCity": "المدينة التفاعلية",
+    "assistant": "المساعد"
   },
   "header": {
     "signIn": "تسجيل الدخول",
@@ -132,7 +135,11 @@
     "saved": "تم تحديث الأدوار."
   },
   "experts": {
-    "status": { "Pending": "قيد الانتظار", "Approved": "معتمد", "Rejected": "مرفوض" },
+    "status": {
+      "Pending": "قيد الانتظار",
+      "Approved": "معتمد",
+      "Rejected": "مرفوض"
+    },
     "requests": {
       "title": "طلبات الخبراء",
       "col": {
@@ -142,8 +149,14 @@
         "status": "الحالة",
         "actions": "الإجراءات"
       },
-      "filter": { "status": "الحالة", "allStatuses": "كل الحالات" },
-      "action": { "approve": "موافقة", "reject": "رفض" }
+      "filter": {
+        "status": "الحالة",
+        "allStatuses": "كل الحالات"
+      },
+      "action": {
+        "approve": "موافقة",
+        "reject": "رفض"
+      }
     },
     "approve": {
       "title": "اعتماد طلب الخبير",
@@ -163,7 +176,9 @@
       "title": "ملفات الخبراء",
       "viewProfilesButton": "عرض الملفات",
       "viewRequestsButton": "عرض الطلبات",
-      "filter": { "search": "بحث بالمستخدم" },
+      "filter": {
+        "search": "بحث بالمستخدم"
+      },
       "col": {
         "user": "المستخدم",
         "titleAr": "اللقب (عربي)",
@@ -175,7 +190,9 @@
   },
   "stateRep": {
     "title": "تعيينات ممثلي الدول",
-    "filter": { "activeOnly": "النشطة فقط" },
+    "filter": {
+      "activeOnly": "النشطة فقط"
+    },
     "col": {
       "user": "المستخدم",
       "country": "الدولة",
@@ -283,76 +300,267 @@
     "notesAr": "ملاحظات الإدارة (عربي)",
     "notesEn": "ملاحظات الإدارة (إنجليزي)",
     "invalidGuid": "أدخل معرّفًا صالحًا.",
-    "approve": { "action": "موافقة", "toast": "تمت الموافقة على الطلب." },
-    "reject": { "action": "رفض", "toast": "تم رفض الطلب.", "notesRequired": "كلتا الملاحظتين العربية والإنجليزية مطلوبة عند الرفض." }
+    "approve": {
+      "action": "موافقة",
+      "toast": "تمت الموافقة على الطلب."
+    },
+    "reject": {
+      "action": "رفض",
+      "toast": "تم رفض الطلب.",
+      "notesRequired": "كلتا الملاحظتين العربية والإنجليزية مطلوبة عند الرفض."
+    }
   },
   "news": {
     "title": "الأخبار",
-    "col": { "title": "العنوان", "slug": "الرابط", "published": "منشور", "publishedOn": "تاريخ النشر", "actions": "الإجراءات" },
-    "filter": { "search": "بحث", "published": "الحالة", "all": "الكل", "publishedOnly": "منشور", "draft": "مسودة" },
-    "field": { "titleAr": "العنوان (عربي)", "titleEn": "العنوان (إنجليزي)", "contentAr": "المحتوى (عربي)", "contentEn": "المحتوى (إنجليزي)", "slug": "الرابط", "featuredImageUrl": "رابط الصورة المميزة" },
-    "create": { "openButton": "خبر جديد", "title": "خبر جديد", "save": "إنشاء", "toast": "تم إنشاء الخبر." },
-    "edit": { "openButton": "تعديل", "title": "تعديل الخبر", "save": "حفظ", "toast": "تم تحديث الخبر." },
-    "publish": { "openButton": "نشر", "title": "نشر الخبر", "message": "هل تريد نشر هذا الخبر؟ سيصبح ظاهرًا للجميع فورًا.", "confirm": "نشر", "toast": "تم نشر الخبر." },
-    "delete": { "openButton": "حذف", "title": "حذف الخبر", "message": "هل تريد حذف هذا الخبر؟ لا يمكن التراجع.", "confirm": "حذف", "toast": "تم حذف الخبر." },
+    "col": {
+      "title": "العنوان",
+      "slug": "الرابط",
+      "published": "منشور",
+      "publishedOn": "تاريخ النشر",
+      "actions": "الإجراءات"
+    },
+    "filter": {
+      "search": "بحث",
+      "published": "الحالة",
+      "all": "الكل",
+      "publishedOnly": "منشور",
+      "draft": "مسودة"
+    },
+    "field": {
+      "titleAr": "العنوان (عربي)",
+      "titleEn": "العنوان (إنجليزي)",
+      "contentAr": "المحتوى (عربي)",
+      "contentEn": "المحتوى (إنجليزي)",
+      "slug": "الرابط",
+      "featuredImageUrl": "رابط الصورة المميزة"
+    },
+    "create": {
+      "openButton": "خبر جديد",
+      "title": "خبر جديد",
+      "save": "إنشاء",
+      "toast": "تم إنشاء الخبر."
+    },
+    "edit": {
+      "openButton": "تعديل",
+      "title": "تعديل الخبر",
+      "save": "حفظ",
+      "toast": "تم تحديث الخبر."
+    },
+    "publish": {
+      "openButton": "نشر",
+      "title": "نشر الخبر",
+      "message": "هل تريد نشر هذا الخبر؟ سيصبح ظاهرًا للجميع فورًا.",
+      "confirm": "نشر",
+      "toast": "تم نشر الخبر."
+    },
+    "delete": {
+      "openButton": "حذف",
+      "title": "حذف الخبر",
+      "message": "هل تريد حذف هذا الخبر؟ لا يمكن التراجع.",
+      "confirm": "حذف",
+      "toast": "تم حذف الخبر."
+    },
     "empty": "لا توجد أخبار منشورة بعد.",
     "back": "العودة إلى الأخبار",
     "publishedOn": "نُشر في",
-    "featured": { "toggle": "عرض المميزة فقط" }
+    "featured": {
+      "toggle": "عرض المميزة فقط"
+    }
   },
   "events": {
     "title": "الفعاليات",
-    "col": { "title": "العنوان", "startsOn": "البداية", "endsOn": "النهاية", "location": "المكان", "actions": "الإجراءات" },
-    "filter": { "search": "بحث", "from": "من", "to": "إلى" },
-    "field": { "titleAr": "العنوان (عربي)", "titleEn": "العنوان (إنجليزي)", "descriptionAr": "الوصف (عربي)", "descriptionEn": "الوصف (إنجليزي)", "startsOn": "تاريخ البدء", "endsOn": "تاريخ الانتهاء", "locationAr": "المكان (عربي)", "locationEn": "المكان (إنجليزي)", "onlineMeetingUrl": "رابط الاجتماع الإلكتروني", "featuredImageUrl": "رابط الصورة المميزة" },
-    "create": { "openButton": "فعالية جديدة", "title": "فعالية جديدة", "save": "إنشاء", "toast": "تم إنشاء الفعالية." },
-    "edit": { "openButton": "تعديل", "title": "تعديل الفعالية", "save": "حفظ", "toast": "تم تحديث الفعالية." },
-    "reschedule": { "openButton": "إعادة جدولة", "title": "إعادة جدولة الفعالية", "save": "إعادة جدولة", "toast": "تم تعديل المواعيد." },
-    "delete": { "openButton": "حذف", "title": "حذف الفعالية", "message": "هل تريد حذف هذه الفعالية؟ سيتم إخطار المسجلين.", "confirm": "حذف", "toast": "تم حذف الفعالية." },
+    "col": {
+      "title": "العنوان",
+      "startsOn": "البداية",
+      "endsOn": "النهاية",
+      "location": "المكان",
+      "actions": "الإجراءات"
+    },
+    "filter": {
+      "search": "بحث",
+      "from": "من",
+      "to": "إلى"
+    },
+    "field": {
+      "titleAr": "العنوان (عربي)",
+      "titleEn": "العنوان (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "startsOn": "تاريخ البدء",
+      "endsOn": "تاريخ الانتهاء",
+      "locationAr": "المكان (عربي)",
+      "locationEn": "المكان (إنجليزي)",
+      "onlineMeetingUrl": "رابط الاجتماع الإلكتروني",
+      "featuredImageUrl": "رابط الصورة المميزة"
+    },
+    "create": {
+      "openButton": "فعالية جديدة",
+      "title": "فعالية جديدة",
+      "save": "إنشاء",
+      "toast": "تم إنشاء الفعالية."
+    },
+    "edit": {
+      "openButton": "تعديل",
+      "title": "تعديل الفعالية",
+      "save": "حفظ",
+      "toast": "تم تحديث الفعالية."
+    },
+    "reschedule": {
+      "openButton": "إعادة جدولة",
+      "title": "إعادة جدولة الفعالية",
+      "save": "إعادة جدولة",
+      "toast": "تم تعديل المواعيد."
+    },
+    "delete": {
+      "openButton": "حذف",
+      "title": "حذف الفعالية",
+      "message": "هل تريد حذف هذه الفعالية؟ سيتم إخطار المسجلين.",
+      "confirm": "حذف",
+      "toast": "تم حذف الفعالية."
+    },
     "empty": "لا توجد فعاليات قادمة.",
     "back": "العودة إلى الفعاليات",
     "startsOn": "البداية",
     "endsOn": "النهاية",
-    "location": { "online": "عبر الإنترنت", "tba": "المكان قيد التحديد" },
-    "export": { "openButton": "إضافة إلى التقويم", "toast": "تم تنزيل دعوة التقويم." }
+    "location": {
+      "online": "عبر الإنترنت",
+      "tba": "المكان قيد التحديد"
+    },
+    "export": {
+      "openButton": "إضافة إلى التقويم",
+      "toast": "تم تنزيل دعوة التقويم."
+    }
   },
   "pages": {
     "title": "الصفحات",
-    "col": { "slug": "الرابط", "pageType": "النوع", "title": "العنوان", "actions": "الإجراءات" },
-    "filter": { "search": "بحث" },
-    "field": { "slug": "الرابط", "pageType": "نوع الصفحة", "titleAr": "العنوان (عربي)", "titleEn": "العنوان (إنجليزي)", "contentAr": "المحتوى (عربي)", "contentEn": "المحتوى (إنجليزي)" },
-    "create": { "openButton": "صفحة جديدة", "title": "صفحة جديدة", "save": "إنشاء", "toast": "تم إنشاء الصفحة." },
-    "edit": { "openButton": "تعديل", "title": "تعديل الصفحة", "save": "حفظ", "toast": "تم تحديث الصفحة." },
-    "delete": { "openButton": "حذف", "title": "حذف الصفحة", "message": "هل تريد حذف هذه الصفحة؟ لا يمكن التراجع.", "confirm": "حذف", "toast": "تم حذف الصفحة." }
+    "col": {
+      "slug": "الرابط",
+      "pageType": "النوع",
+      "title": "العنوان",
+      "actions": "الإجراءات"
+    },
+    "filter": {
+      "search": "بحث"
+    },
+    "field": {
+      "slug": "الرابط",
+      "pageType": "نوع الصفحة",
+      "titleAr": "العنوان (عربي)",
+      "titleEn": "العنوان (إنجليزي)",
+      "contentAr": "المحتوى (عربي)",
+      "contentEn": "المحتوى (إنجليزي)"
+    },
+    "create": {
+      "openButton": "صفحة جديدة",
+      "title": "صفحة جديدة",
+      "save": "إنشاء",
+      "toast": "تم إنشاء الصفحة."
+    },
+    "edit": {
+      "openButton": "تعديل",
+      "title": "تعديل الصفحة",
+      "save": "حفظ",
+      "toast": "تم تحديث الصفحة."
+    },
+    "delete": {
+      "openButton": "حذف",
+      "title": "حذف الصفحة",
+      "message": "هل تريد حذف هذه الصفحة؟ لا يمكن التراجع.",
+      "confirm": "حذف",
+      "toast": "تم حذف الصفحة."
+    }
   },
   "homepage": {
     "title": "أقسام الصفحة الرئيسية",
-    "field": { "sectionType": "نوع القسم", "contentAr": "المحتوى (عربي)", "contentEn": "المحتوى (إنجليزي)", "isActive": "نشط" },
-    "create": { "title": "قسم جديد", "save": "إضافة قسم", "toast": "تم إضافة القسم." },
-    "edit": { "toast": "تم تحديث القسم." },
-    "delete": { "title": "حذف القسم", "message": "هل تريد حذف هذا القسم؟", "confirm": "حذف", "toast": "تم حذف القسم." },
-    "reorder": { "toast": "تم تحديث الترتيب." }
+    "field": {
+      "sectionType": "نوع القسم",
+      "contentAr": "المحتوى (عربي)",
+      "contentEn": "المحتوى (إنجليزي)",
+      "isActive": "نشط"
+    },
+    "create": {
+      "title": "قسم جديد",
+      "save": "إضافة قسم",
+      "toast": "تم إضافة القسم."
+    },
+    "edit": {
+      "toast": "تم تحديث القسم."
+    },
+    "delete": {
+      "title": "حذف القسم",
+      "message": "هل تريد حذف هذا القسم؟",
+      "confirm": "حذف",
+      "toast": "تم حذف القسم."
+    },
+    "reorder": {
+      "toast": "تم تحديث الترتيب."
+    }
   },
   "taxonomies": {
-    "col": { "name": "الاسم", "slug": "الرابط", "order": "الترتيب", "active": "نشط", "actions": "الإجراءات" },
+    "col": {
+      "name": "الاسم",
+      "slug": "الرابط",
+      "order": "الترتيب",
+      "active": "نشط",
+      "actions": "الإجراءات"
+    },
     "field": {
-      "nameAr": "الاسم (عربي)", "nameEn": "الاسم (إنجليزي)",
-      "descriptionAr": "الوصف (عربي)", "descriptionEn": "الوصف (إنجليزي)",
-      "slug": "الرابط", "parentId": "الأب (اختياري)",
-      "iconUrl": "رابط الأيقونة (اختياري)", "orderIndex": "ترتيب", "isActive": "نشط"
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "slug": "الرابط",
+      "parentId": "الأب (اختياري)",
+      "iconUrl": "رابط الأيقونة (اختياري)",
+      "orderIndex": "ترتيب",
+      "isActive": "نشط"
     },
     "category": {
       "title": "تصنيفات الموارد",
-      "create": { "openButton": "تصنيف جديد", "title": "تصنيف جديد", "save": "إنشاء", "toast": "تم إنشاء التصنيف." },
-      "edit": { "openButton": "تعديل", "title": "تعديل التصنيف", "save": "حفظ", "toast": "تم تحديث التصنيف." },
-      "delete": { "openButton": "حذف", "title": "حذف التصنيف", "message": "هل تريد حذف هذا التصنيف؟ ستظل الموارد المرتبطة به دون تصنيف.", "confirm": "حذف", "toast": "تم حذف التصنيف." }
+      "create": {
+        "openButton": "تصنيف جديد",
+        "title": "تصنيف جديد",
+        "save": "إنشاء",
+        "toast": "تم إنشاء التصنيف."
+      },
+      "edit": {
+        "openButton": "تعديل",
+        "title": "تعديل التصنيف",
+        "save": "حفظ",
+        "toast": "تم تحديث التصنيف."
+      },
+      "delete": {
+        "openButton": "حذف",
+        "title": "حذف التصنيف",
+        "message": "هل تريد حذف هذا التصنيف؟ ستظل الموارد المرتبطة به دون تصنيف.",
+        "confirm": "حذف",
+        "toast": "تم حذف التصنيف."
+      }
     },
     "topic": {
       "title": "المواضيع",
-      "filter": { "search": "بحث" },
-      "create": { "openButton": "موضوع جديد", "title": "موضوع جديد", "save": "إنشاء", "toast": "تم إنشاء الموضوع." },
-      "edit": { "openButton": "تعديل", "title": "تعديل الموضوع", "save": "حفظ", "toast": "تم تحديث الموضوع." },
-      "delete": { "openButton": "حذف", "title": "حذف الموضوع", "message": "هل تريد حذف هذا الموضوع؟ سيفقد المحتوى المرتبط وسمه.", "confirm": "حذف", "toast": "تم حذف الموضوع." }
+      "filter": {
+        "search": "بحث"
+      },
+      "create": {
+        "openButton": "موضوع جديد",
+        "title": "موضوع جديد",
+        "save": "إنشاء",
+        "toast": "تم إنشاء الموضوع."
+      },
+      "edit": {
+        "openButton": "تعديل",
+        "title": "تعديل الموضوع",
+        "save": "حفظ",
+        "toast": "تم تحديث الموضوع."
+      },
+      "delete": {
+        "openButton": "حذف",
+        "title": "حذف الموضوع",
+        "message": "هل تريد حذف هذا الموضوع؟ سيفقد المحتوى المرتبط وسمه.",
+        "confirm": "حذف",
+        "toast": "تم حذف الموضوع."
+      }
     }
   },
   "communityModeration": {
@@ -378,21 +586,40 @@
   },
   "countries": {
     "title": "الدول",
-    "search": { "placeholder": "ابحث في الدول…" },
+    "search": {
+      "placeholder": "ابحث في الدول…"
+    },
     "empty": "لا توجد دول متاحة.",
     "back": "العودة إلى الدول",
     "notFound": "لم يتم العثور على الدولة.",
-    "filter": { "search": "بحث" },
-    "col": { "flag": "العلم", "iso": "ISO", "name": "الاسم", "region": "المنطقة", "active": "نشط", "actions": "الإجراءات" },
-    "field": {
-      "nameAr": "الاسم (عربي)", "nameEn": "الاسم (إنجليزي)",
-      "regionAr": "المنطقة (عربي)", "regionEn": "المنطقة (إنجليزي)",
-      "isActive": "نشط",
-      "descriptionAr": "الوصف (عربي)", "descriptionEn": "الوصف (إنجليزي)",
-      "keyInitiativesAr": "المبادرات الرئيسية (عربي)", "keyInitiativesEn": "المبادرات الرئيسية (إنجليزي)",
-      "contactInfoAr": "بيانات التواصل (عربي)", "contactInfoEn": "بيانات التواصل (إنجليزي)"
+    "filter": {
+      "search": "بحث"
     },
-    "edit": { "save": "حفظ", "toast": "تم تحديث بيانات الدولة." },
+    "col": {
+      "flag": "العلم",
+      "iso": "ISO",
+      "name": "الاسم",
+      "region": "المنطقة",
+      "active": "نشط",
+      "actions": "الإجراءات"
+    },
+    "field": {
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "regionAr": "المنطقة (عربي)",
+      "regionEn": "المنطقة (إنجليزي)",
+      "isActive": "نشط",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "keyInitiativesAr": "المبادرات الرئيسية (عربي)",
+      "keyInitiativesEn": "المبادرات الرئيسية (إنجليزي)",
+      "contactInfoAr": "بيانات التواصل (عربي)",
+      "contactInfoEn": "بيانات التواصل (إنجليزي)"
+    },
+    "edit": {
+      "save": "حفظ",
+      "toast": "تم تحديث بيانات الدولة."
+    },
     "detail": {
       "openButton": "تعديل",
       "back": "العودة إلى الدول",
@@ -443,7 +670,9 @@
       "editButton": "تعديل",
       "saveButton": "حفظ",
       "cancelButton": "إلغاء",
-      "toast": { "saved": "تم حفظ الملف الشخصي." }
+      "toast": {
+        "saved": "تم حفظ الملف الشخصي."
+      }
     },
     "knowledgeLevel": {
       "Beginner": "مبتدئ",
@@ -465,7 +694,9 @@
         "approved": "ملف الخبير الخاص بك مُفعّل.",
         "rejected": "تم رفض طلبك السابق: {{reason}}"
       },
-      "toast": { "submitted": "تم إرسال الطلب." }
+      "toast": {
+        "submitted": "تم إرسال الطلب."
+      }
     },
     "serviceRating": {
       "openButton": "قيّم هذه الصفحة",
@@ -473,7 +704,9 @@
       "commentLabel": "تعليق اختياري",
       "submitButton": "إرسال",
       "starLabel": "{{n}} من 5 نجوم",
-      "toast": { "thanks": "شكرًا على ملاحظاتك." }
+      "toast": {
+        "thanks": "شكرًا على ملاحظاتك."
+      }
     }
   },
   "notifications": {
@@ -490,16 +723,39 @@
       "Sms": "رسالة نصية",
       "InApp": "داخل التطبيق"
     },
-    "filter": { "channel": "القناة", "allChannels": "كل القنوات" },
-    "col": { "code": "الرمز", "channel": "القناة", "subject": "العنوان", "active": "نشط", "actions": "الإجراءات" },
-    "field": {
-      "code": "الرمز", "channel": "القناة",
-      "subjectAr": "العنوان (عربي)", "subjectEn": "العنوان (إنجليزي)",
-      "bodyAr": "النص (عربي)", "bodyEn": "النص (إنجليزي)",
-      "variableSchemaJson": "مخطط المتغيرات (JSON)", "isActive": "نشط"
+    "filter": {
+      "channel": "القناة",
+      "allChannels": "كل القنوات"
     },
-    "create": { "openButton": "قالب جديد", "title": "قالب إشعار جديد", "save": "إنشاء", "toast": "تم إنشاء القالب." },
-    "edit": { "openButton": "تعديل", "title": "تعديل قالب الإشعار", "save": "حفظ", "toast": "تم تحديث القالب." }
+    "col": {
+      "code": "الرمز",
+      "channel": "القناة",
+      "subject": "العنوان",
+      "active": "نشط",
+      "actions": "الإجراءات"
+    },
+    "field": {
+      "code": "الرمز",
+      "channel": "القناة",
+      "subjectAr": "العنوان (عربي)",
+      "subjectEn": "العنوان (إنجليزي)",
+      "bodyAr": "النص (عربي)",
+      "bodyEn": "النص (إنجليزي)",
+      "variableSchemaJson": "مخطط المتغيرات (JSON)",
+      "isActive": "نشط"
+    },
+    "create": {
+      "openButton": "قالب جديد",
+      "title": "قالب إشعار جديد",
+      "save": "إنشاء",
+      "toast": "تم إنشاء القالب."
+    },
+    "edit": {
+      "openButton": "تعديل",
+      "title": "تعديل قالب الإشعار",
+      "save": "حفظ",
+      "toast": "تم تحديث القالب."
+    }
   },
   "follows": {
     "title": "متابعاتي",
@@ -619,16 +875,46 @@
   "reports": {
     "title": "التقارير",
     "subtitle": "تنزيل CSV متدفق. حدّد نطاق التاريخ اختياريًا ثم اضغط تنزيل.",
-    "filter": { "from": "من", "to": "إلى" },
-    "download": { "openButton": "تنزيل CSV", "toast": "تم تنزيل التقرير." },
-    "usersRegistrations": { "title": "تسجيلات المستخدمين", "description": "جميع التسجيلات ونشاط الحسابات." },
-    "experts": { "title": "ملفات الخبراء", "description": "الخبراء المعتمدون مع السيرة والوسوم." },
-    "satisfactionSurvey": { "title": "استبيان الرضا", "description": "إجابات استبيان رضا المستخدمين." },
-    "communityPosts": { "title": "منشورات المجتمع", "description": "المنشورات والردود وعدد التفاعلات." },
-    "news": { "title": "مقالات الأخبار", "description": "جميع الأخبار وحالة النشر." },
-    "events": { "title": "الفعاليات", "description": "جميع الفعاليات وعدد المشاركين." },
-    "resources": { "title": "الموارد", "description": "مكتبة الموارد وعدد المشاهدات." },
-    "countryProfiles": { "title": "ملفات الدول", "description": "حالة تحرير ملفات الدول." }
+    "filter": {
+      "from": "من",
+      "to": "إلى"
+    },
+    "download": {
+      "openButton": "تنزيل CSV",
+      "toast": "تم تنزيل التقرير."
+    },
+    "usersRegistrations": {
+      "title": "تسجيلات المستخدمين",
+      "description": "جميع التسجيلات ونشاط الحسابات."
+    },
+    "experts": {
+      "title": "ملفات الخبراء",
+      "description": "الخبراء المعتمدون مع السيرة والوسوم."
+    },
+    "satisfactionSurvey": {
+      "title": "استبيان الرضا",
+      "description": "إجابات استبيان رضا المستخدمين."
+    },
+    "communityPosts": {
+      "title": "منشورات المجتمع",
+      "description": "المنشورات والردود وعدد التفاعلات."
+    },
+    "news": {
+      "title": "مقالات الأخبار",
+      "description": "جميع الأخبار وحالة النشر."
+    },
+    "events": {
+      "title": "الفعاليات",
+      "description": "جميع الفعاليات وعدد المشاركين."
+    },
+    "resources": {
+      "title": "الموارد",
+      "description": "مكتبة الموارد وعدد المشاهدات."
+    },
+    "countryProfiles": {
+      "title": "ملفات الدول",
+      "description": "حالة تحرير ملفات الدول."
+    }
   },
   "audit": {
     "title": "سجل التدقيق",

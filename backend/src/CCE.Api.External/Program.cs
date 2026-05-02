@@ -15,8 +15,18 @@ using CCE.Infrastructure;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serialize enums as their member names (e.g. "Sector") rather than the underlying int.
+// The TypeScript types in apps/web-portal already declare every enum field as a string union
+// (e.g. NodeType = 'Technology' | 'Sector' | 'SubTopic'), so without this converter the
+// Cytoscape stylesheet selectors and ListViewComponent grouping silently fail at runtime.
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+    opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services
     .AddApplication()

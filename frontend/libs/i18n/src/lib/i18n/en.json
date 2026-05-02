@@ -58,7 +58,10 @@
     "countries": "Countries",
     "notifications": "Notifications",
     "reports": "Reports",
-    "audit": "Audit log"
+    "audit": "Audit log",
+    "knowledgeMaps": "Knowledge maps",
+    "interactiveCity": "Interactive city",
+    "assistant": "Assistant"
   },
   "header": {
     "signIn": "Sign in",
@@ -132,7 +135,11 @@
     "saved": "Roles updated."
   },
   "experts": {
-    "status": { "Pending": "Pending", "Approved": "Approved", "Rejected": "Rejected" },
+    "status": {
+      "Pending": "Pending",
+      "Approved": "Approved",
+      "Rejected": "Rejected"
+    },
     "requests": {
       "title": "Expert requests",
       "col": {
@@ -142,8 +149,14 @@
         "status": "Status",
         "actions": "Actions"
       },
-      "filter": { "status": "Status", "allStatuses": "All statuses" },
-      "action": { "approve": "Approve", "reject": "Reject" }
+      "filter": {
+        "status": "Status",
+        "allStatuses": "All statuses"
+      },
+      "action": {
+        "approve": "Approve",
+        "reject": "Reject"
+      }
     },
     "approve": {
       "title": "Approve expert request",
@@ -163,7 +176,9 @@
       "title": "Expert profiles",
       "viewProfilesButton": "View profiles",
       "viewRequestsButton": "View requests",
-      "filter": { "search": "Search by user" },
+      "filter": {
+        "search": "Search by user"
+      },
       "col": {
         "user": "User",
         "titleAr": "Title (Arabic)",
@@ -175,7 +190,9 @@
   },
   "stateRep": {
     "title": "State-rep assignments",
-    "filter": { "activeOnly": "Active only" },
+    "filter": {
+      "activeOnly": "Active only"
+    },
     "col": {
       "user": "User",
       "country": "Country",
@@ -283,76 +300,267 @@
     "notesAr": "Admin notes (Arabic)",
     "notesEn": "Admin notes (English)",
     "invalidGuid": "Enter a valid GUID.",
-    "approve": { "action": "Approve", "toast": "Request approved." },
-    "reject": { "action": "Reject", "toast": "Request rejected.", "notesRequired": "Both Arabic and English notes are required to reject." }
+    "approve": {
+      "action": "Approve",
+      "toast": "Request approved."
+    },
+    "reject": {
+      "action": "Reject",
+      "toast": "Request rejected.",
+      "notesRequired": "Both Arabic and English notes are required to reject."
+    }
   },
   "news": {
     "title": "News",
-    "col": { "title": "Title", "slug": "Slug", "published": "Published", "publishedOn": "Published on", "actions": "Actions" },
-    "filter": { "search": "Search", "published": "Status", "all": "All", "publishedOnly": "Published", "draft": "Draft" },
-    "field": { "titleAr": "Title (Arabic)", "titleEn": "Title (English)", "contentAr": "Content (Arabic)", "contentEn": "Content (English)", "slug": "Slug", "featuredImageUrl": "Featured image URL" },
-    "create": { "openButton": "New article", "title": "New news article", "save": "Create", "toast": "News article created." },
-    "edit": { "openButton": "Edit", "title": "Edit news article", "save": "Save", "toast": "News article updated." },
-    "publish": { "openButton": "Publish", "title": "Publish article", "message": "Publish this article? It will become visible to all users immediately.", "confirm": "Publish", "toast": "News article published." },
-    "delete": { "openButton": "Delete", "title": "Delete article", "message": "Delete this article? This cannot be undone.", "confirm": "Delete", "toast": "News article deleted." },
+    "col": {
+      "title": "Title",
+      "slug": "Slug",
+      "published": "Published",
+      "publishedOn": "Published on",
+      "actions": "Actions"
+    },
+    "filter": {
+      "search": "Search",
+      "published": "Status",
+      "all": "All",
+      "publishedOnly": "Published",
+      "draft": "Draft"
+    },
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)",
+      "slug": "Slug",
+      "featuredImageUrl": "Featured image URL"
+    },
+    "create": {
+      "openButton": "New article",
+      "title": "New news article",
+      "save": "Create",
+      "toast": "News article created."
+    },
+    "edit": {
+      "openButton": "Edit",
+      "title": "Edit news article",
+      "save": "Save",
+      "toast": "News article updated."
+    },
+    "publish": {
+      "openButton": "Publish",
+      "title": "Publish article",
+      "message": "Publish this article? It will become visible to all users immediately.",
+      "confirm": "Publish",
+      "toast": "News article published."
+    },
+    "delete": {
+      "openButton": "Delete",
+      "title": "Delete article",
+      "message": "Delete this article? This cannot be undone.",
+      "confirm": "Delete",
+      "toast": "News article deleted."
+    },
     "empty": "No news articles published yet.",
     "back": "Back to news",
     "publishedOn": "Published",
-    "featured": { "toggle": "Show featured only" }
+    "featured": {
+      "toggle": "Show featured only"
+    }
   },
   "events": {
     "title": "Events",
-    "col": { "title": "Title", "startsOn": "Starts", "endsOn": "Ends", "location": "Location", "actions": "Actions" },
-    "filter": { "search": "Search", "from": "From", "to": "To" },
-    "field": { "titleAr": "Title (Arabic)", "titleEn": "Title (English)", "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)", "startsOn": "Starts on", "endsOn": "Ends on", "locationAr": "Location (Arabic)", "locationEn": "Location (English)", "onlineMeetingUrl": "Online meeting URL", "featuredImageUrl": "Featured image URL" },
-    "create": { "openButton": "New event", "title": "New event", "save": "Create", "toast": "Event created." },
-    "edit": { "openButton": "Edit", "title": "Edit event", "save": "Save", "toast": "Event updated." },
-    "reschedule": { "openButton": "Reschedule", "title": "Reschedule event", "save": "Reschedule", "toast": "Event rescheduled." },
-    "delete": { "openButton": "Delete", "title": "Delete event", "message": "Delete this event? Registered attendees will be notified.", "confirm": "Delete", "toast": "Event deleted." },
+    "col": {
+      "title": "Title",
+      "startsOn": "Starts",
+      "endsOn": "Ends",
+      "location": "Location",
+      "actions": "Actions"
+    },
+    "filter": {
+      "search": "Search",
+      "from": "From",
+      "to": "To"
+    },
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "startsOn": "Starts on",
+      "endsOn": "Ends on",
+      "locationAr": "Location (Arabic)",
+      "locationEn": "Location (English)",
+      "onlineMeetingUrl": "Online meeting URL",
+      "featuredImageUrl": "Featured image URL"
+    },
+    "create": {
+      "openButton": "New event",
+      "title": "New event",
+      "save": "Create",
+      "toast": "Event created."
+    },
+    "edit": {
+      "openButton": "Edit",
+      "title": "Edit event",
+      "save": "Save",
+      "toast": "Event updated."
+    },
+    "reschedule": {
+      "openButton": "Reschedule",
+      "title": "Reschedule event",
+      "save": "Reschedule",
+      "toast": "Event rescheduled."
+    },
+    "delete": {
+      "openButton": "Delete",
+      "title": "Delete event",
+      "message": "Delete this event? Registered attendees will be notified.",
+      "confirm": "Delete",
+      "toast": "Event deleted."
+    },
     "empty": "No events scheduled.",
     "back": "Back to events",
     "startsOn": "Starts",
     "endsOn": "Ends",
-    "location": { "online": "Online", "tba": "Location TBA" },
-    "export": { "openButton": "Add to calendar", "toast": "Calendar invite downloaded." }
+    "location": {
+      "online": "Online",
+      "tba": "Location TBA"
+    },
+    "export": {
+      "openButton": "Add to calendar",
+      "toast": "Calendar invite downloaded."
+    }
   },
   "pages": {
     "title": "Pages",
-    "col": { "slug": "Slug", "pageType": "Type", "title": "Title", "actions": "Actions" },
-    "filter": { "search": "Search" },
-    "field": { "slug": "Slug", "pageType": "Page type", "titleAr": "Title (Arabic)", "titleEn": "Title (English)", "contentAr": "Content (Arabic)", "contentEn": "Content (English)" },
-    "create": { "openButton": "New page", "title": "New page", "save": "Create", "toast": "Page created." },
-    "edit": { "openButton": "Edit", "title": "Edit page", "save": "Save", "toast": "Page updated." },
-    "delete": { "openButton": "Delete", "title": "Delete page", "message": "Delete this page? This cannot be undone.", "confirm": "Delete", "toast": "Page deleted." }
+    "col": {
+      "slug": "Slug",
+      "pageType": "Type",
+      "title": "Title",
+      "actions": "Actions"
+    },
+    "filter": {
+      "search": "Search"
+    },
+    "field": {
+      "slug": "Slug",
+      "pageType": "Page type",
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)"
+    },
+    "create": {
+      "openButton": "New page",
+      "title": "New page",
+      "save": "Create",
+      "toast": "Page created."
+    },
+    "edit": {
+      "openButton": "Edit",
+      "title": "Edit page",
+      "save": "Save",
+      "toast": "Page updated."
+    },
+    "delete": {
+      "openButton": "Delete",
+      "title": "Delete page",
+      "message": "Delete this page? This cannot be undone.",
+      "confirm": "Delete",
+      "toast": "Page deleted."
+    }
   },
   "homepage": {
     "title": "Homepage sections",
-    "field": { "sectionType": "Section type", "contentAr": "Content (Arabic)", "contentEn": "Content (English)", "isActive": "Active" },
-    "create": { "title": "New section", "save": "Add section", "toast": "Section added." },
-    "edit": { "toast": "Section updated." },
-    "delete": { "title": "Delete section", "message": "Delete this homepage section?", "confirm": "Delete", "toast": "Section deleted." },
-    "reorder": { "toast": "Section order updated." }
+    "field": {
+      "sectionType": "Section type",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)",
+      "isActive": "Active"
+    },
+    "create": {
+      "title": "New section",
+      "save": "Add section",
+      "toast": "Section added."
+    },
+    "edit": {
+      "toast": "Section updated."
+    },
+    "delete": {
+      "title": "Delete section",
+      "message": "Delete this homepage section?",
+      "confirm": "Delete",
+      "toast": "Section deleted."
+    },
+    "reorder": {
+      "toast": "Section order updated."
+    }
   },
   "taxonomies": {
-    "col": { "name": "Name", "slug": "Slug", "order": "Order", "active": "Active", "actions": "Actions" },
+    "col": {
+      "name": "Name",
+      "slug": "Slug",
+      "order": "Order",
+      "active": "Active",
+      "actions": "Actions"
+    },
     "field": {
-      "nameAr": "Name (Arabic)", "nameEn": "Name (English)",
-      "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)",
-      "slug": "Slug", "parentId": "Parent ID (optional)",
-      "iconUrl": "Icon URL (optional)", "orderIndex": "Order index", "isActive": "Active"
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "slug": "Slug",
+      "parentId": "Parent ID (optional)",
+      "iconUrl": "Icon URL (optional)",
+      "orderIndex": "Order index",
+      "isActive": "Active"
     },
     "category": {
       "title": "Resource categories",
-      "create": { "openButton": "New category", "title": "New category", "save": "Create", "toast": "Category created." },
-      "edit": { "openButton": "Edit", "title": "Edit category", "save": "Save", "toast": "Category updated." },
-      "delete": { "openButton": "Delete", "title": "Delete category", "message": "Delete this category? Any resources still attached to it will be orphaned.", "confirm": "Delete", "toast": "Category deleted." }
+      "create": {
+        "openButton": "New category",
+        "title": "New category",
+        "save": "Create",
+        "toast": "Category created."
+      },
+      "edit": {
+        "openButton": "Edit",
+        "title": "Edit category",
+        "save": "Save",
+        "toast": "Category updated."
+      },
+      "delete": {
+        "openButton": "Delete",
+        "title": "Delete category",
+        "message": "Delete this category? Any resources still attached to it will be orphaned.",
+        "confirm": "Delete",
+        "toast": "Category deleted."
+      }
     },
     "topic": {
       "title": "Topics",
-      "filter": { "search": "Search" },
-      "create": { "openButton": "New topic", "title": "New topic", "save": "Create", "toast": "Topic created." },
-      "edit": { "openButton": "Edit", "title": "Edit topic", "save": "Save", "toast": "Topic updated." },
-      "delete": { "openButton": "Delete", "title": "Delete topic", "message": "Delete this topic? Posts attached to it will lose their tag.", "confirm": "Delete", "toast": "Topic deleted." }
+      "filter": {
+        "search": "Search"
+      },
+      "create": {
+        "openButton": "New topic",
+        "title": "New topic",
+        "save": "Create",
+        "toast": "Topic created."
+      },
+      "edit": {
+        "openButton": "Edit",
+        "title": "Edit topic",
+        "save": "Save",
+        "toast": "Topic updated."
+      },
+      "delete": {
+        "openButton": "Delete",
+        "title": "Delete topic",
+        "message": "Delete this topic? Posts attached to it will lose their tag.",
+        "confirm": "Delete",
+        "toast": "Topic deleted."
+      }
     }
   },
   "communityModeration": {
@@ -378,21 +586,40 @@
   },
   "countries": {
     "title": "Countries",
-    "search": { "placeholder": "Search countries…" },
+    "search": {
+      "placeholder": "Search countries…"
+    },
     "empty": "No countries available.",
     "back": "Back to countries",
     "notFound": "Country not found.",
-    "filter": { "search": "Search" },
-    "col": { "flag": "Flag", "iso": "ISO", "name": "Name", "region": "Region", "active": "Active", "actions": "Actions" },
-    "field": {
-      "nameAr": "Name (Arabic)", "nameEn": "Name (English)",
-      "regionAr": "Region (Arabic)", "regionEn": "Region (English)",
-      "isActive": "Active",
-      "descriptionAr": "Description (Arabic)", "descriptionEn": "Description (English)",
-      "keyInitiativesAr": "Key initiatives (Arabic)", "keyInitiativesEn": "Key initiatives (English)",
-      "contactInfoAr": "Contact info (Arabic)", "contactInfoEn": "Contact info (English)"
+    "filter": {
+      "search": "Search"
     },
-    "edit": { "save": "Save", "toast": "Country updated." },
+    "col": {
+      "flag": "Flag",
+      "iso": "ISO",
+      "name": "Name",
+      "region": "Region",
+      "active": "Active",
+      "actions": "Actions"
+    },
+    "field": {
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "regionAr": "Region (Arabic)",
+      "regionEn": "Region (English)",
+      "isActive": "Active",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "keyInitiativesAr": "Key initiatives (Arabic)",
+      "keyInitiativesEn": "Key initiatives (English)",
+      "contactInfoAr": "Contact info (Arabic)",
+      "contactInfoEn": "Contact info (English)"
+    },
+    "edit": {
+      "save": "Save",
+      "toast": "Country updated."
+    },
     "detail": {
       "openButton": "Edit",
       "back": "Back to countries",
@@ -443,7 +670,9 @@
       "editButton": "Edit",
       "saveButton": "Save",
       "cancelButton": "Cancel",
-      "toast": { "saved": "Profile saved." }
+      "toast": {
+        "saved": "Profile saved."
+      }
     },
     "knowledgeLevel": {
       "Beginner": "Beginner",
@@ -465,7 +694,9 @@
         "approved": "Your expert profile is active.",
         "rejected": "Your previous request was declined: {{reason}}"
       },
-      "toast": { "submitted": "Request submitted." }
+      "toast": {
+        "submitted": "Request submitted."
+      }
     },
     "serviceRating": {
       "openButton": "Rate this page",
@@ -473,7 +704,9 @@
       "commentLabel": "Optional comment",
       "submitButton": "Submit",
       "starLabel": "{{n}} of 5 stars",
-      "toast": { "thanks": "Thanks for your feedback." }
+      "toast": {
+        "thanks": "Thanks for your feedback."
+      }
     }
   },
   "notifications": {
@@ -490,16 +723,39 @@
       "Sms": "SMS",
       "InApp": "In-app"
     },
-    "filter": { "channel": "Channel", "allChannels": "All channels" },
-    "col": { "code": "Code", "channel": "Channel", "subject": "Subject", "active": "Active", "actions": "Actions" },
-    "field": {
-      "code": "Code", "channel": "Channel",
-      "subjectAr": "Subject (Arabic)", "subjectEn": "Subject (English)",
-      "bodyAr": "Body (Arabic)", "bodyEn": "Body (English)",
-      "variableSchemaJson": "Variable schema (JSON)", "isActive": "Active"
+    "filter": {
+      "channel": "Channel",
+      "allChannels": "All channels"
     },
-    "create": { "openButton": "New template", "title": "New notification template", "save": "Create", "toast": "Template created." },
-    "edit": { "openButton": "Edit", "title": "Edit notification template", "save": "Save", "toast": "Template updated." }
+    "col": {
+      "code": "Code",
+      "channel": "Channel",
+      "subject": "Subject",
+      "active": "Active",
+      "actions": "Actions"
+    },
+    "field": {
+      "code": "Code",
+      "channel": "Channel",
+      "subjectAr": "Subject (Arabic)",
+      "subjectEn": "Subject (English)",
+      "bodyAr": "Body (Arabic)",
+      "bodyEn": "Body (English)",
+      "variableSchemaJson": "Variable schema (JSON)",
+      "isActive": "Active"
+    },
+    "create": {
+      "openButton": "New template",
+      "title": "New notification template",
+      "save": "Create",
+      "toast": "Template created."
+    },
+    "edit": {
+      "openButton": "Edit",
+      "title": "Edit notification template",
+      "save": "Save",
+      "toast": "Template updated."
+    }
   },
   "follows": {
     "title": "My follows",
@@ -619,16 +875,46 @@
   "reports": {
     "title": "Reports",
     "subtitle": "Streaming CSV downloads. Apply an optional date range and click Download.",
-    "filter": { "from": "From", "to": "To" },
-    "download": { "openButton": "Download CSV", "toast": "Report downloaded." },
-    "usersRegistrations": { "title": "User registrations", "description": "All sign-ups and account activity." },
-    "experts": { "title": "Expert profiles", "description": "Approved experts with bios + tags." },
-    "satisfactionSurvey": { "title": "Satisfaction survey", "description": "User satisfaction responses." },
-    "communityPosts": { "title": "Community posts", "description": "Forum posts + replies + reaction counts." },
-    "news": { "title": "News articles", "description": "All news items + publication state." },
-    "events": { "title": "Events", "description": "All events + attendance counts." },
-    "resources": { "title": "Resources", "description": "Resource library + view counts." },
-    "countryProfiles": { "title": "Country profiles", "description": "Profile editorial state per country." }
+    "filter": {
+      "from": "From",
+      "to": "To"
+    },
+    "download": {
+      "openButton": "Download CSV",
+      "toast": "Report downloaded."
+    },
+    "usersRegistrations": {
+      "title": "User registrations",
+      "description": "All sign-ups and account activity."
+    },
+    "experts": {
+      "title": "Expert profiles",
+      "description": "Approved experts with bios + tags."
+    },
+    "satisfactionSurvey": {
+      "title": "Satisfaction survey",
+      "description": "User satisfaction responses."
+    },
+    "communityPosts": {
+      "title": "Community posts",
+      "description": "Forum posts + replies + reaction counts."
+    },
+    "news": {
+      "title": "News articles",
+      "description": "All news items + publication state."
+    },
+    "events": {
+      "title": "Events",
+      "description": "All events + attendance counts."
+    },
+    "resources": {
+      "title": "Resources",
+      "description": "Resource library + view counts."
+    },
+    "countryProfiles": {
+      "title": "Country profiles",
+      "description": "Profile editorial state per country."
+    }
   },
   "audit": {
     "title": "Audit log",

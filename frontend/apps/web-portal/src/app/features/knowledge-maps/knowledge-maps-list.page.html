@@ -1,11 +1,6 @@
 <section class="cce-km-list">
   <h1 class="cce-km-list__title">{{ 'knowledgeMaps.title' | translate }}</h1>
 
-  <div class="cce-km-list__notice" role="status">
-    <mat-icon aria-hidden="true">info</mat-icon>
-    <span>{{ 'knowledgeMaps.comingSoon' | translate }}</span>
-  </div>
-
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
   @if (errorKind(); as kind) {
@@ -23,15 +18,21 @@
 
   <div class="cce-km-list__grid">
     @for (m of rows(); track m.id) {
-      <mat-card class="cce-km-list__card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar aria-hidden="true">account_tree</mat-icon>
-          <mat-card-title>{{ nameOf(m) }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ descriptionOf(m) }}</p>
-        </mat-card-content>
-      </mat-card>
+      <a
+        class="cce-km-list__card-link"
+        [routerLink]="['/knowledge-maps', m.id]"
+        [attr.aria-label]="nameOf(m)"
+      >
+        <mat-card class="cce-km-list__card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar aria-hidden="true">account_tree</mat-icon>
+            <mat-card-title>{{ nameOf(m) }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ descriptionOf(m) }}</p>
+          </mat-card-content>
+        </mat-card>
+      </a>
     }
   </div>
 </section>

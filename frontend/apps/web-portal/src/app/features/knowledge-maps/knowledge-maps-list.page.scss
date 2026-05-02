@@ -43,3 +43,22 @@
   height: 32px;
   color: #1565c0;
 }
+
+.cce-km-list__card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  outline-offset: 2px;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.cce-km-list__card-link:hover .cce-km-list__card,
+.cce-km-list__card-link:focus-visible .cce-km-list__card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.cce-km-list__card-link:focus-visible {
+  outline: 2px solid #1565c0;
+}
