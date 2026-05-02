@@ -144,4 +144,30 @@ describe('MapViewerStore', () => {
     expect(sut.activeId()).toBe('m1');
     expect(getMap).not.toHaveBeenCalled();
   });
+
+  it('dimmedIds is empty when no filter is active (no dimming on an unfiltered graph)', async () => {
+    await sut.openTab('m1');
+    expect(sut.searchTerm()).toBe('');
+    expect(sut.filters().size).toBe(0);
+    expect(sut.dimmedIds().size).toBe(0);
+    expect(sut.matchedIds().size).toBe(2); // both nodes match
+  });
+
+  it('search term narrows matchedIds and dims the rest', async () => {
+    await sut.openTab('m1');
+    sut.setSearch('Tech 1');
+    // N1 has nameEn='Tech 1', N2 has nameEn='Tech 2'
+    expect(sut.matchedIds().has('n1')).toBe(true);
+    expect(sut.matchedIds().has('n2')).toBe(false);
+    expect(sut.dimmedIds().has('n2')).toBe(true);
+    expect(sut.dimmedIds().has('n1')).toBe(false);
+  });
+
+  it('NodeType filter dims nodes outside the filter set', async () => {
+    await sut.openTab('m1');
+    // Both fixture nodes are Technology — filter to Sector should dim both.
+    sut.setFilters(['Sector']);
+    expect(sut.matchedIds().size).toBe(0);
+    expect(sut.dimmedIds().size).toBe(2);
+  });
 });

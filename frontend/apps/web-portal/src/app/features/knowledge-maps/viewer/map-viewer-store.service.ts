@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { KnowledgeMapsApiService } from '../knowledge-maps-api.service';
+import { nodeMatches } from '../lib/search';
 import type {
   KnowledgeMap,
   KnowledgeMapEdge,
@@ -68,6 +69,38 @@ export class MapViewerStore {
     return tab.nodes.find((n) => n.id === sid) ?? null;
   });
   readonly notFound = computed(() => this._errorKind() === 'not-found');
+
+  /** Set of node ids matching the current search term + filters in the active tab. */
+  readonly matchedIds = computed<ReadonlySet<string>>(() => {
+    const tab = this.activeTab();
+    if (!tab) return new Set();
+    const term = this._searchTerm();
+    const filters = this._filters();
+    const matched = new Set<string>();
+    for (const n of tab.nodes) {
+      if (nodeMatches(n, term, filters)) matched.add(n.id);
+    }
+    return matched;
+  });
+
+  /**
+   * Set of node ids that should be visually dimmed.
+   * Empty when no filter is active (term is whitespace AND no type
+   * filters), so an unfiltered graph never dims anything.
+   */
+  readonly dimmedIds = computed<ReadonlySet<string>>(() => {
+    const tab = this.activeTab();
+    if (!tab) return new Set();
+    if (!this._searchTerm().trim() && this._filters().size === 0) {
+      return new Set();
+    }
+    const matched = this.matchedIds();
+    const dimmed = new Set<string>();
+    for (const n of tab.nodes) {
+      if (!matched.has(n.id)) dimmed.add(n.id);
+    }
+    return dimmed;
+  });
 
   // ─── Actions ───
 
