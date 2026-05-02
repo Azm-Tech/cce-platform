@@ -1,1 +1,51 @@
-<!-- TODO Phase 02 -->
+<form class="cce-compose" (submit)="$event.preventDefault(); send()">
+  <div class="cce-compose__row">
+    <label class="cce-compose__label" for="cce-compose-input">
+      {{ 'assistant.compose.placeholder' | translate }}
+    </label>
+    <textarea
+      id="cce-compose-input"
+      class="cce-compose__textarea"
+      rows="1"
+      [formControl]="textControl"
+      [placeholder]="'assistant.compose.placeholder' | translate"
+      [maxlength]="maxLength"
+      (keydown)="onKeydown($event)"
+    ></textarea>
+
+    @if (streaming()) {
+      <button
+        type="button"
+        mat-flat-button
+        color="warn"
+        class="cce-compose__action"
+        [attr.aria-label]="'assistant.compose.cancelLabel' | translate"
+        (click)="cancel()"
+      >
+        <mat-icon>stop</mat-icon>
+        {{ 'assistant.compose.cancel' | translate }}
+      </button>
+    } @else {
+      <button
+        type="submit"
+        mat-flat-button
+        color="primary"
+        class="cce-compose__action"
+        [attr.aria-label]="'assistant.compose.sendLabel' | translate"
+        [disabled]="!canSend()"
+      >
+        <mat-icon>send</mat-icon>
+        {{ 'assistant.compose.send' | translate }}
+      </button>
+    }
+  </div>
+
+  @if (showCharCount()) {
+    <p class="cce-compose__count">
+      {{
+        'assistant.compose.charCount'
+          | translate: { count: value().length, max: maxLength }
+      }}
+    </p>
+  }
+</form>
