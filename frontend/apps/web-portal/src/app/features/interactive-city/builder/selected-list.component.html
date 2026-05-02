@@ -1,1 +1,46 @@
-<!-- TODO Phase 02 -->
+<section class="cce-selected" aria-labelledby="cce-selected-title">
+  <header class="cce-selected__header">
+    <h2 id="cce-selected-title" class="cce-selected__title">
+      {{ 'interactiveCity.selected.title' | translate: { count: count().size } }}
+    </h2>
+
+    <button
+      type="button"
+      mat-button
+      color="warn"
+      [disabled]="count().size === 0"
+      (click)="clearAll()"
+    >
+      {{ 'interactiveCity.selected.clear' | translate }}
+    </button>
+  </header>
+
+  @if (count().size === 0) {
+    <p class="cce-selected__empty">{{ 'interactiveCity.selected.empty' | translate }}</p>
+  } @else {
+    <ul class="cce-selected__list">
+      @for (t of selectedTechnologies(); track t.id) {
+        <li class="cce-selected__item">
+          <div class="cce-selected__item-meta">
+            <span class="cce-selected__item-name">{{ nameOf(t) }}</span>
+            <span class="cce-selected__item-stats">
+              {{ t.carbonImpactKgPerYear | number }}
+              {{ 'interactiveCity.totals.carbonUnit' | translate }}
+              ·
+              {{ t.costUsd | number }}
+              {{ 'interactiveCity.totals.costUnit' | translate }}
+            </span>
+          </div>
+          <button
+            type="button"
+            mat-icon-button
+            [attr.aria-label]="('interactiveCity.selected.remove' | translate) + ': ' + nameOf(t)"
+            (click)="remove(t.id)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>
