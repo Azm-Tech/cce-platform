@@ -30,6 +30,13 @@
       </small>
     </header>
 
+    <cce-search-and-filters
+      [searchTerm]="store.searchTerm()"
+      [filters]="store.filters()"
+      (searchTermChange)="onSearchTermChange($event)"
+      (filtersChange)="onFiltersChange($event)"
+    />
+
     <div class="cce-map-viewer__split">
       <cce-graph-canvas
         class="cce-map-viewer__canvas"
@@ -38,6 +45,7 @@
         [locale]="locale()"
         [mirrored]="mirrored()"
         [selectedId]="store.selectedNodeId()"
+        [dimmedIds]="store.dimmedIds()"
         (nodeClick)="onNodeClick($event)"
       />
 

@@ -562,6 +562,12 @@
     "empty": "No knowledge maps available yet.",
     "notFound": "Knowledge map not found.",
     "viewerPlaceholder": "Graph viewer mounts here once Phase 02 lands.",
+    "search": {
+      "placeholder": "Search nodes…"
+    },
+    "filter": {
+      "title": "Type"
+    },
     "detail": {
       "description": "Description",
       "outboundEdges": "Outbound connections",
