@@ -154,6 +154,11 @@ export class MapViewerPage implements OnInit {
     this.store.selectNode(id);
   }
 
+  /** GraphCanvas (selectionChange) handler — feeds the export multi-select. */
+  onSelectionChange(ids: ReadonlySet<string>): void {
+    this.store.setSelection(ids);
+  }
+
   /** NodeDetailPanel (closed) handler — clears selection. */
   onPanelClosed(): void {
     this.store.selectNode(null);

@@ -55,6 +55,7 @@
         [selectedId]="store.selectedNodeId()"
         [dimmedIds]="store.dimmedIds()"
         (nodeClick)="onNodeClick($event)"
+        (selectionChange)="onSelectionChange($event)"
       />
 
       <cce-node-detail-panel
