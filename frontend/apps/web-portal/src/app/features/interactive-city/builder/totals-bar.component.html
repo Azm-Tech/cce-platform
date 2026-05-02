@@ -1,1 +1,60 @@
-<!-- TODO Phase 03 -->
+<section class="cce-totals-bar" aria-label="Scenario totals">
+  <div class="cce-totals-bar__cells" aria-live="polite">
+    <div class="cce-totals-bar__cell">
+      <span class="cce-totals-bar__label">{{ 'interactiveCity.totals.carbon' | translate }}</span>
+      <span
+        class="cce-totals-bar__value"
+        [class.cce-totals-bar__value--good]="liveTotals().totalCarbonImpactKgPerYear < 0"
+        [class.cce-totals-bar__value--bad]="liveTotals().totalCarbonImpactKgPerYear > 0"
+      >
+        {{ liveTotals().totalCarbonImpactKgPerYear | number }}
+        <span class="cce-totals-bar__unit">{{ 'interactiveCity.totals.carbonUnit' | translate }}</span>
+      </span>
+    </div>
+
+    <div class="cce-totals-bar__cell">
+      <span class="cce-totals-bar__label">{{ 'interactiveCity.totals.cost' | translate }}</span>
+      <span class="cce-totals-bar__value">
+        {{ liveTotals().totalCostUsd | number }}
+        <span class="cce-totals-bar__unit">{{ 'interactiveCity.totals.costUnit' | translate }}</span>
+      </span>
+    </div>
+
+    @if (serverSummary(); as summary) {
+      <div class="cce-totals-bar__summary">{{ summary }}</div>
+    }
+  </div>
+
+  <div class="cce-totals-bar__actions">
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      class="cce-totals-bar__run"
+      [disabled]="!canRun()"
+      (click)="runScenario()"
+    >
+      @if (running()) {
+        <mat-spinner diameter="18" />
+        <span>{{ 'interactiveCity.totals.running' | translate }}</span>
+      } @else {
+        <span>{{ 'interactiveCity.totals.run' | translate }}</span>
+      }
+    </button>
+
+    <button
+      type="button"
+      mat-stroked-button
+      class="cce-totals-bar__save"
+      [disabled]="!canSave()"
+      (click)="saveScenario()"
+    >
+      @if (saving()) {
+        <mat-spinner diameter="18" />
+        <span>{{ 'interactiveCity.totals.saving' | translate }}</span>
+      } @else {
+        <span>{{ 'interactiveCity.totals.save' | translate }}</span>
+      }
+    </button>
+  </div>
+</section>
