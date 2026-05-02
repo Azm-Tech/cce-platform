@@ -1,48 +1,5 @@
 <section class="cce-assistant">
-  <h1 class="cce-assistant__title">{{ 'assistant.title' | translate }}</h1>
-
-  <div class="cce-assistant__notice" role="status">
-    <mat-icon aria-hidden="true">info</mat-icon>
-    <span>{{ 'assistant.comingSoon' | translate }}</span>
-  </div>
-
-  <form
-    class="cce-assistant__form"
-    (ngSubmit)="send()"
-  >
-    <mat-form-field appearance="outline" class="cce-assistant__input">
-      <mat-label>{{ 'assistant.inputPlaceholder' | translate }}</mat-label>
-      <input matInput type="text" [formControl]="question" />
-    </mat-form-field>
-
-    <button
-      type="submit"
-      mat-flat-button
-      color="primary"
-      [disabled]="!canSend()"
-    >
-      <mat-icon>send</mat-icon>
-      {{ 'assistant.sendButton' | translate }}
-    </button>
-  </form>
-
-  @if (loading()) {
-    <p class="cce-assistant__thinking" role="status">
-      <mat-progress-bar mode="indeterminate" />
-      {{ 'assistant.thinking' | translate }}
-    </p>
-  }
-
-  @if (errorKind(); as kind) {
-    <div class="cce-assistant__error" role="alert">
-      {{ ('errors.' + kind) | translate }}
-    </div>
-  }
-
-  @if (reply(); as r) {
-    <article class="cce-assistant__reply">
-      <mat-icon aria-hidden="true">smart_toy</mat-icon>
-      <p>{{ r }}</p>
-    </article>
-  }
+  <h1>{{ 'assistant.title' | translate }}</h1>
+  <p class="cce-assistant__subtitle">{{ 'assistant.subtitle' | translate }}</p>
+  <!-- Phase 02: <cce-message-list /> + <cce-compose-box /> -->
 </section>
