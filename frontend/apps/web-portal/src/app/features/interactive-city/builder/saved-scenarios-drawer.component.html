@@ -1,1 +1,67 @@
-<!-- TODO Phase 04 -->
+<aside class="cce-saved-drawer" role="complementary" aria-labelledby="cce-saved-drawer-title">
+  <h2 id="cce-saved-drawer-title" class="cce-saved-drawer__title">
+    {{ 'interactiveCity.saved.title' | translate }}
+  </h2>
+
+  @if (!isAuthenticated()) {
+    <div class="cce-saved-drawer__cta">
+      <h3 class="cce-saved-drawer__cta-title">
+        {{ 'interactiveCity.saved.signInToSaveTitle' | translate }}
+      </h3>
+      <p class="cce-saved-drawer__cta-body">
+        {{ 'interactiveCity.saved.signInToSaveBody' | translate }}
+      </p>
+      <button type="button" mat-flat-button color="primary" (click)="signIn()">
+        {{ 'interactiveCity.saved.signIn' | translate }}
+      </button>
+    </div>
+  } @else {
+    @if (savedLoading()) {
+      <div class="cce-saved-drawer__loading">
+        <mat-spinner diameter="20" />
+      </div>
+    } @else if (savedError()) {
+      <div class="cce-saved-drawer__error" role="alert">
+        <span>{{ 'interactiveCity.errors.loadSaved' | translate }}</span>
+        <button type="button" mat-button (click)="retry()">
+          {{ 'interactiveCity.errors.retry' | translate }}
+        </button>
+      </div>
+    } @else if (savedScenarios().length === 0) {
+      <p class="cce-saved-drawer__empty">{{ 'interactiveCity.saved.empty' | translate }}</p>
+    } @else {
+      <ul class="cce-saved-drawer__list">
+        @for (s of savedScenarios(); track s.id) {
+          <li class="cce-saved-drawer__item">
+            <div class="cce-saved-drawer__item-meta">
+              <span class="cce-saved-drawer__item-name">{{ nameOf(s) }}</span>
+              <span class="cce-saved-drawer__item-stats">
+                {{ 'interactiveCity.cityType.' + s.cityType | translate }}
+                · {{ s.targetYear }}
+              </span>
+            </div>
+            <div class="cce-saved-drawer__item-actions">
+              <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="load(s)"
+              >
+                {{ 'interactiveCity.saved.load' | translate }}
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                color="warn"
+                [attr.aria-label]="('interactiveCity.saved.delete' | translate) + ': ' + nameOf(s)"
+                (click)="remove(s)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+</aside>

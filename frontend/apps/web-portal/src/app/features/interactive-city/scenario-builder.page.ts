@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
+import { SavedScenariosDrawerComponent } from './builder/saved-scenarios-drawer.component';
 import { ScenarioBuilderStore } from './builder/scenario-builder-store.service';
 import { ScenarioHeaderComponent } from './builder/scenario-header.component';
 import { SelectedListComponent } from './builder/selected-list.component';
@@ -27,6 +28,7 @@ import { buildUrlPatch, parseUrlState } from './lib/url-state';
     TechnologyCatalogComponent,
     SelectedListComponent,
     TotalsBarComponent,
+    SavedScenariosDrawerComponent,
   ],
   providers: [ScenarioBuilderStore],
   templateUrl: './scenario-builder.page.html',

@@ -1,1 +1,101 @@
 :host { display: block; }
+
+.cce-saved-drawer {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem 1.125rem;
+  margin-top: 1.5rem;
+}
+
+.cce-saved-drawer__title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.05rem;
+}
+
+.cce-saved-drawer__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: rgba(21, 101, 192, 0.04);
+  border: 1px dashed rgba(21, 101, 192, 0.25);
+  border-radius: 6px;
+}
+.cce-saved-drawer__cta-title { margin: 0; font-size: 0.95rem; }
+.cce-saved-drawer__cta-body {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.875rem;
+}
+
+.cce-saved-drawer__loading {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.cce-saved-drawer__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+}
+
+.cce-saved-drawer__empty {
+  margin: 0.75rem 0;
+  padding: 1rem;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+  font-style: italic;
+}
+
+.cce-saved-drawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cce-saved-drawer__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.cce-saved-drawer__item-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cce-saved-drawer__item-name { font-weight: 500; }
+.cce-saved-drawer__item-stats {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.cce-saved-drawer__item-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  // Desktop: drawer floats to the right side as a fixed rail.
+  .cce-saved-drawer {
+    position: sticky;
+    top: 1rem;
+  }
+}
