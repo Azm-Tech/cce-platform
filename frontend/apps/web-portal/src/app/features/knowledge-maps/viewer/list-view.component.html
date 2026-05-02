@@ -1,0 +1,44 @@
+<nav
+  class="cce-list-view"
+  [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate"
+>
+  @for (group of grouped(); track group.type) {
+    <section
+      class="cce-list-view__section"
+      [attr.data-node-type]="group.type"
+    >
+      <header class="cce-list-view__section-header">
+        <h2>
+          {{ ('knowledgeMaps.detail.nodeType.' + group.type) | translate }}
+        </h2>
+        <span class="cce-list-view__count">{{ group.nodes.length }}</span>
+      </header>
+
+      @if (group.nodes.length === 0) {
+        <p class="cce-list-view__empty">
+          {{ 'knowledgeMaps.list.noneOfType' | translate }}
+        </p>
+      } @else {
+        <ul class="cce-list-view__list">
+          @for (n of group.nodes; track n.id) {
+            <li>
+              <button
+                type="button"
+                class="cce-list-view__node"
+                [class.cce-list-view__node--selected]="isSelected(n)"
+                [class.cce-list-view__node--dimmed]="isDimmed(n)"
+                [attr.aria-current]="isSelected(n) ? 'true' : null"
+                (click)="onSelect(n)"
+              >
+                <span class="cce-list-view__name">{{ nameOf(n) }}</span>
+                <span class="cce-list-view__edge-count">
+                  {{ outboundCountOf(n) }}
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</nav>

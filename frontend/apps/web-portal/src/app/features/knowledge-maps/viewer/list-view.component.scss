@@ -1,0 +1,110 @@
+:host {
+  display: block;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.cce-list-view__section {
+  margin: 0 0 1.25rem 0;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.cce-list-view__section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem 0;
+
+  h2 {
+    margin: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.55);
+  }
+}
+
+.cce-list-view__count {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.65);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cce-list-view__empty {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
+  font-size: 0.9rem;
+  padding-inline-start: 0.5rem;
+}
+
+.cce-list-view__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cce-list-view__node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-inline-start: 4px solid transparent;
+  padding: 0.5rem 0.75rem;
+  text-align: inline-start;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+  transition: background 0.1s, border-color 0.1s, opacity 0.15s;
+
+  &:hover { background: rgba(0, 0, 0, 0.03); }
+  &:focus-visible {
+    outline: 2px solid #1565c0;
+    outline-offset: 2px;
+  }
+
+  &--selected {
+    border-inline-start-color: #fbc02d;
+    background: rgba(251, 192, 45, 0.08);
+    font-weight: 600;
+  }
+
+  &--dimmed { opacity: 0.4; }
+}
+
+.cce-list-view__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cce-list-view__edge-count {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  flex-shrink: 0;
+}
+
+/* NodeType-specific section accents on the title — picks up the
+   palette from cytoscape-styles.ts so list-view + graph-view share
+   the same visual language. */
+.cce-list-view__section[data-node-type="Technology"] .cce-list-view__count { background: #e3f2fd; color: #0d47a1; }
+.cce-list-view__section[data-node-type="Sector"]     .cce-list-view__count { background: #f3e5f5; color: #4a148c; }
+.cce-list-view__section[data-node-type="SubTopic"]   .cce-list-view__count { background: #e0f2f1; color: #00695c; }

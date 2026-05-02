@@ -572,6 +572,13 @@
       "label": "Open maps",
       "close": "Close tab"
     },
+    "list": {
+      "noneOfType": "No nodes of this type."
+    },
+    "viewMode": {
+      "graph": "Graph view",
+      "list": "List view"
+    },
     "export": {
       "title": "Export",
       "png": "PNG image",
