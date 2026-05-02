@@ -4,6 +4,6 @@ export const INTERACTIVE_CITY_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./interactive-city.page').then((m) => m.InteractiveCityPage),
+      import('./scenario-builder.page').then((m) => m.ScenarioBuilderPage),
   },
 ];
