@@ -1,0 +1,33 @@
+<div class="cce-search-filters">
+  <mat-form-field appearance="outline" class="cce-search-filters__input">
+    <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+    <mat-label>{{ 'knowledgeMaps.search.placeholder' | translate }}</mat-label>
+    <input
+      matInput
+      type="search"
+      [ngModel]="inputValue()"
+      (ngModelChange)="onInput($event)"
+    />
+  </mat-form-field>
+
+  <div
+    class="cce-search-filters__chips"
+    role="group"
+    [attr.aria-label]="'knowledgeMaps.filter.title' | translate"
+  >
+    <span class="cce-search-filters__label">
+      {{ 'knowledgeMaps.filter.title' | translate }}:
+    </span>
+    @for (type of nodeTypes(); track type) {
+      <button
+        type="button"
+        class="cce-search-filters__chip"
+        [class.cce-search-filters__chip--active]="isActive(type)"
+        [attr.aria-pressed]="isActive(type)"
+        (click)="toggleFilter(type)"
+      >
+        {{ ('knowledgeMaps.detail.nodeType.' + type) | translate }}
+      </button>
+    }
+  </div>
+</div>
