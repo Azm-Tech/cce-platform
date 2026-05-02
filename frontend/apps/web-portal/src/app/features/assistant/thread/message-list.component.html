@@ -1,1 +1,25 @@
-<!-- TODO Phase 02 -->
+<div #scrollContainer class="cce-message-list" aria-live="polite">
+  @if (!hasMessages()) {
+    <p class="cce-message-list__empty">
+      {{ 'assistant.empty' | translate }}
+    </p>
+  } @else {
+    <ul class="cce-message-list__items">
+      @for (m of messages(); track m.id; let i = $index) {
+        <cce-message-bubble
+          [message]="m"
+          [isLast]="isLast(i)"
+          (retry)="retry()"
+          (regenerate)="regenerate()"
+          (copy)="copy($event)"
+        />
+      }
+    </ul>
+
+    @if (showTyping()) {
+      <div class="cce-message-list__typing">
+        <cce-typing-indicator />
+      </div>
+    }
+  }
+</div>
