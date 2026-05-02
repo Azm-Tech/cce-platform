@@ -937,12 +937,48 @@
     }
   },
   "assistant": {
-    "title": "Assistant",
-    "comingSoon": "Conversational threading + streaming + citations coming in Sub-7.",
-    "inputPlaceholder": "Ask a question…",
-    "sendButton": "Send",
-    "thinking": "Thinking…",
-    "emptyReply": "No response yet."
+    "title": "Smart Assistant",
+    "subtitle": "Ask anything about the Circular Carbon Economy.",
+    "empty": "Start by asking a question — your conversation will appear here.",
+    "hint": "The assistant cites sources from the knowledge center and knowledge maps.",
+    "compose": {
+      "placeholder": "Ask a question…",
+      "send": "Send",
+      "sendLabel": "Send message",
+      "cancel": "Stop",
+      "cancelLabel": "Stop generating response",
+      "charCount": "{{count}} / {{max}}",
+      "charLimitWarning": "Approaching the character limit."
+    },
+    "message": {
+      "user": "You",
+      "assistant": "Assistant",
+      "copy": "Copy",
+      "copied": "Copied",
+      "retry": "Retry",
+      "regenerate": "Regenerate"
+    },
+    "citations": {
+      "title": "Sources",
+      "sourceText": "Source excerpt",
+      "resourceKind": "Resource",
+      "mapNodeKind": "Knowledge map"
+    },
+    "thread": {
+      "clear": "Clear conversation",
+      "clearConfirmTitle": "Clear this conversation?",
+      "clearConfirmBody": "Removes all messages from the current thread. This cannot be undone.",
+      "clearConfirm": "Clear",
+      "clearCancel": "Keep"
+    },
+    "errors": {
+      "network": "Couldn't reach the assistant. Check your connection.",
+      "server": "The assistant ran into a problem.",
+      "unknown": "Something went wrong.",
+      "retry": "Retry",
+      "streamFailed": "The reply was interrupted.",
+      "offline": "You're offline. Reconnect to ask the assistant."
+    }
   },
   "reports": {
     "title": "Reports",
