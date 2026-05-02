@@ -1,1 +1,43 @@
 :host { display: inline-block; }
+
+.cce-citation-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-decoration: none;
+  color: #1565c0;
+  border: 1px solid rgba(21, 101, 192, 0.25);
+  background: rgba(21, 101, 192, 0.06);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.cce-citation-chip:hover,
+.cce-citation-chip:focus-visible {
+  background: rgba(21, 101, 192, 0.14);
+  border-color: rgba(21, 101, 192, 0.5);
+  outline: none;
+}
+
+.cce-citation-chip__icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.cce-citation-chip--inline {
+  padding: 0 0.25rem;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+}
+
+.cce-citation-chip__title {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

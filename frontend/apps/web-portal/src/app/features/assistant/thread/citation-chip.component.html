@@ -1,1 +1,15 @@
-<!-- TODO Phase 02 -->
+<a
+  class="cce-citation-chip"
+  [class.cce-citation-chip--inline]="variant() === 'inline'"
+  [class.cce-citation-chip--footer]="variant() === 'footer'"
+  [routerLink]="citation().href"
+  [matTooltip]="tooltip()"
+>
+  @if (variant() === 'footer') {
+    <mat-icon class="cce-citation-chip__icon" aria-hidden="true">{{ iconName() }}</mat-icon>
+  }
+  <span class="cce-citation-chip__index">[{{ index() }}]</span>
+  @if (variant() === 'footer') {
+    <span class="cce-citation-chip__title">{{ citation().title }}</span>
+  }
+</a>
