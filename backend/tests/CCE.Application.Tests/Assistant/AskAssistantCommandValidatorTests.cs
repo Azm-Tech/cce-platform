@@ -1,4 +1,6 @@
+using CCE.Application.Assistant;
 using CCE.Application.Assistant.Commands.AskAssistant;
+using FluentValidation.TestHelper;
 
 namespace CCE.Application.Tests.Assistant;
 
@@ -7,23 +9,38 @@ public class AskAssistantCommandValidatorTests
     private readonly AskAssistantCommandValidator _sut = new();
 
     [Fact]
-    public void Valid_command_passes()
+    public void Empty_messages_is_invalid()
     {
-        var result = _sut.Validate(new AskAssistantCommand("What is CCE?", "en"));
-        result.IsValid.Should().BeTrue();
+        var cmd = new AskAssistantCommand(new List<ChatMessage>(), "en");
+        _sut.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Messages);
     }
 
     [Fact]
-    public void Empty_question_fails()
+    public void Single_user_message_is_valid()
     {
-        var result = _sut.Validate(new AskAssistantCommand("", "en"));
-        result.IsValid.Should().BeFalse();
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage> { new("user", "What is CCE?") }, "en");
+        _sut.TestValidate(cmd).ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
-    public void Invalid_locale_fails()
+    public void Last_message_must_be_user()
     {
-        var result = _sut.Validate(new AskAssistantCommand("Hello", "fr"));
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage>
+            {
+                new("user", "hi"),
+                new("assistant", "hello"),
+            }, "en");
+        _sut.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Messages);
+    }
+
+    [Fact]
+    public void Invalid_role_is_invalid()
+    {
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage> { new("system", "hi") }, "en");
+        var result = _sut.TestValidate(cmd);
         result.IsValid.Should().BeFalse();
     }
 
@@ -32,14 +49,37 @@ public class AskAssistantCommandValidatorTests
     [InlineData("en")]
     public void Valid_locales_pass(string locale)
     {
-        var result = _sut.Validate(new AskAssistantCommand("Hello", locale));
-        result.IsValid.Should().BeTrue();
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage> { new("user", "hi") }, locale);
+        _sut.TestValidate(cmd).ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
-    public void Question_over_2000_chars_fails()
+    public void Locale_must_be_ar_or_en()
     {
-        var result = _sut.Validate(new AskAssistantCommand(new string('x', 2001), "en"));
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage> { new("user", "hi") }, "fr");
+        _sut.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Locale);
+    }
+
+    [Fact]
+    public void Content_max_length_4000_is_enforced()
+    {
+        var cmd = new AskAssistantCommand(
+            new List<ChatMessage> { new("user", new string('x', 4001)) }, "en");
+        var result = _sut.TestValidate(cmd);
         result.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Max_50_messages_is_enforced()
+    {
+        var msgs = Enumerable.Range(0, 51)
+            .Select(i => new ChatMessage(i % 2 == 0 ? "user" : "assistant", $"m{i}"))
+            .ToList();
+        // Make sure last is user
+        msgs[^1] = new ChatMessage("user", "last");
+        var cmd = new AskAssistantCommand(msgs, "en");
+        _sut.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Messages);
     }
 }

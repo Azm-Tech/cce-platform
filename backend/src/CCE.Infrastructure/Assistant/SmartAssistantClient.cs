@@ -1,17 +1,22 @@
 using CCE.Application.Assistant;
+using System.Runtime.CompilerServices;
 
 namespace CCE.Infrastructure.Assistant;
 
 /// <summary>
 /// Stub implementation of <see cref="ISmartAssistantClient"/>.
-/// Returns a clearly-labelled placeholder reply.
-/// Real LLM integration is deferred to Sub-project 8.
+/// Phase 01 Task 1.2 fills in the fake-streamer.
 /// </summary>
 public sealed class SmartAssistantClient : ISmartAssistantClient
 {
-    public Task<SmartAssistantReplyDto> AskAsync(string question, string locale, CancellationToken ct)
+#pragma warning disable CS1998 // async method without await
+    public async IAsyncEnumerable<SseEvent> StreamAsync(
+        IReadOnlyList<ChatMessage> messages,
+        string locale,
+        [EnumeratorCancellation] CancellationToken ct)
+#pragma warning restore CS1998
     {
-        var reply = $"[STUB] Smart assistant integration coming in sub-project 8. Your question was: {question}";
-        return Task.FromResult(new SmartAssistantReplyDto(reply));
+        // Phase 01 Task 1.2 fills in the fake-streamer.
+        yield break;
     }
 }
