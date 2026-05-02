@@ -4,6 +4,24 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [web-portal-v0.3.0] — 2026-05-02
+
+### Added
+- Sub-8 Interactive City scenario builder, replacing the Sub-6 Phase 9 skeleton at `/interactive-city`. ~32 tasks across 6 phases. Anonymous and authenticated users pick technologies from a catalog, watch carbon and cost totals recompute live as they toggle, click Run for an authoritative server result + localized summary, and (when authenticated) save named scenarios and reload them later.
+- `ScenarioBuilderStore` signal-driven state container provided per-route (11 state signals + 5 computed: `liveTotals`, `selectedTechnologies`, `dirty`, `canRun`, `canSave`; 11 actions: `init`, `setCityType/Year/Name`, `toggle`, `clear`, `loadFromSaved`, `run`, `save`, `delete`, `applyUrlState/toUrlState`).
+- `ScenarioHeaderComponent` Reactive-Forms-two-way-bound name + city-type + target-year strip; `TechnologyCatalogComponent` with 200ms-debounced search + locale-aware grouping + click-to-toggle; `SelectedListComponent` cart with remove × and Clear all; `TotalsBarComponent` sticky bottom bar with Run + Save buttons + server-summary surface; `SavedScenariosDrawerComponent` auth-only side rail with Load + Delete + sign-in CTA fallback for anonymous users.
+- `SaveScenarioDialogComponent` single-input MatDialog for name confirmation; reusable `ConfirmDialogComponent` for delete + unsaved-changes guards.
+- URL state captures `?city=&year=&t=&name=` for full deep-linking; 200ms-debounced sync-back so typing in the name input doesn't navigate per keystroke. Defensive parse drops unknown city, clamps year, ignores non-GUID t entries.
+- Auth-gated save flow: anonymous Save → `auth.signIn(returnUrl)`; authenticated → name-confirm dialog → POST → toast.
+- 2 new ADRs (0047, 0048): single-page workbench (no wizard), client-side live totals + server-authoritative on Run.
+- 83 new web-portal Jest tests (445 total, was 362). admin-cms unchanged at 218/218. ui-kit unchanged at 27/27. Total Jest suite: 690 across 137 suites.
+
+### Notes
+- No new heavy dependencies — Sub-8 is built entirely on existing Material 18 + Reactive Forms primitives.
+- No backend changes — every endpoint already shipped in Sub-4 (`external-api-v0.1.0`).
+- `liveTotals` is a `computed` signal that sums `carbonImpactKgPerYear` and `costUsd` over selected technologies; the server is only queried on Run, which provides authoritative numbers + a localized `summaryAr / summaryEn` string. The store clears `serverResult` on every edit so it can never be stale (ADR-0048).
+- Polish backlog (7 items) captured in `docs/sub-8-interactive-city-completion.md`: side-by-side comparison, in-place edit (PATCH) of saved scenarios, bilingual name split, drag-to-compose, carbon-over-time chart, catalog pagination, axe-core CI gate.
+
 ## [web-portal-v0.2.0] — 2026-05-02
 
 ### Added
