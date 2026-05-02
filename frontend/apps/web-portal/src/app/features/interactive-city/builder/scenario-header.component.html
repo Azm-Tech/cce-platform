@@ -1,1 +1,35 @@
-<!-- TODO Phase 02 -->
+<form [formGroup]="form" class="cce-scenario-header" autocomplete="off">
+  <mat-form-field appearance="outline" class="cce-scenario-header__name">
+    <mat-label>{{ 'interactiveCity.builder.name' | translate }}</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="name"
+      [placeholder]="'interactiveCity.builder.namePlaceholder' | translate"
+      maxlength="200"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cce-scenario-header__city">
+    <mat-label>{{ 'interactiveCity.builder.cityType' | translate }}</mat-label>
+    <mat-select formControlName="cityType">
+      @for (c of cityTypes; track c) {
+        <mat-option [value]="c">
+          {{ 'interactiveCity.cityType.' + c | translate }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cce-scenario-header__year">
+    <mat-label>{{ 'interactiveCity.builder.targetYear' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="targetYear"
+      [min]="yearBounds.min"
+      [max]="yearBounds.max"
+      step="1"
+    />
+  </mat-form-field>
+</form>
