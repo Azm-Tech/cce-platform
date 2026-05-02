@@ -1,22 +1,16 @@
 import { _resetForTest, ensureSvgPlugin, loadCytoscape } from './cytoscape-loader';
 
-// jest.mock with virtual:true so the test file resolves even before
-// the package is really imported. The loader normalizes both
-// `mod.default` and `mod` shapes, so we provide a `default` here
-// and the loader will unwrap it.
-jest.mock(
-  'cytoscape',
-  () => ({
-    __esModule: true,
-    default: Object.assign(jest.fn(), { use: jest.fn() }),
-  }),
-  { virtual: true },
-);
-jest.mock(
-  'cytoscape-svg',
-  () => ({ __esModule: true, default: { name: 'svg-plugin' } }),
-  { virtual: true },
-);
+// Real modules now exist (added in Phase 0.1), so we mock them via
+// jest.mock without virtual:true. The mock factory still produces a
+// jest-spy `default.use()` for the spec to assert against.
+jest.mock('cytoscape', () => ({
+  __esModule: true,
+  default: Object.assign(jest.fn(), { use: jest.fn() }),
+}));
+jest.mock('cytoscape-svg', () => ({
+  __esModule: true,
+  default: { name: 'svg-plugin' },
+}));
 
 describe('cytoscape-loader', () => {
   beforeEach(() => _resetForTest());
