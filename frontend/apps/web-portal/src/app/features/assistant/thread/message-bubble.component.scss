@@ -1,1 +1,111 @@
 :host { display: block; }
+
+.cce-bubble {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  list-style: none;
+  align-items: flex-start;
+}
+
+.cce-bubble--user {
+  flex-direction: row-reverse;
+  text-align: end;
+}
+
+.cce-bubble__avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  display: grid;
+  place-items: center;
+
+  mat-icon {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.cce-bubble--assistant .cce-bubble__avatar {
+  background: rgba(21, 101, 192, 0.12);
+  mat-icon { color: #1565c0; }
+}
+
+.cce-bubble__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+  max-width: min(100%, 720px);
+}
+
+.cce-bubble--user .cce-bubble__body {
+  align-items: flex-end;
+}
+
+.cce-bubble__role {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+}
+
+.cce-bubble__content {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 0.625rem 0.875rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.55;
+}
+
+.cce-bubble--user .cce-bubble__content {
+  background: rgba(21, 101, 192, 0.1);
+  border-color: rgba(21, 101, 192, 0.25);
+}
+
+.cce-bubble--error .cce-bubble__content {
+  border-color: rgba(176, 0, 32, 0.4);
+}
+
+.cce-bubble__cursor {
+  display: inline-block;
+  margin-inline-start: 2px;
+  animation: cce-cursor-blink 1s steps(2, start) infinite;
+}
+
+@keyframes cce-cursor-blink {
+  to { visibility: hidden; }
+}
+
+.cce-bubble__error {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #b00020;
+}
+
+.cce-bubble__citations {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+
+  li { display: inline-flex; }
+}
+
+.cce-bubble__actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.cce-bubble:hover .cce-bubble__actions,
+.cce-bubble:focus-within .cce-bubble__actions {
+  opacity: 1;
+}

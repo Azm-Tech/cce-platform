@@ -1,1 +1,74 @@
-<!-- TODO Phase 02 -->
+<li
+  class="cce-bubble"
+  [class.cce-bubble--user]="isUser()"
+  [class.cce-bubble--assistant]="isAssistant()"
+  [class.cce-bubble--error]="isError()"
+  [attr.aria-busy]="isStreaming() || message().status === 'pending'"
+  [attr.data-role]="message().role"
+>
+  <div class="cce-bubble__avatar" aria-hidden="true">
+    <mat-icon>{{ isUser() ? 'person' : 'smart_toy' }}</mat-icon>
+  </div>
+
+  <div class="cce-bubble__body">
+    <header class="cce-bubble__role">
+      {{
+        (isUser() ? 'assistant.message.user' : 'assistant.message.assistant') | translate
+      }}
+    </header>
+
+    <div class="cce-bubble__content">{{ message().content
+      }}@if (isStreaming()) {<span class="cce-bubble__cursor" aria-hidden="true">▌</span>}
+    </div>
+
+    @if (isError()) {
+      <p class="cce-bubble__error" role="alert">
+        {{ ('assistant.errors.' + (message().errorKind ?? 'unknown')) | translate }}
+      </p>
+    }
+
+    @if (message().citations.length > 0) {
+      <ul class="cce-bubble__citations" [attr.aria-label]="'assistant.citations.title' | translate">
+        @for (c of message().citations; track c.id; let i = $index) {
+          <li>
+            <cce-citation-chip [citation]="c" [index]="i + 1" variant="footer" />
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="cce-bubble__actions">
+      @if (isComplete() && isAssistant()) {
+        <button
+          type="button"
+          mat-icon-button
+          [attr.aria-label]="'assistant.message.copy' | translate"
+          (click)="copyToClipboard()"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      }
+      @if (showRegenerate()) {
+        <button
+          type="button"
+          mat-stroked-button
+          (click)="regenerate.emit()"
+        >
+          <mat-icon>refresh</mat-icon>
+          {{ 'assistant.message.regenerate' | translate }}
+        </button>
+      }
+      @if (showRetry()) {
+        <button
+          type="button"
+          mat-stroked-button
+          color="warn"
+          (click)="retry.emit()"
+        >
+          <mat-icon>replay</mat-icon>
+          {{ 'assistant.message.retry' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</li>
