@@ -861,8 +861,75 @@
   },
   "interactiveCity": {
     "title": "المدينة التفاعلية",
-    "comingSoon": "منشئ السيناريو قادم في المشروع الفرعي 7. اليوم: استعرض التقنيات المتاحة.",
-    "empty": "لا توجد تقنيات مسجلة بعد."
+    "comingSoon": "",
+    "empty": "لا توجد تقنيات بعد.",
+    "builder": {
+      "title": "ابنِ السيناريو",
+      "subtitle": "اختر التقنيات وشاهد إجمالي الكربون والتكلفة مباشرة.",
+      "name": "اسم السيناريو",
+      "namePlaceholder": "سيناريو بدون عنوان",
+      "cityType": "نوع المدينة",
+      "targetYear": "السنة المستهدفة",
+      "unsavedChangesTitle": "هل تريد تجاهل التغييرات الحالية؟",
+      "unsavedChangesBody": "تحميل سيناريو آخر سيستبدل اختياراتك الحالية.",
+      "unsavedChangesConfirm": "تجاهل وتحميل",
+      "unsavedChangesCancel": "متابعة التحرير"
+    },
+    "cityType": {
+      "Coastal": "ساحلية",
+      "Industrial": "صناعية",
+      "Mixed": "مختلطة",
+      "Residential": "سكنية"
+    },
+    "catalog": {
+      "title": "كتالوج التقنيات",
+      "search": "ابحث في التقنيات…",
+      "empty": "لا توجد تقنيات تطابق البحث.",
+      "addLabel": "أضِف إلى السيناريو",
+      "categoryAll": "كل الفئات"
+    },
+    "selected": {
+      "title": "المختارة ({{count}})",
+      "empty": "اختر تقنيات من الكتالوج للبدء.",
+      "clear": "مسح الكل",
+      "clearConfirmTitle": "مسح كل الاختيارات؟",
+      "clearConfirmBody": "سيتم إزالة جميع التقنيات الـ {{count}} من هذا السيناريو.",
+      "clearConfirm": "مسح الكل",
+      "clearCancel": "إبقاء",
+      "remove": "إزالة"
+    },
+    "totals": {
+      "carbon": "تأثير الكربون",
+      "carbonUnit": "كغ CO₂ / سنة",
+      "cost": "التكلفة",
+      "costUnit": "دولار",
+      "run": "تشغيل",
+      "running": "جارٍ التشغيل…",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "summaryEmpty": "شغّل السيناريو لرؤية ملخص الخادم."
+    },
+    "saved": {
+      "title": "السيناريوهات المحفوظة",
+      "empty": "احفظ سيناريو ليظهر هنا.",
+      "load": "تحميل",
+      "delete": "حذف",
+      "confirmDeleteTitle": "هل تريد حذف السيناريو المحفوظ؟",
+      "confirmDeleteBody": "سيتم حذف \"{{name}}\" نهائياً.",
+      "confirmDelete": "حذف",
+      "confirmCancel": "إلغاء",
+      "signInToSaveTitle": "سجّل الدخول لحفظ السيناريوهات",
+      "signInToSaveBody": "احفظ السيناريوهات في حسابك للعودة إليها لاحقاً.",
+      "signIn": "تسجيل الدخول"
+    },
+    "errors": {
+      "loadCatalog": "تعذّر تحميل التقنيات.",
+      "loadSaved": "تعذّر تحميل السيناريوهات المحفوظة.",
+      "runFailed": "تعذّر تشغيل السيناريو.",
+      "saveFailed": "تعذّر حفظ السيناريو.",
+      "deleteFailed": "تعذّر حذف السيناريو.",
+      "retry": "إعادة المحاولة."
+    }
   },
   "assistant": {
     "title": "المساعد",

@@ -861,8 +861,75 @@
   },
   "interactiveCity": {
     "title": "Interactive city",
-    "comingSoon": "Scenario builder coming in Sub-7. Today: browse available technologies.",
-    "empty": "No technologies catalogued yet."
+    "comingSoon": "",
+    "empty": "No technologies catalogued yet.",
+    "builder": {
+      "title": "Build your scenario",
+      "subtitle": "Pick technologies and see live carbon and cost totals.",
+      "name": "Scenario name",
+      "namePlaceholder": "Untitled scenario",
+      "cityType": "City type",
+      "targetYear": "Target year",
+      "unsavedChangesTitle": "Discard current changes?",
+      "unsavedChangesBody": "Loading another scenario will replace your current selection.",
+      "unsavedChangesConfirm": "Discard and load",
+      "unsavedChangesCancel": "Keep editing"
+    },
+    "cityType": {
+      "Coastal": "Coastal",
+      "Industrial": "Industrial",
+      "Mixed": "Mixed",
+      "Residential": "Residential"
+    },
+    "catalog": {
+      "title": "Technology catalog",
+      "search": "Search technologies…",
+      "empty": "No technologies match your search.",
+      "addLabel": "Add to scenario",
+      "categoryAll": "All categories"
+    },
+    "selected": {
+      "title": "Selected ({{count}})",
+      "empty": "Pick technologies from the catalog to start.",
+      "clear": "Clear all",
+      "clearConfirmTitle": "Clear all selections?",
+      "clearConfirmBody": "Removes all {{count}} technologies from this scenario.",
+      "clearConfirm": "Clear all",
+      "clearCancel": "Keep them",
+      "remove": "Remove"
+    },
+    "totals": {
+      "carbon": "Carbon impact",
+      "carbonUnit": "kg CO₂ / year",
+      "cost": "Cost",
+      "costUnit": "USD",
+      "run": "Run",
+      "running": "Running…",
+      "save": "Save",
+      "saving": "Saving…",
+      "summaryEmpty": "Run the scenario to see the server summary."
+    },
+    "saved": {
+      "title": "Saved scenarios",
+      "empty": "Save a scenario to see it here.",
+      "load": "Load",
+      "delete": "Delete",
+      "confirmDeleteTitle": "Delete saved scenario?",
+      "confirmDeleteBody": "\"{{name}}\" will be permanently removed.",
+      "confirmDelete": "Delete",
+      "confirmCancel": "Cancel",
+      "signInToSaveTitle": "Sign in to save scenarios",
+      "signInToSaveBody": "Save scenarios to your account so you can return to them later.",
+      "signIn": "Sign in"
+    },
+    "errors": {
+      "loadCatalog": "Couldn't load technologies.",
+      "loadSaved": "Couldn't load your saved scenarios.",
+      "runFailed": "Couldn't run the scenario.",
+      "saveFailed": "Couldn't save the scenario.",
+      "deleteFailed": "Couldn't delete the scenario.",
+      "retry": "Retry"
+    }
   },
   "assistant": {
     "title": "Assistant",

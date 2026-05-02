@@ -50,10 +50,14 @@ describe('KnowledgeMapsListPage', () => {
     expect(html).toContain('Map');
   });
 
-  it('renders the "coming in Sub-7" notice', async () => {
+  it('renders each map as a routerLink to /knowledge-maps/:id (Sub-7 ship)', async () => {
     fixture.detectChanges();
-    const html = fixture.nativeElement.textContent ?? '';
-    expect(html).toContain('knowledgeMaps.comingSoon');
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector(
+      `a[href$="/knowledge-maps/${SAMPLE.id}"]`,
+    );
+    expect(link).toBeTruthy();
   });
 
   it('empty result triggers empty() computed', async () => {
