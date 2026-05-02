@@ -4,3 +4,49 @@
   margin: 0.5rem 0 1.5rem 0;
   color: rgba(0, 0, 0, 0.6);
 }
+
+.cce-scenario-builder__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #fdecea;
+  color: #b00020;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.cce-scenario-builder__layout {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .cce-scenario-builder__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cce-scenario-builder__totals-placeholder {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(21, 101, 192, 0.06);
+  border: 1px solid rgba(21, 101, 192, 0.18);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+
+  position: sticky;
+  bottom: 0;
+}
+.cce-scenario-builder__totals-cell {
+  font-size: 1rem;
+}
+.cce-scenario-builder__totals-cell strong {
+  margin-inline-end: 0.25rem;
+}

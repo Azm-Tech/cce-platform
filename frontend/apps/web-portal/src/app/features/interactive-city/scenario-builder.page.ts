@@ -1,9 +1,13 @@
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
 import { ScenarioBuilderStore } from './builder/scenario-builder-store.service';
+import { ScenarioHeaderComponent } from './builder/scenario-header.component';
+import { SelectedListComponent } from './builder/selected-list.component';
+import { TechnologyCatalogComponent } from './builder/technology-catalog.component';
 import { buildUrlPatch, parseUrlState } from './lib/url-state';
 
 /**
@@ -15,7 +19,15 @@ import { buildUrlPatch, parseUrlState } from './lib/url-state';
 @Component({
   selector: 'cce-scenario-builder-page',
   standalone: true,
-  imports: [TranslateModule, MatButtonModule, MatProgressBarModule],
+  imports: [
+    DecimalPipe,
+    TranslateModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    ScenarioHeaderComponent,
+    TechnologyCatalogComponent,
+    SelectedListComponent,
+  ],
   providers: [ScenarioBuilderStore],
   templateUrl: './scenario-builder.page.html',
   styleUrl: './scenario-builder.page.scss',

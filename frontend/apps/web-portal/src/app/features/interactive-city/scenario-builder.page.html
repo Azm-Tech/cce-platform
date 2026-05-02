@@ -17,10 +17,28 @@
     </div>
   }
 
-  <!-- Phase 02: header + catalog + selected slots. Phase 03: totals bar. Phase 04: drawer. -->
+  <cce-scenario-header />
+
   <div class="cce-scenario-builder__layout">
-    <div class="cce-scenario-builder__header-slot"></div>
-    <div class="cce-scenario-builder__catalog-slot"></div>
-    <div class="cce-scenario-builder__selected-slot"></div>
+    <div class="cce-scenario-builder__catalog">
+      <cce-technology-catalog />
+    </div>
+    <div class="cce-scenario-builder__selected">
+      <cce-selected-list />
+    </div>
+  </div>
+
+  <!-- Placeholder totals strip — Phase 03 swaps for TotalsBarComponent (Run/Save). -->
+  <div class="cce-scenario-builder__totals-placeholder" aria-live="polite">
+    <span class="cce-scenario-builder__totals-cell">
+      <strong>{{ 'interactiveCity.totals.carbon' | translate }}:</strong>
+      {{ store.liveTotals().totalCarbonImpactKgPerYear | number }}
+      {{ 'interactiveCity.totals.carbonUnit' | translate }}
+    </span>
+    <span class="cce-scenario-builder__totals-cell">
+      <strong>{{ 'interactiveCity.totals.cost' | translate }}:</strong>
+      {{ store.liveTotals().totalCostUsd | number }}
+      {{ 'interactiveCity.totals.costUnit' | translate }}
+    </span>
   </div>
 </section>
