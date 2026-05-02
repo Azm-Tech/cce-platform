@@ -1,1 +1,62 @@
-<!-- TODO Phase 02 -->
+<section class="cce-catalog" aria-labelledby="cce-catalog-title">
+  <header class="cce-catalog__header">
+    <h2 id="cce-catalog-title" class="cce-catalog__title">
+      {{ 'interactiveCity.catalog.title' | translate }}
+    </h2>
+
+    <mat-form-field appearance="outline" class="cce-catalog__search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        [formControl]="searchControl"
+        [placeholder]="'interactiveCity.catalog.search' | translate"
+      />
+    </mat-form-field>
+  </header>
+
+  @if (!hasCatalog()) {
+    <p class="cce-catalog__empty">{{ 'interactiveCity.empty' | translate }}</p>
+  } @else if (!hasResults()) {
+    <p class="cce-catalog__empty">{{ 'interactiveCity.catalog.empty' | translate }}</p>
+  } @else {
+    @for (group of groups(); track group.category) {
+      <div class="cce-catalog__group">
+        <h3 class="cce-catalog__group-title">{{ group.category }}</h3>
+        <ul class="cce-catalog__list">
+          @for (t of group.rows; track t.id) {
+            <li>
+              <button
+                type="button"
+                class="cce-catalog__card"
+                [class.cce-catalog__card--selected]="isSelected(t.id)"
+                [attr.aria-pressed]="isSelected(t.id)"
+                [attr.aria-label]="
+                  ('interactiveCity.catalog.addLabel' | translate) + ': ' + nameOf(t)
+                "
+                (click)="toggle(t.id)"
+              >
+                <span class="cce-catalog__card-name">{{ nameOf(t) }}</span>
+                <span
+                  class="cce-catalog__card-carbon"
+                  [class.cce-catalog__card-carbon--good]="t.carbonImpactKgPerYear < 0"
+                  [class.cce-catalog__card-carbon--bad]="t.carbonImpactKgPerYear > 0"
+                >
+                  {{ t.carbonImpactKgPerYear | number }}
+                  {{ 'interactiveCity.totals.carbonUnit' | translate }}
+                </span>
+                <span class="cce-catalog__card-cost">
+                  {{ t.costUsd | number }}
+                  {{ 'interactiveCity.totals.costUnit' | translate }}
+                </span>
+                @if (isSelected(t.id)) {
+                  <mat-icon class="cce-catalog__card-check" aria-hidden="true">check_circle</mat-icon>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</section>
