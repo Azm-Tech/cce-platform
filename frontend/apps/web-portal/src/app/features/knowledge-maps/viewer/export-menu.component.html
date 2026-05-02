@@ -1,0 +1,21 @@
+<button
+  type="button"
+  mat-stroked-button
+  [matMenuTriggerFor]="menu"
+  [disabled]="disabled()"
+>
+  <mat-icon>file_download</mat-icon>
+  {{ 'knowledgeMaps.export.title' | translate }}
+</button>
+
+<mat-menu #menu="matMenu">
+  @for (format of formats; track format) {
+    <button
+      type="button"
+      mat-menu-item
+      (click)="onChoose(format)"
+    >
+      {{ ('knowledgeMaps.export.' + format) | translate }}
+    </button>
+  }
+</mat-menu>

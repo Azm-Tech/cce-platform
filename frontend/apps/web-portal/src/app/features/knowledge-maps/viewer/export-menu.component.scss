@@ -1,0 +1,13 @@
+:host { display: inline-block; }
+
+button[mat-stroked-button] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}

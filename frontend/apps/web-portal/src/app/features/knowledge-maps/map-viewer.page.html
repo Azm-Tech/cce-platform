@@ -31,11 +31,17 @@
 
   @if (store.activeTab(); as tab) {
     <header class="cce-map-viewer__header">
-      <h1>{{ tab.metadata.nameEn }}</h1>
-      <p>{{ tab.metadata.descriptionEn }}</p>
-      <small>
-        {{ tab.nodes.length }} nodes · {{ tab.edges.length }} edges
-      </small>
+      <div class="cce-map-viewer__header-text">
+        <h1>{{ tab.metadata.nameEn }}</h1>
+        <p>{{ tab.metadata.descriptionEn }}</p>
+        <small>
+          {{ tab.nodes.length }} nodes · {{ tab.edges.length }} edges
+        </small>
+      </div>
+      <cce-export-menu
+        class="cce-map-viewer__export"
+        (formatChosen)="onExportFormat($event)"
+      />
     </header>
 
     <cce-search-and-filters

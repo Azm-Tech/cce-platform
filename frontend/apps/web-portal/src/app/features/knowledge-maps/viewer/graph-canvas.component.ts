@@ -143,6 +143,15 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
     this.cy = null;
   }
 
+  /**
+   * Returns the live Cytoscape Core, or null if the component has
+   * not yet mounted (or has been destroyed). Used by the parent
+   * MapViewerPage to feed cy into the export serializers (Phase 6.5).
+   */
+  getCytoscape(): Core | null {
+    return this.cy;
+  }
+
   /** Apply selectedId outside reactive context (used post-mount). */
   private applySelectedId(id: string | null): void {
     if (!this.cy) return;

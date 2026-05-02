@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  ViewChild,
   computed,
   effect,
   inject,
@@ -16,6 +17,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
 import { LocaleService } from '@frontend/i18n';
 import type { KnowledgeMapNode, NodeType } from './knowledge-maps.types';
+import { downloadBlob, buildFilename } from './lib/download';
+import { exportJson } from './lib/export-json';
+import { exportPdf } from './lib/export-pdf';
+import { exportPng } from './lib/export-png';
+import { exportSvg } from './lib/export-svg';
+import { ExportMenuComponent, type ExportFormat } from './viewer/export-menu.component';
 import { GraphCanvasComponent } from './viewer/graph-canvas.component';
 import { MapViewerStore } from './viewer/map-viewer-store.service';
 import { NodeDetailPanelComponent } from './viewer/node-detail-panel.component';
@@ -43,6 +50,7 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
     NodeDetailPanelComponent,
     SearchAndFiltersComponent,
     TabsBarComponent,
+    ExportMenuComponent,
   ],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
@@ -55,6 +63,9 @@ export class MapViewerPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly destroyRef = inject(DestroyRef);
   readonly store = inject(MapViewerStore);
+
+  /** Live reference to the GraphCanvas — used by export to grab cy. */
+  @ViewChild(GraphCanvasComponent) canvas?: GraphCanvasComponent;
 
   /** Active locale signal — drives node label selection in GraphCanvas. */
   readonly locale = this.localeService.locale;
@@ -207,5 +218,54 @@ export class MapViewerPage implements OnInit {
 
   retry(): void {
     void this.store.retry();
+  }
+
+  /**
+   * Export dispatcher. Called by ExportMenuComponent's (formatChosen)
+   * output. Passes `full: true` (export the whole graph) when the user
+   * has not multi-selected anything; otherwise exports the selection
+   * subgraph (JSON keeps the closure: only edges where both endpoints
+   * are selected).
+   */
+  async onExportFormat(format: ExportFormat): Promise<void> {
+    const tab = this.store.activeTab();
+    if (!tab) return;
+    const cy = this.canvas?.getCytoscape() ?? null;
+    if (!cy && format !== 'json') return;
+
+    const selection = this.store.selection();
+    const useFull = selection.size === 0;
+    const filename = buildFilename(tab.metadata.slug, format);
+
+    let blob: Blob;
+    switch (format) {
+      case 'png':
+        blob = await exportPng(cy as never, { full: useFull });
+        break;
+      case 'svg':
+        blob = await exportSvg(cy as never, { full: useFull });
+        break;
+      case 'pdf':
+        blob = await exportPdf(cy as never, { full: useFull });
+        break;
+      case 'json':
+        blob = exportJson({
+          map: {
+            id: tab.id,
+            nameAr: tab.metadata.nameAr,
+            nameEn: tab.metadata.nameEn,
+            slug: tab.metadata.slug,
+          },
+          nodes: useFull ? tab.nodes : tab.nodes.filter((n) => selection.has(n.id)),
+          edges: useFull
+            ? tab.edges
+            : tab.edges.filter(
+                (e) => selection.has(e.fromNodeId) && selection.has(e.toNodeId),
+              ),
+          exportedAt: new Date().toISOString(),
+        });
+        break;
+    }
+    downloadBlob(blob, filename);
   }
 }

@@ -572,6 +572,13 @@
       "label": "Open maps",
       "close": "Close tab"
     },
+    "export": {
+      "title": "Export",
+      "png": "PNG image",
+      "svg": "SVG vector",
+      "json": "JSON data",
+      "pdf": "PDF document"
+    },
     "detail": {
       "description": "Description",
       "outboundEdges": "Outbound connections",

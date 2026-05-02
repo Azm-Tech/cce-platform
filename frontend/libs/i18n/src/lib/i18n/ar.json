@@ -572,6 +572,13 @@
       "label": "الخرائط المفتوحة",
       "close": "إغلاق علامة التبويب"
     },
+    "export": {
+      "title": "تصدير",
+      "png": "صورة PNG",
+      "svg": "متجه SVG",
+      "json": "بيانات JSON",
+      "pdf": "مستند PDF"
+    },
     "detail": {
       "description": "الوصف",
       "outboundEdges": "العلاقات الصادرة",

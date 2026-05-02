@@ -30,11 +30,19 @@
   padding: 1rem 1.5rem;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
 
   h1 { margin: 0; }
   p { margin: 0.5rem 0; color: rgba(0, 0, 0, 0.72); line-height: 1.5; }
   small { color: rgba(0, 0, 0, 0.55); }
 }
+
+.cce-map-viewer__header-text { flex: 1 1 auto; min-width: 0; }
+.cce-map-viewer__export { flex: 0 0 auto; }
 
 .cce-map-viewer__split {
   display: grid;
