@@ -3,5 +3,24 @@
   <p class="cce-scenario-builder__subtitle">
     {{ 'interactiveCity.builder.subtitle' | translate }}
   </p>
-  <!-- Phase 01: hydrate URL → store. Phase 02: header + catalog + selected. Phase 03: totals bar. Phase 04: drawer. -->
+
+  @if (store.catalogLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (store.catalogError()) {
+    <div class="cce-scenario-builder__error" role="alert">
+      <span>{{ 'interactiveCity.errors.loadCatalog' | translate }}</span>
+      <button mat-button type="button" (click)="retryCatalog()">
+        {{ 'interactiveCity.errors.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- Phase 02: header + catalog + selected slots. Phase 03: totals bar. Phase 04: drawer. -->
+  <div class="cce-scenario-builder__layout">
+    <div class="cce-scenario-builder__header-slot"></div>
+    <div class="cce-scenario-builder__catalog-slot"></div>
+    <div class="cce-scenario-builder__selected-slot"></div>
+  </div>
 </section>
