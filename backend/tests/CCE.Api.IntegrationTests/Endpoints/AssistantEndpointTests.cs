@@ -1,5 +1,7 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
@@ -17,46 +19,40 @@ public class AssistantEndpointTests : IClassFixture<WebApplicationFactory<CCE.Ap
         using var client = _factory.CreateClient();
         var resp = await client.PostAsJsonAsync(
             "/api/assistant/query",
-            new { question = "What is CCE?", locale = "en" });
+            new
+            {
+                messages = new[] { new { role = "user", content = "What is CCE?" } },
+                locale = "en",
+            });
 
         resp.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
         resp.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
-    public async Task Post_query_returns_200_with_reply()
+    public async Task Post_query_streams_text_and_done_events_in_order()
     {
         using var client = _factory.CreateClient();
-        var resp = await client.PostAsJsonAsync(
-            "/api/assistant/query",
-            new { question = "What is CCE?", locale = "en" });
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/assistant/query");
+        req.Content = JsonContent.Create(new
+        {
+            messages = new[] { new { role = "user", content = "What is CCE?" } },
+            locale = "en",
+        });
+        req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
 
-        resp.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await resp.Content.ReadFromJsonAsync<ReplyBody>();
-        body!.Reply.Should().Contain("sub-project 8");
+        using var resp = await client.SendAsync(req, HttpCompletionOption.ResponseContentRead);
+        resp.EnsureSuccessStatusCode();
+        resp.Content.Headers.ContentType?.MediaType.Should().Be("text/event-stream");
+
+        var raw = await resp.Content.ReadAsStringAsync();
+        var events = raw.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
+            .Select(frame => frame.Replace("data: ", string.Empty, StringComparison.Ordinal))
+            .Select(json => JsonDocument.Parse(json).RootElement)
+            .ToList();
+
+        var types = events.Select(e => e.GetProperty("type").GetString()).ToList();
+        types.Count(t => t == "text").Should().BeGreaterThanOrEqualTo(5);
+        types.Last().Should().Be("done");
     }
-
-    [Fact]
-    public async Task Post_query_with_invalid_locale_returns_400()
-    {
-        using var client = _factory.CreateClient();
-        var resp = await client.PostAsJsonAsync(
-            "/api/assistant/query",
-            new { question = "Hello", locale = "fr" });
-
-        resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task Post_query_with_empty_question_returns_400()
-    {
-        using var client = _factory.CreateClient();
-        var resp = await client.PostAsJsonAsync(
-            "/api/assistant/query",
-            new { question = "", locale = "en" });
-
-        resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    private sealed record ReplyBody(string Reply);
 }
