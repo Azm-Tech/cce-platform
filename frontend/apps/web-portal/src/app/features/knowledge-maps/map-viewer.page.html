@@ -21,6 +21,14 @@
     </div>
   }
 
+  <cce-tabs-bar
+    [tabs]="store.openTabs()"
+    [activeId]="store.activeId()"
+    [locale]="locale()"
+    (tabSelected)="onTabSelected($event)"
+    (tabClosed)="onTabClosed($event)"
+  />
+
   @if (store.activeTab(); as tab) {
     <header class="cce-map-viewer__header">
       <h1>{{ tab.metadata.nameEn }}</h1>

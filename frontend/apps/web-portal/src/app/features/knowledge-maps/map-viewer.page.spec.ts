@@ -45,6 +45,7 @@ interface RouteSnapshot {
 
 interface RouteFixture {
   snapshot: RouteSnapshot;
+  paramMap: import('rxjs').Observable<unknown>;
 }
 
 describe('MapViewerPage', () => {
@@ -59,11 +60,14 @@ describe('MapViewerPage', () => {
     getNodes = jest.fn().mockResolvedValue(ok([NODE]));
     getEdges = jest.fn().mockResolvedValue(ok([EDGE]));
 
+    const { of } = await import('rxjs');
     const routeFixture: RouteFixture = {
       snapshot: {
         paramMap: { get: jest.fn(() => opts.id ?? 'm1') },
         queryParams: opts.query ?? {},
       },
+      // paramMap as an Observable for the takeUntilDestroyed subscription.
+      paramMap: of({ get: (_key: string) => opts.id ?? 'm1' }),
     };
 
     await TestBed.configureTestingModule({

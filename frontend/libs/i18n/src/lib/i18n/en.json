@@ -568,6 +568,10 @@
     "filter": {
       "title": "Type"
     },
+    "tabs": {
+      "label": "Open maps",
+      "close": "Close tab"
+    },
     "detail": {
       "description": "Description",
       "outboundEdges": "Outbound connections",

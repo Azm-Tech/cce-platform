@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +20,7 @@ import { GraphCanvasComponent } from './viewer/graph-canvas.component';
 import { MapViewerStore } from './viewer/map-viewer-store.service';
 import { NodeDetailPanelComponent } from './viewer/node-detail-panel.component';
 import { SearchAndFiltersComponent } from './viewer/search-and-filters.component';
+import { TabsBarComponent } from './viewer/tabs-bar.component';
 import { buildUrlPatch, parseUrlState } from './viewer/url-state';
 
 /**
@@ -18,8 +28,9 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
  *
  * Provides MapViewerStore at the component level so each route
  * activation gets a fresh state container. Hydrates URL query params
- * into the store before opening the active tab. Renders the search +
- * filter bar above the graph + the NodeDetailPanel side-by-side.
+ * (?open + ?q + ?type + ?view + ?node) into the store before
+ * opening the active tab. Renders TabsBar + SearchAndFilters above
+ * the graph; GraphCanvas + NodeDetailPanel side-by-side.
  */
 @Component({
   selector: 'cce-map-viewer-page',
@@ -31,6 +42,7 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
     GraphCanvasComponent,
     NodeDetailPanelComponent,
     SearchAndFiltersComponent,
+    TabsBarComponent,
   ],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
@@ -41,6 +53,7 @@ export class MapViewerPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly store = inject(MapViewerStore);
 
   /** Active locale signal — drives node label selection in GraphCanvas. */
@@ -69,14 +82,20 @@ export class MapViewerPage implements OnInit {
   private hydrated = false;
 
   constructor() {
-    // ─── URL sync: search + filter signals → ?q= + ?type= ───
+    // ─── URL sync: search + filter + open-tabs signals → URL ───
     effect(() => {
       const q = this.store.searchTerm();
       const filters = Array.from(this.store.filters());
-      // Always read both signals so the effect re-fires when either changes;
-      // skip the very first run (which is the post-hydration baseline).
+      // open = open tabs other than the active one (the active tab is in the route :id).
+      const activeId = this.store.activeId();
+      const otherIds = this.store
+        .openTabs()
+        .map((t) => t.id)
+        .filter((tid) => tid !== activeId);
+      // Always read all reactive deps so the effect re-fires;
+      // skip the post-hydration baseline run.
       if (!this.hydrated) return;
-      const patch = buildUrlPatch({ q, filters });
+      const patch = buildUrlPatch({ q, filters, open: otherIds });
       void this.router.navigate([], {
         relativeTo: this.route,
         queryParams: patch,
@@ -84,6 +103,19 @@ export class MapViewerPage implements OnInit {
         replaceUrl: true,
       });
     });
+
+    // ─── Sync activeId to route :id when user navigates between tabs ───
+    // Angular reuses the component instance on same-route param changes,
+    // so we subscribe to paramMap and switch the active tab in the store.
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const newId = params.get('id');
+        if (!newId) return;
+        if (this.store.tabsById().has(newId) && this.store.activeId() !== newId) {
+          this.store.setActive(newId);
+        }
+      });
   }
 
   async ngOnInit(): Promise<void> {
@@ -101,7 +133,20 @@ export class MapViewerPage implements OnInit {
     // subsequent user-driven changes.
     this.hydrated = true;
 
+    // Open the active tab first so it's the foreground.
     await this.store.openTab(id);
+
+    // Open any additional tabs from ?open= so they're available in the strip.
+    const otherTabsToOpen = url.open.filter((openId) => openId !== id);
+    if (otherTabsToOpen.length > 0) {
+      for (const otherId of otherTabsToOpen) {
+        await this.store.openTab(otherId);
+      }
+      // openTab(otherId) flips activeId — restore the route :id as active.
+      // setActive() clears selectedNodeId, so re-apply the hydrated selection.
+      this.store.setActive(id);
+      if (url.node) this.store.selectNode(url.node);
+    }
   }
 
   /** GraphCanvas (nodeClick) handler. */
@@ -127,6 +172,32 @@ export class MapViewerPage implements OnInit {
   /** SearchAndFilters (filtersChange) handler. */
   onFiltersChange(filters: ReadonlySet<NodeType>): void {
     this.store.setFilters(Array.from(filters));
+  }
+
+  /** TabsBar (tabSelected) handler — navigates to the new active tab. */
+  onTabSelected(id: string): void {
+    void this.router.navigate(['/knowledge-maps', id], {
+      queryParamsHandling: 'preserve',
+    });
+  }
+
+  /** TabsBar (tabClosed) handler — closes a tab; routes accordingly. */
+  onTabClosed(id: string): void {
+    const wasActive = this.store.activeId() === id;
+    this.store.closeTab(id);
+    const remaining = this.store.openTabs();
+    if (remaining.length === 0) {
+      void this.router.navigate(['/knowledge-maps']);
+      return;
+    }
+    if (wasActive) {
+      const fallback = this.store.activeId();
+      if (fallback) {
+        void this.router.navigate(['/knowledge-maps', fallback], {
+          queryParamsHandling: 'preserve',
+        });
+      }
+    }
   }
 
   retry(): void {

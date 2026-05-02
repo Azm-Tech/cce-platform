@@ -568,6 +568,10 @@
     "filter": {
       "title": "النوع"
     },
+    "tabs": {
+      "label": "الخرائط المفتوحة",
+      "close": "إغلاق علامة التبويب"
+    },
     "detail": {
       "description": "الوصف",
       "outboundEdges": "العلاقات الصادرة",
