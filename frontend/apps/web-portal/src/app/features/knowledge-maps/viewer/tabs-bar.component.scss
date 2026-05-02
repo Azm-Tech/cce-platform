@@ -1,0 +1,63 @@
+:host { display: block; margin-bottom: 0.75rem; }
+
+.cce-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px 8px 0 0;
+  padding: 0.25rem 0.25rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  // Allow horizontal scroll without showing a scrollbar.
+  scrollbar-width: thin;
+}
+
+.cce-tabs-bar__tab {
+  // The "tab" is itself a button; the close icon is a nested button —
+  // technically nested-button is invalid HTML but we accept it for the
+  // ergonomic click target. (Could split into a tab-link with a sibling
+  // close button if a11y audit flags this.)
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 0.5rem 0.75rem 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover { background: rgba(0, 0, 0, 0.04); color: rgba(0, 0, 0, 0.85); }
+  &:focus-visible { outline: 2px solid #1565c0; outline-offset: -2px; }
+
+  &--active {
+    color: #1565c0;
+    border-bottom-color: #1565c0;
+    font-weight: 600;
+    background: #fff;
+  }
+}
+
+.cce-tabs-bar__label { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+
+.cce-tabs-bar__close {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.15rem;
+  border-radius: 50%;
+  color: rgba(0, 0, 0, 0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: rgba(0, 0, 0, 0.08); color: rgba(0, 0, 0, 0.7); }
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}

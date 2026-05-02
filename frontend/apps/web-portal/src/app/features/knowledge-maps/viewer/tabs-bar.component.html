@@ -1,0 +1,28 @@
+@if (hasTabs()) {
+  <nav
+    class="cce-tabs-bar"
+    role="tablist"
+    [attr.aria-label]="'knowledgeMaps.tabs.label' | translate"
+  >
+    @for (tab of tabs(); track tab.id) {
+      <button
+        type="button"
+        class="cce-tabs-bar__tab"
+        [class.cce-tabs-bar__tab--active]="isActive(tab)"
+        role="tab"
+        [attr.aria-selected]="isActive(tab)"
+        (click)="onSelect(tab)"
+      >
+        <span class="cce-tabs-bar__label">{{ labelOf(tab) }}</span>
+        <button
+          type="button"
+          class="cce-tabs-bar__close"
+          [attr.aria-label]="'knowledgeMaps.tabs.close' | translate"
+          (click)="onClose(tab, $event)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </button>
+    }
+  </nav>
+}
