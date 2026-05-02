@@ -4,6 +4,27 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [web-portal-v0.2.0] — 2026-05-02
+
+### Added
+- Sub-7 Knowledge Maps full UX, layered on top of the Sub-6 Phase 9 skeleton at `apps/web-portal/src/app/features/knowledge-maps/`. ~38 tasks across 9 phases. Public users open a map at `/knowledge-maps/:id`, see its nodes laid out as an interactive Cytoscape graph (server-driven `LayoutX/Y` positions), click nodes to read details in a side panel, search and filter to focus on concepts, hold multiple maps open in tabs, switch between graph and list view for accessibility, and export selections in PDF / PNG / SVG / JSON.
+- `MapViewerStore` signal-driven state container provided per-route (10 actions + computed `openTabs`, `activeTab`, `selectedNode`, `matchedIds`, `dimmedIds`, `notFound`).
+- `GraphCanvasComponent` Cytoscape wrapper: preset layout from server `LayoutX/Y`, click + box-select events, locale-mirror effect with viewport preservation, three reactive effects for elements / selectedId / dimmedIds.
+- `NodeDetailPanelComponent` CSS-driven drawer (right rail desktop / bottom sheet mobile via 720px breakpoint) with click-to-re-select outbound edges + ESC keyboard shortcut.
+- `SearchAndFiltersComponent` with 200ms debounced input + NodeType chip toggles. Highlight + dim semantics; non-matching nodes drop to 0.3 opacity.
+- `TabsBarComponent` horizontal scroll-x strip with active underline + close ×; multi-map workflow with `?open=` URL hydration; last-tab-close routes back to `/knowledge-maps`.
+- 4 export serializers (PNG / SVG / JSON / PDF) with `cytoscape-svg` and `jspdf` lazy-imported only when the user picks SVG or PDF; rubber-band selection feeds export-the-selection-subgraph (JSON keeps closure: only edges where both endpoints are in the selection).
+- `ListViewComponent` accessible `<ul>` tree grouped by NodeType with focusable button rows + `aria-current` + outbound-edge counts. View-mode toggle (graph ↔ list) preserves selection + filter state because both views bind to the same store signals.
+- URL state captures `?q=` (search) + `?type=` (filter) + `?open=` (other tabs) + `?view=` (graph|list) + `?node=` (selection); deep-linkable in any combination.
+- 4 new ADRs (0043–0046): server-driven graph layout, RTL x-mirror strategy, lazy-loaded heavy graph deps, dual-view a11y.
+- 3 new packages (lazy-loaded via cytoscape-loader): `cytoscape@^3.30`, `cytoscape-svg@^0.4`, `jspdf@^2.5`. Plus `@types/cytoscape@^3.21` (devDep). Initial bundle untouched.
+- 85 new web-portal Jest tests (362 total, was 277). admin-cms unchanged at 218/218. ui-kit unchanged at 27/27. Total Jest suite: 607 across 127 suites.
+
+### Notes
+- Knowledge Maps lazy chunk grows ~400KB on first navigation (cytoscape only). SVG plugin (+20KB) and jsPDF (+150KB) only load on actual export. Initial bundle stays within the 1mb / 1.5mb budget.
+- Polish backlog (6 items) captured in `docs/sub-7-knowledge-maps-completion.md`: related maps suggestions, side-by-side comparison, algorithmic layout reset, vector PDF export, admin-cms node-position curation UI, Lighthouse audit deferred to deployment verification.
+- The original Sub-7 brainstorm scoped Maps + City + Assistant under one roof. Decomposed during brainstorming into Sub-7 (Maps, this release), Sub-8 (City), Sub-9 (Assistant), Sub-10 (Deployment / Infra). Each gets its own brainstorm → spec → plan → execution cycle.
+
 ## [web-portal-v0.1.0] — 2026-05-01
 
 ### Added
