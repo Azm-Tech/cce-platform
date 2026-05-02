@@ -929,6 +929,11 @@
       "saveFailed": "Couldn't save the scenario.",
       "deleteFailed": "Couldn't delete the scenario.",
       "retry": "Retry"
+    },
+    "toasts": {
+      "runOk": "Scenario calculated.",
+      "saveOk": "Scenario saved.",
+      "deleteOk": "Scenario deleted."
     }
   },
   "assistant": {
