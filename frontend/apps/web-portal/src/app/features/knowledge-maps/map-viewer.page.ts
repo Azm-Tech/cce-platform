@@ -24,7 +24,8 @@ import { exportPng } from './lib/export-png';
 import { exportSvg } from './lib/export-svg';
 import { ExportMenuComponent, type ExportFormat } from './viewer/export-menu.component';
 import { GraphCanvasComponent } from './viewer/graph-canvas.component';
-import { MapViewerStore } from './viewer/map-viewer-store.service';
+import { ListViewComponent } from './viewer/list-view.component';
+import { MapViewerStore, type ViewMode } from './viewer/map-viewer-store.service';
 import { NodeDetailPanelComponent } from './viewer/node-detail-panel.component';
 import { SearchAndFiltersComponent } from './viewer/search-and-filters.component';
 import { TabsBarComponent } from './viewer/tabs-bar.component';
@@ -51,6 +52,7 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
     SearchAndFiltersComponent,
     TabsBarComponent,
     ExportMenuComponent,
+    ListViewComponent,
   ],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
@@ -103,10 +105,11 @@ export class MapViewerPage implements OnInit {
         .openTabs()
         .map((t) => t.id)
         .filter((tid) => tid !== activeId);
+      const view = this.store.viewMode();
       // Always read all reactive deps so the effect re-fires;
       // skip the post-hydration baseline run.
       if (!this.hydrated) return;
-      const patch = buildUrlPatch({ q, filters, open: otherIds });
+      const patch = buildUrlPatch({ q, filters, open: otherIds, view });
       void this.router.navigate([], {
         relativeTo: this.route,
         queryParams: patch,
@@ -214,6 +217,11 @@ export class MapViewerPage implements OnInit {
         });
       }
     }
+  }
+
+  /** View-toggle button handler — flips graph ↔ list. */
+  onSetViewMode(mode: ViewMode): void {
+    this.store.setViewMode(mode);
   }
 
   retry(): void {

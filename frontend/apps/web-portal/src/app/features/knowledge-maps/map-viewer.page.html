@@ -38,10 +38,34 @@
           {{ tab.nodes.length }} nodes · {{ tab.edges.length }} edges
         </small>
       </div>
-      <cce-export-menu
-        class="cce-map-viewer__export"
-        (formatChosen)="onExportFormat($event)"
-      />
+      <div class="cce-map-viewer__actions">
+        <div class="cce-map-viewer__view-toggle" role="group" [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate">
+          <button
+            type="button"
+            mat-icon-button
+            [class.cce-map-viewer__view-toggle--active]="store.viewMode() === 'graph'"
+            [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate"
+            [attr.aria-pressed]="store.viewMode() === 'graph'"
+            (click)="onSetViewMode('graph')"
+          >
+            <mat-icon>account_tree</mat-icon>
+          </button>
+          <button
+            type="button"
+            mat-icon-button
+            [class.cce-map-viewer__view-toggle--active]="store.viewMode() === 'list'"
+            [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate"
+            [attr.aria-pressed]="store.viewMode() === 'list'"
+            (click)="onSetViewMode('list')"
+          >
+            <mat-icon>list</mat-icon>
+          </button>
+        </div>
+        <cce-export-menu
+          class="cce-map-viewer__export"
+          (formatChosen)="onExportFormat($event)"
+        />
+      </div>
     </header>
 
     <cce-search-and-filters
@@ -52,17 +76,29 @@
     />
 
     <div class="cce-map-viewer__split">
-      <cce-graph-canvas
-        class="cce-map-viewer__canvas"
-        [nodes]="tab.nodes"
-        [edges]="tab.edges"
-        [locale]="locale()"
-        [mirrored]="mirrored()"
-        [selectedId]="store.selectedNodeId()"
-        [dimmedIds]="store.dimmedIds()"
-        (nodeClick)="onNodeClick($event)"
-        (selectionChange)="onSelectionChange($event)"
-      />
+      @if (store.viewMode() === 'graph') {
+        <cce-graph-canvas
+          class="cce-map-viewer__canvas"
+          [nodes]="tab.nodes"
+          [edges]="tab.edges"
+          [locale]="locale()"
+          [mirrored]="mirrored()"
+          [selectedId]="store.selectedNodeId()"
+          [dimmedIds]="store.dimmedIds()"
+          (nodeClick)="onNodeClick($event)"
+          (selectionChange)="onSelectionChange($event)"
+        />
+      } @else {
+        <cce-list-view
+          class="cce-map-viewer__canvas"
+          [nodes]="tab.nodes"
+          [edges]="tab.edges"
+          [locale]="locale()"
+          [selectedId]="store.selectedNodeId()"
+          [dimmedIds]="store.dimmedIds()"
+          (nodeSelected)="onNodeClick($event)"
+        />
+      }
 
       <cce-node-detail-panel
         class="cce-map-viewer__panel"
