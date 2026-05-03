@@ -116,8 +116,9 @@ public static class DependencyInjection
         // Surveys
         services.AddScoped<IServiceRatingService, ServiceRatingService>();
 
-        // Smart assistant (stub — real LLM deferred to Sub-8)
-        services.AddScoped<ISmartAssistantClient, SmartAssistantClient>();
+        // Smart assistant — factory routes to stub or Anthropic based on
+        // Assistant:Provider config + ANTHROPIC_API_KEY env-var (Sub-10a).
+        services.AddCceAssistantClient(configuration);
 
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
