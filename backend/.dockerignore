@@ -1,0 +1,12 @@
+**/bin
+**/obj
+**/artifacts
+**/.vs
+**/.idea
+**/*.user
+**/TestResults
+**/coverage
+.git
+.github
+docs
+tests

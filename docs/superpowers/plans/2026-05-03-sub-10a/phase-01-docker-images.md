@@ -90,20 +90,30 @@ ENTRYPOINT ["dotnet", "CCE.Api.External.dll"]
   ```
   Expected: success. First build pulls SDK + ASP.NET base images (~700MB total).
 
-- [ ] **Step 4:** Smoke-probe the runtime image:
+- [ ] **Step 4:** Smoke-probe the runtime image. The host validates Keycloak +
+  Infrastructure config eagerly at startup, so the probe must pass placeholder
+  values for those — `/health` itself doesn't need them to resolve, just the
+  host needs to start:
   ```bash
-  docker run --rm -d --name cce-api-external-smoke -p 18080:8080 cce-api-external:dev
-  # Wait for startup, then probe
-  for i in 1 2 3 4 5; do
+  docker run --rm -d --name cce-api-external-smoke -p 18080:8080 \
+    -e Keycloak__Authority=http://localhost:8080/realms/cce \
+    -e Keycloak__Audience=cce-api \
+    -e Keycloak__RequireHttpsMetadata=false \
+    -e Infrastructure__SqlConnectionString="Server=localhost;Database=CCE;Integrated Security=True" \
+    -e Infrastructure__RedisConnectionString="localhost:6379" \
+    cce-api-external:dev
+  for i in $(seq 1 15); do
     sleep 2
     if curl -fsS http://localhost:18080/health > /dev/null 2>&1; then
       echo "PASS"; break
     fi
-    [ $i -eq 5 ] && echo "FAIL"
+    [ $i -eq 15 ] && echo "FAIL"
   done
   docker rm -f cce-api-external-smoke
   ```
-  Expected: `PASS`. (The image will fail on missing connection strings during deeper requests, but `/health` returns 200 by design — it's a liveness probe, not a readiness probe.)
+  Expected: `PASS`. (The placeholder values let the host start; deeper
+  requests against SQL / Keycloak would fail, but `/health` is a liveness
+  probe — it returns 200 once the host binds.)
 
 - [ ] **Step 5:** Commit:
   ```bash
