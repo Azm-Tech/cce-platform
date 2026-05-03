@@ -4,6 +4,25 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [app-v1.0.0] — 2026-05-03
+
+### Added
+- Sub-10a App productionization. ~17 tasks across 4 phases. Takes the four shipped applications from "passes tests on a developer laptop" to "production-quality builds with real observability and a real LLM". App-layer only — Sub-10b targets a real environment, Sub-10c lands AD federation + multi-env + IDD DNS/LB validation + backup.
+- Production multistage Linux Docker images for `Api.External`, `Api.Internal`, `web-portal`, and `admin-cms`. Backend uses `aspnet:8.0` runtime as non-root `app` user; frontend uses `nginx:alpine` serving the Nx production build with SPA fallback + gzip + immutable cache on hashed bundles. `docker-compose.prod.yml` wires all four locally for smoke testing.
+- Observability wired: `LoggingExtensions.UseCceSerilog` (console JSON-compact + rolling-file daily + optional Sentry sink, all gated on env-vars; `CorrelationId` flows automatically via the existing `CorrelationIdMiddleware.BeginScope` + `Enrich.FromLogContext`); `PrometheusExtensions.UseCcePrometheus` exposes `/metrics` with default `http_request_*` histograms + custom counters `cce_assistant_streams_total{provider}` and `cce_assistant_citations_total{kind}`.
+- Real LLM client: `AnthropicSmartAssistantClient` against `Anthropic.SDK` 5.0.0 streaming API. Yields `TextEvent` per `Delta.Text` chunk; after the stream finishes, queries `CitationSearch` (RAG-lite Jaccard token-overlap against `Resources` + `KnowledgeMapNodes`) for up to 1 resource + 1 map-node `CitationEvent`; finally `DoneEvent`. Stream-open or mid-stream failure → `ErrorEvent('server')` with partial text preserved. `IAnthropicStreamProvider` abstraction lets unit tests mock streaming without touching the network.
+- `AssistantClientFactory` honours `Assistant:Provider` config + `ANTHROPIC_API_KEY` env-var. `stub` is the default; `anthropic` with the key wires the real client; `anthropic` without the key falls back to stub with a stderr warning so CI / offline dev / no-key envs work out-of-box.
+- New CI workflows: `lighthouse.yml` (against `/knowledge-maps/:id` production build with seeded DB; asserts a11y ≥ 90, best-practices ≥ 90 as errors, performance ≥ 70, SEO ≥ 80 as warnings) and `a11y.yml` (against `/interactive-city` + `/assistant` via the existing `@axe-core/playwright` integration; zero critical/serious findings). New `docker-build` job in `ci.yml` builds all four production images on PR with GHA layer cache + smoke probes.
+- 2 new ADRs (0051 Anthropic.SDK + RAG-lite citations, 0052 Observability stack: Serilog + Sentry + Prometheus).
+- 14 new backend tests (6 CitationSearch + 4 AssistantClientFactory + 4 AnthropicSmartAssistantClient). Drive-by fix to `KnowledgeMapSeederTests` whose assertions were stale since the Sub-7 ship-readiness commit enriched the seeder from 4→13 nodes + added a second carbon-capture map.
+
+### Notes
+- Linux containers chosen over Windows-native because they're smaller and faster to build, and the IDD v1.2's Windows Server 2022 hosts can run Linux containers. Sub-10b decides the final deploy form.
+- `Anthropic.SDK` 5.0.0 community NuGet ships its own `Anthropic.SDK.SseEvent` type that collides with our `CCE.Application.Assistant.SseEvent`; disambiguated via `using SseEvent = ...` alias. CA1031 suppressed at the streaming-boundary class with a comment explaining why catching `Exception` is the documented pattern there.
+- `CitationSearch` uses Jaccard token-overlap (no embeddings). Adequate recall for the small seeded catalog. Embedding-based RAG is a future sub-project — `ICitationSearch` interface lets us swap in an embedding-backed implementation later.
+- `cce_assistant_streams_total` exists in two slightly-different forms (PrometheusExtensions declares the canonical one; AnthropicSmartAssistantClient uses a `_runtime` suffix to avoid the static-registry collision). Cleanup is in the polish backlog.
+- Sub-10b will land deployment automation (migration runner, prod compose / IIS scripts, secrets management). Sub-10c will land production infra (AD federation, DNS/LB validation against IDD v1.2, backup, multi-env, production observability sinks).
+
 ## [web-portal-v0.4.0] — 2026-05-03
 
 ### Added
