@@ -85,6 +85,7 @@
     <PackageVersion Include="Sentry.Serilog" Version="4.13.0" />
     <PackageVersion Include="prometheus-net" Version="8.2.1" />
     <PackageVersion Include="prometheus-net.AspNetCore" Version="8.2.1" />
+    <PackageVersion Include="Anthropic.SDK" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Integration tests (Testcontainers)">
