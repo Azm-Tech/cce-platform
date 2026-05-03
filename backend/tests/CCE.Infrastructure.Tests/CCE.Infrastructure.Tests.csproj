@@ -18,6 +18,7 @@
     <PackageReference Include="NSubstitute.Analyzers.CSharp" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Testcontainers.MsSql" />
   </ItemGroup>
 
   <ItemGroup>
