@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CCE.Application\CCE.Application.csproj" />
+    <ProjectReference Include="..\..\src\CCE.Infrastructure\CCE.Infrastructure.csproj" />
     <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
   </ItemGroup>
 

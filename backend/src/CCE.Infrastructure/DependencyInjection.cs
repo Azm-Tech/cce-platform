@@ -118,6 +118,7 @@ public static class DependencyInjection
 
         // Smart assistant — factory routes to stub or Anthropic based on
         // Assistant:Provider config + ANTHROPIC_API_KEY env-var (Sub-10a).
+        services.AddScoped<ICitationSearch, CitationSearch>();
         services.AddCceAssistantClient(configuration);
 
         // Interactive City
