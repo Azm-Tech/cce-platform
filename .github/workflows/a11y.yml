@@ -1,0 +1,69 @@
+name: a11y (axe-core)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/a11y.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: a11y-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  axe:
+    name: axe-core — /interactive-city + /assistant
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Build web-portal (production)
+        working-directory: frontend
+        run: ./node_modules/.bin/nx build web-portal --configuration=production
+
+      - name: Serve production SPA
+        working-directory: frontend
+        run: |
+          npx --yes serve -l 4200 dist/apps/web-portal/browser > /tmp/serve.log 2>&1 &
+          for i in $(seq 1 10); do
+            sleep 1
+            if curl -fsS http://localhost:4200/ | grep -q "<html"; then
+              echo "SPA up"; exit 0
+            fi
+          done
+          echo "SPA failed to start"; tail -20 /tmp/serve.log; exit 1
+
+      - name: Run axe spec
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:4200
+        run: ./node_modules/.bin/nx e2e web-portal-e2e --grep "Sub-10a a11y gate"
+
+      - name: Upload axe attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-results
+          path: frontend/apps/web-portal-e2e/test-output/**/axe-results.json
+          if-no-files-found: ignore

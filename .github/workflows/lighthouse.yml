@@ -1,0 +1,121 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - '.github/workflows/lighthouse.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lighthouse:
+    name: Lighthouse — /knowledge-maps/:id
+    runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.7
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: Strong!Passw0rd
+          MSSQL_PID: Developer
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "timeout 3 bash -c 'exec 3<>/dev/tcp/localhost/1433' 2>/dev/null"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --health-start-period 30s
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web-portal (production)
+        working-directory: frontend
+        run: ./node_modules/.bin/nx build web-portal --configuration=production
+
+      - name: Seed the database
+        working-directory: backend
+        env:
+          Infrastructure__SqlConnectionString: "Server=localhost,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;"
+          Infrastructure__RedisConnectionString: "localhost:6379"
+        run: dotnet run --project src/CCE.Seeder -- --demo
+
+      - name: Boot External API in background
+        working-directory: backend
+        env:
+          ASPNETCORE_URLS: http://localhost:5001
+          ASPNETCORE_ENVIRONMENT: Development
+          Keycloak__Authority: http://localhost:8080/realms/cce
+          Keycloak__Audience: cce-api
+          Keycloak__RequireHttpsMetadata: "false"
+          Infrastructure__SqlConnectionString: "Server=localhost,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;"
+          Infrastructure__RedisConnectionString: "localhost:6379"
+        run: |
+          nohup dotnet run --project src/CCE.Api.External --no-launch-profile > /tmp/api.log 2>&1 &
+          for i in $(seq 1 30); do
+            sleep 2
+            if curl -fsS http://localhost:5001/health > /dev/null; then
+              echo "API up"; exit 0
+            fi
+          done
+          echo "API failed to start"; tail -50 /tmp/api.log; exit 1
+
+      - name: Serve production SPA
+        working-directory: frontend
+        run: |
+          npx --yes serve -l 4200 dist/apps/web-portal/browser > /tmp/serve.log 2>&1 &
+          for i in $(seq 1 10); do
+            sleep 1
+            if curl -fsS http://localhost:4200/ | grep -q "<html"; then
+              echo "SPA up"; exit 0
+            fi
+          done
+          echo "SPA failed to start"; tail -20 /tmp/serve.log; exit 1
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:4200/knowledge-maps/01eec8cb-87ea-cd59-7e72-16e3639a59f3
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configPath: ./.github/workflows/lighthouserc.json
+
+      - name: Tail API log on failure
+        if: failure()
+        run: tail -80 /tmp/api.log || true
