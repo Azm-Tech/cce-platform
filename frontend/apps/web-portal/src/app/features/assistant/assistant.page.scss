@@ -1,6 +1,46 @@
-:host { display: block; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+:host {
+  display: block;
+  padding: 1rem 1.5rem 0;
+  max-width: 900px;
+  margin: 0 auto;
+  height: calc(100vh - var(--cce-header-height, 64px));
+}
+
+.cce-assistant {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+}
+
+.cce-assistant__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.cce-assistant__heading h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
 
 .cce-assistant__subtitle {
-  margin: 0.5rem 0 1.5rem 0;
+  margin: 0.25rem 0 0;
   color: rgba(0, 0, 0, 0.6);
+}
+
+.cce-assistant__clear {
+  flex-shrink: 0;
+}
+
+.cce-assistant__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cce-assistant__compose {
+  flex-shrink: 0;
 }

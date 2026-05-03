@@ -1,5 +1,21 @@
 <section class="cce-assistant">
-  <h1>{{ 'assistant.title' | translate }}</h1>
-  <p class="cce-assistant__subtitle">{{ 'assistant.subtitle' | translate }}</p>
-  <!-- Phase 02: <cce-message-list /> + <cce-compose-box /> -->
+  <header class="cce-assistant__header">
+    <div class="cce-assistant__heading">
+      <h1>{{ 'assistant.title' | translate }}</h1>
+      <p class="cce-assistant__subtitle">{{ 'assistant.subtitle' | translate }}</p>
+    </div>
+    <button
+      type="button"
+      mat-stroked-button
+      class="cce-assistant__clear"
+      [disabled]="store.messages().length === 0 || store.streaming()"
+      (click)="clear()"
+    >
+      <mat-icon>delete_sweep</mat-icon>
+      {{ 'assistant.thread.clear' | translate }}
+    </button>
+  </header>
+
+  <cce-message-list class="cce-assistant__list" />
+  <cce-compose-box class="cce-assistant__compose" />
 </section>

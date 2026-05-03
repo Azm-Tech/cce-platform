@@ -32,7 +32,7 @@ export class MessageBubbleComponent {
 
   readonly retry = output<void>();
   readonly regenerate = output<void>();
-  readonly copy = output<string>();
+  readonly copyContent = output<string>();
 
   readonly isUser = computed(() => this.message().role === 'user');
   readonly isAssistant = computed(() => this.message().role === 'assistant');
@@ -48,6 +48,6 @@ export class MessageBubbleComponent {
   );
 
   copyToClipboard(): void {
-    this.copy.emit(this.message().content);
+    this.copyContent.emit(this.message().content);
   }
 }
