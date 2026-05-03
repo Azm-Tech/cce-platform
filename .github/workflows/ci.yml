@@ -118,3 +118,104 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run drift check
         run: ./scripts/check-contracts-clean.sh
+
+  docker-build:
+    name: Production Docker images
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Api.External
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/src/CCE.Api.External/Dockerfile
+          push: false
+          load: true
+          tags: cce-api-external:ci
+          cache-from: type=gha,scope=api-external
+          cache-to: type=gha,mode=max,scope=api-external
+
+      - name: Build Api.Internal
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/src/CCE.Api.Internal/Dockerfile
+          push: false
+          load: true
+          tags: cce-api-internal:ci
+          cache-from: type=gha,scope=api-internal
+          cache-to: type=gha,mode=max,scope=api-internal
+
+      - name: Build web-portal
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/apps/web-portal/Dockerfile
+          push: false
+          load: true
+          tags: cce-web-portal:ci
+          cache-from: type=gha,scope=web-portal
+          cache-to: type=gha,mode=max,scope=web-portal
+
+      - name: Build admin-cms
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/apps/admin-cms/Dockerfile
+          push: false
+          load: true
+          tags: cce-admin-cms:ci
+          cache-from: type=gha,scope=admin-cms
+          cache-to: type=gha,mode=max,scope=admin-cms
+
+      - name: Smoke-probe all four runtime containers
+        run: |
+          set -euo pipefail
+          probe_backend() {
+            local name=$1 image=$2 host_port=$3
+            docker run --rm -d --name "${name}" -p "${host_port}:8080" \
+              -e Keycloak__Authority=http://localhost:8080/realms/cce \
+              -e Keycloak__Audience=cce-api \
+              -e Keycloak__RequireHttpsMetadata=false \
+              -e Infrastructure__SqlConnectionString="Server=localhost;Database=CCE;Integrated Security=True" \
+              -e Infrastructure__RedisConnectionString="localhost:6379" \
+              "${image}"
+            for i in $(seq 1 15); do
+              sleep 2
+              if curl -fsS "http://localhost:${host_port}/health" >/dev/null 2>&1; then
+                echo "${name}: PASS"
+                docker rm -f "${name}" >/dev/null
+                return 0
+              fi
+            done
+            echo "${name}: FAIL"
+            docker logs "${name}" || true
+            docker rm -f "${name}" >/dev/null
+            return 1
+          }
+          probe_frontend() {
+            local name=$1 image=$2 host_port=$3
+            docker run --rm -d --name "${name}" -p "${host_port}:8080" "${image}"
+            for i in $(seq 1 10); do
+              sleep 1
+              if curl -fsS "http://localhost:${host_port}/" | grep -q "<html"; then
+                echo "${name}: PASS"
+                docker rm -f "${name}" >/dev/null
+                return 0
+              fi
+            done
+            echo "${name}: FAIL"
+            docker logs "${name}" || true
+            docker rm -f "${name}" >/dev/null
+            return 1
+          }
+
+          probe_backend  ext     cce-api-external:ci   18080
+          probe_backend  int     cce-api-internal:ci   18081
+          probe_frontend portal  cce-web-portal:ci     18082
+          probe_frontend cms     cce-admin-cms:ci      18083

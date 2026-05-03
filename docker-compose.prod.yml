@@ -1,0 +1,57 @@
+# Sub-10a — Production image smoke target.
+# Boots all four production-built images locally for end-to-end probes.
+# Does NOT include infra services (SQL, Redis, Keycloak) — supply via
+# docker-compose.yml (dev) or external hosts (prod, Sub-10b/10c).
+
+services:
+  api-external:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Api.External/Dockerfile
+    image: cce-api-external:prod
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASSISTANT_PROVIDER: ${ASSISTANT_PROVIDER:-stub}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      LOG_LEVEL: ${LOG_LEVEL:-Information}
+      Keycloak__Authority: ${KEYCLOAK_AUTHORITY:-http://host.docker.internal:8080/realms/cce}
+      Keycloak__Audience: ${KEYCLOAK_AUDIENCE:-cce-api}
+      Keycloak__RequireHttpsMetadata: ${KEYCLOAK_REQUIRE_HTTPS:-false}
+      Infrastructure__SqlConnectionString: ${INFRA_SQL:-Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;}
+      Infrastructure__RedisConnectionString: ${INFRA_REDIS:-host.docker.internal:6379}
+    ports:
+      - "5001:8080"
+
+  api-internal:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Api.Internal/Dockerfile
+    image: cce-api-internal:prod
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      LOG_LEVEL: ${LOG_LEVEL:-Information}
+      Keycloak__Authority: ${KEYCLOAK_AUTHORITY:-http://host.docker.internal:8080/realms/cce}
+      Keycloak__Audience: ${KEYCLOAK_AUDIENCE:-cce-api}
+      Keycloak__RequireHttpsMetadata: ${KEYCLOAK_REQUIRE_HTTPS:-false}
+      Infrastructure__SqlConnectionString: ${INFRA_SQL:-Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;}
+      Infrastructure__RedisConnectionString: ${INFRA_REDIS:-host.docker.internal:6379}
+    ports:
+      - "5002:8080"
+
+  web-portal:
+    build:
+      context: .
+      dockerfile: frontend/apps/web-portal/Dockerfile
+    image: cce-web-portal:prod
+    ports:
+      - "4200:8080"
+
+  admin-cms:
+    build:
+      context: .
+      dockerfile: frontend/apps/admin-cms/Dockerfile
+    image: cce-admin-cms:prod
+    ports:
+      - "4201:8080"
