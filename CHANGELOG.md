@@ -4,6 +4,27 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [web-portal-v0.4.0] — 2026-05-03
+
+### Added
+- Sub-9 Smart Assistant streaming + threading + citations, replacing the Sub-6 Phase 9 single-turn skeleton at `/assistant`. ~21 tasks across 4 phases. Anonymous users type a question, watch tokens stream in token-by-token, and see citation chips at the bottom of each assistant message that link into existing knowledge-center resources or knowledge-map nodes.
+- `AssistantStore` signal-driven state container provided per-route (2 state signals: `messages`, `streaming`; 1 computed `canSend`; 5 actions: `sendMessage`, `cancel`, `retry`, `regenerate`, `clear`). Per-stream `AbortController` for clean cancel; SSE events route to the assistant placeholder via `applyEvent`.
+- `lib/sse-client.ts` — `openSseStream(url, body, signal)` async-iterator over `fetch` + `ReadableStream`. POST-capable, BFF-cookie-friendly, abortable. Handles event-frame splits across chunk boundaries; skips malformed JSON / unknown event types rather than failing the stream.
+- 5 sub-components: `MessageBubbleComponent` (role-styled bubble with streaming cursor + copy/retry/regenerate actions + citations footer), `MessageListComponent` (auto-scroll on new message, `aria-live="polite"`), `ComposeBoxComponent` (Reactive Forms textarea, Enter sends, Shift+Enter newlines, send button morphs to Cancel during streaming, char counter at ≥1500), `CitationChipComponent` (inline + footer variants with kind icons and tooltips), `TypingIndicatorComponent` (pure CSS three-dot bouncing animation).
+- URL `?q=` deep-link auto-send: a `/assistant?q=What+is+CCE` URL auto-sends the question on entry and strips `q` from the URL so refresh doesn't re-fire.
+- Clear-thread confirm dialog reuses Sub-8's `ConfirmDialogComponent` (cross-feature import; ADR-0050 documents the future promotion to `ui-kit`).
+- 2 new ADRs (0049, 0050): SSE + structured citation events, client-owned in-memory thread state.
+- Backend reshape: `/api/assistant/query` now accepts `{ messages[], locale }` and responds with `text/event-stream`. `ISmartAssistantClient` becomes `IAsyncEnumerable<SseEvent>`-shaped. `SseEvent` discriminated-union records (Text/Citation/Done/Error) JSON-serialize to match the frontend wire format. `SseWriter.WriteAsync` streams the events to the response with no-cache + `X-Accel-Buffering: no` headers.
+- Fake-streaming `SmartAssistantClient` stub yields ~8 chunks @ 150ms each over ~1.2s; halfway through, queries the DB for one Resource + one KnowledgeMapNode and emits `CitationEvent` records pointing at `/knowledge-center/resources/<id>` and `/knowledge-maps/<id>?node=<id>`. Real LLM integration drops in by replacing this single class — zero frontend changes.
+- 54 new web-portal Jest tests (499 total, was 445). admin-cms unchanged at 218/218. ui-kit unchanged at 27/27. Total Jest suite: 744 across 144 suites. Backend Application.Tests: +5 net (4 SseEvent serialization + 9 new validator − 8 old handler/validator). Backend integration: 2 SSE tests.
+
+### Notes
+- No new heavy frontend dependencies — SSE is handled with native `fetch` + `ReadableStream` (no `eventsource` polyfill).
+- In-memory threads only for v0.1.0; persistence design lands with the real LLM (Sub-10+) along with whatever identity/auth/retention model real conversations need (ADR-0050).
+- Frontend `MessageBubbleComponent`'s `copy` output was renamed to `copyContent` to avoid collision with the standard DOM `copy` event (Angular ESLint `no-output-native` rule).
+- Backend assistant endpoint now bypasses MediatR for the streaming hot path — the endpoint calls `ISmartAssistantClient.StreamAsync` directly so the validation pipeline behavior doesn't try to materialize an `IRequest<TResponse>`.
+- Polish backlog (7 items) captured in `docs/sub-9-assistant-completion.md`: real LLM client, server-persisted threads, markdown rendering, multi-thread sidebar, voice/TTS, promote ConfirmDialog to ui-kit, axe-core CI gate.
+
 ## [web-portal-v0.3.0] — 2026-05-02
 
 ### Added
