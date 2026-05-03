@@ -1,0 +1,10 @@
+node_modules
+.nx
+dist
+**/.nx
+**/dist
+**/coverage
+**/test-output
+.git
+.github
+docs
