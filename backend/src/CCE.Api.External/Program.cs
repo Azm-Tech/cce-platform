@@ -4,6 +4,7 @@ using CCE.Api.Common.Caching;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
+using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Api.External.Endpoints;
@@ -14,10 +15,15 @@ using CCE.Application.Health;
 using CCE.Infrastructure;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Wire Serilog (console JSON + rolling file + optional Sentry sink).
+// Reads Serilog:* config from appsettings + SENTRY_DSN env-var.
+builder.Host.UseCceSerilog();
 
 // Serialize enums as their member names (e.g. "Sector") rather than the underlying int.
 // The TypeScript types in apps/web-portal already declare every enum field as a string union
@@ -48,6 +54,7 @@ var app = builder.Build();
 
 // Middleware order (spec §7.1): correlation → exception → security headers → rate → auth → output-cache → authz → locale
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseCceTieredRateLimiter();

@@ -3,6 +3,7 @@ using CCE.Api.Common.Authorization;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
+using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Api.Internal.Endpoints;
@@ -14,9 +15,12 @@ using CCE.Infrastructure;
 using CCE.Infrastructure.Search;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Serilog;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseCceSerilog();
 
 builder.Services
     .AddApplication()
@@ -37,6 +41,7 @@ var app = builder.Build();
 
 // Middleware order (spec §7.1): correlation → exception → security headers → auth → authz → rate → locale
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseAuthentication();
