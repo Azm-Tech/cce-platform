@@ -48,6 +48,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCceUserSync();
 app.UseRateLimiter();
+app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "internal");

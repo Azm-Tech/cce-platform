@@ -63,6 +63,7 @@ app.UseCceOutputCache();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCceUserSync();
+app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "external");
