@@ -35,6 +35,9 @@
     <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="Meilisearch" />
     <PackageReference Include="StackExchange.Redis" />
+
+    <PackageReference Include="Anthropic.SDK" />
+    <PackageReference Include="prometheus-net" />
   </ItemGroup>
 
   <ItemGroup>
