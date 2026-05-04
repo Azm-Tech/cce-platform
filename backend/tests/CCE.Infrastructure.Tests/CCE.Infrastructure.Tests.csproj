@@ -20,6 +20,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Testcontainers.Keycloak" />
+    <PackageReference Include="Microsoft.Graph" />
+    <PackageReference Include="WireMock.Net" />
   </ItemGroup>
 
   <ItemGroup>
