@@ -68,6 +68,12 @@ Write-Log "Env-file: $resolvedEnvFile"
 
 # ─── Step 2: Validate env-file ─────────────────────────────────────────────
 Write-Log "Step 2/10: Validating required keys."
+
+# Sub-10c: canary integrity check (placeholder values, leaked-secret canaries, whitespace).
+$validateScript = Join-Path $PSScriptRoot 'validate-env.ps1'
+& pwsh -NoProfile -File $validateScript -EnvFile $resolvedEnvFile -Environment $Environment
+if ($LASTEXITCODE -ne 0) { Abort "Env-file validation failed (canary check). See messages above." }
+
 $envMap = @{}
 foreach ($line in Get-Content $resolvedEnvFile) {
     if ($line -match '^\s*#') { continue }
