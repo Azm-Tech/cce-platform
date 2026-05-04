@@ -4,6 +4,31 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [deploy-v1.0.0] — 2026-05-04
+
+**Sub-10b — Deployment automation.** One-command deployable system on a single Windows Server 2022 host. Linux containers, sidecar migrator, `.env.prod` on host, image-tag rollback, ghcr.io registry, PowerShell deploy + rollback scripts.
+
+### Added
+- `CCE.Seeder` `--migrate` and `--seed-reference` CLI flags backed by EF Core's `Database.MigrateAsync()`.
+- `cce-migrator` multistage Dockerfile + CI build step.
+- 3-file compose pattern: `docker-compose.prod.yml` + `prod.deploy.yml` (strict-env) + `build.yml` (local-build).
+- `.env.prod.example` documenting every required + optional env-var.
+- CI ghcr.io push gate with full tag matrix (`:<sha>` / `:sha-<short>` / `:latest` / `:<release-tag>` on `v*`).
+- `deploy/deploy.ps1` (10-step idempotent flow with audit-logged `deploy-history.tsv`).
+- `deploy/smoke.ps1` (4-endpoint probe with 60-sec window).
+- `deploy/rollback.ps1` (atomic image-tag swap + re-deploy).
+- `.github/workflows/deploy-smoke.yml` (Windows-runner end-to-end deploy → rollback → re-smoke test).
+- 12 new backend tests (9 flag parser + 3 migration on Testcontainers MS-SQL).
+- 4 new docs: ADR-0053, completion doc, `deploy/README.md`, 3 runbooks (`deploy.md`, `rollback.md`, `migrations.md`).
+
+### Changed
+- `docker-compose.prod.yml` now references ghcr.io image refs by `${CCE_REGISTRY_OWNER}/cce-<name>:${CCE_IMAGE_TAG}` instead of `build:` blocks. CI uses `docker-compose.build.yml` overlay to restore local-build behaviour for PR smoke target.
+- CI `docker-build` job: `permissions.packages: write`, conditional push gate (`main` + `v*`), step-summary table of pushed images + tags.
+- `.gitignore`: explicit `!.env.prod.example` allow-list.
+
+### Architecture decisions
+- ADR-0053 — Linux containers on Windows Server 2022 (not Windows-native rebuild); sidecar migrator (auto-on-deploy with `MIGRATE_ON_DEPLOY=false` kill-switch); `.env.prod` on host with NTFS ACLs (not Vault, not Docker secrets); image-tag rollback + forward-only migrations (not backup-restore); ghcr.io + PowerShell scripts (not self-hosted registry).
+
 ## [app-v1.0.0] — 2026-05-03
 
 ### Added
