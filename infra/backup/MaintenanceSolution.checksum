@@ -1,0 +1,12 @@
+# Ola Hallengren SQL Server Maintenance Solution
+# Pinned version: 2024-11-10
+# Source URL (canonical): https://ola.hallengren.com/scripts/MaintenanceSolution.sql
+#
+# SHA256 below is computed against the canonical file at the pinned version.
+# Operator updates: bump version + recompute SHA256 + commit.
+#
+# To verify locally:
+#   curl -fsS https://ola.hallengren.com/scripts/MaintenanceSolution.sql | shasum -a 256
+#
+# Recorded SHA256 (placeholder — operator MUST replace at first install):
+SHA256_PLACEHOLDER_REPLACE_AT_FIRST_INSTALL
