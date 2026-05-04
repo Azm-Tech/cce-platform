@@ -920,30 +920,31 @@ Recorded HTTP responses from a real Entra ID dev tenant + Microsoft Graph dev ac
 
 ---
 
-## Phase 00 close-out
+## Phase 00 close-out — DONE 2026-05-04
 
 After Task 0.7 commits cleanly:
 
-- [ ] **Run the full check:**
+- [x] **Run the full check:**
   ```bash
   cd /Users/m/CCE/backend && dotnet build && \
     dotnet test tests/CCE.Application.Tests/ tests/CCE.Infrastructure.Tests/ --nologo
   ```
-  Expected: backend build clean; 439 Application + 84 Infrastructure tests passing (1 skipped).
+  Result: backend build clean (0 warnings, 0 errors); Domain 290, Application 439, Architecture 12, Infrastructure 83 (1 pre-existing skip) — all green.
 
-- [ ] **Verify CI green** on push: existing CI workflows pass.
+- [x] **Verify CI green** on push: existing CI workflows pass.
 
-- [ ] **Hand off to Phase 01.** Phase 01 implements the self-service registration via Microsoft Graph: `EntraIdRegistrationService`, `EntraIdGraphClientFactory`, modify `ProfileEndpoints.cs`, delete `BffTokenRefresher.cs`. Plan file: `phase-01-graph-registration.md` (to be written when ready).
+- [ ] **Hand off to Phase 01.** Phase 01 implements the self-service registration via Microsoft Graph: `EntraIdRegistrationService`, `EntraIdGraphClientFactory`, modify `ProfileEndpoints.cs`, delete `BffTokenRefresher.cs`. Plan file: `phase-01-graph-registration.md` (to be written just-in-time before execution).
 
-**Phase 00 done when:**
-- 7 commits land on `main`, each green.
-- `Microsoft.Identity.Web` 3.5.0 + `WireMock.Net` 1.7.0 + `Microsoft.Graph` 5.65.0 in `Directory.Packages.props`.
-- DB migration `AddEntraIdObjectIdToUser` registered + `User` entity has `EntraIdObjectId` + `LinkEntraIdObjectId` + `CreateStubFromEntraId`.
-- `EntraIdOptions` config record + `EntraId:` appsettings section.
-- `CceJwtAuthRegistration.AddCceJwtAuth` rewired against `Microsoft.Identity.Web` with multi-tenant `IssuerValidator`; `RoleClaimType=roles`; `ValidateAudience=true`.
-- `EntraIdUserResolver` lazy linker registered in BFF DI.
-- `BffRegistration.AddCceBff` rewired against `AddMicrosoftIdentityWebApp` with `OnTokenValidated` → resolver.
-- `EntraIdFixture` + 9 new tests pass against WireMock.
+**Phase 00 done — actual deliverables:**
+- 7 commits landed on `main` (cb3c6f3, a7f5e1c, f266496, af3686d, fcfb57a, 5f6a8a0 + the packages/migration commit), each green.
+- `Microsoft.Identity.Web` 3.5.0 + `Microsoft.Identity.Web.MicrosoftGraph` 3.5.0 + `Microsoft.Identity.Web.UI` 3.5.0 + `Microsoft.Graph` 5.65.0 + `WireMock.Net` 1.7.0 in `Directory.Packages.props`.
+- DB migration `20260504182534_AddEntraIdObjectIdToUser` registered: additive nullable `entra_id_object_id` column + filtered unique index `ix_asp_net_users_entra_id_object_id` on `[identity].[Users]`. `User` entity has `EntraIdObjectId` + `LinkEntraIdObjectId` (idempotent + DomainException on overwrite) + `CreateStubFromEntraId` (EmailConfirmed=false).
+- `EntraIdOptions` config record + `EntraId:` appsettings section in both `appsettings.json` files.
+- `CceJwtAuthRegistration.AddCceJwtAuth` rewired against `Microsoft.Identity.Web` with multi-tenant `IssuerValidator` (extracted as static `EntraIdIssuerValidator` for testability); `RoleClaimType=roles`; `NameClaimType=preferred_username`; `MapInboundClaims=false`; `ValidateAudience=true`; `ClockSkew=5min`.
+- `EntraIdUserResolver` lazy linker registered (`AddScoped`) in BFF DI; swallows `DbUpdateException` (concurrent races) and other exceptions (logged at Error) to avoid blocking sign-in.
+- `BffRegistration.AddCceBff` adds `AddMicrosoftIdentityWebApp` + `EnableTokenAcquisitionToCallDownstreamApi` + in-memory token caches **side-by-side** with the existing custom `BffSessionMiddleware` / `BffSessionCookie` / `BffTokenRefresher` (deletion deferred to Phase 04). `OnTokenValidated` event chains existing handler + invokes resolver.
+- 8 net new tests pass: 5 `EntraIdIssuerValidatorTests` + 3 `EntraIdObjectIdLazyResolutionTests`. `MigratorFixture.CreateContextWithFreshDb` patched with `UseSnakeCaseNamingConvention()` so EF queries match snake_case columns created by migrations.
 - Old `KeycloakLdapFederationTests` (3) still pass — deletion deferred to Phase 04.
-- Test counts: backend Application 439 (unchanged); Infrastructure 84 (was 75; +9). Frontend 502 (unchanged).
+- **Scope deviation from plan**: 2 `RoleClaimMapping` tests deferred to Phase 03 because the existing `RoleToPermissionClaimsTransformer` reads the `groups` claim with `SuperAdmin`-style names rather than Sub-11's `roles` claim with `cce-admin`-style names. Updating that transformer is part of Phase 03's permission-mapping rebuild. Net: 8 new tests instead of planned 9.
+- Test counts: backend Domain 290 (unchanged); Application 439 (unchanged); Architecture 12 (unchanged); Infrastructure 83 (was 75; +8). Frontend 502 (unchanged — Phase 03 territory).
 - **No production cutover.** Cutover happens in Phase 04.
