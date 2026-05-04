@@ -1,4 +1,4 @@
-namespace CCE.Api.Common.Auth;
+namespace CCE.Infrastructure.Identity;
 
 /// <summary>
 /// Strongly-typed accessor for the EntraId: configuration section.
