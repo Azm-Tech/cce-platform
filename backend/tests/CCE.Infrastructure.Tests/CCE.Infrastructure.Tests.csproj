@@ -31,4 +31,10 @@
     <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Identity/Fixtures/entra-id-fixtures/*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

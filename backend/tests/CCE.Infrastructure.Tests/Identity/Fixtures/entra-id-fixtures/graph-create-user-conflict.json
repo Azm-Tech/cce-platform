@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "Request_BadRequest",
+    "message": "Another object with the same value for property userPrincipalName already exists.",
+    "innerError": {
+      "date": "2026-05-04T18:25:34",
+      "request-id": "00000000-0000-0000-0000-000000000409",
+      "client-request-id": "00000000-0000-0000-0000-000000000409"
+    }
+  }
+}
