@@ -20,7 +20,7 @@
     "rdnLDAPAttribute": ["cn"],
     "uuidLDAPAttribute": ["objectGUID"],
     "userObjectClasses": ["person, organizationalPerson, user"],
-    "validatePasswordPolicy": ["true"],
+    "validatePasswordPolicy": ["false"],
     "trustEmail": ["true"],
     "useKerberosForPasswordAuthentication": ["false"],
     "fullSyncPeriod": ["-1"],
