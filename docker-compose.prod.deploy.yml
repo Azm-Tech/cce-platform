@@ -1,0 +1,36 @@
+# Sub-10b — Production strict-env override.
+# Overlays docker-compose.prod.yml; strips fallback defaults so that
+# missing required env-vars hard-fail at compose-up time. Used by
+# deploy.ps1 in production. NOT used by direct `compose up` callers
+# or the CI smoke target — those rely on the relaxed defaults in the
+# base file.
+#
+# Compose merges environment maps key-by-key. Setting a key to the
+# empty-default form ${VAR:?} causes compose to error if VAR is unset
+# OR empty.
+
+services:
+  migrator:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:?CCE_REGISTRY_OWNER must be set}/cce-migrator:${CCE_IMAGE_TAG:?CCE_IMAGE_TAG must be set}
+
+  api-external:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:?CCE_REGISTRY_OWNER must be set}/cce-api-external:${CCE_IMAGE_TAG:?CCE_IMAGE_TAG must be set}
+    environment:
+      Keycloak__Authority: ${KEYCLOAK_AUTHORITY:?KEYCLOAK_AUTHORITY must be set}
+      Keycloak__Audience: ${KEYCLOAK_AUDIENCE:?KEYCLOAK_AUDIENCE must be set}
+      Infrastructure__SqlConnectionString: ${INFRA_SQL:?INFRA_SQL must be set}
+      Infrastructure__RedisConnectionString: ${INFRA_REDIS:?INFRA_REDIS must be set}
+
+  api-internal:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:?CCE_REGISTRY_OWNER must be set}/cce-api-internal:${CCE_IMAGE_TAG:?CCE_IMAGE_TAG must be set}
+    environment:
+      Keycloak__Authority: ${KEYCLOAK_AUTHORITY:?KEYCLOAK_AUTHORITY must be set}
+      Keycloak__Audience: ${KEYCLOAK_AUDIENCE:?KEYCLOAK_AUDIENCE must be set}
+      Infrastructure__SqlConnectionString: ${INFRA_SQL:?INFRA_SQL must be set}
+      Infrastructure__RedisConnectionString: ${INFRA_REDIS:?INFRA_REDIS must be set}
+
+  web-portal:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:?CCE_REGISTRY_OWNER must be set}/cce-web-portal:${CCE_IMAGE_TAG:?CCE_IMAGE_TAG must be set}
+
+  admin-cms:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:?CCE_REGISTRY_OWNER must be set}/cce-admin-cms:${CCE_IMAGE_TAG:?CCE_IMAGE_TAG must be set}

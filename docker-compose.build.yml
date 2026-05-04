@@ -1,0 +1,37 @@
+# Sub-10b — Local-build override.
+# Overlays docker-compose.prod.yml; reinstates `build:` blocks so
+# `docker compose -f docker-compose.prod.yml -f docker-compose.build.yml up --build`
+# builds images from local Dockerfiles instead of pulling from ghcr.io.
+# Used by CI on PRs (where no ghcr.io image exists yet) and for local
+# smoke testing.
+
+services:
+  migrator:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Seeder/Dockerfile
+    image: cce-migrator:dev
+
+  api-external:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Api.External/Dockerfile
+    image: cce-api-external:dev
+
+  api-internal:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Api.Internal/Dockerfile
+    image: cce-api-internal:dev
+
+  web-portal:
+    build:
+      context: .
+      dockerfile: frontend/apps/web-portal/Dockerfile
+    image: cce-web-portal:dev
+
+  admin-cms:
+    build:
+      context: .
+      dockerfile: frontend/apps/admin-cms/Dockerfile
+    image: cce-admin-cms:dev
