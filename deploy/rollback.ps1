@@ -4,20 +4,23 @@
     CCE Sub-10b production rollback script.
 
 .DESCRIPTION
-    Atomically rewrites CCE_IMAGE_TAG in .env.prod to a previous tag,
+    Atomically rewrites CCE_IMAGE_TAG in .env.<env> to a previous tag,
     then invokes deploy.ps1. Forward-only migrations make this safe:
     the older image runs against the current schema without DB rewind.
 
-    Logs the swap to C:\ProgramData\CCE\logs\rollback-<UTC>.log and
-    appends a row to deploy-history.tsv tagged ROLLBACK_FROM=<old>.
+    Logs the swap to C:\ProgramData\CCE\logs\rollback-<env>-<UTC>.log
+    and appends a row to deploy-history-<env>.tsv tagged ROLLBACK_FROM=<old>.
 
 .PARAMETER ToTag
     Required. The image tag to roll back to. Look up in
-    C:\ProgramData\CCE\deploy-history.tsv:
-        Get-Content C:\ProgramData\CCE\deploy-history.tsv | Select-Object -Last 10
+    C:\ProgramData\CCE\deploy-history-<env>.tsv:
+        Get-Content C:\ProgramData\CCE\deploy-history-prod.tsv | Select-Object -Last 10
+
+.PARAMETER Environment
+    Environment name. One of test, preprod, prod, dr. Default: prod.
 
 .PARAMETER EnvFile
-    Path to the production env-file. Default: C:\ProgramData\CCE\.env.prod.
+    Override env-file path. Default: C:\ProgramData\CCE\.env.<Environment>.
 
 .PARAMETER SkipMigrator
     Pass through MIGRATE_ON_DEPLOY=false to deploy.ps1. Forward-only
@@ -31,21 +34,27 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [string]$ToTag,
-    [string]$EnvFile = 'C:\ProgramData\CCE\.env.prod',
+    [ValidateSet('test','preprod','prod','dr')]
+    [string]$Environment = 'prod',
+    [string]$EnvFile,
     [switch]$SkipMigrator
 )
 
 $ErrorActionPreference = 'Stop'
 
-# Logs directory + timestamped rollback log file
+if (-not $EnvFile -or $EnvFile -eq '') {
+    $EnvFile = "C:\ProgramData\CCE\.env.$Environment"
+}
+
+# Logs directory + timestamped rollback log file (per-env)
 $logDir = 'C:\ProgramData\CCE\logs'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-$logFile = Join-Path $logDir ("rollback-{0:yyyyMMddTHHmmssZ}.log" -f (Get-Date).ToUniversalTime())
+$logFile = Join-Path $logDir ("rollback-{0}-{1:yyyyMMddTHHmmssZ}.log" -f $Environment, (Get-Date).ToUniversalTime())
 
 function Write-Log {
     param([string]$Message, [string]$Level = 'INFO')
     $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-    $line = "[$ts] [$Level] $Message"
+    $line = "[$ts] [$Level] [$Environment] $Message"
     Write-Host $line
     Add-Content -Path $logFile -Value $line
 }
@@ -86,17 +95,17 @@ Write-Log "Env-file updated: CCE_IMAGE_TAG=$ToTag"
 # ─── Invoke deploy.ps1 ────────────────────────────────────────────────────
 $deployScript = Join-Path $PSScriptRoot 'deploy.ps1'
 if ($SkipMigrator) {
-    Write-Log "WARN: -SkipMigrator switch is documented but currently delegates to .env.prod's MIGRATE_ON_DEPLOY value."
-    Write-Log "WARN: For a true one-shot skip, set MIGRATE_ON_DEPLOY=false in .env.prod before this command."
+    Write-Log "WARN: -SkipMigrator switch is documented but currently delegates to .env.$Environment's MIGRATE_ON_DEPLOY value."
+    Write-Log "WARN: For a true one-shot skip, set MIGRATE_ON_DEPLOY=false in .env.$Environment before this command."
 }
 
-Write-Log "Invoking deploy.ps1 -EnvFile $resolvedEnvFile"
-& pwsh -NoProfile -File $deployScript -EnvFile $resolvedEnvFile
+Write-Log "Invoking deploy.ps1 -EnvFile $resolvedEnvFile -Environment $Environment -Recursive"
+& pwsh -NoProfile -File $deployScript -EnvFile $resolvedEnvFile -Environment $Environment -Recursive
 $deployExit = $LASTEXITCODE
 
-# ─── Append rollback row to deploy-history.tsv ────────────────────────────
+# ─── Append rollback row to deploy-history-${env}.tsv ─────────────────────
 # (deploy.ps1 also appends its own row; we add a ROLLBACK_FROM marker.)
-$historyFile = 'C:\ProgramData\CCE\deploy-history.tsv'
+$historyFile = "C:\ProgramData\CCE\deploy-history-$Environment.tsv"
 $tsRow = "{0:yyyy-MM-ddTHH:mm:ssZ}`t{1}`t{2}`tROLLBACK_FROM={3}`t{4}" -f `
     (Get-Date).ToUniversalTime(), `
     'rollback-script', `
