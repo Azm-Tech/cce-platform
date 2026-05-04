@@ -122,8 +122,21 @@ $smokeScript = Join-Path $PSScriptRoot 'smoke.ps1'
 if ($LASTEXITCODE -ne 0) { Abort "Smoke probe failed. Apps left running for inspection." -ShowRollback }
 
 # ─── Step 9: Append deploy-history.tsv ────────────────────────────────────
-# (Phase 02 implements this. Phase 01 is a no-op stub.)
-Write-Log "Step 9/10: deploy-history.tsv (Phase 02 implements)."
+Write-Log "Step 9/10: Appending deploy-history.tsv."
+$historyFile = 'C:\ProgramData\CCE\deploy-history.tsv'
+# Capture git SHA from the env-file's tag if it looks like sha-* or a hex SHA;
+# otherwise leave SHA blank (release tags don't carry SHA info here).
+$tagValue = $envMap['CCE_IMAGE_TAG']
+$sha = ''
+if ($tagValue -match '^sha-([0-9a-f]{7,40})$') { $sha = $Matches[1] }
+elseif ($tagValue -match '^[0-9a-f]{40}$')     { $sha = $tagValue }
+$tsRow = "{0:yyyy-MM-ddTHH:mm:ssZ}`t{1}`t{2}`t{3}" -f `
+    (Get-Date).ToUniversalTime(), `
+    $sha, `
+    $tagValue, `
+    'OK'
+Add-Content -Path $historyFile -Value $tsRow
+Write-Log "deploy-history.tsv appended."
 
 # ─── Step 10: Print summary ────────────────────────────────────────────────
 Write-Log "Step 10/10: Done."
