@@ -123,20 +123,84 @@ jobs:
     name: Production Docker images
     runs-on: ubuntu-latest
     needs: [backend, frontend]
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Compute image tags
+        id: tags
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"          # ghcr requires lowercase
+          SHA="${GITHUB_SHA}"
+          SHORT="${GITHUB_SHA::7}"
+          REGISTRY="ghcr.io"
+          # Push on main branch + v* tag pushes only.
+          if [[ "${GITHUB_REF}" == "refs/heads/main" || "${GITHUB_REF}" == refs/tags/v* ]]; then
+            PUSH="true"
+          else
+            PUSH="false"
+          fi
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            RELEASE="${GITHUB_REF#refs/tags/}"
+          else
+            RELEASE=""
+          fi
+
+          tag_set() {
+            local image=$1
+            local base="${REGISTRY}/${OWNER}/${image}"
+            local tags="${base}:${SHA},${base}:sha-${SHORT},${base}:latest"
+            if [[ -n "$RELEASE" ]]; then
+              tags="${tags},${base}:${RELEASE}"
+            fi
+            echo "$tags"
+          }
+
+          {
+            echo "TAGS_API_EXTERNAL=$(tag_set cce-api-external)"
+            echo "TAGS_API_INTERNAL=$(tag_set cce-api-internal)"
+            echo "TAGS_WEB_PORTAL=$(tag_set cce-web-portal)"
+            echo "TAGS_ADMIN_CMS=$(tag_set cce-admin-cms)"
+            echo "TAGS_MIGRATOR=$(tag_set cce-migrator)"
+            echo "PUSH=$PUSH"
+            echo "OWNER=$OWNER"
+            echo "RELEASE=$RELEASE"
+          } >> "$GITHUB_ENV"
+
+          {
+            echo "## Production images"
+            echo ""
+            echo "| Image | Push | Tags |"
+            echo "|---|---|---|"
+            echo "| cce-api-external | $PUSH | \`$(tag_set cce-api-external)\` |"
+            echo "| cce-api-internal | $PUSH | \`$(tag_set cce-api-internal)\` |"
+            echo "| cce-web-portal   | $PUSH | \`$(tag_set cce-web-portal)\` |"
+            echo "| cce-admin-cms    | $PUSH | \`$(tag_set cce-admin-cms)\` |"
+            echo "| cce-migrator     | $PUSH | \`$(tag_set cce-migrator)\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Log in to ghcr.io
+        if: env.PUSH == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Api.External
         uses: docker/build-push-action@v6
         with:
           context: backend
           file: backend/src/CCE.Api.External/Dockerfile
-          push: false
+          push: ${{ env.PUSH == 'true' }}
           load: true
-          tags: cce-api-external:ci
+          tags: ${{ env.TAGS_API_EXTERNAL }}
           cache-from: type=gha,scope=api-external
           cache-to: type=gha,mode=max,scope=api-external
 
@@ -145,9 +209,9 @@ jobs:
         with:
           context: backend
           file: backend/src/CCE.Api.Internal/Dockerfile
-          push: false
+          push: ${{ env.PUSH == 'true' }}
           load: true
-          tags: cce-api-internal:ci
+          tags: ${{ env.TAGS_API_INTERNAL }}
           cache-from: type=gha,scope=api-internal
           cache-to: type=gha,mode=max,scope=api-internal
 
@@ -156,9 +220,9 @@ jobs:
         with:
           context: .
           file: frontend/apps/web-portal/Dockerfile
-          push: false
+          push: ${{ env.PUSH == 'true' }}
           load: true
-          tags: cce-web-portal:ci
+          tags: ${{ env.TAGS_WEB_PORTAL }}
           cache-from: type=gha,scope=web-portal
           cache-to: type=gha,mode=max,scope=web-portal
 
@@ -167,9 +231,9 @@ jobs:
         with:
           context: .
           file: frontend/apps/admin-cms/Dockerfile
-          push: false
+          push: ${{ env.PUSH == 'true' }}
           load: true
-          tags: cce-admin-cms:ci
+          tags: ${{ env.TAGS_ADMIN_CMS }}
           cache-from: type=gha,scope=admin-cms
           cache-to: type=gha,mode=max,scope=admin-cms
 
@@ -178,13 +242,13 @@ jobs:
         with:
           context: backend
           file: backend/src/CCE.Seeder/Dockerfile
-          push: false
+          push: ${{ env.PUSH == 'true' }}
           load: true
-          tags: cce-migrator:ci
+          tags: ${{ env.TAGS_MIGRATOR }}
           cache-from: type=gha,scope=migrator
           cache-to: type=gha,mode=max,scope=migrator
 
-      - name: Smoke-probe all four runtime containers
+      - name: Smoke-probe all five runtime containers
         run: |
           set -euo pipefail
           probe_backend() {
@@ -226,7 +290,21 @@ jobs:
             return 1
           }
 
-          probe_backend  ext     cce-api-external:ci   18080
-          probe_backend  int     cce-api-internal:ci   18081
-          probe_frontend portal  cce-web-portal:ci     18082
-          probe_frontend cms     cce-admin-cms:ci      18083
+          # Use the first tag from each comma-list as the local image ref
+          # (load: true on build-push-action loads the image into the local
+          # docker engine under all tags, but `docker run` needs a single ref).
+          probe_backend  ext     "${TAGS_API_EXTERNAL%%,*}"   18080
+          probe_backend  int     "${TAGS_API_INTERNAL%%,*}"   18081
+          probe_frontend portal  "${TAGS_WEB_PORTAL%%,*}"     18082
+          probe_frontend cms     "${TAGS_ADMIN_CMS%%,*}"      18083
+
+          # Migrator flag-validation probe: assert --migrate --demo exits non-zero.
+          # Cheap (no SQL Server needed); catches Sub-10b regressions in the
+          # SeederMode.Parse rejection path.
+          MIGRATOR_IMG="${TAGS_MIGRATOR%%,*}"
+          if docker run --rm "$MIGRATOR_IMG" --migrate --demo 2>/dev/null; then
+            echo "migrator: FAIL — should have rejected --migrate --demo"
+            exit 1
+          else
+            echo "migrator: PASS — rejects --migrate --demo (exit $?)"
+          fi
