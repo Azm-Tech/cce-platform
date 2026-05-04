@@ -8,7 +8,10 @@
 .env.*
 !.env.example
 !.env.local.example
+!.env.test.example
+!.env.preprod.example
 !.env.prod.example
+!.env.dr.example
 *.pem
 *.key
 *.crt
