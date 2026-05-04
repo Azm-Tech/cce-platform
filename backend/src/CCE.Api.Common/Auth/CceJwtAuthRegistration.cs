@@ -33,11 +33,7 @@ public static class CceJwtAuthRegistration
             // Multi-tenant: any Entra ID tenant's issuer is acceptable, as long as it
             // matches the canonical login.microsoftonline.com/<tenant>/v2.0 shape.
             jwt.TokenValidationParameters.ValidateIssuer = true;
-            jwt.TokenValidationParameters.IssuerValidator = (issuer, _, _) =>
-                issuer.StartsWith("https://login.microsoftonline.com/", StringComparison.OrdinalIgnoreCase)
-                && issuer.EndsWith("/v2.0", StringComparison.OrdinalIgnoreCase)
-                    ? issuer
-                    : throw new SecurityTokenInvalidIssuerException($"Issuer '{issuer}' is not a recognized Entra ID issuer.");
+            jwt.TokenValidationParameters.IssuerValidator = (issuer, _, _) => EntraIdIssuerValidator.Validate(issuer);
 
             // Audience validation re-enabled. Entra ID always issues an `aud` claim
             // matching the API's app ID URI (api://<application-id-guid>).

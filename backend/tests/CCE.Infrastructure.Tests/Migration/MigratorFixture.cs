@@ -29,6 +29,7 @@ public sealed class MigratorFixture : IAsyncLifetime
         var conn = BuildConnectionString(dbSuffix);
         var options = new DbContextOptionsBuilder<CceDbContext>()
             .UseSqlServer(conn)
+            .UseSnakeCaseNamingConvention()
             .Options;
         return new CceDbContext(options);
     }
