@@ -20,23 +20,32 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$EnvFile = 'C:\ProgramData\CCE\.env.prod'
+    [ValidateSet('test','preprod','prod','dr')]
+    [string]$Environment = 'prod',
+    [string]$EnvFile,
+    [switch]$Recursive
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Default env-file derived from -Environment when -EnvFile not explicitly passed.
+if (-not $EnvFile -or $EnvFile -eq '') {
+    $EnvFile = "C:\ProgramData\CCE\.env.$Environment"
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $composeBase   = Join-Path $repoRoot 'docker-compose.prod.yml'
 $composeStrict = Join-Path $repoRoot 'docker-compose.prod.deploy.yml'
 
-# Logs directory + timestamped log file
+# Logs directory + timestamped log file (per-env)
 $logDir = 'C:\ProgramData\CCE\logs'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-$logFile = Join-Path $logDir ("deploy-{0:yyyyMMddTHHmmssZ}.log" -f (Get-Date).ToUniversalTime())
+$logFile = Join-Path $logDir ("deploy-{0}-{1:yyyyMMddTHHmmssZ}.log" -f $Environment, (Get-Date).ToUniversalTime())
 
 function Write-Log {
     param([string]$Message, [string]$Level = 'INFO')
     $ts = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-    $line = "[$ts] [$Level] $Message"
+    $line = "[$ts] [$Level] [$Environment] $Message"
     Write-Host $line
     Add-Content -Path $logFile -Value $line
 }
@@ -45,8 +54,8 @@ function Abort {
     param([string]$Message, [int]$ExitCode = 1, [switch]$ShowRollback)
     Write-Log -Level 'ERROR' -Message $Message
     if ($ShowRollback) {
-        Write-Log -Level 'ERROR' -Message "Rollback command: .\deploy\rollback.ps1 -ToTag <previous-tag>"
-        Write-Log -Level 'ERROR' -Message "Find previous tag in: C:\ProgramData\CCE\deploy-history.tsv (Phase 02)"
+        Write-Log -Level 'ERROR' -Message "Rollback command: .\deploy\rollback.ps1 -ToTag <previous-tag> -Environment $Environment"
+        Write-Log -Level 'ERROR' -Message "Find previous tag in: C:\ProgramData\CCE\deploy-history-$Environment.tsv"
     }
     exit $ExitCode
 }
@@ -123,7 +132,7 @@ if ($LASTEXITCODE -ne 0) { Abort "Smoke probe failed. Apps left running for insp
 
 # ─── Step 9: Append deploy-history.tsv ────────────────────────────────────
 Write-Log "Step 9/10: Appending deploy-history.tsv."
-$historyFile = 'C:\ProgramData\CCE\deploy-history.tsv'
+$historyFile = "C:\ProgramData\CCE\deploy-history-$Environment.tsv"
 # Capture git SHA from the env-file's tag if it looks like sha-* or a hex SHA;
 # otherwise leave SHA blank (release tags don't carry SHA info here).
 $tagValue = $envMap['CCE_IMAGE_TAG']
