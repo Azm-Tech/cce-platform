@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <rule name="ProxyToBackend" stopProcessing="true">
+          <match url="^(.*)$" />
+          <action type="Rewrite" url="http://localhost:{BACKEND_PORT}/{R:1}" />
+          <serverVariables>
+            <set name="HTTP_X_FORWARDED_HOST"  value="{HTTP_HOST}" />
+            <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+            <set name="HTTP_X_FORWARDED_FOR"   value="{REMOTE_ADDR}" />
+          </serverVariables>
+        </rule>
+      </rules>
+    </rewrite>
+    <httpProtocol>
+      <customHeaders>
+        <remove name="X-Powered-By" />
+        <add name="Strict-Transport-Security" value="max-age=31536000; includeSubDomains" />
+        <add name="X-Content-Type-Options" value="nosniff" />
+        <add name="X-Frame-Options" value="SAMEORIGIN" />
+        <add name="Referrer-Policy" value="strict-origin-when-cross-origin" />
+      </customHeaders>
+    </httpProtocol>
+    <!-- SSE-friendly: long concurrent request limit; no response buffering. -->
+    <serverRuntime appConcurrentRequestLimit="5000" />
+    <security>
+      <requestFiltering>
+        <requestLimits maxAllowedContentLength="52428800" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+</configuration>
