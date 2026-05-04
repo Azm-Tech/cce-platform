@@ -173,6 +173,17 @@ jobs:
           cache-from: type=gha,scope=admin-cms
           cache-to: type=gha,mode=max,scope=admin-cms
 
+      - name: Build cce-migrator
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/src/CCE.Seeder/Dockerfile
+          push: false
+          load: true
+          tags: cce-migrator:ci
+          cache-from: type=gha,scope=migrator
+          cache-to: type=gha,mode=max,scope=migrator
+
       - name: Smoke-probe all four runtime containers
         run: |
           set -euo pipefail
