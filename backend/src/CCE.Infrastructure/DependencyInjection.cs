@@ -80,6 +80,13 @@ public static class DependencyInjection
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
+
+        // Sub-11 Phase 01 — Microsoft Graph user-create + CCE-side persist.
+        // Factory is singleton (ClientSecretCredential is thread-safe and reusable);
+        // service is scoped because it consumes the scoped CceDbContext.
+        services.Configure<EntraIdOptions>(configuration.GetSection(EntraIdOptions.SectionName));
+        services.AddSingleton<EntraIdGraphClientFactory>();
+        services.AddScoped<EntraIdRegistrationService>();
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
         services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
         services.AddScoped<IExpertRequestSubmissionService, ExpertRequestSubmissionService>();

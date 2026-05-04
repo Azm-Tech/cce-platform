@@ -63,8 +63,12 @@ public sealed class EntraIdFixture : IAsyncLifetime
     public GraphServiceClient CreateGraphClient()
     {
         var auth = new BaseBearerTokenAuthenticationProvider(new StaticAccessTokenProvider("TEST_TOKEN"));
-        var http = new HttpClient { BaseAddress = new System.Uri(GraphBaseUrl) };
-        return new GraphServiceClient(http, auth, GraphBaseUrl);
+        // Graph SDK 5.x's request builders generate paths like "{baseUrl}/users".
+        // Real Graph base URL is "https://graph.microsoft.com/v1.0"; mirror that
+        // here so stubs registered at "/v1.0/users" match the actual SDK request.
+        var graphRoot = $"{GraphBaseUrl}/v1.0";
+        var http = new HttpClient { BaseAddress = new System.Uri(graphRoot) };
+        return new GraphServiceClient(http, auth, graphRoot);
     }
 
     private void StubCreateUser(HttpStatusCode status, string fixtureFile)
