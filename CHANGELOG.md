@@ -4,6 +4,31 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [infra-v1.0.0] — 2026-05-04
+
+**Sub-10c — Production infra + DR.** The CCE platform is now operationally complete on IDD v1.2 hardware. Multi-environment promotion, AD federation via Keycloak, IIS reverse proxy with TLS, automated backups + restore, auto-rollback, production Sentry observability, DR-host provisioning + 8-step promotion runbook.
+
+### Added
+- `deploy.ps1 -Environment <test|preprod|prod|dr>` + per-env `deploy-history-${env}.tsv` audit trail.
+- `deploy/validate-env.ps1` canary integrity check (placeholder values, known-leaked secrets, BOM/CR detection, cross-key consistency).
+- `deploy/promote-env.ps1` mechanical env-promotion helper that re-blanks secrets across boundaries.
+- `deploy.ps1 -AutoRollback` / `-NoAutoRollback` / `-Recursive` flow with Sentry breadcrumb on auto-rollback.
+- `infra/keycloak/apply-realm.ps1` + `realm-cce-ldap-federation.json` (idempotent Keycloak provisioning of LDAP user-federation against `cce.local` AD).
+- `infra/iis/Install-ARRPrereqs.ps1` + `Configure-IISSites.ps1` + `web.config.template` (4 IIS sites with TLS + ARR rewrites).
+- `infra/backup/Install-OlaHallengren.ps1` + `Register-ScheduledTasks.ps1` + `Sync-OffHost.ps1` + `Restore-FromBackup.ps1` + `Test-BackupChain.ps1` (Ola Hallengren + 5 scheduled tasks + off-host UNC sync + restore helper + healthcheck).
+- 11 new docs: ADR-0054, ADR-0055, ADR-0056, ADR-0057, completion doc, AD federation runbook, secret-rotation runbook, env-promotion runbook, backup-restore runbook, DR-promotion runbook, DR-host provisioning checklist, cert + DNS operator checklist.
+- 4 `.env.<env>.example` files (test/preprod/prod/dr).
+- 13 new backend tests: 3 KeycloakLdapFederationTests, 2 RestoreFromBackupTests, 4 LoggingExtensionsSentryTests, plus deferred Sub-10b backlog tests rolled in — Infrastructure.Tests goes from 54 → 75.
+- `LoggingExtensions.ConfigureSentry` reads `SENTRY_ENVIRONMENT` + `SENTRY_RELEASE` and propagates to Sentry events.
+
+### Changed
+- `rollback.ps1` mirrors `-Environment` + `-Recursive` switches; passes them to nested `deploy.ps1`.
+- `deploy/smoke.ps1` gains env-aware HTTPS mode against IDD hostnames; preserves Sub-10b localhost mode for backward compat.
+- `.gitignore` allow-list extended to commit all 4 `.env.<env>.example` files.
+
+### Architecture decisions
+- ADR-0054 — IIS reverse proxy on Windows Server (vs Caddy/Traefik/nginx); ADR-0055 — Keycloak LDAP federation (vs SPNEGO, AD FS, read-write); ADR-0056 — Ola Hallengren + Task Scheduler (vs custom T-SQL, Veeam, cloud-managed); ADR-0057 — Multi-env via per-env files (vs compose profiles, helm overlays, Vault graduation deferred).
+
 ## [deploy-v1.0.0] — 2026-05-04
 
 **Sub-10b — Deployment automation.** One-command deployable system on a single Windows Server 2022 host. Linux containers, sidecar migrator, `.env.prod` on host, image-tag rollback, ghcr.io registry, PowerShell deploy + rollback scripts.
