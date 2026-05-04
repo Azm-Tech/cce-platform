@@ -23,7 +23,9 @@ param(
     [ValidateSet('test','preprod','prod','dr')]
     [string]$Environment = 'prod',
     [string]$EnvFile,
-    [switch]$Recursive
+    [switch]$Recursive,
+    [switch]$AutoRollback,
+    [switch]$NoAutoRollback
 )
 
 $ErrorActionPreference = 'Stop'
@@ -36,6 +38,7 @@ if (-not $EnvFile -or $EnvFile -eq '') {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $composeBase   = Join-Path $repoRoot 'docker-compose.prod.yml'
 $composeStrict = Join-Path $repoRoot 'docker-compose.prod.deploy.yml'
+$historyFile   = "C:\ProgramData\CCE\deploy-history-$Environment.tsv"
 
 # Logs directory + timestamped log file (per-env)
 $logDir = 'C:\ProgramData\CCE\logs'
@@ -58,6 +61,57 @@ function Abort {
         Write-Log -Level 'ERROR' -Message "Find previous tag in: C:\ProgramData\CCE\deploy-history-$Environment.tsv"
     }
     exit $ExitCode
+}
+
+function Send-SentryBreadcrumb {
+    param(
+        [hashtable]$EnvMap,
+        [string]$CurrentTag,
+        [string]$PreviousTag,
+        [string]$Reason
+    )
+    $dsn = $EnvMap['SENTRY_DSN']
+    if ([string]::IsNullOrWhiteSpace($dsn)) {
+        Write-Log "SENTRY_DSN not set; skipping auto-rollback Sentry event."
+        return
+    }
+    # Sentry DSN format: https://<key>@<host>/<project_id>
+    $match = [regex]::Match($dsn, '^https://([^@]+)@([^/]+)/(.+)$')
+    if (-not $match.Success) {
+        Write-Log -Level 'WARN' "SENTRY_DSN looks malformed; skipping breadcrumb."
+        return
+    }
+    $key = $match.Groups[1].Value
+    $sentryHost = $match.Groups[2].Value
+    $projectId = $match.Groups[3].Value
+
+    $payload = @{
+        message = "deploy.auto_rollback: $CurrentTag -> $PreviousTag ($Reason)"
+        level = 'error'
+        environment = $EnvMap['SENTRY_ENVIRONMENT'] ?? $Environment
+        release = $CurrentTag
+        tags = @{
+            'deploy.auto_rollback' = 'true'
+            'deploy.from_tag' = $CurrentTag
+            'deploy.to_tag' = $PreviousTag
+        }
+        extra = @{
+            reason = $Reason
+            cce_environment = $Environment
+            host = $env:COMPUTERNAME
+        }
+    } | ConvertTo-Json -Depth 10
+
+    $sentryUrl = "https://$sentryHost/api/$projectId/store/"
+    $sentryAuth = "Sentry sentry_version=7,sentry_key=$key,sentry_client=cce-deploy/1.0"
+    try {
+        Invoke-RestMethod -Uri $sentryUrl -Method Post `
+            -Headers @{ 'X-Sentry-Auth' = $sentryAuth; 'Content-Type' = 'application/json' } `
+            -Body $payload -TimeoutSec 5 | Out-Null
+        Write-Log "Sentry auto-rollback event sent."
+    } catch {
+        Write-Log -Level 'WARN' "Sentry breadcrumb POST failed (non-fatal): $($_.Exception.Message)"
+    }
 }
 
 # ─── Step 1: Resolve env-file path ─────────────────────────────────────────
@@ -134,11 +188,68 @@ if ($LASTEXITCODE -ne 0) { Abort "App startup failed." -ShowRollback }
 Write-Log "Step 8/10: Running smoke probes."
 $smokeScript = Join-Path $PSScriptRoot 'smoke.ps1'
 & pwsh -NoProfile -File $smokeScript -Timeout 60
-if ($LASTEXITCODE -ne 0) { Abort "Smoke probe failed. Apps left running for inspection." -ShowRollback }
+$smokeExitCode = $LASTEXITCODE
+
+if ($smokeExitCode -ne 0) {
+    # Resolve auto-rollback decision (precedence high → low):
+    #  -NoAutoRollback wins; -Recursive (nested call from rollback.ps1) suppresses;
+    #  -AutoRollback flag forces; env-file AUTO_ROLLBACK=true triggers; else don't.
+    $autoRollbackEnabled = $false
+    if ($NoAutoRollback) {
+        Write-Log "Smoke failed; -NoAutoRollback override — leaving apps running for operator inspection."
+    } elseif ($Recursive) {
+        Write-Log "Smoke failed; -Recursive set (nested deploy from rollback.ps1) — recursion guard suppresses auto-rollback."
+    } elseif ($AutoRollback) {
+        Write-Log "Smoke failed; -AutoRollback flag — attempting auto-rollback."
+        $autoRollbackEnabled = $true
+    } elseif ($envMap['AUTO_ROLLBACK'] -ieq 'true') {
+        Write-Log "Smoke failed; AUTO_ROLLBACK=true in env-file — attempting auto-rollback."
+        $autoRollbackEnabled = $true
+    } else {
+        Write-Log "Smoke failed; auto-rollback NOT enabled."
+    }
+
+    if ($autoRollbackEnabled) {
+        # Resolve previous OK tag from deploy-history-${env}.tsv.
+        $currentTag = $envMap['CCE_IMAGE_TAG']
+        $previousTag = $null
+        if (Test-Path $historyFile) {
+            $okRows = Get-Content $historyFile | Where-Object { $_ -match '\tOK(\t|$)' }
+            # TSV columns: <UTC-iso8601> \t <sha> \t <tag> \t OK [\t ROLLBACK_FROM=...]
+            # Walk newest → oldest, pick first with a tag != current.
+            for ($i = $okRows.Count - 1; $i -ge 0; $i--) {
+                $cols = $okRows[$i].Split("`t")
+                if ($cols.Count -ge 3 -and $cols[2] -and $cols[2] -ne $currentTag) {
+                    $previousTag = $cols[2]
+                    break
+                }
+            }
+        }
+
+        if (-not $previousTag) {
+            Abort "Auto-rollback enabled but no prior OK tag found in $historyFile. Operator-driven rollback only."
+        }
+
+        Write-Log "Auto-rolling back to '$previousTag' (current was '$currentTag')."
+        Send-SentryBreadcrumb -EnvMap $envMap -CurrentTag $currentTag -PreviousTag $previousTag -Reason "smoke-probe failure"
+
+        $rollbackScript = Join-Path $PSScriptRoot 'rollback.ps1'
+        & pwsh -NoProfile -File $rollbackScript -ToTag $previousTag -Environment $Environment -EnvFile $resolvedEnvFile
+        $rollbackExitCode = $LASTEXITCODE
+
+        if ($rollbackExitCode -ne 0) {
+            Abort "Auto-rollback FAILED (rollback.ps1 exit $rollbackExitCode). Manual intervention required. Both bad tag '$currentTag' and rollback target '$previousTag' may be unhealthy."
+        }
+        Write-Log "Auto-rollback complete; live tag is now '$previousTag'."
+        exit 0
+    }
+
+    Abort "Smoke probe failed. Apps left running for inspection." -ShowRollback
+}
 
 # ─── Step 9: Append deploy-history.tsv ────────────────────────────────────
 Write-Log "Step 9/10: Appending deploy-history.tsv."
-$historyFile = "C:\ProgramData\CCE\deploy-history-$Environment.tsv"
+# $historyFile defined at top of script.
 # Capture git SHA from the env-file's tag if it looks like sha-* or a hex SHA;
 # otherwise leave SHA blank (release tags don't carry SHA info here).
 $tagValue = $envMap['CCE_IMAGE_TAG']
