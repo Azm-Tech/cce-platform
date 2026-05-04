@@ -27,6 +27,47 @@ public class User : IdentityUser<System.Guid>
     public string? AvatarUrl { get; private set; }
 
     /// <summary>
+    /// Sub-11: stable Entra ID Object ID (<c>oid</c> claim) for this user. Populated lazily on
+    /// first sign-in by <c>EntraIdUserResolver</c>. Null until the user signs in via Entra ID
+    /// for the first time post-cutover. Filtered unique index enforces no two users share
+    /// the same objectId.
+    /// </summary>
+    public System.Guid? EntraIdObjectId { get; private set; }
+
+    /// <summary>
+    /// Sub-11: idempotent linkage of an existing CCE user to their Entra ID objectId.
+    /// Throws if already linked to a different objectId.
+    /// </summary>
+    public void LinkEntraIdObjectId(System.Guid objectId)
+    {
+        if (EntraIdObjectId.HasValue && EntraIdObjectId.Value != objectId)
+        {
+            throw new DomainException(
+                $"User {Id} is already linked to Entra ID objectId {EntraIdObjectId}; refusing to overwrite with {objectId}.");
+        }
+        EntraIdObjectId = objectId;
+    }
+
+    /// <summary>
+    /// Sub-11: factory for stub User rows created on first sign-in by external partner-tenant
+    /// users who don't have a pre-existing CCE row. Other fields default; user completes
+    /// profile in CCE later. Operator/admin must confirm email + assign roles before access.
+    /// </summary>
+    public static User CreateStubFromEntraId(System.Guid objectId, string email, string displayName)
+    {
+        return new User
+        {
+            Id = System.Guid.NewGuid(),
+            EntraIdObjectId = objectId,
+            Email = email,
+            UserName = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            NormalizedUserName = email.ToUpperInvariant(),
+            EmailConfirmed = false,
+        };
+    }
+
+    /// <summary>
     /// Updates the locale preference. Only <c>"ar"</c> and <c>"en"</c> are accepted.
     /// </summary>
     public void SetLocalePreference(string locale)

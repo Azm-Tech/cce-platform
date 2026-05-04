@@ -13,5 +13,13 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Interests).HasColumnType("nvarchar(max)");
         builder.Property(u => u.KnowledgeLevel).HasConversion<int>();
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");
+
+        // Sub-11: filtered unique index on EntraIdObjectId. Only enforces uniqueness on
+        // non-null values so existing rows pre-cutover (NULL) don't conflict, and so that
+        // the lazy-resolver's idempotent linkage stays safe under concurrent first-sign-ins.
+        builder.HasIndex(u => u.EntraIdObjectId)
+            .HasDatabaseName("ix_asp_net_users_entra_id_object_id")
+            .IsUnique()
+            .HasFilter("[entra_id_object_id] IS NOT NULL");
     }
 }
