@@ -934,32 +934,33 @@ EOF
 
 ---
 
-## Phase 01 close-out
+## Phase 01 close-out — DONE 2026-05-04
 
 After Task 1.5 commits cleanly:
 
-- [ ] **Run the full check:**
+- [x] **Run the full check:**
   ```bash
   cd /Users/m/CCE/backend && dotnet build && \
     dotnet test tests/CCE.Domain.Tests/ tests/CCE.Application.Tests/ \
                 tests/CCE.ArchitectureTests/ tests/CCE.Infrastructure.Tests/ --nologo
   ```
-  Expected: backend builds clean (0 warnings, 0 errors); Domain 290, Application 439, Architecture 12, Infrastructure 87 — all green (1 pre-existing skip).
+  Result: backend builds clean (0 warnings, 0 errors); Domain 290, Application 439, Architecture 12, Infrastructure 87 — all green (1 pre-existing skip).
 
-- [ ] **Verify CI green** on push: existing CI workflows pass.
+- [x] **Verify CI green** on push: existing CI workflows pass.
 
-- [ ] **Update master plan + Phase 01 doc** to mark Phase 01 DONE with actual deliverables (mirror the Phase 00 close-out treatment in `2026-05-04-sub-11.md`).
+- [x] **Update master plan + Phase 01 doc** to mark Phase 01 DONE with actual deliverables.
 
 - [ ] **Hand off to Phase 02.** Phase 02 ships PowerShell provisioning scripts under `infra/entra/` (`apply-app-registration.ps1` + `Configure-Branding.ps1`) plus 4 ADRs (0058 Entra ID multi-tenant, 0059 app roles vs groups, 0060 Conditional Access for MFA, ADR-0055 → Superseded). No backend code changes. Plan file: `phase-02-app-registration.md` (to be written just-in-time before execution).
 
-**Phase 01 done when:**
-- 5 commits land on `main`, each green.
+**Phase 01 done — actual deliverables:**
+- 5 task commits + Task 1.5 fixes landed on `main` (c9abdcc, 2208097, cae0127, 547bd51, 3c86592), each green.
 - `Microsoft.Graph` 5.65.0 + `Microsoft.Identity.Web.MicrosoftGraph` 3.5.0 + `Azure.Identity` 1.13.2 referenced from `CCE.Infrastructure`.
-- `EntraIdGraphClientFactory` + `EntraIdRegistrationService` + `RegistrationContracts` shipped under `CCE.Infrastructure/Identity/`.
-- DI: factory singleton + service scoped registered in `CCE.Infrastructure.DependencyInjection.AddInfrastructure`.
-- `ProfileEndpoints./api/users/register` is a POST gated to `cce-admin` returning 201/400/403/409.
-- `EntraIdFixture` (WireMock) + 4 fixture JSONs committed; `EntraIdRegistrationTests` (3 tests) + 1 fixture-smoke test pass.
-- Total Infrastructure tests: 75 baseline → 87 (+8 Phase 00 + +4 Phase 01).
+- `EntraIdGraphClientFactory` + `EntraIdRegistrationService` + `RegistrationContracts` shipped under `CCE.Infrastructure/Identity/`. `EntraIdOptions` relocated from `CCE.Api.Common/Auth/` to `CCE.Infrastructure/Identity/` so the factory layer can consume it (architecturally cleaner — Api.Common already references Infrastructure; just adds a using directive).
+- DI: factory singleton + service scoped + `Configure<EntraIdOptions>` registered in `CCE.Infrastructure.DependencyInjection.AddInfrastructure`.
+- `ProfileEndpoints./api/users/register` is a POST gated to `cce-admin` returning 201/400/403/409. Was a GET-redirect-to-Keycloak.
+- `EntraIdFixture` (WireMock) + 4 PII-scrubbed fixture JSONs committed under `Identity/Fixtures/entra-id-fixtures/`. The fixture base URL is `{wireMockUrl}/v1.0` to match the SDK's actual request paths. `EntraIdRegistrationTests` (3 tests: happy path, UPN conflict via 400 Request_BadRequest, 403 Authorization_RequestDenied) + 1 fixture-smoke test pass.
+- Total Infrastructure tests: 75 baseline → 83 (Phase 00 +8) → **87** (Phase 01 +4).
 - Old `KeycloakLdapFederationTests` (3) still pass — deletion deferred to Phase 04.
 - Custom BFF (`BffSessionMiddleware`/`BffAuthEndpoints`/`BffTokenRefresher`) untouched — coexists with M.I.W through Phase 03; Phase 04 deletes the cluster.
+- **Phase 00 hangover fixed**: M.I.W's `AddMicrosoftIdentityWebApi`/`WebApp` validates `EntraId:ClientId` is non-empty when the auth pipeline initializes. Both API hosts' `appsettings.Development.json` now have stub EntraId values so the test host boots clean. `ProfileEndpointTests` (5) all pass; `CountryProfileEndpointTests` (3) still fail because `AdminAuthFixture` authenticates against a real Keycloak that's no longer wired up — pre-existing breakage, will be cleaned up in Phase 04 when AdminAuthFixture moves to Entra ID/stub.
 - **No production cutover.** Cutover happens in Phase 04.
