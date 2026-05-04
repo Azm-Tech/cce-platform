@@ -1,0 +1,132 @@
+name: Deploy smoke (Sub-10b)
+
+# Manual-dispatch only — Windows runners are expensive and this is a
+# semi-rare gate (ideally run before each release tag). Exercises the
+# full deploy + rollback cycle against a synthetic env-file pointing
+# at an inline SQL Server container.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy (e.g. latest, app-v1.0.0)'
+        required: true
+        default: 'latest'
+      previous_tag:
+        description: 'Previous tag to roll back to (e.g. app-v1.0.0)'
+        required: true
+        default: 'latest'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  smoke:
+    name: Deploy → rollback → re-smoke
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Docker is available
+        shell: pwsh
+        run: |
+          docker version
+          docker info | Select-String 'Operating System'
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Boot inline SQL Server container
+        shell: pwsh
+        run: |
+          $pwd = 'Strong!Passw0rd'
+          docker run -d --name cce-test-sql `
+            -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=$pwd" `
+            -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          # Wait for SQL Server to be ready
+          for ($i = 0; $i -lt 30; $i++) {
+            $log = docker logs cce-test-sql 2>&1
+            if ($log -match 'SQL Server is now ready for client connections') {
+              Write-Host "SQL Server up after $i sec"
+              break
+            }
+            Start-Sleep -Seconds 2
+          }
+
+      - name: Boot inline Redis container
+        shell: pwsh
+        run: |
+          docker run -d --name cce-test-redis -p 6379:6379 redis:7-alpine
+
+      - name: Synthesize .env.prod for the smoke run
+        shell: pwsh
+        run: |
+          $owner = '${{ github.repository_owner }}'.ToLower()
+          $envContent = @"
+          CCE_REGISTRY_OWNER=$owner
+          CCE_IMAGE_TAG=${{ inputs.image_tag }}
+          INFRA_SQL=Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;
+          INFRA_REDIS=host.docker.internal:6379
+          KEYCLOAK_AUTHORITY=http://host.docker.internal:8080/realms/cce
+          KEYCLOAK_AUDIENCE=cce-api
+          KEYCLOAK_REQUIRE_HTTPS=false
+          ASSISTANT_PROVIDER=stub
+          ANTHROPIC_API_KEY=
+          LOG_LEVEL=Information
+          SENTRY_DSN=
+          MIGRATE_ON_DEPLOY=true
+          MIGRATE_SEED_REFERENCE=true
+          CCE_GHCR_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          "@
+          $envDir = 'C:\ProgramData\CCE'
+          New-Item -ItemType Directory -Path $envDir -Force | Out-Null
+          New-Item -ItemType Directory -Path "$envDir\logs" -Force | Out-Null
+          $envFile = "$envDir\.env.prod"
+          $envContent | Out-File -FilePath $envFile -Encoding utf8
+          Write-Host "Wrote $envFile"
+
+      - name: Deploy
+        shell: pwsh
+        run: |
+          .\deploy\deploy.ps1 -EnvFile C:\ProgramData\CCE\.env.prod
+
+      - name: Verify deploy-history.tsv has 1 row
+        shell: pwsh
+        run: |
+          $rows = Get-Content C:\ProgramData\CCE\deploy-history.tsv
+          Write-Host "deploy-history.tsv contents:"
+          $rows | ForEach-Object { Write-Host "  $_" }
+          if ($rows.Count -lt 1) { throw "deploy-history.tsv is empty after deploy" }
+
+      - name: Rollback to previous tag
+        shell: pwsh
+        run: |
+          .\deploy\rollback.ps1 -ToTag '${{ inputs.previous_tag }}' -EnvFile C:\ProgramData\CCE\.env.prod
+
+      - name: Verify smoke probes still pass after rollback
+        shell: pwsh
+        run: |
+          .\deploy\smoke.ps1 -Timeout 60
+
+      - name: Verify deploy-history.tsv has rollback row
+        shell: pwsh
+        run: |
+          $rows = Get-Content C:\ProgramData\CCE\deploy-history.tsv
+          Write-Host "deploy-history.tsv contents:"
+          $rows | ForEach-Object { Write-Host "  $_" }
+          $rollback = $rows | Where-Object { $_ -match 'ROLLBACK_FROM=' }
+          if (-not $rollback) { throw "Expected a ROLLBACK_FROM row in deploy-history.tsv" }
+          Write-Host "Rollback audit row found: $rollback"
+
+      - name: Cleanup
+        if: always()
+        shell: pwsh
+        run: |
+          docker compose -f docker-compose.prod.yml -f docker-compose.prod.deploy.yml `
+            --env-file C:\ProgramData\CCE\.env.prod down -v 2>&1 | Out-Host
+          docker rm -f cce-test-sql cce-test-redis 2>&1 | Out-Host
