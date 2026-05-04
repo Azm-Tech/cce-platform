@@ -10,18 +10,17 @@ public class ProfileEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.
     public ProfileEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
-    public async Task Register_redirects_to_keycloak()
+    public async Task Register_anonymous_returns_401()
     {
-        using var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false,
-        });
-
-        var resp = await client.PostAsync(new Uri("/api/users/register", UriKind.Relative), null);
-
-        resp.StatusCode.Should().Be(HttpStatusCode.Redirect);
-        resp.Headers.Location.Should().NotBeNull();
-        resp.Headers.Location!.ToString().Should().Contain("openid-connect/registrations");
+        // Sub-11 Phase 01: registration is now an admin-only POST that calls
+        // EntraIdRegistrationService against Microsoft Graph. Was a Keycloak
+        // redirect; that test was deleted with the old behavior. This test
+        // covers the unauth path; happy-path coverage lives in
+        // EntraIdRegistrationTests against WireMock.
+        using var client = _factory.CreateClient();
+        using var content = new System.Net.Http.StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+        var resp = await client.PostAsync(new Uri("/api/users/register", UriKind.Relative), content);
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

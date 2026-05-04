@@ -1,15 +1,14 @@
-using CCE.Api.Common.Auth;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
 using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
 using CCE.Domain.Identity;
+using CCE.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 
 namespace CCE.Api.External.Endpoints;
 
@@ -19,18 +18,39 @@ public static class ProfileEndpoints
     {
         var users = app.MapGroup("/api/users").WithTags("Profile");
 
-        users.MapPost("/register", (HttpContext ctx, IOptions<BffOptions> bffOpts) =>
+        // Sub-11 Phase 01 — admin-driven user creation via Microsoft Graph.
+        // Was a GET-redirect-to-Keycloak-registration-page; now a POST that
+        // calls EntraIdRegistrationService. Anonymous self-service deferred
+        // to Sub-11d (needs IEmailSender abstraction to deliver temp password).
+        users.MapPost("/register", async (
+            RegisterUserRequest body,
+            EntraIdRegistrationService registrationService,
+            CancellationToken ct) =>
         {
-            var o = bffOpts.Value;
-            var redirectUri = $"{ctx.Request.Scheme}://{ctx.Request.Host}/auth/callback";
-            var url = $"{o.KeycloakBaseUrl}/realms/{o.KeycloakRealm}/protocol/openid-connect/registrations"
-                + $"?client_id={System.Uri.EscapeDataString(o.KeycloakClientId)}"
-                + $"&response_type=code"
-                + $"&redirect_uri={System.Uri.EscapeDataString(redirectUri)}"
-                + $"&scope={System.Uri.EscapeDataString("openid profile email")}";
-            return Results.Redirect(url);
+            if (body is null
+                || string.IsNullOrWhiteSpace(body.GivenName)
+                || string.IsNullOrWhiteSpace(body.Surname)
+                || string.IsNullOrWhiteSpace(body.Email)
+                || string.IsNullOrWhiteSpace(body.MailNickname))
+            {
+                return Results.BadRequest(new { error = "GivenName, Surname, Email, MailNickname are required." });
+            }
+            var dto = new RegistrationRequest(body.GivenName, body.Surname, body.Email, body.MailNickname);
+            try
+            {
+                var result = await registrationService.CreateUserAsync(dto, ct).ConfigureAwait(false);
+                return Results.Created($"/api/users/{result.EntraIdObjectId}", result);
+            }
+            catch (EntraIdRegistrationConflictException)
+            {
+                return Results.Conflict(new { error = "User principal name already exists in Entra ID." });
+            }
+            catch (EntraIdRegistrationAuthorizationException)
+            {
+                return Results.StatusCode(StatusCodes.Status403Forbidden);
+            }
         })
-        .AllowAnonymous()
+        .RequireAuthorization(policy => policy.RequireRole("cce-admin"))
         .WithName("RegisterUser");
 
         var usersAuth = app.MapGroup("/api/users").WithTags("Profile").RequireAuthorization();
@@ -104,3 +124,9 @@ public sealed record SubmitExpertRequestRequest(
     string RequestedBioAr,
     string RequestedBioEn,
     IReadOnlyList<string>? RequestedTags);
+
+public sealed record RegisterUserRequest(
+    string GivenName,
+    string Surname,
+    string Email,
+    string MailNickname);
