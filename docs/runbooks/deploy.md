@@ -65,6 +65,51 @@
 
 Every deploy writes to `C:\ProgramData\CCE\logs\deploy-<UTC-timestamp>.log`. Logs older than 30 days can be deleted manually (10c will add automated rotation).
 
+## Sentry alert rules (recommended baseline)
+
+Sentry org admin configures these in the Sentry web UI per environment. The CCE backend tags every event with `environment` (production / preprod / test / dr) and `release` (`CCE_IMAGE_TAG`), making per-env alerting trivial.
+
+### Recommended rules per project
+
+| Rule | Trigger | Action |
+|---|---|---|
+| **First-occurrence in production** | New issue seen for the first time, environment = production | Email to ops on-call |
+| **High error rate** | More than 1% of events in production are errors over 5 minutes | Email to ops on-call |
+| **Auto-rollback triggered** | Event with tag `deploy.auto_rollback = true` (deploy.ps1 sends this) | Email + Slack/PagerDuty alert; treat as a real-time signal |
+| **Regression after release** | Issue marked resolved seen again in a newer release | Email to dev team |
+
+### Configuration steps
+
+1. Sentry → Project → Alerts → Create Alert.
+2. Pick "Issues" or "Metric Alert" depending on the rule.
+3. Set conditions per the table above.
+4. For environment-scoped alerts: under "If" filters, add `environment` equals the target environment.
+5. For auto-rollback alerts: filter on `deploy.auto_rollback` tag (set by `deploy.ps1`).
+
+### Verification
+
+After alert rules are configured, fire a test event:
+
+```powershell
+# From the backend host: trigger a test exception (any endpoint that returns 500
+# will do; or use Sentry's test-event endpoint).
+curl -X POST https://api.CCE/admin/__test-error__ -H "Authorization: Bearer <token>"
+```
+
+Verify the event appears in Sentry within ~30 seconds + the alert fires per the rule.
+
+### Auto-rollback events
+
+Whenever `deploy.ps1` triggers an auto-rollback (smoke probe failed and `AUTO_ROLLBACK=true`), it POSTs a Sentry event tagged `deploy.auto_rollback = true` with:
+- `environment` = `SENTRY_ENVIRONMENT` from the env-file
+- `release` = the failed `CCE_IMAGE_TAG` (the bad tag, not the rolled-back-to tag)
+- `tags.deploy.from_tag` = bad tag
+- `tags.deploy.to_tag` = previous good tag
+- `extra.reason` = "smoke-probe failure" (or future failure reasons)
+- `extra.host` = `$env:COMPUTERNAME`
+
+Use these tags in the alert filter for the "Auto-rollback triggered" rule.
+
 ## On failure: rollback
 
 If the smoke probes fail or the system is broken after deploy, roll back to the previous known-good image tag:
