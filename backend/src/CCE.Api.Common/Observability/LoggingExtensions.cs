@@ -47,14 +47,34 @@ public static class LoggingExtensions
 
             if (!string.IsNullOrWhiteSpace(sentryDsn))
             {
-                cfg.WriteTo.Sentry(o =>
-                {
-                    o.Dsn = sentryDsn;
-                    o.MinimumEventLevel = LogEventLevel.Warning;
-                    o.MinimumBreadcrumbLevel = LogEventLevel.Information;
-                });
+                cfg.WriteTo.Sentry(o => ConfigureSentry(o, sentryDsn, ctx.Configuration, ctx.HostingEnvironment.EnvironmentName));
             }
         });
+    }
+
+    /// <summary>
+    /// Public for testability. Constructs the Sentry sink options from
+    /// the same configuration keys UseCceSerilog reads. Kept narrow so
+    /// tests can verify env-var propagation without booting a host.
+    /// </summary>
+    public static void ConfigureSentry(
+        SentrySerilogOptions options,
+        string dsn,
+        IConfiguration configuration,
+        string fallbackEnvironmentName)
+    {
+        options.Dsn = dsn;
+        options.Environment = configuration["SENTRY_ENVIRONMENT"]
+                           ?? Environment.GetEnvironmentVariable("SENTRY_ENVIRONMENT")
+                           ?? fallbackEnvironmentName;
+        var release = configuration["SENTRY_RELEASE"]
+                   ?? Environment.GetEnvironmentVariable("SENTRY_RELEASE");
+        if (!string.IsNullOrWhiteSpace(release))
+        {
+            options.Release = release;
+        }
+        options.MinimumEventLevel = LogEventLevel.Warning;
+        options.MinimumBreadcrumbLevel = LogEventLevel.Information;
     }
 
     private static LogEventLevel? ParseLevel(string? value)

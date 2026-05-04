@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CCE.Infrastructure\CCE.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\CCE.Seeder\CCE.Seeder.csproj" />
+    <ProjectReference Include="..\..\src\CCE.Api.Common\CCE.Api.Common.csproj" />
     <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
   </ItemGroup>
 
