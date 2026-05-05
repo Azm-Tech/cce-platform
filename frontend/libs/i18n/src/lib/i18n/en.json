@@ -13,6 +13,39 @@
       "countries": "Countries",
       "netZero": "Net-Zero Target"
     },
+    "how": {
+      "heading": "How it works",
+      "sub": "Three pillars connect insight to action: see the world, learn the system, drive change.",
+      "step1": {
+        "title": "Discover",
+        "body": "Browse 60+ cities on the interactive map. Filter by carbon tier, surface key initiatives, see who's leading the transition."
+      },
+      "step2": {
+        "title": "Understand",
+        "body": "Navigate concept maps that connect technologies, sectors, and policies. Bookmark resources, ask the AI assistant."
+      },
+      "step3": {
+        "title": "Act",
+        "body": "Build city scenarios in the simulator. Share findings with the community. Submit research as an expert."
+      }
+    },
+    "featured": {
+      "eyebrow": "City spotlight",
+      "heading": "Cities leading the transition",
+      "sub": "A small sample from the 60+ cities mapped across 35 countries.",
+      "viewAll": "Explore all 60 cities"
+    },
+    "quote": {
+      "text": "We won't decarbonize the planet one country at a time. We'll do it one city at a time — and we need every operator, every researcher, every citizen to see the same map.",
+      "name": "Dr. Amani Al-Saadi",
+      "role": "Climate Policy Lead, MENA Climate Initiative"
+    },
+    "cta": {
+      "title": "Be part of the transition",
+      "sub": "Join researchers, policymakers, and practitioners shaping a sustainable future. Free to start. Sign up in 30 seconds.",
+      "signUp": "Create your account",
+      "demo": "See the map first"
+    },
     "features": {
       "heading": "Everything you need to drive change",
       "map": {

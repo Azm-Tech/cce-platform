@@ -1,7 +1,12 @@
 <section class="cce-home">
-  <!-- Animated hero -->
+  <!-- ─── Hero (white background) ─────────────────────────────────────── -->
   <div class="cce-home__hero">
-    <!-- Floating particle layer -->
+    <!-- Soft decorative blobs in the corners -->
+    <div class="cce-home__blob cce-home__blob--tl" aria-hidden="true"></div>
+    <div class="cce-home__blob cce-home__blob--tr" aria-hidden="true"></div>
+    <div class="cce-home__blob cce-home__blob--br" aria-hidden="true"></div>
+
+    <!-- Floating particle layer (now navy on white) -->
     <div class="cce-home__particles" aria-hidden="true">
       <span class="cce-home__particle"></span>
       <span class="cce-home__particle"></span>
@@ -38,10 +43,12 @@
           <span class="cce-home__stat-value">60+</span>
           <span class="cce-home__stat-label">{{ 'home.stats.cities' | translate }}</span>
         </div>
+        <div class="cce-home__stat-divider"></div>
         <div class="cce-home__stat">
           <span class="cce-home__stat-value">35</span>
           <span class="cce-home__stat-label">{{ 'home.stats.countries' | translate }}</span>
         </div>
+        <div class="cce-home__stat-divider"></div>
         <div class="cce-home__stat">
           <span class="cce-home__stat-value">2050</span>
           <span class="cce-home__stat-label">{{ 'home.stats.netZero' | translate }}</span>
@@ -49,13 +56,42 @@
       </div>
     </div>
 
-    <!-- Decorative wave at bottom of hero -->
+    <!-- Decorative wave separator (transitions white → dark) -->
     <svg class="cce-home__hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0,60 C240,120 480,0 720,40 C960,80 1200,30 1440,60 L1440,120 L0,120 Z" fill="currentColor" />
     </svg>
   </div>
 
-  <!-- Feature cards -->
+  <!-- ─── How it works (3-step) ──────────────────────────────────────── -->
+  <div class="cce-home__how">
+    <h2 class="cce-home__section-heading cce-home__section-heading--center">
+      {{ 'home.how.heading' | translate }}
+    </h2>
+    <p class="cce-home__section-sub">{{ 'home.how.sub' | translate }}</p>
+
+    <ol class="cce-home__steps">
+      <li class="cce-home__step">
+        <div class="cce-home__step-num">01</div>
+        <div class="cce-home__step-icon">🔭</div>
+        <h3 class="cce-home__step-title">{{ 'home.how.step1.title' | translate }}</h3>
+        <p class="cce-home__step-body">{{ 'home.how.step1.body' | translate }}</p>
+      </li>
+      <li class="cce-home__step">
+        <div class="cce-home__step-num">02</div>
+        <div class="cce-home__step-icon">📚</div>
+        <h3 class="cce-home__step-title">{{ 'home.how.step2.title' | translate }}</h3>
+        <p class="cce-home__step-body">{{ 'home.how.step2.body' | translate }}</p>
+      </li>
+      <li class="cce-home__step">
+        <div class="cce-home__step-num">03</div>
+        <div class="cce-home__step-icon">🚀</div>
+        <h3 class="cce-home__step-title">{{ 'home.how.step3.title' | translate }}</h3>
+        <p class="cce-home__step-body">{{ 'home.how.step3.body' | translate }}</p>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ─── Features grid (existing, dark) ─────────────────────────────── -->
   <div class="cce-home__features">
     <h2 class="cce-home__section-heading">{{ 'home.features.heading' | translate }}</h2>
     <div class="cce-home__feature-grid">
@@ -86,7 +122,106 @@
     </div>
   </div>
 
-  <!-- CMS-driven sections (preserved from original behavior) -->
+  <!-- ─── Featured cities ─────────────────────────────────────────────── -->
+  <div class="cce-home__featured-cities">
+    <div class="cce-home__featured-header">
+      <p class="cce-home__featured-eyebrow">{{ 'home.featured.eyebrow' | translate }}</p>
+      <h2 class="cce-home__section-heading cce-home__section-heading--center">
+        {{ 'home.featured.heading' | translate }}
+      </h2>
+      <p class="cce-home__section-sub">{{ 'home.featured.sub' | translate }}</p>
+    </div>
+
+    <div class="cce-home__featured-grid">
+      <a routerLink="/explore" class="cce-home__featured-card cce-home__featured-card--low">
+        <div class="cce-home__featured-flag">🇸🇦</div>
+        <div class="cce-home__featured-meta">
+          <h3 class="cce-home__featured-name">Riyadh</h3>
+          <p class="cce-home__featured-country">Saudi Arabia</p>
+        </div>
+        <p class="cce-home__featured-tag">NEOM Green Hydrogen</p>
+        <div class="cce-home__featured-stats">
+          <span><strong>7.6M</strong> people</span>
+          <span class="cce-home__featured-tier cce-home__featured-tier--medium">Medium</span>
+        </div>
+      </a>
+      <a routerLink="/explore" class="cce-home__featured-card cce-home__featured-card--low">
+        <div class="cce-home__featured-flag">🇦🇪</div>
+        <div class="cce-home__featured-meta">
+          <h3 class="cce-home__featured-name">Dubai</h3>
+          <p class="cce-home__featured-country">United Arab Emirates</p>
+        </div>
+        <p class="cce-home__featured-tag">COP28 Host · Solar Park</p>
+        <div class="cce-home__featured-stats">
+          <span><strong>3.6M</strong> people</span>
+          <span class="cce-home__featured-tier cce-home__featured-tier--medium">Medium</span>
+        </div>
+      </a>
+      <a routerLink="/explore" class="cce-home__featured-card cce-home__featured-card--low">
+        <div class="cce-home__featured-flag">🇬🇧</div>
+        <div class="cce-home__featured-meta">
+          <h3 class="cce-home__featured-name">London</h3>
+          <p class="cce-home__featured-country">United Kingdom</p>
+        </div>
+        <p class="cce-home__featured-tag">Net-Zero by 2030 · ULEZ</p>
+        <div class="cce-home__featured-stats">
+          <span><strong>9.5M</strong> people</span>
+          <span class="cce-home__featured-tier cce-home__featured-tier--low">Low</span>
+        </div>
+      </a>
+      <a routerLink="/explore" class="cce-home__featured-card cce-home__featured-card--low">
+        <div class="cce-home__featured-flag">🇸🇬</div>
+        <div class="cce-home__featured-meta">
+          <h3 class="cce-home__featured-name">Singapore</h3>
+          <p class="cce-home__featured-country">Singapore</p>
+        </div>
+        <p class="cce-home__featured-tag">Green Plan 2030</p>
+        <div class="cce-home__featured-stats">
+          <span><strong>5.9M</strong> people</span>
+          <span class="cce-home__featured-tier cce-home__featured-tier--medium">Medium</span>
+        </div>
+      </a>
+    </div>
+
+    <a routerLink="/explore" class="cce-home__featured-link">
+      <span>{{ 'home.featured.viewAll' | translate }}</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+        <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- ─── Quote / voices ─────────────────────────────────────────────── -->
+  <div class="cce-home__quote">
+    <svg class="cce-home__quote-mark" width="80" height="80" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M9.4 4.5C5.4 5.6 3 9.4 3 14v5.5h7v-7H6.4c.3-2.5 1.6-4 3-4.6V4.5zM20 4.5c-4 1.1-6.4 4.9-6.4 9.5v5.5h7v-7h-3.6c.3-2.5 1.6-4 3-4.6V4.5z" />
+    </svg>
+    <p class="cce-home__quote-text">{{ 'home.quote.text' | translate }}</p>
+    <div class="cce-home__quote-attr">
+      <p class="cce-home__quote-name">{{ 'home.quote.name' | translate }}</p>
+      <p class="cce-home__quote-role">{{ 'home.quote.role' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- ─── Final CTA banner ───────────────────────────────────────────── -->
+  <div class="cce-home__cta-banner">
+    <div class="cce-home__cta-banner-glow" aria-hidden="true"></div>
+    <h2 class="cce-home__cta-banner-title">{{ 'home.cta.title' | translate }}</h2>
+    <p class="cce-home__cta-banner-sub">{{ 'home.cta.sub' | translate }}</p>
+    <div class="cce-home__cta-banner-actions">
+      <a routerLink="/register" class="cce-home__cta cce-home__cta--primary cce-home__cta--large">
+        <span>{{ 'home.cta.signUp' | translate }}</span>
+        <svg class="cce-home__cta-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+      <a routerLink="/explore" class="cce-home__cta cce-home__cta--ghost-on-dark cce-home__cta--large">
+        {{ 'home.cta.demo' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <!-- ─── CMS-driven sections (preserved) ─────────────────────────────── -->
   @if (loading()) {
     <p class="cce-home__loading">{{ 'common.loading' | translate }}</p>
   }
