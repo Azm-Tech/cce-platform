@@ -8,9 +8,15 @@ export interface CceAuthEnv {
 }
 
 /**
- * Build an angular-auth-oidc-client configuration for one of the CCE Keycloak realms.
- * Apps call this from their bootstrap with values pulled from /assets/env.json so the
- * same image deploys to dev/staging/prod by swapping the runtime config file.
+ * Build an angular-auth-oidc-client configuration for one of the CCE
+ * Entra ID app registrations. Apps call this from their bootstrap with
+ * values pulled from /assets/env.json so the same image deploys to
+ * dev/staging/prod by swapping the runtime config file.
+ *
+ * Multi-tenant Entra ID — `authority` points at
+ * `https://login.microsoftonline.com/<tenant>/v2.0` (or `/common` for
+ * any-tenant); the BFF's IssuerValidator accepts any tenant matching the
+ * canonical shape (see EntraIdIssuerValidator).
  */
 export function buildCceOidcConfig(env: CceAuthEnv): OpenIdConfiguration {
   return {
@@ -18,7 +24,8 @@ export function buildCceOidcConfig(env: CceAuthEnv): OpenIdConfiguration {
     redirectUrl: env.redirectUri,
     postLogoutRedirectUri: env.postLogoutRedirectUri,
     clientId: env.clientId,
-    scope: 'openid profile email adfs-compat offline_access',
+    // Entra ID standard scopes; adfs-compat (Keycloak-only) removed in Sub-11.
+    scope: 'openid profile email offline_access',
     responseType: 'code',
     silentRenew: true,
     useRefreshToken: true,
