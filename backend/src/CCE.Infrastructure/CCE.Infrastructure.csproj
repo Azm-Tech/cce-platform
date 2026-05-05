@@ -33,6 +33,7 @@
     <PackageReference Include="MediatR" />
 
     <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="MailKit" />
     <PackageReference Include="Meilisearch" />
     <PackageReference Include="StackExchange.Redis" />
 

@@ -24,6 +24,7 @@ using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
 using CCE.Domain.Common;
+using CCE.Infrastructure.Email;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Persistence;
@@ -87,6 +88,21 @@ public static class DependencyInjection
         services.Configure<EntraIdOptions>(configuration.GetSection(EntraIdOptions.SectionName));
         services.AddSingleton<EntraIdGraphClientFactory>();
         services.AddScoped<EntraIdRegistrationService>();
+
+        // Sub-11d — outbound email transport. SMTP-backed when
+        // Email:Provider=smtp; otherwise NullEmailSender (logs + discards).
+        // Singleton because both impls are stateless + thread-safe.
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.AddSingleton<IEmailSender>(sp =>
+        {
+            var opts = sp.GetRequiredService<IOptions<EmailOptions>>();
+            var provider = (opts.Value.Provider ?? "null").ToLowerInvariant();
+            return provider switch
+            {
+                "smtp" => ActivatorUtilities.CreateInstance<SmtpEmailSender>(sp),
+                _      => ActivatorUtilities.CreateInstance<NullEmailSender>(sp),
+            };
+        });
         services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
         services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
         services.AddScoped<IExpertRequestSubmissionService, ExpertRequestSubmissionService>();

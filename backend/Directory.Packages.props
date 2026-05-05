@@ -32,6 +32,10 @@
     <PackageVersion Include="Meilisearch" Version="0.15.5" />
   </ItemGroup>
 
+  <ItemGroup Label="Email transport (SMTP)">
+    <PackageVersion Include="MailKit" Version="4.8.0" />
+  </ItemGroup>
+
   <ItemGroup Label="Application layer">
     <PackageVersion Include="CsvHelper" Version="33.0.1" />
     <PackageVersion Include="MediatR" Version="12.4.1" />
