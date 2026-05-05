@@ -1,3 +1,4 @@
+using CCE.Api.Common.Auth;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
@@ -5,10 +6,14 @@ using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
 using CCE.Domain.Identity;
 using CCE.Infrastructure.Identity;
+using CCE.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CCE.Api.External.Endpoints;
 
@@ -32,7 +37,10 @@ public static class ProfileEndpoints
         // email transport on registration failure.
         users.MapPost("/register", async (
             RegisterUserRequest body,
+            HttpContext httpCtx,
+            IConfiguration config,
             EntraIdRegistrationService registrationService,
+            CceDbContext db,
             CancellationToken ct) =>
         {
             if (body is null
@@ -43,6 +51,51 @@ public static class ProfileEndpoints
             {
                 return Results.BadRequest(new { error = "GivenName, Surname, Email, MailNickname are required." });
             }
+
+            // ─── Dev-mode shortcut ──────────────────────────────────────────
+            // Without a real Entra ID tenant the Graph user-create call
+            // can't succeed (placeholder ClientId in appsettings.Development.json).
+            // In dev we synthesize a CCE.DB User row directly + sign the
+            // user in via the dev cookie so the registration flow is usable
+            // end-to-end on localhost.
+            var devMode = config.GetValue<bool>("Auth:DevMode");
+            if (devMode)
+            {
+                var normalizedEmail = body.Email.ToUpperInvariant();
+                var existing = await db.Users
+                    .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail, ct)
+                    .ConfigureAwait(false);
+                if (existing is not null)
+                {
+                    return Results.Conflict(new { error = "An account with that email already exists." });
+                }
+                var newUser = new User
+                {
+                    Id = Guid.NewGuid(),
+                    UserName = body.Email,
+                    NormalizedUserName = body.Email.ToUpperInvariant(),
+                    Email = body.Email,
+                    NormalizedEmail = body.Email.ToUpperInvariant(),
+                    EmailConfirmed = true,
+                };
+                db.Users.Add(newUser);
+                await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+                // Auto-sign-in via the dev cookie so the SPA picks the user up.
+                httpCtx.Response.Cookies.Append(DevAuthHandler.DevCookieName, "cce-user", new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = false,
+                    SameSite = SameSiteMode.Lax,
+                    Path = "/",
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                });
+
+                return Results.Created($"/api/users/{newUser.Id}",
+                    new RegisterUserResponse(newUser.Id, body.Email, $"{body.GivenName} {body.Surname}"));
+            }
+
+            // ─── Production path: Microsoft Graph user-create ───────────────
             var dto = new RegistrationRequest(body.GivenName, body.Surname, body.Email, body.MailNickname);
             try
             {
