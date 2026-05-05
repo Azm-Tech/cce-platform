@@ -76,6 +76,14 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
     return Results.Ok(new { name, upn });
 }).RequireAuthorization();
 
+// Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
+// /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production
+// deployments leave the flag false → endpoints are never mounted.
+if (builder.Configuration.GetValue<bool>("Auth:DevMode"))
+{
+    app.MapDevAuthEndpoints();
+}
+
 app.MapProfileEndpoints();
 app.MapNotificationsEndpoints();
 app.MapNewsPublicEndpoints();

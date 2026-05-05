@@ -1,4 +1,5 @@
 using CCE.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,29 @@ public static class CceJwtAuthRegistration
 {
     public static IServiceCollection AddCceJwtAuth(this IServiceCollection services, IConfiguration configuration)
     {
+        // Sub-11d follow-up — DevMode shim. When Auth:DevMode=true, register
+        // DevAuthHandler as the default scheme (replacing M.I.W's JwtBearer)
+        // so local-dev sign-in works without a real Entra ID tenant.
+        // Production deployments leave the flag false → DevAuth is never
+        // registered + the production JwtBearer chain runs as before.
+        var devMode = configuration.GetValue<bool>("Auth:DevMode");
+        if (devMode)
+        {
+            services
+                .AddAuthentication(opts =>
+                {
+                    opts.DefaultAuthenticateScheme = DevAuthHandler.SchemeName;
+                    opts.DefaultChallengeScheme = DevAuthHandler.SchemeName;
+                    opts.DefaultScheme = DevAuthHandler.SchemeName;
+                })
+                .AddScheme<AuthenticationSchemeOptions, DevAuthHandler>(
+                    DevAuthHandler.SchemeName, _ => { });
+            services.AddHostedService<DevUsersSeeder>();
+            services.Configure<EntraIdOptions>(configuration.GetSection(EntraIdOptions.SectionName));
+            services.AddAuthorization();
+            return services;
+        }
+
         // Microsoft.Identity.Web layers on top of JwtBearer: registers the JwtBearer
         // scheme, points it at Entra ID's OIDC discovery endpoint, and pulls keys
         // from the JWKS automatically. configSectionName must match the JSON section

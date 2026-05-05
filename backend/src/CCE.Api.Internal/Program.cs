@@ -71,6 +71,14 @@ app.MapNotificationTemplateEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
 
+// Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
+// /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production
+// deployments leave the flag false → endpoints are never mounted.
+if (builder.Configuration.GetValue<bool>("Auth:DevMode"))
+{
+    app.MapDevAuthEndpoints();
+}
+
 app.MapGet("/", () => "CCE.Api.Internal — Foundation");
 
 app.MapGet("/auth/echo", (HttpContext ctx) =>
