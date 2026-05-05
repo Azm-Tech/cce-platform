@@ -18,8 +18,10 @@ public class RoleToPermissionClaimsTransformerTests
     }
 
     [Fact]
-    public async Task SuperAdmin_role_group_expands_to_all_SuperAdmin_permissions()
+    public async Task Legacy_SuperAdmin_groups_claim_expands_to_admin_permission_set()
     {
+        // Legacy Keycloak `groups` claim — still consumed during Sub-11 phases
+        // 00-03 coexistence; Phase 04 cutover removes the legacy branch.
         var identity = new ClaimsIdentity(
             new[] { new Claim("groups", "SuperAdmin") },
             authenticationType: "test");
@@ -81,5 +83,42 @@ public class RoleToPermissionClaimsTransformerTests
         var secondCount = second.FindAll("groups").Count();
 
         secondCount.Should().Be(firstCount, "second transform must short-circuit");
+    }
+
+    // ─── Sub-11 Phase 03 — Entra ID `roles` claim (deferred from Phase 00) ───
+
+    [Fact]
+    public async Task EntraId_roles_claim_cce_admin_expands_to_full_permission_set()
+    {
+        var identity = new ClaimsIdentity(
+            new[] { new Claim("roles", "cce-admin") },
+            authenticationType: "test");
+        var principal = new ClaimsPrincipal(identity);
+        var sut = new RoleToPermissionClaimsTransformer();
+
+        var result = await sut.TransformAsync(principal);
+
+        var permissions = result.FindAll("groups").Select(c => c.Value).ToHashSet();
+        permissions.Should().Contain(Permissions.System_Health_Read);
+        permissions.Should().Contain(Permissions.User_Create);
+        permissions.Should().Contain(Permissions.Role_Assign);
+    }
+
+    [Fact]
+    public async Task EntraId_roles_claim_cce_user_grants_community_writes_but_not_admin_actions()
+    {
+        var identity = new ClaimsIdentity(
+            new[] { new Claim("roles", "cce-user") },
+            authenticationType: "test");
+        var principal = new ClaimsPrincipal(identity);
+        var sut = new RoleToPermissionClaimsTransformer();
+
+        var result = await sut.TransformAsync(principal);
+
+        var permissions = result.FindAll("groups").Select(c => c.Value).ToHashSet();
+        permissions.Should().Contain(Permissions.Community_Post_Create);
+        permissions.Should().Contain(Permissions.Community_Post_Reply);
+        permissions.Should().NotContain(Permissions.Role_Assign); // admin-only
+        permissions.Should().NotContain(Permissions.User_Create); // admin-only
     }
 }

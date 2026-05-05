@@ -27,13 +27,19 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
 {
     private const string YamlFileName = "permissions.yaml";
 
+    // Role values are the strings emitted in Entra ID app-role tokens (the
+    // `roles` claim) and used in permissions.yaml's `roles:` lists. The
+    // generator emits a corresponding C# property on RolePermissionMap whose
+    // identifier is the value PascalCased via ToRoleMemberName (e.g.
+    // "cce-admin" → "CceAdmin"). Phase 03 (Sub-11) renamed from Keycloak's
+    // SuperAdmin-style names to Entra ID app-role values.
     private static readonly string[] KnownRoles =
     {
-        "SuperAdmin",
-        "ContentManager",
-        "StateRepresentative",
-        "CommunityExpert",
-        "RegisteredUser",
+        "cce-admin",
+        "cce-editor",
+        "cce-reviewer",
+        "cce-expert",
+        "cce-user",
         "Anonymous",
     };
 
@@ -345,15 +351,16 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         for (int r = 0; r < KnownRoles.Length; r++)
         {
             var role = KnownRoles[r];
+            var memberName = ToRoleMemberName(role);
             var matches = entries.Where(e => e.Roles.Contains(role)).Select(e => e.Name).ToArray();
             sb.AppendLine($"    /// <summary>Permissions assigned to the <c>{role}</c> role.</summary>");
             if (matches.Length == 0)
             {
-                sb.AppendLine($"    public static IReadOnlyList<string> {role} {{ get; }} = System.Array.Empty<string>();");
+                sb.AppendLine($"    public static IReadOnlyList<string> {memberName} {{ get; }} = System.Array.Empty<string>();");
             }
             else
             {
-                sb.AppendLine($"    public static IReadOnlyList<string> {role} {{ get; }} = new[]");
+                sb.AppendLine($"    public static IReadOnlyList<string> {memberName} {{ get; }} = new[]");
                 sb.AppendLine("    {");
                 foreach (var name in matches)
                 {
@@ -372,4 +379,25 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
     }
 
     private static string ToMemberName(string permission) => permission.Replace('.', '_');
+
+    /// <summary>
+    /// Converts a role value (e.g. "cce-admin") into a valid C# member
+    /// identifier (e.g. "CceAdmin") for use as a property name on the
+    /// generated RolePermissionMap. Splits on '-', uppercases each segment's
+    /// first character, joins. Leaves identifier-safe inputs (e.g. "Anonymous")
+    /// unchanged in shape.
+    /// </summary>
+    private static string ToRoleMemberName(string role)
+    {
+        if (string.IsNullOrEmpty(role)) return role;
+        var parts = role.Split('-');
+        var sb = new StringBuilder(role.Length);
+        foreach (var part in parts)
+        {
+            if (part.Length == 0) continue;
+            sb.Append(char.ToUpperInvariant(part[0]));
+            if (part.Length > 1) sb.Append(part.Substring(1));
+        }
+        return sb.ToString();
+    }
 }
