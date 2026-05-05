@@ -10,7 +10,7 @@ public class RolePermissionMapGeneratorTests
               User:
                 Read:
                   description: x
-                  roles: [SuperAdmin]
+                  roles: [cce-admin]
             """;
 
         var generated = GeneratorTestHarness.Run(yaml);
@@ -26,12 +26,14 @@ public class RolePermissionMapGeneratorTests
               User:
                 Read:
                   description: x
-                  roles: [SuperAdmin]
+                  roles: [cce-admin]
             """;
 
         var generated = GeneratorTestHarness.Run(yaml);
 
-        generated.Should().Contain("public static IReadOnlyList<string> SuperAdmin { get; } = new[]");
+        // Sub-11 Phase 03: role values like "cce-admin" become PascalCase
+        // C# identifiers ("CceAdmin") via PermissionsGenerator.ToRoleMemberName.
+        generated.Should().Contain("public static IReadOnlyList<string> CceAdmin { get; } = new[]");
         generated.Should().Contain("\"User.Read\",");
     }
 
@@ -43,16 +45,16 @@ public class RolePermissionMapGeneratorTests
               Page:
                 Edit:
                   description: x
-                  roles: [SuperAdmin, ContentManager]
+                  roles: [cce-admin, cce-editor]
             """;
 
         var generated = GeneratorTestHarness.Run(yaml);
 
-        var superAdminBlock = ExtractRoleBlock(generated, "SuperAdmin");
-        var contentManagerBlock = ExtractRoleBlock(generated, "ContentManager");
+        var cceAdminBlock = ExtractRoleBlock(generated, "CceAdmin");
+        var cceEditorBlock = ExtractRoleBlock(generated, "CceEditor");
 
-        superAdminBlock.Should().Contain("\"Page.Edit\"");
-        contentManagerBlock.Should().Contain("\"Page.Edit\"");
+        cceAdminBlock.Should().Contain("\"Page.Edit\"");
+        cceEditorBlock.Should().Contain("\"Page.Edit\"");
     }
 
     [Fact]
@@ -63,23 +65,25 @@ public class RolePermissionMapGeneratorTests
               User:
                 Delete:
                   description: x
-                  roles: [SuperAdmin]
+                  roles: [cce-admin]
             """;
 
         var generated = GeneratorTestHarness.Run(yaml);
 
-        generated.Should().Contain("public static IReadOnlyList<string> SuperAdmin { get; }");
-        generated.Should().Contain("public static IReadOnlyList<string> ContentManager { get; }");
-        generated.Should().Contain("public static IReadOnlyList<string> StateRepresentative { get; }");
-        generated.Should().Contain("public static IReadOnlyList<string> CommunityExpert { get; }");
-        generated.Should().Contain("public static IReadOnlyList<string> RegisteredUser { get; }");
+        // Sub-11 Phase 03 Entra ID app-role values, PascalCased for the
+        // generated C# property names.
+        generated.Should().Contain("public static IReadOnlyList<string> CceAdmin { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceEditor { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceReviewer { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceExpert { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceUser { get; }");
         generated.Should().Contain("public static IReadOnlyList<string> Anonymous { get; }");
     }
 
     /// <summary>
     /// Returns the substring of <paramref name="generated"/> covering the body of the named role's
-    /// collection, e.g. for role "SuperAdmin": everything between
-    /// "public static IReadOnlyList&lt;string&gt; SuperAdmin { get; } = new[]" and the next "};".
+    /// collection, e.g. for role "CceAdmin": everything between
+    /// "public static IReadOnlyList&lt;string&gt; CceAdmin { get; } = new[]" and the next "};".
     /// </summary>
     private static string ExtractRoleBlock(string generated, string roleName)
     {
