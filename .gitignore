@@ -116,3 +116,11 @@ dependency-check-report.*
 # so the drift check (scripts/check-contracts-clean.sh) can compare against
 # the committed snapshot. Only ignore openapi-ts CLI error logs.
 frontend/libs/api-client/openapi-ts-error-*.log
+
+######################
+# Entra ID branding assets
+######################
+# Operators copy rendered assets from the design system at deploy time.
+# Source-of-truth lives in frontend/libs/ui-kit/, not here.
+infra/entra/branding/*.png
+infra/entra/branding/custom.css

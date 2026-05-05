@@ -1,0 +1,21 @@
+/* CCE custom Entra ID sign-in CSS — example.
+ * Copy to custom.css and customize. Maximum 25 KB.
+ * Documented selectors: https://learn.microsoft.com/entra/fundamentals/how-to-customize-branding
+ */
+
+/* Brand-color overrides — match CCE design tokens. */
+:root {
+    --cce-primary: #2D5A87;
+    --cce-accent: #F4A300;
+}
+
+/* Sign-in container. */
+.ext-sign-in-box {
+    background: var(--cce-primary);
+}
+
+/* Submit button. */
+.ext-button.ext-primary {
+    background-color: var(--cce-accent);
+    border-color: var(--cce-accent);
+}
