@@ -1,0 +1,85 @@
+{
+  "displayName": "CCE Knowledge Center",
+  "signInAudience": "AzureADMultipleOrgs",
+  "description": "Multi-tenant Entra ID app registration for the CCE Knowledge Center platform. Provisioned by infra/entra/apply-app-registration.ps1. Source of truth: this manifest.",
+  "web": {
+    "redirectUris": [
+      "http://localhost:5101/signin-oidc",
+      "http://localhost:5102/signin-oidc",
+      "https://{{HOSTNAME_PORTAL_TEST}}/signin-oidc",
+      "https://{{HOSTNAME_PORTAL_PREPROD}}/signin-oidc",
+      "https://{{HOSTNAME_PORTAL_PROD}}/signin-oidc",
+      "https://{{HOSTNAME_PORTAL_DR}}/signin-oidc",
+      "https://{{HOSTNAME_CMS_TEST}}/signin-oidc",
+      "https://{{HOSTNAME_CMS_PREPROD}}/signin-oidc",
+      "https://{{HOSTNAME_CMS_PROD}}/signin-oidc",
+      "https://{{HOSTNAME_CMS_DR}}/signin-oidc"
+    ],
+    "implicitGrantSettings": {
+      "enableAccessTokenIssuance": false,
+      "enableIdTokenIssuance": false
+    },
+    "logoutUrl": "https://{{HOSTNAME_PORTAL_PROD}}/signout-oidc"
+  },
+  "appRoles": [
+    {
+      "id": "11111111-aaaa-1111-aaaa-111111111111",
+      "displayName": "CCE Admin",
+      "value": "cce-admin",
+      "description": "Full administrative access to the CCE CMS and platform settings.",
+      "allowedMemberTypes": ["User"],
+      "isEnabled": true
+    },
+    {
+      "id": "22222222-aaaa-2222-aaaa-222222222222",
+      "displayName": "CCE Editor",
+      "value": "cce-editor",
+      "description": "Content-authoring access (resources, news, events, pages).",
+      "allowedMemberTypes": ["User"],
+      "isEnabled": true
+    },
+    {
+      "id": "33333333-aaaa-3333-aaaa-333333333333",
+      "displayName": "CCE Reviewer",
+      "value": "cce-reviewer",
+      "description": "Read access plus expert-request-review queue.",
+      "allowedMemberTypes": ["User"],
+      "isEnabled": true
+    },
+    {
+      "id": "44444444-aaaa-4444-aaaa-444444444444",
+      "displayName": "CCE Expert",
+      "value": "cce-expert",
+      "description": "Expert-only authoring (community posts, expert profiles).",
+      "allowedMemberTypes": ["User"],
+      "isEnabled": true
+    },
+    {
+      "id": "55555555-aaaa-5555-aaaa-555555555555",
+      "displayName": "CCE User",
+      "value": "cce-user",
+      "description": "Base end-user role; required for any signed-in access.",
+      "allowedMemberTypes": ["User"],
+      "isEnabled": true
+    }
+  ],
+  "requiredResourceAccess": [
+    {
+      "resourceAppId": "00000003-0000-0000-c000-000000000000",
+      "resourceAccess": [
+        {
+          "id": "741f803b-c850-494e-b5df-cde7c675a1ca",
+          "type": "Role"
+        },
+        {
+          "id": "df021288-bdef-4463-88db-98f22de89214",
+          "type": "Role"
+        },
+        {
+          "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+          "type": "Scope"
+        }
+      ]
+    }
+  ]
+}
