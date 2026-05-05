@@ -883,6 +883,8 @@ After Task 4.5 commits cleanly + the tag is created:
 - [ ] **Update master plan** to mark Phase 04 DONE.
 - [ ] **No Phase 05** — Sub-11 ends here.
 
+## Phase 04 close-out — DONE 2026-05-05
+
 **Phase 04 done when:**
 - 4 task commits + 1 close-out commit landed on `main`, each green.
 - All Bff* files deleted from `CCE.Api.Common/Auth/`; `BffRegistration.cs` simplified to M.I.W-only.
