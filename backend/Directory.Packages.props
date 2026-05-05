@@ -98,7 +98,6 @@
     <PackageVersion Include="Testcontainers" Version="4.0.0" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.0.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.0.0" />
-    <PackageVersion Include="Testcontainers.Keycloak" Version="4.0.0" />
     <PackageVersion Include="WireMock.Net" Version="1.7.0" />
   </ItemGroup>
 

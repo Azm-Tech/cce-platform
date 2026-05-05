@@ -25,8 +25,8 @@ public class RolesAndPermissionsSeederTests
 
         var roles = await ctx.Set<Role>().ToListAsync();
         roles.Should().HaveCount(5);
-        roles.Select(r => r.Name).Should().Contain(new[] { "SuperAdmin", "ContentManager",
-            "StateRepresentative", "CommunityExpert", "RegisteredUser" });
+        roles.Select(r => r.Name).Should().Contain(new[] { "cce-admin", "cce-editor",
+            "cce-reviewer", "cce-expert", "cce-user" });
 
         var claims = await ctx.Set<IdentityRoleClaim<System.Guid>>().ToListAsync();
         claims.Should().NotBeEmpty();
@@ -52,13 +52,13 @@ public class RolesAndPermissionsSeederTests
     }
 
     [Fact]
-    public async Task SuperAdmin_has_System_Health_Read_claim()
+    public async Task CceAdmin_has_System_Health_Read_claim()
     {
         using var ctx = NewContext();
         var seeder = new RolesAndPermissionsSeeder(ctx, NullLogger<RolesAndPermissionsSeeder>.Instance);
         await seeder.SeedAsync();
 
-        var roleId = DeterministicGuid.From("role:SuperAdmin");
+        var roleId = DeterministicGuid.From("role:cce-admin");
         var hasClaim = await ctx.Set<IdentityRoleClaim<System.Guid>>()
             .AnyAsync(c => c.RoleId == roleId
                            && c.ClaimType == "permission"

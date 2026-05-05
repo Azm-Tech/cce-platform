@@ -21,7 +21,6 @@
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="Testcontainers.Redis" />
-    <PackageReference Include="Testcontainers.Keycloak" />
   </ItemGroup>
 
   <ItemGroup>
