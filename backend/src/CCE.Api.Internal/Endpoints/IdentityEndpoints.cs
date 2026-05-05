@@ -5,6 +5,7 @@ using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
 using CCE.Application.Identity.Queries.ListUsers;
 using CCE.Domain;
+using CCE.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -58,6 +59,21 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("AssignUserRoles");
+
+        // Sub-11d Task D — batch UPN→EntraIdObjectId backfill. Admin-only;
+        // referenced by docs/runbooks/entra-id-cutover.md step 7. Lazy
+        // resolution per-user already happens on first sign-in via
+        // EntraIdUserResolver; this endpoint pre-populates the link in
+        // bulk so cutover-day first-sign-ins are single-round-trip.
+        users.MapPost("/sync", async (
+            EntraIdUserSyncService syncService,
+            CancellationToken ct) =>
+        {
+            var summary = await syncService.SyncAsync(ct).ConfigureAwait(false);
+            return Results.Ok(summary);
+        })
+        .RequireAuthorization(Permissions.Role_Assign)
+        .WithName("SyncEntraIdUsers");
 
         var assignments = app.MapGroup("/api/admin/state-rep-assignments").WithTags("Identity");
 

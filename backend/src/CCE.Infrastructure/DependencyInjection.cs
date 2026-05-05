@@ -88,6 +88,7 @@ public static class DependencyInjection
         services.Configure<EntraIdOptions>(configuration.GetSection(EntraIdOptions.SectionName));
         services.AddSingleton<EntraIdGraphClientFactory>();
         services.AddScoped<EntraIdRegistrationService>();
+        services.AddScoped<EntraIdUserSyncService>();
 
         // Sub-11d — outbound email transport. SMTP-backed when
         // Email:Provider=smtp; otherwise NullEmailSender (logs + discards).

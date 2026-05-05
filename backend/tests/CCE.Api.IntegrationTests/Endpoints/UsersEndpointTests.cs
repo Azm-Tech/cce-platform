@@ -97,4 +97,17 @@ public class UsersEndpointTests :
 
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Sync_anonymous_returns_401()
+    {
+        // Sub-11d Task D: POST /api/admin/users/sync drives a Graph batch
+        // backfill of EntraIdObjectId on existing CCE Users. Admin-only;
+        // anonymous → 401.
+        using var client = _factory.CreateClient();
+
+        var resp = await client.PostAsync(new Uri("/api/admin/users/sync", UriKind.Relative), content: null);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }
