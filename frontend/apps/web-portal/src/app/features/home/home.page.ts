@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { LocaleService } from '@frontend/i18n';
 import { TranslateModule } from '@ngx-translate/core';
 import { HomeApiService } from './home-api.service';
@@ -8,7 +9,7 @@ import type { HomepageSection } from './home.types';
 @Component({
   selector: 'cce-home',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

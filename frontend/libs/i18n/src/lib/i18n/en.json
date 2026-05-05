@@ -1,4 +1,56 @@
 {
+  "home": {
+    "hero": {
+      "eyebrow": "Carbon Circular Economy Initiative",
+      "title1": "Decarbonize.",
+      "title2": "Reimagine the planet.",
+      "subtitle": "Explore real-time climate intelligence from 60+ cities across 35 countries — visualize the path to net-zero, learn from leading initiatives, and join the global community shaping a sustainable future.",
+      "exploreCta": "Explore the World",
+      "learnCta": "Learn More"
+    },
+    "stats": {
+      "cities": "Cities Mapped",
+      "countries": "Countries",
+      "netZero": "Net-Zero Target"
+    },
+    "features": {
+      "heading": "Everything you need to drive change",
+      "map": {
+        "title": "Interactive World Map",
+        "body": "60+ cities pinned on a beautiful interactive globe. Click any city to see its climate initiatives, carbon profile, and population."
+      },
+      "knowledge": {
+        "title": "Knowledge Maps",
+        "body": "Navigate the carbon-circular-economy domain through interactive concept maps that connect technologies, sectors, and policies."
+      },
+      "city": {
+        "title": "Interactive City Simulator",
+        "body": "Build your own sustainable-city scenarios. Tune energy mix, transport, and emissions controls — see live impact projections."
+      },
+      "community": {
+        "title": "Expert Community",
+        "body": "Connect with researchers, policymakers, and practitioners shaping the carbon transition. Ask questions, share findings, learn together."
+      }
+    }
+  },
+  "explore": {
+    "title": "The Carbon Atlas",
+    "subtitle": "Click any city to explore its climate profile and sustainability initiatives.",
+    "cities": "cities",
+    "summary": "About",
+    "initiatives": "Key initiatives",
+    "close": "Close panel",
+    "legend": {
+      "low": "Low carbon intensity",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "stats": {
+      "population": "Population",
+      "coords": "Coordinates",
+      "tier": "Carbon tier"
+    }
+  },
   "common": {
     "appName": "CCE Knowledge Center",
     "welcome": "Welcome to the CCE Knowledge Center",

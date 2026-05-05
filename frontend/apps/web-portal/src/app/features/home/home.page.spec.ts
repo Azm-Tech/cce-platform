@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { LocaleService } from '@frontend/i18n';
 import { HomeApiService, type Result } from './home-api.service';
@@ -34,6 +35,7 @@ describe('HomePage', () => {
     await TestBed.configureTestingModule({
       imports: [HomePage, TranslateModule.forRoot()],
       providers: [
+        provideRouter([]),
         { provide: HomeApiService, useValue: { listSections } },
         { provide: LocaleService, useValue: localeStub },
       ],

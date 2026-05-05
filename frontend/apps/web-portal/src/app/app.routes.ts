@@ -71,6 +71,12 @@ export const appRoutes: Route[] = [
     title: 'CCE — Interactive City',
   },
   {
+    path: 'explore',
+    loadChildren: () =>
+      import('./features/world-map/routes').then((m) => m.WORLD_MAP_ROUTES),
+    title: 'CCE — Explore the World',
+  },
+  {
     path: 'assistant',
     loadChildren: () =>
       import('./features/assistant/routes').then((m) => m.ASSISTANT_ROUTES),
