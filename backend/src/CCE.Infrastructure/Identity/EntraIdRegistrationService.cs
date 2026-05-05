@@ -1,4 +1,6 @@
+using System.Net;
 using System.Security.Cryptography;
+using CCE.Application.Common.Interfaces;
 using CCE.Domain.Identity;
 using CCE.Infrastructure.Persistence;
 using Microsoft.Extensions.Logging;
@@ -18,15 +20,18 @@ public sealed class EntraIdRegistrationService
 {
     private readonly EntraIdGraphClientFactory _graphFactory;
     private readonly CceDbContext _db;
+    private readonly IEmailSender _emailSender;
     private readonly ILogger<EntraIdRegistrationService> _logger;
 
     public EntraIdRegistrationService(
         EntraIdGraphClientFactory graphFactory,
         CceDbContext db,
+        IEmailSender emailSender,
         ILogger<EntraIdRegistrationService> logger)
     {
         _graphFactory = graphFactory;
         _db = db;
+        _emailSender = emailSender;
         _logger = logger;
     }
 
@@ -86,11 +91,56 @@ public sealed class EntraIdRegistrationService
         _db.Users.Add(cceUser);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
+        // Sub-11d — send welcome email with one-time password. We swallow
+        // SMTP failures (logged at Error) rather than rolling back the
+        // user-create: the user exists in Entra ID + CCE.DB; the operator
+        // can rotate the password via Entra ID portal if the email never
+        // landed. CA1031 suppressed because the catch is intentional —
+        // SMTP transports throw a wide variety of types (SocketException,
+        // SmtpCommandException, IOException, AuthenticationException, ...).
+#pragma warning disable CA1031 // Do not catch general exception types
+        try
+        {
+            var subject = "Welcome to CCE — your account is ready";
+            var body = BuildWelcomeEmailHtml(dto, tempPassword);
+            await _emailSender.SendAsync(created.UserPrincipalName!, subject, body, ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to send welcome email to {Upn}. User-create succeeded; operator must communicate password out-of-band.",
+                created.UserPrincipalName);
+        }
+#pragma warning restore CA1031
+
         return new RegistrationResult(
             EntraIdObjectId: cceUser.EntraIdObjectId!.Value,
             UserPrincipalName: created.UserPrincipalName!,
             DisplayName: created.DisplayName!,
             TemporaryPassword: tempPassword);
+    }
+
+    private static string BuildWelcomeEmailHtml(RegistrationRequest dto, string tempPassword)
+    {
+        // HTML-encode all user-supplied + secret content. tempPassword is
+        // base64url + "Aa1!" but encode anyway as defense-in-depth.
+        var givenName = WebUtility.HtmlEncode(dto.GivenName);
+        var encodedPassword = WebUtility.HtmlEncode(tempPassword);
+        return $$"""
+            <html>
+              <body style="font-family: sans-serif; color: #333;">
+                <h1>Welcome to CCE Knowledge Center, {{givenName}}!</h1>
+                <p>Your CCE account has been created. Your one-time password is:</p>
+                <p style="font-family: monospace; font-size: 1.2em; padding: 0.5em; background: #f5f5f5; display: inline-block;">
+                  {{encodedPassword}}
+                </p>
+                <p>You'll be prompted to change this password on first sign-in.</p>
+                <p>For security, this email is the only place this password appears. If you didn't request this account, contact your CCE administrator immediately.</p>
+                <hr style="margin: 2em 0;" />
+                <p style="font-size: 0.9em; color: #888;">CCE Knowledge Center — automated message</p>
+              </body>
+            </html>
+            """;
     }
 
     private static string GenerateTempPassword()

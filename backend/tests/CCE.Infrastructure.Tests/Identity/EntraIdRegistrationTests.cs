@@ -105,7 +105,11 @@ public sealed class EntraIdRegistrationTests : IClassFixture<MigratorFixture>
             GraphTenantDomain = "cce.local",
         });
         var fakeFactory = new FakeGraphClientFactory(_entra, options);
-        return new EntraIdRegistrationService(fakeFactory, ctx, NullLogger<EntraIdRegistrationService>.Instance);
+        var emailSender = new CCE.Infrastructure.Email.NullEmailSender(
+            NullLogger<CCE.Infrastructure.Email.NullEmailSender>.Instance);
+        return new EntraIdRegistrationService(
+            fakeFactory, ctx, emailSender,
+            NullLogger<EntraIdRegistrationService>.Instance);
     }
 
     private sealed class FakeGraphClientFactory : EntraIdGraphClientFactory
