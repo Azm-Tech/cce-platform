@@ -267,6 +267,49 @@
   color: rgba(226, 232, 240, 0.85);
 }
 
+.cce-explore__minimal-note {
+  margin: 1.2rem 0 0;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: rgba(244, 163, 0, 0.08);
+  border: 1px solid rgba(244, 163, 0, 0.18);
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  animation: fadeIn 500ms ease-out 500ms both;
+}
+
+.cce-explore__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  background: var(--cce-explore-accent);
+  color: #060d1a;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeIn 500ms ease-out 700ms both;
+}
+.cce-explore__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(244, 163, 0, 0.4);
+}
+.cce-explore__cta svg { transition: transform 0.2s ease; }
+.cce-explore__cta:hover svg { transform: translateX(4px); }
+
+.cce-explore__hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  color: rgba(148, 163, 184, 0.75);
+  font-style: italic;
+  opacity: 0;
+  animation: fadeIn 600ms ease-out 700ms forwards;
+}
+
 /* Animations */
 @keyframes headerSlideDown {
   from { opacity: 0; transform: translateY(-30px); }

@@ -82,7 +82,10 @@
       "population": "Population",
       "coords": "Coordinates",
       "tier": "Carbon tier"
-    }
+    },
+    "zoomHint": "Tip: scroll-zoom to reveal more cities. Click any pin for details.",
+    "minimalNote": "We have basic info on this city. Build a sustainability scenario for it in the simulator below.",
+    "scenarioCta": "Build a city scenario"
   },
   "common": {
     "appName": "CCE Knowledge Center",

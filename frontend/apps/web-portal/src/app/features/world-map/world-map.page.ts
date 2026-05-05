@@ -1,24 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { WorldMapComponent } from './world-map.component';
-import { CITIES, type City } from './cities.data';
+import { ALL_CITIES, WorldMapComponent, type AnyCity, type FeaturedCity } from './world-map.component';
 
 /**
  * Interactive world-map page. Renders <cce-world-map> with a side
- * detail panel that slides in when a city is clicked. Entry animations:
+ * detail panel that slides in when a city is clicked.
  *
- *   - Page heading slides down + fades.
- *   - Map fades + scales subtly into view.
- *   - Detail panel slides in from the right.
- *   - Stats counters in the panel ramp from 0 (CSS counter-reset trick).
- *
- * No external animation lib — all CSS keyframes + Angular signals.
+ * Cities come in two flavors:
+ *   - "featured" (60 entries): rich metadata (initiatives + summary)
+ *   - "standard" (~150 entries): basic data; panel offers a CTA to
+ *     build a sustainability scenario in /interactive-city.
  */
 @Component({
   selector: 'cce-world-map-page',
   standalone: true,
-  imports: [CommonModule, WorldMapComponent, TranslateModule],
+  imports: [CommonModule, RouterLink, WorldMapComponent, TranslateModule],
   template: `
     <div class="cce-explore">
       <header class="cce-explore__header">
@@ -36,6 +34,7 @@ import { CITIES, type City } from './cities.data';
           </span>
           <span class="cce-explore__count">{{ cityCount }} {{ 'explore.cities' | translate }}</span>
         </div>
+        <p class="cce-explore__hint">{{ 'explore.zoomHint' | translate }}</p>
       </header>
 
       <div class="cce-explore__stage">
@@ -81,15 +80,30 @@ import { CITIES, type City } from './cities.data';
               </div>
             </dl>
 
-            <h3 class="cce-explore__section-title">{{ 'explore.summary' | translate }}</h3>
-            <p class="cce-explore__summary">{{ city.summary }}</p>
+            @if (isFeatured(city)) {
+              <h3 class="cce-explore__section-title">{{ 'explore.summary' | translate }}</h3>
+              <p class="cce-explore__summary">{{ city.summary }}</p>
 
-            <h3 class="cce-explore__section-title">{{ 'explore.initiatives' | translate }}</h3>
-            <ul class="cce-explore__initiatives">
-              @for (init of city.initiatives; track init) {
-                <li>{{ init }}</li>
-              }
-            </ul>
+              <h3 class="cce-explore__section-title">{{ 'explore.initiatives' | translate }}</h3>
+              <ul class="cce-explore__initiatives">
+                @for (init of city.initiatives; track init) {
+                  <li>{{ init }}</li>
+                }
+              </ul>
+            } @else {
+              <p class="cce-explore__minimal-note">{{ 'explore.minimalNote' | translate }}</p>
+            }
+
+            <a
+              routerLink="/interactive-city"
+              class="cce-explore__cta"
+              [attr.aria-label]="'explore.scenarioCta' | translate"
+            >
+              <span>{{ 'explore.scenarioCta' | translate }}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
           </aside>
         }
       </div>
@@ -100,19 +114,24 @@ import { CITIES, type City } from './cities.data';
 })
 export class WorldMapPage {
   readonly selectedCityId = signal<string | null>(null);
-  readonly selectedCity = computed<City | null>(() => {
+  readonly selectedCity = computed<AnyCity | null>(() => {
     const id = this.selectedCityId();
     if (!id) return null;
-    return CITIES.find((c) => c.id === id) ?? null;
+    return ALL_CITIES.find((c) => c.id === id) ?? null;
   });
-  readonly cityCount = CITIES.length;
+  readonly cityCount = ALL_CITIES.length;
 
-  onCityClicked(city: City): void {
+  onCityClicked(city: AnyCity): void {
     this.selectedCityId.set(city.id);
   }
 
   closePanel(): void {
     this.selectedCityId.set(null);
+  }
+
+  /** Type guard: featured cities (from cities.data.ts) carry summary + initiatives. */
+  isFeatured(city: AnyCity): city is FeaturedCity {
+    return city.kind === 'featured';
   }
 
   formatPopulation(n: number): string {
@@ -121,7 +140,6 @@ export class WorldMapPage {
     return n.toString();
   }
 
-  /** Convert ISO 3166-1 alpha-2 to Unicode regional-indicator flag emoji. */
   flagEmoji(cc: string): string {
     if (!cc || cc.length !== 2) return '';
     const A = 0x1f1e6;
