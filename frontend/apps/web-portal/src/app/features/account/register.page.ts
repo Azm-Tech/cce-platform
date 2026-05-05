@@ -6,13 +6,21 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
 
 /**
- * Public landing page that hands off to Keycloak's registration flow.
+ * Public landing page for the /register route.
  *
- * `POST /api/users/register` is a 302-redirect endpoint — the SPA
- * cannot follow a 302 cross-origin via fetch (the browser blocks the
- * redirect for `mode: 'cors'`). Instead, this page renders a primary
- * button that calls `window.location.assign('/api/users/register')`,
- * letting the browser follow the redirect natively.
+ * Sub-11 changed CCE's IdP from Keycloak (with hosted self-service
+ * registration) to multi-tenant Entra ID. Anonymous self-service
+ * registration is deferred to Sub-11d (needs an IEmailSender abstraction
+ * to deliver temp passwords). For now, this page tells users how to get
+ * an account:
+ *
+ *   - Internal users (cce.local): synced via Entra ID Connect — already
+ *     have accounts, click sign-in.
+ *   - Partner-tenant users: sign in with their existing Entra ID tenant.
+ *   - External users without an Entra ID account: contact a CCE admin.
+ *
+ * `POST /api/users/register` is now an admin-only Graph user-create call
+ * (Sub-11 Phase 01); the public flow no longer hits it.
  */
 @Component({
   selector: 'cce-register',
@@ -29,13 +37,14 @@ import { AuthService } from '../../core/auth/auth.service';
         </a>
       } @else {
         <p class="cce-register__body">{{ 'account.register.body' | translate }}</p>
+        <p class="cce-register__hint">{{ 'account.register.contactHint' | translate }}</p>
         <button
           type="button"
           mat-flat-button
           color="primary"
-          (click)="continueToSignUp()"
+          (click)="signIn()"
         >
-          {{ 'account.register.continueButton' | translate }}
+          {{ 'account.register.signInButton' | translate }}
         </button>
       }
     </section>
@@ -47,7 +56,7 @@ export class RegisterPage {
   private readonly auth = inject(AuthService);
   readonly isAuthenticated = this.auth.isAuthenticated;
 
-  continueToSignUp(): void {
-    window.location.assign('/api/users/register');
+  signIn(): void {
+    this.auth.signIn('/me/profile');
   }
 }

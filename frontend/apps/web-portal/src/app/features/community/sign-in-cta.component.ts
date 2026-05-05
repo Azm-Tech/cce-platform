@@ -9,7 +9,7 @@ import { AuthService } from '../../core/auth/auth.service';
  * compose / reply / rate controls when `auth.isAuthenticated() === false`.
  *
  * Calls `auth.signIn(currentUrl)` so the user lands back on the same
- * page after the BFF round-trip through Keycloak.
+ * page after the BFF round-trip through Entra ID.
  */
 @Component({
   selector: 'cce-sign-in-cta',

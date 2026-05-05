@@ -5,9 +5,9 @@ import { catchError, throwError } from 'rxjs';
 
 /**
  * Same-origin or relative-path requests target the CCE backend; everything
- * else (Keycloak discovery, Sentry, KAPSARC) is third-party and must not be
+ * else (Entra ID discovery, Sentry, KAPSARC) is third-party and must not be
  * tagged with `withCredentials` — that would force a credentialed CORS
- * preflight which Keycloak's discovery endpoint does not allow.
+ * preflight which Entra ID's discovery endpoint does not allow.
  */
 function isInternalUrl(url: string): boolean {
   if (url.startsWith('/')) return true;

@@ -649,9 +649,10 @@
   },
   "account": {
     "register": {
-      "title": "Create your CCE account",
-      "body": "We'll redirect you to the secure sign-up screen. After completing it, you'll come back here signed in.",
-      "continueButton": "Continue to sign-up",
+      "title": "Sign in to CCE",
+      "body": "Sign in with your existing organization account. CCE supports any Microsoft Entra ID tenant.",
+      "contactHint": "Don't have an account? Internal users (cce.local) sign in with their existing credentials. Otherwise, contact a CCE administrator to get an account.",
+      "signInButton": "Sign in",
       "alreadySignedIn": "You're already signed in.",
       "openProfile": "Open my profile"
     },

@@ -28,7 +28,7 @@ export function _resetAuthGuardForTest(): void {
  *   covers the cold-start case where the BFF cookie is valid but
  *   `/api/me` has not yet been called this session.
  * - Not authenticated AND refresh has already been attempted -> calls
- *   `auth.signIn(state.url)` so the BFF round-trips through Keycloak
+ *   `auth.signIn(state.url)` so the BFF round-trips through Entra ID
  *   and brings the user back to the originally requested URL, then
  *   returns false so the route doesn't render.
  */
