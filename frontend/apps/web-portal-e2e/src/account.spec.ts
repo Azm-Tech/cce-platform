@@ -16,13 +16,18 @@ test.describe('account smoke', () => {
     await expect(page.getByRole('button', { name: /sign in|تسجيل الدخول/i })).toBeVisible();
   });
 
-  test('/register attaches the register page', async ({ page }) => {
-    // Sub-11 Phase 03: register page is now an info page with a Sign In
-    // button (anonymous self-service deferred to Sub-11d).
+  test('/register renders the registration form', async ({ page }) => {
+    // Sub-11d: register page is now an anonymous self-service form. POSTs
+    // to /api/users/register; backend issues a welcome email with the temp
+    // password. We assert only that the form mounts — happy-path coverage
+    // requires a live SMTP transport which lives outside the e2e boundary.
     await page.goto('/register');
     await expect(page.locator('cce-register')).toBeAttached({ timeout: 10_000 });
+    // Form has 4 inputs (givenName / surname / email / mailNickname).
+    await expect(page.locator('cce-register form')).toBeAttached();
+    await expect(page.locator('cce-register input[name="email"]')).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /sign in|تسجيل الدخول/i }),
+      page.getByRole('button', { name: /create account|إنشاء الحساب/i }),
     ).toBeVisible();
   });
 

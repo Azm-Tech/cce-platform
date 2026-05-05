@@ -18,10 +18,18 @@ public static class ProfileEndpoints
     {
         var users = app.MapGroup("/api/users").WithTags("Profile");
 
-        // Sub-11 Phase 01 — admin-driven user creation via Microsoft Graph.
-        // Was a GET-redirect-to-Keycloak-registration-page; now a POST that
-        // calls EntraIdRegistrationService. Anonymous self-service deferred
-        // to Sub-11d (needs IEmailSender abstraction to deliver temp password).
+        // Sub-11d — anonymous self-service registration via Microsoft Graph.
+        // Sub-11 Phase 01 made this admin-only as a stop-gap until an
+        // IEmailSender existed; Sub-11d Task A added the abstraction +
+        // Task B wired it into EntraIdRegistrationService, so the temp
+        // password is now delivered via email instead of returned in the
+        // response. Endpoint is anonymous again — the welcome email is
+        // the user's only credential channel.
+        //
+        // Response shape: 201 with the new user's UPN + objectId only.
+        // The temporary password is intentionally NOT in the response
+        // (would leak to logs / screen-captures); operators check the
+        // email transport on registration failure.
         users.MapPost("/register", async (
             RegisterUserRequest body,
             EntraIdRegistrationService registrationService,
@@ -39,7 +47,11 @@ public static class ProfileEndpoints
             try
             {
                 var result = await registrationService.CreateUserAsync(dto, ct).ConfigureAwait(false);
-                return Results.Created($"/api/users/{result.EntraIdObjectId}", result);
+                var response = new RegisterUserResponse(
+                    result.EntraIdObjectId,
+                    result.UserPrincipalName,
+                    result.DisplayName);
+                return Results.Created($"/api/users/{result.EntraIdObjectId}", response);
             }
             catch (EntraIdRegistrationConflictException)
             {
@@ -50,7 +62,7 @@ public static class ProfileEndpoints
                 return Results.StatusCode(StatusCodes.Status403Forbidden);
             }
         })
-        .RequireAuthorization(policy => policy.RequireRole("cce-admin"))
+        .AllowAnonymous()
         .WithName("RegisterUser");
 
         var usersAuth = app.MapGroup("/api/users").WithTags("Profile").RequireAuthorization();
@@ -130,3 +142,12 @@ public sealed record RegisterUserRequest(
     string Surname,
     string Email,
     string MailNickname);
+
+/// <summary>
+/// Sub-11d — public response shape for /api/users/register. Excludes
+/// the temporary password (delivered via the welcome email instead).
+/// </summary>
+public sealed record RegisterUserResponse(
+    System.Guid EntraIdObjectId,
+    string UserPrincipalName,
+    string DisplayName);
