@@ -1,6 +1,9 @@
 # ADR-0055 — AD federation via Keycloak LDAP user federation
 
-**Status:** Accepted
+> **STATUS: Superseded by [ADR-0058](./0058-entra-id-multi-tenant-graph-writes.md) on 2026-05-04.**
+> Sub-11 retires Keycloak and replaces it with Entra ID multi-tenant + Entra ID Connect from on-prem AD. The decisions in this ADR no longer apply; see ADR-0058 for the current architecture. The Phase 04 cutover (Sub-11) deletes the Keycloak surface (`infra/keycloak/`, `KeycloakLdapFederationTests`, `Testcontainers.Keycloak`).
+
+**Status:** Superseded by ADR-0058
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
 **Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
