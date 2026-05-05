@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { expectNoA11yViolations } from './support/axe';
 
-// Sub-11 Phase 03: matches either the legacy Keycloak `/realms/` URL or the
-// new Entra ID `login.microsoftonline.com` URL. Phase 04 cutover deletes the
-// Keycloak surface; this regex tightens to Entra-only at that point.
-const idpUrlPattern = /(\/realms\/cce-internal|login\.microsoftonline\.com)/;
+// Sub-11 Phase 04: Keycloak surface deleted; matches Entra ID only.
+const idpUrlPattern = /login\.microsoftonline\.com/;
 
 test.describe('admin-cms smoke', () => {
   test('renders shell with sign-in CTA before login', async ({ page }, testInfo) => {

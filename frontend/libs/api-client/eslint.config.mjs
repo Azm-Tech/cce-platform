@@ -45,4 +45,14 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    // openapi-ts auto-generated files emit `@ts-nocheck` headers because
+    // the generated SDK regularly tickles eslint/tsc edge-cases that we
+    // don't want to fail the lint on. Suppress @typescript-eslint/ban-ts-comment
+    // for the generated file paths only.
+    files: ['**/generated/**/*.ts'],
+    rules: {
+      '@typescript-eslint/ban-ts-comment': 'off',
+    },
+  },
 ];

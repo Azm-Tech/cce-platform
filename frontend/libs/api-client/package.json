@@ -5,7 +5,7 @@
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0",
     "@hey-api/openapi-ts": "0.61.2",
-    "@hey-api/client-fetch": "^0.5.0"
+    "@hey-api/client-fetch": "0.13.1"
   },
   "sideEffects": false
 }

@@ -10,12 +10,10 @@ import { test, expect } from '@playwright/test';
  */
 test.describe('admin-cms layout', () => {
   test.beforeEach(async ({ page }) => {
-    // Block all IdP traffic so the OIDC guard cannot redirect away from
-    // the SPA. Pre-Sub-11 this was Keycloak's /realms/<realm>/* surface;
-    // Sub-11 swapped to multi-tenant Entra ID at login.microsoftonline.com.
-    // The auth-toolbar will show its sign-in CTA instead.
+    // Block Entra ID traffic so the OIDC guard cannot redirect away from the
+    // SPA. The auth-toolbar will show its sign-in CTA instead. Sub-11 Phase
+    // 04 deleted the Keycloak path; this only blocks login.microsoftonline.com.
     await page.route('**/login.microsoftonline.com/**', (route) => route.abort());
-    await page.route('**/realms/cce-internal/**', (route) => route.abort());
   });
 
   test('cce-shell renders with mat-sidenav-container and side-nav drawer', async ({ page }) => {
