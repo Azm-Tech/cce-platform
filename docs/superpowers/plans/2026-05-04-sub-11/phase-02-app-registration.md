@@ -1049,33 +1049,29 @@ EOF
 
 ## Phase 02 close-out
 
+## Phase 02 close-out — DONE 2026-05-05
+
 After Task 2.5 commits cleanly:
 
-- [ ] **Sanity-check the artifact tree:**
-  ```bash
-  ls /Users/m/CCE/infra/entra/
-  ls /Users/m/CCE/docs/adr/0055* /Users/m/CCE/docs/adr/0058* /Users/m/CCE/docs/adr/0059* /Users/m/CCE/docs/adr/0060*
-  ```
-  Expected: `app-registration-manifest.json` + `apply-app-registration.ps1` + `Configure-Branding.ps1` + `branding/` + `README.md` under `infra/entra/`. 4 ADR files (0055 modified, 0058+0059+0060 created).
+- [x] **Sanity-check the artifact tree:**
+  Result: `infra/entra/` contains `app-registration-manifest.json`, `apply-app-registration.ps1`, `Configure-Branding.ps1`, `README.md`, `branding/{README.md, custom.css.example, .gitkeep}`. 4 ADR files in place (0055 modified, 0058 + 0059 + 0060 created).
 
-- [ ] **Backend test suites unchanged** — no source changes in Phase 02:
-  ```bash
-  cd /Users/m/CCE/backend && dotnet build --nologo --verbosity minimal | tail -5
-  ```
-  Expected: `Build succeeded. 0 Warning(s) 0 Error(s)`. Test counts unchanged from Phase 01: Domain 290 / Application 439 / Architecture 12 / Infrastructure 87.
+- [x] **Backend test suites unchanged** — no source changes in Phase 02:
+  Result: `Build succeeded. 0 Warning(s) 0 Error(s)`. Test counts unchanged from Phase 01: Domain 290 / Application 439 / Architecture 12 / Infrastructure 87.
 
-- [ ] **Update master plan + Phase 02 doc** to mark Phase 02 DONE with actual deliverables.
+- [x] **Master plan + Phase 02 doc** marked DONE.
 
 - [ ] **Hand off to Phase 03.** Phase 03 is the frontend-side wiring: 6 frontend files (`auth.guard`, `register.page`, `sign-in-cta`, 2× `auth.interceptor`, `correlation-id.interceptor`), 3 e2e spec files, runtime config files per env. Plus the backend-side `RoleToPermissionClaimsTransformer` rewrite (the 2 deferred `RoleClaimMappingTests` from Phase 00 land here). Plan file: `phase-03-frontend-changes.md` (to be written just-in-time before execution).
 
-**Phase 02 done when:**
-- 5 commits land on `main`, each green.
-- `infra/entra/app-registration-manifest.json` ships with 5 app roles + 10 redirect URIs (templated).
-- `infra/entra/apply-app-registration.ps1` + `infra/entra/Configure-Branding.ps1` ship with PSv7 + Microsoft.Graph PS module dependencies.
-- `infra/entra/branding/` placeholders ship; PNGs gitignored.
-- `infra/entra/README.md` operator runbook ships.
-- All 6 env-file examples updated with `ENTRA_*` + `HOSTNAME_*` blocks; legacy `KEYCLOAK_*` keys retained with DEPRECATED comment.
-- ADR-0058 (multi-tenant + Graph writes) + ADR-0059 (app roles) + ADR-0060 (Conditional Access for MFA) committed.
-- ADR-0055 status flipped to Superseded with cross-link to ADR-0058.
+**Phase 02 done — actual deliverables:**
+- 5 task commits + 1 close-out doc commit landed on `main` (26da6cf, d9f2e70, 7d7a0a8, 33691dc, f6c5e4c), each green.
+- `infra/entra/app-registration-manifest.json` ships with 5 app roles (deterministic GUIDs `1111…5555-aaaa-…`) + 10 redirect URIs (`{{HOSTNAME_*}}` placeholders) + 3 Graph permissions (`User.ReadWrite.All` app, `User.Read.All` app, `User.Read` delegated).
+- `infra/entra/apply-app-registration.ps1` (PSv7 + Microsoft.Graph.Applications 2.x) — idempotent PATCH-or-POST, mirrors Sub-10c `apply-realm.ps1` pattern.
+- `infra/entra/Configure-Branding.ps1` (PSv7 + Microsoft.Graph.Identity.DirectoryManagement 2.x) — uploads bannerLogo / squareLogo / backgroundImage / customCSS via `organizationalBranding` API; gracefully exits 0 if tenant lacks Entra ID P1/P2 SKU.
+- `infra/entra/branding/` placeholders ship: `README.md`, `custom.css.example`, `.gitkeep`. PNG assets and live `custom.css` gitignored — operators copy from design system at deploy time.
+- `infra/entra/README.md` operator runbook ships: split-privilege provisioner-app setup, Phase 02→04 sequencing, troubleshooting.
+- All 6 env-file examples (`.env.example`, `.env.local.example`, `.env.test.example`, `.env.preprod.example`, `.env.prod.example`, `.env.dr.example`) updated with `ENTRA_*` + `HOSTNAME_*` blocks. Legacy `KEYCLOAK_*` keys retained with `DEPRECATED — removed in Phase 04 cutover` comment.
+- ADR-0058 (Entra ID multi-tenant + Graph writes) + ADR-0059 (app roles vs groups) + ADR-0060 (Conditional Access for MFA) committed.
+- ADR-0055 status flipped to **Superseded by ADR-0058** with cross-link banner.
 - Backend test counts unchanged: Domain 290 / Application 439 / Architecture 12 / Infrastructure 87.
 - **No production cutover.** Cutover happens in Phase 04.
