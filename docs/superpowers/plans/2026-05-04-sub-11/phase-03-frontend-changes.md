@@ -761,16 +761,21 @@ After Task 3.4 commits cleanly + Task 3.5 verifies green:
 
 - [ ] **Hand off to Phase 04.** Phase 04 is the cutover phase: ships `entra-id-cutover.md` runbook (12 steps + rollback), deletes `infra/keycloak/`, deletes `KeycloakLdapFederationTests` + `Testcontainers.Keycloak`, deletes the custom BFF cluster (`BffSessionMiddleware`/`BffAuthEndpoints`/`BffTokenRefresher`/`BffOptions`/`BffTokenResponse`), tags `entra-id-v1.0.0`. Plan file: `phase-04-cutover.md` (to be written just-in-time before execution).
 
-**Phase 03 done when:**
-- 4 task commits + close-out doc commit land on `main`, each green.
-- `cce-oidc.config.ts` drops `adfs-compat` scope; `env.types.ts` doc comments updated; both `env.json` files point at `login.microsoftonline.com/common/v2.0`.
-- `register.page.ts` is an info page directing users to sign-in or contact admin (no longer hits the GET /api/users/register-redirect-to-Keycloak).
-- All `Keycloak` references in frontend source code (auth.guard, auth.interceptor, sign-in-cta) replaced with `Entra ID` in JSDoc/comments.
-- e2e specs (account, smoke × 2, layout × 2 if applicable) assert against the new register-page button text and BFF `/auth/login` redirect.
-- Backend `RoleToPermissionClaimsTransformer` reads `roles` claim with `cce-*` role values; `permissions.yaml` renamed; `PermissionsGenerator.KnownRoles` updated with `ToPascalCase` helper.
-- 2 deferred `RoleClaimMappingTests` from Phase 00 land in `RoleToPermissionClaimsTransformerTests.cs`.
-- Backend test counts: Domain 290 / Application 439 / Architecture 12 / Infrastructure 87 (unchanged); IntegrationTests gains 2 new transformer tests.
-- Frontend test counts: 502 (unchanged).
+## Phase 03 close-out — DONE 2026-05-05
+
+**Phase 03 done — actual deliverables:**
+- 4 task commits landed on `main` (f41e367, 8564705, 58baa5a, cb7f5b4), each green.
+- `cce-oidc.config.ts` drops `adfs-compat` scope; `env.types.ts` doc comments updated; both `env.json` files point at `login.microsoftonline.com/common/v2.0` with placeholder clientId.
+- `register.page.ts` rewired: anonymous users see an info page explaining the 3 account-acquisition paths (cce.local sync, partner-tenant sign-in, contact admin) + a Sign In CTA via `auth.signIn('/me/profile')`. No longer hits the legacy GET /api/users/register-redirect-to-Keycloak.
+- All `Keycloak` references in frontend source code replaced with `Entra ID` in JSDoc/comments: `auth.guard.ts` (web-portal), `auth.interceptor.ts` + `correlation-id.interceptor.ts` (admin-cms), `sign-in-cta.component.ts` (web-portal).
+- e2e specs updated: `account.spec.ts` button regex matches new "Sign in" copy; `smoke.spec.ts` (admin-cms) asserts against an `idpUrlPattern` regex matching either `/realms/cce-internal` or `login.microsoftonline.com` (Phase 04 tightens to Entra-only); `layout.spec.ts` (admin-cms) blocks both Keycloak and Entra ID URLs.
+- i18n keys updated (en + ar): `account.register.continueButton` → `account.register.signInButton`; `account.register.contactHint` added; `title` + `body` rewritten.
+- **Architectural deviation from plan**: dual-claim transformer instead of strict `roles`-only switch. `RoleToPermissionClaimsTransformer` reads BOTH `roles` (Entra ID, cce-* values) AND `groups` (Keycloak, SuperAdmin-style) claims so Phase 03 can ship without breaking the Keycloak path that Phase 04 will delete. Both legacy and new role names map to the same `RolePermissionMap.Cce*` properties.
+- `permissions.yaml` renamed: SuperAdmin→cce-admin, ContentManager→cce-editor, StateRepresentative→cce-editor (merged), CommunityExpert→cce-expert, RegisteredUser→cce-user; cce-reviewer added with read-only on content + ApproveRequest.
+- `PermissionsGenerator.KnownRoles` renamed; new `ToRoleMemberName` helper converts dashed role values (`cce-admin`) to valid C# identifiers (`CceAdmin`) for generated `RolePermissionMap` properties.
+- 2 deferred RoleClaimMapping tests landed: `EntraId_roles_claim_cce_admin_expands_to_full_permission_set` + `EntraId_roles_claim_cce_user_grants_community_writes_but_not_admin_actions`. Existing transformer tests retained (5) verify the legacy `groups`-claim path still works.
+- Backend test counts: Domain 290 / Application 439 / Architecture 12 / Infrastructure 87 — all green (1 pre-existing skip). `RoleToPermissionClaimsTransformerTests` 7 passing (was 5; +2 net new).
+- Frontend test counts: web-portal 502, admin-cms 218 — unchanged.
 - Custom BFF (`BffSessionMiddleware`/`BffAuthEndpoints`/`BffTokenRefresher`) untouched — Phase 04 deletes the cluster.
 - Old `KeycloakLdapFederationTests` (3) still pass — Phase 04 deletes them.
 - **No production cutover.** Cutover happens in Phase 04.
