@@ -50,11 +50,11 @@ public class PermissionsYamlSchemaTests
 
     private static readonly string[] ExpectedRoleNames =
     {
-        "SuperAdmin", "ContentManager", "StateRepresentative",
-        "CommunityExpert", "RegisteredUser", "Anonymous",
+        "CceAdmin", "CceEditor", "CceReviewer",
+        "CceExpert", "CceUser", "Anonymous",
     };
 
-    private static readonly string[] SuperAdminSentinel =
+    private static readonly string[] CceAdminSentinel =
     {
         "System.Health.Read",
         "User.Read",
@@ -87,9 +87,9 @@ public class PermissionsYamlSchemaTests
     }
 
     [Fact]
-    public void SuperAdmin_role_has_every_permission_assigned_to_it_in_YAML()
+    public void CceAdmin_role_has_every_permission_assigned_to_it_in_YAML()
     {
-        var superAdmin = CCE.Domain.RolePermissionMap.SuperAdmin;
-        superAdmin.Should().Contain(SuperAdminSentinel);
+        var cceAdmin = CCE.Domain.RolePermissionMap.CceAdmin;
+        cceAdmin.Should().Contain(CceAdminSentinel);
     }
 }

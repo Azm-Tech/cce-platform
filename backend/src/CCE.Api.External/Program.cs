@@ -58,7 +58,6 @@ app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseCceTieredRateLimiter();
-app.UseCceBff();
 app.UseCceOutputCache();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -76,8 +75,6 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
     var upn = ctx.User.FindFirst("upn")?.Value ?? "(no upn)";
     return Results.Ok(new { name, upn });
 }).RequireAuthorization();
-
-app.MapBffAuthEndpoints();
 
 app.MapProfileEndpoints();
 app.MapNotificationsEndpoints();

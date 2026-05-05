@@ -64,7 +64,7 @@ public static class TieredRateLimiterRegistration
             || !HttpMethods.IsGet(ctx.Request.Method);
 
         var hasAuth = ctx.Request.Headers.ContainsKey("Authorization")
-            || ctx.Request.Cookies.ContainsKey(BffSessionCookie.CookieName);
+            || ctx.Request.Cookies.ContainsKey(CceAuthCookies.SessionCookieName);
 
         if (isSearchOrWrite)
         {
@@ -88,7 +88,7 @@ public static class TieredRateLimiterRegistration
             // but we don't want to validate JWTs in the limiter.
             return $"bearer:{auth.Length}:{auth.GetHashCode(System.StringComparison.Ordinal)}";
         }
-        if (ctx.Request.Cookies.TryGetValue(BffSessionCookie.CookieName, out var cookie) && !string.IsNullOrEmpty(cookie))
+        if (ctx.Request.Cookies.TryGetValue(CceAuthCookies.SessionCookieName, out var cookie) && !string.IsNullOrEmpty(cookie))
         {
             return $"sess:{cookie.Length}:{cookie.GetHashCode(System.StringComparison.Ordinal)}";
         }

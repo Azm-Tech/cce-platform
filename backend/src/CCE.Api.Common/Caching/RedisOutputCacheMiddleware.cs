@@ -101,7 +101,7 @@ public sealed class RedisOutputCacheMiddleware
     private static bool HasAuth(HttpContext ctx)
     {
         if (ctx.Request.Headers.ContainsKey("Authorization")) return true;
-        if (ctx.Request.Cookies.ContainsKey(BffSessionCookie.CookieName)) return true;
+        if (ctx.Request.Cookies.ContainsKey(CceAuthCookies.SessionCookieName)) return true;
         return false;
     }
 
