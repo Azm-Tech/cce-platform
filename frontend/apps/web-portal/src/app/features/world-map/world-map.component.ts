@@ -132,11 +132,13 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       .cce-world-map__svg { width: 100%; height: 100%; display: block; cursor: grab; }
       .cce-world-map__svg:active { cursor: grabbing; }
 
-      /* Countries */
+      /* Countries — visible borders + slightly brighter fill on hover */
       :host ::ng-deep .cce-world-map__countries path {
         fill: #1e3a5f;
-        stroke: #2d5a87;
-        stroke-width: 0.4;
+        stroke: #5b8db8;
+        stroke-width: 0.7;
+        stroke-linejoin: round;
+        vector-effect: non-scaling-stroke;
         opacity: 0;
         transition: fill 0.25s ease, transform 0.25s ease;
         cursor: default;
@@ -185,14 +187,18 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         opacity: 0.7;
       }
 
-      /* Standard cities (zoom-revealed) — initially hidden, reveal at zoom > threshold via JS class. */
+      /* Standard cities (zoom-revealed) — disable the entry animation so
+         they STAY hidden until the parent group gains .cce-cities--zoomed-in.
+         Override the .cce-city-marker animation rule with same specificity
+         + later source order. */
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--standard {
+        animation: none !important;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s ease;
       }
       :host ::ng-deep .cce-world-map__cities.cce-cities--zoomed-in .cce-city-marker--standard {
-        opacity: 1;
+        opacity: 0.85;
         pointer-events: auto;
       }
       /* Standard markers smaller + dimmer. */
@@ -201,6 +207,14 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--standard .cce-city-marker__pulse {
         animation: none;
+        opacity: 0;
+      }
+
+      /* Filtered-out: marker hidden via class set from page filter signals. */
+      :host ::ng-deep .cce-world-map__cities .cce-city-marker--filtered-out {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.25s ease;
       }
 
       /* City markers */
@@ -304,6 +318,8 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   @ViewChild('zoomGroup', { static: true }) zoomGroupEl!: ElementRef<SVGGElement>;
 
   readonly selectedCityId = input<string | null>(null);
+  /** IDs of cities that should currently be visible (post-filter). null = no filter active. */
+  readonly visibleCityIds = input<readonly string[] | null>(null);
   @Output() readonly cityClicked = new EventEmitter<AnyCity>();
 
   private readonly http = inject(HttpClient);
@@ -329,6 +345,17 @@ export class WorldMapComponent implements OnInit, OnDestroy {
 
   ngOnChanges(): void {
     this.applySelection();
+    this.applyFilter();
+  }
+
+  private applyFilter(): void {
+    if (!this.svgEl) return;
+    const ids = this.visibleCityIds();
+    const visibleSet = ids ? new Set(ids) : null;
+    d3.select(this.svgEl.nativeElement)
+      .select<SVGGElement>('.cce-world-map__cities')
+      .selectAll<SVGGElement, AnyCity>('g.cce-city-marker')
+      .classed('cce-city-marker--filtered-out', (d) => visibleSet !== null && !visibleSet.has(d.id));
   }
 
   @HostListener('window:resize')
@@ -516,6 +543,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     svg.call(this.zoom);
 
     this.applySelection();
+    this.applyFilter();
   }
 
   private repositionMarkers(): void {

@@ -81,7 +81,28 @@
     "stats": {
       "population": "Population",
       "coords": "Coordinates",
-      "tier": "Carbon tier"
+      "tier": "Carbon tier",
+      "shown": "Showing",
+      "totalPop": "Total population",
+      "popUnit": "people",
+      "tierBreakdown": "By tier",
+      "regions": "Regions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Find a city or country…",
+      "tier": "Carbon tier",
+      "region": "Region",
+      "reset": "Reset"
+    },
+    "region": {
+      "all": "All regions",
+      "mena": "Middle East & N. Africa",
+      "africa": "Sub-Saharan Africa",
+      "europe": "Europe",
+      "asia": "Asia & Pacific",
+      "americas": "Americas",
+      "oceania": "Oceania"
     },
     "zoomHint": "Tip: scroll-zoom to reveal more cities. Click any pin for details.",
     "minimalNote": "We have basic info on this city. Build a sustainability scenario for it in the simulator below.",
