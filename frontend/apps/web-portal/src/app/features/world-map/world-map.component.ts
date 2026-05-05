@@ -135,8 +135,8 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       /* Countries — visible borders + slightly brighter fill on hover */
       :host ::ng-deep .cce-world-map__countries path {
         fill: #1e3a5f;
-        stroke: #5b8db8;
-        stroke-width: 0.7;
+        stroke: #93c5fd;
+        stroke-width: 1.1;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
         opacity: 0;
@@ -187,27 +187,28 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         opacity: 0.7;
       }
 
-      /* Standard cities (zoom-revealed) — disable the entry animation so
-         they STAY hidden until the parent group gains .cce-cities--zoomed-in.
-         Override the .cce-city-marker animation rule with same specificity
-         + later source order. */
+      /* Standard cities — always visible, smaller, no pulse. The
+         featured cities (60) animate in with bounce + pulse; standard
+         cities (~150) appear with a simpler quick fade. */
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--standard {
-        animation: none !important;
+        animation: standardMarkerFadeIn 500ms ease-out forwards !important;
         opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-      :host ::ng-deep .cce-world-map__cities.cce-cities--zoomed-in .cce-city-marker--standard {
-        opacity: 0.85;
         pointer-events: auto;
       }
-      /* Standard markers smaller + dimmer. */
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--standard .cce-city-marker__core {
         stroke-width: 0.8;
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--standard .cce-city-marker__pulse {
         animation: none;
         opacity: 0;
+      }
+      /* When zoomed in, standard markers brighten to full opacity. */
+      :host ::ng-deep .cce-world-map__cities.cce-cities--zoomed-in .cce-city-marker--standard {
+        opacity: 1;
+      }
+      @keyframes standardMarkerFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 0.7; }
       }
 
       /* Filtered-out: marker hidden via class set from page filter signals. */
