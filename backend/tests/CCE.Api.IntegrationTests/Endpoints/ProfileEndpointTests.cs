@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class ProfileEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class ProfileEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public ProfileEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public ProfileEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Register_anonymous_returns_401()

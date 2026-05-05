@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class AssistantEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class AssistantEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public AssistantEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory)
+    public AssistantEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory)
         => _factory = factory;
 
     [Fact]

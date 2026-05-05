@@ -2,11 +2,11 @@ using System.Net;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class PagesPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class PagesPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public PagesPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public PagesPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task GetBySlug_returns_200_for_existing_page()
@@ -30,11 +30,11 @@ public class PagesPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.
     }
 }
 
-public class HomepageSectionsPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class HomepageSectionsPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public HomepageSectionsPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public HomepageSectionsPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task List_returns_200()
@@ -45,11 +45,11 @@ public class HomepageSectionsPublicEndpointTests : IClassFixture<WebApplicationF
     }
 }
 
-public class TopicsPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class TopicsPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public TopicsPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public TopicsPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task List_returns_200()
@@ -60,11 +60,11 @@ public class TopicsPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE
     }
 }
 
-public class CategoriesPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class CategoriesPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public CategoriesPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public CategoriesPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task List_returns_200()

@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class SearchEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class SearchEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public SearchEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public SearchEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Search_endpoint_is_publicly_reachable()

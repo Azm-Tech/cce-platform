@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class CommunityPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class CommunityPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public CommunityPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory)
+    public CommunityPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory)
         => _factory = factory;
 
     [Fact]

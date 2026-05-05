@@ -1,3 +1,4 @@
+global using CCE.Api.IntegrationTests.Identity;
 global using FluentAssertions;
 global using Microsoft.AspNetCore.Mvc.Testing;
 global using NSubstitute;

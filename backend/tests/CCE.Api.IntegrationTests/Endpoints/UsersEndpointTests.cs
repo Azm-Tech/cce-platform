@@ -11,14 +11,14 @@ namespace CCE.Api.IntegrationTests.Endpoints;
 // user accounts in the dev Keycloak realm. The current dev setup only issues SuperAdmin tokens
 // via the cce-admin-cms client_credentials grant.
 public class UsersEndpointTests :
-    IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>,
+    IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>,
     IClassFixture<AdminAuthFixture>
 {
-    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _factory;
     private readonly AdminAuthFixture _auth;
 
     public UsersEndpointTests(
-        WebApplicationFactory<CCE.Api.Internal.Program> factory,
+        CceTestWebApplicationFactory<CCE.Api.Internal.Program> factory,
         AdminAuthFixture auth)
     {
         _factory = factory;

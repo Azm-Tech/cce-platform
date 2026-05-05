@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace CCE.Api.IntegrationTests.OpenApi;
 
 public class SwaggerEndpointTests
-    : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>,
-      IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>
+    : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>,
+      IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _externalFactory;
-    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _internalFactory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _externalFactory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _internalFactory;
 
     public SwaggerEndpointTests(
-        WebApplicationFactory<CCE.Api.External.Program> externalFactory,
-        WebApplicationFactory<CCE.Api.Internal.Program> internalFactory)
+        CceTestWebApplicationFactory<CCE.Api.External.Program> externalFactory,
+        CceTestWebApplicationFactory<CCE.Api.Internal.Program> internalFactory)
     {
         _externalFactory = externalFactory;
         _internalFactory = internalFactory;

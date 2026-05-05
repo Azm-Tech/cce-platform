@@ -3,11 +3,11 @@ using System.Net.Http.Json;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class InteractiveCityEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class InteractiveCityEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public InteractiveCityEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory)
+    public InteractiveCityEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory)
         => _factory = factory;
 
     private HttpClient AnonClient() => _factory.CreateClient(new WebApplicationFactoryClientOptions

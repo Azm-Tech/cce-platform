@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class KnowledgeMapEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class KnowledgeMapEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public KnowledgeMapEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public KnowledgeMapEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task List_returns_200()

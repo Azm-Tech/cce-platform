@@ -7,11 +7,11 @@ namespace CCE.Api.IntegrationTests.Endpoints;
 /// <summary>
 /// Smoke-tests: all community write endpoints return 401 for anonymous requests.
 /// </summary>
-public class CommunityWriteEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class CommunityWriteEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public CommunityWriteEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory)
+    public CommunityWriteEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory)
         => _factory = factory;
 
     private HttpClient AnonClient() => _factory.CreateClient(new WebApplicationFactoryClientOptions

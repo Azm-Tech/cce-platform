@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace CCE.Api.IntegrationTests.Endpoints;
 
 public class ReportsEndpointTests :
-    IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>,
+    IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>,
     IClassFixture<AdminAuthFixture>
 {
-    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _factory;
     private readonly AdminAuthFixture _auth;
 
     public ReportsEndpointTests(
-        WebApplicationFactory<CCE.Api.Internal.Program> factory,
+        CceTestWebApplicationFactory<CCE.Api.Internal.Program> factory,
         AdminAuthFixture auth)
     {
         _factory = factory;

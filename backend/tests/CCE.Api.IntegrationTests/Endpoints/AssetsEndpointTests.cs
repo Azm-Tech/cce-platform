@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class AssetsEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>
+public class AssetsEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _factory;
 
-    public AssetsEndpointTests(WebApplicationFactory<CCE.Api.Internal.Program> factory) => _factory = factory;
+    public AssetsEndpointTests(CceTestWebApplicationFactory<CCE.Api.Internal.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Anonymous_request_returns_401()

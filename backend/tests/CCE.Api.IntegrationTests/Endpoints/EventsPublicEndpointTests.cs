@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class EventsPublicEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
+public class EventsPublicEndpointTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public EventsPublicEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
+    public EventsPublicEndpointTests(CceTestWebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task List_returns_200_with_paged_result_shape()

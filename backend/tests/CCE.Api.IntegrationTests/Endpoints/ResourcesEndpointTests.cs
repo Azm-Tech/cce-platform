@@ -9,14 +9,14 @@ using JsonContent = System.Net.Http.Json.JsonContent;
 namespace CCE.Api.IntegrationTests.Endpoints;
 
 public class ResourcesEndpointTests :
-    IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>,
+    IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>,
     IClassFixture<AdminAuthFixture>
 {
-    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _factory;
     private readonly AdminAuthFixture _auth;
 
     public ResourcesEndpointTests(
-        WebApplicationFactory<CCE.Api.Internal.Program> factory,
+        CceTestWebApplicationFactory<CCE.Api.Internal.Program> factory,
         AdminAuthFixture auth)
     {
         _factory = factory;
