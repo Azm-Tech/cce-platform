@@ -4,6 +4,55 @@ All notable changes to the CCE Knowledge Center project are documented in this f
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [entra-id-v1.0.0] — 2026-05-05
+
+**Sub-11 — Entra ID migration.** Replaces Keycloak (wired across Sub-1 through Sub-10c) with multi-tenant Microsoft Entra ID as the IdP for the entire CCE platform. Synced from on-prem AD via Entra ID Connect. CCE backend writes to Entra ID via Microsoft Graph for self-service registration. Conditional Access enforces MFA at the Entra ID side; CCE backend stays MFA-agnostic.
+
+### Added
+- **Backend identity stack**: `Microsoft.Identity.Web` 3.5.0 + `Microsoft.Identity.Web.MicrosoftGraph` 3.5.0 + `Microsoft.Graph` 5.65.0 + `Azure.Identity` 1.13.2 in `Directory.Packages.props`.
+- **CCE.Infrastructure.Identity/**: `EntraIdGraphClientFactory.cs` (single composition root for `GraphServiceClient` with app-only `ClientSecretCredential`); `EntraIdRegistrationService.cs` (Graph user-create + CCE-side persist with ODataError → domain exception mapping); `RegistrationContracts.cs` (RegistrationRequest/Result + 2 domain exceptions); `EntraIdOptions.cs` (relocated from CCE.Api.Common.Auth).
+- **CCE.Api.Common/Auth/**: `EntraIdIssuerValidator.cs` (multi-tenant issuer-shape check, extracted for testability); `EntraIdUserResolver.cs` (lazy UPN→objectId linker + concurrency-safe filtered unique index); `CceAuthCookies.cs` (M.I.W cookie name constant).
+- **DB migration**: `AddEntraIdObjectIdToUser` — additive nullable `entra_id_object_id` column + filtered unique index on `[identity].[Users]`. Forward-only-friendly: old images ignore the column.
+- **Self-service registration endpoint**: `POST /api/users/register` gated to `cce-admin` role; returns 201 with the new user's `EntraIdObjectId` + UPN + temp password.
+- **infra/entra/**: `app-registration-manifest.json` (5 app roles + 10 redirect URIs + 3 Graph permissions); `apply-app-registration.ps1` (idempotent PATCH-or-POST against Microsoft Graph); `Configure-Branding.ps1` (organizationalBranding upload with P1/P2 detection + graceful skip); `branding/{README.md, custom.css.example, .gitkeep}` (operator-supplied PNG slot); `README.md` operator runbook.
+- **Test infrastructure**: `WireMock.Net` 1.7.0 replaces Testcontainers Keycloak. `EntraIdFixture.cs` + 4 PII-scrubbed Graph fixture JSONs. 9 net new tests in `CCE.Infrastructure.Tests` (75 → 84): 5 IssuerValidator + 3 ObjectIdLazyResolution + 1 fixture smoke + 3 EntraIdRegistration − 3 KeycloakLdap.
+- **2 RoleClaimMapping tests** in IntegrationTests covering `roles`-claim → `cce-*` role-value flow.
+- **6 env-file `.example` templates** updated with `ENTRA_*` + `HOSTNAME_*` blocks.
+- **Docs**: ADR-0058 (Entra ID multi-tenant + Graph writes), ADR-0059 (app roles vs groups), ADR-0060 (Conditional Access for MFA), `entra-id-cutover.md` (12-step maintenance-window runbook + rollback), `entra-id-troubleshooting.md` (replaces `ad-federation.md`), `sub-11-entra-id-migration-completion.md`.
+
+### Changed
+- **Frontend OIDC config**: `cce-oidc.config.ts` drops the Keycloak-only `adfs-compat` scope; both `env.json` files point at `https://login.microsoftonline.com/common/v2.0` with placeholder client ID.
+- **`/register` page**: rewired from "redirect to Keycloak hosted registration" to an info page with `auth.signIn('/me/profile')` CTA (anonymous self-service deferred to Sub-11d).
+- **`permissions.yaml`**: 6 legacy Keycloak role names renamed to 5 Entra ID app-role values + Anonymous (`SuperAdmin`→`cce-admin`, `ContentManager`→`cce-editor`, `StateRepresentative`→`cce-editor` merged, `CommunityExpert`→`cce-expert`, `RegisteredUser`→`cce-user`); `cce-reviewer` added with read-only on content + `Community.Expert.ApproveRequest`.
+- **`PermissionsGenerator.KnownRoles`** + new `ToRoleMemberName` helper that converts dashed values (`cce-admin`) to valid C# identifiers (`CceAdmin`) for generated `RolePermissionMap` properties.
+- **`RoleToPermissionClaimsTransformer.cs`**: reads Entra ID `roles` claim with `cce-*` values; legacy `groups`-claim coexistence branch removed in Phase 04 cutover.
+- **`CceJwtAuthRegistration.cs`** + **`BffRegistration.cs`** rewired against `Microsoft.Identity.Web` (multi-tenant `IssuerValidator`, `RoleClaimType=roles`, in-memory token cache).
+- **i18n**: `account.register.continueButton` → `account.register.signInButton`; `account.register.contactHint` added (en + ar).
+- **Both API hosts' `appsettings.Development.json`** include stub EntraId values so M.I.W's `IDW10106 ClientId-required` validation passes during integration tests.
+- **e2e specs**: `account.spec.ts` button regex matches new "Sign in" copy; `smoke.spec.ts` (admin-cms) asserts against IdP-agnostic regex (matches both legacy Keycloak `/realms/` and new `login.microsoftonline.com`).
+
+### Deleted
+- **Custom BFF cluster** (7 src files): `BffSessionMiddleware.cs`, `BffAuthEndpoints.cs`, `BffTokenRefresher.cs`, `BffSessionCookie.cs`, `BffSession.cs`, `BffOptions.cs`, `BffTokenResponse.cs`.
+- **`BffSessionMiddlewareTests.cs`** (5 IntegrationTests).
+- **`infra/keycloak/`** (`apply-realm.ps1` + `realm-cce-ldap-federation.json`).
+- **`KeycloakLdapFixture.cs` + `KeycloakLdapFederationTests.cs`** (3 Infrastructure tests).
+- **`Testcontainers.Keycloak`** package reference (Directory.Packages.props + 2 test csprojs).
+- **`KEYCLOAK_*` + `LDAP_*`** env-keys from all 6 env-file `.example` templates.
+- **`docs/runbooks/ad-federation.md`** (Sub-10c-era; superseded by `entra-id-cutover.md` + `entra-id-troubleshooting.md`).
+- **Legacy transformer branches**: dual-claim coexistence read of `groups` claim; Keycloak role-name mappings (SuperAdmin → CceAdmin etc.); slash-prefix normalization.
+
+### Architecture decisions
+- **ADR-0058** — Entra ID multi-tenant + Graph writes (supersedes ADR-0055). Multi-tenant chosen over single-tenant (partner orgs would otherwise need guest invitations) and B2C (consumer-only; doesn't sync from on-prem AD via Entra ID Connect). Graph writes (`User.ReadWrite.All`) chosen over read-only.
+- **ADR-0059** — App roles chosen over security groups: app-scoped vs tenant-scoped semantics; multi-tenant compatibility (groups don't propagate from partner tenants); token-size headroom (groups emit all 20–200 memberships per user, app roles emit only the 1–5 assigned).
+- **ADR-0060** — Conditional Access for MFA. Operator-configured policy targets the CCE app; CCE backend stays MFA-agnostic (no `amr` claim inspection). Partner-tenant users bound by their own tenant's CA policies (multi-tenant trade-off).
+- **ADR-0055** — `ad-federation-via-keycloak-ldap`: status changed to **Superseded by ADR-0058**.
+
+### Migration
+
+Operators run `entra-id-cutover.md` per env (test → preprod → prod → dr). 15–30 min downtime per env. Rollback via `deploy.ps1 -Environment <env> -Rollback` (Sub-10b); Keycloak stays running for a 7-day deferred-decommission window.
+
+---
+
 ## [infra-v1.0.0] — 2026-05-04
 
 **Sub-10c — Production infra + DR.** The CCE platform is now operationally complete on IDD v1.2 hardware. Multi-environment promotion, AD federation via Keycloak, IIS reverse proxy with TLS, automated backups + restore, auto-rollback, production Sentry observability, DR-host provisioning + 8-step promotion runbook.
