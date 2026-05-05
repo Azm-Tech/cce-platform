@@ -4,13 +4,17 @@ import { test, expect } from '@playwright/test';
  * Phase 0.5 layout regression guard. The smoke.spec.ts above proves the OIDC
  * redirect path. This spec proves the SPA shell itself — `<cce-shell>` with
  * `<mat-sidenav-container>` and the side-nav drawer — renders before any
- * redirect can fire. It blocks Keycloak network requests so the app stays
- * mounted on the dev origin long enough for the assertions to run.
+ * redirect can fire. It blocks IdP network requests (Sub-11: Entra ID) so
+ * the app stays mounted on the dev origin long enough for the assertions
+ * to run.
  */
 test.describe('admin-cms layout', () => {
   test.beforeEach(async ({ page }) => {
-    // Block all Keycloak traffic so the OIDC guard cannot redirect away from
-    // the SPA. The auth-toolbar will show its sign-in CTA instead.
+    // Block all IdP traffic so the OIDC guard cannot redirect away from
+    // the SPA. Pre-Sub-11 this was Keycloak's /realms/<realm>/* surface;
+    // Sub-11 swapped to multi-tenant Entra ID at login.microsoftonline.com.
+    // The auth-toolbar will show its sign-in CTA instead.
+    await page.route('**/login.microsoftonline.com/**', (route) => route.abort());
     await page.route('**/realms/cce-internal/**', (route) => route.abort());
   });
 

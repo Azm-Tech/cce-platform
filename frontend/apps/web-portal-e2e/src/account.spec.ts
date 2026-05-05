@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
  * - /register attaching the register page
  * - /me/* bouncing anonymous users back through the auth flow
  *
- * Full-stack verification (real Keycloak + cookie session + profile
+ * Full-stack verification (real Entra ID + cookie session + profile
  * provisioning) is deferred to Phase 9 close-out.
  */
 test.describe('account smoke', () => {
@@ -17,10 +17,12 @@ test.describe('account smoke', () => {
   });
 
   test('/register attaches the register page', async ({ page }) => {
+    // Sub-11 Phase 03: register page is now an info page with a Sign In
+    // button (anonymous self-service deferred to Sub-11d).
     await page.goto('/register');
     await expect(page.locator('cce-register')).toBeAttached({ timeout: 10_000 });
     await expect(
-      page.getByRole('button', { name: /continue to sign-up|متابعة إلى التسجيل/i }),
+      page.getByRole('button', { name: /sign in|تسجيل الدخول/i }),
     ).toBeVisible();
   });
 

@@ -1,10 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { expectNoA11yViolations } from './support/axe';
 
+// Sub-11 Phase 03: matches either the legacy Keycloak `/realms/` URL or the
+// new Entra ID `login.microsoftonline.com` URL. Phase 04 cutover deletes the
+// Keycloak surface; this regex tightens to Entra-only at that point.
+const idpUrlPattern = /(\/realms\/cce-internal|login\.microsoftonline\.com)/;
+
 test.describe('admin-cms smoke', () => {
   test('renders shell with sign-in CTA before login', async ({ page }, testInfo) => {
     // Track every URL the frame navigates through. The autoLoginPartialRoutesGuard from
-    // Phase 12 redirects to Keycloak as soon as the app bootstraps, so the sign-in CTA
+    // Phase 12 redirects to the IdP as soon as the app bootstraps, so the sign-in CTA
     // may only be visible for a moment (or not at all) before the redirect fires.
     const visitedUrls: string[] = [];
     page.on('framenavigated', (frame) => {
@@ -20,28 +25,28 @@ test.describe('admin-cms smoke', () => {
     await page.waitForLoadState('networkidle');
 
     const finalUrl = page.url();
-    const onKeycloak =
-      finalUrl.includes('/realms/cce-internal') || visitedUrls.some((u) => u.includes('/realms/cce-internal'));
+    const onIdp =
+      idpUrlPattern.test(finalUrl) || visitedUrls.some((u) => idpUrlPattern.test(u));
 
-    if (!onKeycloak) {
+    if (!onIdp) {
       const signIn = page.getByRole('button', { name: /sign in|تسجيل الدخول/i });
       await expect(signIn).toBeVisible({ timeout: 10_000 });
       await expectNoA11yViolations(page, testInfo);
     } else {
-      // Auto-login redirected us (or attempted to). Either we're on Keycloak now, or
-      // Keycloak rejected our request and bounced us back to /auth/callback?error=...
+      // Auto-login redirected us (or attempted to). Either we're on the IdP now, or
+      // it rejected our request and bounced us back to /auth/callback?error=... .
       // Both outcomes prove the OIDC redirect path works.
       const passed =
-        finalUrl.includes('/realms/cce-internal') ||
+        idpUrlPattern.test(finalUrl) ||
         finalUrl.includes('/auth/callback') ||
-        visitedUrls.some((u) => u.includes('/realms/cce-internal'));
+        visitedUrls.some((u) => idpUrlPattern.test(u));
       expect(passed).toBe(true);
     }
   });
 
-  test('clicking sign-in redirects to Keycloak realm', async ({ page }) => {
-    // Capture navigations so we can assert a Keycloak URL was visited even if the
-    // page later bounces back (e.g. Keycloak rejects the request and redirects to
+  test('clicking sign-in redirects to the IdP', async ({ page }) => {
+    // Capture navigations so we can assert an IdP URL was visited even if the
+    // page later bounces back (e.g. IdP rejects the request and redirects to
     // /auth/callback?error=invalid_scope).
     const visitedUrls: string[] = [];
     page.on('framenavigated', (frame) => {
@@ -54,29 +59,27 @@ test.describe('admin-cms smoke', () => {
     // eslint-disable-next-line playwright/no-networkidle -- waiting on OIDC redirect chain that has no single deterministic selector
     await page.waitForLoadState('networkidle');
 
-    // If the auto-login guard already redirected through Keycloak, we're done — the
+    // If the auto-login guard already redirected through the IdP, we're done — the
     // OIDC redirect happened without a manual click.
-    const alreadyVisitedKeycloak = visitedUrls.some((u) =>
-      u.includes('/realms/cce-internal/protocol/openid-connect/auth'),
-    );
-    if (alreadyVisitedKeycloak || page.url().includes('/realms/cce-internal')) {
+    const alreadyVisitedIdp = visitedUrls.some((u) => idpUrlPattern.test(u));
+    if (alreadyVisitedIdp || idpUrlPattern.test(page.url())) {
       expect(true).toBe(true);
       return;
     }
 
-    // Otherwise click the sign-in CTA and confirm the next navigation is the Keycloak
-    // authorize endpoint. We use page.waitForRequest because a successful Keycloak hit
+    // Otherwise click the sign-in CTA and confirm the next navigation is the IdP's
+    // authorize endpoint. We use page.waitForRequest because a successful IdP hit
     // may immediately redirect back to /auth/callback?error=... (e.g. invalid_scope),
     // which would race with page.waitForURL(load).
     const signIn = page.getByRole('button', { name: /sign in|تسجيل الدخول/i });
     await expect(signIn).toBeVisible({ timeout: 10_000 });
 
-    const keycloakRequest = page.waitForRequest(
-      (req) => req.url().includes('/realms/cce-internal/protocol/openid-connect/auth'),
+    const idpRequest = page.waitForRequest(
+      (req) => idpUrlPattern.test(req.url()),
       { timeout: 15_000 },
     );
     await signIn.click();
-    const req = await keycloakRequest;
-    expect(req.url()).toMatch(/\/realms\/cce-internal\/protocol\/openid-connect\/auth/);
+    const req = await idpRequest;
+    expect(idpUrlPattern.test(req.url())).toBe(true);
   });
 });
