@@ -194,7 +194,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Api.External
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: backend
           file: backend/src/CCE.Api.External/Dockerfile
@@ -205,7 +205,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=api-external
 
       - name: Build Api.Internal
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: backend
           file: backend/src/CCE.Api.Internal/Dockerfile
@@ -216,7 +216,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=api-internal
 
       - name: Build web-portal
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: frontend/apps/web-portal/Dockerfile
@@ -227,7 +227,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=web-portal
 
       - name: Build admin-cms
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: frontend/apps/admin-cms/Dockerfile
@@ -238,7 +238,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=admin-cms
 
       - name: Build cce-migrator
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: backend
           file: backend/src/CCE.Seeder/Dockerfile
