@@ -89,11 +89,11 @@ Suppression of a security tool finding (CodeQL, Semgrep, SonarCloud, Trivy, Depe
 
 ## Working with phase plans
 
-This project follows a brainstorm → spec → plan → execute workflow under `docs/superpowers/`. New planned work goes through:
+This project follows a brainstorm → spec → plan → execute workflow under `project-plan/`. New planned work goes through:
 
 1. A **brainstorm** that explores intent and scope.
-2. A **spec** in `docs/superpowers/specs/` once requirements are clear.
-3. A **plan** in `docs/superpowers/plans/<date>-<slug>/` with one task at a time.
+2. A **spec** in `project-plan/specs/` once requirements are clear.
+3. A **plan** in `project-plan/plans/<date>-<slug>/` with one task at a time.
 4. **Execution** with one commit per task, exact commit messages from the plan.
 
 If you're picking up unfinished work, start by reading the parent plan file and the most recent phase plan.

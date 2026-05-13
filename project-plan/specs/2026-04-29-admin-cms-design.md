@@ -252,7 +252,7 @@ Each phase consumes Sub-3 endpoints:
 
 ## 10. Phase plan
 
-9 phases (0–8). Master plan + per-phase plan files in `docs/superpowers/plans/2026-04-29-admin-cms/`.
+9 phases (0–8). Master plan + per-phase plan files in `project-plan/plans/2026-04-29-admin-cms/`.
 
 | # | Phase | Tasks | Deliverable |
 |---|---|---|---|

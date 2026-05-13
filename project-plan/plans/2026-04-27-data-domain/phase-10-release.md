@@ -350,7 +350,7 @@ Each ADR follows the existing template (Status / Date / Sub-project owner / Spec
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §3.1, §3.2](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §3.1, §3.2](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -380,7 +380,7 @@ The CCE platform needs ASP.NET Identity tables (users, roles, claims) AND ~33 CC
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §5.5](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §5.5](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -410,7 +410,7 @@ Mark entities with the `ISoftDeletable` interface; `CceDbContext.OnModelCreating
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §5.4](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §5.4](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -442,7 +442,7 @@ High-volume associations (`PostRating`, `*Follow`, `UserNotification`, `CityScen
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §3.5, §5.4](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §3.5, §5.4](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -493,7 +493,7 @@ git -c commit.gpgsign=false commit -m "docs(adr): add 0019-0022 (single DbContex
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §3.4](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §3.4](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -523,7 +523,7 @@ One consolidated `DataDomainInitial` migration. Foundation's two existing migrat
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §3.1, §4.1](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §3.1, §4.1](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -553,7 +553,7 @@ ASP.NET Identity tables (`asp_net_users`, `asp_net_roles`, `asp_net_user_roles`,
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §5.7](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §5.7](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -583,7 +583,7 @@ Seeders must be idempotent — re-running them must NOT produce duplicate rows. 
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §8](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §8](../../specs/2026-04-27-data-domain-design.md)
 
 ## Context
 
@@ -645,8 +645,8 @@ Note the per-project counts. They feed into the report.
 
 **Tag:** `data-domain-v0.1.0`
 **Date:** 2026-04-28
-**Spec:** [Data & Domain Design Spec](superpowers/specs/2026-04-27-data-domain-design.md)
-**Plan:** [Data & Domain Implementation Plan](superpowers/plans/2026-04-27-data-domain.md)
+**Spec:** [Data & Domain Design Spec](../../specs/2026-04-27-data-domain-design.md)
+**Plan:** [Data & Domain Implementation Plan](../2026-04-27-data-domain.md)
 
 ## Tooling versions
 

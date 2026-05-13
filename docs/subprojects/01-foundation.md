@@ -31,10 +31,10 @@ T-shirt size: **XL** (already in flight — 18 phases).
 - [ ] All 18 ADRs committed; `docs/roadmap.md`, briefs, traceability, threat model, a11y checklist, README, CONTRIBUTING shipped.
 - [ ] Release tag `foundation-v1.0.0`.
 
-Refined at the Foundation spec § 11 — see [`docs/superpowers/specs/2026-04-24-foundation-design.md`](../superpowers/specs/2026-04-24-foundation-design.md#11-definition-of-done).
+Refined at the Foundation spec § 11 — see [`project-plan/specs/2026-04-24-foundation-design.md`](../../project-plan/specs/2026-04-24-foundation-design.md#11-definition-of-done).
 
 ## Related
 
-- Spec: [`docs/superpowers/specs/2026-04-24-foundation-design.md`](../superpowers/specs/2026-04-24-foundation-design.md)
-- Plan: [`docs/superpowers/plans/2026-04-24-foundation/`](../superpowers/plans/2026-04-24-foundation/)
+- Spec: [`project-plan/specs/2026-04-24-foundation-design.md`](../../project-plan/specs/2026-04-24-foundation-design.md)
+- Plan: [`project-plan/plans/2026-04-24-foundation/`](../../project-plan/plans/2026-04-24-foundation)
 - ADRs: [`docs/adr/`](../adr/)

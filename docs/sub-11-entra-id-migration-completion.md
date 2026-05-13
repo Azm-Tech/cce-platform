@@ -75,13 +75,13 @@ Replace Keycloak (Sub-1's IdP, wired through Sub-2/3/4/5/6/9 and Sub-10c's LDAP 
 ## Key reference links
 
 - **Plan files**:
-  - [Master plan](./superpowers/plans/2026-05-04-sub-11.md)
-  - [Phase 00 detail](./superpowers/plans/2026-05-04-sub-11/phase-00-backend-foundation.md)
-  - [Phase 01 detail](./superpowers/plans/2026-05-04-sub-11/phase-01-graph-registration.md)
-  - [Phase 02 detail](./superpowers/plans/2026-05-04-sub-11/phase-02-app-registration.md)
-  - [Phase 03 detail](./superpowers/plans/2026-05-04-sub-11/phase-03-frontend-changes.md)
-  - [Phase 04 detail](./superpowers/plans/2026-05-04-sub-11/phase-04-cutover.md)
+  - [Master plan](./../project-plan/plans/2026-05-04-sub-11.md)
+  - [Phase 00 detail](./../project-plan/plans/2026-05-04-sub-11/phase-00-backend-foundation.md)
+  - [Phase 01 detail](./../project-plan/plans/2026-05-04-sub-11/phase-01-graph-registration.md)
+  - [Phase 02 detail](./../project-plan/plans/2026-05-04-sub-11/phase-02-app-registration.md)
+  - [Phase 03 detail](./../project-plan/plans/2026-05-04-sub-11/phase-03-frontend-changes.md)
+  - [Phase 04 detail](./../project-plan/plans/2026-05-04-sub-11/phase-04-cutover.md)
 - **ADRs**: [0058](./adr/0058-entra-id-multi-tenant-graph-writes.md), [0059](./adr/0059-app-roles-vs-security-groups.md), [0060](./adr/0060-conditional-access-for-mfa.md), [0055 (Superseded)](./adr/0055-ad-federation-via-keycloak-ldap.md).
 - **Runbooks**: [entra-id-cutover.md](./runbooks/entra-id-cutover.md), [entra-id-troubleshooting.md](./runbooks/entra-id-troubleshooting.md).
 - **Operator docs**: [`infra/entra/README.md`](../infra/entra/README.md).
-- **Spec**: [`docs/superpowers/specs/2026-05-04-sub-11-design.md`](./superpowers/specs/2026-05-04-sub-11-design.md).
+- **Spec**: [`project-plan/specs/2026-05-04-sub-11-design.md`](./../project-plan/specs/2026-05-04-sub-11-design.md).

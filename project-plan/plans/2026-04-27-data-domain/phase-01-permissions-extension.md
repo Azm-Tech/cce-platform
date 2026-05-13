@@ -1149,7 +1149,7 @@ Open the file, locate the closing `}` of the class, and insert before it:
     public void Permissions_All_count_matches_BRD_matrix()
     {
         // Spec §5.6 enumerates exactly 41 permissions. If you add or remove one, update this number
-        // and update docs/superpowers/specs/2026-04-27-data-domain-design.md §5.6 in the same PR.
+        // and update project-plan/specs/2026-04-27-data-domain-design.md §5.6 in the same PR.
         Permissions.All.Count.Should().Be(41);
     }
 

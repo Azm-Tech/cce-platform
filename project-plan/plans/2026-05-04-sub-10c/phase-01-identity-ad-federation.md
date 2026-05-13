@@ -749,7 +749,7 @@ public sealed class KeycloakLdapFederationTests : IDisposable
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -811,7 +811,7 @@ The mapping is the contract. AD admins create/manage groups; CCE doesn't write t
 
 ## References
 
-- [Sub-10c design spec §Identity](../superpowers/specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
+- [Sub-10c design spec §Identity](../../specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
 - [AD federation runbook](../runbooks/ad-federation.md)
 - [Keycloak User Federation docs](https://www.keycloak.org/docs/latest/server_admin/#_user-storage-federation)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)
@@ -937,7 +937,7 @@ If federation fails entirely and a fix isn't obvious within 30 minutes:
 - [ADR-0055 — AD federation via Keycloak LDAP](../adr/0055-ad-federation-via-keycloak-ldap.md)
 - [`secret-rotation.md`](secret-rotation.md) — `LDAP_BIND_PASSWORD` rotation procedure.
 - [Keycloak User Federation docs](https://www.keycloak.org/docs/latest/server_admin/#_user-storage-federation)
-- [Sub-10c design spec §Identity](../superpowers/specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
+- [Sub-10c design spec §Identity](../../specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
 ```
 
 - [ ] **Step 1:** Create `docs/adr/0055-ad-federation-via-keycloak-ldap.md` with the contents above.

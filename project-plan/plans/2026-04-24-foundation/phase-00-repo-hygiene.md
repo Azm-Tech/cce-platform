@@ -604,11 +604,11 @@ git -c commit.gpgsign=false commit -m "chore(phase-00): install Gitleaks pre-com
 
 **Client:** Saudi Ministry of Energy — Sustainability & Climate Change Agency
 **Status:** Bootstrap — Foundation sub-project in progress
-**Docs:** [Design spec](docs/superpowers/specs/2026-04-24-foundation-design.md) · [Plan](docs/superpowers/plans/2026-04-24-foundation.md) · [Roadmap](docs/roadmap.md) (added in Phase 18)
+**Docs:** [Design spec](project-plan/specs/2026-04-24-foundation-design.md) · [Plan](project-plan/plans/2026-04-24-foundation.md) · [Roadmap](docs/roadmap.md) (added in Phase 18)
 
 ## What this is
 
-A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Economy, meeting Saudi **DGA** UX and accessibility standards. Nine sub-projects from scaffolding through integrations and mobile — see the [Foundation spec](docs/superpowers/specs/2026-04-24-foundation-design.md) §10 for the full decomposition.
+A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Economy, meeting Saudi **DGA** UX and accessibility standards. Nine sub-projects from scaffolding through integrations and mobile — see the [Foundation spec](project-plan/specs/2026-04-24-foundation-design.md) §10 for the full decomposition.
 
 ## Stack
 
@@ -620,7 +620,7 @@ A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Eco
 ## Getting started
 
 > Full getting-started is added in Phase 18. Until then, follow the plan phases in order:
-> `docs/superpowers/plans/2026-04-24-foundation/phase-XX-*.md`
+> `project-plan/plans/2026-04-24-foundation/phase-XX-*.md`
 
 ## License
 

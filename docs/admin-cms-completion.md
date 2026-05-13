@@ -2,8 +2,8 @@
 
 **Tag:** `admin-cms-v0.1.0`
 **Date:** 2026-04-30
-**Spec:** [Admin CMS Design Spec](superpowers/specs/2026-04-29-admin-cms-design.md)
-**Plan:** [Admin CMS Implementation Plan](superpowers/plans/2026-04-29-admin-cms.md)
+**Spec:** [Admin CMS Design Spec](../project-plan/specs/2026-04-29-admin-cms-design.md)
+**Plan:** [Admin CMS Implementation Plan](../project-plan/plans/2026-04-29-admin-cms.md)
 
 ## Tooling versions
 

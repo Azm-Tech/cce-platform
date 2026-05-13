@@ -109,4 +109,4 @@ Per-cert; rotated when cert is renewed. See [`infra/dns-tls/README.md`](../../in
 ## See also
 
 - [`env-promotion.md`](env-promotion.md) — promoting deploys across environments.
-- [Sub-10c design spec §Secret rotation](../superpowers/specs/2026-05-04-sub-10c-design.md#secret-rotation-runbook-docsrunbookssecret-rotationmd).
+- [Sub-10c design spec §Secret rotation](../../project-plan/specs/2026-05-04-sub-10c-design.md#secret-rotation-runbook-docsrunbookssecret-rotationmd).

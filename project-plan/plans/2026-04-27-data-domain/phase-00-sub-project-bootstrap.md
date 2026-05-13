@@ -330,8 +330,8 @@ git -c commit.gpgsign=false commit -m "test(common): add 3 forward-looking guard
 ```markdown
 # Sub-Project 02 — Data & Domain — Progress
 
-**Spec:** [`../superpowers/specs/2026-04-27-data-domain-design.md`](../superpowers/specs/2026-04-27-data-domain-design.md)
-**Plan:** [`../superpowers/plans/2026-04-27-data-domain.md`](../superpowers/plans/2026-04-27-data-domain.md)
+**Spec:** [`../../specs/2026-04-27-data-domain-design.md`](../../specs/2026-04-27-data-domain-design.md)
+**Plan:** [`../2026-04-27-data-domain.md`](../2026-04-27-data-domain.md)
 **Brief:** [`02-data-domain.md`](02-data-domain.md)
 
 ## Phase status

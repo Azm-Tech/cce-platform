@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../project-plan/specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -57,7 +57,7 @@ Use IIS as a reverse proxy on the host. Each IDD hostname maps to an IIS site th
 
 ## References
 
-- [Sub-10c design spec §Network](../superpowers/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
+- [Sub-10c design spec §Network](../../project-plan/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
 - [`infra/dns-tls/README.md`](../../infra/dns-tls/README.md) — cert + DNS operator checklist.
 - [Microsoft URL Rewrite docs](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/using-url-rewrite-module)
 - [Microsoft ARR docs](https://learn.microsoft.com/en-us/iis/extensions/installing-application-request-routing-arr/)

@@ -103,4 +103,4 @@ For manual renewal, see [`secret-rotation.md`](../../docs/runbooks/secret-rotati
 
 - [`Configure-IISSites.ps1`](../iis/Configure-IISSites.ps1) — provisions the IIS sites with these certs.
 - [ADR-0054 — IIS reverse proxy](../../docs/adr/0054-iis-reverse-proxy-on-windows-server.md)
-- [Sub-10c design spec §Network](../../docs/superpowers/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
+- [Sub-10c design spec §Network](../../project-plan/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)

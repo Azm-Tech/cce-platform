@@ -2,8 +2,8 @@
 
 **Tag:** `web-portal-v0.3.0`
 **Date:** 2026-05-02
-**Spec:** [Interactive City Design Spec](superpowers/specs/2026-05-02-sub-8-design.md)
-**Plan:** [Interactive City Implementation Plan](superpowers/plans/2026-05-02-sub-8.md)
+**Spec:** [Interactive City Design Spec](../project-plan/specs/2026-05-02-sub-8-design.md)
+**Plan:** [Interactive City Implementation Plan](../project-plan/plans/2026-05-02-sub-8.md)
 **Predecessor:** [Sub-7 Knowledge Maps completion](sub-7-knowledge-maps-completion.md)
 **Successors (planned):** Sub-9 Smart Assistant, Sub-10 Deployment / Infra
 

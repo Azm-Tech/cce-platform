@@ -352,4 +352,4 @@ To be written in Phase 8 of this sub-project:
 
 ## 10. Phase plan
 
-9 phases (0–8). Each phase delivers shippable, testable software end-to-end (handlers + endpoints + tests + permission gates). Master plan + per-phase plan files written in `docs/superpowers/plans/2026-04-28-internal-api/`.
+9 phases (0–8). Each phase delivers shippable, testable software end-to-end (handlers + endpoints + tests + permission gates). Master plan + per-phase plan files written in `project-plan/plans/2026-04-28-internal-api/`.

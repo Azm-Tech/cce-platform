@@ -8,7 +8,7 @@ A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Eco
 ## Documentation
 
 - [Roadmap](docs/roadmap.md) — sub-project map, status, BRD references.
-- [Foundation design spec](docs/superpowers/specs/2026-04-24-foundation-design.md)
+- [Foundation design spec](project-plan/specs/2026-04-24-foundation-design.md)
 - [Architecture Decision Records](docs/adr/) — 38 ADRs covering Foundation through Sub-5 decisions.
 - [Sub-project briefs](docs/subprojects/)
 - [Requirements traceability](docs/requirements-trace.csv) — BRD section → sub-project mapping.
@@ -98,7 +98,7 @@ docker compose down -v    # destroys all local data
 | `scripts/`           | Repo-wide tooling (`check-contracts-clean.sh`, etc.).                           |
 | `docs/adr/`          | Architecture Decision Records (0001–0018).                                      |
 | `docs/subprojects/`  | Per-sub-project briefs (01–09).                                                 |
-| `docs/superpowers/`  | Specs and phase plans for the brainstorm → spec → plan workflow.                |
+| `project-plan/`      | Specs and phase plans for the brainstorm → spec → plan workflow.                |
 | `.github/workflows/` | CI pipelines: build, test, OpenAPI drift, security scans, SBOM.                 |
 
 ## Architecture Decision Records

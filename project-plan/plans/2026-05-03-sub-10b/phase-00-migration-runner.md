@@ -821,7 +821,7 @@ Some changes can't be staged. Examples:
 
 When this is necessary, the change is its own release with these gates:
 
-1. **Separate spec + plan.** `docs/superpowers/specs/<date>-<topic>-design.md` documents the data-migration plan; PR-reviewed before any code.
+1. **Separate spec + plan.** `project-plan/specs/<date>-<topic>-design.md` documents the data-migration plan; PR-reviewed before any code.
 2. **Backup-and-restore is part of the runbook** — schema rollback isn't possible, so the rollback strategy is "restore the pre-deploy backup". Backup automation lives in Sub-10c, but the destructive release explicitly invokes it.
 3. **Maintenance window.** Operator schedules downtime; deploy runs against a frozen system.
 4. **No image-tag rollback.** The release explicitly disables `rollback.ps1` for the target tag (or the runbook calls out that it's unavailable).
@@ -832,7 +832,7 @@ A migration with any "wait, will the old image still run?" doubt is a destructiv
 
 ## References
 
-- Sub-10b spec §Migration discipline: [`../superpowers/specs/2026-05-03-sub-10b-design.md`](../superpowers/specs/2026-05-03-sub-10b-design.md)
+- Sub-10b spec §Migration discipline: [`../../specs/2026-05-03-sub-10b-design.md`](../../specs/2026-05-03-sub-10b-design.md)
 - Rollback runbook (Phase 02): [`./rollback.md`](./rollback.md) (lands in Sub-10b Phase 02)
 - EF Core migration docs: <https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/>
 ```

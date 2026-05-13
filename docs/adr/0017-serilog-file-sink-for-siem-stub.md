@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §4.1](../superpowers/specs/2026-04-24-foundation-design.md#4-architecture)
+- **Spec ref:** [Foundation §4.1](../../project-plan/specs/2026-04-24-foundation-design.md#4-architecture)
 
 ## Context
 
@@ -53,5 +53,5 @@ A genuine dev SIEM stand-in is a structured log sink that backend code can write
 ## Related
 
 - [ADR-0005](0005-local-first-docker-compose.md)
-- [`docs/superpowers/plans/2026-04-24-foundation/phase-01-docker-compose.md`](../superpowers/plans/2026-04-24-foundation/phase-01-docker-compose.md) (preamble — Divergence 2)
+- [`project-plan/plans/2026-04-24-foundation/phase-01-docker-compose.md`](../../project-plan/plans/2026-04-24-foundation/phase-01-docker-compose.md) (preamble — Divergence 2)
 - `docker-compose.yml`, `logs/`

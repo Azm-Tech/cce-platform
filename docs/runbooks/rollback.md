@@ -69,4 +69,4 @@ Recovery from this state is a Sub-10c+ scenario: backup-restore. Sub-10b explici
 
 - [`deploy.md`](./deploy.md) — green-path deploy procedure
 - [`migrations.md`](./migrations.md) — forward-only discipline rules
-- [Sub-10b design spec](../superpowers/specs/2026-05-03-sub-10b-design.md) §Rollback procedure
+- [Sub-10b design spec](../../project-plan/specs/2026-05-03-sub-10b-design.md) §Rollback procedure

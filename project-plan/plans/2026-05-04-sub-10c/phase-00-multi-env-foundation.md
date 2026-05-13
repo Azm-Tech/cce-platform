@@ -1090,7 +1090,7 @@ Per-cert; rotated when cert is renewed. See [`infra/dns-tls/README.md`](../../in
 ## See also
 
 - [`env-promotion.md`](env-promotion.md) — promoting deploys across environments.
-- [Sub-10c design spec §Secret rotation](../superpowers/specs/2026-05-04-sub-10c-design.md#secret-rotation-runbook-docsrunbookssecret-rotationmd).
+- [Sub-10c design spec §Secret rotation](../../specs/2026-05-04-sub-10c-design.md#secret-rotation-runbook-docsrunbookssecret-rotationmd).
 ```
 
 **Final state of `docs/runbooks/env-promotion.md`:**
@@ -1164,7 +1164,7 @@ DR host stays cold until promoted. Use `prod → dr` to keep the DR env-file's t
 - [`secret-rotation.md`](secret-rotation.md) — per-secret rotation procedure.
 - [`deploy.md`](deploy.md) — green-path deploy.
 - [`rollback.md`](rollback.md) — rollback within an env.
-- [Sub-10c design spec §Multi-env config](../superpowers/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files).
+- [Sub-10c design spec §Multi-env config](../../specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files).
 ```
 
 - [ ] **Step 1:** Create `docs/runbooks/secret-rotation.md` with the contents above.

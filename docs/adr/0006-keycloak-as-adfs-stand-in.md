@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §3](../superpowers/specs/2026-04-24-foundation-design.md#3-stack-decisions)
+- **Spec ref:** [Foundation §3](../../project-plan/specs/2026-04-24-foundation-design.md#3-stack-decisions)
 
 ## Context
 
@@ -21,7 +21,7 @@ Production CCE federates with the ministry's **ADFS** for authentication via OID
 
 - Local devs run a single `docker compose up -d` and get a working OIDC IdP.
 - Claim-shape parity means JWT validation, role mapping, and middleware logic don't branch per environment.
-- Keycloak is tracked in git via realm export ([phase 02 plan](../superpowers/plans/2026-04-24-foundation/phase-02-keycloak.md)) so realm state is reproducible.
+- Keycloak is tracked in git via realm export ([phase 02 plan](../../project-plan/plans/2026-04-24-foundation/phase-02-keycloak.md)) so realm state is reproducible.
 - ADFS swap is a config change, not a code change.
 
 ### Negative

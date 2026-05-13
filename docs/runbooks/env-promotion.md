@@ -66,4 +66,4 @@ DR host stays cold until promoted. Use `prod → dr` to keep the DR env-file's t
 - [`secret-rotation.md`](secret-rotation.md) — per-secret rotation procedure.
 - [`deploy.md`](deploy.md) — green-path deploy.
 - [`rollback.md`](rollback.md) — rollback within an env.
-- [Sub-10c design spec §Multi-env config](../superpowers/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files).
+- [Sub-10c design spec §Multi-env config](../../project-plan/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files).

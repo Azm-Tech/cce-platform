@@ -68,4 +68,4 @@ Useful for ad-hoc verification without redeploying.
 - [Production deploy runbook](../docs/runbooks/deploy.md)
 - [Rollback runbook](../docs/runbooks/rollback.md) (Phase 02)
 - [Forward-only migrations](../docs/runbooks/migrations.md)
-- [Sub-10b design spec](../docs/superpowers/specs/2026-05-03-sub-10b-design.md)
+- [Sub-10b design spec](../project-plan/specs/2026-05-03-sub-10b-design.md)

@@ -296,7 +296,7 @@ Recovery from this state is a Sub-10c+ scenario: backup-restore. Sub-10b explici
 
 - [`deploy.md`](./deploy.md) — green-path deploy procedure
 - [`migrations.md`](./migrations.md) — forward-only discipline rules
-- [Sub-10b design spec](../superpowers/specs/2026-05-03-sub-10b-design.md) §Rollback procedure
+- [Sub-10b design spec](../../specs/2026-05-03-sub-10b-design.md) §Rollback procedure
 ```
 
 **Final state of `.github/workflows/deploy-smoke.yml`:**
@@ -493,7 +493,7 @@ jobs:
 **Status:** Accepted
 **Date:** 2026-05-03
 **Deciders:** Sub-10b brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10b — Deployment automation](../superpowers/specs/2026-05-03-sub-10b-design.md)
+**Sub-project:** [Sub-10b — Deployment automation](../../specs/2026-05-03-sub-10b-design.md)
 
 ## Context
 
@@ -581,7 +581,7 @@ Push images to `ghcr.io/<owner>/cce-<image>` via existing CI's `docker/build-pus
 
 ## References
 
-- [Sub-10b design spec](../superpowers/specs/2026-05-03-sub-10b-design.md)
+- [Sub-10b design spec](../../specs/2026-05-03-sub-10b-design.md)
 - [Forward-only migrations runbook](../runbooks/migrations.md)
 - [Production deploy runbook](../runbooks/deploy.md)
 - [Rollback runbook](../runbooks/rollback.md)
@@ -597,8 +597,8 @@ Push images to `ghcr.io/<owner>/cce-<image>` via existing CI's `docker/build-pus
 **Released:** 2026-05-04
 **Tag:** `deploy-v1.0.0`
 **Sub-project:** Second of three Sub-10 sub-projects (Sub-10a `app-v1.0.0` shipped; Sub-10c is the third).
-**Spec:** [`superpowers/specs/2026-05-03-sub-10b-design.md`](superpowers/specs/2026-05-03-sub-10b-design.md)
-**Plan:** [`superpowers/plans/2026-05-03-sub-10b.md`](superpowers/plans/2026-05-03-sub-10b.md)
+**Spec:** [`../../specs/2026-05-03-sub-10b-design.md`](../../specs/2026-05-03-sub-10b-design.md)
+**Plan:** [`../2026-05-03-sub-10b.md`](../2026-05-03-sub-10b.md)
 
 ## What shipped
 
@@ -756,7 +756,7 @@ A one-command deployable system on a single Windows Server 2022 host. Linux cont
   Linux containers, sidecar migrator, .env.prod on host, image-tag
   rollback, ghcr.io registry, PowerShell deploy + rollback scripts.
 
-  Spec: docs/superpowers/specs/2026-05-03-sub-10b-design.md
+  Spec: project-plan/specs/2026-05-03-sub-10b-design.md
   Completion: docs/sub-10b-deployment-automation-completion.md"
   ```
 

@@ -176,4 +176,4 @@ When prod is recoverable:
 - [DR provisioning checklist](../../infra/dns-tls/dr-provisioning-checklist.md) — pre-disaster setup.
 - [Backup-restore runbook](backup-restore.md) — restore procedure detail.
 - [`secret-rotation.md`](secret-rotation.md) — for any secret rotation triggered by the incident.
-- [Sub-10c design spec §DR](../superpowers/specs/2026-05-04-sub-10c-design.md#dr-procedure)
+- [Sub-10c design spec §DR](../../project-plan/specs/2026-05-04-sub-10c-design.md#dr-procedure)

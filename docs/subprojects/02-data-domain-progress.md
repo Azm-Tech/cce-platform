@@ -1,7 +1,7 @@
 # Sub-Project 02 — Data & Domain — Progress
 
-**Spec:** [`../superpowers/specs/2026-04-27-data-domain-design.md`](../superpowers/specs/2026-04-27-data-domain-design.md)
-**Plan:** [`../superpowers/plans/2026-04-27-data-domain.md`](../superpowers/plans/2026-04-27-data-domain.md)
+**Spec:** [`../../project-plan/specs/2026-04-27-data-domain-design.md`](../../project-plan/specs/2026-04-27-data-domain-design.md)
+**Plan:** [`../../project-plan/plans/2026-04-27-data-domain.md`](../../project-plan/plans/2026-04-27-data-domain.md)
 **Brief:** [`02-data-domain.md`](02-data-domain.md)
 
 ## Phase status

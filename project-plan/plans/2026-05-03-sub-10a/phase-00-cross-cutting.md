@@ -287,7 +287,7 @@ Merge into the existing root object. Do not remove existing keys.
 ## Task 0.5: Document Phase 00 env-vars
 
 **Files:**
-- Create: `docs/superpowers/plans/2026-05-03-sub-10a/env-vars.md`.
+- Create: `project-plan/plans/2026-05-03-sub-10a/env-vars.md`.
 
 **Purpose:** every environment variable Sub-10a introduces gets documented in one place that Phase 01's Dockerfiles + docker-compose, Phase 02's wiring code, and Phase 03's CI workflows all reference.
 
@@ -316,7 +316,7 @@ Merge into the existing root object. Do not remove existing keys.
 
 - [ ] **Step 2:** Commit:
   ```bash
-  git add docs/superpowers/plans/2026-05-03-sub-10a/env-vars.md
+  git add project-plan/plans/2026-05-03-sub-10a/env-vars.md
   git -c commit.gpgsign=false commit -m "docs(sub-10a): document Phase 00 env-vars
 
   Single reference table for every env-var Sub-10a introduces. Phase 01
@@ -351,5 +351,5 @@ After Task 0.5 commits cleanly:
 - `LoggingExtensions.UseCceSerilog` and `PrometheusExtensions.UseCcePrometheus` exist as no-op pass-throughs.
 - `AssistantClientFactory.AddCceAssistantClient` is wired into `Infrastructure/DependencyInjection.cs` returning the existing stub.
 - `appsettings.json` (both APIs) includes `Assistant:` and `Serilog:` sections with safe defaults.
-- `docs/superpowers/plans/2026-05-03-sub-10a/env-vars.md` documents every Sub-10a env-var.
+- `project-plan/plans/2026-05-03-sub-10a/env-vars.md` documents every Sub-10a env-var.
 - Test counts unchanged (frontend 502; backend application 429).

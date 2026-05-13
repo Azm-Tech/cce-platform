@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-28
 - **Sub-project owner:** Data & Domain
-- **Spec ref:** [Data & Domain §3.1, §4.1](../superpowers/specs/2026-04-27-data-domain-design.md)
+- **Spec ref:** [Data & Domain §3.1, §4.1](../../project-plan/specs/2026-04-27-data-domain-design.md)
 
 ## Context
 

@@ -2,8 +2,8 @@
 
 **Tag:** `internal-api-v0.1.0`
 **Date:** 2026-04-29
-**Spec:** [Internal API Design Spec](superpowers/specs/2026-04-27-internal-api-design.md)
-**Plan:** [Internal API Implementation Plan](superpowers/plans/2026-04-27-internal-api.md)
+**Spec:** [Internal API Design Spec](../project-plan/specs/2026-04-28-internal-api-design.md)
+**Plan:** [Internal API Implementation Plan](../project-plan/plans/2026-04-28-internal-api.md)
 
 ## Tooling versions
 

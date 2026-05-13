@@ -2,8 +2,8 @@
 
 **Tag:** `web-portal-v0.4.0`
 **Date:** 2026-05-03
-**Spec:** [Smart Assistant Design Spec](superpowers/specs/2026-05-02-sub-9-design.md)
-**Plan:** [Smart Assistant Implementation Plan](superpowers/plans/2026-05-02-sub-9.md)
+**Spec:** [Smart Assistant Design Spec](../project-plan/specs/2026-05-02-sub-9-design.md)
+**Plan:** [Smart Assistant Implementation Plan](../project-plan/plans/2026-05-02-sub-9.md)
 **Predecessor:** [Sub-8 Interactive City completion](sub-8-interactive-city-completion.md)
 **Successor (planned):** Sub-10 Deployment / Infra
 

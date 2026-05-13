@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §6](../superpowers/specs/2026-04-24-foundation-design.md#6-permissions-and-authorization)
+- **Spec ref:** [Foundation §6](../../project-plan/specs/2026-04-24-foundation-design.md#6-permissions-and-authorization)
 
 ## Context
 

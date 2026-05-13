@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §9](../superpowers/specs/2026-04-24-foundation-design.md#9-security)
+- **Spec ref:** [Foundation §9](../../project-plan/specs/2026-04-24-foundation-design.md#9-security)
 
 ## Context
 

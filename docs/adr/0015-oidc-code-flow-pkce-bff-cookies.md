@@ -3,7 +3,7 @@
 - **Status:** Accepted (Foundation gap noted below)
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §3, §9](../superpowers/specs/2026-04-24-foundation-design.md#3-stack-decisions)
+- **Spec ref:** [Foundation §3, §9](../../project-plan/specs/2026-04-24-foundation-design.md#3-stack-decisions)
 
 ## Context
 

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §11](../superpowers/specs/2026-04-24-foundation-design.md#11-definition-of-done)
+- **Spec ref:** [Foundation §11](../../project-plan/specs/2026-04-24-foundation-design.md#11-definition-of-done)
 
 ## Context
 

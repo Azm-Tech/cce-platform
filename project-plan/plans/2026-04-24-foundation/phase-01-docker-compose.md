@@ -694,14 +694,14 @@ Edit `README.md`. Replace this line:
 
 ```markdown
 > Full getting-started is added in Phase 18. Until then, follow the plan phases in order:
-> `docs/superpowers/plans/2026-04-24-foundation/phase-XX-*.md`
+> `project-plan/plans/2026-04-24-foundation/phase-XX-*.md`
 ```
 
 with:
 
 ````markdown
 > Full getting-started is added in Phase 18. Until then, follow the plan phases in order:
-> `docs/superpowers/plans/2026-04-24-foundation/phase-XX-*.md`
+> `project-plan/plans/2026-04-24-foundation/phase-XX-*.md`
 
 ## Local dev stack (Phase 01 onwards)
 

@@ -626,7 +626,7 @@ For manual renewal, see [`secret-rotation.md`](../../docs/runbooks/secret-rotati
 
 - [`Configure-IISSites.ps1`](../iis/Configure-IISSites.ps1) — provisions the IIS sites with these certs.
 - [ADR-0054 — IIS reverse proxy](../../docs/adr/0054-iis-reverse-proxy-on-windows-server.md)
-- [Sub-10c design spec §Network](../../docs/superpowers/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
+- [Sub-10c design spec §Network](../../specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
 ```
 
 - [ ] **Step 1:** Create `infra/dns-tls/` directory:
@@ -809,7 +809,7 @@ exit 0
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -863,7 +863,7 @@ Use IIS as a reverse proxy on the host. Each IDD hostname maps to an IIS site th
 
 ## References
 
-- [Sub-10c design spec §Network](../superpowers/specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
+- [Sub-10c design spec §Network](../../specs/2026-05-04-sub-10c-design.md#network--iis-reverse-proxy--tls)
 - [`infra/dns-tls/README.md`](../../infra/dns-tls/README.md) — cert + DNS operator checklist.
 - [Microsoft URL Rewrite docs](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/using-url-rewrite-module)
 - [Microsoft ARR docs](https://learn.microsoft.com/en-us/iis/extensions/installing-application-request-routing-arr/)

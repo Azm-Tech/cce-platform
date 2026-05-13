@@ -3,8 +3,8 @@
 **Released:** 2026-05-04
 **Tag:** `infra-v1.0.0`
 **Sub-project:** Third and final Sub-10 sub-project. Sub-10a `app-v1.0.0` + Sub-10b `deploy-v1.0.0` shipped earlier.
-**Spec:** [`superpowers/specs/2026-05-04-sub-10c-design.md`](superpowers/specs/2026-05-04-sub-10c-design.md)
-**Plan:** [`superpowers/plans/2026-05-04-sub-10c.md`](superpowers/plans/2026-05-04-sub-10c.md)
+**Spec:** [`../project-plan/specs/2026-05-04-sub-10c-design.md`](../project-plan/specs/2026-05-04-sub-10c-design.md)
+**Plan:** [`../project-plan/plans/2026-05-04-sub-10c.md`](../project-plan/plans/2026-05-04-sub-10c.md)
 
 ## What shipped
 

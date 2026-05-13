@@ -6,7 +6,7 @@
 
 **Tasks in this phase:** 20
 **Working directory:** `/Users/m/CCE/`
-**Preconditions:** Phase 17 complete; `docs/` already has `superpowers/specs/` + `superpowers/plans/`.
+**Preconditions:** Phase 17 complete; `docs/` already has `../../specs/` + `../`.
 
 ---
 
@@ -28,7 +28,7 @@ Each ADR follows MADR (Markdown Any Decision Record) format:
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §X](../superpowers/specs/2026-04-24-foundation-design.md#section-x)
+- **Spec ref:** [Foundation §X](../../specs/2026-04-24-foundation-design.md#section-x)
 
 ## Context
 
@@ -222,7 +222,7 @@ Each task creates **one** ADR file under `docs/adr/`.
 ## Foundation completion (sub-project 1)
 
 See [`subprojects/01-foundation.md`](subprojects/01-foundation.md) for the brief.
-DoD tracked in [Foundation spec §11](superpowers/specs/2026-04-24-foundation-design.md#11-definition-of-done).
+DoD tracked in [Foundation spec §11](../../specs/2026-04-24-foundation-design.md#11-definition-of-done).
 
 ## Per-sub-project briefs
 

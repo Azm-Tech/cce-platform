@@ -2,8 +2,8 @@
 
 **Tag:** `external-api-v0.1.0`
 **Date:** 2026-04-29
-**Spec:** [External API Design Spec](superpowers/specs/2026-04-28-external-api-design.md)
-**Plan:** [External API Implementation Plan](superpowers/plans/2026-04-28-external-api.md)
+**Spec:** [External API Design Spec](../project-plan/specs/2026-04-29-external-api-design.md)
+**Plan:** [External API Implementation Plan](../project-plan/plans/2026-04-29-external-api.md)
 
 ## Tooling versions
 

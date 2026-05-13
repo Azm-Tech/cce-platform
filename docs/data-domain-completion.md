@@ -2,8 +2,8 @@
 
 **Tag:** `data-domain-v0.1.0`
 **Date:** 2026-04-28
-**Spec:** [Data & Domain Design Spec](superpowers/specs/2026-04-27-data-domain-design.md)
-**Plan:** [Data & Domain Implementation Plan](superpowers/plans/2026-04-27-data-domain.md)
+**Spec:** [Data & Domain Design Spec](../project-plan/specs/2026-04-27-data-domain-design.md)
+**Plan:** [Data & Domain Implementation Plan](../project-plan/plans/2026-04-27-data-domain.md)
 
 ## Tooling versions
 

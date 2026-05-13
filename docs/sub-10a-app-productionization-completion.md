@@ -2,8 +2,8 @@
 
 **Tag:** `app-v1.0.0`
 **Date:** 2026-05-03
-**Spec:** [App Productionization Design Spec](superpowers/specs/2026-05-03-sub-10a-design.md)
-**Plan:** [App Productionization Implementation Plan](superpowers/plans/2026-05-03-sub-10a.md)
+**Spec:** [App Productionization Design Spec](../project-plan/specs/2026-05-03-sub-10a-design.md)
+**Plan:** [App Productionization Implementation Plan](../project-plan/plans/2026-05-03-sub-10a.md)
 **Predecessor:** [Sub-9 Smart Assistant completion](sub-9-assistant-completion.md)
 **Successors (planned):** Sub-10b Deployment automation, Sub-10c Production infra (AD federation, multi-env, backup, IDD DNS/LB validation)
 
@@ -45,7 +45,7 @@ All four are multistage Linux containers, runs as non-root user (backend `app` U
 
 ## Observability env-vars
 
-Documented in `docs/superpowers/plans/2026-05-03-sub-10a/env-vars.md`.
+Documented in `project-plan/plans/2026-05-03-sub-10a/env-vars.md`.
 
 | Variable | Used by | Effect |
 |---|---|---|

@@ -4,7 +4,7 @@
 **Status:** Shipped (`web-portal-v0.4.0` + `app-v1.0.0`)
 **Last reviewed:** 2026-05-08
 **Sources of truth:**
-- Design: [`docs/superpowers/specs/2026-05-02-sub-9-design.md`](superpowers/specs/2026-05-02-sub-9-design.md)
+- Design: [`project-plan/specs/2026-05-02-sub-9-design.md`](../project-plan/specs/2026-05-02-sub-9-design.md)
 - Completion (frontend + stub): [`docs/sub-9-assistant-completion.md`](sub-9-assistant-completion.md)
 - Completion (real LLM): [`docs/sub-10a-app-productionization-completion.md`](sub-10a-app-productionization-completion.md)
 - ADRs: [`0049`](adr/0049-sse-structured-citation-events.md), [`0050`](adr/0050-client-owned-in-memory-thread.md), [`0051`](adr/0051-anthropic-sdk-rag-lite-citations.md)

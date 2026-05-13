@@ -317,7 +317,7 @@ See `docs/foundation-completion.md` for the full list.
 ### Phase summary
 
 The Foundation was built across 20 phases (00-19). Each phase has its own plan under
-`docs/superpowers/plans/2026-04-24-foundation/phase-NN-*.md`. ~30 cross-phase patches
+`project-plan/plans/2026-04-24-foundation/phase-NN-*.md`. ~30 cross-phase patches
 were captured during execution as real tooling quirks; each is documented in its
 commit message.
 

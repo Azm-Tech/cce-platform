@@ -128,4 +128,4 @@ After DR promotion (see [`dr-promotion.md`](dr-promotion.md)):
 - [`migrations.md`](migrations.md) — forward-only migration discipline (relevant for restore-vs-migration-history checks)
 - [`dr-promotion.md`](dr-promotion.md) — DR promotion procedure (Phase 05)
 - [Ola Hallengren's docs](https://ola.hallengren.com/)
-- [Sub-10c design spec §Backup](../superpowers/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
+- [Sub-10c design spec §Backup](../../project-plan/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)

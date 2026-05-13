@@ -3,8 +3,8 @@
 **Released:** 2026-05-04
 **Tag:** `deploy-v1.0.0`
 **Sub-project:** Second of three Sub-10 sub-projects (Sub-10a `app-v1.0.0` shipped; Sub-10c is the third).
-**Spec:** [`superpowers/specs/2026-05-03-sub-10b-design.md`](superpowers/specs/2026-05-03-sub-10b-design.md)
-**Plan:** [`superpowers/plans/2026-05-03-sub-10b.md`](superpowers/plans/2026-05-03-sub-10b.md)
+**Spec:** [`../project-plan/specs/2026-05-03-sub-10b-design.md`](../project-plan/specs/2026-05-03-sub-10b-design.md)
+**Plan:** [`../project-plan/plans/2026-05-03-sub-10b.md`](../project-plan/plans/2026-05-03-sub-10b.md)
 
 ## What shipped
 

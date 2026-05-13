@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../project-plan/specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -54,7 +54,7 @@ Per-env `deploy-history-${env}.tsv` audit trail prevents test deploys from clutt
 
 ## References
 
-- [Sub-10c design spec §Multi-env config](../superpowers/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files)
+- [Sub-10c design spec §Multi-env config](../../project-plan/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files)
 - [Secret-rotation runbook](../runbooks/secret-rotation.md)
 - [Env-promotion runbook](../runbooks/env-promotion.md)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)

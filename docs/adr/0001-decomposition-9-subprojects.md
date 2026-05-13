@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §10](../superpowers/specs/2026-04-24-foundation-design.md#10-decomposition-into-sub-projects)
+- **Spec ref:** [Foundation §10](../../project-plan/specs/2026-04-24-foundation-design.md#10-decomposition-into-sub-projects)
 
 ## Context
 
@@ -58,4 +58,4 @@ The full project is decomposed into **nine sub-projects**, each with its own bra
 ## Related
 
 - [`docs/roadmap.md`](../roadmap.md)
-- [`docs/superpowers/specs/2026-04-24-foundation-design.md`](../superpowers/specs/2026-04-24-foundation-design.md) §10
+- [`project-plan/specs/2026-04-24-foundation-design.md`](../../project-plan/specs/2026-04-24-foundation-design.md) §10

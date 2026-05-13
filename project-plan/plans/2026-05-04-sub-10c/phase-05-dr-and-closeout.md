@@ -143,7 +143,7 @@ Record the result in the ops drill log.
 
 - [DR-promotion runbook](../../docs/runbooks/dr-promotion.md) — invoked when DR is needed.
 - [Backup-restore runbook](../../docs/runbooks/backup-restore.md) — DR-host cold-start restore procedure.
-- [Sub-10c design spec §DR](../../docs/superpowers/specs/2026-05-04-sub-10c-design.md#dr-procedure)
+- [Sub-10c design spec §DR](../../specs/2026-05-04-sub-10c-design.md#dr-procedure)
 ```
 
 - [ ] **Step 1:** Create `infra/dns-tls/dr-provisioning-checklist.md` with the contents above.
@@ -352,7 +352,7 @@ When prod is recoverable:
 - [DR provisioning checklist](../../infra/dns-tls/dr-provisioning-checklist.md) — pre-disaster setup.
 - [Backup-restore runbook](backup-restore.md) — restore procedure detail.
 - [`secret-rotation.md`](secret-rotation.md) — for any secret rotation triggered by the incident.
-- [Sub-10c design spec §DR](../superpowers/specs/2026-05-04-sub-10c-design.md#dr-procedure)
+- [Sub-10c design spec §DR](../../specs/2026-05-04-sub-10c-design.md#dr-procedure)
 ```
 
 - [ ] **Step 1:** Create `docs/runbooks/dr-promotion.md` with the contents above.
@@ -391,7 +391,7 @@ When prod is recoverable:
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -442,7 +442,7 @@ Per-env `deploy-history-${env}.tsv` audit trail prevents test deploys from clutt
 
 ## References
 
-- [Sub-10c design spec §Multi-env config](../superpowers/specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files)
+- [Sub-10c design spec §Multi-env config](../../specs/2026-05-04-sub-10c-design.md#multi-env-config--per-env-files)
 - [Secret-rotation runbook](../runbooks/secret-rotation.md)
 - [Env-promotion runbook](../runbooks/env-promotion.md)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)
@@ -458,8 +458,8 @@ Per-env `deploy-history-${env}.tsv` audit trail prevents test deploys from clutt
 **Released:** 2026-05-04
 **Tag:** `infra-v1.0.0`
 **Sub-project:** Third and final Sub-10 sub-project. Sub-10a `app-v1.0.0` + Sub-10b `deploy-v1.0.0` shipped earlier.
-**Spec:** [`superpowers/specs/2026-05-04-sub-10c-design.md`](superpowers/specs/2026-05-04-sub-10c-design.md)
-**Plan:** [`superpowers/plans/2026-05-04-sub-10c.md`](superpowers/plans/2026-05-04-sub-10c.md)
+**Spec:** [`../../specs/2026-05-04-sub-10c-design.md`](../../specs/2026-05-04-sub-10c-design.md)
+**Plan:** [`../2026-05-04-sub-10c.md`](../2026-05-04-sub-10c.md)
 
 ## What shipped
 
@@ -657,7 +657,7 @@ The CCE platform is now operationally complete on the IDD v1.2 target hardware. 
   production Sentry observability, DR-host provisioning + 8-step
   promotion runbook.
 
-  Spec: docs/superpowers/specs/2026-05-04-sub-10c-design.md
+  Spec: project-plan/specs/2026-05-04-sub-10c-design.md
   Completion: docs/sub-10c-production-infra-completion.md"
   ```
 

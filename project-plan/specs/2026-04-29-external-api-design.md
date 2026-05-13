@@ -268,7 +268,7 @@ To be written in Phase 9 of this sub-project:
 
 ## 10. Phase plan
 
-10 phases (0–9). Master plan + per-phase plan files written in `docs/superpowers/plans/2026-04-29-external-api/`.
+10 phases (0–9). Master plan + per-phase plan files written in `project-plan/plans/2026-04-29-external-api/`.
 
 | # | Phase | Tasks (rough) | Deliverable |
 |---|---|---|---|

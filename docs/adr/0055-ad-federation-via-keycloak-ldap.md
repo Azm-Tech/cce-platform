@@ -6,7 +6,7 @@
 **Status:** Superseded by ADR-0058
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../project-plan/specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -69,7 +69,7 @@ The mapping is the contract. AD admins create/manage groups; CCE doesn't write t
 
 ## References
 
-- [Sub-10c design spec §Identity](../superpowers/specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
+- [Sub-10c design spec §Identity](../../project-plan/specs/2026-05-04-sub-10c-design.md#identity--keycloak-ldap-user-federation)
 - [AD federation runbook](../runbooks/ad-federation.md)
 - [Keycloak User Federation docs](https://www.keycloak.org/docs/latest/server_admin/#_user-storage-federation)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)

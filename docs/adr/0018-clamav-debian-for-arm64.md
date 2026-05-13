@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-04-26
 - **Sub-project owner:** Foundation
-- **Spec ref:** [Foundation §4.1](../superpowers/specs/2026-04-24-foundation-design.md#4-architecture)
+- **Spec ref:** [Foundation §4.1](../../project-plan/specs/2026-04-24-foundation-design.md#4-architecture)
 
 ## Context
 
@@ -51,5 +51,5 @@ The same upstream ClamAV maintainers publish `clamav/clamav-debian:stable` with 
 ## Related
 
 - [ADR-0005](0005-local-first-docker-compose.md)
-- [`docs/superpowers/plans/2026-04-24-foundation/phase-01-docker-compose.md`](../superpowers/plans/2026-04-24-foundation/phase-01-docker-compose.md) (preamble — Divergence 3)
+- [`project-plan/plans/2026-04-24-foundation/phase-01-docker-compose.md`](../../project-plan/plans/2026-04-24-foundation/phase-01-docker-compose.md) (preamble — Divergence 3)
 - `docker-compose.yml`

@@ -118,4 +118,4 @@ Record the result in the ops drill log.
 
 - [DR-promotion runbook](../../docs/runbooks/dr-promotion.md) — invoked when DR is needed.
 - [Backup-restore runbook](../../docs/runbooks/backup-restore.md) — DR-host cold-start restore procedure.
-- [Sub-10c design spec §DR](../../docs/superpowers/specs/2026-05-04-sub-10c-design.md#dr-procedure)
+- [Sub-10c design spec §DR](../../project-plan/specs/2026-05-04-sub-10c-design.md#dr-procedure)

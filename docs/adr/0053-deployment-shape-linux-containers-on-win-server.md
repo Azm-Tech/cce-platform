@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-03
 **Deciders:** Sub-10b brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10b — Deployment automation](../superpowers/specs/2026-05-03-sub-10b-design.md)
+**Sub-project:** [Sub-10b — Deployment automation](../../project-plan/specs/2026-05-03-sub-10b-design.md)
 
 ## Context
 
@@ -91,7 +91,7 @@ Push images to `ghcr.io/<owner>/cce-<image>` via existing CI's `docker/build-pus
 
 ## References
 
-- [Sub-10b design spec](../superpowers/specs/2026-05-03-sub-10b-design.md)
+- [Sub-10b design spec](../../project-plan/specs/2026-05-03-sub-10b-design.md)
 - [Forward-only migrations runbook](../runbooks/migrations.md)
 - [Production deploy runbook](../runbooks/deploy.md)
 - [Rollback runbook](../runbooks/rollback.md)

@@ -2,7 +2,7 @@
 
 **Tag:** `foundation-v0.1.0`
 **Date:** 2026-04-24
-**Spec:** [Foundation Design Spec](superpowers/specs/2026-04-24-foundation-design.md)
+**Spec:** [Foundation Design Spec](../project-plan/specs/2026-04-24-foundation-design.md)
 
 ## Tooling versions
 

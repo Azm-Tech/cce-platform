@@ -2,8 +2,8 @@
 
 **Tag:** `web-portal-v0.1.0`
 **Date:** 2026-05-01
-**Spec:** [Web Portal Design Spec](superpowers/specs/2026-04-30-web-portal-design.md)
-**Plan:** [Web Portal Implementation Plan](superpowers/plans/2026-04-30-web-portal.md)
+**Spec:** [Web Portal Design Spec](../project-plan/specs/2026-04-30-web-portal-design.md)
+**Plan:** [Web Portal Implementation Plan](../project-plan/plans/2026-04-30-web-portal.md)
 
 ---
 

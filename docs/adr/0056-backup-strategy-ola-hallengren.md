@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../project-plan/specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -74,7 +74,7 @@ Recovery model: `FULL` (required for log backups; gives 15-minute RPO).
 
 ## References
 
-- [Sub-10c design spec §Backup](../superpowers/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
+- [Sub-10c design spec §Backup](../../project-plan/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
 - [Backup-restore runbook](../runbooks/backup-restore.md)
 - [Ola Hallengren's Maintenance Solution](https://ola.hallengren.com/)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)

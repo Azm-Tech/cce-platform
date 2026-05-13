@@ -1073,7 +1073,7 @@ public sealed class RestoreFromBackupTests
 **Status:** Accepted
 **Date:** 2026-05-04
 **Deciders:** Sub-10c brainstorm (kilany113@gmail.com)
-**Sub-project:** [Sub-10c — Production infra + DR](../superpowers/specs/2026-05-04-sub-10c-design.md)
+**Sub-project:** [Sub-10c — Production infra + DR](../../specs/2026-05-04-sub-10c-design.md)
 
 ## Context
 
@@ -1144,7 +1144,7 @@ Recovery model: `FULL` (required for log backups; gives 15-minute RPO).
 
 ## References
 
-- [Sub-10c design spec §Backup](../superpowers/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
+- [Sub-10c design spec §Backup](../../specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
 - [Backup-restore runbook](../runbooks/backup-restore.md)
 - [Ola Hallengren's Maintenance Solution](https://ola.hallengren.com/)
 - ADR-0054 — IIS reverse proxy on Windows Server (Sub-10c)
@@ -1284,7 +1284,7 @@ After DR promotion (see [`dr-promotion.md`](dr-promotion.md)):
 - [`migrations.md`](migrations.md) — forward-only migration discipline (relevant for restore-vs-migration-history checks)
 - [`dr-promotion.md`](dr-promotion.md) — DR promotion procedure (Phase 05)
 - [Ola Hallengren's docs](https://ola.hallengren.com/)
-- [Sub-10c design spec §Backup](../superpowers/specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
+- [Sub-10c design spec §Backup](../../specs/2026-05-04-sub-10c-design.md#backup--ola-hallengren--task-scheduler)
 ```
 
 - [ ] **Step 1:** Create `docs/adr/0056-backup-strategy-ola-hallengren.md` with the contents above.
