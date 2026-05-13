@@ -5,6 +5,7 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { TranslateModule } from '@ngx-translate/core';
@@ -23,7 +24,7 @@ interface ComposeReplyFormShape {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule,
-    MatButtonModule, MatFormFieldModule, MatInputModule, MatRadioModule,
+    MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatRadioModule,
     TranslateModule,
   ],
   templateUrl: './compose-reply-form.component.html',
@@ -37,6 +38,18 @@ export class ComposeReplyFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly postId = input.required<string>();
+  /** When set, the reply is created as a child of this reply (threaded
+   *  comment). The PostDetailPage drives this via a "Replying to @handle"
+   *  affordance below the parent. */
+  readonly parentReplyId = input<string | null>(null);
+  /** Optional already-translated handle of the parent reply's author
+   *  (e.g. `@d70d6a`). Shown above the textarea so the user knows who
+   *  they're replying to. Only used when parentReplyId is set. */
+  readonly parentHandle = input<string | null>(null);
+  /** Emitted when the user clicks the inline cancel button (only
+   *  rendered when replying to a comment). PostDetailPage uses this
+   *  to clear the `replyingToReplyId` state. */
+  readonly cancelReply = output<void>();
   readonly replyCreated = output<string>();
 
   readonly submitting = signal(false);
@@ -62,6 +75,7 @@ export class ComposeReplyFormComponent implements OnInit {
     const payload: CreateReplyPayload = {
       content: v.content.trim(),
       locale: v.locale,
+      parentReplyId: this.parentReplyId() ?? null,
     };
     this.submitting.set(true);
     this.errorKind.set(null);

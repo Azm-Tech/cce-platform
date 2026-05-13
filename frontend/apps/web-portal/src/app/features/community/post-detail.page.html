@@ -1,56 +1,166 @@
 <section class="cce-post-detail">
   <a class="cce-post-detail__back" routerLink="/community">
-    ← {{ 'community.title' | translate }}
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    {{ 'community.detail.backToCommunity' | translate }}
   </a>
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-post-detail__progress" />
+  }
 
+  <!-- ─── Not-found state ─────────────────────────────────── -->
   @if (notFound()) {
     <div class="cce-post-detail__notfound" role="alert">
+      <span class="cce-post-detail__notfound-art" aria-hidden="true">
+        <mat-icon>chat_bubble_outline</mat-icon>
+      </span>
       <h1>{{ 'community.notFound' | translate }}</h1>
+      <p>{{ 'community.detail.postNotFoundDesc' | translate }}</p>
+      <a mat-flat-button color="primary" routerLink="/community">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'community.detail.backToCommunity' | translate }}
+      </a>
     </div>
   } @else if (errorKind()) {
     <div class="cce-post-detail__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
       <span>{{ ('errors.' + errorKind()) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
-      </button>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
     </div>
   }
 
+  <!-- ─── Skeleton (initial load, no post yet) ────────────── -->
+  @if (loading() && !post()) {
+    <div class="cce-post-detail__skeleton-card" aria-busy="true">
+      <span class="cce-post-detail__skel-avatar"></span>
+      <div class="cce-post-detail__skel-lines">
+        <span class="cce-post-detail__skel-line cce-post-detail__skel-line--sm"></span>
+        <span class="cce-post-detail__skel-line cce-post-detail__skel-line--lg"></span>
+        <span class="cce-post-detail__skel-line"></span>
+        <span class="cce-post-detail__skel-line"></span>
+      </div>
+    </div>
+  }
+
+  <!-- ─── Post (FB / IG / X-style card) ───────────────────── -->
   @if (post(); as p) {
-    <article class="cce-post-detail__post">
-      <header class="cce-post-detail__post-header">
-        <span class="cce-post-detail__author">{{ p.authorId }}</span>
-        @if (postShowLangBadge()) {
-          <span class="cce-post-detail__lang">
-            {{ 'community.languageBadge' | translate:{ locale: p.locale } }}
+    <article
+      class="cce-post-detail__post"
+      [class.cce-post-detail__post--resolved]="!!p.answeredReplyId"
+    >
+      <header class="cce-post-detail__head">
+        <span class="cce-post-detail__avatar" aria-hidden="true">
+          {{ authorInitial(p.authorId) }}
+        </span>
+
+        <div class="cce-post-detail__author">
+          <span class="cce-post-detail__author-row">
+            <span class="cce-post-detail__author-name">
+              {{ 'community.detail.memberHandle' | translate }}
+            </span>
+            <span class="cce-post-detail__author-handle">
+              {{ authorHandle(p.authorId) }}
+            </span>
           </span>
-        }
-        <small class="cce-post-detail__date">
-          {{ p.createdOn | date:'medium' }}
-        </small>
+          <span class="cce-post-detail__byline">
+            <time
+              [attr.datetime]="p.createdOn"
+              [title]="p.createdOn | date:'medium'"
+            >{{ timeAgo(p.createdOn) }}</time>
+            <span aria-hidden="true">·</span>
+            @if (p.answeredReplyId) {
+              <span class="cce-post-detail__chip cce-post-detail__chip--resolved">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                {{ 'community.detail.resolvedTag' | translate }}
+              </span>
+            } @else if (p.isAnswerable) {
+              <span class="cce-post-detail__chip cce-post-detail__chip--question">
+                <mat-icon aria-hidden="true">help_outline</mat-icon>
+                {{ 'community.detail.questionTag' | translate }}
+              </span>
+            } @else {
+              <span class="cce-post-detail__chip cce-post-detail__chip--discussion">
+                <mat-icon aria-hidden="true">forum</mat-icon>
+                {{ 'community.detail.discussionTag' | translate }}
+              </span>
+            }
+            @if (postShowLangBadge()) {
+              <span class="cce-post-detail__chip cce-post-detail__chip--lang">
+                {{ 'community.languageBadge' | translate:{ locale: p.locale } }}
+              </span>
+            }
+          </span>
+        </div>
+
+        <button
+          type="button"
+          mat-icon-button
+          class="cce-post-detail__more"
+          [attr.aria-label]="'community.detail.actionMore' | translate"
+        >
+          <mat-icon>more_horiz</mat-icon>
+        </button>
       </header>
 
-      <p class="cce-post-detail__content">{{ p.content }}</p>
+      <div class="cce-post-detail__body">{{ p.content }}</div>
 
+      <!-- Stats row: reply count -->
+      <div class="cce-post-detail__stats">
+        <span>
+          <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
+          {{ (total() === 1
+              ? 'community.detail.repliesCountSingular'
+              : 'community.detail.repliesCount') | translate:{ count: total() } }}
+        </span>
+      </div>
+
+      <!-- Action bar: Like / Dislike / Reply / Save / Share -->
       <div class="cce-post-detail__actions">
+        <cce-like-dislike-control
+          class="cce-post-detail__action-likes"
+          [entityId]="p.id"
+          entityType="post"
+        />
+
+        <button
+          type="button"
+          class="cce-post-detail__action"
+          (click)="focusComposer()"
+        >
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <span>{{ 'community.detail.actionReply' | translate }}</span>
+        </button>
+
         @if (isAuthenticated()) {
           <button
             type="button"
-            mat-stroked-button
+            class="cce-post-detail__action"
             cceFollow
             entityType="post"
             [entityId]="p.id"
           >
-            {{ 'follows.followButton' | translate }}
+            <mat-icon>bookmark_border</mat-icon>
+            <span>{{ 'community.detail.actionSave' | translate }}</span>
           </button>
         }
-        <cce-rate-post-control [postId]="p.id" />
+
+        <button
+          type="button"
+          class="cce-post-detail__action"
+          (click)="copyLink()"
+        >
+          <mat-icon>share</mat-icon>
+          <span>{{ 'community.detail.actionShare' | translate }}</span>
+        </button>
       </div>
     </article>
 
-    <section class="cce-post-detail__compose">
+    <!-- Inline composer (FB-style "Add a reply") -->
+    <section class="cce-post-detail__compose" #composer>
+      <h2 class="cce-post-detail__section-title">
+        <mat-icon aria-hidden="true">edit_note</mat-icon>
+        {{ 'community.detail.composeTitle' | translate }}
+      </h2>
       @if (isAuthenticated()) {
         <cce-compose-reply-form
           [postId]="p.id"
@@ -61,24 +171,46 @@
       }
     </section>
 
+    <!-- Replies feed -->
     <section class="cce-post-detail__replies">
+      <h2 class="cce-post-detail__section-title">
+        <mat-icon aria-hidden="true">forum</mat-icon>
+        {{ 'community.detail.repliesTitle' | translate }}
+        @if (total() > 0) {
+          <span class="cce-post-detail__section-count">{{ total() }}</span>
+        }
+      </h2>
+
       @if (!loading() && replies().length === 0) {
-        <p class="cce-post-detail__empty">
-          {{ 'community.empty.replies' | translate }}
-        </p>
+        <div class="cce-post-detail__empty">
+          <span class="cce-post-detail__empty-art" aria-hidden="true">
+            <mat-icon>chat_bubble_outline</mat-icon>
+          </span>
+          <p>{{ 'community.detail.noReplies' | translate }}</p>
+        </div>
       }
 
-      @for (r of orderedReplies(); track r.id) {
+      @for (r of topLevelReplies(); track r.id) {
         <cce-reply
           [reply]="r"
           [isAccepted]="r.id === p.answeredReplyId"
+          [acceptedReplyId]="p.answeredReplyId"
+          [canMarkAnswer]="canMarkAnswer()"
+          [postId]="p.id"
           [markableForPostId]="canMarkAnswer() && r.id !== p.answeredReplyId ? p.id : null"
+          [children]="descendantsOf(r.id)"
+          [replyingToId]="replyingToReplyId()"
+          [isAuthenticated]="isAuthenticated()"
           (answerMarked)="onAnswerMarked()"
+          (replyClicked)="onReplyToReply($event)"
+          (replyCreated)="onReplyCreated()"
+          (cancelReply)="cancelThreadReply()"
         />
       }
 
       @if (total() > pageSize()) {
         <mat-paginator
+          class="cce-post-detail__paginator"
           [length]="total()"
           [pageIndex]="page() - 1"
           [pageSize]="pageSize()"

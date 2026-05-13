@@ -1,26 +1,31 @@
-<section class="cce-countries-grid">
-  <div class="cce-countries-grid__header">
-    <h1 class="cce-countries-grid__title">{{ 'countries.title' | translate }}</h1>
-    <form
-      class="cce-countries-grid__search"
-      (ngSubmit)="onSearchSubmit()"
-      role="search"
-    >
-      <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
-        <mat-label>{{ 'countries.search.placeholder' | translate }}</mat-label>
-        <input
-          matInput
-          type="search"
-          name="q"
-          [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event)"
-        />
-      </mat-form-field>
-      <button mat-flat-button color="primary" type="submit">
-        {{ 'search.submit' | translate }}
-      </button>
-    </form>
-  </div>
+<section class="cce-countries-grid" [class.cce-countries-grid--panel-open]="selectedCountry() !== null">
+  <cce-workbench-hero
+    [eyebrow]="'countries.eyebrow' | translate"
+    [title]="'countries.title' | translate"
+    [subtitle]="'countries.subtitle' | translate"
+  />
+
+  <!-- Search lives in its own row beneath the hero — workbench-hero
+       has no aside slot. -->
+  <form
+    class="cce-countries-grid__search"
+    (ngSubmit)="onSearchSubmit()"
+    role="search"
+  >
+    <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
+      <mat-label>{{ 'countries.search.placeholder' | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        name="q"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit">
+      {{ 'search.submit' | translate }}
+    </button>
+  </form>
 
   @if (loading()) {
     <mat-progress-bar mode="indeterminate" />
@@ -39,14 +44,117 @@
     <p class="cce-countries-grid__empty">{{ 'countries.empty' | translate }}</p>
   }
 
-  @for (group of groups(); track group.region) {
-    <section class="cce-countries-grid__region">
-      <h2 class="cce-countries-grid__region-title">{{ group.region }}</h2>
-      <div class="cce-countries-grid__cards">
-        @for (country of group.countries; track country.id) {
-          <cce-country-card [country]="country" [locale]="locale()" />
-        }
-      </div>
-    </section>
-  }
+  <div class="cce-countries-grid__stage">
+    <div class="cce-countries-grid__regions">
+      @for (group of groups(); track group.region) {
+        <section class="cce-countries-grid__region">
+          <h2 class="cce-countries-grid__region-title">{{ group.region }}</h2>
+          <div class="cce-countries-grid__cards">
+            @for (country of group.countries; track country.id) {
+              <cce-country-card
+                [country]="country"
+                [locale]="locale()"
+                [isSelected]="selectedCountry()?.id === country.id"
+                (cardClick)="openPanel($event)"
+              />
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <!-- ─── Inline detail panel ─────────────────────────────── -->
+    @if (selectedCountry(); as sel) {
+      <aside class="cce-country-panel" role="complementary" [attr.aria-label]="selectedName()">
+        <button
+          type="button"
+          class="cce-country-panel__close"
+          (click)="closePanel()"
+          [attr.aria-label]="'countries.close' | translate">
+          ✕
+        </button>
+
+        <header class="cce-country-panel__header">
+          <span class="cce-country-panel__flag-wrap" aria-hidden="true">
+            @if (!flagFailed()) {
+              <img
+                class="cce-country-panel__flag"
+                [src]="selectedFlagSrc()"
+                [alt]="selectedName()"
+                width="64"
+                height="44"
+                referrerpolicy="no-referrer"
+                (error)="onSelectedFlagError()" />
+            } @else {
+              <span class="cce-country-panel__flag-fallback">{{ selectedFlagEmoji() }}</span>
+            }
+          </span>
+          <div>
+            <span class="cce-country-panel__iso">{{ sel.isoAlpha3 }}</span>
+            <h2 class="cce-country-panel__name">{{ selectedName() }}</h2>
+            @if (profile(); as p) {
+              <p class="cce-country-panel__updated">
+                {{ 'countries.detail.lastUpdated' | translate }}:
+                {{ p.lastUpdatedOn | date:'mediumDate' }}
+              </p>
+            }
+          </div>
+        </header>
+
+        <div class="cce-country-panel__body">
+          @if (profileLoading()) {
+            <mat-progress-bar mode="indeterminate" />
+          }
+
+          @if (profile(); as p) {
+            <article class="cce-country-panel__section">
+              <h3>{{ 'countries.detail.description' | translate }}</h3>
+              <div class="cce-country-panel__rich" [innerHTML]="description()"></div>
+            </article>
+
+            <article class="cce-country-panel__section">
+              <h3>{{ 'countries.detail.keyInitiatives' | translate }}</h3>
+              <div class="cce-country-panel__rich" [innerHTML]="keyInitiatives()"></div>
+            </article>
+
+            @if (contactInfo(); as contact) {
+              <article class="cce-country-panel__section">
+                <h3>{{ 'countries.detail.contactInfo' | translate }}</h3>
+                <div class="cce-country-panel__rich" [innerHTML]="contact"></div>
+              </article>
+            }
+
+            <article class="cce-country-panel__section">
+              <h3>{{ 'kapsarc.title' | translate }}</h3>
+              @if (snapshot(); as snap) {
+                <cce-kapsarc-snapshot [snapshot]="snap" [locale]="locale()" />
+              } @else {
+                <p class="cce-country-panel__empty">{{ 'kapsarc.unavailable' | translate }}</p>
+              }
+            </article>
+
+            <!-- Cross-link to the world map, pre-filtered to this country's cities -->
+            <a
+              class="cce-country-panel__map-link"
+              [routerLink]="['/explore']"
+              [queryParams]="{ country: sel.isoAlpha2 }">
+              <span class="cce-country-panel__map-link-glyph" aria-hidden="true">
+                <span class="cce-country-panel__map-link-pin"></span>
+              </span>
+              <span class="cce-country-panel__map-link-text">
+                <span class="cce-country-panel__map-link-eyebrow">VIEW ON MAP</span>
+                <span class="cce-country-panel__map-link-title">
+                  See {{ selectedName() }}'s pin on the World Map
+                </span>
+                <span class="cce-country-panel__map-link-desc">
+                  Filters the map to cities in {{ selectedName() }} ({{ sel.isoAlpha3 }})
+                </span>
+              </span>
+              <span class="cce-country-panel__map-link-arrow" aria-hidden="true">→</span>
+            </a>
+          }
+        </div>
+      </aside>
+    }
+  </div>
 </section>

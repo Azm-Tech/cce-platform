@@ -1,8 +1,19 @@
-/* Sub-12 Interactive World Map page styles + entry animations. */
+/* Sub-12 Interactive World Map page styles + entry animations.
+   Full-bleed: world map needs the entire viewport for the SVG +
+   panel overlay, so we break out of the shell's 1500px container. */
 
 :host {
   display: block;
-  width: 100%;
+  /* Span the full viewport width AND nullify the shell's block
+     padding so the filter bar / map start right under the header
+     with no white gap. */
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+}
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; }
 }
 
 .cce-explore {
@@ -100,32 +111,44 @@
   font-weight: 600;
 }
 
-/* Stage = map + optional side panel */
+/* Stage = map + optional side panel.
+   The panel is OVERLAID on top of the map (position: absolute) so opening
+   it does NOT change the map's container size. If we made it a flex
+   sibling instead, the map-wrap would shrink, the ResizeObserver would
+   fire, the projection would refit, and the user's zoom + country labels
+   would visibly jump — bug we hit and now avoid by overlaying. */
 .cce-explore__stage {
   position: relative;
   flex: 1;
-  display: flex;
+  display: block; /* overlay layout, not flex split */
   min-height: 0;
 }
 
 .cce-explore__map-wrap {
-  flex: 1;
-  min-width: 0;
+  position: absolute;
+  inset: 0;
   opacity: 0;
   transform: scale(0.98);
   animation: mapEntry 1s cubic-bezier(0.22, 1, 0.36, 1) 200ms forwards;
 }
 
-/* Side detail panel */
+/* Side detail panel — OVERLAID on the map (right side, full height of
+   the stage). The map underneath keeps its full width, so the user's
+   D3 zoom transform and country labels never shift when the panel
+   opens / closes. */
 .cce-explore__panel {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 0;
   width: clamp(280px, 32vw, 420px);
   background: var(--cce-explore-panel-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-inline-start: 1px solid rgba(244, 163, 0, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-inline-start: 1px solid rgba(244, 163, 0, 0.18);
   padding: 1.6rem 1.4rem;
   overflow-y: auto;
+  z-index: 5;
   animation: panelSlideIn 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
 }
@@ -134,20 +157,31 @@
   position: absolute;
   top: 0.7rem;
   inset-inline-end: 0.7rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--cce-explore-muted);
-  width: 32px;
-  height: 32px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  color: #fff;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
   line-height: 1;
-  transition: background 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background 0.18s, transform 0.18s, border-color 0.18s;
 }
 .cce-explore__panel-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(244, 163, 0, 0.85);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.08);
+}
+.cce-explore__panel-close:focus-visible {
+  outline: 2px solid var(--cce-explore-accent, #f4a300);
+  outline-offset: 2px;
 }
 
 .cce-explore__panel-header {
@@ -341,34 +375,58 @@
   text-align: start;
 }
 
+/* World-map filter inputs — restored navy/amber dark-theme look.
+   The `!important` flags override the global form polish layer in
+   _fancy.scss (which applies a white-bg + green-border style to
+   every native input/select). The explore page sits on a dark
+   navy map backdrop, so it needs the original tinted-glass style. */
 .cce-explore__search-input,
-.cce-explore__select {
-  padding: 0.55rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(15, 27, 49, 0.6);
-  color: var(--cce-explore-text, #e2e8f0);
-  font-size: 0.92rem;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+.cce-explore__select,
+input.cce-explore__search-input,
+select.cce-explore__select {
+  padding: 0.55rem 0.85rem !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(15, 27, 49, 0.6) !important;
+  color: var(--cce-explore-text, #e2e8f0) !important;
+  font-size: 0.92rem !important;
+  font-family: inherit !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, background 0.2s ease !important;
 }
-.cce-explore__search-input::placeholder { color: rgba(148, 163, 184, 0.6); }
+.cce-explore__search-input::placeholder,
+input.cce-explore__search-input::placeholder {
+  color: rgba(148, 163, 184, 0.6) !important;
+  font-weight: 400 !important;
+}
+.cce-explore__search-input:hover:not(:disabled):not([readonly]),
+.cce-explore__select:hover:not(:disabled):not([readonly]),
+input.cce-explore__search-input:hover,
+select.cce-explore__select:hover {
+  border-color: rgba(244, 163, 0, 0.32) !important;
+  background: rgba(15, 27, 49, 0.75) !important;
+  box-shadow: none !important;
+}
 .cce-explore__search-input:focus,
-.cce-explore__select:focus {
-  border-color: rgba(244, 163, 0, 0.6);
-  background: rgba(15, 27, 49, 0.85);
+.cce-explore__select:focus,
+input.cce-explore__search-input:focus,
+select.cce-explore__select:focus {
+  border-color: rgba(244, 163, 0, 0.6) !important;
+  background: rgba(15, 27, 49, 0.85) !important;
+  box-shadow: none !important;
 }
 
-.cce-explore__select {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.7rem center;
-  background-size: 12px 8px;
-  padding-right: 2rem;
-  cursor: pointer;
+.cce-explore__select,
+select.cce-explore__select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.7rem center !important;
+  background-size: 12px 8px !important;
+  padding-right: 2rem !important;
+  cursor: pointer !important;
 }
 
 .cce-explore__pills { display: inline-flex; gap: 0.35rem; }
@@ -513,14 +571,18 @@
 
 /* Responsive: stack on small screens */
 @media (max-width: 768px) {
-  .cce-explore__stage {
-    flex-direction: column;
-  }
+  /* On mobile the panel slides up from the bottom — full width, top
+     border instead of leading border. Still overlaid (not a flex sibling)
+     so the map keeps its size. */
   .cce-explore__panel {
+    inset-inline-end: 0;
+    inset-inline-start: 0;
+    top: auto;
+    bottom: 0;
     width: 100%;
+    max-height: 55vh;
     border-inline-start: none;
     border-top: 1px solid rgba(244, 163, 0, 0.15);
-    max-height: 50vh;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
   }
 }

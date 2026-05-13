@@ -1,38 +1,133 @@
 <section class="cce-km-list">
-  <h1 class="cce-km-list__title">{{ 'knowledgeMaps.title' | translate }}</h1>
+  <!-- Unified page hero (shared component) -->
+  <cce-workbench-hero
+    [eyebrow]="'knowledgeMaps.eyebrow' | translate"
+    [title]="'knowledgeMaps.title' | translate"
+    [subtitle]="'knowledgeMaps.subtitle' | translate"
+  />
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  <!-- Toolbar -->
+  <div class="cce-km-list__toolbar">
+    <div class="cce-km-list__search">
+      <mat-icon class="cce-km-list__search-icon" aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        class="cce-km-list__search-input"
+        [placeholder]="'knowledgeMaps.searchPlaceholder' | translate"
+        [ngModel]="query()"
+        (ngModelChange)="onQueryChange($event)"
+        [attr.aria-label]="'knowledgeMaps.searchPlaceholder' | translate"
+      />
+      @if (query()) {
+        <button
+          type="button"
+          class="cce-km-list__search-clear"
+          [attr.aria-label]="'knowledgeMaps.clearSearch' | translate"
+          (click)="clearQuery()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
 
+    @if (!loading() && rows().length > 0) {
+      <span class="cce-km-list__count">
+        {{ filtered().length }} / {{ rows().length }}
+      </span>
+    }
+  </div>
+
+  <!-- Inline progress bar (preserves existing behavior) -->
+  @if (loading() && rows().length > 0) {
+    <mat-progress-bar mode="indeterminate" class="cce-km-list__progress" />
+  }
+
+  <!-- Error -->
   @if (errorKind(); as kind) {
     <div class="cce-km-list__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <div class="cce-km-list__error-text">
+        <strong>{{ ('errors.' + kind) | translate }}</strong>
+      </div>
+      <button mat-stroked-button type="button" (click)="retry()">
         {{ 'errors.retry' | translate }}
       </button>
     </div>
   }
 
-  @if (empty()) {
-    <p class="cce-km-list__empty">{{ 'knowledgeMaps.empty' | translate }}</p>
+  <!-- Skeleton placeholders during initial load -->
+  @if (loading() && rows().length === 0) {
+    <div class="cce-km-list__grid" aria-busy="true">
+      @for (s of skeletons; track $index) {
+        <div class="cce-km-list__skeleton">
+          <div class="cce-km-list__skeleton-band"></div>
+          <div class="cce-km-list__skeleton-line cce-km-list__skeleton-line--lg"></div>
+          <div class="cce-km-list__skeleton-line"></div>
+          <div class="cce-km-list__skeleton-line cce-km-list__skeleton-line--sm"></div>
+        </div>
+      }
+    </div>
   }
 
-  <div class="cce-km-list__grid">
-    @for (m of rows(); track m.id) {
-      <a
-        class="cce-km-list__card-link"
-        [routerLink]="['/knowledge-maps', m.id]"
-        [attr.aria-label]="nameOf(m)"
-      >
-        <mat-card class="cce-km-list__card">
-          <mat-card-header>
-            <mat-icon mat-card-avatar aria-hidden="true">account_tree</mat-icon>
-            <mat-card-title>{{ nameOf(m) }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p>{{ descriptionOf(m) }}</p>
-          </mat-card-content>
-        </mat-card>
-      </a>
-    }
-  </div>
+  <!-- Empty (no data at all) -->
+  @if (empty()) {
+    <div class="cce-km-list__empty">
+      <span class="cce-km-list__empty-art" aria-hidden="true">
+        <mat-icon>account_tree</mat-icon>
+      </span>
+      <h2>{{ 'knowledgeMaps.empty' | translate }}</h2>
+      <p>{{ 'knowledgeMaps.emptyDesc' | translate }}</p>
+    </div>
+  }
+
+  <!-- Filtered empty (data exists but search filter zeroed it) -->
+  @if (filteredEmpty()) {
+    <div class="cce-km-list__empty cce-km-list__empty--filter">
+      <span class="cce-km-list__empty-art" aria-hidden="true">
+        <mat-icon>search_off</mat-icon>
+      </span>
+      <h2>{{ 'knowledgeMaps.filteredEmpty' | translate }}</h2>
+      <button mat-stroked-button type="button" (click)="clearQuery()">
+        {{ 'knowledgeMaps.clearSearch' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- Cards grid -->
+  @if (!loading() && filtered().length > 0) {
+    <div class="cce-km-list__grid">
+      @for (m of filtered(); track m.id; let i = $index) {
+        @let p = paletteFor(i);
+        <a
+          class="cce-km-list__card"
+          [routerLink]="['/knowledge-maps', m.id]"
+          [attr.aria-label]="nameOf(m)"
+          [style.--km-card-grad]="p.grad"
+          [style.--km-card-ring]="p.ring"
+        >
+          <div class="cce-km-list__card-band">
+            <span class="cce-km-list__card-band-glow" aria-hidden="true"></span>
+            <span class="cce-km-list__card-band-icon" aria-hidden="true">
+              <mat-icon>{{ p.icon }}</mat-icon>
+            </span>
+            <span class="cce-km-list__card-band-tag">
+              {{ 'knowledgeMaps.title' | translate }}
+            </span>
+          </div>
+
+          <div class="cce-km-list__card-body">
+            <h3 class="cce-km-list__card-title">{{ nameOf(m) }}</h3>
+            <p class="cce-km-list__card-desc">{{ descriptionOf(m) }}</p>
+          </div>
+
+          <div class="cce-km-list__card-foot">
+            <span class="cce-km-list__card-cta">
+              {{ 'knowledgeMaps.openMap' | translate }}
+              <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+            </span>
+          </div>
+        </a>
+      }
+    </div>
+  }
 </section>

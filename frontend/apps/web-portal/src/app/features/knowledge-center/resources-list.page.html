@@ -1,5 +1,9 @@
 <section class="cce-resources-list">
-  <h1 class="cce-resources-list__title">{{ 'resources.title' | translate }}</h1>
+  <cce-workbench-hero
+    [eyebrow]="'resources.eyebrow' | translate"
+    [title]="'resources.title' | translate"
+    [subtitle]="'resources.subtitle' | translate"
+  />
 
   <div class="cce-resources-list__layout">
     <cce-filter-rail>

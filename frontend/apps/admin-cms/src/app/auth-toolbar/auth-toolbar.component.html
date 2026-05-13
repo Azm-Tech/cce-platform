@@ -1,4 +1,8 @@
 @if (isAuthenticated()) {
+  <span class="cce-auth-toolbar__role" shellHeaderEnd>
+    <span class="cce-auth-toolbar__role-dot"></span>
+    {{ displayLabel() }}
+  </span>
   <button type="button" mat-button shellHeaderEnd (click)="signOut()">
     {{ "common.actions.signOut" | translate }}
   </button>

@@ -150,6 +150,14 @@
     "retry": "Retry"
   },
   "nav": {
+    "sidebarLabel": "Admin navigation",
+    "group": {
+      "people": "People & Access",
+      "publishing": "Publishing",
+      "knowledge": "Knowledge",
+      "operations": "Operations",
+      "system": "System"
+    },
     "home": "Home",
     "knowledgeCenter": "Knowledge Center",
     "users": "Users",
@@ -168,10 +176,18 @@
     "notifications": "Notifications",
     "reports": "Reports",
     "audit": "Audit log",
+    "translations": "Translations",
+    "settings": "Settings",
     "knowledgeMaps": "Knowledge maps",
     "interactiveCity": "Interactive city",
     "worldMap": "World Map",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "discover": "Discover",
+    "discoverDesc": {
+      "knowledgeCenter": "Curated long-reads, briefs & references",
+      "worldMap": "Interactive map of cities & regions",
+      "countries": "Country profiles & KAPSARC indices"
+    }
   },
   "header": {
     "signIn": "Sign in",
@@ -339,6 +355,8 @@
   },
   "resources": {
     "title": "Resources",
+    "subtitle": "Curated reports, briefs, datasets, and references on the carbon circular economy.",
+    "eyebrow": "KNOWLEDGE CENTER · RESOURCES",
     "col": {
       "title": "Title",
       "type": "Type",
@@ -422,6 +440,8 @@
   },
   "news": {
     "title": "News",
+    "subtitle": "Latest stories, announcements, and policy updates from across the carbon circular economy.",
+    "eyebrow": "NEWS · LATEST UPDATES",
     "col": {
       "title": "Title",
       "slug": "Slug",
@@ -471,14 +491,39 @@
       "toast": "News article deleted."
     },
     "empty": "No news articles published yet.",
+    "emptyDesc": "Stories published by the editorial team will appear here.",
     "back": "Back to news",
     "publishedOn": "Published",
     "featured": {
-      "toggle": "Show featured only"
+      "toggle": "Featured only",
+      "tag": "FEATURED"
+    },
+    "tag": "ARTICLE",
+    "searchPlaceholder": "Search articles by title or excerpt…",
+    "filteredEmpty": "No articles match your search.",
+    "clearSearch": "Clear",
+    "readArticle": "Read article",
+    "draft": "Draft",
+    "filters": {
+      "open": "Filters",
+      "status": "Status",
+      "statusAll": "All",
+      "statusFeatured": "Featured",
+      "statusDraft": "Drafts",
+      "dateRange": "Published date",
+      "from": "From",
+      "to": "To",
+      "sort": "Sort by",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "active": "Active filters",
+      "clearAll": "Clear all"
     }
   },
   "events": {
     "title": "Events",
+    "subtitle": "Conferences, webinars, workshops, and gatherings shaping the future of low-carbon cities.",
+    "eyebrow": "EVENTS · UPCOMING & PAST",
     "col": {
       "title": "Title",
       "startsOn": "Starts",
@@ -529,12 +574,79 @@
       "toast": "Event deleted."
     },
     "empty": "No events scheduled.",
+    "emptyDesc": "Upcoming events will appear here once they're announced.",
     "back": "Back to events",
+    "backToEvents": "All events",
     "startsOn": "Starts",
     "endsOn": "Ends",
+    "duration": "Duration",
     "location": {
       "online": "Online",
       "tba": "Location TBA"
+    },
+    "detail": {
+      "notFound": "Event not found.",
+      "notFoundDesc": "The event you're looking for may have been moved or removed.",
+      "notesTitle": "About this event",
+      "logisticsTitle": "Logistics",
+      "starts": "Starts",
+      "ends": "Ends",
+      "venue": "Venue",
+      "online": "Online meeting",
+      "tba": "Location to be announced",
+      "joinOnline": "Join online",
+      "openInMaps": "Open in maps",
+      "addToCalendar": "Add to calendar",
+      "downloadingCalendar": "Preparing…",
+      "share": "Share",
+      "shareCopiedToast": "Event link copied to clipboard.",
+      "save": "Save",
+      "countdownIn": "Starts in {{value}} {{unit}}",
+      "countdownToday": "Starts today",
+      "countdownLive": "Happening now",
+      "countdownEndedAgo": "Ended {{value}} {{unit}} ago",
+      "unitMinute": "minute",
+      "unitMinutes": "minutes",
+      "unitHour": "hour",
+      "unitHours": "hours",
+      "unitDay": "day",
+      "unitDays": "days",
+      "unitWeek": "week",
+      "unitWeeks": "weeks"
+    },
+    "tag": "EVENT",
+    "tagOnline": "ONLINE",
+    "tagInPerson": "IN PERSON",
+    "tagWebinar": "WEBINAR",
+    "tagUpcoming": "UPCOMING",
+    "tagPast": "PAST",
+    "tagToday": "TODAY",
+    "searchPlaceholder": "Search events by title or location…",
+    "filteredEmpty": "No events match your filters.",
+    "clearSearch": "Clear",
+    "clearFilters": "Clear filters",
+    "viewEvent": "View event",
+    "filterFromShort": "From",
+    "filterToShort": "To",
+    "filters": {
+      "open": "Filters",
+      "type": "Type",
+      "typeAll": "All",
+      "typeOnline": "Online",
+      "typeInPerson": "In person",
+      "when": "When",
+      "whenAll": "All",
+      "whenUpcoming": "Upcoming",
+      "whenToday": "Today",
+      "whenPast": "Past",
+      "dateRange": "Date range",
+      "from": "From",
+      "to": "To",
+      "sort": "Sort by",
+      "sortSoonest": "Soonest first",
+      "sortLatest": "Latest first",
+      "active": "Active filters",
+      "clearAll": "Clear all"
     },
     "export": {
       "openButton": "Add to calendar",
@@ -692,10 +804,58 @@
       "message": "Soft-delete this reply? It is hidden from the thread but preserved for audit.",
       "confirm": "Soft-delete",
       "toast": "Reply soft-deleted."
+    },
+    "empty": "No community posts match your filters.",
+    "filter": {
+      "search": "Search content",
+      "status": "Status",
+      "topic": "Topic",
+      "allTopics": "All topics",
+      "locale": "Locale",
+      "allLocales": "All locales",
+      "clear": "Reset"
+    },
+    "statusOption": {
+      "all": "All posts",
+      "active": "Active only",
+      "deleted": "Soft-deleted",
+      "question": "Open questions",
+      "answered": "Answered"
+    },
+    "col": {
+      "status": "Status",
+      "content": "Content",
+      "topic": "Topic",
+      "replies": "Replies",
+      "locale": "Locale",
+      "createdOn": "Posted",
+      "actions": "Actions"
+    },
+    "chip": {
+      "question": "Question",
+      "answered": "Answered",
+      "discussion": "Discussion",
+      "deleted": "Deleted"
+    },
+    "action": {
+      "delete": "Soft-delete post",
+      "viewOnPortal": "Open post on the public portal",
+      "viewReplies": "Open replies on portal",
+      "copyId": "Copy post ID",
+      "copyLink": "Copy public link",
+      "copyIdToast": "Post ID copied to clipboard.",
+      "copyLinkToast": "Public link copied to clipboard.",
+      "moreActions": "More actions"
+    },
+    "quick": {
+      "title": "Quick action — delete a reply by ID",
+      "help": "Paste the GUID of any reply to soft-delete it without finding its parent post in the table."
     }
   },
   "countries": {
     "title": "Countries",
+    "subtitle": "Country profiles, KAPSARC indices, and decarbonization snapshots across the GCC and beyond.",
+    "eyebrow": "COUNTRIES · PROFILES & INDICES",
     "search": {
       "placeholder": "Search countries…"
     },
@@ -758,6 +918,24 @@
     "error": "Could not load KAPSARC snapshot."
   },
   "account": {
+    "login": {
+      "title": "Sign in to CCE",
+      "subtitle": "Welcome back. Sign in with your work email or pick a demo persona below.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "forgotPassword": "Forgot password?",
+      "submitButton": "Sign in",
+      "submittingButton": "Signing in…",
+      "errorInvalid": "Invalid email or password.",
+      "errorGeneric": "We couldn't sign you in. Please try again.",
+      "orDemoAs": "or sign in as a demo persona",
+      "noAccount": "Don't have an account?",
+      "register": "Create one",
+      "alreadySignedIn": "You're already signed in.",
+      "openProfile": "Open my profile"
+    },
     "register": {
       "title": "Create your CCE account",
       "body": "Sign up to access expert-curated knowledge, save scenarios, and join the community discussion.",
@@ -900,6 +1078,56 @@
   },
   "community": {
     "title": "Community",
+    "subtitle": "Discussions, questions, and answers from researchers, practitioners, and experts across the network.",
+    "eyebrow": "COMMUNITY · DISCUSSIONS",
+    "tag": "TOPIC",
+    "searchPlaceholder": "Search topics by name or description…",
+    "filteredEmpty": "No topics match your search.",
+    "clearSearch": "Clear",
+    "openTopic": "Open topic",
+    "openPost": "Open post",
+    "emptyDesc": "Topics published by moderators will appear here.",
+    "detail": {
+      "backToTopics": "All topics",
+      "backToCommunity": "Back to community",
+      "notFoundDesc": "The topic you're looking for may have been moved or removed.",
+      "postNotFoundDesc": "The post you're looking for may have been moved or removed.",
+      "postsCount": "{{count}} posts",
+      "postsCountSingular": "{{count}} post",
+      "repliesCount": "{{count}} replies",
+      "repliesCountSingular": "{{count}} reply",
+      "noReplies": "No replies yet",
+      "questionTag": "QUESTION",
+      "discussionTag": "DISCUSSION",
+      "resolvedTag": "RESOLVED",
+      "askedBy": "Asked",
+      "repliedBy": "Replied",
+      "repliesTitle": "Replies",
+      "composeTitle": "Add a reply",
+      "actionReply": "Reply",
+      "actionShare": "Share",
+      "actionSave": "Save",
+      "actionSaved": "Saved",
+      "actionMore": "More",
+      "shareCopiedToast": "Link copied to clipboard.",
+      "memberHandle": "Member",
+      "actionLike": "Like",
+      "actionLiked": "Liked",
+      "actionDislike": "Dislike",
+      "actionDisliked": "Disliked",
+      "replyToReply": "Replying to {{handle}}",
+      "cancelReply": "Cancel reply",
+      "replyToCommentLabel": "Reply"
+    },
+    "filters": {
+      "open": "Filters",
+      "sort": "Sort by",
+      "sortDefault": "Featured",
+      "sortAlpha": "A → Z",
+      "sortAlphaReverse": "Z → A",
+      "active": "Active filters",
+      "clearAll": "Clear all"
+    },
     "newPostButton": "New post",
     "signInToPost": "Sign in to post.",
     "signInToReply": "Sign in to reply.",
@@ -937,8 +1165,20 @@
   },
   "knowledgeMaps": {
     "title": "Knowledge maps",
+    "subtitle": "Visual atlases that connect technologies, sectors, and sub-topics across the carbon circular economy.",
+    "eyebrow": "KNOWLEDGE MAPS · ATLAS",
     "comingSoon": "Detailed graph view coming in Sub-7. Today: browse the available maps.",
+    "searchPlaceholder": "Search maps by name or topic…",
+    "filteredEmpty": "No maps match your search.",
+    "clearSearch": "Clear",
+    "openMap": "Open map",
+    "backToList": "All knowledge maps",
+    "metaNodes": "Nodes",
+    "metaEdges": "Connections",
+    "metaTabs": "Open tabs",
+    "notFoundDesc": "The map you're looking for may have been moved or removed.",
     "empty": "No knowledge maps available yet.",
+    "emptyDesc": "Maps published by the editorial team will appear here.",
     "notFound": "Knowledge map not found.",
     "viewerPlaceholder": "Graph viewer mounts here once Phase 02 lands.",
     "search": {
@@ -952,7 +1192,26 @@
       "close": "Close tab"
     },
     "list": {
-      "noneOfType": "No nodes of this type."
+      "noneOfType": "No nodes of this type.",
+      "sortLabel": "Sort",
+      "sortDefault": "Default order",
+      "sortAlpha": "A → Z",
+      "collapseSection": "Collapse section",
+      "expandSection": "Expand section",
+      "edgesParentOf": "parent",
+      "edgesRelatedTo": "related",
+      "edgesRequiredBy": "prerequisite"
+    },
+    "graph": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit to screen",
+      "center": "Reset view",
+      "legendTitle": "Legend",
+      "legendOpen": "Show legend",
+      "legendClose": "Hide legend",
+      "allDimmed": "No nodes match your search or filters.",
+      "allDimmedClear": "Clear filters"
     },
     "viewMode": {
       "graph": "Graph view",
@@ -988,7 +1247,14 @@
     "empty": "No technologies catalogued yet.",
     "builder": {
       "title": "Build your scenario",
-      "subtitle": "Pick technologies and see live carbon and cost totals.",
+      "subtitle": "Set the city's environmental factors, pick technologies, and watch the path to carbon neutrality update live.",
+      "eyebrow": "INTERACTIVE CITY · SCENARIO BUILDER",
+      "step1Label": "Set environmental factors",
+      "step1Desc": "Adjust public transport, renewables, recycling, and more",
+      "step2Label": "Pick technologies",
+      "step2Desc": "Browse the catalog and add what your city needs",
+      "step3Label": "Reach neutrality",
+      "step3Desc": "Watch totals update — close the gap to net-zero",
       "name": "Scenario name",
       "namePlaceholder": "Untitled scenario",
       "cityType": "City type",
@@ -997,6 +1263,26 @@
       "unsavedChangesBody": "Loading another scenario will replace your current selection.",
       "unsavedChangesConfirm": "Discard and load",
       "unsavedChangesCancel": "Keep editing"
+    },
+    "factors": {
+      "eyebrow": "ENVIRONMENTAL FACTORS",
+      "title": "Current city profile",
+      "subtitle": "Describe the governorate's current environmental factors. The baseline footprint updates as you adjust each input.",
+      "baseline": "Baseline footprint",
+      "reset": "Reset to defaults",
+      "unitKm": "km/day",
+      "publicTransportPct": "Public transport usage",
+      "publicTransportPctHelp": "Share of trips taken on buses, metro, and rail.",
+      "avgTransportKmPerDay": "Avg. daily transport distance",
+      "avgTransportKmPerDayHelp": "Kilometers travelled per resident on a typical day.",
+      "renewableEnergyPct": "Renewable energy mix",
+      "renewableEnergyPctHelp": "Share of the electricity grid powered by renewables.",
+      "wasteRecyclingPct": "Waste recycling rate",
+      "wasteRecyclingPctHelp": "Share of municipal waste recycled or composted.",
+      "greenSpacePct": "Green-space coverage",
+      "greenSpacePctHelp": "Share of the city area covered by parks and natural land.",
+      "industrialIntensity": "Industrial-emissions intensity",
+      "industrialIntensityHelp": "Index 0–100 — higher means heavier industrial activity."
     },
     "cityType": {
       "Coastal": "Coastal",
@@ -1026,6 +1312,11 @@
       "carbonUnit": "kg CO₂ / year",
       "cost": "Cost",
       "costUnit": "USD",
+      "baseline": "City baseline",
+      "neutralityProgress": "Carbon neutrality",
+      "neutralityAchieved": "Carbon neutral",
+      "neutralityGap": "kg CO₂ / yr from neutrality",
+      "recommend": "Recommend technologies",
       "run": "Run",
       "running": "Running…",
       "save": "Save",
@@ -1056,7 +1347,10 @@
     "toasts": {
       "runOk": "Scenario calculated.",
       "saveOk": "Scenario saved.",
-      "deleteOk": "Scenario deleted."
+      "deleteOk": "Scenario deleted.",
+      "recommendOk": "Recommended technologies added to your scenario.",
+      "recommendNoNeed": "You're already at carbon neutrality — no recommendation needed.",
+      "recommendNoMore": "No more carbon-reducing technologies available in the catalog."
     }
   },
   "assistant": {

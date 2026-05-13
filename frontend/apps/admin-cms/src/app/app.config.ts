@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
 import { buildCceOidcConfig } from '@frontend/auth';
 import { appRoutes } from './app.routes';
+import { AuthService } from './core/auth/auth.service';
 import { EnvService } from './core/env.service';
 import { ngxTranslateHttpLoaderFactory } from './core/translate-loader.factory';
 
@@ -49,9 +50,16 @@ export const appConfig: ApplicationConfig = {
       const env = inject(EnvService);
       const translate = inject(TranslateService);
       const locale = inject(LocaleService);
+      const auth = inject(AuthService);
       await env.load();
       translate.setDefaultLang('ar');
       await firstValueFrom(translate.use(locale.locale()));
+      // Bootstrap user + permissions. Without this the side-nav stays
+      // empty (every nav item is gated by *ccePermission, and with
+      // currentUser = null every check fails). AuthService.refresh()
+      // tries /api/me first, then falls back to deriving the user
+      // and permissions from the cce-dev-role cookie.
+      await auth.refresh();
     }),
   ],
 };

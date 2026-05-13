@@ -1,11 +1,17 @@
-<mat-toolbar color="primary" class="cce-app-shell__toolbar">
-  <span class="cce-app-shell__title">{{ appTitle() }}</span>
+<mat-toolbar class="cce-app-shell__toolbar">
+  <div class="cce-app-shell__toolbar-glyph" aria-hidden="true"></div>
+  <div class="cce-app-shell__toolbar-text">
+    <span class="cce-app-shell__eyebrow">CCE · ADMIN CONSOLE</span>
+    <span class="cce-app-shell__title">{{ appTitle() }}</span>
+  </div>
   <span class="cce-app-shell__spacer"></span>
   <ng-content select="[shellHeaderEnd]" />
 </mat-toolbar>
 
 <main class="cce-app-shell__main">
-  <ng-content />
+  <div class="cce-app-shell__main-inner">
+    <ng-content />
+  </div>
 </main>
 
 <footer class="cce-app-shell__footer">

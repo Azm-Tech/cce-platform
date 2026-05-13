@@ -1,24 +1,189 @@
 <section class="cce-topics-list">
-  <h1 class="cce-topics-list__title">{{ 'community.title' | translate }}</h1>
+  <cce-workbench-hero
+    [eyebrow]="'community.eyebrow' | translate"
+    [title]="'community.title' | translate"
+    [subtitle]="'community.subtitle' | translate"
+  />
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  <!-- ─── Toolbar ─────────────────────────────────────────── -->
+  <div class="cce-list-toolbar">
+    <div class="cce-list-toolbar__search">
+      <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        class="cce-list-toolbar__search-input"
+        [placeholder]="'community.searchPlaceholder' | translate"
+        [ngModel]="query()"
+        (ngModelChange)="onQueryChange($event)"
+        [attr.aria-label]="'community.searchPlaceholder' | translate"
+      />
+      @if (query()) {
+        <button
+          type="button"
+          class="cce-list-toolbar__search-clear"
+          [attr.aria-label]="'community.clearSearch' | translate"
+          (click)="clearQuery()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
 
-  @if (errorKind(); as kind) {
-    <div class="cce-topics-list__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+    <button
+      type="button"
+      class="cce-list-toolbar__chip"
+      [class.cce-list-toolbar__chip--active]="filtersOpen() || activeChips().length > 0"
+      [attr.aria-pressed]="filtersOpen()"
+      [attr.aria-expanded]="filtersOpen()"
+      aria-controls="cce-topics-filters"
+      (click)="toggleFilters()"
+    >
+      <mat-icon aria-hidden="true">tune</mat-icon>
+      {{ 'community.filters.open' | translate }}
+      @if (activeChips().length > 0) {
+        <span class="cce-list-toolbar__chip-badge">{{ activeChips().length }}</span>
+      }
+    </button>
+
+    <div class="cce-list-toolbar__view" role="group" aria-label="View density">
+      <button
+        type="button"
+        class="cce-list-toolbar__view-btn"
+        [class.cce-list-toolbar__view-btn--active]="viewMode() === 'grid'"
+        [attr.aria-pressed]="viewMode() === 'grid'"
+        aria-label="Grid view"
+        (click)="setViewMode('grid')"
+      >
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button
+        type="button"
+        class="cce-list-toolbar__view-btn"
+        [class.cce-list-toolbar__view-btn--active]="viewMode() === 'list'"
+        [attr.aria-pressed]="viewMode() === 'list'"
+        aria-label="List view"
+        (click)="setViewMode('list')"
+      >
+        <mat-icon>view_agenda</mat-icon>
+      </button>
+    </div>
+
+    @if (!loading() && rows().length > 0) {
+      <span class="cce-list-toolbar__count">
+        {{ filtered().length }} / {{ rows().length }}
+      </span>
+    }
+  </div>
+
+  <!-- ─── Filter panel (collapsible) ──────────────────────── -->
+  <div id="cce-topics-filters" class="cce-list-filters" [hidden]="!filtersOpen()">
+    <fieldset class="cce-list-filters__group">
+      <legend class="cce-list-filters__legend">
+        <mat-icon aria-hidden="true">sort</mat-icon>
+        {{ 'community.filters.sort' | translate }}
+      </legend>
+      <div class="cce-list-filters__seg">
+        <button type="button" class="cce-list-filters__seg-btn"
+                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'default'"
+                (click)="setSort('default')">
+          {{ 'community.filters.sortDefault' | translate }}
+        </button>
+        <button type="button" class="cce-list-filters__seg-btn"
+                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alpha'"
+                (click)="setSort('alpha')">
+          {{ 'community.filters.sortAlpha' | translate }}
+        </button>
+        <button type="button" class="cce-list-filters__seg-btn"
+                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alphaReverse'"
+                (click)="setSort('alphaReverse')">
+          {{ 'community.filters.sortAlphaReverse' | translate }}
+        </button>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- ─── Active filter chips ─────────────────────────────── -->
+  @if (activeChips().length > 0) {
+    <div class="cce-list-active" role="status">
+      <span class="cce-list-active__label">{{ 'community.filters.active' | translate }}:</span>
+      @for (chip of activeChips(); track chip.id) {
+        <span class="cce-list-active__chip">
+          {{ chip.label }}
+          <button
+            type="button"
+            class="cce-list-active__chip-x"
+            [attr.aria-label]="'community.clearSearch' | translate"
+            (click)="removeChip(chip.id)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      }
+      <button type="button" class="cce-list-active__clear" (click)="clearAllFilters()">
+        {{ 'community.filters.clearAll' | translate }}
       </button>
     </div>
   }
 
-  @if (empty()) {
-    <p class="cce-topics-list__empty">{{ 'community.empty.topics' | translate }}</p>
+  @if (loading() && rows().length > 0) {
+    <mat-progress-bar mode="indeterminate" class="cce-topics-list__progress" />
   }
 
-  <div class="cce-topics-list__grid">
-    @for (topic of sortedRows(); track topic.id) {
-      <cce-topic-card [topic]="topic" [locale]="locale()" />
-    }
-  </div>
+  <!-- ─── Error ───────────────────────────────────────────── -->
+  @if (errorKind(); as kind) {
+    <div class="cce-list-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | translate }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+    </div>
+  }
+
+  <!-- ─── Skeleton ────────────────────────────────────────── -->
+  @if (loading() && rows().length === 0) {
+    <div class="cce-list-grid" aria-busy="true">
+      @for (s of skeletons; track $index) {
+        <div class="cce-list-skeleton">
+          <div class="cce-list-skeleton__band"></div>
+          <div class="cce-list-skeleton__lines">
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--sm"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--lg"></div>
+            <div class="cce-list-skeleton__line"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ─── Empty (no data) ─────────────────────────────────── -->
+  @if (empty()) {
+    <div class="cce-list-empty">
+      <span class="cce-list-empty__art" aria-hidden="true">
+        <mat-icon>forum</mat-icon>
+      </span>
+      <h2>{{ 'community.empty.topics' | translate }}</h2>
+      <p>{{ 'community.emptyDesc' | translate }}</p>
+    </div>
+  }
+
+  <!-- ─── Filtered empty ──────────────────────────────────── -->
+  @if (filteredEmpty()) {
+    <div class="cce-list-empty cce-list-empty--filter">
+      <span class="cce-list-empty__art" aria-hidden="true">
+        <mat-icon>search_off</mat-icon>
+      </span>
+      <h2>{{ 'community.filteredEmpty' | translate }}</h2>
+      <button type="button" class="cce-list-toolbar__chip" (click)="clearQuery()">
+        {{ 'community.clearSearch' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- ─── Cards ───────────────────────────────────────────── -->
+  @if (!loading() && filtered().length > 0) {
+    <div class="cce-list-grid" [class.cce-list-grid--list]="viewMode() === 'list'">
+      @for (topic of filtered(); track topic.id) {
+        <cce-topic-card [topic]="topic" [locale]="locale()" />
+      }
+    </div>
+  }
 </section>

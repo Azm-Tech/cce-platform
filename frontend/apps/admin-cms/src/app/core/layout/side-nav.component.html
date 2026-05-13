@@ -1,14 +1,38 @@
-<mat-nav-list class="cce-side-nav">
-  @for (item of items; track item.route) {
-    <a
-      *ccePermission="item.permission"
-      mat-list-item
-      [routerLink]="item.route"
-      routerLinkActive="cce-side-nav__item--active"
-      class="cce-side-nav__item"
-    >
-      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-      <span matListItemTitle>{{ item.labelKey | translate }}</span>
-    </a>
+<div class="cce-side-nav__brand">
+  <span class="cce-side-nav__brand-glyph" aria-hidden="true"></span>
+  <div class="cce-side-nav__brand-text">
+    <span class="cce-side-nav__brand-name">CCE</span>
+    <span class="cce-side-nav__brand-tag">Admin Console</span>
+  </div>
+</div>
+
+<nav class="cce-side-nav" [attr.aria-label]="'nav.sidebarLabel' | translate">
+  @for (group of visibleGroups(); track group.id) {
+    <section class="cce-side-nav__group" [attr.data-group]="group.id">
+      <h3 class="cce-side-nav__group-heading">
+        <mat-icon class="cce-side-nav__group-icon" aria-hidden="true">{{ group.icon }}</mat-icon>
+        <span>{{ group.labelKey | translate }}</span>
+      </h3>
+
+      <mat-nav-list class="cce-side-nav__list">
+        @for (item of group.items; track item.route) {
+          <a
+            *ccePermission="item.permission"
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="cce-side-nav__item--active"
+            class="cce-side-nav__item"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.labelKey | translate }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </section>
   }
-</mat-nav-list>
+</nav>
+
+<div class="cce-side-nav__footer">
+  <span class="cce-side-nav__footer-version">v1.0.0</span>
+  <span class="cce-side-nav__footer-build">Carbon Circular Economy</span>
+</div>

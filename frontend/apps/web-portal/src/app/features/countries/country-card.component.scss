@@ -1,34 +1,162 @@
-:host { display: block; }
+/* Country card — branded paper tile with flag + ISO + hover lift */
 
+:host { display: block; height: 100%; }
+
+/* Reset native button defaults — the card is now a <button> instead
+   of an <a> so it can call back to the parent without routing. */
 .cce-country-card {
   display: block;
-  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  font: inherit;
   color: inherit;
+  cursor: pointer;
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.20s cubic-bezier(0.22, 1, 0.36, 1);
 
-  mat-card { transition: box-shadow 0.2s; }
-  &:hover mat-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+  &:hover { transform: translateY(-2px); }
+  &:focus-visible {
+    outline: none;
+    ::ng-deep mat-card {
+      border-color: #006c4f !important;
+      box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.20),
+                  0 12px 28px -12px rgba(0, 48, 31, 0.22) !important;
+    }
+  }
+}
+
+/* Selected state — when this card matches the currently-open panel */
+.cce-country-card--selected ::ng-deep mat-card {
+  border-color: #006c4f !important;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(15, 139, 108, 0.06) 100%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 108, 79, 0.20),
+    0 12px 28px -12px rgba(15, 139, 108, 0.40) !important;
+}
+.cce-country-card--selected .cce-country-card__name { color: #006c4f; }
+
+::ng-deep .cce-country-card mat-card {
+  height: 100%;
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 12px -8px rgba(0, 48, 31, 0.10) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  transition: border-color 0.20s ease, box-shadow 0.20s ease;
+}
+.cce-country-card:hover ::ng-deep mat-card {
+  border-color: rgba(0, 108, 79, 0.30) !important;
+  box-shadow: 0 12px 28px -12px rgba(0, 48, 31, 0.22) !important;
 }
 
 .cce-country-card__body {
-  display: flex;
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  position: relative;
+}
+
+.cce-country-card__flag-wrap {
+  width: 56px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #fafafa, #f1f5f4);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.50) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 4px 8px -4px rgba(0, 0, 0, 0.10);
 }
 
 .cce-country-card__flag {
-  flex: 0 0 48px;
-  width: 48px;
-  height: 32px;
+  width: 56px;
+  height: 38px;
   object-fit: cover;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: block;
 }
 
-.cce-country-card__text { display: flex; flex-direction: column; gap: 0.125rem; }
-.cce-country-card__name { font-weight: 500; }
+.cce-country-card__flag-fallback {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.10));
+}
+
+.cce-country-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.cce-country-card__name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: -0.005em;
+  line-height: 1.30;
+  color: #1c2724;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cce-country-card:hover .cce-country-card__name {
+  color: #006c4f;
+}
+
 .cce-country-card__iso {
-  font-size: 0.75em;
-  letter-spacing: 0.05em;
-  color: rgba(0, 0, 0, 0.55);
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #006c4f;
+  background: rgba(15, 139, 108, 0.08);
+  border: 1px solid rgba(15, 139, 108, 0.18);
+  border-radius: 999px;
+  padding: 0.10rem 0.45rem;
+  align-self: start;
+  margin-top: 0.15rem;
+  width: max-content;
+}
+
+/* Trailing arrow that slides in on hover */
+.cce-country-card__body::after {
+  content: '→';
+  font-size: 1.05rem;
+  color: rgba(15, 139, 108, 0.55);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.20s ease, transform 0.20s ease, color 0.20s ease;
+}
+.cce-country-card:hover .cce-country-card__body::after {
+  opacity: 1;
+  transform: translateX(0);
+  color: #006c4f;
+}
+
+[dir="rtl"] .cce-country-card__body::after {
+  content: '←';
+  transform: translateX(4px);
+}
+[dir="rtl"] .cce-country-card:hover .cce-country-card__body::after {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-country-card,
+  .cce-country-card__body::after { transition: none !important; transform: none !important; }
 }

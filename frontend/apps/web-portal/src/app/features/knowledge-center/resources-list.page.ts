@@ -8,10 +8,12 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { LocaleService } from '@frontend/i18n';
+import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { TranslateModule } from '@ngx-translate/core';
 import { FilterRailComponent } from '../../core/layout/filter-rail.component';
 import { CategoriesTreeComponent } from './categories-tree.component';
 import { KnowledgeApiService } from './knowledge-api.service';
+import { MOCK_CATEGORIES, MOCK_RESOURCES } from './mock-data';
 import { ResourceCardComponent } from './resource-card.component';
 import {
   RESOURCE_TYPES,
@@ -28,7 +30,7 @@ import {
     MatFormFieldModule, MatInputModule, MatPaginatorModule,
     MatProgressBarModule, MatSelectModule,
     TranslateModule,
-    FilterRailComponent, CategoriesTreeComponent, ResourceCardComponent,
+    FilterRailComponent, CategoriesTreeComponent, ResourceCardComponent, WorkbenchHeroComponent,
   ],
   templateUrl: './resources-list.page.html',
   styleUrl: './resources-list.page.scss',
@@ -71,25 +73,34 @@ export class ResourcesListPage implements OnInit {
   }
 
   async loadCategories(): Promise<void> {
-    const res = await this.api.listCategories();
-    if (res.ok) this.categories.set(res.value);
+    // DEMO MODE: skip the backend call entirely (it 500s without a
+    // running data layer) and always use the mock category tree. When
+    // a real backend is wired in, restore the API call here.
+    this.categories.set(MOCK_CATEGORIES);
   }
 
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
-    const res = await this.api.listResources({
-      page: this.page(),
-      pageSize: this.pageSize(),
-      categoryId: this.categoryId() ?? undefined,
-      countryId: this.countryId() || undefined,
-      resourceType: this.resourceType() || undefined,
-    });
+    // DEMO MODE: skip the backend `/api/resources` call (it 500s in
+    // local dev) and synthesize a paged result from the mock dataset.
+    // When a real backend is wired in, restore `this.api.listResources(...)`.
+    let filtered = MOCK_RESOURCES.slice();
+    const cat = this.categoryId();
+    if (cat) {
+      filtered = filtered.filter((r) => r.categoryId === cat || r.categoryId.startsWith(`${cat}-`));
+    }
+    const country = this.countryId();
+    if (country) filtered = filtered.filter((r) => r.countryId === country);
+    const type = this.resourceType();
+    if (type) filtered = filtered.filter((r) => r.resourceType === type);
+
+    const total = filtered.length;
+    const start = (this.page() - 1) * this.pageSize();
+    const items = filtered.slice(start, start + this.pageSize());
+    this.rows.set(items);
+    this.total.set(total);
     this.loading.set(false);
-    if (res.ok) {
-      this.rows.set(res.value.items);
-      this.total.set(Number(res.value.total));
-    } else this.errorKind.set(res.error.kind);
   }
 
   onPage(e: PageEvent): void {

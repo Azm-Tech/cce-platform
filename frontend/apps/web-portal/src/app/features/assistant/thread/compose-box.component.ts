@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +21,7 @@ const WARN_LENGTH = 1500;
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    TextFieldModule, // for cdkTextareaAutosize
     MatButtonModule,
     MatIconModule,
     TranslateModule,
@@ -57,9 +59,12 @@ export class ComposeBoxComponent {
   }
 
   onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
-      event.preventDefault();
-      void this.send();
-    }
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+    // If we can't send right now (streaming, empty, or over-limit) let
+    // Enter behave normally — don't preventDefault, so the user can
+    // still insert newlines / type without their keystrokes vanishing.
+    if (!this.canSend()) return;
+    event.preventDefault();
+    void this.send();
   }
 }

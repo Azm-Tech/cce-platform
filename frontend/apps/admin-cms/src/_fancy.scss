@@ -1,0 +1,789 @@
+// CCE web-portal — global "fancy" polish layer.
+//
+// This file is imported once from styles.scss. It augments the existing
+// theme without replacing it: animations, scrollbar polish, focus rings,
+// glass surfaces, gradient utilities, and Material component refinements
+// that apply ACROSS THE ENTIRE APP without per-page changes.
+//
+// Design principles:
+//   * Subtle motion — easings tuned to feel responsive, not floaty.
+//   * High contrast on focus / hover so interactivity reads instantly.
+//   * Consistent glass aesthetic on overlays (sticky headers, dialogs).
+//   * Brand palette shimmer gradients (forest green → gold) on heroes.
+//
+// All animations honor `prefers-reduced-motion`.
+
+/* =========================================================
+   1. CSS variables — gradient + motion + glass tokens
+   ========================================================= */
+:root {
+  --cce-fancy-grad-brand: linear-gradient(135deg, #006c4f 0%, #0f8b6c 45%, #c8a045 100%);
+  --cce-fancy-grad-brand-soft:
+    radial-gradient(1200px 600px at 12% -10%, rgba(0, 108, 79, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, rgba(200, 160, 69, 0.20), transparent 55%);
+  --cce-fancy-grad-hero:
+    radial-gradient(1400px 700px at 20% 0%, rgba(15, 139, 108, 0.10), transparent 55%),
+    radial-gradient(1100px 700px at 100% 100%, rgba(244, 163, 0, 0.12), transparent 50%),
+    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+  --cce-fancy-glass-bg: rgba(255, 255, 255, 0.72);
+  --cce-fancy-glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --cce-fancy-glass-border: 1px solid rgba(0, 108, 79, 0.10);
+  --cce-fancy-glass-blur: blur(14px) saturate(140%);
+  --cce-fancy-shadow-soft: 0 6px 22px -8px rgba(0, 48, 31, 0.18);
+  --cce-fancy-shadow-hover: 0 14px 40px -10px rgba(0, 48, 31, 0.30);
+  --cce-fancy-shadow-glow: 0 0 0 6px rgba(0, 108, 79, 0.10);
+  --cce-fancy-ring: 0 0 0 3px rgba(15, 139, 108, 0.45);
+  --cce-fancy-easing-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --cce-fancy-easing-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --cce-fancy-accent: #c8a045;
+  --cce-fancy-accent-bright: #f4a300;
+  --cce-fancy-primary: #006c4f;
+  --cce-fancy-primary-bright: #0f8b6c;
+}
+
+/* =========================================================
+   2. Document base — typography + smooth scroll + selection
+   ========================================================= */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* leave room for sticky headers on anchor jumps */
+}
+
+::selection {
+  background: rgba(15, 139, 108, 0.28);
+  color: var(--cce-fancy-primary);
+}
+
+/* Subtle gradient backdrop on the body so flat white surfaces don't
+   feel sterile. Routed pages can override with their own background. */
+body {
+  background: var(--cce-fancy-grad-hero) !important;
+  background-attachment: fixed !important;
+  color: #1c2724;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================================================
+   3. Custom scrollbar — both webkit + firefox
+   ========================================================= */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 108, 79, 0.35) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 108, 79, 0.40), rgba(15, 139, 108, 0.35));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(0, 108, 79, 0.65), rgba(15, 139, 108, 0.6));
+  background-clip: padding-box;
+}
+
+/* =========================================================
+   4. Universal focus ring — keyboard accessibility upgrade
+   ========================================================= */
+:focus-visible {
+  outline: none !important;
+  box-shadow: var(--cce-fancy-ring) !important;
+  border-radius: 6px;
+  transition: box-shadow 0.18s var(--cce-fancy-easing-soft);
+}
+
+/* =========================================================
+   5. Page-load animation — applies to every routed view via
+      router-outlet. Nothing in feature pages needs to change.
+   ========================================================= */
+.cce-portal-shell__main > * {
+  animation: cceFancyRouteFadeUp 460ms var(--cce-fancy-easing-emphasized) both;
+}
+@keyframes cceFancyRouteFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   6. Material component upgrades — applied via attribute
+      selectors so every existing usage benefits with no
+      per-component changes.
+   ========================================================= */
+
+/* Cards — minimal global default. Per-feature pages set their own
+   borders / shadows / hover behavior. We only enforce the rounded
+   corner so legacy mat-cards don't look square against the rest of
+   the app. No glass background, no lift on hover. */
+mat-card,
+.mat-mdc-card {
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* =========================================================
+   6.4  BUTTONS — every Material variant
+   ========================================================= */
+
+/* Shared polish: pill-ish corners, tight tracking, transition */
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.005em !important;
+  font-weight: 600 !important;
+  --mdc-filled-button-container-shape: 8px;
+  --mdc-protected-button-container-shape: 8px;
+  --mdc-outlined-button-container-shape: 8px;
+  --mdc-text-button-container-shape: 8px;
+  transition: transform 0.18s var(--cce-fancy-easing-emphasized),
+              box-shadow 0.18s var(--cce-fancy-easing-emphasized),
+              background-color 0.18s ease !important;
+}
+
+/* Diagonal shine sweep on raised + flat */
+.mat-mdc-raised-button::after,
+.mat-mdc-flat-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.32) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+  transition: transform 0.7s var(--cce-fancy-easing-emphasized);
+}
+.mat-mdc-raised-button:hover,
+.mat-mdc-flat-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.40) !important;
+}
+.mat-mdc-raised-button:hover::after,
+.mat-mdc-flat-button:hover::after {
+  transform: translateX(120%);
+}
+
+/* Stroked / outlined buttons — branded green border */
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button {
+  --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.40);
+  --mdc-outlined-button-label-text-color: #006c4f;
+}
+.mat-mdc-stroked-button:hover,
+.mat-mdc-outlined-button:hover {
+  background: rgba(15, 139, 108, 0.08) !important;
+  border-color: #006c4f !important;
+  transform: translateY(-1px);
+}
+
+/* Text (basic) buttons — subtle hover tint */
+.mat-mdc-button:hover:not([disabled]):not(.mat-mdc-icon-button) {
+  background: rgba(15, 139, 108, 0.08) !important;
+}
+
+/* Icon buttons — circular brand-tint hover */
+.mat-mdc-icon-button {
+  --mat-mdc-button-persistent-ripple-color: rgba(15, 139, 108, 0.32);
+  transition: background-color 0.18s ease, transform 0.18s ease;
+  &:hover:not([disabled]) {
+    background: rgba(15, 139, 108, 0.10) !important;
+    transform: scale(1.05);
+  }
+}
+
+/* Disabled state — soft, low-contrast */
+.mat-mdc-button[disabled],
+.mat-mdc-raised-button[disabled],
+.mat-mdc-flat-button[disabled],
+.mat-mdc-stroked-button[disabled],
+.mat-mdc-outlined-button[disabled],
+.mat-mdc-icon-button[disabled] {
+  cursor: not-allowed !important;
+  opacity: 0.60;
+  filter: saturate(0.5);
+  &::after { display: none !important; }
+}
+
+/* FAB — extended floating action button */
+.mat-mdc-fab,
+.mat-mdc-mini-fab,
+.mat-mdc-extended-fab {
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
+  color: #fff !important;
+  box-shadow:
+    0 6px 18px -4px rgba(15, 139, 108, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.20) inset !important;
+  transition: transform 0.20s var(--cce-fancy-easing-emphasized),
+              box-shadow 0.20s var(--cce-fancy-easing-emphasized) !important;
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 12px 28px -6px rgba(15, 139, 108, 0.65),
+      0 0 0 1px rgba(255, 255, 255, 0.30) inset !important;
+  }
+}
+
+/* =========================================================
+   6.5  FORMS & INPUTS — comprehensive polish layer
+   ---------------------------------------------------------
+   Every Material form control + native input gets:
+     • Smooth rounded corners (10–12px)
+     • Brand-green focus ring with subtle glow halo
+     • Better hover feedback
+     • Smoother label transitions, tighter typography
+     • Branded error / disabled states
+     • Polished selects, checkboxes, radios, toggles, datepickers
+     • Branded native <input>, <textarea>, <select> as baseline
+   ========================================================= */
+
+/* ── Outlined form fields (the most common Mat shape) ───── */
+.mat-mdc-form-field {
+  /* CSS variables Material exposes — re-tinted to brand */
+  --mdc-outlined-text-field-container-shape: 10px;
+  --mdc-outlined-text-field-outline-color: rgba(0, 108, 79, 0.18);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 108, 79, 0.45);
+  --mdc-outlined-text-field-focus-outline-color: #006c4f;
+  --mdc-outlined-text-field-error-outline-color: #dc2626;
+  --mdc-outlined-text-field-error-hover-outline-color: #b91c1c;
+  --mdc-outlined-text-field-error-focus-outline-color: #dc2626;
+  --mdc-outlined-text-field-label-text-color: rgba(28, 39, 36, 0.62);
+  --mdc-outlined-text-field-hover-label-text-color: rgba(28, 39, 36, 0.85);
+  --mdc-outlined-text-field-focus-label-text-color: #006c4f;
+  --mdc-outlined-text-field-input-text-color: #1c2724;
+  --mdc-outlined-text-field-input-text-placeholder-color: rgba(28, 39, 36, 0.45);
+  --mdc-outlined-text-field-disabled-outline-color: rgba(0, 0, 0, 0.10);
+  --mdc-outlined-text-field-disabled-input-text-color: rgba(28, 39, 36, 0.40);
+
+  /* For filled variant */
+  --mdc-filled-text-field-container-color: rgba(15, 139, 108, 0.05);
+  --mdc-filled-text-field-hover-state-layer-color: rgba(15, 139, 108, 0.08);
+  --mdc-filled-text-field-focus-state-layer-color: rgba(15, 139, 108, 0.10);
+  --mdc-filled-text-field-active-indicator-color: rgba(0, 108, 79, 0.32);
+  --mdc-filled-text-field-hover-active-indicator-color: #006c4f;
+  --mdc-filled-text-field-focus-active-indicator-color: #006c4f;
+}
+
+/* Soft glow ring around outlined fields on focus */
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined:focus-within {
+  box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.15);
+  border-radius: 10px;
+  transition: box-shadow 0.20s var(--cce-fancy-easing-soft);
+}
+
+/* Filled variant — smooth corners + soft hover lift */
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: rgba(15, 139, 108, 0.05) !important;
+  border-radius: 12px 12px 0 0 !important;
+  transition: background-color 0.20s, box-shadow 0.20s;
+}
+.mdc-text-field--filled:not(.mdc-text-field--disabled):hover {
+  background-color: rgba(15, 139, 108, 0.10) !important;
+}
+.mat-mdc-form-field-focus-overlay {
+  background-color: rgba(15, 139, 108, 0.06) !important;
+}
+
+/* Floating label tightening */
+.mat-mdc-form-field .mdc-floating-label {
+  letter-spacing: -0.005em !important;
+  font-weight: 500 !important;
+}
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+  font-weight: 600 !important;
+}
+
+/* Hint text more legible */
+.mat-mdc-form-field-hint {
+  color: rgba(28, 39, 36, 0.55) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.005em;
+}
+
+/* Error message — branded red, inline-icon vibe */
+.mat-mdc-form-field-error {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.005em;
+  &::before {
+    content: '⚠';
+    margin-inline-end: 0.3rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Required asterisk — brand-amber so it doesn't read as error */
+.mat-mdc-form-field-required-marker {
+  color: #d97706 !important;
+}
+
+/* ── Inputs / textareas (any variant) ───────────────────── */
+.mat-mdc-input-element,
+.mdc-text-field input.mat-mdc-form-field-input-control,
+.mdc-text-field textarea.mat-mdc-form-field-input-control {
+  caret-color: #006c4f !important;
+  letter-spacing: -0.005em;
+}
+.mat-mdc-input-element::placeholder {
+  color: rgba(28, 39, 36, 0.45) !important;
+  font-weight: 500;
+}
+
+/* Prefix / suffix icons inside form fields */
+.mat-mdc-form-field-icon-prefix mat-icon,
+.mat-mdc-form-field-icon-suffix mat-icon {
+  color: rgba(15, 139, 108, 0.65) !important;
+  transition: color 0.18s ease;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-prefix mat-icon,
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-suffix mat-icon {
+  color: #006c4f !important;
+}
+
+/* ── Mat-select arrow + value ───────────────────────────── */
+.mat-mdc-select-arrow {
+  color: rgba(15, 139, 108, 0.65) !important;
+  transition: transform 0.20s var(--cce-fancy-easing-emphasized), color 0.18s ease;
+}
+.mat-mdc-select-trigger:hover .mat-mdc-select-arrow {
+  color: #006c4f !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: #006c4f !important;
+  transform: rotate(180deg);
+}
+.mat-mdc-select-value-text { font-weight: 500; }
+
+/* Mat-option (in the dropdown panel) */
+.mat-mdc-option {
+  border-radius: 8px;
+  margin: 2px 4px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: background-color 0.15s ease;
+}
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: rgba(15, 139, 108, 0.10) !important;
+  color: #006c4f !important;
+}
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  font-weight: 700 !important;
+  background: linear-gradient(90deg, rgba(15, 139, 108, 0.14), rgba(200, 160, 69, 0.06)) !important;
+}
+.mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
+  color: #006c4f !important;
+}
+
+/* ── Checkboxes ─────────────────────────────────────────── */
+.mat-mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+  --mdc-checkbox-selected-focus-icon-color: #006c4f;
+  --mdc-checkbox-selected-hover-icon-color: #006c4f;
+  --mdc-checkbox-selected-icon-color: #006c4f;
+  --mdc-checkbox-selected-pressed-icon-color: #006c4f;
+  --mdc-checkbox-unselected-focus-icon-color: rgba(0, 108, 79, 0.55);
+  --mdc-checkbox-unselected-hover-icon-color: rgba(0, 108, 79, 0.55);
+  --mdc-checkbox-unselected-icon-color: rgba(28, 39, 36, 0.45);
+  --mdc-checkbox-state-layer-size: 36px;
+}
+.mat-mdc-checkbox label {
+  letter-spacing: -0.005em !important;
+  font-weight: 500 !important;
+}
+
+/* ── Radio buttons ──────────────────────────────────────── */
+.mat-mdc-radio-button {
+  --mdc-radio-selected-focus-icon-color: #006c4f;
+  --mdc-radio-selected-hover-icon-color: #006c4f;
+  --mdc-radio-selected-icon-color: #006c4f;
+  --mdc-radio-selected-pressed-icon-color: #006c4f;
+  --mdc-radio-unselected-focus-icon-color: rgba(0, 108, 79, 0.55);
+  --mdc-radio-unselected-hover-icon-color: rgba(0, 108, 79, 0.55);
+  --mdc-radio-unselected-icon-color: rgba(28, 39, 36, 0.45);
+}
+
+/* ── Slide-toggle (gradient when checked) ────────────────── */
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #14b88f;
+  --mdc-switch-selected-hover-track-color: #14b88f;
+  --mdc-switch-selected-pressed-track-color: #006c4f;
+  --mdc-switch-selected-focus-track-color: #14b88f;
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-selected-hover-handle-color: #ffffff;
+  --mdc-switch-selected-pressed-handle-color: #ffffff;
+  --mdc-switch-selected-focus-handle-color: #ffffff;
+  --mdc-switch-selected-icon-color: #006c4f;
+  --mdc-switch-handle-shape: 999px;
+  --mdc-switch-track-shape: 999px;
+}
+.mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked .mdc-switch__track::after {
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
+}
+.mat-mdc-slide-toggle label {
+  letter-spacing: -0.005em !important;
+  font-weight: 500 !important;
+}
+
+/* ── Date picker ─────────────────────────────────────────── */
+.mat-datepicker-toggle .mat-mdc-icon-button mat-icon {
+  color: rgba(15, 139, 108, 0.65);
+  transition: color 0.18s ease;
+}
+.mat-datepicker-toggle:hover .mat-mdc-icon-button mat-icon {
+  color: #006c4f;
+}
+.mat-datepicker-content {
+  border-radius: 14px !important;
+  box-shadow: var(--cce-fancy-shadow-hover) !important;
+}
+.mat-calendar-body-selected {
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
+  color: #fff !important;
+}
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #006c4f !important;
+}
+
+/* ── Chips (filter / input chips) ────────────────────────── */
+.mat-mdc-chip {
+  --mdc-chip-container-shape: 999px;
+  --mdc-chip-elevated-container-color: rgba(15, 139, 108, 0.08);
+  --mdc-chip-label-text-color: #1c2724;
+  font-weight: 600 !important;
+  letter-spacing: 0.005em;
+  transition: background-color 0.18s, transform 0.18s;
+}
+.mat-mdc-chip:hover {
+  background: rgba(15, 139, 108, 0.14) !important;
+  transform: translateY(-1px);
+}
+.mat-mdc-chip.mat-mdc-chip-selected {
+  background: linear-gradient(135deg, #006c4f, #14b88f) !important;
+  color: #ffffff !important;
+  --mdc-chip-label-text-color: #ffffff;
+}
+
+/* ── Native HTML inputs (fallback for non-Material) ────── */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not(.mat-mdc-input-element):not(.mat-mdc-form-field-input-control),
+textarea:not(.mat-mdc-input-element):not(.mat-mdc-form-field-input-control),
+select:not(.mat-mdc-select):not(.mat-mdc-form-field-input-control) {
+  font: inherit;
+  color: #1c2724;
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  letter-spacing: -0.005em;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+
+  &::placeholder {
+    color: rgba(28, 39, 36, 0.45);
+    font-weight: 500;
+  }
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: rgba(0, 108, 79, 0.40);
+  }
+  &:focus:not(:disabled):not([readonly]) {
+    border-color: #006c4f;
+    box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.18);
+  }
+  &:disabled,
+  &[readonly] {
+    background: rgba(0, 0, 0, 0.03);
+    color: rgba(28, 39, 36, 0.50);
+    border-color: rgba(0, 0, 0, 0.08);
+    cursor: not-allowed;
+  }
+}
+
+/* Native checkbox / radio — accent color */
+input[type="checkbox"]:not(.mat-mdc-input-element),
+input[type="radio"]:not(.mat-mdc-input-element) {
+  accent-color: #006c4f;
+  cursor: pointer;
+}
+
+/* Native search clear button — branded */
+input[type="search"]::-webkit-search-cancel-button {
+  filter: hue-rotate(120deg) saturate(0.8);
+  cursor: pointer;
+}
+
+/* ── Form layout — better label/group spacing ──────────── */
+fieldset:not(.mat-mdc-form-field) {
+  border: 1px solid rgba(0, 108, 79, 0.10);
+  border-radius: 12px;
+  padding: 1rem 1.25rem 1.25rem;
+  margin-block: 0.5rem 1.25rem;
+}
+legend:not(.mat-mdc-form-field-label) {
+  padding-inline: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #006c4f;
+}
+
+label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc-radio-button label):not(.mdc-floating-label):not(.mat-mdc-form-field-label) {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.78);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.005em;
+}
+
+/* Menu — glass surface */
+.mat-mdc-menu-panel,
+.mat-mdc-autocomplete-panel,
+.mat-mdc-select-panel {
+  background: var(--cce-fancy-glass-bg-strong) !important;
+  backdrop-filter: var(--cce-fancy-glass-blur);
+  -webkit-backdrop-filter: var(--cce-fancy-glass-blur);
+  border: var(--cce-fancy-glass-border);
+  border-radius: 14px !important;
+  box-shadow: var(--cce-fancy-shadow-hover) !important;
+}
+
+/* Tabs — animated underline thicker + branded */
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: var(--cce-fancy-primary) !important;
+  border-top-width: 3px !important;
+  border-radius: 999px;
+}
+
+/* Snackbar — branded gradient */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: rgba(0, 48, 31, 0.95) !important;
+  --mat-mdc-snack-bar-button-color: var(--cce-fancy-accent-bright) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--cce-fancy-shadow-hover) !important;
+}
+
+/* Tooltip — softer, branded edge */
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: rgba(0, 48, 31, 0.94) !important;
+  --mdc-plain-tooltip-supporting-text-color: #fff !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(6px);
+}
+
+/* Chips (filter chips) — branded gradient on selected */
+.mat-mdc-chip.mat-mdc-chip-selected.mat-primary {
+  background: var(--cce-fancy-grad-brand) !important;
+  color: #fff !important;
+}
+
+/* Mat-icon-button — circular hover ring */
+.mat-mdc-icon-button:hover {
+  background: rgba(15, 139, 108, 0.10) !important;
+}
+
+/* Toolbar — subtle glass when used as a header */
+.mat-toolbar.mat-primary {
+  background: linear-gradient(135deg, #006c4f 0%, #008c66 100%) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--cce-fancy-shadow-soft) !important;
+}
+
+/* =========================================================
+   7. Utility classes — opt-in fancy effects for any element
+   ========================================================= */
+.cce-fancy-glass {
+  background: var(--cce-fancy-glass-bg-strong) !important;
+  backdrop-filter: var(--cce-fancy-glass-blur);
+  -webkit-backdrop-filter: var(--cce-fancy-glass-blur);
+  border: var(--cce-fancy-glass-border);
+  border-radius: 18px;
+  box-shadow: var(--cce-fancy-shadow-soft);
+}
+
+.cce-fancy-grad-text {
+  background: var(--cce-fancy-grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.cce-fancy-card {
+  border-radius: 18px;
+  background: var(--cce-fancy-glass-bg-strong);
+  backdrop-filter: var(--cce-fancy-glass-blur);
+  -webkit-backdrop-filter: var(--cce-fancy-glass-blur);
+  border: var(--cce-fancy-glass-border);
+  padding: 1.25rem 1.4rem;
+  box-shadow: var(--cce-fancy-shadow-soft);
+  transition: transform 0.28s var(--cce-fancy-easing-emphasized),
+              box-shadow 0.28s var(--cce-fancy-easing-emphasized);
+}
+.cce-fancy-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cce-fancy-shadow-hover);
+}
+
+.cce-fancy-lift {
+  transition: transform 0.22s var(--cce-fancy-easing-emphasized),
+              box-shadow 0.22s var(--cce-fancy-easing-emphasized);
+}
+.cce-fancy-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cce-fancy-shadow-hover);
+}
+
+.cce-fancy-shine {
+  position: relative;
+  overflow: hidden;
+}
+.cce-fancy-shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+  transition: transform 0.7s var(--cce-fancy-easing-emphasized);
+}
+.cce-fancy-shine:hover::before {
+  transform: translateX(120%);
+}
+
+.cce-fancy-border-grad {
+  position: relative;
+}
+.cce-fancy-border-grad::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--cce-fancy-grad-brand);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Animated brand dot — small pulsing accent */
+.cce-fancy-pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cce-fancy-primary-bright);
+  position: relative;
+}
+.cce-fancy-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--cce-fancy-primary-bright);
+  opacity: 0.4;
+  animation: ccePulse 1.8s ease-out infinite;
+}
+@keyframes ccePulse {
+  0%   { transform: scale(0.6); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Reveal-on-scroll-ish fade-in (use with .cce-fancy-fade-in class) */
+.cce-fancy-fade-in {
+  animation: cceFadeIn 600ms var(--cce-fancy-easing-emphasized) both;
+}
+@keyframes cceFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cce-fancy-stagger > * {
+  animation: cceFadeIn 600ms var(--cce-fancy-easing-emphasized) both;
+}
+.cce-fancy-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.cce-fancy-stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.cce-fancy-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.cce-fancy-stagger > *:nth-child(4) { animation-delay: 0.20s; }
+.cce-fancy-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.cce-fancy-stagger > *:nth-child(6) { animation-delay: 0.30s; }
+.cce-fancy-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.cce-fancy-stagger > *:nth-child(8) { animation-delay: 0.40s; }
+.cce-fancy-stagger > *:nth-child(n+9) { animation-delay: 0.45s; }
+
+/* =========================================================
+   8. Header / footer / nav refinements (selectors target the
+   custom elements rendered by the existing layout components,
+   so no template changes required).
+   ========================================================= */
+/* The header element itself is fully styled by header.component.scss
+   (dark gradient variant). Here we only add the global behaviors
+   that aren't visual — sticky positioning, slide-in animation. */
+cce-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: block;
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.45);
+  animation: cceHeaderSlide 520ms var(--cce-fancy-easing-emphasized) both;
+}
+@keyframes cceHeaderSlide {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+cce-footer {
+  display: block;
+  /* No top margin: the footer sits flush against the routed content
+     so full-bleed pages don't show a strip of body backdrop above it. */
+  margin-top: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 48, 31, 0.04) 25%, rgba(0, 48, 31, 0.08) 100%);
+  border-top: 1px solid rgba(0, 108, 79, 0.10);
+}
+
+/* =========================================================
+   9. Skeletons (for loading states) — use .cce-fancy-skeleton
+   ========================================================= */
+.cce-fancy-skeleton {
+  background: linear-gradient(90deg,
+    rgba(0, 108, 79, 0.06) 0%,
+    rgba(0, 108, 79, 0.14) 50%,
+    rgba(0, 108, 79, 0.06) 100%);
+  background-size: 200% 100%;
+  animation: cceShimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes cceShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* =========================================================
+   10. Reduced-motion override — respects user preferences
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

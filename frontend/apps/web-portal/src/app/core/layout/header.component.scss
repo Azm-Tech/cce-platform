@@ -1,44 +1,602 @@
+/* ============================================================
+   CCE Portal Header — clean light edition
+   Solid white surface, no scroll/animation effects on the
+   surface itself. Element-level micro-animations only on
+   the logo glyph + bell pulse + sign-in shine.
+   ============================================================ */
+
+:host {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  background: #ffffff;
+  color: #1c2724;
+  border-bottom: 1px solid rgba(0, 108, 79, 0.10);
+  box-shadow: 0 4px 18px -10px rgba(0, 48, 31, 0.10);
+}
+
+/* Static brand-gradient hairline at the bottom edge */
+:host::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 108, 79, 0.45) 25%,
+    rgba(15, 139, 108, 0.65) 50%,
+    rgba(200, 160, 69, 0.50) 75%,
+    transparent 100%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .cce-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: #fff;
+  padding: 0.85rem clamp(1rem, 3vw, 2.5rem);
+  max-width: 1500px;
+  margin-inline: auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  background: transparent;
 }
+
+/* ─── Logo ──────────────────────────────────────────────────── */
 .cce-header__logo {
-  font-weight: 700;
-  font-size: 1.25rem;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 800;
+  font-size: 1.4rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
   text-decoration: none;
-  color: inherit;
+  color: #006c4f;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 50%, #c8a045 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex-shrink: 0;
+  padding-inline-end: 0.85rem;
+  border-inline-end: 1px solid rgba(0, 108, 79, 0.18);
+  margin-inline-end: 0.4rem;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.cce-header__logo:hover { transform: translateY(-1px) scale(1.02); }
+
+/* Pulsing leaf glyph */
+.cce-header__logo::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 30% 30%, #14b88f 0%, #006c4f 70%);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M5 21c-.55 0-1-.45-1-1 0-7.18 5.82-13 13-13 1.66 0 3 1.34 3 3 0 7.18-5.82 13-13 13H5zm9-12.39c-.43-.27-.93-.43-1.5-.43-3.81 0-7 3.19-7 7 0 .57.16 1.07.43 1.5l4.07-4.07h4l-4.07 4.07c.43.27.93.43 1.5.43 3.81 0 7-3.19 7-7 0-.57-.16-1.07-.43-1.5l-4.07 4.07h-4l4.07-4.07z'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M5 21c-.55 0-1-.45-1-1 0-7.18 5.82-13 13-13 1.66 0 3 1.34 3 3 0 7.18-5.82 13-13 13H5zm9-12.39c-.43-.27-.93-.43-1.5-.43-3.81 0-7 3.19-7 7 0 .57.16 1.07.43 1.5l4.07-4.07h4l-4.07 4.07c.43.27.93.43 1.5.43 3.81 0 7-3.19 7-7 0-.57-.16-1.07-.43-1.5l-4.07 4.07h-4l4.07-4.07z'/></svg>") center/contain no-repeat;
+  filter: drop-shadow(0 0 6px rgba(20, 184, 143, 0.45));
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cce-header__logo:hover::before { transform: rotate(6deg) scale(1.10); }
+
+/* ─── Primary nav — UNDERLINE STYLE ──────────────────────── */
 .cce-header__primary {
   display: flex;
-  gap: 1rem;
-  flex: 1;
-  a {
-    text-decoration: none;
-    color: rgba(0, 0, 0, 0.7);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    &:hover { background: rgba(0, 0, 0, 0.04); }
-  }
-  .cce-header__link--active { color: inherit; font-weight: 600; background: rgba(0, 0, 0, 0.06); }
-}
-.cce-header__search { min-width: 240px; }
-.cce-header__hamburger { display: none; }
+  align-items: center;
+  gap: clamp(0.1rem, 0.6vw, 0.5rem);
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: max-content;
+  padding: 0;
+  border: none;
+  background: transparent;
+  /* `overflow: visible` is REQUIRED so the absolutely-positioned
+   *  mega-menu panel can escape the nav's bounds. `overflow-x: auto`
+   *  silently clips descendants on the cross axis too — which would
+   *  hide the dropdown panel below the trigger. The mobile breakpoint
+   *  (≤900 px) already collapses the nav into the hamburger drawer,
+   *  so we don't need horizontal scrolling on desktop. */
+  overflow: visible;
 
-@media (max-width: 768px) {
+  a {
+    position: relative;
+    text-decoration: none;
+    color: rgba(28, 39, 36, 0.70);
+    padding: 0.55rem clamp(0.45rem, 0.7vw, 0.75rem);
+    font-weight: 500;
+    font-size: clamp(0.82rem, 0.88vw, 0.95rem);
+    line-height: 1.1;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 0;
+    transition: color 0.18s ease;
+
+    &:hover { color: #006c4f; }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 4px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+    &:hover::after { transform: scaleX(1); }
+  }
+
+  .cce-header__link--active {
+    color: #006c4f;
+    font-weight: 700;
+
+    &:hover { color: #006c4f; }
+    &::after {
+      transform: scaleX(1);
+      height: 2.5px;
+    }
+  }
+}
+
+/* ─── Mega-menu group trigger ─────────────────────────────── */
+.cce-header__group {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.cce-header__group-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.55rem clamp(0.45rem, 0.7vw, 0.75rem);
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  font-size: clamp(0.82rem, 0.88vw, 0.95rem);
+  line-height: 1.1;
+  white-space: nowrap;
+  color: rgba(28, 39, 36, 0.70);
+  cursor: pointer;
+  border-radius: 0;
+  transition: color 0.18s ease;
+
+  &:hover { color: #006c4f; }
+
+  /* Underline (matches link style) */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 4px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  &:hover::after { transform: scaleX(1); }
+}
+.cce-header__group-trigger--active {
+  color: #006c4f;
+  font-weight: 700;
+  &::after { transform: scaleX(1); height: 2.5px; }
+}
+
+.cce-header__group-chevron {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cce-header__group-trigger--open .cce-header__group-chevron {
+  transform: rotate(180deg);
+}
+
+/* ─── Mega-menu panel ─────────────────────────────────────── */
+.cce-header__mega {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  margin-top: 0.55rem;
+  z-index: 110;
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) minmax(280px, 360px);
+  gap: 0;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 24px 50px -16px rgba(0, 48, 31, 0.30);
+  animation: cceMegaIn 220ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Connector visual: removes the visible gap between trigger underline
+     and the panel; user can move from trigger → panel without losing
+     the hover state thanks to the 8px gap being inside an invisible
+     hit-box (the wrapper `.cce-header__group` has the mouseenter). */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 12px;
+    background: transparent;
+  }
+}
+@keyframes cceMegaIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Left pane — link list */
+.cce-header__mega-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cce-header__mega-link {
+  display: grid;
+  grid-template-columns: 40px 1fr 22px;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: linear-gradient(135deg, rgba(15, 139, 108, 0.10) 0%, rgba(200, 160, 69, 0.05) 100%);
+    transform: translateX(2px);
+    outline: none;
+
+    .cce-header__mega-icon {
+      background: linear-gradient(135deg, #006c4f, #14b88f);
+      color: #ffffff;
+      box-shadow: 0 6px 14px -4px rgba(15, 139, 108, 0.45);
+    }
+    .cce-header__mega-arrow {
+      color: #006c4f;
+      transform: translateX(3px);
+    }
+    .cce-header__mega-title { color: #006c4f; }
+  }
+}
+.cce-header__mega-link--active {
+  background: linear-gradient(135deg, rgba(15, 139, 108, 0.14) 0%, rgba(200, 160, 69, 0.06) 100%);
+  .cce-header__mega-title { color: #006c4f; font-weight: 700; }
+  .cce-header__mega-icon {
+    background: linear-gradient(135deg, #006c4f, #14b88f);
+    color: #ffffff;
+  }
+}
+
+.cce-header__mega-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 139, 108, 0.10);
+  color: #006c4f;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+}
+
+.cce-header__mega-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.cce-header__mega-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.005em;
+  color: #1c2724;
+  transition: color 0.18s ease;
+}
+.cce-header__mega-desc {
+  font-size: 0.76rem;
+  color: rgba(28, 39, 36, 0.55);
+  line-height: 1.30;
+}
+
+.cce-header__mega-arrow {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(28, 39, 36, 0.30);
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+[dir="rtl"] .cce-header__mega-link:hover .cce-header__mega-arrow {
+  transform: translateX(-3px) scaleX(-1);
+}
+[dir="rtl"] .cce-header__mega-arrow { transform: scaleX(-1); }
+
+/* Right pane — preview image with eyebrow + title overlay */
+.cce-header__mega-preview {
+  position: relative;
+  min-height: 240px;
+  background: linear-gradient(135deg, #003923 0%, #006c4f 100%);
+  overflow: hidden;
+}
+.cce-header__mega-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.78) saturate(1.05);
+  transition: opacity 0.22s ease, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cce-header__mega-preview:hover .cce-header__mega-preview-img,
+.cce-header__mega-link:hover ~ .cce-header__mega-preview .cce-header__mega-preview-img {
+  transform: scale(1.04);
+}
+
+.cce-header__mega-preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem 1.4rem;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(0, 48, 31, 0.20) 40%,
+    rgba(0, 48, 31, 0.85) 100%);
+  color: #ffffff;
+  pointer-events: none;
+}
+.cce-header__mega-preview-eyebrow {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #5af0c4;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+.cce-header__mega-preview-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.20;
+  margin-bottom: 0.35rem;
+}
+.cce-header__mega-preview-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.40;
+}
+
+/* RTL — anchor mega panel to the trailing edge of the trigger */
+:host-context([dir="rtl"]) .cce-header__mega {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
+
+/* Mobile: collapse mega panel into a flat list under the parent label
+   (no preview pane, no two-column grid) */
+@media (max-width: 900px) {
+  .cce-header__group { width: 100%; }
+  .cce-header__group-trigger {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.7rem 0.9rem;
+  }
+  .cce-header__mega {
+    position: static;
+    margin-top: 0.5rem;
+    width: 100%;
+    max-width: none;
+    grid-template-columns: 1fr;
+    box-shadow: none;
+    border: 1px solid rgba(0, 108, 79, 0.12);
+    border-radius: 12px;
+    animation: none;
+  }
+  .cce-header__mega-preview { display: none; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cce-header__mega,
+  .cce-header__mega-link,
+  .cce-header__mega-arrow,
+  .cce-header__mega-preview-img,
+  .cce-header__group-chevron {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ─── Right cluster ─────────────────────────────────────────── */
+.cce-header__search {
+  margin-inline-start: auto;
+  flex: 0 1 clamp(180px, 18vw, 280px);
+  min-width: 0;
+}
+.cce-header__locale { flex-shrink: 0; }
+
+.cce-header__bell {
+  flex-shrink: 0;
+  position: relative;
+  border-radius: 999px !important;
+  background: rgba(15, 139, 108, 0.06) !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+  &:hover {
+    background: rgba(15, 139, 108, 0.14) !important;
+    transform: translateY(-1px);
+  }
+}
+.cce-header__bell:has(.mat-badge-content:not(.mat-badge-hidden)) {
+  animation: cceBellPulse 2.6s ease-in-out infinite;
+}
+@keyframes cceBellPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 163, 0, 0.40); }
+  60%      { box-shadow: 0 0 0 12px rgba(244, 163, 0, 0); }
+}
+
+.cce-header__user {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem !important;
+  border-radius: 999px !important;
+  background: rgba(15, 139, 108, 0.06) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(0, 108, 79, 0.15) !important;
+  transition: background-color 0.2s, transform 0.2s, border-color 0.2s !important;
+
+  mat-icon {
+    color: #006c4f;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(15, 139, 108, 0.16), rgba(200, 160, 69, 0.20));
+    padding: 2px;
+  }
+  &:hover {
+    background: rgba(15, 139, 108, 0.14) !important;
+    border-color: rgba(0, 108, 79, 0.30) !important;
+    transform: translateY(-1px);
+  }
+}
+
+.cce-header__signin {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px !important;
+  padding: 0.55rem 1.4rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+  font-size: 0.82rem !important;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 50%, #c8a045 100%) !important;
+  color: #fff !important;
+  box-shadow:
+    0 6px 18px -6px rgba(0, 108, 79, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset !important;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.2s ease !important;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 12px 28px -8px rgba(0, 108, 79, 0.65),
+      0 0 0 1px rgba(255, 255, 255, 0.28) inset !important;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  &:hover::before { animation: cceSignInShine 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+}
+@keyframes cceSignInShine {
+  to { transform: translateX(120%); }
+}
+
+.cce-header__hamburger {
+  display: none;
+  border-radius: 999px !important;
+  background: rgba(15, 139, 108, 0.06) !important;
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .cce-header__primary { padding: 0.2rem; }
+  .cce-header__primary a { padding: 0.45rem 0.7rem; font-size: 0.88rem; }
+}
+
+@media (max-width: 900px) {
+  .cce-header { padding: 0.65rem 1rem; gap: 0.6rem; }
+  .cce-header__logo {
+    font-size: 1.25rem;
+    padding-inline-end: 0;
+    border-inline-end: none;
+    margin-inline-end: 0;
+  }
+  .cce-header__logo::before { width: 24px; height: 24px; }
+
   .cce-header__primary {
     display: none;
     &.cce-header__primary--open {
       display: flex;
       flex-direction: column;
+      align-items: stretch;
       position: absolute; top: 100%; left: 0; right: 0;
-      background: #fff; padding: 1rem; gap: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      padding: 1rem;
+      gap: 0.25rem;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid rgba(0, 108, 79, 0.10);
+      box-shadow: 0 12px 30px -10px rgba(0, 48, 31, 0.20);
+      z-index: 99;
+      a { padding: 0.7rem 0.9rem; }
     }
   }
   .cce-header__hamburger { display: inline-flex; }
   .cce-header__search { min-width: 0; flex: 1; }
+}
+
+@media (max-width: 520px) {
+  .cce-header__search { display: none; }
+  .cce-header__user span { display: none; }
+  .cce-header__signin { padding-inline: 0.9rem !important; font-size: 0.72rem !important; }
+}
+
+/* RTL */
+:host-context([dir="rtl"]) {
+  .cce-header__logo {
+    border-inline-end: none;
+    border-inline-start: 1px solid rgba(0, 108, 79, 0.18);
+    padding-inline-start: 0.85rem;
+    padding-inline-end: 0;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cce-header__logo,
+  .cce-header__logo::before,
+  .cce-header__bell,
+  .cce-header__signin::before {
+    animation: none !important;
+    transition: none !important;
+  }
 }

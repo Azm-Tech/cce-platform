@@ -1,0 +1,249 @@
+/* ============================================================
+   Login page — standalone screen
+   ------------------------------------------------------------
+   Centered card on the page, soft brand-tinted page background,
+   email + password form, demo-role quick-pick buttons, link
+   to /register.
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  padding-block: 3rem 4rem;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  min-height: calc(100vh - 80px);
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; padding-block: 2rem 3rem; }
+}
+
+.cce-login {
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+}
+
+.cce-login__card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 44px -16px rgba(0, 48, 31, 0.18);
+  padding: 2rem 2rem 1.75rem;
+}
+
+/* ─── Brand ─────────────────────────────────────────────── */
+.cce-login__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.cce-login__brand-glyph {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+  box-shadow: 0 4px 10px -4px rgba(15, 139, 108, 0.55);
+}
+.cce-login__brand-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.10em;
+  color: #006c4f;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+.cce-login__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.20;
+  color: #1c2724;
+}
+.cce-login__subtitle {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: rgba(28, 39, 36, 0.62);
+  line-height: 1.50;
+}
+
+/* ─── Form ──────────────────────────────────────────────── */
+.cce-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.cce-login__form .mat-mdc-form-field {
+  width: 100%;
+}
+.cce-login__form mat-icon[matPrefix] {
+  color: rgba(15, 139, 108, 0.65);
+  margin-inline-end: 0.4rem;
+}
+
+.cce-login__row {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.25rem 0 0.75rem;
+}
+.cce-login__forgot {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #006c4f;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.cce-login__error {
+  margin: 0 0 0.6rem;
+  padding: 0.55rem 0.75rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.20);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.cce-login__submit {
+  height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.45) !important;
+  margin-top: 0.4rem;
+  text-transform: uppercase !important;
+  font-size: 0.85rem !important;
+}
+
+/* ─── Divider + role buttons ─────────────────────────────── */
+.cce-login__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.5rem 0 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(28, 39, 36, 0.45);
+  text-transform: uppercase;
+
+  span { white-space: nowrap; }
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.10);
+  }
+}
+
+.cce-login__roles {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.5rem;
+}
+.cce-login__role {
+  display: grid;
+  grid-template-columns: 8px 1fr;
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 0.15rem 0.6rem;
+  padding: 0.65rem 0.85rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: start;
+  transition: border-color 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
+
+  &:hover {
+    border-color: #006c4f;
+    background: rgba(15, 139, 108, 0.04);
+    transform: translateY(-1px);
+  }
+  &:focus-visible {
+    outline: none;
+    border-color: #006c4f;
+    box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.20);
+  }
+}
+.cce-login__role-dot {
+  grid-row: 1 / span 2;
+  align-self: stretch;
+  background: linear-gradient(180deg, #006c4f, #14b88f);
+  border-radius: 999px;
+}
+.cce-login__role[data-role="cce-expert"] .cce-login__role-dot {
+  background: linear-gradient(180deg, #7c3aed, #a78bfa);
+}
+.cce-login__role[data-role="cce-reviewer"] .cce-login__role-dot {
+  background: linear-gradient(180deg, #0891b2, #22d3ee);
+}
+.cce-login__role[data-role="cce-editor"] .cce-login__role-dot {
+  background: linear-gradient(180deg, #d97706, #fbbf24);
+}
+.cce-login__role[data-role="cce-admin"] .cce-login__role-dot {
+  background: linear-gradient(180deg, #dc2626, #f87171);
+}
+.cce-login__role-label {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #1c2724;
+  line-height: 1.2;
+}
+.cce-login__role-desc {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: rgba(28, 39, 36, 0.55);
+  line-height: 1.30;
+}
+
+/* ─── Register line ─────────────────────────────────────── */
+.cce-login__register-line {
+  text-align: center;
+  margin: 0;
+  font-size: 0.92rem;
+  color: rgba(28, 39, 36, 0.65);
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.cce-login__register-link {
+  margin-inline-start: 0.4rem;
+  font-weight: 700;
+  color: #006c4f;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+/* ─── Already-signed-in panel ────────────────────────────── */
+.cce-login__already {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+  p {
+    margin: 0 0 1rem;
+    color: rgba(28, 39, 36, 0.70);
+  }
+}
+
+/* ─── Mobile ────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .cce-login__roles { grid-template-columns: 1fr; }
+  .cce-login__card { padding: 1.5rem 1.25rem; }
+}

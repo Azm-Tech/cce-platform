@@ -18,14 +18,22 @@
   @if (profile(); as p) {
     <header class="cce-country-detail__header">
       @if (country(); as c) {
-        <img
-          class="cce-country-detail__flag"
-          [src]="c.flagUrl"
-          [alt]="headerName()"
-          width="64"
-          height="48"
-          loading="lazy"
-        />
+        <span class="cce-country-detail__flag-wrap" [attr.aria-hidden]="true">
+          @if (!flagFailed()) {
+            <img
+              class="cce-country-detail__flag"
+              [src]="flagSrc()"
+              [alt]="headerName()"
+              width="88"
+              height="60"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              (error)="onFlagError()"
+            />
+          } @else {
+            <span class="cce-country-detail__flag-fallback">{{ flagEmoji() }}</span>
+          }
+        </span>
       }
       <div>
         <h1 class="cce-country-detail__name">

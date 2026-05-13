@@ -1,12 +1,100 @@
 <header class="cce-header" role="banner">
-  <a routerLink="/" class="cce-header__logo">CCE</a>
+  <a routerLink="/" class="cce-header__logo" (click)="closeMobileMenu()">CCE</a>
 
-  <nav class="cce-header__primary" [class.cce-header__primary--open]="mobileMenuOpen()" role="navigation">
-    @for (item of nav; track item.route) {
-      <a [routerLink]="item.route" routerLinkActive="cce-header__link--active"
-         [routerLinkActiveOptions]="{ exact: item.route === '/' }">
-        {{ item.labelKey | translate }}
-      </a>
+  <nav
+    id="cce-primary-nav"
+    class="cce-header__primary"
+    [class.cce-header__primary--open]="mobileMenuOpen()"
+    role="navigation"
+  >
+    @for (item of nav; track item.labelKey) {
+      @if (isLink(item)) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="cce-header__link--active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+          (click)="closeMobileMenu()"
+        >
+          {{ item.labelKey | translate }}
+        </a>
+      } @else if (isGroup(item)) {
+        <div
+          class="cce-header__group"
+          (mouseenter)="openGroup(item)"
+          (mouseleave)="closeGroup()"
+        >
+          <button
+            type="button"
+            class="cce-header__group-trigger"
+            [class.cce-header__group-trigger--active]="isGroupActive(item) || openGroupId() === item.id"
+            [class.cce-header__group-trigger--open]="openGroupId() === item.id"
+            [attr.aria-expanded]="openGroupId() === item.id"
+            [attr.aria-controls]="'cce-mega-' + item.id"
+            (click)="toggleGroup(item)"
+          >
+            {{ item.labelKey | translate }}
+            <mat-icon class="cce-header__group-chevron" aria-hidden="true">expand_more</mat-icon>
+          </button>
+
+          @if (openGroupId() === item.id) {
+            <div
+              class="cce-header__mega"
+              [id]="'cce-mega-' + item.id"
+              role="menu"
+              (mouseenter)="openGroup(item)"
+              (mouseleave)="closeGroup()"
+            >
+              <ul class="cce-header__mega-list" role="none">
+                @for (child of item.children; track child.route) {
+                  <li role="none">
+                    <a
+                      class="cce-header__mega-link"
+                      role="menuitem"
+                      [routerLink]="child.route"
+                      routerLinkActive="cce-header__mega-link--active"
+                      (mouseenter)="hoveredChildRoute.set(child.route)"
+                      (focus)="hoveredChildRoute.set(child.route)"
+                      (click)="closeGroup(true); closeMobileMenu()"
+                    >
+                      <span class="cce-header__mega-icon" aria-hidden="true">
+                        <mat-icon>{{ child.icon }}</mat-icon>
+                      </span>
+                      <span class="cce-header__mega-text">
+                        <span class="cce-header__mega-title">{{ child.labelKey | translate }}</span>
+                        @if (child.descriptionKey) {
+                          <span class="cce-header__mega-desc">{{ child.descriptionKey | translate }}</span>
+                        }
+                      </span>
+                      <mat-icon class="cce-header__mega-arrow" aria-hidden="true">arrow_forward</mat-icon>
+                    </a>
+                  </li>
+                }
+              </ul>
+
+              <!-- Preview pane: image of the currently-hovered child link -->
+              <div class="cce-header__mega-preview" aria-hidden="true">
+                @if (previewImageFor(item); as src) {
+                  <img
+                    class="cce-header__mega-preview-img"
+                    [src]="src"
+                    alt=""
+                    referrerpolicy="no-referrer"
+                  />
+                }
+                @if (previewLinkFor(item); as link) {
+                  <div class="cce-header__mega-preview-overlay">
+                    <span class="cce-header__mega-preview-eyebrow">DISCOVER</span>
+                    <span class="cce-header__mega-preview-title">{{ link.labelKey | translate }}</span>
+                    @if (link.descriptionKey) {
+                      <span class="cce-header__mega-preview-desc">{{ link.descriptionKey | translate }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
     }
   </nav>
 
@@ -43,8 +131,15 @@
     </button>
   }
 
-  <button type="button" mat-icon-button class="cce-header__hamburger" (click)="toggleMobileMenu()"
-    [attr.aria-label]="'header.menu' | translate">
+  <button
+    type="button"
+    mat-icon-button
+    class="cce-header__hamburger"
+    (click)="toggleMobileMenu()"
+    [attr.aria-label]="'header.menu' | translate"
+    [attr.aria-expanded]="mobileMenuOpen()"
+    aria-controls="cce-primary-nav"
+  >
     <mat-icon>menu</mat-icon>
   </button>
 </header>

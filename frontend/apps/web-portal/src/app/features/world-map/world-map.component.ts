@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   HostListener,
@@ -114,11 +115,15 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <!-- ClipPath populated dynamically with country paths so the
+               Voronoi city-boundary tessellation only renders on land. -->
+          <clipPath id="cce-land-clip"></clipPath>
         </defs>
         <rect class="cce-world-map__ocean" width="100%" height="100%" fill="url(#oceanGradient)" />
         <g #zoomGroup class="cce-world-map__zoom-group">
           <g class="cce-world-map__graticule"></g>
           <g class="cce-world-map__countries"></g>
+          <g class="cce-world-map__city-boundaries" clip-path="url(#cce-land-clip)"></g>
           <g class="cce-world-map__country-labels"></g>
           <g class="cce-world-map__cities"></g>
         </g>
@@ -132,23 +137,23 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       .cce-world-map__svg { width: 100%; height: 100%; display: block; cursor: grab; }
       .cce-world-map__svg:active { cursor: grabbing; }
 
-      /* Countries — visible borders + slightly brighter fill on hover */
+      /* Countries — high-contrast borders + clear fill */
       :host ::ng-deep .cce-world-map__countries path {
         fill: #1e3a5f;
-        stroke: #93c5fd;
-        stroke-width: 1.1;
+        stroke: rgba(255, 255, 255, 0.7);
+        stroke-width: 1.4;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
         opacity: 0;
-        transition: fill 0.25s ease, transform 0.25s ease;
+        transition: fill 0.25s ease;
         cursor: default;
-      }
-      :host ::ng-deep .cce-world-map__countries path.cce-country--visible {
-        animation: countryFadeIn 700ms ease-out forwards;
       }
       :host ::ng-deep .cce-world-map__countries path:hover {
         fill: #2d5a87;
-        filter: url(#countryGlow);
+        stroke: #ffffff;
+      }
+      :host ::ng-deep .cce-world-map__countries path.cce-country--visible {
+        animation: countryFadeIn 700ms ease-out forwards;
       }
 
       /* Graticule (subtle grid) */
@@ -208,7 +213,7 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       }
       @keyframes standardMarkerFadeIn {
         from { opacity: 0; }
-        to   { opacity: 0.7; }
+        to   { opacity: 1; }
       }
 
       /* Filtered-out: marker hidden via class set from page filter signals. */
@@ -216,6 +221,46 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         opacity: 0 !important;
         pointer-events: none !important;
         transition: opacity 0.25s ease;
+      }
+
+      /* Per-city geo-circle boundaries — each city has its own discrete
+         circular footprint sized by population on a log scale. Discs are
+         great-circle on the sphere then projected, so they distort with
+         the map projection. Clipped to land via #cce-land-clip. */
+      :host ::ng-deep .cce-world-map__city-boundaries path {
+        fill-opacity: 0.14;
+        stroke: rgba(255, 255, 255, 0.30);
+        stroke-width: 0.8;
+        stroke-linejoin: round;
+        vector-effect: non-scaling-stroke;
+        pointer-events: none; /* clicks fall through to city markers */
+        opacity: 0;
+        transition: fill-opacity 0.2s ease, stroke-width 0.2s ease, stroke 0.2s ease;
+        animation: cityBoundaryFadeIn 900ms ease-out 1.4s forwards;
+      }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--low    { fill: #4ade80; }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--medium { fill: #fbbf24; }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--high   { fill: #f87171; }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--filtered-out {
+        opacity: 0 !important;
+      }
+      /* Hover state — driven via JS class toggle when the matching
+         city marker is hovered. Pulls the boundary forward visually. */
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--hover {
+        fill-opacity: 0.30;
+        stroke: rgba(255, 255, 255, 0.65);
+        stroke-width: 1.4;
+      }
+      /* Selection state — strongest highlight, applied when a city is
+         actively selected from the list / detail panel. */
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--selected {
+        fill-opacity: 0.42;
+        stroke: rgba(255, 255, 255, 0.85);
+        stroke-width: 1.8;
+      }
+      @keyframes cityBoundaryFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
       }
 
       /* City markers */
@@ -295,10 +340,14 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         from { opacity: 0; }
         to   { opacity: 1; }
       }
+      /* Markers fade in (opacity only — must NOT animate transform,
+         else the CSS keyframe transform overrides the SVG transform
+         attribute that holds the projected lat/lon coords, causing
+         all markers to collapse to translate(0,0). The bounce-in
+         visual is sacrificed so positions stay correct under zoom. */
       @keyframes markerDropIn {
-        0%   { opacity: 0; transform: translateY(-30px) scale(0.3); }
-        70%  { opacity: 1; transform: translateY(2px) scale(1.2); }
-        100% { opacity: 1; transform: translateY(0) scale(1); }
+        from { opacity: 0; }
+        to   { opacity: 1; }
       }
       @keyframes markerPulse {
         0%   { r: 5; opacity: 0.8; }
@@ -322,6 +371,9 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   /** IDs of cities that should currently be visible (post-filter). null = no filter active. */
   readonly visibleCityIds = input<readonly string[] | null>(null);
   @Output() readonly cityClicked = new EventEmitter<AnyCity>();
+  /** Fires when the user clicks empty map area (ocean / non-pin space)
+   *  — the parent uses this to close the detail panel. */
+  @Output() readonly mapBackgroundClicked = new EventEmitter<void>();
 
   private readonly http = inject(HttpClient);
   private resizeObserver?: ResizeObserver;
@@ -329,6 +381,20 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   private path!: d3.GeoPath;
   private zoom!: d3.ZoomBehavior<SVGSVGElement, unknown>;
   private currentSelectedId: string | null = null;
+  /** True once render() has wired up the zoom behavior. Prevents the
+   *  fit-to-filter effect from running before the map is ready. */
+  private isMapReady = false;
+
+  constructor() {
+    // When the filter changes (page emits a new visibleCityIds list),
+    // smoothly animate the map to fit those cities. Clearing the filter
+    // (visibleCityIds === null) zooms back out to the world view.
+    effect(() => {
+      const ids = this.visibleCityIds();
+      if (!this.isMapReady) return;
+      this.fitToFilter(ids);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     const topology = await new Promise<AnyTopology>((resolve) => {
@@ -353,10 +419,20 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     if (!this.svgEl) return;
     const ids = this.visibleCityIds();
     const visibleSet = ids ? new Set(ids) : null;
-    d3.select(this.svgEl.nativeElement)
+    const svg = d3.select(this.svgEl.nativeElement);
+    svg
       .select<SVGGElement>('.cce-world-map__cities')
       .selectAll<SVGGElement, AnyCity>('g.cce-city-marker')
       .classed('cce-city-marker--filtered-out', (d) => visibleSet !== null && !visibleSet.has(d.id));
+    // City boundaries follow the same filter: hide discs whose city is
+    // filtered out. data-city-id is set when the path is created.
+    svg
+      .select<SVGGElement>('.cce-world-map__city-boundaries')
+      .selectAll<SVGPathElement, unknown>('path')
+      .classed('cce-city-boundary--filtered-out', function () {
+        const id = (this as SVGPathElement).getAttribute('data-city-id');
+        return visibleSet !== null && id !== null && !visibleSet.has(id);
+      });
   }
 
   @HostListener('window:resize')
@@ -378,7 +454,11 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     const pathFn = (d: unknown) => this.path(d as never) ?? '';
     svg.selectAll<SVGPathElement, unknown>('.cce-world-map__countries path').attr('d', pathFn);
     svg.selectAll<SVGPathElement, unknown>('.cce-world-map__graticule path').attr('d', pathFn);
+    // Land clip needs to track the new projection too so per-city
+    // boundary discs stay properly clipped after a resize.
+    svg.selectAll<SVGPathElement, unknown>('#cce-land-clip path').attr('d', pathFn);
     this.repositionMarkers();
+    this.rebuildBoundaries();
   }
 
   private render(topology: AnyTopology): void {
@@ -434,19 +514,58 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     // ─── Country labels at centroids ───────────────────────────────────
     // Major countries get larger labels (always visible). Smaller ones
     // get the --hidden class until zoom reveals them.
+    //
+    // For label positioning we use the centroid of the LARGEST sub-polygon
+    // of each country (computed in projected pixel space). This matters
+    // because:
+    //   1. d3.geoCentroid() returns a geographic centroid which, when
+    //      projected, can land outside the visible polygon (e.g. Russia's
+    //      centroid is near the antimeridian, USA's centroid is skewed
+    //      by Alaska, France's by overseas territories).
+    //   2. d3.geoPath.centroid() on a MultiPolygon returns an area-weighted
+    //      blend of all sub-polygon centroids — for the USA that's roughly
+    //      the middle of the country (good), but for outliers the label
+    //      can still drift.
+    //   3. Using the centroid of the LARGEST sub-polygon places the label
+    //      reliably inside the main visible mass.
+    const pathInPx = d3.geoPath(this.projection);
     const labelFeatures = sorted
       .map((f) => {
         const id = String((f as { id?: string | number }).id ?? '');
         const name = COUNTRY_NAMES[id];
         if (!name) return null;
-        const centroid = d3.geoCentroid(f as never);
-        const projected = this.projection(centroid);
-        if (!projected) return null;
-        // Approximate area of the country path in pixel-space (used for
-        // sizing decision). geoPath.area returns the projected area in
-        // square pixels.
-        const area = d3.geoPath(this.projection).area(f as never);
-        return { id, name, x: projected[0], y: projected[1], area };
+        const geom = (f as GeoFeature).geometry as
+          | { type: 'Polygon'; coordinates: number[][][] }
+          | { type: 'MultiPolygon'; coordinates: number[][][][] }
+          | undefined;
+        if (!geom) return null;
+        // Pick the polygon (or sub-polygon of a MultiPolygon) with the
+        // largest projected area, then take its projected centroid.
+        let bestPolygon: number[][][] | null = null;
+        let bestArea = -Infinity;
+        const candidates =
+          geom.type === 'Polygon'
+            ? [geom.coordinates]
+            : geom.type === 'MultiPolygon'
+              ? geom.coordinates
+              : [];
+        for (const polyCoords of candidates) {
+          const poly = { type: 'Polygon' as const, coordinates: polyCoords };
+          const a = pathInPx.area(poly as never);
+          if (a > bestArea) {
+            bestArea = a;
+            bestPolygon = polyCoords;
+          }
+        }
+        if (!bestPolygon) return null;
+        const [cx, cy] = pathInPx.centroid({
+          type: 'Polygon',
+          coordinates: bestPolygon,
+        } as never);
+        if (!Number.isFinite(cx) || !Number.isFinite(cy)) return null;
+        // Total area for label-size decisions (Major / Hidden tiers).
+        const area = pathInPx.area(f as never);
+        return { id, name, x: cx, y: cy, area };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null)
       .sort((a, b) => b.area - a.area);
@@ -472,8 +591,52 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       })
       .text((d) => d.name);
 
-    // ─── City markers (featured + standard combined) ───────────────────
+    // ─── Per-city geo-circle boundaries ─────────────────────────────────
+    // Each city gets its OWN discrete circular boundary, sized by population
+    // on a log scale so megacities get bigger circles than small ones
+    // without crowding out neighbors. Boundaries are great-circle discs on
+    // the sphere then projected, so they distort naturally with the map
+    // projection. They're clipped to land via #cce-land-clip so the disc
+    // doesn't bleed into the ocean for coastal cities.
     const sortedCities = ALL_CITIES.slice().sort((a, b) => b.population - a.population);
+    // Population → boundary radius in DEGREES. Tuned so:
+    //   100K   →  0.15° (~17 km)   small town footprint
+    //   1M     →  0.45° (~50 km)   mid-size metro
+    //   10M    →  0.75° (~83 km)   megacity metro
+    //   37M    →  0.88° (~98 km)   Tokyo-tier
+    const radiusDeg = (pop: number) =>
+      Math.max(0.15, (Math.log10(Math.max(pop, 100000)) - 4) * 0.22);
+    const cityBoundaries = sortedCities.map((city) => ({
+      city,
+      geometry: d3
+        .geoCircle()
+        .center([city.lon, city.lat])
+        .radius(radiusDeg(city.population))(),
+    }));
+
+    // Populate land-clip with country shapes so per-city circles only
+    // render over land.
+    const landClip = svg.select<SVGClipPathElement>('#cce-land-clip');
+    landClip.selectAll('path').remove();
+    landClip
+      .selectAll('path')
+      .data(sorted)
+      .enter()
+      .append('path')
+      .attr('d', pathFn);
+
+    // Render the per-city boundary discs.
+    svg
+      .select<SVGGElement>('.cce-world-map__city-boundaries')
+      .selectAll('path')
+      .data(cityBoundaries)
+      .enter()
+      .append('path')
+      .attr('data-city-id', (d) => d.city.id)
+      .attr('class', (d) => `cce-city-boundary cce-city-boundary--${d.city.carbonTier}`)
+      .attr('d', (d) => pathFn(d.geometry as never));
+
+    // ─── City markers (featured + standard combined) ───────────────────
     const cityG = svg.select<SVGGElement>('.cce-world-map__cities');
     const markers = cityG
       .selectAll('g.cce-city-marker')
@@ -493,12 +656,19 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       .on('click', (event: MouseEvent, d) => {
         event.stopPropagation();
         this.cityClicked.emit(d as AnyCity);
-      });
+      })
+      .on('mouseenter', (_event: MouseEvent, d) => this.setHover((d as AnyCity).id, true))
+      .on('mouseleave', (_event: MouseEvent, d) => this.setHover((d as AnyCity).id, false));
 
-    markers.append('circle').attr('class', 'cce-city-marker__pulse').attr('r', (d) => ((d as AnyCity).kind ?? 'featured') === 'featured' ? 5 : 3);
-    markers.append('circle').attr('class', 'cce-city-marker__ring').attr('r', 8);
-    markers.append('circle').attr('class', 'cce-city-marker__core').attr('r', (d) => ((d as AnyCity).kind ?? 'featured') === 'featured' ? 5 : 3);
-    markers
+    // Wrap visual elements in an INNER group. The outer marker `<g>` holds
+    // the projected position (translate(px, py)) and is NEVER modified during
+    // zoom, so pins stay glued to their cities. The inner `<g>` holds the
+    // counter-scale (scale(1/k)) so circles/labels stay a constant visual size.
+    const inner = markers.append('g').attr('class', 'cce-city-marker__inner');
+    inner.append('circle').attr('class', 'cce-city-marker__pulse').attr('r', (d) => ((d as AnyCity).kind ?? 'featured') === 'featured' ? 5 : 3);
+    inner.append('circle').attr('class', 'cce-city-marker__ring').attr('r', 8);
+    inner.append('circle').attr('class', 'cce-city-marker__core').attr('r', (d) => ((d as AnyCity).kind ?? 'featured') === 'featured' ? 5 : 3);
+    inner
       .append('text')
       .attr('class', 'cce-city-marker__label')
       .attr('y', -10)
@@ -516,14 +686,12 @@ export class WorldMapComponent implements OnInit, OnDestroy {
         const k = event.transform.k;
 
         // Counter-scale marker visuals so they stay readable when zoomed.
+        // Apply scale to the INNER group only — the outer marker `<g>` keeps
+        // its `translate(px, py)` (projected position) untouched, so pins
+        // stay glued to their cities at every zoom level.
         d3.select(this.zoomGroupEl.nativeElement)
-          .selectAll<SVGGElement, AnyCity>('g.cce-city-marker')
-          .each(function () {
-            const node = this as SVGGElement;
-            const t = node.getAttribute('transform') ?? '';
-            const baseTranslate = t.replace(/\s*scale\([^)]*\)/, '');
-            node.setAttribute('transform', `${baseTranslate} scale(${1 / k})`);
-          });
+          .selectAll<SVGGElement, unknown>('g.cce-city-marker__inner')
+          .attr('transform', `scale(${1 / k})`);
 
         // Counter-scale country labels (so they stay readable + don't bloat).
         d3.select(this.zoomGroupEl.nativeElement)
@@ -543,8 +711,111 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       });
     svg.call(this.zoom);
 
+    // Click on empty map area (ocean / country fill — anything that's not
+    // a city pin) emits mapBackgroundClicked so the page can close the
+    // detail panel. Pins call event.stopPropagation() in their own click
+    // handler, so this only fires for non-pin clicks.
+    svg.on('click', (event: MouseEvent) => {
+      // d3.zoom triggers click events on drag-end too; require the click
+      // to actually land on a non-pin element.
+      const target = event.target as Element | null;
+      if (target && target.closest('.cce-city-marker')) return;
+      this.mapBackgroundClicked.emit();
+    });
+
     this.applySelection();
     this.applyFilter();
+
+    // Mark the map as ready so the visibleCityIds effect can start
+    // running fit-to-filter animations. If a filter is already active
+    // (e.g. user reloaded with state), apply it now.
+    this.isMapReady = true;
+    const initialFilter = this.visibleCityIds();
+    if (initialFilter !== null) this.fitToFilter(initialFilter);
+  }
+
+  /**
+   * Animate the D3 zoom transform so the bounding box of every city in
+   * `ids` fits inside the SVG viewport with a comfortable margin. When
+   * `ids` is `null` (no filter), zoom back out to the world view.
+   *
+   * Called from the constructor `effect()` whenever `visibleCityIds`
+   * changes (which the parent page recomputes on any filter change).
+   */
+  private fitToFilter(ids: readonly string[] | null): void {
+    if (!this.zoom || !this.svgEl?.nativeElement) return;
+    const svg = d3.select(this.svgEl.nativeElement);
+    if (ids === null) {
+      // Filter cleared → reset to world view (zoomIdentity = scale 1, no
+      // pan), animated.
+      svg
+        .transition()
+        .duration(700)
+        .ease(d3.easeCubicInOut)
+        .call(this.zoom.transform, d3.zoomIdentity);
+      return;
+    }
+    if (ids.length === 0) return; // nothing visible — leave map alone
+    const idSet = new Set(ids);
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const c of ALL_CITIES) {
+      if (!idSet.has(c.id)) continue;
+      const p = this.projection([c.lon, c.lat]);
+      if (!p) continue;
+      if (p[0] < minX) minX = p[0];
+      if (p[1] < minY) minY = p[1];
+      if (p[0] > maxX) maxX = p[0];
+      if (p[1] > maxY) maxY = p[1];
+    }
+    if (!Number.isFinite(minX)) return;
+
+    const { width, height } = this.hostEl.nativeElement.getBoundingClientRect();
+    const w = width || 1200;
+    const h = height || 600;
+
+    // For a single-city filter the bbox is a point; force a sensible
+    // default zoom level (~k=4) so the user sees that city in context.
+    let dx = maxX - minX;
+    let dy = maxY - minY;
+    if (dx < 1 && dy < 1) {
+      // Single point — pick a fixed zoom level instead of computing scale.
+      const k = 4;
+      const cx = minX;
+      const cy = minY;
+      const tx = w / 2 - k * cx;
+      const ty = h / 2 - k * cy;
+      svg
+        .transition()
+        .duration(800)
+        .ease(d3.easeCubicInOut)
+        .call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+      return;
+    }
+    // Pad bounds so cities aren't flush against the viewport edge.
+    const padX = Math.max(40, dx * 0.12);
+    const padY = Math.max(40, dy * 0.12);
+    minX -= padX;
+    minY -= padY;
+    maxX += padX;
+    maxY += padY;
+    dx = maxX - minX;
+    dy = maxY - minY;
+
+    // Scale to fit, clamped to the configured zoom extent [1, 12].
+    let k = Math.min(w / dx, h / dy);
+    k = Math.max(1, Math.min(12, k));
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    const tx = w / 2 - k * cx;
+    const ty = h / 2 - k * cy;
+    svg
+      .transition()
+      .duration(800)
+      .ease(d3.easeCubicInOut)
+      .call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
   }
 
   private repositionMarkers(): void {
@@ -559,9 +830,60 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     const id = this.selectedCityId();
     if (id === this.currentSelectedId) return;
     this.currentSelectedId = id;
-    d3.select(this.svgEl.nativeElement)
+    const svg = d3.select(this.svgEl.nativeElement);
+    svg
       .select<SVGGElement>('.cce-world-map__cities')
       .selectAll<SVGGElement, AnyCity>('g.cce-city-marker')
       .classed('cce-city-marker--selected', (d) => d.id === id);
+    // Highlight the selected city's boundary disc too — fill goes from
+    // 14% to 42% opacity, stroke goes from 0.8 to 1.8 px white.
+    svg
+      .select<SVGGElement>('.cce-world-map__city-boundaries')
+      .selectAll<SVGPathElement, unknown>('path')
+      .classed('cce-city-boundary--selected', function () {
+        return (this as SVGPathElement).getAttribute('data-city-id') === id;
+      });
+  }
+
+  /**
+   * Set/clear the hover highlight on the matching boundary disc when a
+   * marker is hovered. Called from `mouseenter`/`mouseleave` handlers
+   * wired up in {@link render}.
+   */
+  private setHover(cityId: string, on: boolean): void {
+    if (!this.svgEl) return;
+    d3.select(this.svgEl.nativeElement)
+      .select<SVGGElement>('.cce-world-map__city-boundaries')
+      .selectAll<SVGPathElement, unknown>('path')
+      .filter(function () {
+        return (this as SVGPathElement).getAttribute('data-city-id') === cityId;
+      })
+      .classed('cce-city-boundary--hover', on);
+  }
+
+  /**
+   * Recompute every per-city boundary geometry from the current
+   * projection and rewrite the `<path>` `d` attributes. Called from
+   * {@link handleResize} after the projection has been refit.
+   */
+  private rebuildBoundaries(): void {
+    const svg = d3.select(this.svgEl.nativeElement);
+    const pathFn = (d: unknown) => this.path(d as never) ?? '';
+    const radiusDeg = (pop: number) =>
+      Math.max(0.15, (Math.log10(Math.max(pop, 100000)) - 4) * 0.22);
+    svg
+      .select<SVGGElement>('.cce-world-map__city-boundaries')
+      .selectAll<SVGPathElement, unknown>('path')
+      .each(function () {
+        const node = this as SVGPathElement;
+        const id = node.getAttribute('data-city-id');
+        const city = ALL_CITIES.find((c) => c.id === id);
+        if (!city) return;
+        const geom = d3
+          .geoCircle()
+          .center([city.lon, city.lat])
+          .radius(radiusDeg(city.population))();
+        node.setAttribute('d', pathFn(geom as never));
+      });
   }
 }

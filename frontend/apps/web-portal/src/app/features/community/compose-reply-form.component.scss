@@ -28,3 +28,45 @@
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
 }
+
+/* "Replying to @handle" banner — appears above the textarea when the
+ * compose form is in threaded-reply mode. */
+.cce-compose-reply__parent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  background: rgba(0, 108, 79, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.2);
+  color: #006c4f;
+  padding: 0.4rem 0.6rem 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+.cce-compose-reply__cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #006c4f;
+  transition: background 0.15s ease;
+
+  mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+  &:hover { background: rgba(0, 108, 79, 0.16); }
+}

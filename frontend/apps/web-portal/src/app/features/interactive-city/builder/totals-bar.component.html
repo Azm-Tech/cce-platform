@@ -1,22 +1,84 @@
 <section class="cce-totals-bar" aria-label="Scenario totals">
   <div class="cce-totals-bar__cells" aria-live="polite">
+    <!-- F009 — city baseline derived from environmental factors -->
+    <div class="cce-totals-bar__cell cce-totals-bar__cell--baseline">
+      <span class="cce-totals-bar__label">
+        {{ 'interactiveCity.totals.baseline' | translate }}
+      </span>
+      <span class="cce-totals-bar__value">
+        {{ baselineKgPerYear() | number }}
+        <span class="cce-totals-bar__unit">
+          {{ 'interactiveCity.totals.carbonUnit' | translate }}
+        </span>
+      </span>
+    </div>
+
+    <!-- Sum of selected technology impacts (negative = reduction) -->
     <div class="cce-totals-bar__cell">
-      <span class="cce-totals-bar__label">{{ 'interactiveCity.totals.carbon' | translate }}</span>
+      <span class="cce-totals-bar__label">
+        {{ 'interactiveCity.totals.carbon' | translate }}
+      </span>
       <span
         class="cce-totals-bar__value"
         [class.cce-totals-bar__value--good]="liveTotals().totalCarbonImpactKgPerYear < 0"
         [class.cce-totals-bar__value--bad]="liveTotals().totalCarbonImpactKgPerYear > 0"
       >
         {{ liveTotals().totalCarbonImpactKgPerYear | number }}
-        <span class="cce-totals-bar__unit">{{ 'interactiveCity.totals.carbonUnit' | translate }}</span>
+        <span class="cce-totals-bar__unit">
+          {{ 'interactiveCity.totals.carbonUnit' | translate }}
+        </span>
       </span>
     </div>
 
+    <!-- F009 — net city footprint + neutrality progress bar -->
+    <div class="cce-totals-bar__cell cce-totals-bar__cell--neutrality">
+      <span class="cce-totals-bar__label">
+        {{ 'interactiveCity.totals.neutralityProgress' | translate }}
+      </span>
+      <span
+        class="cce-totals-bar__value"
+        [class.cce-totals-bar__value--good]="isCarbonNeutral()"
+      >
+        @if (isCarbonNeutral()) {
+          <mat-icon
+            class="cce-totals-bar__neutrality-icon"
+            aria-hidden="true"
+          >verified</mat-icon>
+          {{ 'interactiveCity.totals.neutralityAchieved' | translate }}
+        } @else {
+          {{ neutralityProgressPct() }}<span class="cce-totals-bar__unit">%</span>
+        }
+      </span>
+      <div
+        class="cce-totals-bar__progress"
+        role="progressbar"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="100"
+        [attr.aria-valuenow]="neutralityProgressPct()"
+      >
+        <span
+          class="cce-totals-bar__progress-fill"
+          [class.cce-totals-bar__progress-fill--neutral]="isCarbonNeutral()"
+          [style.width.%]="neutralityProgressPct()"
+        ></span>
+      </div>
+      @if (!isCarbonNeutral()) {
+        <span class="cce-totals-bar__neutrality-gap">
+          {{ netFootprintKgPerYear() | number }}
+          {{ 'interactiveCity.totals.neutralityGap' | translate }}
+        </span>
+      }
+    </div>
+
     <div class="cce-totals-bar__cell">
-      <span class="cce-totals-bar__label">{{ 'interactiveCity.totals.cost' | translate }}</span>
+      <span class="cce-totals-bar__label">
+        {{ 'interactiveCity.totals.cost' | translate }}
+      </span>
       <span class="cce-totals-bar__value">
         {{ liveTotals().totalCostUsd | number }}
-        <span class="cce-totals-bar__unit">{{ 'interactiveCity.totals.costUnit' | translate }}</span>
+        <span class="cce-totals-bar__unit">
+          {{ 'interactiveCity.totals.costUnit' | translate }}
+        </span>
       </span>
     </div>
 
@@ -26,6 +88,18 @@
   </div>
 
   <div class="cce-totals-bar__actions">
+    <!-- F009: auto-pick technologies needed to reach neutrality -->
+    <button
+      type="button"
+      mat-stroked-button
+      class="cce-totals-bar__recommend"
+      [disabled]="isCarbonNeutral()"
+      (click)="recommendNow()"
+    >
+      <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+      <span>{{ 'interactiveCity.totals.recommend' | translate }}</span>
+    </button>
+
     <button
       type="button"
       mat-flat-button

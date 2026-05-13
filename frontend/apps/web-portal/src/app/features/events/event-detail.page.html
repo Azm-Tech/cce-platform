@@ -1,53 +1,215 @@
-<article class="cce-event-detail">
+<section class="cce-event-detail">
   <a class="cce-event-detail__back" routerLink="/events">
-    <mat-icon>arrow_back</mat-icon>
-    {{ 'events.back' | translate }}
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    {{ 'events.backToEvents' | translate }}
   </a>
 
-  @if (loading()) { <p class="cce-event-detail__loading">{{ 'common.loading' | translate }}</p> }
-  @if (errorKind(); as kind) {
-    <div class="cce-event-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-event-detail__progress" />
   }
 
+  <!-- ─── Not-found state ─────────────────────────────────── -->
+  @if (notFound()) {
+    <div class="cce-event-detail__notfound" role="alert">
+      <span class="cce-event-detail__notfound-art" aria-hidden="true">
+        <mat-icon>event_busy</mat-icon>
+      </span>
+      <h1>{{ 'events.detail.notFound' | translate }}</h1>
+      <p>{{ 'events.detail.notFoundDesc' | translate }}</p>
+      <a mat-flat-button color="primary" routerLink="/events">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'events.backToEvents' | translate }}
+      </a>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-event-detail__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+    </div>
+  }
+
+  <!-- ─── Skeleton (initial load) ─────────────────────────── -->
+  @if (loading() && !event()) {
+    <div class="cce-event-detail__skeleton" aria-busy="true">
+      <span class="cce-event-detail__skel-banner"></span>
+      <div class="cce-event-detail__skel-body">
+        @for (s of skeletons; track $index) {
+          <span class="cce-event-detail__skel-line" [class.cce-event-detail__skel-line--lg]="$index === 0"></span>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ─── Hero card ───────────────────────────────────────── -->
   @if (event(); as e) {
-    <mat-card class="cce-event-detail__card">
-      <mat-card-header>
-        <mat-icon mat-card-avatar>{{ e.onlineMeetingUrl ? 'videocam' : 'event' }}</mat-icon>
-        <mat-card-title>{{ title() }}</mat-card-title>
-        <mat-card-subtitle>
-          {{ 'events.startsOn' | translate }}: {{ e.startsOn | date:'medium' }}
-          ·
-          {{ 'events.endsOn' | translate }}: {{ e.endsOn | date:'medium' }}
-        </mat-card-subtitle>
-      </mat-card-header>
-      @if (e.featuredImageUrl) {
-        <img mat-card-image [src]="e.featuredImageUrl" [alt]="title()" />
-      }
-      <mat-card-content>
-        <p class="cce-event-detail__description">{{ description() }}</p>
-        @if (location(); as loc) {
-          <p class="cce-event-detail__location">
-            <mat-icon>{{ e.onlineMeetingUrl ? 'link' : 'place' }}</mat-icon>
-            {{ loc }}
+    <article class="cce-event-detail__card">
+      <div
+        class="cce-event-detail__banner"
+        [class.cce-event-detail__banner--placeholder]="!hasImage()"
+      >
+        @if (hasImage()) {
+          <img
+            class="cce-event-detail__banner-img"
+            [src]="e.featuredImageUrl"
+            [alt]="title()"
+            referrerpolicy="no-referrer"
+            (error)="onImageError()"
+          />
+          <span class="cce-event-detail__banner-overlay" aria-hidden="true"></span>
+        } @else {
+          <span class="cce-event-detail__banner-glow" aria-hidden="true"></span>
+          <span class="cce-event-detail__banner-icon" aria-hidden="true">
+            <mat-icon>{{ isOnline() ? 'videocam' : 'event' }}</mat-icon>
+          </span>
+        }
+
+        <span class="cce-event-detail__day-pill" aria-hidden="true">
+          <span class="cce-event-detail__day-pill-day">{{ e.startsOn | date:'d' }}</span>
+          <span class="cce-event-detail__day-pill-mon">{{ e.startsOn | date:'MMM' }}</span>
+        </span>
+
+        <span class="cce-event-detail__chips" aria-hidden="true">
+          <span
+            class="cce-event-detail__chip cce-event-detail__chip--type"
+            [class.cce-event-detail__chip--online]="isOnline()"
+          >
+            <mat-icon>{{ isOnline() ? 'videocam' : 'place' }}</mat-icon>
+            {{ typeTagKey() | translate }}
+          </span>
+          @switch (timeBucket()) {
+            @case ('live') {
+              <span class="cce-event-detail__chip cce-event-detail__chip--live">
+                <mat-icon>radio_button_checked</mat-icon>
+                {{ 'events.detail.countdownLive' | translate }}
+              </span>
+            }
+            @case ('today') {
+              <span class="cce-event-detail__chip cce-event-detail__chip--today">
+                <mat-icon>today</mat-icon>
+                {{ 'events.tagToday' | translate }}
+              </span>
+            }
+            @case ('past') {
+              <span class="cce-event-detail__chip cce-event-detail__chip--past">
+                <mat-icon>history</mat-icon>
+                {{ 'events.tagPast' | translate }}
+              </span>
+            }
+            @default {
+              <span class="cce-event-detail__chip cce-event-detail__chip--upcoming">
+                <mat-icon>schedule</mat-icon>
+                {{ 'events.tagUpcoming' | translate }}
+              </span>
+            }
+          }
+        </span>
+      </div>
+
+      <header class="cce-event-detail__head">
+        <h1 class="cce-event-detail__title">{{ title() }}</h1>
+        @if (countdown()) {
+          <p class="cce-event-detail__countdown" aria-live="polite">
+            <mat-icon aria-hidden="true">timer</mat-icon>
+            {{ countdown() }}
           </p>
         }
-      </mat-card-content>
-      <mat-card-actions align="end">
+      </header>
+
+      <!-- ─── Meta strip (date · time · venue) ──────────────── -->
+      <ul class="cce-event-detail__meta" role="list">
+        <li>
+          <mat-icon aria-hidden="true">event</mat-icon>
+          <span>
+            <strong>{{ 'events.detail.starts' | translate }}</strong>
+            {{ e.startsOn | date:'fullDate' }}
+            · {{ e.startsOn | date:'shortTime' }}
+          </span>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true">event_available</mat-icon>
+          <span>
+            <strong>{{ 'events.detail.ends' | translate }}</strong>
+            {{ e.endsOn | date:'fullDate' }}
+            · {{ e.endsOn | date:'shortTime' }}
+          </span>
+        </li>
+        <li class="cce-event-detail__meta-loc">
+          <mat-icon aria-hidden="true">{{ isOnline() ? 'link' : 'place' }}</mat-icon>
+          <span>
+            <strong>
+              {{ (isOnline() ? 'events.detail.online' : 'events.detail.venue') | translate }}
+            </strong>
+            @if (venue(); as v) {
+              {{ v }}
+            } @else {
+              {{ 'events.detail.tba' | translate }}
+            }
+          </span>
+        </li>
+      </ul>
+
+      <!-- ─── Description ────────────────────────────────── -->
+      <section class="cce-event-detail__notes">
+        <h2 class="cce-event-detail__section-title">
+          <mat-icon aria-hidden="true">notes</mat-icon>
+          {{ 'events.detail.notesTitle' | translate }}
+        </h2>
+        <p class="cce-event-detail__description">{{ description() }}</p>
+      </section>
+
+      <!-- ─── Action bar ─────────────────────────────────── -->
+      <div class="cce-event-detail__actions">
+        @if (isOnline()) {
+          <button
+            type="button"
+            mat-flat-button
+            color="primary"
+            class="cce-event-detail__action cce-event-detail__action--primary"
+            (click)="openMeeting()"
+          >
+            <mat-icon>open_in_new</mat-icon>
+            <span>{{ 'events.detail.joinOnline' | translate }}</span>
+          </button>
+        } @else if (venue()) {
+          <button
+            type="button"
+            mat-flat-button
+            color="primary"
+            class="cce-event-detail__action cce-event-detail__action--primary"
+            (click)="openInMaps()"
+          >
+            <mat-icon>map</mat-icon>
+            <span>{{ 'events.detail.openInMaps' | translate }}</span>
+          </button>
+        }
+
         <button
           type="button"
-          mat-flat-button
-          color="primary"
+          mat-stroked-button
+          class="cce-event-detail__action"
           (click)="exportToCalendar()"
           [disabled]="downloading()"
         >
           @if (downloading()) {
-            <mat-spinner diameter="20" />
+            <mat-spinner diameter="18" />
+            <span>{{ 'events.detail.downloadingCalendar' | translate }}</span>
           } @else {
             <mat-icon>event_available</mat-icon>
-            {{ 'events.export.openButton' | translate }}
+            <span>{{ 'events.detail.addToCalendar' | translate }}</span>
           }
         </button>
-      </mat-card-actions>
-    </mat-card>
+
+        <button
+          type="button"
+          mat-stroked-button
+          class="cce-event-detail__action"
+          (click)="copyLink()"
+        >
+          <mat-icon>share</mat-icon>
+          <span>{{ 'events.detail.share' | translate }}</span>
+        </button>
+      </div>
+    </article>
   }
-</article>
+</section>

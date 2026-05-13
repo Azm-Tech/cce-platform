@@ -1,6 +1,20 @@
-/* CCE landing page — white hero, multi-section animated marketing page. */
+/* CCE landing page — white hero, multi-section animated marketing page.
+   Breaks out of the shell's 1500px max-width container so the hero,
+   sections, and footer-callouts span the entire viewport. */
 
-:host { display: block; }
+:host {
+  display: block;
+  /* Full-bleed override: nullify shell padding + max-width AND the
+     shell's vertical padding so the hero starts right under the
+     header with no white gap. */
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+}
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; }
+}
 
 .cce-home {
   --cce-bg: #060d1a;

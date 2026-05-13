@@ -1,0 +1,71 @@
+<div class="cce-assistant-dialog" [class.cce-assistant-dialog--empty]="isEmpty()">
+  <header class="cce-assistant-dialog__header">
+    <div class="cce-assistant-dialog__brand">
+      <span class="cce-assistant-dialog__brand-glyph" aria-hidden="true">
+        <mat-icon>smart_toy</mat-icon>
+      </span>
+      <div class="cce-assistant-dialog__brand-text">
+        <span class="cce-assistant-dialog__brand-eyebrow">
+          <span class="cce-assistant-dialog__brand-dot"></span>
+          AI ASSISTANT · BETA
+        </span>
+        <span class="cce-assistant-dialog__brand-title">CCE Assistant</span>
+      </div>
+    </div>
+    <div class="cce-assistant-dialog__actions">
+      <button type="button"
+        mat-icon-button
+        [disabled]="store.messages().length === 0 || store.streaming()"
+        (click)="clearThread()"
+        aria-label="Clear thread">
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+      <button type="button"
+        mat-icon-button
+        (click)="close()"
+        aria-label="Close assistant">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <div class="cce-assistant-dialog__body">
+    @if (isEmpty()) {
+      <div class="cce-assistant-dialog__welcome">
+        <div class="cce-assistant-dialog__hero">
+          <div class="cce-assistant-dialog__hero-glyph" aria-hidden="true">
+            <mat-icon>auto_awesome</mat-icon>
+          </div>
+          <h2 class="cce-assistant-dialog__hero-title">How can I help?</h2>
+          <p class="cce-assistant-dialog__hero-body">
+            Ask anything about the carbon circular economy. I cite my sources.
+          </p>
+        </div>
+
+        <div class="cce-assistant-dialog__suggestions">
+          @for (s of suggestedPrompts; track s.id) {
+            <button
+              type="button"
+              class="cce-assistant-dialog__suggestion"
+              [attr.data-tier]="s.tier"
+              (click)="useSuggestion(s.text)">
+              <span class="cce-assistant-dialog__suggestion-icon">
+                <mat-icon>{{ s.icon }}</mat-icon>
+              </span>
+              <span class="cce-assistant-dialog__suggestion-text">
+                <span class="cce-assistant-dialog__suggestion-tag">{{ s.tag }}</span>
+                <span class="cce-assistant-dialog__suggestion-prompt">{{ s.text }}</span>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <cce-message-list class="cce-assistant-dialog__list" />
+    }
+  </div>
+
+  <div class="cce-assistant-dialog__compose">
+    <cce-compose-box />
+  </div>
+</div>

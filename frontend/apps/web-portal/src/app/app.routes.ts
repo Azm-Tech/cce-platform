@@ -40,6 +40,12 @@ export const appRoutes: Route[] = [
     title: 'CCE — Search',
   },
   {
+    path: 'login',
+    loadComponent: () =>
+      import('./features/account/login.page').then((m) => m.LoginPage),
+    title: 'CCE — Sign in',
+  },
+  {
     path: 'register',
     loadComponent: () =>
       import('./features/account/register.page').then((m) => m.RegisterPage),

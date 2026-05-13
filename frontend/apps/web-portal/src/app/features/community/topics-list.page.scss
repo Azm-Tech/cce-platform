@@ -1,27 +1,14 @@
-:host { display: block; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+/* Topics list — toolbar/grid/skeleton/empty/error shared via global
+ * styles (apps/web-portal/src/styles.scss). */
 
-.cce-topics-list__title { margin: 0 0 1.5rem 0; }
+:host {
+  display: block;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem) 4rem;
+}
 
-.cce-topics-list__error {
-  background: #fdecea;
-  color: #b00020;
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
+.cce-topics-list__progress {
   margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.cce-topics-list__empty {
-  text-align: center;
-  padding: 2rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-.cce-topics-list__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  --mdc-linear-progress-active-indicator-color: #006c4f;
 }

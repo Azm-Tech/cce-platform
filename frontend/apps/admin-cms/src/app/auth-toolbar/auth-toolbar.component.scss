@@ -1,0 +1,32 @@
+/* Auth toolbar — role chip + sign-out polish.
+   The role chip is a small green-tinted pill with a leading dot, so
+   admins always see who they're signed in as without opening a menu. */
+
+.cce-auth-toolbar__role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  margin-inline-end: 0.5rem;
+  background: rgba(15, 139, 108, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.20);
+  color: #006c4f;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.cce-auth-toolbar__role-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #14b88f 0%, #006c4f 100%);
+  box-shadow: 0 0 8px rgba(20, 184, 143, 0.55);
+}
+
+@media (max-width: 640px) {
+  .cce-auth-toolbar__role { display: none; }
+}

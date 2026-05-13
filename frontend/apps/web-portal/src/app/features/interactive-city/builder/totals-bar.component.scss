@@ -1,3 +1,6 @@
+/* Totals bar — modern + simple. Brand greens (was off-brand blue).
+ * Adds the F009 carbon-neutrality progress cell and recommend button. */
+
 :host {
   display: block;
   position: sticky;
@@ -11,64 +14,140 @@
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  padding: 0.875rem 1.25rem;
-  background: rgba(21, 101, 192, 0.06);
-  border: 1px solid rgba(21, 101, 192, 0.18);
-  border-radius: 8px;
-  margin-top: 1.5rem;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+  padding: 1rem 1.25rem;
+  background:
+    radial-gradient(900px 200px at 100% 0%, rgba(20, 184, 143, 0.08), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+  border: 1px solid rgba(0, 108, 79, 0.16);
+  border-radius: 16px;
+  margin-top: 1.25rem;
+  box-shadow: 0 -8px 24px -16px rgba(0, 48, 31, 0.18);
 }
 
 .cce-totals-bar__cells {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem 1.5rem;
   align-items: center;
   flex: 1 1 auto;
+  min-width: 0;
 }
 
 .cce-totals-bar__cell {
   display: flex;
   flex-direction: column;
-  min-width: 140px;
+  min-width: 0;
+  gap: 0.15rem;
 }
 
 .cce-totals-bar__label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: rgba(28, 39, 36, 0.55);
 }
 
 .cce-totals-bar__value {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1c2724;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
 }
 
-.cce-totals-bar__value--good { color: #2e7d32; }
+.cce-totals-bar__value--good { color: #006c4f; }
 .cce-totals-bar__value--bad { color: #c62828; }
 
 .cce-totals-bar__unit {
-  font-size: 0.8125rem;
-  color: rgba(0, 0, 0, 0.55);
-  font-weight: 400;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+}
+
+/* F009 — neutrality progress bar */
+.cce-totals-bar__cell--neutrality {
+  grid-column: span 2;
+}
+.cce-totals-bar__progress {
+  margin-top: 0.4rem;
+  height: 8px;
+  background: rgba(0, 108, 79, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cce-totals-bar__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #006c4f 0%, #14b88f 100%);
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cce-totals-bar__progress-fill--neutral {
+  background: linear-gradient(90deg, #14b88f 0%, #c8a045 100%);
+}
+.cce-totals-bar__neutrality-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #006c4f;
+  margin-inline-end: 0.2rem;
+}
+.cce-totals-bar__neutrality-gap {
+  margin-top: 0.25rem;
+  font-size: 0.74rem;
+  color: rgba(28, 39, 36, 0.6);
+  font-weight: 600;
 }
 
 .cce-totals-bar__summary {
   flex: 1 1 100%;
-  font-size: 0.875rem;
-  color: rgba(0, 0, 0, 0.75);
-  border-top: 1px dashed rgba(21, 101, 192, 0.25);
-  padding-top: 0.5rem;
+  font-size: 0.88rem;
+  color: rgba(28, 39, 36, 0.78);
+  border-top: 1px dashed rgba(0, 108, 79, 0.22);
+  padding-top: 0.55rem;
+  line-height: 1.55;
 }
 
 .cce-totals-bar__actions {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.cce-totals-bar__recommend {
+  border-radius: 999px !important;
+  --mdc-outlined-button-label-text-color: #006c4f;
+  --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.4);
+}
+.cce-totals-bar__recommend:hover:not(:disabled) {
+  background: rgba(0, 108, 79, 0.06) !important;
+}
+.cce-totals-bar__recommend mat-icon {
+  margin-inline-end: 0.25rem;
+}
+
+.cce-totals-bar__run,
+.cce-totals-bar__save {
+  border-radius: 999px !important;
 }
 
 .cce-totals-bar__run mat-spinner,
 .cce-totals-bar__save mat-spinner {
   margin-inline-end: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .cce-totals-bar { flex-direction: column; align-items: stretch; }
+  .cce-totals-bar__actions { justify-content: stretch; }
+  .cce-totals-bar__cell--neutrality { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-totals-bar__progress-fill { transition: none; }
 }

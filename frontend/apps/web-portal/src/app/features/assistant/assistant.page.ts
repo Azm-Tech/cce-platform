@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,59 @@ import {
 import { AssistantStore } from './thread/assistant-store.service';
 import { ComposeBoxComponent } from './thread/compose-box.component';
 import { MessageListComponent } from './thread/message-list.component';
+
+interface SuggestedPrompt {
+  id: string;
+  icon: string;
+  tag: string;
+  tier: 'policy' | 'energy' | 'circular' | 'finance' | 'cities' | 'tech';
+  text: string;
+}
+
+const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
+  {
+    id: 'p1',
+    icon: 'gavel',
+    tag: 'POLICY',
+    tier: 'policy',
+    text: "What are Saudi Vision 2030's headline carbon-reduction targets?",
+  },
+  {
+    id: 'p2',
+    icon: 'wb_sunny',
+    tag: 'ENERGY',
+    tier: 'energy',
+    text: 'Compare green hydrogen production economics at NEOM vs. Yanbu.',
+  },
+  {
+    id: 'p3',
+    icon: 'recycling',
+    tag: 'CIRCULAR ECONOMY',
+    tier: 'circular',
+    text: 'Explain industrial symbiosis with examples from Yanbu Industrial City.',
+  },
+  {
+    id: 'p4',
+    icon: 'account_balance',
+    tag: 'FINANCE',
+    tier: 'finance',
+    text: 'How do compliance and voluntary carbon markets differ?',
+  },
+  {
+    id: 'p5',
+    icon: 'apartment',
+    tag: 'CITIES',
+    tier: 'cities',
+    text: 'What sustainability KPIs does Riyadh use to track progress?',
+  },
+  {
+    id: 'p6',
+    icon: 'memory',
+    tag: 'TECH',
+    tier: 'tech',
+    text: 'How does CCUS work, and where is it being deployed today?',
+  },
+];
 
 /**
  * Top-level page for /assistant. Owns the AssistantStore (provided per
@@ -45,6 +98,17 @@ export class AssistantPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+
+  readonly suggestedPrompts = SUGGESTED_PROMPTS;
+  readonly isEmpty = computed(
+    () => this.store.messages().length === 0 && !this.store.streaming(),
+  );
+
+  /** Click handler for suggested-prompt cards in the empty state. */
+  useSuggestion(text: string): void {
+    if (this.store.streaming()) return;
+    void this.store.sendMessage(text);
+  }
 
   ngOnInit(): void {
     const q = this.route.snapshot.queryParamMap.get('q');

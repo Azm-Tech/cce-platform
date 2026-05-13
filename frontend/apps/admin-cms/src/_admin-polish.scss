@@ -1,0 +1,215 @@
+/* ============================================================
+   Admin-CMS — global polish layer.
+
+   Targets generic admin-page selectors so every list/detail page
+   inherits brand-aligned UX without per-page edits:
+
+     - `<h1>` page titles inside the shell's main → brand-green
+       gradient text + eyebrow chip pattern
+     - Filter rows (`.cce-*-list__filters`) → unified toolbar card
+     - Tables (`.mat-mdc-table` rows) → brand hover + branded header
+     - Paginator (`.mat-mdc-paginator`) → brand-green active controls
+     - Error blocks (`.cce-*__error`) → branded warning pill
+     - Form fields → brand-green focus ring + caret
+
+   All rules are scoped to `.cce-app-shell__main-inner` so they
+   don't leak into the shared ui-kit components used elsewhere.
+   ============================================================ */
+
+.cce-app-shell__main-inner {
+  /* ─── Page titles → branded gradient + eyebrow accent ─── */
+  > :where(h1, .cce-page-h1) {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: -0.018em;
+    background: linear-gradient(135deg, #003a2b 0%, #006c4f 60%, #0f8b6c 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    position: relative;
+    padding-block-start: 0.65rem;
+
+    &::before {
+      content: '';
+      flex: 0 0 auto;
+      width: 4px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #006c4f 0%, #14b88f 60%, #c8a045 100%);
+      -webkit-text-fill-color: initial;
+    }
+  }
+
+  /* ─── Filter rows ─────────────────────────────────────── */
+  > :where(.cce-users-list__filters,
+          .cce-resources-list__filters,
+          .cce-news-list__filters,
+          .cce-events-list__filters,
+          .cce-pages-list__filters,
+          .cce-countries-list__filters,
+          .cce-experts-list__filters,
+          .cce-state-rep-list__filters,
+          .cce-country-resource-request__filters,
+          .cce-audit__filters,
+          .cce-list-filters-row,
+          [data-admin-filters]) {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.1rem;
+    background:
+      radial-gradient(500px 140px at 0% 0%, rgba(20, 184, 143, 0.06), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+    border: 1px solid rgba(0, 108, 79, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 6px 16px -14px rgba(0, 48, 31, 0.22);
+  }
+  /* Inside filter rows, tighten the Material form-field bottom subscript */
+  > :where(.cce-users-list__filters,
+          .cce-resources-list__filters,
+          .cce-news-list__filters,
+          .cce-events-list__filters,
+          .cce-pages-list__filters,
+          .cce-countries-list__filters,
+          .cce-experts-list__filters,
+          .cce-state-rep-list__filters,
+          .cce-country-resource-request__filters,
+          .cce-audit__filters,
+          .cce-list-filters-row,
+          [data-admin-filters]) {
+    .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+    mat-form-field { width: auto; min-width: 220px; flex: 1 1 220px; max-width: 360px; }
+  }
+
+  /* ─── Error blocks → branded warning pill ─────────────── */
+  > :where(.cce-users-list__error,
+          .cce-resources-list__error,
+          .cce-news-list__error,
+          .cce-events-list__error,
+          .cce-pages-list__error,
+          .cce-countries-list__error,
+          .cce-experts-list__error,
+          .cce-state-rep-list__error,
+          .cce-audit__error,
+          .cce-settings__error,
+          .cce-translations__error,
+          .cce-moderation__error,
+          [data-admin-error]) {
+    background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
+    color: #8a1f0d;
+    padding: 0.85rem 1.05rem;
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(176, 0, 32, 0.18);
+    font-weight: 600;
+    box-shadow: 0 6px 16px -14px rgba(176, 0, 32, 0.30);
+  }
+}
+
+/* ─── Material tables — branded header + hover row ───────── */
+.cce-app-shell__main-inner .mat-mdc-table {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 60, 44, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px -18px rgba(0, 48, 31, 0.22);
+}
+.cce-app-shell__main-inner .mat-mdc-header-row {
+  background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important;
+  border-bottom: 1px solid rgba(0, 108, 79, 0.18) !important;
+}
+.cce-app-shell__main-inner .mat-mdc-header-cell {
+  font-weight: 800 !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  color: rgba(0, 60, 44, 0.78) !important;
+}
+.cce-app-shell__main-inner .mat-mdc-row {
+  transition: background 0.15s ease;
+}
+.cce-app-shell__main-inner .mat-mdc-row:hover {
+  background: rgba(20, 184, 143, 0.05) !important;
+}
+.cce-app-shell__main-inner .mat-mdc-cell {
+  font-size: 0.92rem !important;
+  color: #1c2724 !important;
+  border-bottom-color: rgba(0, 60, 44, 0.05) !important;
+}
+
+/* ─── Paginator ──────────────────────────────────────────── */
+.cce-app-shell__main-inner .mat-mdc-paginator {
+  background: transparent !important;
+  padding-top: 0.5rem !important;
+}
+.cce-app-shell__main-inner .mat-mdc-paginator-page-size-label,
+.cce-app-shell__main-inner .mat-mdc-paginator-range-label {
+  color: rgba(28, 39, 36, 0.65) !important;
+  font-weight: 600 !important;
+}
+.cce-app-shell__main-inner .mat-mdc-icon-button.mat-mdc-paginator-navigation-next,
+.cce-app-shell__main-inner .mat-mdc-icon-button.mat-mdc-paginator-navigation-previous,
+.cce-app-shell__main-inner .mat-mdc-icon-button.mat-mdc-paginator-navigation-first,
+.cce-app-shell__main-inner .mat-mdc-icon-button.mat-mdc-paginator-navigation-last {
+  --mdc-icon-button-icon-color: #006c4f;
+}
+
+/* ─── Form fields → brand-green focus ─────────────────────── */
+.cce-app-shell__main-inner {
+  .mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+    background-color: rgba(15, 139, 108, 0.08) !important;
+  }
+  .mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__leading,
+  .mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__notch,
+  .mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__trailing {
+    border-color: #006c4f !important;
+  }
+  .mat-mdc-form-field.mat-focused .mdc-floating-label,
+  .mat-mdc-form-field.mat-focused .mdc-floating-label--float-above {
+    color: #006c4f !important;
+  }
+  .mat-mdc-input-element {
+    caret-color: #006c4f !important;
+  }
+}
+
+/* ─── Buttons — primary stays branded, raise stroked accent ── */
+.cce-app-shell__main-inner {
+  .mat-mdc-raised-button.mat-primary,
+  .mat-mdc-flat-button.mat-primary,
+  .mat-mdc-fab.mat-primary,
+  .mat-mdc-mini-fab.mat-primary {
+    --mdc-protected-button-container-color: #006c4f;
+    --mdc-filled-button-container-color: #006c4f;
+    --mdc-fab-container-color: #006c4f;
+    --mat-mdc-button-persistent-ripple-color: #ffffff;
+  }
+  .mat-mdc-stroked-button {
+    --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.30);
+    --mdc-outlined-button-label-text-color: #006c4f;
+  }
+  .mat-mdc-stroked-button:hover {
+    --mdc-outlined-button-outline-color: #006c4f;
+    background-color: rgba(0, 108, 79, 0.06) !important;
+  }
+}
+
+/* ─── Cards & dialogs picked up by the same brand surface ── */
+.cce-app-shell__main-inner .mat-mdc-card {
+  border: 1px solid rgba(0, 60, 44, 0.08);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 22px -18px rgba(0, 48, 31, 0.20) !important;
+}
+.cce-app-shell__main-inner .mat-mdc-card-title {
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+  color: #1c2724 !important;
+}

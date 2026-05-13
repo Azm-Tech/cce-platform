@@ -1,14 +1,136 @@
-:host { display: block; }
+/* ============================================================
+   Knowledge Center — resource card (SIMPLE edition)
+   ------------------------------------------------------------
+   Clean white card. Hairline border. No gradients, no glows,
+   no shadows, no decorative shapes. Type indicated only by a
+   small colored dot before the type label. Title is the focus.
+   Subtle hover: light tinted background.
+   ============================================================ */
+
+:host {
+  display: block;
+  height: 100%;
+  --type-color: #006c4f;
+}
+
+/* Type colors (used only on the small leading dot + on hover border) */
+.cce-resource-card[data-type="Pdf"]      { --type-color: #dc2626; }
+.cce-resource-card[data-type="Video"]    { --type-color: #7c3aed; }
+.cce-resource-card[data-type="Image"]    { --type-color: #0891b2; }
+.cce-resource-card[data-type="Link"]     { --type-color: #d97706; }
+.cce-resource-card[data-type="Document"] { --type-color: #4f46e5; }
+
+/* ─── Outer link ───────────────────────────────────────── */
 .cce-resource-card {
   display: block;
   text-decoration: none;
   color: inherit;
-  mat-card { transition: box-shadow 0.2s; }
-  &:hover mat-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+  height: 100%;
+  border-radius: 0;
+  position: relative;
 }
+
+/* ─── Inner mat-card ─────────────────────────────────────── */
+::ng-deep .cce-resource-card mat-card {
+  height: 100%;
+  border-radius: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 1rem 1.1rem !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: hidden !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.cce-resource-card:hover ::ng-deep mat-card {
+  border-color: var(--type-color) !important;
+  background: #fafafa !important;
+}
+
+/* ─── Header row ───────────────────────────────────────── */
+::ng-deep .cce-resource-card mat-card-header {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+}
+
+/* Hide the Material avatar — we don't want the colored icon block */
+::ng-deep .cce-resource-card mat-icon[mat-card-avatar] {
+  display: none !important;
+}
+
+/* Type label with leading dot */
+::ng-deep .cce-resource-card mat-card-subtitle {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  color: var(--type-color) !important;
+  margin: 0 !important;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.4rem;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+/* Title */
+::ng-deep .cce-resource-card mat-card-title {
+  font-size: 0.96rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+  line-height: 1.40 !important;
+  color: #1c2724;
+  margin: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Content area */
+::ng-deep .cce-resource-card mat-card-content {
+  padding: 0 !important;
+  margin: auto 0 0 !important;
+}
+
 .cce-resource-card__meta {
   margin: 0;
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.9em;
+  color: rgba(28, 39, 36, 0.55);
+  font-size: 0.78rem;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+
+  &::before { display: none !important; }
 }
-.cce-resource-card__date { margin-inline-start: 0.25rem; }
+
+.cce-resource-card__date {
+  margin-inline-start: 0.3rem;
+  color: rgba(28, 39, 36, 0.45);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  &::before {
+    content: '·';
+    margin-inline-end: 0.4rem;
+    opacity: 0.6;
+  }
+}

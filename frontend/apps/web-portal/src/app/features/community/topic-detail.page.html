@@ -1,52 +1,89 @@
 <section class="cce-topic-detail">
   <a class="cce-topic-detail__back" routerLink="/community">
-    ← {{ 'community.title' | translate }}
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    {{ 'community.detail.backToTopics' | translate }}
   </a>
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-topic-detail__progress" />
+  }
 
+  <!-- ─── Not-found state ─────────────────────────────────── -->
   @if (notFound()) {
     <div class="cce-topic-detail__notfound" role="alert">
+      <span class="cce-topic-detail__notfound-art" aria-hidden="true">
+        <mat-icon>forum</mat-icon>
+      </span>
       <h1>{{ 'community.notFound' | translate }}</h1>
+      <p>{{ 'community.detail.notFoundDesc' | translate }}</p>
+      <a mat-flat-button color="primary" routerLink="/community">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'community.detail.backToTopics' | translate }}
+      </a>
     </div>
   } @else if (errorKind()) {
     <div class="cce-topic-detail__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
       <span>{{ ('errors.' + errorKind()) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
+      <button type="button" (click)="retry()">
         {{ 'errors.retry' | translate }}
       </button>
     </div>
   }
 
+  <!-- ─── Hero header ─────────────────────────────────────── -->
   @if (topic(); as t) {
     <header class="cce-topic-detail__header">
       <div class="cce-topic-detail__title-row">
-        @if (t.iconUrl) {
-          <img class="cce-topic-detail__icon" [src]="t.iconUrl" alt="" width="48" height="48" />
-        } @else {
-          <mat-icon class="cce-topic-detail__icon-fallback" aria-hidden="true">forum</mat-icon>
-        }
-        <h1 class="cce-topic-detail__name">{{ topicName() }}</h1>
+        <span class="cce-topic-detail__icon-wrap" aria-hidden="true">
+          @if (t.iconUrl) {
+            <img class="cce-topic-detail__icon" [src]="t.iconUrl"
+                 [alt]="topicName()" width="48" height="48"
+                 referrerpolicy="no-referrer" />
+          } @else {
+            <mat-icon class="cce-topic-detail__icon-fallback">forum</mat-icon>
+          }
+        </span>
+        <div class="cce-topic-detail__title-text">
+          <span class="cce-topic-detail__eyebrow">
+            <mat-icon aria-hidden="true">forum</mat-icon>
+            {{ 'community.tag' | translate }}
+          </span>
+          <h1 class="cce-topic-detail__name">{{ topicName() }}</h1>
+        </div>
       </div>
+
       <p class="cce-topic-detail__description">{{ topicDescription() }}</p>
+
+      <div class="cce-topic-detail__meta">
+        <span>
+          <mat-icon aria-hidden="true">forum</mat-icon>
+          <strong>{{ total() }}</strong>
+          {{ (total() === 1 ? 'community.detail.postsCountSingular' : 'community.detail.postsCount') | translate:{ count: total() } }}
+        </span>
+      </div>
 
       <div class="cce-topic-detail__actions">
         @if (isAuthenticated()) {
           <button
             type="button"
             mat-stroked-button
+            class="cce-topic-detail__follow"
             cceFollow
             entityType="topic"
             [entityId]="t.id"
           >
+            <mat-icon>star_outline</mat-icon>
             {{ 'follows.followButton' | translate }}
           </button>
           <button
             type="button"
             mat-flat-button
             color="primary"
+            class="cce-topic-detail__compose"
             (click)="openComposeDialog()"
           >
+            <mat-icon>edit</mat-icon>
             {{ 'community.newPostButton' | translate }}
           </button>
         } @else {
@@ -55,26 +92,57 @@
       </div>
     </header>
 
-    <article class="cce-topic-detail__posts">
-      @if (!loading() && posts().length === 0) {
-        <p class="cce-topic-detail__empty">
-          {{ 'community.empty.posts' | translate }}
-        </p>
-      }
+    <!-- ─── Skeleton ──────────────────────────────────────── -->
+    @if (loading() && posts().length === 0) {
+      <div class="cce-topic-detail__skeletons" aria-busy="true">
+        @for (s of skeletons; track $index) {
+          <div class="cce-topic-detail__skeleton">
+            <span class="cce-topic-detail__skeleton-avatar"></span>
+            <div class="cce-topic-detail__skeleton-lines">
+              <span class="cce-topic-detail__skeleton-line cce-topic-detail__skeleton-line--sm"></span>
+              <span class="cce-topic-detail__skeleton-line cce-topic-detail__skeleton-line--lg"></span>
+              <span class="cce-topic-detail__skeleton-line"></span>
+            </div>
+          </div>
+        }
+      </div>
+    }
 
-      @for (p of posts(); track p.id) {
-        <cce-post-summary [post]="p" />
-      }
+    <!-- ─── Empty state ───────────────────────────────────── -->
+    @if (!loading() && posts().length === 0) {
+      <div class="cce-topic-detail__empty">
+        <span class="cce-topic-detail__empty-art" aria-hidden="true">
+          <mat-icon>chat_bubble_outline</mat-icon>
+        </span>
+        <h2>{{ 'community.empty.posts' | translate }}</h2>
+        @if (isAuthenticated()) {
+          <button type="button" mat-flat-button color="primary"
+                  (click)="openComposeDialog()">
+            <mat-icon>edit</mat-icon>
+            {{ 'community.newPostButton' | translate }}
+          </button>
+        }
+      </div>
+    }
 
-      @if (total() > pageSize()) {
-        <mat-paginator
-          [length]="total()"
-          [pageIndex]="page() - 1"
-          [pageSize]="pageSize()"
-          [pageSizeOptions]="[10, 20, 50]"
-          (page)="onPage($event)"
-        />
-      }
-    </article>
+    <!-- ─── Posts ─────────────────────────────────────────── -->
+    @if (posts().length > 0) {
+      <article class="cce-topic-detail__posts">
+        @for (p of posts(); track p.id) {
+          <cce-post-summary [post]="p" />
+        }
+
+        @if (total() > pageSize()) {
+          <mat-paginator
+            class="cce-topic-detail__paginator"
+            [length]="total()"
+            [pageIndex]="page() - 1"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="[10, 20, 50]"
+            (page)="onPage($event)"
+          />
+        }
+      </article>
+    }
   }
 </section>

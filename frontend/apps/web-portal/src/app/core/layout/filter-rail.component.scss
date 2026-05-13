@@ -1,18 +1,49 @@
-.cce-filter-rail__toggle { display: none; }
-.cce-filter-rail {
-  width: 240px;
-  padding: 1rem;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-}
-.cce-filter-rail__title {
-  font-size: 1rem; margin: 0 0 1rem;
+/* Filter rail — fancy edition.
+   The OUTER container styling (sticky, glass, rounded) is set on the
+   custom element itself by the page that hosts it (see e.g.
+   resources-list.page.scss). This file styles the rail's internals:
+   the toggle button (mobile), the title, and the slot wrapper. */
+
+.cce-filter-rail__toggle {
+  display: none;
+  border-radius: 999px !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
-@media (max-width: 768px) {
+.cce-filter-rail {
+  width: 100%;
+  padding: 0;
+  border: none;
+}
+
+.cce-filter-rail__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #006c4f;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  &::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #006c4f, #14b88f);
+    border-radius: 4px;
+    display: inline-block;
+    box-shadow: 0 2px 6px -2px rgba(15, 139, 108, 0.5);
+  }
+}
+
+@media (max-width: 880px) {
   .cce-filter-rail__toggle { display: inline-flex; }
   .cce-filter-rail {
     display: none;
     &.cce-filter-rail--open { display: block; }
-    width: 100%; border-right: none; border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 }

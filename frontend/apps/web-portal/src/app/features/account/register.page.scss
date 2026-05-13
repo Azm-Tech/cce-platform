@@ -1,18 +1,177 @@
+/* ============================================================
+   Register page — polished to match the login screen.
+   Same centered glass card on a brand-tinted backdrop, same
+   brand glyph, same typography rhythm. Form fields are vertical
+   with 0.6rem gaps; submit button is a brand-gradient capsule.
+   ============================================================ */
+
 :host {
   display: block;
-  padding: 3rem 1.5rem;
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  padding-block: 3rem 4rem;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  min-height: calc(100vh - 80px);
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: start;
+}
+
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; padding-block: 2rem 3rem; }
+}
+
+/* ─── Card ─────────────────────────────────────────────── */
+.cce-register {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 44px -16px rgba(0, 48, 31, 0.18);
+  padding: 2rem 2rem 1.75rem;
+}
+
+/* Brand row at top of card */
+.cce-register::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+  box-shadow: 0 4px 10px -4px rgba(15, 139, 108, 0.55);
+  margin-bottom: 1.25rem;
+  vertical-align: middle;
+}
+.cce-register::after {
+  content: 'CCE';
+  display: inline-block;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.10em;
+  color: #006c4f;
+  margin-inline-start: 0.5rem;
+  vertical-align: middle;
+  position: absolute;
+  top: 2rem;
+  inset-inline-start: 2.4rem;
 }
 
 .cce-register__title {
-  margin: 0 0 1rem 0;
-  font-size: 1.75rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.20;
+  color: #1c2724;
 }
 
 .cce-register__body {
-  margin: 0 0 2rem 0;
-  color: rgba(0, 0, 0, 0.7);
-  line-height: 1.5;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: rgba(28, 39, 36, 0.62);
+  line-height: 1.50;
+}
+
+/* ─── Form ─────────────────────────────────────────────── */
+.cce-register__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  .mat-mdc-form-field { width: 100%; }
+}
+
+.cce-register__error {
+  margin: 0 0 0.6rem;
+  padding: 0.65rem 0.85rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.20);
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '⚠';
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+}
+
+/* Submit button — gradient capsule (matches login) */
+.cce-register__form button[type="submit"] {
+  height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  text-transform: uppercase !important;
+  font-size: 0.85rem !important;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.45) !important;
+  margin-top: 0.4rem;
+
+  &[disabled] {
+    background: rgba(28, 39, 36, 0.18) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: none !important;
+  }
+}
+
+.cce-register__hint {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.85rem;
+  color: rgba(28, 39, 36, 0.55);
+  line-height: 1.50;
+  text-align: center;
+}
+
+/* "Sign in with existing account" secondary CTA */
+.cce-register__signin-link {
+  display: block !important;
+  width: 100%;
+  margin-top: 0.5rem !important;
+  font-weight: 700 !important;
+  font-size: 0.92rem !important;
+  color: #006c4f !important;
+  text-align: center;
+  border-radius: 999px !important;
+
+  &:hover { background: rgba(15, 139, 108, 0.08) !important; }
+}
+
+/* ─── Already-signed-in / success state ─────────────────── */
+.cce-register .mat-mdc-flat-button[color="primary"]:not([type="submit"]) {
+  display: block !important;
+  margin: 1rem 0 0;
+  width: 100%;
+  height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
+  color: #fff !important;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .cce-register { padding: 1.5rem 1.25rem; }
+  .cce-register::after { inset-inline-start: 1.85rem; top: 1.5rem; }
 }

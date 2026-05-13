@@ -1,44 +1,104 @@
-<nav
-  class="cce-list-view"
-  [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate"
->
-  @for (group of grouped(); track group.type) {
-    <section
-      class="cce-list-view__section"
-      [attr.data-node-type]="group.type"
-    >
-      <header class="cce-list-view__section-header">
-        <h2>
-          {{ ('knowledgeMaps.detail.nodeType.' + group.type) | translate }}
-        </h2>
-        <span class="cce-list-view__count">{{ group.nodes.length }}</span>
-      </header>
+<div class="cce-list-view-wrap" [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate">
+  <!-- ─── Sort toolbar ─────────────────────────────────────── -->
+  <div class="cce-list-view__toolbar" role="group" [attr.aria-label]="'knowledgeMaps.list.sortLabel' | translate">
+    <span class="cce-list-view__toolbar-label">
+      <mat-icon aria-hidden="true">sort</mat-icon>
+      {{ 'knowledgeMaps.list.sortLabel' | translate }}
+    </span>
+    <div class="cce-list-view__sort">
+      <button
+        type="button"
+        class="cce-list-view__sort-btn"
+        [class.cce-list-view__sort-btn--active]="sortOrder() === 'default'"
+        [attr.aria-pressed]="sortOrder() === 'default'"
+        (click)="setSort('default')"
+      >
+        {{ 'knowledgeMaps.list.sortDefault' | translate }}
+      </button>
+      <button
+        type="button"
+        class="cce-list-view__sort-btn"
+        [class.cce-list-view__sort-btn--active]="sortOrder() === 'alpha'"
+        [attr.aria-pressed]="sortOrder() === 'alpha'"
+        (click)="setSort('alpha')"
+      >
+        {{ 'knowledgeMaps.list.sortAlpha' | translate }}
+      </button>
+    </div>
+  </div>
 
-      @if (group.nodes.length === 0) {
-        <p class="cce-list-view__empty">
-          {{ 'knowledgeMaps.list.noneOfType' | translate }}
-        </p>
-      } @else {
-        <ul class="cce-list-view__list">
-          @for (n of group.nodes; track n.id) {
-            <li>
-              <button
-                type="button"
-                class="cce-list-view__node"
-                [class.cce-list-view__node--selected]="isSelected(n)"
-                [class.cce-list-view__node--dimmed]="isDimmed(n)"
-                [attr.aria-current]="isSelected(n) ? 'true' : null"
-                (click)="onSelect(n)"
-              >
-                <span class="cce-list-view__name">{{ nameOf(n) }}</span>
-                <span class="cce-list-view__edge-count">
-                  {{ outboundCountOf(n) }}
-                </span>
-              </button>
-            </li>
+  <nav class="cce-list-view">
+    @for (group of grouped(); track group.type) {
+      <section
+        class="cce-list-view__section"
+        [class.cce-list-view__section--collapsed]="isCollapsed(group.type)"
+        [attr.data-node-type]="group.type"
+      >
+        <button
+          type="button"
+          class="cce-list-view__section-header"
+          [attr.aria-expanded]="!isCollapsed(group.type)"
+          [attr.aria-label]="(isCollapsed(group.type)
+              ? 'knowledgeMaps.list.expandSection'
+              : 'knowledgeMaps.list.collapseSection') | translate"
+          (click)="toggleCollapsed(group.type)"
+        >
+          <span class="cce-list-view__pip" [attr.data-node-type]="group.type" aria-hidden="true"></span>
+          <h2 class="cce-list-view__section-title">
+            {{ ('knowledgeMaps.detail.nodeType.' + group.type) | translate }}
+          </h2>
+          <span class="cce-list-view__count">{{ group.nodes.length }}</span>
+          <mat-icon class="cce-list-view__chevron" aria-hidden="true">
+            {{ isCollapsed(group.type) ? 'expand_more' : 'expand_less' }}
+          </mat-icon>
+        </button>
+
+        @if (!isCollapsed(group.type)) {
+          @if (group.nodes.length === 0) {
+            <p class="cce-list-view__empty">
+              {{ 'knowledgeMaps.list.noneOfType' | translate }}
+            </p>
+          } @else {
+            <ul class="cce-list-view__list">
+              @for (n of group.nodes; track n.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="cce-list-view__node"
+                    [class.cce-list-view__node--selected]="isSelected(n)"
+                    [class.cce-list-view__node--dimmed]="isDimmed(n)"
+                    [attr.aria-current]="isSelected(n) ? 'true' : null"
+                    (click)="onSelect(n)"
+                  >
+                    <span class="cce-list-view__name">{{ nameOf(n) }}</span>
+
+                    <!-- Edge composition pills -->
+                    @if (breakdownOf(n).total > 0) {
+                      <span class="cce-list-view__edges" aria-hidden="true">
+                        @for (rel of relTypes; track rel) {
+                          @if (breakdownOf(n)[rel] > 0) {
+                            <span
+                              class="cce-list-view__edge"
+                              [attr.data-rel]="rel"
+                              [title]="('knowledgeMaps.list.edges' + rel) | translate"
+                            >
+                              {{ breakdownOf(n)[rel] }}
+                            </span>
+                          }
+                        }
+                      </span>
+                    }
+
+                    <span class="cce-list-view__edge-count">
+                      {{ outboundCountOf(n) }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
           }
-        </ul>
-      }
-    </section>
-  }
-</nav>
+        }
+      </section>
+    }
+  </nav>
+</div>

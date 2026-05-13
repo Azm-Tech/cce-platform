@@ -1,4 +1,4 @@
-<li
+<div
   class="cce-bubble"
   [class.cce-bubble--user]="isUser()"
   [class.cce-bubble--assistant]="isAssistant()"
@@ -37,7 +37,7 @@
       </ul>
     }
 
-    <div class="cce-bubble__actions">
+    <div class="cce-bubble__actions" role="toolbar">
       @if (isComplete() && isAssistant()) {
         <button
           type="button"
@@ -71,4 +71,4 @@
       }
     </div>
   </div>
-</li>
+</div>

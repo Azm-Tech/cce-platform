@@ -48,6 +48,9 @@ export class TopicDetailPage implements OnInit {
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
 
+  /** Skeleton placeholder array used during the initial load. */
+  readonly skeletons = Array.from({ length: 4 });
+
   readonly locale = this.localeService.locale;
   readonly isAuthenticated = this.auth.isAuthenticated;
 

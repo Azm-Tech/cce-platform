@@ -1,5 +1,6 @@
 import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from '@angular/core';
+import { AuthService } from './core/auth/auth.service';
 import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
 import { serverErrorInterceptor } from './core/http/server-error.interceptor';
@@ -33,9 +34,15 @@ export const appConfig: ApplicationConfig = {
       const env = inject(EnvService);
       const translate = inject(TranslateService);
       const locale = inject(LocaleService);
+      const auth = inject(AuthService);
       await env.load();
       translate.setDefaultLang('ar');
       await firstValueFrom(translate.use(locale.locale()));
+      // Bootstrap auth state from /api/me. Without this the SPA never
+      // discovers an existing BFF cookie session — so after a successful
+      // login redirect the header keeps showing the "Sign in" button as
+      // if nothing happened. Tolerates 401 silently (anonymous user).
+      await auth.refresh();
     }),
   ],
 };

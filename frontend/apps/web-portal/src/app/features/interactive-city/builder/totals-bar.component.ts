@@ -52,10 +52,32 @@ export class TotalsBarComponent {
   readonly saving = this.store.saving;
   readonly locale = this.localeService.locale;
 
+  // F009: carbon-neutrality framing surfaced inline in the totals bar.
+  readonly baselineKgPerYear = this.store.baselineKgPerYear;
+  readonly netFootprintKgPerYear = this.store.netFootprintKgPerYear;
+  readonly neutralityProgressPct = this.store.neutralityProgressPct;
+  readonly isCarbonNeutral = this.store.isCarbonNeutral;
+
   serverSummary(): string | null {
     const r = this.serverResult();
     if (!r) return null;
     return this.locale() === 'ar' ? r.summaryAr : r.summaryEn;
+  }
+
+  /** F009: trigger the recommender. Adds the calculated set of techs
+   *  to the current selection. Toasts "already neutral" or "no more
+   *  techs available" when nothing was added. */
+  recommendNow(): void {
+    if (this.isCarbonNeutral()) {
+      this.toast.success('interactiveCity.toasts.recommendNoNeed');
+      return;
+    }
+    const picks = this.store.recommend();
+    if (picks.length === 0) {
+      this.toast.success('interactiveCity.toasts.recommendNoMore');
+      return;
+    }
+    this.toast.success('interactiveCity.toasts.recommendOk');
   }
 
   async runScenario(): Promise<void> {

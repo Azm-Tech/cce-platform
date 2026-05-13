@@ -3,11 +3,15 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { InteractiveCityApiService, type Result } from '../interactive-city-api.service';
 import {
   DEFAULT_CITY_TYPE,
+  DEFAULT_ENV_FACTORS,
   DEFAULT_TARGET_YEAR,
   buildConfigurationJson,
+  computeBaselineFootprintKgPerYear,
   parseConfigurationJson,
+  recommendTechnologies,
   type CityType,
   type CityTechnology,
+  type EnvironmentalFactors,
   type RunResult,
   type SavedScenario,
 } from '../interactive-city.types';
@@ -43,6 +47,9 @@ export class ScenarioBuilderStore {
   readonly name = signal<string>('');
   readonly selectedIds = signal<ReadonlySet<string>>(new Set());
 
+  // ─── F009: Environmental factor inputs ───
+  readonly envFactors = signal<EnvironmentalFactors>({ ...DEFAULT_ENV_FACTORS });
+
   // ─── Server result (cleared by edits, populated by run()) ───
   readonly serverResult = signal<RunResult | null>(null);
 
@@ -77,6 +84,30 @@ export class ScenarioBuilderStore {
     }
     return { totalCarbonImpactKgPerYear: carbon, totalCostUsd: cost };
   });
+
+  /** F009: city-level baseline carbon footprint derived from the
+   *  user-entered environmental factors + city type. */
+  readonly baselineKgPerYear = computed(() =>
+    computeBaselineFootprintKgPerYear(this.envFactors(), this.cityType()),
+  );
+
+  /** F009: net city footprint = baseline + sum of selected technology
+   *  impacts (negative = reduction). When ≤ 0 the scenario reaches
+   *  carbon neutrality. */
+  readonly netFootprintKgPerYear = computed(
+    () => this.baselineKgPerYear() + this.liveTotals().totalCarbonImpactKgPerYear,
+  );
+
+  /** F009: 0..100 progress from the unmitigated baseline down to zero
+   *  net emissions. 100% = neutral or net-negative. */
+  readonly neutralityProgressPct = computed(() => {
+    const baseline = this.baselineKgPerYear();
+    if (baseline <= 0) return 100;
+    const reduction = baseline - Math.max(this.netFootprintKgPerYear(), 0);
+    return Math.max(0, Math.min(100, Math.round((reduction / baseline) * 100)));
+  });
+
+  readonly isCarbonNeutral = computed(() => this.netFootprintKgPerYear() <= 0);
 
   readonly selectedTechnologies = computed(() => {
     const ids = this.selectedIds();
@@ -146,6 +177,51 @@ export class ScenarioBuilderStore {
       return next;
     });
     this.serverResult.set(null);
+  }
+
+  /** F009: update a single environmental factor (clamped to its bounds). */
+  setEnvFactor<K extends keyof EnvironmentalFactors>(
+    key: K,
+    value: EnvironmentalFactors[K],
+  ): void {
+    this.envFactors.update((prev) => ({ ...prev, [key]: value }));
+    this.serverResult.set(null);
+  }
+
+  /** F009: replace all factor values at once (used by URL hydration
+   *  and the "Reset" button). */
+  setEnvFactors(factors: EnvironmentalFactors): void {
+    this.envFactors.set({ ...factors });
+    this.serverResult.set(null);
+  }
+
+  resetEnvFactors(): void {
+    this.envFactors.set({ ...DEFAULT_ENV_FACTORS });
+    this.serverResult.set(null);
+  }
+
+  /**
+   * F009 recommend action. Auto-selects the technologies needed to
+   * close the gap between the baseline (derived from env factors) and
+   * carbon neutrality. Already-selected techs are kept; the recommender
+   * adds to the selection rather than replacing it. Returns the list of
+   * newly added tech ids so callers can toast the count.
+   */
+  recommend(): readonly string[] {
+    const picks = recommendTechnologies({
+      catalog: this.technologies(),
+      selectedIds: this.selectedIds(),
+      baselineKgPerYear: this.baselineKgPerYear(),
+      currentTechSumKgPerYear: this.liveTotals().totalCarbonImpactKgPerYear,
+    });
+    if (picks.length === 0) return picks;
+    this.selectedIds.update((prev) => {
+      const next = new Set(prev);
+      for (const id of picks) next.add(id);
+      return next;
+    });
+    this.serverResult.set(null);
+    return picks;
   }
 
   clear(): void {
@@ -221,6 +297,7 @@ export class ScenarioBuilderStore {
       targetYear: this.targetYear(),
       name: this.name(),
       selectedIds: Array.from(this.selectedIds()),
+      envFactors: this.envFactors(),
     };
   }
 
@@ -229,6 +306,7 @@ export class ScenarioBuilderStore {
     this.targetYear.set(s.targetYear);
     this.name.set(s.name);
     this.selectedIds.set(new Set(s.selectedIds));
+    this.envFactors.set({ ...s.envFactors });
     if (this.hydrating()) this.resetBaseline();
   }
 

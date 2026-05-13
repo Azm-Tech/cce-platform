@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ALL_CITIES, WorldMapComponent, type AnyCity, type FeaturedCity } from './world-map.component';
 
@@ -181,6 +181,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
             [selectedCityId]="selectedCityId()"
             [visibleCityIds]="visibleCityIds()"
             (cityClicked)="onCityClicked($event)"
+            (mapBackgroundClicked)="closePanel()"
           />
         </div>
 
@@ -251,7 +252,9 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
   styleUrl: './world-map.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorldMapPage {
+export class WorldMapPage implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+
   readonly regions = REGIONS;
   readonly totalCities = ALL_CITIES.length;
 
@@ -259,6 +262,29 @@ export class WorldMapPage {
   readonly searchTerm = signal('');
   readonly selectedTiers = signal<Set<CarbonTier>>(new Set(['low', 'medium', 'high']));
   readonly selectedRegion = signal<RegionId>('all');
+
+  ngOnInit(): void {
+    // Deep-link via query params:
+    //   ?q=<text>           — pre-fill the search filter
+    //   ?country=<isoAlpha2>— jump straight to a specific country's
+    //                         cities (used by the country-detail panel
+    //                         "View on World Map" link)
+    const qp = this.route.snapshot.queryParamMap;
+    const q = qp.get('q');
+    if (q && q.trim() !== '') {
+      this.searchTerm.set(q.trim());
+      return;
+    }
+    const cc = (qp.get('country') ?? '').toUpperCase();
+    if (cc.length === 2) {
+      // Find any city for that country code and use its country name
+      // as the search term — the existing search filter matches by
+      // city.country (case-insensitive) so this lands the user on the
+      // cities for their chosen country.
+      const sample = ALL_CITIES.find((c) => c.countryCode === cc);
+      if (sample) this.searchTerm.set(sample.country);
+    }
+  }
 
   readonly filteredCities = computed<readonly AnyCity[]>(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -319,11 +345,23 @@ export class WorldMapPage {
   }
 
   onCityClicked(city: AnyCity): void {
-    this.selectedCityId.set(city.id);
+    // Toggle: clicking the same already-selected pin closes the panel.
+    // Otherwise, switch the panel to show the newly clicked city.
+    if (this.selectedCityId() === city.id) {
+      this.selectedCityId.set(null);
+    } else {
+      this.selectedCityId.set(city.id);
+    }
   }
 
   closePanel(): void {
     this.selectedCityId.set(null);
+  }
+
+  /** Esc key closes the detail panel from anywhere on the page. */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.selectedCityId() !== null) this.closePanel();
   }
 
   isFeatured(city: AnyCity): city is FeaturedCity {

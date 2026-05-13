@@ -1,0 +1,325 @@
+/* ============================================================
+   Translations Management — admin page
+   ============================================================ */
+
+:host {
+  display: block;
+  padding: 1.5rem 2rem 3rem;
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+/* ─── Header ───────────────────────────────────────────── */
+.cce-translations__header {
+  margin-bottom: 1.5rem;
+}
+
+.cce-translations__title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cce-translations__eyebrow {
+  display: inline-block;
+  font-size: 0.70rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #006c4f;
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(15, 139, 108, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  border-radius: 999px;
+}
+
+.cce-translations__title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1c2724;
+}
+
+.cce-translations__subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(28, 39, 36, 0.62);
+  line-height: 1.50;
+  max-width: 580px;
+}
+
+/* Stat tiles */
+.cce-translations__stat-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.cce-translations__stat {
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.10);
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 4px 12px -8px rgba(0, 48, 31, 0.10);
+}
+.cce-translations__stat-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #006c4f;
+  font-variant-numeric: tabular-nums;
+}
+.cce-translations__stat-label {
+  display: block;
+  font-size: 0.70rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+  margin-top: 0.25rem;
+}
+.cce-translations__stat--modified .cce-translations__stat-value { color: #d97706; }
+.cce-translations__stat--modified.cce-translations__stat--clean .cce-translations__stat-value { color: rgba(28, 39, 36, 0.40); }
+
+/* Toolbar */
+.cce-translations__toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+  gap: 1rem;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  flex-wrap: wrap;
+}
+.cce-translations__search { width: 100%; }
+::ng-deep .cce-translations__search .mat-mdc-form-field-subscript-wrapper { display: none; }
+::ng-deep .cce-translations__search .mat-mdc-text-field-wrapper { background: rgba(15, 139, 108, 0.04) !important; }
+
+.cce-translations__chips {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.cce-translations__chip {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  background: #ffffff;
+  color: rgba(28, 39, 36, 0.78);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(15, 139, 108, 0.06);
+    color: #006c4f;
+    border-color: rgba(0, 108, 79, 0.40);
+  }
+  &--active {
+    background: linear-gradient(135deg, #006c4f, #14b88f) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px -4px rgba(15, 139, 108, 0.50);
+  }
+}
+
+.cce-translations__actions {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cce-translations__save-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  padding-inline: 1.2rem !important;
+  background: linear-gradient(135deg, #006c4f, #14b88f) !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.4rem;
+
+  &[disabled] {
+    background: rgba(28, 39, 36, 0.20) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+}
+
+/* ─── Empty ─────────────────────────────────────────────── */
+.cce-translations__empty {
+  background: #ffffff;
+  border: 1px dashed rgba(0, 108, 79, 0.20);
+  border-radius: 14px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: rgba(28, 39, 36, 0.55);
+
+  mat-icon {
+    font-size: 2.2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    color: rgba(15, 139, 108, 0.50);
+    margin-bottom: 0.5rem;
+  }
+  p { margin: 0 0 0.85rem; }
+}
+
+/* ─── Table ─────────────────────────────────────────────── */
+.cce-translations__table {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 22px -10px rgba(0, 48, 31, 0.10);
+}
+
+.cce-translations__row {
+  display: grid;
+  grid-template-columns: 240px 100px 1fr 1fr 100px;
+  gap: 0;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease;
+
+  &:last-child { border-bottom: none; }
+
+  &--head {
+    background: linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: rgba(28, 39, 36, 0.55);
+    .cce-translations__cell { padding-block: 0.85rem; }
+  }
+
+  &:not(.cce-translations__row--head):hover {
+    background: rgba(15, 139, 108, 0.03);
+  }
+  &--dirty {
+    background: rgba(217, 119, 6, 0.05);
+    box-shadow: inset 3px 0 0 #d97706;
+    &:hover { background: rgba(217, 119, 6, 0.08); }
+  }
+}
+
+.cce-translations__cell {
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  color: #1c2724;
+  min-width: 0;
+
+  &--key {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, monospace;
+    font-size: 0.80rem;
+    color: rgba(28, 39, 36, 0.78);
+    code {
+      background: rgba(15, 139, 108, 0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: #006c4f;
+      font-weight: 600;
+      word-break: break-all;
+    }
+  }
+  &--scope { font-size: 0.72rem; }
+  &--meta {
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: rgba(28, 39, 36, 0.50);
+  }
+}
+
+.cce-translations__scope-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  background: rgba(15, 139, 108, 0.10);
+  color: #006c4f;
+  border-radius: 999px;
+}
+.cce-translations__scope-pill[data-scope="auth"]      { background: rgba(124, 58, 237, 0.10); color: #7c3aed; }
+.cce-translations__scope-pill[data-scope="errors"]    { background: rgba(220, 38, 38, 0.10); color: #dc2626; }
+.cce-translations__scope-pill[data-scope="resources"] { background: rgba(8, 145, 178, 0.10); color: #0891b2; }
+.cce-translations__scope-pill[data-scope="events"]    { background: rgba(217, 119, 6, 0.10); color: #d97706; }
+.cce-translations__scope-pill[data-scope="home"]      { background: rgba(79, 70, 229, 0.10); color: #4f46e5; }
+
+.cce-translations__dirty-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d97706;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.55);
+}
+
+.cce-translations__input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #1c2724;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  resize: vertical;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.10);
+  }
+  &:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #006c4f;
+    box-shadow: 0 0 0 2px rgba(15, 139, 108, 0.20);
+  }
+}
+
+/* RTL row reordering */
+:host-context([dir="rtl"]) .cce-translations__row {
+  grid-template-columns: 240px 100px 1fr 1fr 100px;
+}
+
+/* ─── Mobile ────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .cce-translations__row {
+    grid-template-columns: 200px 90px 1fr 1fr 90px;
+  }
+}
+@media (max-width: 880px) {
+  :host { padding: 1rem; }
+  .cce-translations__toolbar {
+    grid-template-columns: 1fr;
+  }
+  .cce-translations__row {
+    grid-template-columns: 1fr;
+    padding: 0.85rem 0;
+    .cce-translations__cell--key,
+    .cce-translations__cell--scope,
+    .cce-translations__cell--meta { padding-block: 0.25rem; }
+  }
+  .cce-translations__row--head { display: none; }
+  .cce-translations__title-row {
+    flex-direction: column;
+  }
+}

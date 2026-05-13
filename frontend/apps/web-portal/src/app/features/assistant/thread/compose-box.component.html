@@ -6,7 +6,9 @@
     <textarea
       id="cce-compose-input"
       class="cce-compose__textarea"
-      rows="1"
+      cdkTextareaAutosize
+      [cdkAutosizeMinRows]="1"
+      [cdkAutosizeMaxRows]="6"
       [formControl]="textControl"
       [placeholder]="'assistant.compose.placeholder' | translate"
       [maxlength]="maxLength"

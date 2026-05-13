@@ -1,74 +1,201 @@
+/* Reply — social-feed comment with avatar tile + bubble. */
+
 :host { display: block; }
 
 .cce-reply {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
+  align-items: flex-start;
 }
 
-.cce-reply--accepted mat-card {
-  border: 2px solid #2e7d32;
+/* Highlight ring when this reply is the active "replying to" target. */
+.cce-reply--highlighted .cce-reply__bubble {
+  border-color: rgba(0, 108, 79, 0.55);
+  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.18);
 }
 
-.cce-reply__accepted-banner {
+/* Wrapper around the bubble + actions + children — keeps the avatar
+ * column lined up with the top of the bubble. */
+.cce-reply__main { min-width: 0; }
+
+.cce-reply__avatar {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background: #d4edda;
-  color: #155724;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 70%, #c8a045 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  flex: 0 0 auto;
 }
 
-.cce-reply__meta {
-  display: flex;
+/* Bubble — like FB / IG comment bubbles. */
+.cce-reply__bubble {
+  background: #f4faf7;
+  border: 1px solid rgba(0, 60, 44, 0.06);
+  border-radius: 14px;
+  padding: 0.65rem 0.95rem 0.55rem;
+  min-width: 0;
+}
+
+/* Accepted-answer ribbon — leans into the brand greens. */
+.cce-reply--accepted .cce-reply__bubble {
+  background: linear-gradient(135deg, rgba(20, 184, 143, 0.08) 0%, rgba(0, 108, 79, 0.08) 100%);
+  border-color: rgba(20, 184, 143, 0.45);
+  box-shadow: 0 0 0 2px rgba(20, 184, 143, 0.18);
+}
+
+.cce-reply__accepted {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1e6b3a;
+  background: linear-gradient(135deg, rgba(20, 184, 143, 0.22), rgba(0, 108, 79, 0.18));
+  border: 1px solid rgba(20, 184, 143, 0.35);
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.45rem;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
 }
 
-.cce-reply__author {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.8rem;
-  color: rgba(0, 0, 0, 0.55);
+/* ─── Head ──────────────────────────────────────────────── */
+.cce-reply__head { margin-bottom: 0.25rem; }
+
+.cce-reply__author-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+.cce-reply__author-name {
+  font-weight: 700;
+  color: #1c2724;
+  letter-spacing: -0.005em;
+}
+.cce-reply__author-handle {
+  color: rgba(28, 39, 36, 0.55);
+  font-weight: 500;
+  font-size: 0.78rem;
 }
 
 .cce-reply__expert {
-  background: #fff3cd;
-  color: #856404;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #6b4f0a;
+  background: linear-gradient(135deg, rgba(200, 160, 69, 0.22), rgba(212, 185, 105, 0.26));
+  border: 1px solid rgba(200, 160, 69, 0.36);
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+
+  mat-icon { font-size: 12px; width: 12px; height: 12px; }
 }
 
 .cce-reply__lang {
-  background: #e3f2fd;
-  color: #0d47a1;
-  padding: 0.1rem 0.5rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+  background: rgba(28, 39, 36, 0.05);
+  border: 1px solid rgba(28, 39, 36, 0.1);
+  padding: 0.16rem 0.45rem;
   border-radius: 999px;
-  font-size: 0.7rem;
 }
 
-.cce-reply__date {
-  color: rgba(0, 0, 0, 0.45);
-  margin-inline-start: auto;
-}
-
+/* ─── Body ───────────────────────────────────────────────── */
 .cce-reply__content {
-  margin: 0.25rem 0;
-  white-space: pre-wrap;
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.92rem;
   line-height: 1.55;
+  color: #1c2724;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
-.cce-reply__footer {
+/* ─── Foot ───────────────────────────────────────────────── */
+.cce-reply__foot {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+.cce-reply__time {
+  font-size: 0.74rem;
+  color: rgba(28, 39, 36, 0.55);
+  font-weight: 500;
+}
+
+/* ─── Action row (Like / Dislike / Reply) ───────────────── */
+.cce-reply__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+  padding-inline-start: 0.4rem;
+}
+
+.cce-reply__reply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(28, 39, 36, 0.65);
+  border-radius: 8px;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  &:hover {
+    color: #006c4f;
+    background: rgba(0, 108, 79, 0.06);
+  }
+}
+
+/* Inline reply composer — appears below the bubble when this reply
+ * is the active "replying to" target. */
+.cce-reply__composer {
+  margin: 0.65rem 0 0.25rem;
+}
+
+/* ─── Nested children (threaded replies) ────────────────── */
+.cce-reply__children {
+  margin-top: 0.65rem;
+  padding-inline-start: 0.6rem;
+  border-inline-start: 2px solid rgba(0, 108, 79, 0.16);
+}
+.cce-reply__children > .cce-reply:last-child { margin-bottom: 0; }
+
+@media (max-width: 540px) {
+  .cce-reply__children {
+    padding-inline-start: 0.4rem;
+  }
+  .cce-reply__reply-btn span { display: none; }
 }

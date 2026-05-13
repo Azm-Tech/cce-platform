@@ -150,6 +150,14 @@
     "retry": "إعادة المحاولة"
   },
   "nav": {
+    "sidebarLabel": "تنقّل لوحة الإدارة",
+    "group": {
+      "people": "المستخدمون والصلاحيات",
+      "publishing": "النشر",
+      "knowledge": "المعرفة",
+      "operations": "العمليات",
+      "system": "النظام"
+    },
     "home": "الرئيسية",
     "knowledgeCenter": "مركز المعرفة",
     "users": "المستخدمون",
@@ -168,10 +176,18 @@
     "notifications": "الإشعارات",
     "reports": "التقارير",
     "audit": "سجل التدقيق",
+    "translations": "الترجمات",
+    "settings": "الإعدادات",
     "knowledgeMaps": "الخرائط المعرفية",
     "interactiveCity": "المدينة التفاعلية",
     "worldMap": "خريطة العالم",
-    "assistant": "المساعد"
+    "assistant": "المساعد",
+    "discover": "اكتشف",
+    "discoverDesc": {
+      "knowledgeCenter": "قراءات وموجزات ومراجع منسقة",
+      "worldMap": "خريطة تفاعلية للمدن والمناطق",
+      "countries": "ملفات الدول ومؤشرات كابسارك"
+    }
   },
   "header": {
     "signIn": "تسجيل الدخول",
@@ -339,6 +355,8 @@
   },
   "resources": {
     "title": "الموارد",
+    "subtitle": "تقارير وموجزات وبيانات ومراجع منسقة حول الاقتصاد الدائري للكربون.",
+    "eyebrow": "مركز المعرفة · الموارد",
     "col": {
       "title": "العنوان",
       "type": "النوع",
@@ -422,6 +440,8 @@
   },
   "news": {
     "title": "الأخبار",
+    "subtitle": "أحدث القصص والإعلانات وتحديثات السياسات في مجال الاقتصاد الدائري للكربون.",
+    "eyebrow": "الأخبار · آخر التحديثات",
     "col": {
       "title": "العنوان",
       "slug": "الرابط",
@@ -471,14 +491,39 @@
       "toast": "تم حذف الخبر."
     },
     "empty": "لا توجد أخبار منشورة بعد.",
+    "emptyDesc": "ستظهر القصص التي ينشرها فريق التحرير هنا.",
     "back": "العودة إلى الأخبار",
     "publishedOn": "نُشر في",
     "featured": {
-      "toggle": "عرض المميزة فقط"
+      "toggle": "المميزة فقط",
+      "tag": "مميّز"
+    },
+    "tag": "مقال",
+    "searchPlaceholder": "ابحث في المقالات بالعنوان أو المقتطف…",
+    "filteredEmpty": "لا توجد مقالات مطابقة لبحثك.",
+    "clearSearch": "مسح",
+    "readArticle": "اقرأ المقال",
+    "draft": "مسودة",
+    "filters": {
+      "open": "الفلاتر",
+      "status": "الحالة",
+      "statusAll": "الكل",
+      "statusFeatured": "المميزة",
+      "statusDraft": "المسودات",
+      "dateRange": "تاريخ النشر",
+      "from": "من",
+      "to": "إلى",
+      "sort": "ترتيب حسب",
+      "sortNewest": "الأحدث أولاً",
+      "sortOldest": "الأقدم أولاً",
+      "active": "الفلاتر النشطة",
+      "clearAll": "مسح الكل"
     }
   },
   "events": {
     "title": "الفعاليات",
+    "subtitle": "مؤتمرات وندوات وورش عمل تشكّل مستقبل المدن منخفضة الكربون.",
+    "eyebrow": "الفعاليات · القادمة والمنتهية",
     "col": {
       "title": "العنوان",
       "startsOn": "البداية",
@@ -529,12 +574,79 @@
       "toast": "تم حذف الفعالية."
     },
     "empty": "لا توجد فعاليات قادمة.",
+    "emptyDesc": "ستظهر الفعاليات القادمة هنا فور الإعلان عنها.",
     "back": "العودة إلى الفعاليات",
+    "backToEvents": "كل الفعاليات",
     "startsOn": "البداية",
     "endsOn": "النهاية",
+    "duration": "المدة",
     "location": {
       "online": "عبر الإنترنت",
       "tba": "المكان قيد التحديد"
+    },
+    "detail": {
+      "notFound": "لم يتم العثور على الفعالية.",
+      "notFoundDesc": "ربما تم نقل الفعالية التي تبحث عنها أو إزالتها.",
+      "notesTitle": "عن هذه الفعالية",
+      "logisticsTitle": "اللوجستيات",
+      "starts": "البداية",
+      "ends": "النهاية",
+      "venue": "المكان",
+      "online": "اجتماع عبر الإنترنت",
+      "tba": "سيُعلَن عن المكان لاحقًا",
+      "joinOnline": "انضم عبر الإنترنت",
+      "openInMaps": "فتح في الخرائط",
+      "addToCalendar": "إضافة إلى التقويم",
+      "downloadingCalendar": "جارٍ التحضير…",
+      "share": "مشاركة",
+      "shareCopiedToast": "تم نسخ رابط الفعالية.",
+      "save": "حفظ",
+      "countdownIn": "تبدأ خلال {{value}} {{unit}}",
+      "countdownToday": "تبدأ اليوم",
+      "countdownLive": "جارية الآن",
+      "countdownEndedAgo": "انتهت منذ {{value}} {{unit}}",
+      "unitMinute": "دقيقة",
+      "unitMinutes": "دقائق",
+      "unitHour": "ساعة",
+      "unitHours": "ساعات",
+      "unitDay": "يوم",
+      "unitDays": "أيام",
+      "unitWeek": "أسبوع",
+      "unitWeeks": "أسابيع"
+    },
+    "tag": "فعالية",
+    "tagOnline": "عبر الإنترنت",
+    "tagInPerson": "حضوري",
+    "tagWebinar": "ندوة",
+    "tagUpcoming": "قادمة",
+    "tagPast": "منتهية",
+    "tagToday": "اليوم",
+    "searchPlaceholder": "ابحث في الفعاليات بالعنوان أو المكان…",
+    "filteredEmpty": "لا توجد فعاليات مطابقة للفلاتر.",
+    "clearSearch": "مسح",
+    "clearFilters": "مسح الفلاتر",
+    "viewEvent": "اعرض الفعالية",
+    "filterFromShort": "من",
+    "filterToShort": "إلى",
+    "filters": {
+      "open": "الفلاتر",
+      "type": "النوع",
+      "typeAll": "الكل",
+      "typeOnline": "عبر الإنترنت",
+      "typeInPerson": "حضوري",
+      "when": "متى",
+      "whenAll": "الكل",
+      "whenUpcoming": "قادمة",
+      "whenToday": "اليوم",
+      "whenPast": "منتهية",
+      "dateRange": "نطاق التاريخ",
+      "from": "من",
+      "to": "إلى",
+      "sort": "ترتيب حسب",
+      "sortSoonest": "الأقرب أولاً",
+      "sortLatest": "الأبعد أولاً",
+      "active": "الفلاتر النشطة",
+      "clearAll": "مسح الكل"
     },
     "export": {
       "openButton": "إضافة إلى التقويم",
@@ -692,10 +804,58 @@
       "message": "هل تريد حذف هذا الرد؟ يحتفظ السجل به للتدقيق.",
       "confirm": "حذف",
       "toast": "تم حذف الرد."
+    },
+    "empty": "لا توجد منشورات تطابق الفلاتر.",
+    "filter": {
+      "search": "ابحث في المحتوى",
+      "status": "الحالة",
+      "topic": "الموضوع",
+      "allTopics": "كل المواضيع",
+      "locale": "اللغة",
+      "allLocales": "كل اللغات",
+      "clear": "إعادة التعيين"
+    },
+    "statusOption": {
+      "all": "كل المنشورات",
+      "active": "النشطة فقط",
+      "deleted": "محذوفة",
+      "question": "أسئلة مفتوحة",
+      "answered": "تمّت الإجابة"
+    },
+    "col": {
+      "status": "الحالة",
+      "content": "المحتوى",
+      "topic": "الموضوع",
+      "replies": "الردود",
+      "locale": "اللغة",
+      "createdOn": "تاريخ النشر",
+      "actions": "الإجراءات"
+    },
+    "chip": {
+      "question": "سؤال",
+      "answered": "تمّت الإجابة",
+      "discussion": "نقاش",
+      "deleted": "محذوف"
+    },
+    "action": {
+      "delete": "حذف المنشور",
+      "viewOnPortal": "فتح المنشور في البوابة العامة",
+      "viewReplies": "فتح الردود في البوابة",
+      "copyId": "نسخ معرّف المنشور",
+      "copyLink": "نسخ الرابط العام",
+      "copyIdToast": "تم نسخ معرّف المنشور.",
+      "copyLinkToast": "تم نسخ الرابط العام.",
+      "moreActions": "المزيد من الإجراءات"
+    },
+    "quick": {
+      "title": "إجراء سريع — حذف رد عبر المعرّف",
+      "help": "ألصق معرّف أي رد لحذفه دون البحث عن المنشور الأصلي في الجدول."
     }
   },
   "countries": {
     "title": "الدول",
+    "subtitle": "ملفات الدول ومؤشرات كابسارك ولقطات إزالة الكربون عبر دول مجلس التعاون وما بعدها.",
+    "eyebrow": "الدول · ملفات ومؤشرات",
     "search": {
       "placeholder": "ابحث في الدول…"
     },
@@ -758,6 +918,24 @@
     "error": "تعذّر تحميل لقطة كابسارك."
   },
   "account": {
+    "login": {
+      "title": "تسجيل الدخول إلى CCE",
+      "subtitle": "أهلاً بعودتك. سجّل الدخول ببريدك الإلكتروني أو اختر شخصية تجريبية أدناه.",
+      "emailLabel": "البريد الإلكتروني",
+      "passwordLabel": "كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "submitButton": "تسجيل الدخول",
+      "submittingButton": "جارٍ تسجيل الدخول…",
+      "errorInvalid": "بريد إلكتروني أو كلمة مرور غير صحيحة.",
+      "errorGeneric": "تعذّر تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+      "orDemoAs": "أو سجّل الدخول كشخصية تجريبية",
+      "noAccount": "ليس لديك حساب؟",
+      "register": "أنشئ حساباً",
+      "alreadySignedIn": "أنت مسجّل الدخول بالفعل.",
+      "openProfile": "افتح ملفي الشخصي"
+    },
     "register": {
       "title": "أنشئ حسابك في CCE",
       "body": "سجّل للوصول إلى المعرفة المنسقة من الخبراء، وحفظ السيناريوهات، والانضمام إلى نقاشات المجتمع.",
@@ -900,6 +1078,56 @@
   },
   "community": {
     "title": "المجتمع",
+    "subtitle": "نقاشات وأسئلة وإجابات من الباحثين والممارسين والخبراء عبر الشبكة.",
+    "eyebrow": "المجتمع · النقاشات",
+    "tag": "موضوع",
+    "searchPlaceholder": "ابحث في المواضيع بالاسم أو الوصف…",
+    "filteredEmpty": "لا توجد مواضيع مطابقة لبحثك.",
+    "clearSearch": "مسح",
+    "openTopic": "افتح الموضوع",
+    "openPost": "افتح المنشور",
+    "emptyDesc": "ستظهر المواضيع التي ينشرها المشرفون هنا.",
+    "detail": {
+      "backToTopics": "كل المواضيع",
+      "backToCommunity": "العودة إلى المجتمع",
+      "notFoundDesc": "ربما تم نقل الموضوع الذي تبحث عنه أو إزالته.",
+      "postNotFoundDesc": "ربما تم نقل المنشور الذي تبحث عنه أو إزالته.",
+      "postsCount": "{{count}} منشور",
+      "postsCountSingular": "{{count}} منشور",
+      "repliesCount": "{{count}} رد",
+      "repliesCountSingular": "{{count}} رد",
+      "noReplies": "لا توجد ردود بعد",
+      "questionTag": "سؤال",
+      "discussionTag": "نقاش",
+      "resolvedTag": "تمّت الإجابة",
+      "askedBy": "نُشر",
+      "repliedBy": "ردّ",
+      "repliesTitle": "الردود",
+      "composeTitle": "أضِف ردًا",
+      "actionReply": "ردّ",
+      "actionShare": "مشاركة",
+      "actionSave": "حفظ",
+      "actionSaved": "محفوظ",
+      "actionMore": "المزيد",
+      "shareCopiedToast": "تم نسخ الرابط.",
+      "memberHandle": "عضو",
+      "actionLike": "إعجاب",
+      "actionLiked": "أُعجبت",
+      "actionDislike": "عدم إعجاب",
+      "actionDisliked": "لم يعجبني",
+      "replyToReply": "رد على {{handle}}",
+      "cancelReply": "إلغاء الرد",
+      "replyToCommentLabel": "ردّ"
+    },
+    "filters": {
+      "open": "الفلاتر",
+      "sort": "ترتيب حسب",
+      "sortDefault": "الافتراضي",
+      "sortAlpha": "أ → ي",
+      "sortAlphaReverse": "ي → أ",
+      "active": "الفلاتر النشطة",
+      "clearAll": "مسح الكل"
+    },
     "newPostButton": "منشور جديد",
     "signInToPost": "سجّل الدخول للنشر.",
     "signInToReply": "سجّل الدخول للرد.",
@@ -937,8 +1165,20 @@
   },
   "knowledgeMaps": {
     "title": "خرائط المعرفة",
+    "subtitle": "أطالس مرئية تربط بين التقنيات والقطاعات والموضوعات الفرعية في الاقتصاد الدائري للكربون.",
+    "eyebrow": "خرائط المعرفة · أطلس",
     "comingSoon": "عرض الرسم البياني التفصيلي قادم في المشروع الفرعي 7. اليوم: استعرض الخرائط المتاحة.",
+    "searchPlaceholder": "ابحث عن خريطة بالاسم أو الموضوع…",
+    "filteredEmpty": "لا توجد خرائط مطابقة لبحثك.",
+    "clearSearch": "مسح",
+    "openMap": "افتح الخريطة",
+    "backToList": "كل خرائط المعرفة",
+    "metaNodes": "العقد",
+    "metaEdges": "الروابط",
+    "metaTabs": "علامات التبويب المفتوحة",
+    "notFoundDesc": "ربما تم نقل الخريطة التي تبحث عنها أو إزالتها.",
     "empty": "لا توجد خرائط معرفة بعد.",
+    "emptyDesc": "ستظهر الخرائط التي ينشرها فريق التحرير هنا.",
     "notFound": "لم يتم العثور على خريطة المعرفة.",
     "viewerPlaceholder": "سيتم تركيب عارض الرسم البياني هنا بمجرد إصدار المرحلة 02.",
     "search": {
@@ -952,7 +1192,26 @@
       "close": "إغلاق علامة التبويب"
     },
     "list": {
-      "noneOfType": "لا توجد عقد من هذا النوع."
+      "noneOfType": "لا توجد عقد من هذا النوع.",
+      "sortLabel": "ترتيب",
+      "sortDefault": "الترتيب الافتراضي",
+      "sortAlpha": "أ → ي",
+      "collapseSection": "طيّ القسم",
+      "expandSection": "توسيع القسم",
+      "edgesParentOf": "أصل",
+      "edgesRelatedTo": "مرتبط",
+      "edgesRequiredBy": "متطلّب"
+    },
+    "graph": {
+      "zoomIn": "تكبير",
+      "zoomOut": "تصغير",
+      "fit": "ملاءمة الشاشة",
+      "center": "إعادة الضبط",
+      "legendTitle": "وسيلة الإيضاح",
+      "legendOpen": "إظهار الإيضاح",
+      "legendClose": "إخفاء الإيضاح",
+      "allDimmed": "لا توجد عقد تطابق بحثك أو فلاترك.",
+      "allDimmedClear": "مسح الفلاتر"
     },
     "viewMode": {
       "graph": "عرض الرسم البياني",
@@ -988,7 +1247,14 @@
     "empty": "لا توجد تقنيات بعد.",
     "builder": {
       "title": "ابنِ السيناريو",
-      "subtitle": "اختر التقنيات وشاهد إجمالي الكربون والتكلفة مباشرة.",
+      "subtitle": "حدّد العوامل البيئية للمدينة، اختر التقنيات، وتابع المسار نحو الحياد الكربوني مباشرة.",
+      "eyebrow": "المدينة التفاعلية · أداة بناء السيناريو",
+      "step1Label": "حدّد العوامل البيئية",
+      "step1Desc": "اضبط النقل العام والطاقة المتجددة والتدوير وغيرها",
+      "step2Label": "اختر التقنيات",
+      "step2Desc": "تصفّح الكتالوج وأضف ما تحتاجه مدينتك",
+      "step3Label": "اِبلغ الحياد",
+      "step3Desc": "تابع التحديثات الحية — أغلق الفجوة إلى صفر صافٍ",
       "name": "اسم السيناريو",
       "namePlaceholder": "سيناريو بدون عنوان",
       "cityType": "نوع المدينة",
@@ -997,6 +1263,26 @@
       "unsavedChangesBody": "تحميل سيناريو آخر سيستبدل اختياراتك الحالية.",
       "unsavedChangesConfirm": "تجاهل وتحميل",
       "unsavedChangesCancel": "متابعة التحرير"
+    },
+    "factors": {
+      "eyebrow": "العوامل البيئية",
+      "title": "الوضع الحالي للمدينة",
+      "subtitle": "أدخل قيم العوامل البيئية الحالية للمحافظة. تتحدّث البصمة الأساسية تلقائياً مع كل تعديل.",
+      "baseline": "البصمة الأساسية",
+      "reset": "إعادة الضبط",
+      "unitKm": "كم/يوم",
+      "publicTransportPct": "نسبة استخدام المواصلات العامة",
+      "publicTransportPctHelp": "نسبة الرحلات التي تتم عبر الحافلات والمترو والقطارات.",
+      "avgTransportKmPerDay": "متوسط مسافة النقل اليومية",
+      "avgTransportKmPerDayHelp": "الكيلومترات التي يقطعها الفرد يومياً في المتوسط.",
+      "renewableEnergyPct": "نسبة الطاقة المتجددة",
+      "renewableEnergyPctHelp": "نسبة الكهرباء المولّدة من مصادر متجددة.",
+      "wasteRecyclingPct": "نسبة تدوير النفايات",
+      "wasteRecyclingPctHelp": "نسبة النفايات البلدية المعاد تدويرها أو معالجتها بسماد.",
+      "greenSpacePct": "نسبة المساحات الخضراء",
+      "greenSpacePctHelp": "نسبة مساحة المدينة المغطاة بحدائق ومناطق طبيعية.",
+      "industrialIntensity": "كثافة الانبعاثات الصناعية",
+      "industrialIntensityHelp": "مؤشر 0–100 — الأعلى يعني نشاطاً صناعياً أكبر."
     },
     "cityType": {
       "Coastal": "ساحلية",
@@ -1026,6 +1312,11 @@
       "carbonUnit": "كغ CO₂ / سنة",
       "cost": "التكلفة",
       "costUnit": "دولار",
+      "baseline": "البصمة الأساسية للمدينة",
+      "neutralityProgress": "الحياد الكربوني",
+      "neutralityAchieved": "حياد كربوني",
+      "neutralityGap": "كغ CO₂ / سنة عن الحياد",
+      "recommend": "اقترح التقنيات",
       "run": "تشغيل",
       "running": "جارٍ التشغيل…",
       "save": "حفظ",
@@ -1056,7 +1347,10 @@
     "toasts": {
       "runOk": "تم حساب السيناريو.",
       "saveOk": "تم حفظ السيناريو.",
-      "deleteOk": "تم حذف السيناريو."
+      "deleteOk": "تم حذف السيناريو.",
+      "recommendOk": "تمت إضافة التقنيات الموصى بها إلى سيناريوك.",
+      "recommendNoNeed": "لقد بلغت الحياد الكربوني — لا حاجة لتوصية.",
+      "recommendNoMore": "لا توجد تقنيات إضافية لخفض الكربون في الكتالوج."
     }
   },
   "assistant": {

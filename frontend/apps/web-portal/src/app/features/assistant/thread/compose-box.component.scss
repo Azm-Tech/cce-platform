@@ -1,13 +1,41 @@
+/* ============================================================
+   Assistant compose box — floating glass card UX
+   • Sticks to the bottom of the assistant page
+   • Auto-grows on multi-line input (max ~240px)
+   • Brand-green focus ring + glow halo
+   • Send button = gradient capsule with icon
+   • Stop button (during streaming) = warn-red outlined
+   • Subtle keyboard hint visible at idle
+   ============================================================ */
+
 :host {
   display: block;
-  position: sticky;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(6px);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 0.75rem 0;
+  padding-block: 0.85rem 0.5rem;
 }
 
+.cce-compose {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(0, 108, 79, 0.15);
+  border-radius: 18px;
+  padding: 0.6rem 0.6rem 0.6rem 0.85rem;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 14px 32px -14px rgba(0, 48, 31, 0.20);
+  transition: border-color 0.20s ease, box-shadow 0.20s ease;
+  position: relative;
+
+  &:focus-within {
+    border-color: #006c4f;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 0 0 3px rgba(15, 139, 108, 0.16),
+      0 14px 32px -14px rgba(0, 48, 31, 0.22);
+  }
+}
+
+/* Visually-hidden label kept for a11y */
 .cce-compose__label {
   position: absolute;
   width: 1px;
@@ -26,33 +54,107 @@
   align-items: flex-end;
 }
 
+/* ─── Textarea ─────────────────────────────────────────── */
 .cce-compose__textarea {
   flex: 1 1 auto;
-  resize: vertical;
+  width: 100%;
+  /* `cdkTextareaAutosize` controls height now; we just bound it
+     to one line minimum and let the directive grow up to 6 rows. */
+  resize: none;
   min-height: 44px;
-  max-height: 240px;
   font: inherit;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  border-radius: 8px;
-  background: #fff;
-  line-height: 1.5;
+  font-size: 0.96rem;
+  letter-spacing: -0.005em;
+  line-height: 1.55;
+  padding: 0.65rem 0.85rem;
+  border: none !important;
+  border-radius: 12px;
+  background: transparent !important;
+  color: #1c2724;
+  caret-color: #006c4f;
+  outline: none !important;
+  box-shadow: none !important;
+  overflow-y: auto; /* allow scroll once 6-row max is hit */
+  transition: background-color 0.18s ease;
+
+  &::placeholder {
+    color: rgba(28, 39, 36, 0.45);
+    font-weight: 500;
+  }
+  &:hover:not(:disabled):not([readonly]) {
+    background: rgba(15, 139, 108, 0.04) !important;
+  }
+  &:focus-visible {
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 
-.cce-compose__textarea:focus-visible {
-  outline: 2px solid #1565c0;
-  outline-offset: 1px;
-  border-color: transparent;
-}
-
+/* ─── Action button (send / stop) ──────────────────────── */
 .cce-compose__action {
   flex: 0 0 auto;
   height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  padding-inline: 1.25rem !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.4rem;
 }
 
+/* Primary send button — brand-gradient capsule */
+.cce-compose__action[color="primary"],
+.cce-compose__action.mat-primary {
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.55) !important;
+
+  &:hover {
+    box-shadow: 0 12px 28px -8px rgba(0, 108, 79, 0.65) !important;
+  }
+  &[disabled] {
+    background: rgba(28, 39, 36, 0.18) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Stop button (visible during streaming) — warn-red */
+.cce-compose__action[color="warn"],
+.cce-compose__action.mat-warn {
+  background: linear-gradient(135deg, #dc2626 0%, #f87171 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px -6px rgba(220, 38, 38, 0.55) !important;
+}
+
+/* ─── Char count ───────────────────────────────────────── */
 .cce-compose__count {
-  margin: 0.25rem 0 0;
-  font-size: 0.75rem;
+  margin: 0.4rem 0.85rem 0;
+  font-size: 0.74rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   text-align: end;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(28, 39, 36, 0.50);
+  letter-spacing: 0.005em;
+
+  &::before {
+    content: '⏎ Enter to send · Shift+⏎ for newline · ';
+    color: rgba(28, 39, 36, 0.40);
+  }
+}
+
+/* Hide the keyboard hint text on tiny screens */
+@media (max-width: 480px) {
+  .cce-compose__count::before {
+    content: '';
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cce-compose, .cce-compose__textarea, .cce-compose__action {
+    transition: none !important;
+  }
 }

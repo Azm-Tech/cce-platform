@@ -1,5 +1,19 @@
 <cce-header />
-<main class="cce-portal-shell__main">
+<main id="cce-main-content" class="cce-portal-shell__main" tabindex="-1">
   <router-outlet />
 </main>
 <cce-footer />
+
+<!-- Floating Assistant launcher — bottom-leading corner, opens modal dialog -->
+<button
+  type="button"
+  class="cce-portal-shell__assistant-fab"
+  aria-label="Open AI Assistant"
+  title="Ask the AI Assistant"
+  (click)="openAssistant()"
+>
+  <span class="cce-portal-shell__assistant-fab-glow" aria-hidden="true"></span>
+  <mat-icon class="cce-portal-shell__assistant-fab-icon">smart_toy</mat-icon>
+  <span class="cce-portal-shell__assistant-fab-label">Ask AI</span>
+  <span class="cce-portal-shell__assistant-fab-pulse" aria-hidden="true"></span>
+</button>

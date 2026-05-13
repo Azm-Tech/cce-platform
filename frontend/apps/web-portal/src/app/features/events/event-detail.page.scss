@@ -1,18 +1,412 @@
-:host { display: block; padding: 1.5rem; max-width: 800px; margin: 0 auto; }
+/* Event detail — modern + simple, brand greens.
+ * Hero banner with day-pill, status chips, and an action bar. */
+
+:host {
+  display: block;
+  max-width: 920px;
+  margin-inline: auto;
+  padding: 1.25rem clamp(1rem, 2.5vw, 1.75rem) 4rem;
+}
+
+/* ─── Branded back-pill ─────────────────────────────────── */
 .cce-event-detail__back {
-  display: inline-flex; align-items: center; gap: 0.25rem;
-  color: rgba(0, 0, 0, 0.7); text-decoration: none; margin-bottom: 1rem;
-  &:hover { color: inherit; }
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.45rem 0.95rem;
+  background: rgba(0, 108, 79, 0.06);
+  color: #006c4f;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(0, 108, 79, 0.16);
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; transition: transform 0.18s ease; }
+  &:hover {
+    background: rgba(0, 108, 79, 0.1);
+    border-color: rgba(0, 108, 79, 0.3);
+    mat-icon { transform: translateX(-2px); }
+  }
 }
-.cce-event-detail__loading { text-align: center; color: rgba(0, 0, 0, 0.6); padding: 1.5rem; }
+[dir="rtl"] .cce-event-detail__back mat-icon { transform: scaleX(-1); }
+[dir="rtl"] .cce-event-detail__back:hover mat-icon { transform: translateX(-2px) scaleX(-1); }
+
+.cce-event-detail__progress {
+  margin-bottom: 1rem;
+  --mdc-linear-progress-active-indicator-color: #006c4f;
+}
+
+/* ─── Not-found / error states ──────────────────────────── */
+.cce-event-detail__notfound {
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f4faf7 100%);
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 22px;
+  padding: 3rem 1.5rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+
+  h1 { margin: 0; color: #1c2724; font-size: 1.4rem; font-weight: 800; }
+  p { margin: 0; max-width: 48ch; color: rgba(28, 39, 36, 0.7); line-height: 1.55; }
+  a[mat-flat-button] {
+    margin-top: 0.5rem;
+    border-radius: 999px;
+    --mdc-filled-button-container-color: #006c4f;
+  }
+}
+.cce-event-detail__notfound-art {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 108, 79, 0.1);
+  color: #006c4f;
+
+  mat-icon { font-size: 32px; width: 32px; height: 32px; }
+}
+
 .cce-event-detail__error {
-  background: #fdecea; color: #b00020;
-  padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
+  color: #8a1f0d;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgba(176, 0, 32, 0.15);
+  flex-wrap: wrap;
+
+  mat-icon { color: #b00020; }
+  span { flex: 1 1 auto; min-width: 0; }
+  button {
+    border: 1px solid rgba(176, 0, 32, 0.4);
+    background: transparent;
+    color: #8a1f0d;
+    font: inherit;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  button:hover { background: rgba(176, 0, 32, 0.06); }
 }
-.cce-event-detail__card { margin-top: 0.5rem; }
-.cce-event-detail__description { line-height: 1.6; white-space: pre-wrap; margin: 0 0 1rem; }
-.cce-event-detail__location {
-  display: flex; align-items: center; gap: 0.5rem;
-  color: rgba(0, 0, 0, 0.7);
+
+/* ─── Skeleton ───────────────────────────────────────────── */
+.cce-event-detail__skeleton {
+  background: #ffffff;
+  border: 1px solid rgba(0, 60, 44, 0.06);
+  border-radius: 22px;
+  overflow: hidden;
+}
+.cce-event-detail__skel-banner {
+  display: block;
+  height: 240px;
+  background: linear-gradient(90deg, #eef5f1, #e2efe9, #eef5f1);
+  background-size: 200% 100%;
+  animation: cceEventShimmer 1.6s linear infinite;
+}
+.cce-event-detail__skel-body {
+  padding: 1.4rem 1.6rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.cce-event-detail__skel-line {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eef0ee, #e2e7e4, #eef0ee);
+  background-size: 200% 100%;
+  animation: cceEventShimmer 1.6s linear infinite;
+  width: 90%;
+}
+.cce-event-detail__skel-line--lg { height: 22px; width: 60%; }
+
+@keyframes cceEventShimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ─── Card shell ─────────────────────────────────────────── */
+.cce-event-detail__card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 60, 44, 0.08);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 16px 32px -24px rgba(0, 48, 31, 0.22);
+}
+
+/* ─── Banner ─────────────────────────────────────────────── */
+.cce-event-detail__banner {
+  position: relative;
+  height: clamp(220px, 36vw, 360px);
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%);
+}
+.cce-event-detail__banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cce-event-detail__banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 30, 22, 0.55) 100%);
+  pointer-events: none;
+}
+.cce-event-detail__banner-glow {
+  position: absolute;
+  inset: -30% -10%;
+  background:
+    radial-gradient(280px 200px at 80% 20%, rgba(255, 255, 255, 0.22), transparent 70%),
+    radial-gradient(360px 220px at 10% 110%, rgba(255, 255, 255, 0.12), transparent 70%);
+  pointer-events: none;
+}
+.cce-event-detail__banner-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.92);
+
+  mat-icon { font-size: 80px; width: 80px; height: 80px; }
+}
+
+/* Day pill — anchored to a leading bottom corner of the banner. */
+.cce-event-detail__day-pill {
+  position: absolute;
+  inset-inline-start: clamp(1rem, 2.4vw, 1.6rem);
+  bottom: clamp(1rem, 2.4vw, 1.6rem);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #006c4f;
+  box-shadow: 0 12px 28px -10px rgba(0, 48, 31, 0.45);
+  backdrop-filter: blur(6px);
+  line-height: 1;
+}
+.cce-event-detail__day-pill-day {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.cce-event-detail__day-pill-mon {
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.7);
+}
+
+/* Type / status chip cluster — top trailing corner. */
+.cce-event-detail__chips {
+  position: absolute;
+  inset-inline-end: clamp(1rem, 2.4vw, 1.6rem);
+  top: clamp(1rem, 2.4vw, 1.6rem);
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: calc(100% - 100px);
+}
+.cce-event-detail__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+}
+.cce-event-detail__chip--type {
+  background: rgba(0, 108, 79, 0.55);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.cce-event-detail__chip--online {
+  background: linear-gradient(135deg, rgba(15, 139, 108, 0.65), rgba(20, 184, 143, 0.7));
+}
+.cce-event-detail__chip--live {
+  background: linear-gradient(135deg, #b91c1c, #ef4444);
+  animation: cceEventPulse 1.6s ease-in-out infinite;
+}
+.cce-event-detail__chip--today {
+  background: linear-gradient(135deg, #006c4f, #0f8b6c);
+}
+.cce-event-detail__chip--upcoming {
+  background: rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.96);
+}
+.cce-event-detail__chip--past {
+  background: rgba(28, 39, 36, 0.55);
+}
+
+@keyframes cceEventPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.04); }
+}
+
+/* When there's no image, the chips need to be more readable on the
+ * solid brand-gradient background. */
+.cce-event-detail__banner--placeholder .cce-event-detail__chip--upcoming {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* ─── Head ──────────────────────────────────────────────── */
+.cce-event-detail__head {
+  padding: clamp(1.2rem, 2.4vw, 1.8rem) clamp(1.3rem, 2.8vw, 2rem) 0.6rem;
+}
+.cce-event-detail__title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  color: #003a2b;
+}
+.cce-event-detail__countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+/* ─── Meta strip ────────────────────────────────────────── */
+.cce-event-detail__meta {
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0 clamp(1.3rem, 2.8vw, 2rem) 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.65rem 1rem;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    background: #fbfdfb;
+    border: 1px solid rgba(0, 108, 79, 0.12);
+    border-radius: 14px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+    color: rgba(28, 39, 36, 0.78);
+    line-height: 1.4;
+
+    span { min-width: 0; word-break: break-word; }
+  }
+  strong {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(28, 39, 36, 0.55);
+    margin-bottom: 0.1rem;
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #006c4f;
+    flex: 0 0 auto;
+    margin-top: 0.15rem;
+  }
+}
+.cce-event-detail__meta-loc { grid-column: 1 / -1; }
+
+/* ─── Description ───────────────────────────────────────── */
+.cce-event-detail__notes {
+  padding: 1.25rem clamp(1.3rem, 2.8vw, 2rem) 0.5rem;
+}
+.cce-event-detail__section-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.6);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #006c4f;
+  }
+}
+.cce-event-detail__description {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #1c2724;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ─── Action bar ────────────────────────────────────────── */
+.cce-event-detail__actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  padding: 1.25rem clamp(1.3rem, 2.8vw, 2rem) 1.5rem;
+  border-top: 1px dashed rgba(0, 60, 44, 0.1);
+  margin-top: 0.5rem;
+}
+.cce-event-detail__action {
+  border-radius: 999px !important;
+
+  mat-icon { margin-inline-end: 0.25rem; }
+  mat-spinner { margin-inline-end: 0.5rem; }
+}
+.cce-event-detail__action--primary {
+  --mdc-filled-button-container-color: #006c4f;
+}
+
+@media (max-width: 480px) {
+  .cce-event-detail__day-pill { width: 60px; height: 60px; }
+  .cce-event-detail__day-pill-day { font-size: 1.35rem; }
+  .cce-event-detail__action span { font-size: 0.85rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-event-detail__back,
+  .cce-event-detail__back mat-icon,
+  .cce-event-detail__chip--live { transition: none; animation: none; }
+  .cce-event-detail__skel-banner,
+  .cce-event-detail__skel-line { animation: none; }
 }

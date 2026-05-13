@@ -9,6 +9,23 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  width: 100%;
+  min-height: 100vh;
   background: #fafafa;
+  // Prevent horizontal scrollbar from full-bleed pages.
+  overflow-x: hidden;
+  overflow-x: clip;
 }
+
+html { height: 100%; }
+body { min-height: 100vh; }
+
+// Global polish — same layer as web-portal so the experience feels
+// consistent across the two apps.
+@import "./fancy";
+
+// Admin-only polish: cascades through every page hosted inside
+// `.cce-app-shell__main-inner` so list / detail screens pick up the
+// branded heroes, filter cards, tables, paginators, forms and errors
+// without per-page edits.
+@import "./admin-polish";

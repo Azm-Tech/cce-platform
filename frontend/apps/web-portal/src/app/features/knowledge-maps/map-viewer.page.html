@@ -1,21 +1,33 @@
 <section class="cce-map-viewer">
+  <!-- Back link as a branded pill -->
   <a class="cce-map-viewer__back" routerLink="/knowledge-maps">
-    ← {{ 'knowledgeMaps.title' | translate }}
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    {{ 'knowledgeMaps.backToList' | translate }}
   </a>
 
-  @if (store.loading()) { <mat-progress-bar mode="indeterminate" /> }
+  <!-- Slim top progress bar (kept for loading-state continuity) -->
+  @if (store.loading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-map-viewer__progress" />
+  }
 
+  <!-- Not-found state -->
   @if (store.notFound()) {
     <div class="cce-map-viewer__notfound" role="alert">
+      <span class="cce-map-viewer__notfound-art" aria-hidden="true">
+        <mat-icon>map</mat-icon>
+      </span>
       <h1>{{ 'knowledgeMaps.notFound' | translate }}</h1>
-      <a mat-stroked-button routerLink="/knowledge-maps">
-        {{ 'knowledgeMaps.title' | translate }}
+      <p>{{ 'knowledgeMaps.notFoundDesc' | translate }}</p>
+      <a mat-flat-button color="primary" routerLink="/knowledge-maps">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'knowledgeMaps.backToList' | translate }}
       </a>
     </div>
   } @else if (store.errorKind()) {
     <div class="cce-map-viewer__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
       <span>{{ ('errors.' + store.errorKind()) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
+      <button mat-stroked-button type="button" (click)="retry()">
         {{ 'errors.retry' | translate }}
       </button>
     </div>
@@ -30,35 +42,62 @@
   />
 
   @if (store.activeTab(); as tab) {
+    <!-- Branded header card with iconified meta chips -->
     <header class="cce-map-viewer__header">
       <div class="cce-map-viewer__header-text">
-        <h1>{{ tab.metadata.nameEn }}</h1>
-        <p>{{ tab.metadata.descriptionEn }}</p>
-        <small>
-          {{ tab.nodes.length }} nodes · {{ tab.edges.length }} edges
-        </small>
+        <span class="cce-map-viewer__header-eyebrow">
+          <mat-icon aria-hidden="true">account_tree</mat-icon>
+          {{ 'knowledgeMaps.title' | translate }}
+        </span>
+        <h1>{{ locale() === 'ar' ? tab.metadata.nameAr : tab.metadata.nameEn }}</h1>
+        <p>{{ locale() === 'ar' ? tab.metadata.descriptionAr : tab.metadata.descriptionEn }}</p>
+
+        <ul class="cce-map-viewer__meta" role="list">
+          <li>
+            <mat-icon aria-hidden="true">scatter_plot</mat-icon>
+            <strong>{{ tab.nodes.length }}</strong>
+            <span>{{ 'knowledgeMaps.metaNodes' | translate }}</span>
+          </li>
+          <li>
+            <mat-icon aria-hidden="true">timeline</mat-icon>
+            <strong>{{ tab.edges.length }}</strong>
+            <span>{{ 'knowledgeMaps.metaEdges' | translate }}</span>
+          </li>
+          <li>
+            <mat-icon aria-hidden="true">tab</mat-icon>
+            <strong>{{ store.openTabs().length }}</strong>
+            <span>{{ 'knowledgeMaps.metaTabs' | translate }}</span>
+          </li>
+        </ul>
       </div>
+
       <div class="cce-map-viewer__actions">
-        <div class="cce-map-viewer__view-toggle" role="group" [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate">
+        <div
+          class="cce-map-viewer__view-toggle"
+          role="group"
+          [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate"
+        >
           <button
             type="button"
-            mat-icon-button
-            [class.cce-map-viewer__view-toggle--active]="store.viewMode() === 'graph'"
+            class="cce-map-viewer__view-toggle-btn"
+            [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'graph'"
             [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate"
             [attr.aria-pressed]="store.viewMode() === 'graph'"
             (click)="onSetViewMode('graph')"
           >
             <mat-icon>account_tree</mat-icon>
+            <span>{{ 'knowledgeMaps.viewMode.graph' | translate }}</span>
           </button>
           <button
             type="button"
-            mat-icon-button
-            [class.cce-map-viewer__view-toggle--active]="store.viewMode() === 'list'"
+            class="cce-map-viewer__view-toggle-btn"
+            [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'list'"
             [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate"
             [attr.aria-pressed]="store.viewMode() === 'list'"
             (click)="onSetViewMode('list')"
           >
             <mat-icon>list</mat-icon>
+            <span>{{ 'knowledgeMaps.viewMode.list' | translate }}</span>
           </button>
         </div>
         <cce-export-menu
@@ -87,6 +126,7 @@
           [dimmedIds]="store.dimmedIds()"
           (nodeClick)="onNodeClick($event)"
           (selectionChange)="onSelectionChange($event)"
+          (clearFiltersRequest)="onClearFilters()"
         />
       } @else {
         <cce-list-view

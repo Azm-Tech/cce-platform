@@ -1,44 +1,69 @@
+/* Categories tree — SIMPLE edition.
+   Plain text rows. Selected = brand-green text with subtle bg.
+   Nothing fancy. */
+
 :host { display: block; }
+
 .cce-cat-tree {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
+
 .cce-cat-tree__list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
 }
 .cce-cat-tree__list--nested {
-  padding-inline-start: 1rem;
-  margin-top: 0.25rem;
+  padding-inline-start: 0.85rem;
+  margin-top: 0.15rem;
+  border-inline-start: 1px solid rgba(0, 0, 0, 0.08);
+  margin-inline-start: 0.4rem;
 }
+
+.cce-cat-tree__node { margin: 0; }
+
 .cce-cat-tree__item {
   display: block;
   width: 100%;
   text-align: start;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 0.55rem;
   background: transparent;
   border: 0;
   border-radius: 4px;
   cursor: pointer;
   font: inherit;
-  color: inherit;
-  &:hover { background: rgba(0, 0, 0, 0.04); }
+  color: rgba(28, 39, 36, 0.78);
+  font-weight: 400;
+  font-size: 0.9rem;
+  line-height: 1.40;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: #1c2724;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(15, 139, 108, 0.30);
+  }
+
   &--all {
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
   }
   &--child {
-    font-size: 0.92em;
-    color: rgba(0, 0, 0, 0.7);
+    font-size: 0.85rem;
+    color: rgba(28, 39, 36, 0.65);
   }
   &--selected {
-    background: rgba(0, 0, 0, 0.08);
+    color: #006c4f !important;
     font-weight: 600;
+    background: rgba(15, 139, 108, 0.08) !important;
   }
 }
-.cce-cat-tree__node { margin: 0; }

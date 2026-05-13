@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@frontend/i18n';
+import { WorkbenchHeroComponent, type HeroStep } from '@frontend/ui-kit';
+import { EnvironmentalFactorsComponent } from './builder/environmental-factors.component';
 import { SavedScenariosDrawerComponent } from './builder/saved-scenarios-drawer.component';
 import { ScenarioBuilderStore } from './builder/scenario-builder-store.service';
 import { ScenarioHeaderComponent } from './builder/scenario-header.component';
@@ -24,7 +27,9 @@ import { buildUrlPatch, parseUrlState } from './lib/url-state';
     TranslateModule,
     MatButtonModule,
     MatProgressBarModule,
+    WorkbenchHeroComponent,
     ScenarioHeaderComponent,
+    EnvironmentalFactorsComponent,
     TechnologyCatalogComponent,
     SelectedListComponent,
     TotalsBarComponent,
@@ -39,11 +44,37 @@ export class ScenarioBuilderPage implements OnInit {
   readonly store = inject(ScenarioBuilderStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly t = inject(TranslateService);
+  private readonly locale = inject(LocaleService).locale;
 
   /** Set true after the URL is hydrated so the sync effect doesn't fire
    *  on initial subscription before the parsed values are applied. */
   private readonly hydrated = signal<boolean>(false);
   private syncPending: ReturnType<typeof setTimeout> | null = null;
+
+  /** Localized hero steps fed to <cce-workbench-hero>. The `locale()`
+   *  read makes the computed re-fire on language switch so the strings
+   *  stay in sync with the active language. */
+  readonly heroSteps = computed<HeroStep[]>(() => {
+    this.locale(); // reactive trigger — drop the value
+    return [
+      {
+        num: '1',
+        label: this.t.instant('interactiveCity.builder.step1Label'),
+        desc: this.t.instant('interactiveCity.builder.step1Desc'),
+      },
+      {
+        num: '2',
+        label: this.t.instant('interactiveCity.builder.step2Label'),
+        desc: this.t.instant('interactiveCity.builder.step2Desc'),
+      },
+      {
+        num: '3',
+        label: this.t.instant('interactiveCity.builder.step3Label'),
+        desc: this.t.instant('interactiveCity.builder.step3Desc'),
+      },
+    ];
+  });
 
   constructor() {
     // effect() must be created in the injection context (constructor or

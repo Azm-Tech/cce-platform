@@ -1,2 +1,199 @@
-:host { display: flex; flex-direction: column; min-height: 100vh; }
-.cce-portal-shell__main { flex: 1; }
+/* ============================================================
+   Portal shell — vertical layout + global content alignment.
+   ------------------------------------------------------------
+   `<main>` aligns to the SAME horizontal grid as the header:
+     • max-width: 1500px (matches header)
+     • inline padding: clamp(1rem, 3vw, 2.5rem) (matches header)
+   This ensures every routed page lines up with the header logo
+   and right-cluster regardless of viewport width.
+
+   Feature pages may set their own tighter max-width on `:host`
+   (e.g. 800px for articles, 1200px for grids) — those still
+   work because they're nested inside this container.
+   ============================================================ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Full-bleed pages (landing, world-map, knowledge-center) use
+     `width: 100vw; margin-inline: calc(50% - 50vw)` to break out
+     of the shell's max-width container. `100vw` includes the OS
+     vertical scrollbar width, so on Windows/Linux this overflows
+     by ~17px and produces a horizontal scrollbar. `overflow-x:
+     clip` (with hidden as fallback) cuts that overflow without
+     affecting vertical scrolling. */
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+.cce-portal-shell__main {
+  flex: 1;
+  width: 100%;
+  max-width: 1500px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  padding-block: 1.5rem 2rem;
+  box-sizing: border-box;
+  /* IMPORTANT: NO overflow-x: clip here — it would clip full-bleed
+     pages (landing, world-map) that use negative inline margin
+     calc(50% - 50vw) to escape the shell's 1500px container. The
+     overflow guard against horizontal scrollbars lives on :host /
+     html / body, which span the full viewport, so clipping there
+     doesn't cut into our intentionally-overflowing pages. */
+
+  /* Set a sensible default for routed pages, but with `:where()` so
+     specificity is zero and pages can override on their own `:host`
+     without needing higher selectors. */
+  > :where(*) {
+    margin-inline: auto;
+  }
+}
+
+/* Phone: tighter top padding so content starts higher under the
+   sticky header on small screens. */
+@media (max-width: 600px) {
+  .cce-portal-shell__main {
+    padding-block: 1rem 1.5rem;
+  }
+}
+
+/* ============================================================
+   Floating Assistant FAB
+   ------------------------------------------------------------
+   Anchored to the bottom-leading corner. Brand-gradient capsule
+   with a robot icon + "Ask AI" label, soft glow halo, and a
+   subtle pulse ring to invite attention. Clicking opens the
+   AssistantDialog as a modal.
+   ============================================================ */
+
+.cce-portal-shell__assistant-fab {
+  position: fixed;
+  bottom: clamp(1rem, 3vw, 2rem);
+  inset-inline-start: clamp(1rem, 3vw, 2rem);
+  z-index: 90;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.3rem 0.85rem 1rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 50%, #14b88f 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.30) inset,
+    0 12px 28px -6px rgba(15, 139, 108, 0.55),
+    0 6px 14px -4px rgba(0, 48, 31, 0.30);
+  isolation: isolate;
+  overflow: visible;
+  animation: cceFabSlideIn 700ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.40) inset,
+      0 18px 36px -8px rgba(15, 139, 108, 0.65),
+      0 10px 20px -6px rgba(0, 48, 31, 0.35);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 4px rgba(15, 139, 108, 0.30),
+      0 12px 28px -6px rgba(15, 139, 108, 0.55);
+  }
+  &:active { transform: translateY(0) scale(0.98); }
+}
+
+@keyframes cceFabSlideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.85); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Soft mint glow behind the capsule */
+.cce-portal-shell__assistant-fab-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(20, 184, 143, 0.45) 0%, transparent 65%);
+  filter: blur(14px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity 0.22s ease;
+}
+.cce-portal-shell__assistant-fab:hover .cce-portal-shell__assistant-fab-glow {
+  opacity: 1;
+}
+
+/* Robot icon — softly bobs */
+.cce-portal-shell__assistant-fab-icon {
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: #ffffff;
+  animation: cceFabIconBob 3.4s ease-in-out infinite;
+}
+@keyframes cceFabIconBob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-2px) rotate(2deg); }
+}
+
+/* "Ask AI" label */
+.cce-portal-shell__assistant-fab-label {
+  white-space: nowrap;
+}
+
+/* Outer pulse ring — invites the click */
+.cce-portal-shell__assistant-fab-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 2px solid rgba(20, 184, 143, 0.55);
+  animation: cceFabPulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes cceFabPulse {
+  0%   { transform: scale(1);   opacity: 0.65; }
+  80%  { transform: scale(1.30); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Phones: smaller, label hidden */
+@media (max-width: 480px) {
+  .cce-portal-shell__assistant-fab {
+    padding: 0.85rem;
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+  }
+  .cce-portal-shell__assistant-fab-label { display: none; }
+  .cce-portal-shell__assistant-fab-icon {
+    font-size: 26px !important;
+    width: 26px !important;
+    height: 26px !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cce-portal-shell__assistant-fab,
+  .cce-portal-shell__assistant-fab-icon,
+  .cce-portal-shell__assistant-fab-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Note: the cdk-overlay-pane positioning lives in the GLOBAL
+   styles.scss (cdk-overlay renders outside any component scope, so
+   component-scoped selectors don't reach it even with ::ng-deep). */

@@ -1,0 +1,265 @@
+<section class="cce-settings">
+  <header class="cce-settings__header">
+    <span class="cce-settings__eyebrow">BRD §4.1.28 · CONFIGURATION</span>
+    <h1 class="cce-settings__title">Platform Settings</h1>
+    <p class="cce-settings__subtitle">
+      Runtime configuration for the entire CCE platform. Changes apply across both web-portal and admin-cms.
+    </p>
+  </header>
+
+  <div class="cce-settings__layout">
+    <!-- Section nav -->
+    <nav class="cce-settings__sections" role="navigation" aria-label="Settings sections">
+      @for (s of sections; track s.id) {
+        <button type="button"
+          class="cce-settings__section-btn"
+          [class.cce-settings__section-btn--active]="activeSection() === s.id"
+          (click)="setSection(s.id)">
+          <mat-icon>{{ s.icon }}</mat-icon>
+          <span class="cce-settings__section-text">
+            <span class="cce-settings__section-label">{{ s.label }}</span>
+            <span class="cce-settings__section-desc">{{ s.description }}</span>
+          </span>
+        </button>
+      }
+    </nav>
+
+    <div class="cce-settings__panel">
+      <!-- GENERAL -->
+      @if (activeSection() === 'general') {
+        <h2 class="cce-settings__panel-title">General</h2>
+        <p class="cce-settings__panel-hint">Identity and locale defaults shown across the platform.</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Site name</mat-label>
+          <input matInput
+            [ngModel]="model().general.siteName"
+            (ngModelChange)="updateGeneral('siteName', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Tagline</mat-label>
+          <input matInput
+            [ngModel]="model().general.siteTagline"
+            (ngModelChange)="updateGeneral('siteTagline', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Default locale</mat-label>
+          <mat-select [ngModel]="model().general.defaultLocale" (ngModelChange)="updateGeneral('defaultLocale', $event)">
+            <mat-option value="ar">العربية (ar)</mat-option>
+            <mat-option value="en">English (en)</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Timezone (IANA)</mat-label>
+          <input matInput
+            [ngModel]="model().general.timezone"
+            (ngModelChange)="updateGeneral('timezone', $event)" />
+          <mat-hint>e.g. Asia/Riyadh, Europe/London</mat-hint>
+        </mat-form-field>
+      }
+
+      <!-- BRANDING -->
+      @if (activeSection() === 'branding') {
+        <h2 class="cce-settings__panel-title">Branding</h2>
+        <p class="cce-settings__panel-hint">Visual identity tokens applied to both apps.</p>
+
+        <div class="cce-settings__color-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Primary color</mat-label>
+            <input matInput type="color"
+              [ngModel]="model().branding.primaryColor"
+              (ngModelChange)="updateBranding('primaryColor', $event)" />
+          </mat-form-field>
+          <span class="cce-settings__swatch" [style.background]="model().branding.primaryColor"></span>
+          <code class="cce-settings__color-code">{{ model().branding.primaryColor }}</code>
+        </div>
+
+        <div class="cce-settings__color-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Accent color</mat-label>
+            <input matInput type="color"
+              [ngModel]="model().branding.accentColor"
+              (ngModelChange)="updateBranding('accentColor', $event)" />
+          </mat-form-field>
+          <span class="cce-settings__swatch" [style.background]="model().branding.accentColor"></span>
+          <code class="cce-settings__color-code">{{ model().branding.accentColor }}</code>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Logo URL</mat-label>
+          <input matInput
+            [ngModel]="model().branding.logoUrl"
+            (ngModelChange)="updateBranding('logoUrl', $event)" />
+        </mat-form-field>
+      }
+
+      <!-- EMAIL -->
+      @if (activeSection() === 'email') {
+        <h2 class="cce-settings__panel-title">Email / SMTP</h2>
+        <p class="cce-settings__panel-hint">Outgoing-mail server used for notifications, registration emails, and password resets.</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>SMTP host</mat-label>
+          <input matInput
+            [ngModel]="model().email.smtpHost"
+            (ngModelChange)="updateEmail('smtpHost', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>SMTP port</mat-label>
+          <input matInput type="number"
+            [ngModel]="model().email.smtpPort"
+            (ngModelChange)="updateEmail('smtpPort', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>From address</mat-label>
+          <input matInput type="email"
+            [ngModel]="model().email.smtpFromAddress"
+            (ngModelChange)="updateEmail('smtpFromAddress', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>From display name</mat-label>
+          <input matInput
+            [ngModel]="model().email.smtpFromName"
+            (ngModelChange)="updateEmail('smtpFromName', $event)" />
+        </mat-form-field>
+
+        <div class="cce-settings__toggle-row">
+          <mat-slide-toggle
+            [ngModel]="model().email.enableTls"
+            (ngModelChange)="updateEmail('enableTls', $event)">
+            Enable TLS / STARTTLS
+          </mat-slide-toggle>
+          <span class="cce-settings__toggle-hint">Required for ports 465 and 587.</span>
+        </div>
+      }
+
+      <!-- SECURITY -->
+      @if (activeSection() === 'security') {
+        <h2 class="cce-settings__panel-title">Security</h2>
+        <p class="cce-settings__panel-hint">Authentication, session policy, and rotation rules.</p>
+
+        <div class="cce-settings__toggle-row">
+          <mat-slide-toggle
+            [ngModel]="model().security.requireMfa"
+            (ngModelChange)="updateSecurity('requireMfa', $event)">
+            Require MFA for all admin sign-ins
+          </mat-slide-toggle>
+          <span class="cce-settings__toggle-hint">Enforced via Conditional Access policy in Entra ID.</span>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Session timeout (minutes)</mat-label>
+          <input matInput type="number"
+            [ngModel]="model().security.sessionTimeoutMinutes"
+            (ngModelChange)="updateSecurity('sessionTimeoutMinutes', $event)" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password rotation (days)</mat-label>
+          <input matInput type="number"
+            [ngModel]="model().security.enforcePasswordRotationDays"
+            (ngModelChange)="updateSecurity('enforcePasswordRotationDays', $event)" />
+          <mat-hint>Set to 0 to disable rotation enforcement.</mat-hint>
+        </mat-form-field>
+
+        <div class="cce-settings__toggle-row">
+          <mat-slide-toggle
+            [ngModel]="model().security.allowedSelfRegistration"
+            (ngModelChange)="updateSecurity('allowedSelfRegistration', $event)">
+            Allow public self-registration
+          </mat-slide-toggle>
+          <span class="cce-settings__toggle-hint">When off, accounts must be admin-provisioned.</span>
+        </div>
+      }
+
+      <!-- FEATURE FLAGS -->
+      @if (activeSection() === 'features') {
+        <h2 class="cce-settings__panel-title">Feature Flags</h2>
+        <p class="cce-settings__panel-hint">Toggle modules across the platform without a deploy.</p>
+
+        <div class="cce-settings__flag-grid">
+          <label class="cce-settings__flag-card">
+            <mat-slide-toggle
+              [ngModel]="model().features.publicRegistration"
+              (ngModelChange)="updateFeatures('publicRegistration', $event)" />
+            <span class="cce-settings__flag-name">Public Registration</span>
+            <span class="cce-settings__flag-desc">Allow visitors to create their own accounts.</span>
+          </label>
+          <label class="cce-settings__flag-card">
+            <mat-slide-toggle
+              [ngModel]="model().features.communityEnabled"
+              (ngModelChange)="updateFeatures('communityEnabled', $event)" />
+            <span class="cce-settings__flag-name">Community</span>
+            <span class="cce-settings__flag-desc">Forums, posts, replies, and follows.</span>
+          </label>
+          <label class="cce-settings__flag-card">
+            <mat-slide-toggle
+              [ngModel]="model().features.knowledgeMapsEnabled"
+              (ngModelChange)="updateFeatures('knowledgeMapsEnabled', $event)" />
+            <span class="cce-settings__flag-name">Knowledge Maps</span>
+            <span class="cce-settings__flag-desc">Interactive concept-graph viewer.</span>
+          </label>
+          <label class="cce-settings__flag-card">
+            <mat-slide-toggle
+              [ngModel]="model().features.interactiveCityEnabled"
+              (ngModelChange)="updateFeatures('interactiveCityEnabled', $event)" />
+            <span class="cce-settings__flag-name">Interactive City</span>
+            <span class="cce-settings__flag-desc">Sustainability scenario builder.</span>
+          </label>
+          <label class="cce-settings__flag-card">
+            <mat-slide-toggle
+              [ngModel]="model().features.smartAssistantEnabled"
+              (ngModelChange)="updateFeatures('smartAssistantEnabled', $event)" />
+            <span class="cce-settings__flag-name">Smart Assistant</span>
+            <span class="cce-settings__flag-desc">AI-powered answer assistant.</span>
+          </label>
+        </div>
+      }
+
+      <!-- STORAGE -->
+      @if (activeSection() === 'storage') {
+        <h2 class="cce-settings__panel-title">Storage</h2>
+        <p class="cce-settings__panel-hint">Upload limits and CDN configuration.</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Maximum upload size (MB)</mat-label>
+          <input matInput type="number"
+            [ngModel]="model().storage.maxUploadSizeMb"
+            (ngModelChange)="updateStorage('maxUploadSizeMb', $event)" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Allowed file types</mat-label>
+          <input matInput
+            [ngModel]="model().storage.allowedFileTypes"
+            (ngModelChange)="updateStorage('allowedFileTypes', $event)" />
+          <mat-hint>Comma-separated extensions, no dots. e.g. pdf,docx,jpg</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>CDN base URL</mat-label>
+          <input matInput
+            [ngModel]="model().storage.cdnBaseUrl"
+            (ngModelChange)="updateStorage('cdnBaseUrl', $event)" />
+        </mat-form-field>
+      }
+
+      <!-- Sticky action bar -->
+      <div class="cce-settings__action-bar">
+        <button mat-button type="button" (click)="restoreDefaults()">
+          <mat-icon>restart_alt</mat-icon>
+          Restore defaults
+        </button>
+        <span class="cce-settings__action-spacer"></span>
+        <button mat-button type="button"
+          [disabled]="!isDirty()"
+          (click)="reset()">Reset</button>
+        <button mat-flat-button color="primary"
+          class="cce-settings__save-btn"
+          [disabled]="!isDirty()"
+          (click)="save()">
+          <mat-icon>save</mat-icon>
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

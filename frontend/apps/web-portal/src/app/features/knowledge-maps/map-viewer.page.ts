@@ -224,6 +224,14 @@ export class MapViewerPage implements OnInit {
     this.store.setViewMode(mode);
   }
 
+  /** GraphCanvas (clearFiltersRequest) handler — fired from the
+   *  all-dimmed empty-state CTA. Resets the search term + active
+   *  filter chips so the graph repopulates. */
+  onClearFilters(): void {
+    this.store.setSearch('');
+    this.store.setFilters([]);
+  }
+
   retry(): void {
     void this.store.retry();
   }

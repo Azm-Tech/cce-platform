@@ -1,0 +1,86 @@
+<section class="cce-env-factors" aria-labelledby="cce-env-factors-title">
+  <header class="cce-env-factors__head">
+    <div class="cce-env-factors__head-text">
+      <span class="cce-env-factors__eyebrow">
+        <mat-icon aria-hidden="true">eco</mat-icon>
+        {{ 'interactiveCity.factors.eyebrow' | translate }}
+      </span>
+      <h2 id="cce-env-factors-title" class="cce-env-factors__title">
+        {{ 'interactiveCity.factors.title' | translate }}
+      </h2>
+      <p class="cce-env-factors__subtitle">
+        {{ 'interactiveCity.factors.subtitle' | translate }}
+      </p>
+    </div>
+
+    <div class="cce-env-factors__head-aside">
+      <div class="cce-env-factors__baseline" aria-live="polite">
+        <span class="cce-env-factors__baseline-label">
+          {{ 'interactiveCity.factors.baseline' | translate }}
+        </span>
+        <span class="cce-env-factors__baseline-value">
+          {{ baseline() | number }}
+          <span class="cce-env-factors__baseline-unit">
+            {{ 'interactiveCity.totals.carbonUnit' | translate }}
+          </span>
+        </span>
+      </div>
+      <button
+        type="button"
+        class="cce-env-factors__reset"
+        [disabled]="!hasChanges()"
+        (click)="reset()"
+      >
+        <mat-icon aria-hidden="true">restart_alt</mat-icon>
+        {{ 'interactiveCity.factors.reset' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="cce-env-factors__grid">
+    @for (row of rows; track row.key) {
+      <div class="cce-env-factors__row">
+        <div class="cce-env-factors__row-head">
+          <span class="cce-env-factors__row-icon" aria-hidden="true">
+            <mat-icon>{{ row.icon }}</mat-icon>
+          </span>
+          <div class="cce-env-factors__row-text">
+            <span class="cce-env-factors__row-label">
+              {{ row.labelKey | translate }}
+            </span>
+            <span class="cce-env-factors__row-help">
+              {{ row.helpKey | translate }}
+            </span>
+          </div>
+          <span class="cce-env-factors__row-badge" aria-hidden="true">
+            {{ factors()[row.key] }}
+            @if (row.bounds.unit === 'percent') { % }
+            @else if (row.bounds.unit === 'km') {
+              <span class="cce-env-factors__row-badge-unit">
+                {{ 'interactiveCity.factors.unitKm' | translate }}
+              </span>
+            }
+          </span>
+        </div>
+
+        <mat-slider
+          class="cce-env-factors__slider"
+          [min]="row.bounds.min"
+          [max]="row.bounds.max"
+          [step]="row.bounds.step"
+          [discrete]="true"
+        >
+          <input
+            matSliderThumb
+            [value]="factors()[row.key]"
+            (valueChange)="setValue(row.key, $event)"
+            [attr.aria-label]="row.labelKey | translate"
+            [attr.aria-valuemin]="row.bounds.min"
+            [attr.aria-valuemax]="row.bounds.max"
+            [attr.aria-valuenow]="factors()[row.key]"
+          />
+        </mat-slider>
+      </div>
+    }
+  </div>
+</section>

@@ -3,6 +3,21 @@
   [formGroup]="form"
   (ngSubmit)="submit()"
 >
+  @if (parentReplyId() && parentHandle(); as h) {
+    <div class="cce-compose-reply__parent" role="status">
+      <mat-icon aria-hidden="true">reply</mat-icon>
+      <span>{{ 'community.detail.replyToReply' | translate:{ handle: h } }}</span>
+      <button
+        type="button"
+        class="cce-compose-reply__cancel"
+        [attr.aria-label]="'community.detail.cancelReply' | translate"
+        (click)="cancelReply.emit()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
   @if (errorKind()) {
     <div class="cce-compose-reply__error" role="alert">
       {{ ('errors.' + errorKind()) | translate }}

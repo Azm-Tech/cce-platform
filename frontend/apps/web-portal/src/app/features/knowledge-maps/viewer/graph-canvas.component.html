@@ -1,1 +1,98 @@
-<div #host class="cce-graph-canvas" data-testid="graph-canvas-host"></div>
+<div class="cce-graph-canvas-wrap">
+  <div #host class="cce-graph-canvas" data-testid="graph-canvas-host"></div>
+
+  <!-- ─── Floating zoom / fit / reset controls (top-trailing) ─── -->
+  <div class="cce-graph-controls" role="group" aria-label="Graph controls">
+    <button
+      type="button"
+      class="cce-graph-controls__btn"
+      [attr.aria-label]="'knowledgeMaps.graph.zoomIn' | translate"
+      [title]="'knowledgeMaps.graph.zoomIn' | translate"
+      (click)="zoomIn()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+    <button
+      type="button"
+      class="cce-graph-controls__btn"
+      [attr.aria-label]="'knowledgeMaps.graph.zoomOut' | translate"
+      [title]="'knowledgeMaps.graph.zoomOut' | translate"
+      (click)="zoomOut()"
+    >
+      <mat-icon>remove</mat-icon>
+    </button>
+    <span class="cce-graph-controls__divider" aria-hidden="true"></span>
+    <button
+      type="button"
+      class="cce-graph-controls__btn"
+      [attr.aria-label]="'knowledgeMaps.graph.fit' | translate"
+      [title]="'knowledgeMaps.graph.fit' | translate"
+      (click)="fit()"
+    >
+      <mat-icon>fit_screen</mat-icon>
+    </button>
+    <button
+      type="button"
+      class="cce-graph-controls__btn"
+      [attr.aria-label]="'knowledgeMaps.graph.center' | translate"
+      [title]="'knowledgeMaps.graph.center' | translate"
+      (click)="resetView()"
+    >
+      <mat-icon>my_location</mat-icon>
+    </button>
+  </div>
+
+  <!-- ─── Legend — always visible at the bottom-leading corner ─── -->
+  <aside class="cce-graph-legend" role="region"
+         [attr.aria-label]="'knowledgeMaps.graph.legendTitle' | translate">
+    <h3 class="cce-graph-legend__title">
+      <mat-icon aria-hidden="true">info</mat-icon>
+      {{ 'knowledgeMaps.graph.legendTitle' | translate }}
+    </h3>
+
+    <dl class="cce-graph-legend__group">
+      <dt>{{ 'knowledgeMaps.filter.title' | translate }}</dt>
+      <dd>
+        <span class="cce-graph-legend__node cce-graph-legend__node--tech" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.nodeType.Technology' | translate }}
+      </dd>
+      <dd>
+        <span class="cce-graph-legend__node cce-graph-legend__node--sector" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.nodeType.Sector' | translate }}
+      </dd>
+      <dd>
+        <span class="cce-graph-legend__node cce-graph-legend__node--subtopic" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.nodeType.SubTopic' | translate }}
+      </dd>
+    </dl>
+
+    <dl class="cce-graph-legend__group">
+      <dt>{{ 'knowledgeMaps.detail.outboundEdges' | translate }}</dt>
+      <dd>
+        <span class="cce-graph-legend__edge cce-graph-legend__edge--parent" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.relationshipType.ParentOf' | translate }}
+      </dd>
+      <dd>
+        <span class="cce-graph-legend__edge cce-graph-legend__edge--related" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.relationshipType.RelatedTo' | translate }}
+      </dd>
+      <dd>
+        <span class="cce-graph-legend__edge cce-graph-legend__edge--required" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.relationshipType.RequiredBy' | translate }}
+      </dd>
+    </dl>
+  </aside>
+
+  <!-- ─── All-dimmed empty state ─── -->
+  @if (allDimmed()) {
+    <div class="cce-graph-canvas__empty" role="status">
+      <span class="cce-graph-canvas__empty-art" aria-hidden="true">
+        <mat-icon>filter_alt_off</mat-icon>
+      </span>
+      <p>{{ 'knowledgeMaps.graph.allDimmed' | translate }}</p>
+      <button type="button" class="cce-graph-canvas__empty-cta" (click)="clearFilters()">
+        {{ 'knowledgeMaps.graph.allDimmedClear' | translate }}
+      </button>
+    </div>
+  }
+</div>

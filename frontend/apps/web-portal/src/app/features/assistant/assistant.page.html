@@ -1,7 +1,11 @@
-<section class="cce-assistant">
+<section class="cce-assistant" [class.cce-assistant--empty]="isEmpty()">
   <header class="cce-assistant__header">
     <div class="cce-assistant__heading">
-      <h1>{{ 'assistant.title' | translate }}</h1>
+      <span class="cce-assistant__eyebrow">
+        <span class="cce-assistant__eyebrow-dot"></span>
+        AI ASSISTANT · BETA
+      </span>
+      <h1 class="cce-assistant__title">{{ 'assistant.title' | translate }}</h1>
       <p class="cce-assistant__subtitle">{{ 'assistant.subtitle' | translate }}</p>
     </div>
     <button
@@ -16,6 +20,59 @@
     </button>
   </header>
 
-  <cce-message-list class="cce-assistant__list" />
+  @if (isEmpty()) {
+    <!-- Welcome / suggested prompts when no messages yet -->
+    <div class="cce-assistant__welcome">
+      <div class="cce-assistant__hero">
+        <div class="cce-assistant__hero-glyph" aria-hidden="true">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <h2 class="cce-assistant__hero-title">How can I help you today?</h2>
+        <p class="cce-assistant__hero-body">
+          Ask anything about the carbon circular economy. I draw on curated
+          resources, news, and policy briefs — and I always cite my sources.
+        </p>
+      </div>
+
+      <div class="cce-assistant__suggestions" role="list">
+        @for (s of suggestedPrompts; track s.id) {
+          <button
+            type="button"
+            class="cce-assistant__suggestion"
+            [attr.data-tier]="s.tier"
+            (click)="useSuggestion(s.text)"
+            role="listitem"
+          >
+            <span class="cce-assistant__suggestion-icon">
+              <mat-icon>{{ s.icon }}</mat-icon>
+            </span>
+            <span class="cce-assistant__suggestion-text">
+              <span class="cce-assistant__suggestion-tag">{{ s.tag }}</span>
+              <span class="cce-assistant__suggestion-prompt">{{ s.text }}</span>
+            </span>
+            <mat-icon class="cce-assistant__suggestion-arrow">arrow_forward</mat-icon>
+          </button>
+        }
+      </div>
+
+      <div class="cce-assistant__capabilities">
+        <div class="cce-assistant__cap">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Curated knowledge from CCE library</span>
+        </div>
+        <div class="cce-assistant__cap">
+          <mat-icon>format_quote</mat-icon>
+          <span>Inline citations on every answer</span>
+        </div>
+        <div class="cce-assistant__cap">
+          <mat-icon>language</mat-icon>
+          <span>Bilingual: English + العربية</span>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <cce-message-list class="cce-assistant__list" />
+  }
+
   <cce-compose-box class="cce-assistant__compose" />
 </section>

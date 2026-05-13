@@ -1,44 +1,114 @@
 <article
   class="cce-reply"
   [class.cce-reply--accepted]="isAccepted()"
+  [class.cce-reply--highlighted]="isHighlighted()"
 >
-  <mat-card>
-    <mat-card-content>
+  <span class="cce-reply__avatar" aria-hidden="true">
+    {{ authorInitial(reply().authorId) }}
+  </span>
+
+  <div class="cce-reply__main">
+    <div class="cce-reply__bubble">
       @if (isAccepted()) {
-        <header class="cce-reply__accepted-banner">
+        <span class="cce-reply__accepted">
           <mat-icon aria-hidden="true">check_circle</mat-icon>
           {{ 'community.acceptedAnswer' | translate }}
-        </header>
+        </span>
       }
 
-      <div class="cce-reply__meta">
-        <span class="cce-reply__author">{{ reply().authorId }}</span>
-        @if (reply().isByExpert) {
-          <span class="cce-reply__expert">
-            {{ 'community.expertBadge' | translate }}
+      <header class="cce-reply__head">
+        <span class="cce-reply__author-row">
+          <span class="cce-reply__author-name">
+            {{ 'community.detail.memberHandle' | translate }}
           </span>
-        }
-        @if (showLanguageBadge()) {
-          <span class="cce-reply__lang">
-            {{ 'community.languageBadge' | translate:{ locale: reply().locale } }}
+          <span class="cce-reply__author-handle">
+            {{ authorHandle(reply().authorId) }}
           </span>
-        }
-        <small class="cce-reply__date">
-          {{ reply().createdOn | date:'medium' }}
-        </small>
-      </div>
+          @if (reply().isByExpert) {
+            <span class="cce-reply__expert">
+              <mat-icon aria-hidden="true">verified</mat-icon>
+              {{ 'community.expertBadge' | translate }}
+            </span>
+          }
+          @if (showLanguageBadge()) {
+            <span class="cce-reply__lang">
+              {{ 'community.languageBadge' | translate:{ locale: reply().locale } }}
+            </span>
+          }
+        </span>
+      </header>
 
       <p class="cce-reply__content">{{ reply().content }}</p>
 
-      @if (markableForPostId(); as postId) {
-        <footer class="cce-reply__footer">
+      <footer class="cce-reply__foot">
+        <time
+          class="cce-reply__time"
+          [attr.datetime]="reply().createdOn"
+          [title]="reply().createdOn | date:'medium'"
+        >{{ timeAgo(reply().createdOn) }}</time>
+
+        @if (markableForPostId(); as postId) {
           <cce-mark-answer-button
             [postId]="postId"
             [replyId]="reply().id"
             (marked)="answerMarked.emit()"
           />
-        </footer>
-      }
-    </mat-card-content>
-  </mat-card>
+        }
+      </footer>
+    </div>
+
+    <!-- Action row: Like / Dislike / Reply -->
+    <div class="cce-reply__actions">
+      <cce-like-dislike-control
+        [entityId]="reply().id"
+        entityType="reply"
+        [compact]="true"
+      />
+      <button
+        type="button"
+        class="cce-reply__reply-btn"
+        (click)="onReplyClick()"
+      >
+        <mat-icon aria-hidden="true">reply</mat-icon>
+        <span>{{ 'community.detail.replyToCommentLabel' | translate }}</span>
+      </button>
+    </div>
+
+    <!-- Inline composer — appears when this reply is the replyingTo
+         target (Twitter / FB style). -->
+    @if (isHighlighted() && postId() && isAuthenticated()) {
+      <div class="cce-reply__composer">
+        <cce-compose-reply-form
+          [postId]="postId()!"
+          [parentReplyId]="reply().id"
+          [parentHandle]="authorHandle(reply().authorId)"
+          (replyCreated)="replyCreated.emit()"
+          (cancelReply)="cancelReply.emit()"
+        />
+      </div>
+    }
+
+    <!-- Nested children (indented thread). -->
+    @if (children().length > 0) {
+      <div class="cce-reply__children">
+        @for (child of children(); track child.id) {
+          <cce-reply
+            [reply]="child"
+            [isAccepted]="acceptedReplyId() === child.id"
+            [acceptedReplyId]="acceptedReplyId()"
+            [canMarkAnswer]="canMarkAnswer()"
+            [postId]="postId()"
+            [replyingToId]="replyingToId()"
+            [isAuthenticated]="isAuthenticated()"
+            [markableForPostId]="canMarkAnswer() && acceptedReplyId() !== child.id ? postId() : null"
+            [children]="[]"
+            (answerMarked)="answerMarked.emit()"
+            (replyClicked)="replyClicked.emit($event)"
+            (replyCreated)="replyCreated.emit()"
+            (cancelReply)="cancelReply.emit()"
+          />
+        }
+      </div>
+    }
+  </div>
 </article>

@@ -1,0 +1,97 @@
+/* Like / Dislike thumbs control. */
+
+:host { display: inline-flex; }
+
+.cce-like-dislike {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.cce-like-dislike__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.65);
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.cce-like-dislike__btn:hover {
+  background: rgba(0, 108, 79, 0.06);
+  color: #006c4f;
+}
+.cce-like-dislike__btn:active {
+  transform: scale(0.96);
+}
+.cce-like-dislike__btn--active {
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.1);
+  font-weight: 700;
+}
+.cce-like-dislike__btn--down.cce-like-dislike__btn--active {
+  color: #b00020;
+  background: rgba(176, 0, 32, 0.08);
+}
+.cce-like-dislike__btn--down:hover {
+  color: #b00020;
+  background: rgba(176, 0, 32, 0.06);
+}
+
+.cce-like-dislike__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(28, 39, 36, 0.06);
+  color: rgba(28, 39, 36, 0.7);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.cce-like-dislike__btn--active .cce-like-dislike__count {
+  background: rgba(0, 108, 79, 0.16);
+  color: #006c4f;
+}
+.cce-like-dislike__btn--down.cce-like-dislike__btn--active .cce-like-dislike__count {
+  background: rgba(176, 0, 32, 0.12);
+  color: #b00020;
+}
+
+/* Compact mode hides the verbal label so the control fits inside
+ * dense reply footers. */
+.cce-like-dislike--compact .cce-like-dislike__btn {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.78rem;
+  gap: 0.25rem;
+}
+.cce-like-dislike--compact .cce-like-dislike__label { display: none; }
+.cce-like-dislike--compact .cce-like-dislike__count {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  height: auto;
+  font-weight: 700;
+}
+
+@media (max-width: 540px) {
+  .cce-like-dislike__label { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-like-dislike__btn { transition: none; }
+}

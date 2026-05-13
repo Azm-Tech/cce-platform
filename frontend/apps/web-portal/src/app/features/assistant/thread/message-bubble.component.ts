@@ -22,6 +22,11 @@ import { CitationChipComponent } from './citation-chip.component';
   ],
   templateUrl: './message-bubble.component.html',
   styleUrl: './message-bubble.component.scss',
+  // Explicitly mark the host as a list item so the parent
+  // `<div role="list">` maintains valid list semantics for screen
+  // readers (was previously a `<ul>` containing custom-element
+  // `<cce-message-bubble>` directly, which is invalid).
+  host: { role: 'listitem' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageBubbleComponent {

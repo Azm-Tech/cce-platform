@@ -1,0 +1,115 @@
+<section class="cce-translations">
+  <header class="cce-translations__header">
+    <div class="cce-translations__title-row">
+      <div>
+        <span class="cce-translations__eyebrow">BRD §4.1.24 · TRANSLATIONS</span>
+        <h1 class="cce-translations__title">Translations Management</h1>
+        <p class="cce-translations__subtitle">
+          Edit user-facing strings in English and Arabic without a code change. Save All commits modified rows.
+        </p>
+      </div>
+
+      <div class="cce-translations__stat-row">
+        <div class="cce-translations__stat">
+          <span class="cce-translations__stat-value">{{ stats().total }}</span>
+          <span class="cce-translations__stat-label">Total keys</span>
+        </div>
+        <div class="cce-translations__stat">
+          <span class="cce-translations__stat-value">{{ stats().scopes }}</span>
+          <span class="cce-translations__stat-label">Scopes</span>
+        </div>
+        <div class="cce-translations__stat cce-translations__stat--modified" [class.cce-translations__stat--clean]="modifiedCount() === 0">
+          <span class="cce-translations__stat-value">{{ modifiedCount() }}</span>
+          <span class="cce-translations__stat-label">Modified</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cce-translations__toolbar">
+      <mat-form-field appearance="outline" class="cce-translations__search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput
+          type="search"
+          placeholder="Search by key, English, or Arabic"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)" />
+      </mat-form-field>
+
+      <div class="cce-translations__chips">
+        @for (s of scopes; track s.id) {
+          <button type="button"
+            class="cce-translations__chip"
+            [class.cce-translations__chip--active]="selectedScope() === s.id"
+            (click)="selectedScope.set(s.id)">
+            {{ s.label }}
+          </button>
+        }
+      </div>
+
+      <div class="cce-translations__actions">
+        <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+        <button mat-button type="button"
+          [disabled]="modifiedCount() === 0"
+          (click)="resetAll()">Reset</button>
+        <button mat-flat-button color="primary"
+          class="cce-translations__save-btn"
+          [disabled]="modifiedCount() === 0"
+          (click)="saveAll()">
+          <mat-icon>save</mat-icon>
+          Save All ({{ modifiedCount() }})
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (filteredEntries().length === 0) {
+    <div class="cce-translations__empty">
+      <mat-icon>translate</mat-icon>
+      <p>No translation keys match your filter.</p>
+      <button mat-button (click)="clearFilters()">Clear filters</button>
+    </div>
+  } @else {
+    <div class="cce-translations__table" role="table">
+      <div class="cce-translations__row cce-translations__row--head" role="row">
+        <div class="cce-translations__cell cce-translations__cell--key" role="columnheader">Key</div>
+        <div class="cce-translations__cell cce-translations__cell--scope" role="columnheader">Scope</div>
+        <div class="cce-translations__cell" role="columnheader">English</div>
+        <div class="cce-translations__cell" role="columnheader" dir="rtl">العربية</div>
+        <div class="cce-translations__cell cce-translations__cell--meta" role="columnheader">Updated</div>
+      </div>
+
+      @for (e of filteredEntries(); track trackByKey($index, e)) {
+        <div class="cce-translations__row" [class.cce-translations__row--dirty]="isDirty(e.key)" role="row">
+          <div class="cce-translations__cell cce-translations__cell--key" role="cell">
+            <code>{{ e.key }}</code>
+            @if (isDirty(e.key)) {
+              <span class="cce-translations__dirty-dot" aria-label="Modified"></span>
+            }
+          </div>
+          <div class="cce-translations__cell cce-translations__cell--scope" role="cell">
+            <span class="cce-translations__scope-pill" [attr.data-scope]="e.scope">{{ e.scope }}</span>
+          </div>
+          <div class="cce-translations__cell" role="cell">
+            <textarea
+              class="cce-translations__input"
+              dir="ltr"
+              rows="1"
+              [ngModel]="e.en"
+              (ngModelChange)="updateField(e.key, 'en', $event)"></textarea>
+          </div>
+          <div class="cce-translations__cell" role="cell">
+            <textarea
+              class="cce-translations__input"
+              dir="rtl"
+              rows="1"
+              [ngModel]="e.ar"
+              (ngModelChange)="updateField(e.key, 'ar', $event)"></textarea>
+          </div>
+          <div class="cce-translations__cell cce-translations__cell--meta" role="cell">
+            {{ e.updatedAt }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

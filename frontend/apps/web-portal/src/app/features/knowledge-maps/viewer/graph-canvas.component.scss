@@ -1,13 +1,276 @@
+/* Graph canvas — brand-tinted backdrop + floating overlay controls
+ * (zoom / fit / reset / legend) + an all-dimmed empty state.
+ * The graph itself is rendered by Cytoscape (see lib/cytoscape-styles.ts);
+ * this wrapper hosts it. */
+
 :host { display: block; }
+
+.cce-graph-canvas-wrap {
+  position: relative;
+}
 
 .cce-graph-canvas {
   width: 100%;
   height: 600px;
-  background: #fafafa;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background:
+    radial-gradient(900px 320px at 0% 0%, rgba(20, 184, 143, 0.06), transparent 60%),
+    radial-gradient(900px 320px at 100% 100%, rgba(200, 160, 69, 0.06), transparent 60%),
+    linear-gradient(180deg, #fbfdfb 0%, #f4faf7 100%);
+  border: 1px solid rgba(0, 108, 79, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 8px 18px -16px rgba(0, 48, 31, 0.22);
+  overflow: hidden;
 }
 
 @media (max-width: 720px) {
-  .cce-graph-canvas { height: 400px; }
+  .cce-graph-canvas { height: 440px; }
+}
+
+/* ─── Floating controls (top-trailing) ───────────────────── */
+.cce-graph-controls {
+  position: absolute;
+  top: 0.85rem;
+  inset-inline-end: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 108, 79, 0.16);
+  border-radius: 999px;
+  box-shadow: 0 6px 18px -8px rgba(0, 48, 31, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 5;
+}
+
+.cce-graph-controls__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  color: rgba(28, 39, 36, 0.7);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  &:hover {
+    color: #006c4f;
+    background: rgba(0, 108, 79, 0.08);
+  }
+  &:active { transform: scale(0.94); }
+  &:focus-visible {
+    outline: 3px solid rgba(0, 108, 79, 0.28);
+    outline-offset: 2px;
+  }
+}
+
+.cce-graph-controls__divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: rgba(0, 108, 79, 0.18);
+  margin: 0 0.15rem;
+}
+
+/* ─── Legend — always-visible panel pinned at the bottom-leading
+ *               corner (visual left in LTR, right in RTL). ───────── */
+.cce-graph-legend {
+  position: absolute;
+  bottom: 0.85rem;
+  inset-inline-start: 0.85rem;
+  z-index: 5;
+  width: 230px;
+  max-width: calc(100% - 1.7rem);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  border-radius: 14px;
+  padding: 0.7rem 0.9rem 0.85rem;
+  box-shadow: 0 12px 26px -14px rgba(0, 48, 31, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.cce-graph-legend__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #006c4f;
+
+  mat-icon {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+.cce-graph-legend__group {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  & + & {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px dashed rgba(0, 60, 44, 0.12);
+  }
+
+  dt {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(28, 39, 36, 0.55);
+    margin-bottom: 0.15rem;
+  }
+  dd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.82rem;
+    color: #1c2724;
+  }
+}
+
+/* Node glyph swatches — mirror the cytoscape shapes/colours. */
+.cce-graph-legend__node {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(0, 60, 44, 0.18);
+
+  &--tech {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f8b6c, #006c4f);
+  }
+  &--sector {
+    border-radius: 4px;
+    background: linear-gradient(135deg, #d4b969, #b78a30);
+  }
+  &--subtopic {
+    background: linear-gradient(135deg, #22d3a0, #0f8b6c);
+    transform: rotate(45deg);
+    border-radius: 2px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Edge glyph swatches — mirror the cytoscape line styles. */
+.cce-graph-legend__edge {
+  display: inline-block;
+  width: 28px;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 2.5px solid #006c4f;
+  border-radius: 999px;
+
+  &--parent  { border-top: 3px solid #006c4f; }
+  &--related { border-top: 2px dashed #94a098; }
+  &--required {
+    border-top: 2.5px dotted #a87d0e;
+  }
+}
+
+/* ─── All-dimmed empty state ─────────────────────────────── */
+.cce-graph-canvas__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 4;
+  pointer-events: auto;
+  border-radius: 18px;
+  animation: cceEmptyFade 220ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  p {
+    margin: 0;
+    max-width: 36ch;
+    color: rgba(28, 39, 36, 0.78);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+@keyframes cceEmptyFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.cce-graph-canvas__empty-art {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(0, 108, 79, 0.1);
+  color: #006c4f;
+
+  mat-icon {
+    font-size: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+.cce-graph-canvas__empty-cta {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.2);
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 108, 79, 0.14);
+    border-color: rgba(0, 108, 79, 0.36);
+  }
+  &:focus-visible {
+    outline: 3px solid rgba(0, 108, 79, 0.28);
+    outline-offset: 2px;
+  }
+}
+
+/* ─── Mobile tweaks ──────────────────────────────────────── */
+@media (max-width: 540px) {
+  .cce-graph-controls__btn { width: 30px; height: 30px; }
+  .cce-graph-legend__toggle span { display: none; }
+  .cce-graph-legend__toggle { padding: 0.45rem; }
+  .cce-graph-legend__panel { min-width: 180px; padding: 0.75rem 0.85rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-graph-controls__btn,
+  .cce-graph-legend__toggle { transition: none; }
+  .cce-graph-legend__panel,
+  .cce-graph-canvas__empty { animation: none; }
 }

@@ -1,89 +1,251 @@
+/* List view — brand greens, polished. Alternative to the graph
+ * canvas. Sort toolbar at the top; collapsible sections grouped by
+ * node type with a shape pip that mirrors the cytoscape node shape
+ * (circle / round-rect / diamond) for visual continuity. Each row
+ * shows an edge-composition pill set (parent / related / required)
+ * alongside the total outbound count. */
+
 :host {
   display: block;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 1rem;
-  max-height: 600px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 60, 44, 0.08);
+  border-radius: 18px;
+  padding: 0.9rem 1.1rem 1.1rem;
+  max-height: 640px;
   overflow-y: auto;
+  box-shadow: 0 8px 18px -16px rgba(0, 48, 31, 0.22);
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 108, 79, 0.22);
+    border-radius: 999px;
+  }
+  &::-webkit-scrollbar-track { background: transparent; }
 }
 
-.cce-list-view__section {
-  margin: 0 0 1.25rem 0;
+.cce-list-view-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
 
-  &:last-child { margin-bottom: 0; }
+/* ─── Sort toolbar ──────────────────────────────────────── */
+.cce-list-view__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.7rem;
+  background:
+    radial-gradient(400px 120px at 0% 0%, rgba(20, 184, 143, 0.06), transparent 70%),
+    linear-gradient(180deg, #fbfdfb 0%, #f4faf7 100%);
+  border: 1px solid rgba(0, 108, 79, 0.14);
+  border-radius: 14px;
+  position: sticky;
+  top: -0.3rem;     /* compensate for the host's 0.9rem top padding */
+  z-index: 2;
+}
+
+.cce-list-view__toolbar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.6);
+
+  mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    color: #006c4f;
+  }
+}
+
+.cce-list-view__sort {
+  display: inline-flex;
+  background: rgba(0, 108, 79, 0.06);
+  border: 1px solid rgba(0, 108, 79, 0.14);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.cce-list-view__sort-btn {
+  border: none;
+  background: transparent;
+  padding: 0.36rem 0.78rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.7);
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover { color: #006c4f; }
+  &--active {
+    background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+  }
+  &--active:hover { color: #ffffff; }
+  &:focus-visible {
+    outline: 3px solid rgba(0, 108, 79, 0.28);
+    outline-offset: 2px;
+  }
+}
+
+/* ─── Sections ──────────────────────────────────────────── */
+.cce-list-view__section {
+  margin: 0;
+
+  & + & { margin-top: 1rem; }
 }
 
 .cce-list-view__section-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.5rem 0;
+  gap: 0.55rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  text-align: inline-start;
+  transition: background 0.15s ease;
 
-  h2 {
-    margin: 0;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: rgba(0, 0, 0, 0.55);
+  &:hover { background: rgba(0, 108, 79, 0.05); }
+  &:focus-visible {
+    outline: 3px solid rgba(0, 108, 79, 0.28);
+    outline-offset: 2px;
+  }
+}
+
+.cce-list-view__section-title {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(28, 39, 36, 0.7);
+}
+
+.cce-list-view__chevron {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(28, 39, 36, 0.5);
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+.cce-list-view__section-header:hover .cce-list-view__chevron { color: #006c4f; }
+
+/* Shape pip — mirrors the cytoscape node shape per type so the
+ * visual mapping between graph + list views is obvious. */
+.cce-list-view__pip {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(0, 60, 44, 0.2);
+
+  &[data-node-type="Technology"] {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f8b6c, #006c4f);
+  }
+  &[data-node-type="Sector"] {
+    border-radius: 4px;
+    background: linear-gradient(135deg, #d4b969, #b78a30);
+  }
+  &[data-node-type="SubTopic"] {
+    width: 13px;
+    height: 13px;
+    background: linear-gradient(135deg, #22d3a0, #0f8b6c);
+    transform: rotate(45deg);
+    border-radius: 2px;
   }
 }
 
 .cce-list-view__count {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.06);
-  color: rgba(0, 0, 0, 0.65);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 0.55rem;
+  background: rgba(0, 108, 79, 0.1);
+  color: #006c4f;
   border-radius: 999px;
-  padding: 0.1rem 0.6rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .cce-list-view__empty {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.5);
+  margin: 0.35rem 0 0;
+  color: rgba(28, 39, 36, 0.5);
   font-style: italic;
-  font-size: 0.9rem;
-  padding-inline-start: 0.5rem;
+  font-size: 0.88rem;
+  padding-inline-start: 1.1rem;
 }
 
 .cce-list-view__list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0.35rem 0 0;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
+  animation: cceListExpand 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes cceListExpand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Node row ──────────────────────────────────────────── */
 .cce-list-view__node {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   width: 100%;
   background: transparent;
   border: 0;
   border-inline-start: 4px solid transparent;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.85rem;
   text-align: inline-start;
   cursor: pointer;
-  border-radius: 0 4px 4px 0;
-  transition: background 0.1s, border-color 0.1s, opacity 0.15s;
+  border-radius: 0 12px 12px 0;
+  font: inherit;
+  font-size: 0.92rem;
+  color: #1c2724;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.18s ease, transform 0.15s ease;
 
-  &:hover { background: rgba(0, 0, 0, 0.03); }
+  &:hover {
+    background: rgba(0, 108, 79, 0.05);
+    transform: translateX(2px);
+  }
   &:focus-visible {
-    outline: 2px solid #1565c0;
+    outline: 3px solid rgba(0, 108, 79, 0.28);
     outline-offset: 2px;
   }
-
   &--selected {
-    border-inline-start-color: #fbc02d;
-    background: rgba(251, 192, 45, 0.08);
-    font-weight: 600;
+    border-inline-start-color: #c8a045;
+    background: linear-gradient(90deg, rgba(200, 160, 69, 0.12), rgba(200, 160, 69, 0.0));
+    font-weight: 700;
+    color: #1c2724;
   }
-
   &--dimmed { opacity: 0.4; }
 }
+[dir="rtl"] .cce-list-view__node:hover { transform: translateX(-2px); }
 
 .cce-list-view__name {
   flex: 1 1 auto;
@@ -93,18 +255,77 @@
   white-space: nowrap;
 }
 
-.cce-list-view__edge-count {
-  font-size: 0.75rem;
-  color: rgba(0, 0, 0, 0.45);
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 999px;
-  padding: 0.05rem 0.5rem;
-  flex-shrink: 0;
+/* ─── Edge composition pills ────────────────────────────── */
+.cce-list-view__edges {
+  display: inline-flex;
+  gap: 0.2rem;
+  flex: 0 0 auto;
 }
 
-/* NodeType-specific section accents on the title — picks up the
-   palette from cytoscape-styles.ts so list-view + graph-view share
-   the same visual language. */
-.cce-list-view__section[data-node-type="Technology"] .cce-list-view__count { background: #e3f2fd; color: #0d47a1; }
-.cce-list-view__section[data-node-type="Sector"]     .cce-list-view__count { background: #f3e5f5; color: #4a148c; }
-.cce-list-view__section[data-node-type="SubTopic"]   .cce-list-view__count { background: #e0f2f1; color: #00695c; }
+.cce-list-view__edge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  border: 1px solid transparent;
+
+  /* Mirror the cytoscape edge palette. */
+  &[data-rel="ParentOf"] {
+    background: #006c4f;
+  }
+  &[data-rel="RelatedTo"] {
+    background: rgba(148, 160, 152, 0.85);
+    color: #1c2724;
+  }
+  &[data-rel="RequiredBy"] {
+    background: #a87d0e;
+  }
+}
+
+.cce-list-view__edge-count {
+  font-size: 0.74rem;
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ─── NodeType-specific section accents ─────────────────── */
+.cce-list-view__section[data-node-type="Technology"] .cce-list-view__count {
+  background: linear-gradient(135deg, rgba(20, 184, 143, 0.18), rgba(0, 108, 79, 0.18));
+  color: #1e6b3a;
+}
+.cce-list-view__section[data-node-type="Sector"] .cce-list-view__count {
+  background: linear-gradient(135deg, rgba(200, 160, 69, 0.18), rgba(212, 185, 105, 0.22));
+  color: #6b4f0a;
+}
+.cce-list-view__section[data-node-type="SubTopic"] .cce-list-view__count {
+  background: rgba(0, 108, 79, 0.1);
+  color: #006c4f;
+}
+
+/* ─── Mobile ────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .cce-list-view__toolbar { gap: 0.5rem; }
+  .cce-list-view__toolbar-label span { display: none; }
+  .cce-list-view__edges { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-list-view__node,
+  .cce-list-view__section-header,
+  .cce-list-view__sort-btn,
+  .cce-list-view__chevron { transition: none; }
+  .cce-list-view__node:hover { transform: none; }
+  .cce-list-view__list { animation: none; }
+}

@@ -11,7 +11,9 @@ import type { ResourceListItem } from './knowledge.types';
   standalone: true,
   imports: [CommonModule, DatePipe, RouterLink, MatCardModule, MatIconModule, TranslateModule],
   template: `
-    <a class="cce-resource-card" [routerLink]="['/knowledge-center', resource().id]">
+    <a class="cce-resource-card"
+       [attr.data-type]="resource().resourceType"
+       [routerLink]="['/knowledge-center', resource().id]">
       <mat-card>
         <mat-card-header>
           <mat-icon mat-card-avatar>{{ iconFor(resource().resourceType) }}</mat-icon>

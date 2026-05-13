@@ -1,8 +1,10 @@
 <section class="cce-scenario-builder">
-  <h1>{{ 'interactiveCity.builder.title' | translate }}</h1>
-  <p class="cce-scenario-builder__subtitle">
-    {{ 'interactiveCity.builder.subtitle' | translate }}
-  </p>
+  <cce-workbench-hero
+    [eyebrow]="'interactiveCity.builder.eyebrow' | translate"
+    [title]="'interactiveCity.builder.title' | translate"
+    [subtitle]="'interactiveCity.builder.subtitle' | translate"
+    [steps]="heroSteps()"
+  />
 
   @if (store.catalogLoading()) {
     <mat-progress-bar mode="indeterminate" />
@@ -18,6 +20,10 @@
   }
 
   <cce-scenario-header />
+
+  <!-- F009: governorate-level environmental factor inputs that drive
+       the city baseline carbon footprint. -->
+  <cce-environmental-factors />
 
   <div class="cce-scenario-builder__layout">
     <div class="cce-scenario-builder__catalog">

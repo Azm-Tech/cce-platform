@@ -1,52 +1,106 @@
-:host { display: block; padding: 1.5rem; max-width: 1280px; margin: 0 auto; }
+/* ============================================================
+   Scenario Builder — UX/UI-enhanced
+   Full-bleed brand backdrop, gradient hero, 3-step quick-start
+   strip, polished split layout (catalog + selected), branded
+   error banner, sticky totals bar.
+   ============================================================ */
 
-.cce-scenario-builder__subtitle {
-  margin: 0.5rem 0 1.5rem 0;
-  color: rgba(0, 0, 0, 0.6);
+:host {
+  display: block;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  min-height: calc(100vh - 80px);
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+  padding-block: 1.5rem 4rem;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  box-sizing: border-box;
+}
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; padding-block: 1rem 3rem; }
 }
 
+.cce-scenario-builder {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+/* Hero rendered by <cce-workbench-hero> — see libs/ui-kit/workbench-hero. */
+
+/* ─── Loading bar ────────────────────────────────────── */
+::ng-deep .cce-scenario-builder mat-progress-bar {
+  border-radius: 999px;
+  overflow: hidden;
+  height: 3px !important;
+  margin-bottom: 1rem;
+  --mdc-linear-progress-active-indicator-color: #14b88f;
+  --mdc-linear-progress-track-color: rgba(15, 139, 108, 0.12);
+}
+
+/* ─── Error banner ───────────────────────────────────── */
 .cce-scenario-builder__error {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: #fdecea;
-  color: #b00020;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin: 1rem 0;
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  padding: 0.95rem 1.25rem;
+  border-radius: 12px;
+  margin: 1rem 0 1.5rem;
+  font-weight: 500;
+
+  &::before {
+    content: '⚠';
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #dc2626;
+  }
+  span { flex: 1; }
 }
 
+/* ─── Layout: catalog (left, wider) + selected (right, sticky) ─ */
 .cce-scenario-builder__layout {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
   gap: 1.5rem;
-  margin-top: 0.5rem;
+  margin-top: 1.25rem;
+  align-items: start;
 }
 
-@media (max-width: 720px) {
+.cce-scenario-builder__catalog {
+  min-width: 0;
+}
+
+.cce-scenario-builder__selected {
+  min-width: 0;
+  position: sticky;
+  top: 88px;
+  /* The selected panel scrolls internally if it overflows the viewport. */
+  max-height: calc(100vh - 110px);
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
   .cce-scenario-builder__layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   }
 }
 
-.cce-scenario-builder__totals-placeholder {
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  background: rgba(21, 101, 192, 0.06);
-  border: 1px solid rgba(21, 101, 192, 0.18);
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  align-items: center;
+@media (max-width: 880px) {
+  .cce-scenario-builder__layout {
+    grid-template-columns: 1fr;
+  }
+  .cce-scenario-builder__selected {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
 
-  position: sticky;
-  bottom: 0;
-}
-.cce-scenario-builder__totals-cell {
-  font-size: 1rem;
-}
-.cce-scenario-builder__totals-cell strong {
-  margin-inline-end: 0.25rem;
-}
+/* Reduced-motion handling for hero is owned by <cce-workbench-hero>. */

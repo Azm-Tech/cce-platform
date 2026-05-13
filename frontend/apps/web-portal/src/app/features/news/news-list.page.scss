@@ -1,17 +1,20 @@
-:host { display: block; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
-.cce-news-list__header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+/* News list — toolbar/grid/skeleton/empty/error shared via global
+ * styles (see apps/web-portal/src/styles.scss → "List-page shared
+ * utilities"). Only page-specific tweaks live here. */
+
+:host {
+  display: block;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem) 4rem;
 }
-.cce-news-list__title { margin: 0; }
-.cce-news-list__error {
-  background: #fdecea; color: #b00020;
-  padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
-}
-.cce-news-list__empty { text-align: center; padding: 2rem; color: rgba(0, 0, 0, 0.6); }
-.cce-news-list__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+
+.cce-news-list__progress {
   margin-bottom: 1rem;
+  --mdc-linear-progress-active-indicator-color: #006c4f;
+}
+
+mat-paginator {
+  margin-top: 0.5rem;
+  background: transparent;
 }

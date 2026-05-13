@@ -21,4 +21,16 @@ export interface CceEnv {
 
   /** Sentry DSN; empty string disables Sentry. */
   readonly sentryDsn: string;
+
+  /**
+   * Public web-portal origin (no trailing slash) — used by the admin-cms
+   * to deep-link rows in moderation lists back to their public surface
+   * (e.g. `/community/posts/:id`). When omitted, admin-side actions that
+   * would otherwise open the public site silently no-op.
+   *
+   * Examples:
+   *   - dev:        `http://localhost:4200`
+   *   - production: `https://portal.cce.example`
+   */
+  readonly webPortalUrl?: string;
 }

@@ -1,1 +1,145 @@
-.cce-search-box { width: 100%; }
+/* ============================================================
+   CCE Search Box — clean pill (rewritten to fix layout issues)
+   ------------------------------------------------------------
+   Issues fixed in this pass:
+     • Removed the "/" trailing hint chip (overlapped the input
+       on narrow widths and added clutter)
+     • Removed the icon gradient/scale/rotate animation that
+       caused vertical layout shifts and inconsistent rendering
+     • Simplified to a single solid pill with a clean focus ring
+     • Hardcoded a stable 40px pill height that matches the bell
+       and locale switcher buttons exactly (header alignment)
+     • Killed Material's notched-outline + floating label + hint
+       gutter so the pill is the only visible element
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.cce-search-box {
+  width: 100%;
+  display: block;
+
+  /* Stable height that matches other header chrome (bell, user pill,
+     sign-in button) so the entire row aligns vertically. */
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+  --mdc-outlined-text-field-outline-color: transparent;
+  --mdc-outlined-text-field-hover-outline-color: transparent;
+  --mdc-outlined-text-field-focus-outline-color: transparent;
+}
+
+/* ─── Pill surface ────────────────────────────────────────── */
+::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  position: relative;
+  background: rgba(15, 139, 108, 0.05) !important;
+  border: 1px solid rgba(0, 108, 79, 0.14) !important;
+  border-radius: 999px !important;
+  overflow: visible !important;
+  height: 40px !important;
+  padding: 0 !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--outlined:hover {
+  background: rgba(15, 139, 108, 0.08) !important;
+  border-color: rgba(0, 108, 79, 0.28) !important;
+}
+
+/* Focus state: solid white surface + brand-green border + soft glow ring */
+::ng-deep .cce-search-box .mdc-text-field--focused .mat-mdc-text-field-wrapper,
+::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--focused {
+  background: #ffffff !important;
+  border-color: #006c4f !important;
+  box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.15) !important;
+}
+
+/* Hide Material's stock notched-outline so our border is the ONLY edge */
+::ng-deep .cce-search-box .mdc-notched-outline,
+::ng-deep .cce-search-box .mdc-notched-outline__leading,
+::ng-deep .cce-search-box .mdc-notched-outline__notch,
+::ng-deep .cce-search-box .mdc-notched-outline__trailing {
+  border: none !important;
+}
+
+/* ─── Inner layout ────────────────────────────────────────── */
+::ng-deep .cce-search-box .mat-mdc-form-field-flex {
+  align-items: center !important;
+  height: 100% !important;
+  padding-inline: 0.85rem !important;
+  gap: 0.55rem;
+}
+
+/* Search icon — static, no animation. */
+::ng-deep .cce-search-box .mat-mdc-form-field-icon-prefix {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+::ng-deep .cce-search-box mat-icon[matPrefix] {
+  color: rgba(0, 108, 79, 0.65);
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 18px;
+}
+
+/* Input — vertically centered, clean placeholder */
+::ng-deep .cce-search-box .mat-mdc-form-field-infix {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  width: auto !important;
+}
+::ng-deep .cce-search-box input.mat-mdc-input-element,
+::ng-deep .cce-search-box input.mat-mdc-form-field-input-control {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+  line-height: 1.2 !important;
+  caret-color: #006c4f;
+  color: #1c2724;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+::ng-deep .cce-search-box input.mat-mdc-input-element::placeholder {
+  color: rgba(28, 39, 36, 0.45);
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* Hide Material's floating label, ripple, and hint subscript so the
+   pill stays a single clean element. */
+::ng-deep .cce-search-box .mdc-floating-label,
+::ng-deep .cce-search-box .mat-mdc-form-field-subscript-wrapper,
+::ng-deep .cce-search-box .mat-mdc-form-field-bottom-align,
+::ng-deep .cce-search-box .mat-mdc-line-ripple,
+::ng-deep .cce-search-box .mdc-line-ripple {
+  display: none !important;
+}
+
+/* Reset the form field's overall vertical padding/border-box */
+::ng-deep .cce-search-box .mat-mdc-form-field {
+  width: 100%;
+}
+::ng-deep .cce-search-box .mdc-text-field {
+  padding: 0 !important;
+  height: 40px !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  ::ng-deep .cce-search-box .mat-mdc-text-field-wrapper {
+    transition: none !important;
+  }
+}

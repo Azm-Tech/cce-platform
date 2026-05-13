@@ -12,10 +12,622 @@
 // Per Phase 09 deviation, we use legacy @import inside a partial to side-step Sass module isolation.
 @import "./bootstrap-grid";
 
-// Document-level resets
+// Document-level resets — make sure the brand-tinted gradient
+// (applied to <body> in `_fancy.scss`) covers the FULL viewport on
+// every page, regardless of content height or LTR/RTL direction.
+//
+// `min-height: 100vh` ensures html + body always span the viewport
+// vertically, even on short pages, so the gradient never reveals
+// the browser's default white "canvas" beneath. `width: 100%` +
+// `overflow-x: clip` prevents 100vw children (full-bleed pages)
+// from forcing a horizontal scrollbar.
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
-  background: #fafafa;
+  width: 100%;
+  min-height: 100vh;
+  // Tall content still grows beyond the viewport — `min-height`
+  // means "at least this tall, but can grow" so the gradient
+  // extends with the body box.
+  background: #fafafa; // base color — overridden by fancy.scss gradient
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+html { height: 100%; }
+body { min-height: 100vh; }
+
+// Global polish layer — applies fancy animations, glass surfaces,
+// custom scrollbar, page transitions, Material upgrades. No per-page
+// changes required; every routed view inherits these.
+@import "./fancy";
+
+// ─── Assistant dialog — RIGHT-SIDE SIDE SHEET ─────────────────
+// Anchored to the trailing edge of the viewport (right in LTR,
+// left in RTL), full height, ~460px wide. Slides in from the
+// trailing edge with a smooth easing. cdk-overlay-pane renders
+// outside any component shadow tree, so this MUST live at the
+// global level.
+.cdk-overlay-pane.cce-assistant-dialog-panel {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  inset-inline-end: 0 !important;
+  inset-inline-start: auto !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+
+  /* Slide-in from the trailing edge */
+  animation: cceAssistantSheetIn 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes cceAssistantSheetIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+[dir="rtl"] .cdk-overlay-pane.cce-assistant-dialog-panel {
+  animation: cceAssistantSheetInRtl 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes cceAssistantSheetInRtl {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+.cce-assistant-dialog-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+  /* Sharp inside-edge, rounded outside-edge — feels anchored to
+     the viewport wall on one side and free-floating on the other. */
+  border-radius: 22px 0 0 22px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    -28px 0 64px -16px rgba(0, 48, 31, 0.40),
+    -1px 0 0 rgba(0, 108, 79, 0.18) !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+[dir="rtl"] .cce-assistant-dialog-panel .mat-mdc-dialog-container {
+  border-radius: 0 22px 22px 0 !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    28px 0 64px -16px rgba(0, 48, 31, 0.40),
+    1px 0 0 rgba(0, 108, 79, 0.18) !important;
+}
+.cce-assistant-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: inherit !important;
+  background: transparent !important;
+  height: 100% !important;
+}
+
+/* Backdrop tone: lighter than default scrim so the page is still
+   visible behind the sheet (it's a side panel, not a takeover). */
+.cdk-overlay-backdrop.cce-assistant-dialog-backdrop {
+  background: rgba(0, 48, 31, 0.30);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Phones: full-screen sheet (no rounding, no leading shadow gap) */
+@media (max-width: 600px) {
+  .cdk-overlay-pane.cce-assistant-dialog-panel {
+    width: 100vw !important;
+    inset-inline-end: 0 !important;
+  }
+  .cce-assistant-dialog-panel .mat-mdc-dialog-container {
+    border-radius: 0 !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   List-page shared utilities
+   Used by News, Community Topics, and Events list pages so they
+   share one toolbar / grid / skeleton / empty-state / error
+   language. Keep these classes minimal — modern and restrained.
+   Brand palette: deep green #006c4f, mid green #14b88f, gold #c8a045
+   ───────────────────────────────────────────────────────────── */
+
+.cce-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.cce-list-toolbar__search {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 200px;
+  max-width: 540px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  border-radius: 999px;
+  padding-inline-start: 0.95rem;
+  padding-inline-end: 0.4rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cce-list-toolbar__search:focus-within {
+  border-color: #006c4f;
+  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.14);
+}
+.cce-list-toolbar__search-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(0, 108, 79, 0.7);
+  margin-inline-end: 0.4rem;
+}
+.cce-list-toolbar__search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.65rem 0;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #1c2724;
+}
+.cce-list-toolbar__search-input::placeholder { color: rgba(28, 39, 36, 0.45); }
+.cce-list-toolbar__search-input::-webkit-search-cancel-button { display: none; }
+
+.cce-list-toolbar__search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: rgba(28, 39, 36, 0.55);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cce-list-toolbar__search-clear:hover {
+  background: rgba(0, 108, 79, 0.08);
+  color: #006c4f;
+}
+.cce-list-toolbar__search-clear mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.cce-list-toolbar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.7);
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.cce-list-toolbar__chip:hover { color: #006c4f; border-color: rgba(0, 108, 79, 0.36); }
+.cce-list-toolbar__chip mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+.cce-list-toolbar__chip--active {
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+}
+.cce-list-toolbar__chip--active:hover { color: #ffffff; }
+
+.cce-list-toolbar__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1c2724;
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+}
+.cce-list-toolbar__date > span {
+  font-weight: 700;
+  color: rgba(28, 39, 36, 0.55);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cce-list-toolbar__date input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.86rem;
+  color: #1c2724;
+  padding: 0;
+  min-width: 110px;
+}
+
+/* Counter pip on the "Filters" button. Reuses .cce-list-toolbar__chip
+ * as the host (so it picks up active styling automatically). */
+.cce-list-toolbar__chip-badge {
+  margin-inline-start: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #006c4f;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.cce-list-toolbar__chip--active .cce-list-toolbar__chip-badge {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.cce-list-toolbar__count {
+  margin-inline-start: auto;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.55);
+  white-space: nowrap;
+}
+
+/* ─── Grid (wider min track for horizontal cards) ─────────── */
+.cce-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* `--list` modifier collapses the grid to a single full-width column,
+ * which lets users switch from a 3-up grid to a stacked list. */
+.cce-list-grid--list {
+  grid-template-columns: 1fr;
+}
+
+/* View-mode toggle pill (Grid ↔ List) used in list-page toolbars. */
+.cce-list-toolbar__view {
+  display: inline-flex;
+  background: rgba(0, 108, 79, 0.06);
+  border: 1px solid rgba(0, 108, 79, 0.14);
+  border-radius: 999px;
+  padding: 3px;
+}
+.cce-list-toolbar__view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: rgba(28, 39, 36, 0.65);
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.cce-list-toolbar__view-btn mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+.cce-list-toolbar__view-btn:hover { color: #006c4f; }
+.cce-list-toolbar__view-btn--active {
+  background: #ffffff;
+  color: #006c4f;
+  box-shadow: 0 2px 6px -2px rgba(0, 108, 79, 0.35);
+}
+
+/* ─── Skeleton (matches horizontal 75/25 card shape) ──────── */
+.cce-list-skeleton {
+  background: #ffffff;
+  border: 1px solid rgba(0, 60, 44, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  /* Match the cards: 25/75, image (band) leading. */
+  grid-template-columns: 1fr 3fr;
+  min-height: 160px;
+}
+.cce-list-skeleton__lines {
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  justify-content: center;
+}
+.cce-list-skeleton__band {
+  background: linear-gradient(90deg, #eef5f1 0%, #e2efe9 50%, #eef5f1 100%);
+  background-size: 200% 100%;
+  animation: cceListShimmer 1.6s linear infinite;
+}
+.cce-list-skeleton__line {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eef0ee 0%, #e2e7e4 50%, #eef0ee 100%);
+  background-size: 200% 100%;
+  animation: cceListShimmer 1.6s linear infinite;
+}
+.cce-list-skeleton__line--lg { height: 16px; width: 80%; }
+.cce-list-skeleton__line--sm { height: 10px; width: 35%; }
+
+@keyframes cceListShimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ─── Empty / error ──────────────────────────────────────── */
+.cce-list-empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #fbfdfb;
+  border: 1px dashed rgba(0, 108, 79, 0.22);
+  border-radius: 18px;
+  color: rgba(28, 39, 36, 0.7);
+  margin-bottom: 1.25rem;
+}
+.cce-list-empty h2 {
+  margin: 0.85rem 0 0.4rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1c2724;
+}
+.cce-list-empty p {
+  margin: 0;
+  max-width: 44ch;
+  margin-inline: auto;
+}
+.cce-list-empty__art {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 108, 79, 0.08);
+  color: #006c4f;
+}
+.cce-list-empty__art mat-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+.cce-list-empty--filter button { margin-top: 0.85rem; }
+
+.cce-list-error {
+  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
+  color: #8a1f0d;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgba(176, 0, 32, 0.15);
+  flex-wrap: wrap;
+}
+.cce-list-error mat-icon { color: #b00020; }
+.cce-list-error span { flex: 1 1 auto; min-width: 0; }
+.cce-list-error button {
+  border: 1px solid rgba(176, 0, 32, 0.4);
+  background: transparent;
+  color: #8a1f0d;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.cce-list-error button:hover { background: rgba(176, 0, 32, 0.06); }
+
+/* ─── Expandable filter panel ─────────────────────────────
+ * Lives directly under the toolbar. Becomes visible when the
+ * "Filters" button is toggled. Each group uses a small uppercase
+ * legend + a row of segmented pills (or date inputs).
+ * ───────────────────────────────────────────────────────── */
+
+.cce-list-filters {
+  background:
+    radial-gradient(700px 200px at 0% 0%, rgba(20, 184, 143, 0.08), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.1rem 1.5rem;
+  animation: cceListFiltersIn 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cce-list-filters[hidden] { display: none; }
+
+@keyframes cceListFiltersIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cce-list-filters__group {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.cce-list-filters__legend {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cce-list-filters__legend mat-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: #006c4f;
+}
+
+/* Segmented pill group */
+.cce-list-filters__seg {
+  display: inline-flex;
+  background: rgba(0, 108, 79, 0.06);
+  border: 1px solid rgba(0, 108, 79, 0.14);
+  border-radius: 999px;
+  padding: 3px;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.cce-list-filters__seg-btn {
+  border: none;
+  background: transparent;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(28, 39, 36, 0.7);
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+.cce-list-filters__seg-btn:hover { color: #006c4f; }
+.cce-list-filters__seg-btn--active {
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+}
+.cce-list-filters__seg-btn--active:hover { color: #ffffff; }
+
+/* Date row */
+.cce-list-filters__date-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.cce-list-filters__date {
+  flex: 1 1 0;
+  min-width: 130px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+}
+.cce-list-filters__date input {
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #1c2724;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cce-list-filters__date input:focus {
+  outline: none;
+  border-color: #006c4f;
+  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.14);
+}
+
+/* ─── Active filter chips strip ───────────────────────────
+ * Sits between the toolbar/panel and the cards, surfacing all
+ * non-default filter values with one-click remove + clear-all.
+ * ───────────────────────────────────────────────────────── */
+.cce-list-active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.cce-list-active__label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(28, 39, 36, 0.55);
+  margin-inline-end: 0.25rem;
+}
+.cce-list-active__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.08);
+  border: 1px solid rgba(0, 108, 79, 0.18);
+  padding: 0.28rem 0.4rem 0.28rem 0.7rem;
+  border-radius: 999px;
+}
+[dir="rtl"] .cce-list-active__chip { padding: 0.28rem 0.7rem 0.28rem 0.4rem; }
+
+.cce-list-active__chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #006c4f;
+  transition: background 0.15s ease;
+}
+.cce-list-active__chip-x:hover { background: rgba(0, 108, 79, 0.18); }
+.cce-list-active__chip-x mat-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.cce-list-active__clear {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #b00020;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+}
+.cce-list-active__clear:hover { background: rgba(176, 0, 32, 0.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-list-filters { animation: none; }
+  .cce-list-filters__seg-btn { transition: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-list-skeleton__band,
+  .cce-list-skeleton__line { animation: none; }
 }
