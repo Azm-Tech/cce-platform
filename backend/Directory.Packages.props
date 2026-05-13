@@ -111,7 +111,7 @@
 
   <ItemGroup Label="Health checks">
     <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
-    <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="MediatR pipeline behaviors">
