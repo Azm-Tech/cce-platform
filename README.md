@@ -1,89 +1,51 @@
-# CCE — Circular Carbon Economy Knowledge Center (Phase 2)
+# CCE — Circular Carbon Economy Knowledge Center
 
 **Client:** Saudi Ministry of Energy — Sustainability & Climate Change Agency
-**Status:** Sub-projects 1–5 complete (`foundation-v0.1.0`, `data-domain-v0.1.0`, `internal-api-v0.1.0`, `external-api-v0.1.0`, `admin-cms-v0.1.0`); sub-projects 6–9 to follow.
+**Status:** Sub-projects 1–11 complete — foundation, data-domain, internal API, external API, admin CMS, web portal, knowledge maps, interactive city, smart assistant, app productionization + deployment + production infra, and Entra ID migration. See [project plan](project-plan/README.md).
 
-A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Economy, meeting Saudi **DGA** UX and accessibility standards. The full project decomposes into nine sub-projects — see the [roadmap](docs/roadmap.md).
+A bilingual (Arabic RTL / English LTR) knowledge hub for the Circular Carbon Economy, meeting Saudi **DGA** UX and accessibility standards.
+
+## ▶ Running the project
+
+**[Full setup guide → `docs/getting-started.md`](docs/getting-started.md)** — clone-to-running in 10 minutes.
+
+Short version:
+
+```bash
+git clone https://github.com/Azm-Tech/cce-platform.git && cd cce-platform
+cp .env.example .env && cp .env.local.example .env.local
+docker compose up -d                                                 # infra (SQL, Redis, Meilisearch, MailDev, ClamAV)
+pnpm install --frozen-lockfile && dotnet restore backend/CCE.sln
+dotnet run --project backend/src/CCE.Seeder -- --migrate --demo      # one-shot: migrate + seed demo data
+# Then in separate terminals:
+cd backend/src/CCE.Api.External && ASPNETCORE_ENVIRONMENT=Development dotnet run --urls=http://localhost:5001
+cd backend/src/CCE.Api.Internal && ASPNETCORE_ENVIRONMENT=Development dotnet run --urls=http://localhost:5002
+pnpm nx serve web-portal --port 4200
+pnpm nx serve admin-cms  --port 4201
+```
+
+Then open **http://localhost:4200** (public portal) and **http://localhost:4201** (admin). Sign in via dev auth: hit `http://localhost:5001/dev/sign-in?role=cce-user` or `http://localhost:5002/dev/sign-in?role=cce-admin`.
 
 ## Documentation
 
-- [Roadmap](docs/roadmap.md) — sub-project map, status, BRD references.
-- [Foundation design spec](project-plan/specs/2026-04-24-foundation-design.md)
-- [Architecture Decision Records](docs/adr/) — 38 ADRs covering Foundation through Sub-5 decisions.
-- [Sub-project briefs](docs/subprojects/)
-- [Requirements traceability](docs/requirements-trace.csv) — BRD section → sub-project mapping.
-- [Threat model](docs/threat-model.md) — STRIDE.
-- [A11y manual checklist](docs/a11y-checklist.md) — what axe-core can't catch.
-- [Contributing](CONTRIBUTING.md) — branch model, commit format, PR checklist.
+- **[Getting started](docs/getting-started.md)** — clone, run, sign in.
+- **[Project plan](project-plan/README.md)** — every sub-project's spec, master plan, phase plans, completion reports, release tags.
+- **[Roadmap](docs/roadmap.md)** — sub-project map, status, BRD references.
+- **[Architecture Decision Records](docs/adr/)** — 60+ ADRs covering foundation through Entra ID migration.
+- **[Sub-project briefs](docs/subprojects/)** — one-page summary per sub-project.
+- **[Runbooks](docs/runbooks/)** — backup/restore, DR promotion, secret rotation, env promotion, migrations, rollback.
+- **[Requirements traceability](docs/requirements-trace.csv)** — BRD section → sub-project mapping.
+- **[Threat model](docs/threat-model.md)** — STRIDE.
+- **[A11y manual checklist](docs/a11y-checklist.md)** — what axe-core can't catch.
+- **[Contributing](CONTRIBUTING.md)** — branch model, commit format, PR checklist.
 
 ## Stack
 
-- **Backend:** .NET 8 LTS, EF Core 8, SQL Server 2022 (Azure SQL Edge in dev — see [ADR-0016](docs/adr/0016-azure-sql-edge-for-arm64-dev.md)), Redis 7, MediatR, FluentValidation, Serilog, Swashbuckle, Sentry.
-- **Frontend:** Angular 18.2, Angular Material 18, Bootstrap 5 (grid + utilities only — see [ADR-0003](docs/adr/0003-material-bootstrap-grid-dga-tokens.md)), ngx-translate, angular-auth-oidc-client, Nx 20, pnpm.
-- **Identity:** Keycloak 25 (dev OIDC); ADFS in prod — see [ADR-0006](docs/adr/0006-keycloak-as-adfs-stand-in.md).
-- **Local infra:** Docker Compose (SQL, Redis, Keycloak, MailDev, ClamAV).
+- **Backend:** .NET 8 LTS, EF Core 8, SQL Server 2022 (Azure SQL Edge on arm64 — see [ADR-0016](docs/adr/0016-azure-sql-edge-for-arm64-dev.md)), Redis 7, Meilisearch, MediatR, FluentValidation, Serilog, Swashbuckle, Sentry.
+- **Frontend:** Angular 19, Angular Material 18, Bootstrap 5 (grid + utilities only — see [ADR-0003](docs/adr/0003-material-bootstrap-grid-dga-tokens.md)), ngx-translate, angular-auth-oidc-client, Nx 20, pnpm.
+- **Identity:** Microsoft Entra ID (multi-tenant, Microsoft.Identity.Web + Graph SDK) in prod; dev mode uses a header/cookie shim — see [Sub-11 spec](project-plan/specs/2026-05-04-sub-11-design.md).
+- **Local infra:** Docker Compose (SQL, Redis, Meilisearch, MailDev, ClamAV).
 - **Contracts:** OpenAPI as single source of truth — [ADR-0009](docs/adr/0009-openapi-as-contract-source.md).
-
-## Quickstart
-
-Prerequisites: Docker Engine v26+ (OrbStack / Docker Desktop / Colima), Docker Compose v2, .NET 8 SDK, Node 20+, pnpm 9+, `nc`.
-
-### 1. Bootstrap env
-
-```bash
-cp .env.example .env
-grep -E '^(SQL_PASSWORD|REDIS_PASSWORD|KEYCLOAK_CLIENT_SECRET_|SENTRY_DSN)' .env.local.example >> .env
-```
-
-Edit `.env` to change `SQL_PASSWORD` if desired (must meet SQL Server complexity rules).
-
-### 2. Start infrastructure
-
-```bash
-docker compose up -d
-docker compose ps   # all services should report (healthy) within ~2 min
-```
-
-Host-exposed ports:
-
-| Port | Service                                              |
-| ---- | ---------------------------------------------------- |
-| 1433 | SQL (Azure SQL Edge; SQL Server 2022-compatible)     |
-| 6379 | Redis 7                                              |
-| 8080 | Keycloak admin console (user `admin` / pass `admin`) |
-| 1080 | MailDev inbox UI                                     |
-| 1025 | MailDev SMTP endpoint                                |
-| 3310 | ClamAV daemon (TCP)                                  |
-
-### 3. Build + test backend
-
-```bash
-dotnet restore backend/CCE.sln
-dotnet build   backend/CCE.sln
-dotnet test    backend/CCE.sln
-```
-
-### 4. Build + test frontend
-
-```bash
-pnpm install --frozen-lockfile
-pnpm nx run-many -t lint,test
-pnpm nx run-many -t build
-pnpm nx run-many -t e2e   # Playwright + axe-core
-```
-
-### 5. Contract drift check
-
-```bash
-./scripts/check-contracts-clean.sh
-```
-
-### 6. Tear down
-
-```bash
-docker compose down       # keeps volumes
-docker compose down -v    # destroys all local data
-```
 
 ## Repository layout
 
