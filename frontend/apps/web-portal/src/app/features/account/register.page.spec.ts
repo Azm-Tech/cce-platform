@@ -7,7 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { RegisterPage } from './register.page';
 
@@ -31,7 +31,7 @@ describe('RegisterPage', () => {
     signInMock = jest.fn();
 
     await TestBed.configureTestingModule({
-      imports: [RegisterPage, TranslateModule.forRoot()],
+      imports: [RegisterPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

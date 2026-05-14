@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 /**
  * Public landing route for the OIDC redirect URI configured in
@@ -17,7 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'cce-auth-callback',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslocoModule],
   template: `
     <div class="cce-auth-callback">
       <p>{{ 'common.loading' | translate }}</p>

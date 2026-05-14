@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService, type CurrentUser } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import { FollowsApiService } from '../follows/follows-api.service';
@@ -54,7 +54,7 @@ describe('PostDetailPage', () => {
     currentUserSig = signal<CurrentUser | null>(opts.user ?? null);
 
     await TestBed.configureTestingModule({
-      imports: [PostDetailPage, TranslateModule.forRoot()],
+      imports: [PostDetailPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

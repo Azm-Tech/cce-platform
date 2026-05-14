@@ -10,7 +10,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { EnvService } from '../../core/env.service';
@@ -42,7 +42,7 @@ const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatMenuModule, MatPaginatorModule, MatProgressBarModule, MatSelectModule,
     MatTooltipModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './community-moderation.page.html',
   styleUrl: './community-moderation.page.scss',

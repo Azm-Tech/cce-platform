@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CategoriesTreeComponent } from './categories-tree.component';
 import type { ResourceCategory } from './knowledge.types';
 
@@ -16,7 +16,7 @@ describe('CategoriesTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CategoriesTreeComponent, TranslateModule.forRoot()],
+      imports: [CategoriesTreeComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(CategoriesTreeComponent);

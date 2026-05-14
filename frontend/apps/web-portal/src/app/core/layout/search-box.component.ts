@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cce-search-box',
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, TranslateModule],
+  imports: [FormsModule, MatFormFieldModule, MatIconModule, MatInputModule, TranslocoModule],
   template: `
     <mat-form-field appearance="outline" class="cce-search-box">
       <mat-icon matPrefix>search</mat-icon>

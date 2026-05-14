@@ -1,7 +1,7 @@
 <section class="cce-catalog" aria-labelledby="cce-catalog-title">
   <header class="cce-catalog__header">
     <h2 id="cce-catalog-title" class="cce-catalog__title">
-      {{ 'interactiveCity.catalog.title' | translate }}
+      {{ 'interactiveCity.catalog.title' | transloco }}
     </h2>
 
     <mat-form-field appearance="outline" class="cce-catalog__search">
@@ -10,15 +10,15 @@
         matInput
         type="search"
         [formControl]="searchControl"
-        [placeholder]="'interactiveCity.catalog.search' | translate"
+        [placeholder]="'interactiveCity.catalog.search' | transloco"
       />
     </mat-form-field>
   </header>
 
   @if (!hasCatalog()) {
-    <p class="cce-catalog__empty">{{ 'interactiveCity.empty' | translate }}</p>
+    <p class="cce-catalog__empty">{{ 'interactiveCity.empty' | transloco }}</p>
   } @else if (!hasResults()) {
-    <p class="cce-catalog__empty">{{ 'interactiveCity.catalog.empty' | translate }}</p>
+    <p class="cce-catalog__empty">{{ 'interactiveCity.catalog.empty' | transloco }}</p>
   } @else {
     @for (group of groups(); track group.category) {
       <div class="cce-catalog__group">
@@ -32,7 +32,7 @@
                 [class.cce-catalog__card--selected]="isSelected(t.id)"
                 [attr.aria-pressed]="isSelected(t.id)"
                 [attr.aria-label]="
-                  ('interactiveCity.catalog.addLabel' | translate) + ': ' + nameOf(t)
+                  ('interactiveCity.catalog.addLabel' | transloco) + ': ' + nameOf(t)
                 "
                 (click)="toggle(t.id)"
               >
@@ -43,11 +43,11 @@
                   [class.cce-catalog__card-carbon--bad]="t.carbonImpactKgPerYear > 0"
                 >
                   {{ t.carbonImpactKgPerYear | number }}
-                  {{ 'interactiveCity.totals.carbonUnit' | translate }}
+                  {{ 'interactiveCity.totals.carbonUnit' | transloco }}
                 </span>
                 <span class="cce-catalog__card-cost">
                   {{ t.costUsd | number }}
-                  {{ 'interactiveCity.totals.costUnit' | translate }}
+                  {{ 'interactiveCity.totals.costUnit' | transloco }}
                 </span>
                 @if (isSelected(t.id)) {
                   <mat-icon class="cce-catalog__card-check" aria-hidden="true">check_circle</mat-icon>

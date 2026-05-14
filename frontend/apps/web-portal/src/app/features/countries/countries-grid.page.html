@@ -1,8 +1,8 @@
 <section class="cce-countries-grid" [class.cce-countries-grid--panel-open]="selectedCountry() !== null">
   <cce-workbench-hero
-    [eyebrow]="'countries.eyebrow' | translate"
-    [title]="'countries.title' | translate"
-    [subtitle]="'countries.subtitle' | translate"
+    [eyebrow]="'countries.eyebrow' | transloco"
+    [title]="'countries.title' | transloco"
+    [subtitle]="'countries.subtitle' | transloco"
   />
 
   <!-- Search lives in its own row beneath the hero — workbench-hero
@@ -13,7 +13,7 @@
     role="search"
   >
     <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
-      <mat-label>{{ 'countries.search.placeholder' | translate }}</mat-label>
+      <mat-label>{{ 'countries.search.placeholder' | transloco }}</mat-label>
       <input
         matInput
         type="search"
@@ -23,7 +23,7 @@
       />
     </mat-form-field>
     <button mat-flat-button color="primary" type="submit">
-      {{ 'search.submit' | translate }}
+      {{ 'search.submit' | transloco }}
     </button>
   </form>
 
@@ -33,15 +33,15 @@
 
   @if (errorKind(); as kind) {
     <div class="cce-countries-grid__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
       <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
 
   @if (empty()) {
-    <p class="cce-countries-grid__empty">{{ 'countries.empty' | translate }}</p>
+    <p class="cce-countries-grid__empty">{{ 'countries.empty' | transloco }}</p>
   }
 
   <div class="cce-countries-grid__stage">
@@ -70,7 +70,7 @@
           type="button"
           class="cce-country-panel__close"
           (click)="closePanel()"
-          [attr.aria-label]="'countries.close' | translate">
+          [attr.aria-label]="'countries.close' | transloco">
           ✕
         </button>
 
@@ -94,7 +94,7 @@
             <h2 class="cce-country-panel__name">{{ selectedName() }}</h2>
             @if (profile(); as p) {
               <p class="cce-country-panel__updated">
-                {{ 'countries.detail.lastUpdated' | translate }}:
+                {{ 'countries.detail.lastUpdated' | transloco }}:
                 {{ p.lastUpdatedOn | date:'mediumDate' }}
               </p>
             }
@@ -108,28 +108,28 @@
 
           @if (profile(); as p) {
             <article class="cce-country-panel__section">
-              <h3>{{ 'countries.detail.description' | translate }}</h3>
+              <h3>{{ 'countries.detail.description' | transloco }}</h3>
               <div class="cce-country-panel__rich" [innerHTML]="description()"></div>
             </article>
 
             <article class="cce-country-panel__section">
-              <h3>{{ 'countries.detail.keyInitiatives' | translate }}</h3>
+              <h3>{{ 'countries.detail.keyInitiatives' | transloco }}</h3>
               <div class="cce-country-panel__rich" [innerHTML]="keyInitiatives()"></div>
             </article>
 
             @if (contactInfo(); as contact) {
               <article class="cce-country-panel__section">
-                <h3>{{ 'countries.detail.contactInfo' | translate }}</h3>
+                <h3>{{ 'countries.detail.contactInfo' | transloco }}</h3>
                 <div class="cce-country-panel__rich" [innerHTML]="contact"></div>
               </article>
             }
 
             <article class="cce-country-panel__section">
-              <h3>{{ 'kapsarc.title' | translate }}</h3>
+              <h3>{{ 'kapsarc.title' | transloco }}</h3>
               @if (snapshot(); as snap) {
                 <cce-kapsarc-snapshot [snapshot]="snap" [locale]="locale()" />
               } @else {
-                <p class="cce-country-panel__empty">{{ 'kapsarc.unavailable' | translate }}</p>
+                <p class="cce-country-panel__empty">{{ 'kapsarc.unavailable' | transloco }}</p>
               }
             </article>
 

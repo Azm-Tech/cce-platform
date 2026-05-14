@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { KapsarcSnapshot } from './country.types';
 
 interface SubScoreRow {
@@ -14,7 +14,7 @@ interface SubScoreRow {
 @Component({
   selector: 'cce-kapsarc-snapshot',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe, MatCardModule, TranslateModule],
+  imports: [CommonModule, DatePipe, DecimalPipe, MatCardModule, TranslocoModule],
   template: `
     <div class="cce-kapsarc-snapshot">
       <header class="cce-kapsarc-snapshot__header">

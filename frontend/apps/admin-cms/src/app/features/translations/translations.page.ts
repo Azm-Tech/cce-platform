@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { MOCK_TRANSLATIONS, type TranslationEntry } from './translations-mock';
 
 type Scope = 'all' | TranslationEntry['scope'];
@@ -41,7 +41,7 @@ type Scope = 'all' | TranslationEntry['scope'];
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './translations.page.html',
   styleUrl: './translations.page.scss',

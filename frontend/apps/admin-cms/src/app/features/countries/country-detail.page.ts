@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { CountryApiService } from './country-api.service';
 import type { Country, CountryProfile } from './country.types';
@@ -43,7 +43,7 @@ interface ProfileForm {
   imports: [
     CommonModule, DatePipe, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule,
-    MatIconModule, MatInputModule, MatProgressBarModule, TranslateModule,
+    MatIconModule, MatInputModule, MatProgressBarModule, TranslocoModule,
   ],
   templateUrl: './country-detail.page.html',
   styleUrl: './countries.scss',

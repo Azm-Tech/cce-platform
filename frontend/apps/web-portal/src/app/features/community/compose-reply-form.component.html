@@ -6,11 +6,11 @@
   @if (parentReplyId() && parentHandle(); as h) {
     <div class="cce-compose-reply__parent" role="status">
       <mat-icon aria-hidden="true">reply</mat-icon>
-      <span>{{ 'community.detail.replyToReply' | translate:{ handle: h } }}</span>
+      <span>{{ 'community.detail.replyToReply' | transloco:{ handle: h } }}</span>
       <button
         type="button"
         class="cce-compose-reply__cancel"
-        [attr.aria-label]="'community.detail.cancelReply' | translate"
+        [attr.aria-label]="'community.detail.cancelReply' | transloco"
         (click)="cancelReply.emit()"
       >
         <mat-icon>close</mat-icon>
@@ -20,12 +20,12 @@
 
   @if (errorKind()) {
     <div class="cce-compose-reply__error" role="alert">
-      {{ ('errors.' + errorKind()) | translate }}
+      {{ ('errors.' + errorKind()) | transloco }}
     </div>
   }
 
   <mat-form-field appearance="outline">
-    <mat-label>{{ 'community.reply.placeholder' | translate }}</mat-label>
+    <mat-label>{{ 'community.reply.placeholder' | transloco }}</mat-label>
     <textarea
       matInput
       formControlName="content"
@@ -46,7 +46,7 @@
       type="submit"
       [disabled]="form.invalid || submitting()"
     >
-      {{ 'community.reply.submit' | translate }}
+      {{ 'community.reply.submit' | transloco }}
     </button>
   </div>
 </form>

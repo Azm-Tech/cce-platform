@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { SearchApiService, type Result } from './search-api.service';
 import type { PagedResult, SearchHit } from './search.types';
 import { SearchResultsPage } from './search-results.page';
@@ -33,7 +33,7 @@ describe('SearchResultsPage', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [SearchResultsPage, TranslateModule.forRoot()],
+      imports: [SearchResultsPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

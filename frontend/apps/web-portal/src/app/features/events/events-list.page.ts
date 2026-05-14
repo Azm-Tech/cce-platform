@@ -7,7 +7,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { EventsApiService } from './events-api.service';
 import { EventCardComponent } from './event-card.component';
 import type { Event as EventModel } from './event.types';
@@ -34,7 +34,7 @@ interface ActiveChip {
   imports: [
     CommonModule, FormsModule,
     MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslateModule, EventCardComponent, WorkbenchHeroComponent,
+    TranslocoModule, EventCardComponent, WorkbenchHeroComponent,
   ],
   templateUrl: './events-list.page.html',
   styleUrl: './events-list.page.scss',
@@ -45,7 +45,7 @@ export class EventsListPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
 
   // ─── Search / view ──────────────────────────────────────
   readonly query = signal('');
@@ -134,7 +134,7 @@ export class EventsListPage implements OnInit {
     if (this.typeFilter() !== 'all') {
       chips.push({
         id: 'type',
-        label: this.t.instant(
+        label: this.t.translate(
           this.typeFilter() === 'online'
             ? 'events.filters.typeOnline'
             : 'events.filters.typeInPerson',
@@ -147,12 +147,12 @@ export class EventsListPage implements OnInit {
         today: 'events.filters.whenToday',
         past: 'events.filters.whenPast',
       } as const;
-      chips.push({ id: 'when', label: this.t.instant(map[this.whenFilter() as Exclude<WhenFilter, 'all'>]) });
+      chips.push({ id: 'when', label: this.t.translate(map[this.whenFilter() as Exclude<WhenFilter, 'all'>]) });
     }
-    if (this.from()) chips.push({ id: 'from', label: `${this.t.instant('events.filters.from')}: ${this.from()}` });
-    if (this.to()) chips.push({ id: 'to', label: `${this.t.instant('events.filters.to')}: ${this.to()}` });
+    if (this.from()) chips.push({ id: 'from', label: `${this.t.translate('events.filters.from')}: ${this.from()}` });
+    if (this.to()) chips.push({ id: 'to', label: `${this.t.translate('events.filters.to')}: ${this.to()}` });
     if (this.sortOrder() !== 'soonest') {
-      chips.push({ id: 'sort', label: this.t.instant('events.filters.sortLatest') });
+      chips.push({ id: 'sort', label: this.t.translate('events.filters.sortLatest') });
     }
     return chips;
   });

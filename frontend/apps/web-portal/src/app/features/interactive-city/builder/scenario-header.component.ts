@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CITY_TYPES, targetYearBounds, type CityType } from '../interactive-city.types';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
 
@@ -21,7 +21,7 @@ import { ScenarioBuilderStore } from './scenario-builder-store.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './scenario-header.component.html',
   styleUrl: './scenario-header.component.scss',

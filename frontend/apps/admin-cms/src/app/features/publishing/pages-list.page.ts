@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -24,7 +24,7 @@ import type { Page } from './publishing.types';
     CommonModule, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatPaginatorModule, MatProgressBarModule, MatTableModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './pages-list.page.html',
   styleUrl: './pages-list.page.scss',

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AssistantApiService } from '../assistant-api.service';
 import { newMessage, type ThreadMessage } from '../assistant.types';
@@ -15,7 +15,7 @@ describe('MessageListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MessageListComponent, TranslateModule.forRoot()],
+      imports: [MessageListComponent, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

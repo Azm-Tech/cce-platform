@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output, signal } fro
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { CommunityApiService } from './community-api.service';
 
@@ -17,7 +17,7 @@ import { CommunityApiService } from './community-api.service';
 @Component({
   selector: 'cce-mark-answer-button',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <button
       type="button"

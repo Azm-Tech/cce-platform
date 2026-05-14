@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { FollowsApiService, type Result } from './follows-api.service';
 import type { MyFollows } from './follows.types';
@@ -32,7 +32,7 @@ describe('FollowsPage', () => {
     toastError = jest.fn();
 
     await TestBed.configureTestingModule({
-      imports: [FollowsPage, TranslateModule.forRoot()],
+      imports: [FollowsPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

@@ -10,7 +10,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IdentityApiService } from './identity-api.service';
 import { KNOWN_ROLES, type UserDetail } from './identity.types';
 
@@ -34,7 +34,7 @@ export interface RoleAssignDialogData {
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './role-assign.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

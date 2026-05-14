@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CommunityApiService } from './community-api.service';
@@ -25,7 +25,7 @@ interface ComposeReplyFormShape {
   imports: [
     CommonModule, ReactiveFormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatRadioModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './compose-reply-form.component.html',
   styleUrl: './compose-reply-form.component.scss',

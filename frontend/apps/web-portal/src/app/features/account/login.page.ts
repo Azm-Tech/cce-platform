@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 
 interface LoginFormModel {
@@ -45,7 +45,7 @@ type LoginState =
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   template: `
     <section class="cce-login">

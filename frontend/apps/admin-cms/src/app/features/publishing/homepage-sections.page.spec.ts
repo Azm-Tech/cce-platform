@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { PublishingApiService, type Result } from './publishing-api.service';
@@ -41,7 +41,7 @@ describe('HomepageSectionsPage', () => {
     confirm = { confirm: jest.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
-      imports: [HomepageSectionsPage, TranslateModule.forRoot()],
+      imports: [HomepageSectionsPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),

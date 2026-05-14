@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -56,7 +56,7 @@ describe('StateRepListPage', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [StateRepListPage, TranslateModule.forRoot()],
+      imports: [StateRepListPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),

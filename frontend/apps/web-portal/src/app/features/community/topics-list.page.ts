@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { CommunityApiService } from './community-api.service';
@@ -31,7 +31,7 @@ interface ActiveChip {
   imports: [
     CommonModule, FormsModule,
     MatIconModule, MatProgressBarModule,
-    TranslateModule, TopicCardComponent, WorkbenchHeroComponent,
+    TranslocoModule, TopicCardComponent, WorkbenchHeroComponent,
   ],
   templateUrl: './topics-list.page.html',
   styleUrl: './topics-list.page.scss',
@@ -42,7 +42,7 @@ export class TopicsListPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
 
   readonly rows = signal<PublicTopic[]>([]);
   readonly loading = signal(false);
@@ -96,7 +96,7 @@ export class TopicsListPage implements OnInit {
     if (this.sortOrder() !== 'default') {
       chips.push({
         id: 'sort',
-        label: this.t.instant(
+        label: this.t.translate(
           this.sortOrder() === 'alpha'
             ? 'community.filters.sortAlpha'
             : 'community.filters.sortAlphaReverse',

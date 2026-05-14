@@ -3,13 +3,13 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { ResourceListItem } from './knowledge.types';
 
 @Component({
   selector: 'cce-resource-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatCardModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, RouterLink, MatCardModule, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-resource-card"
        [attr.data-type]="resource().resourceType"

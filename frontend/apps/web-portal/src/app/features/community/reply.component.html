@@ -12,14 +12,14 @@
       @if (isAccepted()) {
         <span class="cce-reply__accepted">
           <mat-icon aria-hidden="true">check_circle</mat-icon>
-          {{ 'community.acceptedAnswer' | translate }}
+          {{ 'community.acceptedAnswer' | transloco }}
         </span>
       }
 
       <header class="cce-reply__head">
         <span class="cce-reply__author-row">
           <span class="cce-reply__author-name">
-            {{ 'community.detail.memberHandle' | translate }}
+            {{ 'community.detail.memberHandle' | transloco }}
           </span>
           <span class="cce-reply__author-handle">
             {{ authorHandle(reply().authorId) }}
@@ -27,12 +27,12 @@
           @if (reply().isByExpert) {
             <span class="cce-reply__expert">
               <mat-icon aria-hidden="true">verified</mat-icon>
-              {{ 'community.expertBadge' | translate }}
+              {{ 'community.expertBadge' | transloco }}
             </span>
           }
           @if (showLanguageBadge()) {
             <span class="cce-reply__lang">
-              {{ 'community.languageBadge' | translate:{ locale: reply().locale } }}
+              {{ 'community.languageBadge' | transloco:{ locale: reply().locale } }}
             </span>
           }
         </span>
@@ -70,7 +70,7 @@
         (click)="onReplyClick()"
       >
         <mat-icon aria-hidden="true">reply</mat-icon>
-        <span>{{ 'community.detail.replyToCommentLabel' | translate }}</span>
+        <span>{{ 'community.detail.replyToCommentLabel' | transloco }}</span>
       </button>
     </div>
 

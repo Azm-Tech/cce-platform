@@ -1,16 +1,16 @@
 <div class="cce-notifications__header">
-  <h1>{{ 'notifications.templatesTitle' | translate }}</h1>
+  <h1>{{ 'notifications.templatesTitle' | transloco }}</h1>
   <button type="button" mat-flat-button color="primary"
     *ccePermission="'Notification.TemplateManage'" (click)="openCreate()">
     <mat-icon>add</mat-icon>
-    {{ 'notifications.create.openButton' | translate }}
+    {{ 'notifications.create.openButton' | transloco }}
   </button>
 </div>
 
 <mat-form-field appearance="outline" class="cce-notifications__filter">
-  <mat-label>{{ 'notifications.filter.channel' | translate }}</mat-label>
+  <mat-label>{{ 'notifications.filter.channel' | transloco }}</mat-label>
   <mat-select [ngModel]="channelFilter()" (ngModelChange)="onChannelFilter($event)">
-    <mat-option value="">{{ 'notifications.filter.allChannels' | translate }}</mat-option>
+    <mat-option value="">{{ 'notifications.filter.allChannels' | transloco }}</mat-option>
     @for (c of channels; track c) {
       <mat-option [value]="c">{{ c }}</mat-option>
     }
@@ -19,31 +19,31 @@
 
 @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 @if (errorKind(); as kind) {
-  <div class="cce-notifications__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-notifications__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <table mat-table [dataSource]="rows()" class="cce-notifications__table">
   <ng-container matColumnDef="code">
-    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.code' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.code' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.code }}</td>
   </ng-container>
   <ng-container matColumnDef="channel">
-    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.channel' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.channel' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.channel }}</td>
   </ng-container>
   <ng-container matColumnDef="subjectEn">
-    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.subject' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.subject' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.subjectEn }}</td>
   </ng-container>
   <ng-container matColumnDef="isActive">
-    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.active' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.active' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.isActive ? '✓' : '—' }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.actions' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'notifications.col.actions' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
       <button type="button" mat-button *ccePermission="'Notification.TemplateManage'" (click)="openEdit(r)">
-        {{ 'notifications.edit.openButton' | translate }}
+        {{ 'notifications.edit.openButton' | transloco }}
       </button>
     </td>
   </ng-container>

@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { AccountApiService } from '../../features/account/account-api.service';
 import type { ServiceRatingPayload } from '../../features/account/account.types';
@@ -26,7 +26,7 @@ export interface ServiceRatingDialogResult {
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     MatDialogModule, MatButtonModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, TranslateModule,
+    MatInputModule, TranslocoModule,
   ],
   templateUrl: './service-rating-dialog.component.html',
   styleUrl: './service-rating-dialog.component.scss',

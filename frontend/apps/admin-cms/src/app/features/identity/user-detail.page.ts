@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ToastService } from '@frontend/ui-kit';
@@ -30,7 +30,7 @@ import type { UserDetail } from './identity.types';
     MatCardModule,
     MatChipsModule,
     MatIconModule,
-    TranslateModule,
+    TranslocoModule,
     PermissionDirective,
   ],
   templateUrl: './user-detail.page.html',

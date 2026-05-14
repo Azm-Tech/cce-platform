@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from './content-api.service';
 
@@ -32,7 +32,7 @@ interface CrrForm {
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './country-resource-request.page.html',
   styleUrl: './country-resource-request.page.scss',

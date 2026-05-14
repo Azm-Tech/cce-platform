@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AssetUploadComponent } from './asset-upload.component';
 import { ContentApiService } from './content-api.service';
 import {
@@ -57,7 +57,7 @@ interface ResourceForm {
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './resource-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { HomeApiService, type Result } from './home-api.service';
 import type { HomepageSection } from './home.types';
@@ -33,7 +33,7 @@ describe('HomePage', () => {
     const localeStub = { locale: localeSig.asReadonly() };
 
     await TestBed.configureTestingModule({
-      imports: [HomePage, TranslateModule.forRoot()],
+      imports: [HomePage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         { provide: HomeApiService, useValue: { listSections } },

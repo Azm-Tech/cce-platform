@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
@@ -25,7 +25,7 @@ describe('RatePostControlComponent', () => {
     isAuthenticatedSig = signal<boolean>(true);
 
     await TestBed.configureTestingModule({
-      imports: [RatePostControlComponent, TranslateModule.forRoot()],
+      imports: [RatePostControlComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { ratePost } },
@@ -73,7 +73,7 @@ describe('MarkAnswerButtonComponent', () => {
     emitted = 0;
 
     await TestBed.configureTestingModule({
-      imports: [MarkAnswerButtonComponent, TranslateModule.forRoot()],
+      imports: [MarkAnswerButtonComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { markAnswer } },

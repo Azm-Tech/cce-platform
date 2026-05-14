@@ -1,7 +1,7 @@
 <section class="cce-topic-detail">
   <a class="cce-topic-detail__back" routerLink="/community">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'community.detail.backToTopics' | translate }}
+    {{ 'community.detail.backToTopics' | transloco }}
   </a>
 
   @if (loading()) {
@@ -14,19 +14,19 @@
       <span class="cce-topic-detail__notfound-art" aria-hidden="true">
         <mat-icon>forum</mat-icon>
       </span>
-      <h1>{{ 'community.notFound' | translate }}</h1>
-      <p>{{ 'community.detail.notFoundDesc' | translate }}</p>
+      <h1>{{ 'community.notFound' | transloco }}</h1>
+      <p>{{ 'community.detail.notFoundDesc' | transloco }}</p>
       <a mat-flat-button color="primary" routerLink="/community">
         <mat-icon>arrow_back</mat-icon>
-        {{ 'community.detail.backToTopics' | translate }}
+        {{ 'community.detail.backToTopics' | transloco }}
       </a>
     </div>
   } @else if (errorKind()) {
     <div class="cce-topic-detail__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
       <button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
@@ -47,7 +47,7 @@
         <div class="cce-topic-detail__title-text">
           <span class="cce-topic-detail__eyebrow">
             <mat-icon aria-hidden="true">forum</mat-icon>
-            {{ 'community.tag' | translate }}
+            {{ 'community.tag' | transloco }}
           </span>
           <h1 class="cce-topic-detail__name">{{ topicName() }}</h1>
         </div>
@@ -59,7 +59,7 @@
         <span>
           <mat-icon aria-hidden="true">forum</mat-icon>
           <strong>{{ total() }}</strong>
-          {{ (total() === 1 ? 'community.detail.postsCountSingular' : 'community.detail.postsCount') | translate:{ count: total() } }}
+          {{ (total() === 1 ? 'community.detail.postsCountSingular' : 'community.detail.postsCount') | transloco:{ count: total() } }}
         </span>
       </div>
 
@@ -74,7 +74,7 @@
             [entityId]="t.id"
           >
             <mat-icon>star_outline</mat-icon>
-            {{ 'follows.followButton' | translate }}
+            {{ 'follows.followButton' | transloco }}
           </button>
           <button
             type="button"
@@ -84,7 +84,7 @@
             (click)="openComposeDialog()"
           >
             <mat-icon>edit</mat-icon>
-            {{ 'community.newPostButton' | translate }}
+            {{ 'community.newPostButton' | transloco }}
           </button>
         } @else {
           <cce-sign-in-cta messageKey="community.signInToPost" />
@@ -114,12 +114,12 @@
         <span class="cce-topic-detail__empty-art" aria-hidden="true">
           <mat-icon>chat_bubble_outline</mat-icon>
         </span>
-        <h2>{{ 'community.empty.posts' | translate }}</h2>
+        <h2>{{ 'community.empty.posts' | transloco }}</h2>
         @if (isAuthenticated()) {
           <button type="button" mat-flat-button color="primary"
                   (click)="openComposeDialog()">
             <mat-icon>edit</mat-icon>
-            {{ 'community.newPostButton' | translate }}
+            {{ 'community.newPostButton' | transloco }}
           </button>
         }
       </div>

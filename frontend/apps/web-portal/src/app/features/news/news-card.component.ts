@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { NewsArticle } from './news.types';
 
 /**
@@ -14,7 +14,7 @@ import type { NewsArticle } from './news.types';
 @Component({
   selector: 'cce-news-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-news-card" [routerLink]="['/news', article().slug]"
        [attr.aria-label]="title()">

@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import type { CityTechnology } from '../interactive-city.types';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
@@ -14,7 +14,7 @@ import { ScenarioBuilderStore } from './scenario-builder-store.service';
 @Component({
   selector: 'cce-selected-list',
   standalone: true,
-  imports: [DecimalPipe, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [DecimalPipe, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './selected-list.component.html',
   styleUrl: './selected-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

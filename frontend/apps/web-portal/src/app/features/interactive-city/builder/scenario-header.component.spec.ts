@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../../core/auth/auth.service';
 import { InteractiveCityApiService } from '../interactive-city-api.service';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
@@ -13,7 +13,7 @@ describe('ScenarioHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ScenarioHeaderComponent, TranslateModule.forRoot()],
+      imports: [ScenarioHeaderComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         ScenarioBuilderStore,

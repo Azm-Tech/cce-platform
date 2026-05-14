@@ -9,7 +9,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ToastService } from '@frontend/ui-kit';
@@ -28,7 +28,7 @@ import {
     CommonModule, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule,
     MatPaginatorModule, MatProgressBarModule, MatSelectModule, MatTableModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './notifications-list.page.html',
   styleUrl: './notifications.scss',

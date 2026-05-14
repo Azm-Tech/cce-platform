@@ -1,13 +1,13 @@
-<h2 mat-dialog-title>{{ 'interactiveCity.totals.save' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'interactiveCity.totals.save' | transloco }}</h2>
 
 <mat-dialog-content>
   <mat-form-field appearance="outline" style="width: 100%;">
-    <mat-label>{{ 'interactiveCity.builder.name' | translate }}</mat-label>
+    <mat-label>{{ 'interactiveCity.builder.name' | transloco }}</mat-label>
     <input
       matInput
       type="text"
       [formControl]="nameControl"
-      [placeholder]="'interactiveCity.builder.namePlaceholder' | translate"
+      [placeholder]="'interactiveCity.builder.namePlaceholder' | transloco"
       maxlength="200"
       (keydown.enter)="submit()"
     />
@@ -16,7 +16,7 @@
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()">
-    {{ 'interactiveCity.saved.confirmCancel' | translate }}
+    {{ 'interactiveCity.saved.confirmCancel' | transloco }}
   </button>
   <button
     type="button"
@@ -25,6 +25,6 @@
     [disabled]="nameControl.invalid"
     (click)="submit()"
   >
-    {{ 'interactiveCity.totals.save' | translate }}
+    {{ 'interactiveCity.totals.save' | transloco }}
   </button>
 </mat-dialog-actions>

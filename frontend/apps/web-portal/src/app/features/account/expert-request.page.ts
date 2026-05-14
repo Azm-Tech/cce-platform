@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { AccountApiService } from './account-api.service';
@@ -25,7 +25,7 @@ interface ExpertFormShape {
   imports: [
     CommonModule, DatePipe, ReactiveFormsModule,
     MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './expert-request.page.html',
   styleUrl: './expert-request.page.scss',

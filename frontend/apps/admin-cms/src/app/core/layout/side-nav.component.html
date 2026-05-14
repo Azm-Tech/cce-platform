@@ -6,12 +6,12 @@
   </div>
 </div>
 
-<nav class="cce-side-nav" [attr.aria-label]="'nav.sidebarLabel' | translate">
+<nav class="cce-side-nav" [attr.aria-label]="'nav.sidebarLabel' | transloco">
   @for (group of visibleGroups(); track group.id) {
     <section class="cce-side-nav__group" [attr.data-group]="group.id">
       <h3 class="cce-side-nav__group-heading">
         <mat-icon class="cce-side-nav__group-icon" aria-hidden="true">{{ group.icon }}</mat-icon>
-        <span>{{ group.labelKey | translate }}</span>
+        <span>{{ group.labelKey | transloco }}</span>
       </h3>
 
       <mat-nav-list class="cce-side-nav__list">
@@ -24,7 +24,7 @@
             class="cce-side-nav__item"
           >
             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-            <span matListItemTitle>{{ item.labelKey | translate }}</span>
+            <span matListItemTitle>{{ item.labelKey | transloco }}</span>
           </a>
         }
       </mat-nav-list>

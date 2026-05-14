@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AssetUploadComponent } from './asset-upload.component';
 import { ContentApiService, type Result } from './content-api.service';
 import type { AssetFile } from './content.types';
@@ -43,7 +43,7 @@ describe('AssetUploadComponent', () => {
   beforeEach(async () => {
     uploadAsset = jest.fn();
     await TestBed.configureTestingModule({
-      imports: [AssetUploadComponent, TranslateModule.forRoot()],
+      imports: [AssetUploadComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: ContentApiService, useValue: { uploadAsset } },

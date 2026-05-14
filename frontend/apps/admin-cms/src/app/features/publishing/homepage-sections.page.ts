@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { PublishingApiService } from './publishing-api.service';
@@ -31,7 +31,7 @@ import {
     CommonModule, FormsModule,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule,
     MatIconModule, MatInputModule, MatProgressBarModule, MatSelectModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './homepage-sections.page.html',
   styleUrl: './homepage-sections.page.scss',

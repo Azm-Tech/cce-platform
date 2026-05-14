@@ -15,7 +15,7 @@
           [routerLinkActiveOptions]="{ exact: item.route === '/' }"
           (click)="closeMobileMenu()"
         >
-          {{ item.labelKey | translate }}
+          {{ item.labelKey | transloco }}
         </a>
       } @else if (isGroup(item)) {
         <div
@@ -32,7 +32,7 @@
             [attr.aria-controls]="'cce-mega-' + item.id"
             (click)="toggleGroup(item)"
           >
-            {{ item.labelKey | translate }}
+            {{ item.labelKey | transloco }}
             <mat-icon class="cce-header__group-chevron" aria-hidden="true">expand_more</mat-icon>
           </button>
 
@@ -60,9 +60,9 @@
                         <mat-icon>{{ child.icon }}</mat-icon>
                       </span>
                       <span class="cce-header__mega-text">
-                        <span class="cce-header__mega-title">{{ child.labelKey | translate }}</span>
+                        <span class="cce-header__mega-title">{{ child.labelKey | transloco }}</span>
                         @if (child.descriptionKey) {
-                          <span class="cce-header__mega-desc">{{ child.descriptionKey | translate }}</span>
+                          <span class="cce-header__mega-desc">{{ child.descriptionKey | transloco }}</span>
                         }
                       </span>
                       <mat-icon class="cce-header__mega-arrow" aria-hidden="true">arrow_forward</mat-icon>
@@ -84,9 +84,9 @@
                 @if (previewLinkFor(item); as link) {
                   <div class="cce-header__mega-preview-overlay">
                     <span class="cce-header__mega-preview-eyebrow">DISCOVER</span>
-                    <span class="cce-header__mega-preview-title">{{ link.labelKey | translate }}</span>
+                    <span class="cce-header__mega-preview-title">{{ link.labelKey | transloco }}</span>
                     @if (link.descriptionKey) {
-                      <span class="cce-header__mega-preview-desc">{{ link.descriptionKey | translate }}</span>
+                      <span class="cce-header__mega-preview-desc">{{ link.descriptionKey | transloco }}</span>
                     }
                   </div>
                 }
@@ -106,7 +106,7 @@
       type="button"
       mat-icon-button
       class="cce-header__bell"
-      [attr.aria-label]="'notifications.bellLabel' | translate"
+      [attr.aria-label]="'notifications.bellLabel' | transloco"
       [matBadge]="unreadCount()"
       matBadgeColor="warn"
       matBadgeSize="small"
@@ -120,14 +120,14 @@
       <span>{{ userLabel() }}</span>
     </button>
     <mat-menu #userMenu>
-      <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | translate }}</a>
-      <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | translate }}</a>
-      <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | translate }}</a>
-      <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | translate }}</button>
+      <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | transloco }}</a>
+      <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | transloco }}</a>
+      <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | transloco }}</a>
+      <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | transloco }}</button>
     </mat-menu>
   } @else {
     <button type="button" mat-flat-button color="primary" (click)="signIn()" class="cce-header__signin">
-      {{ 'header.signIn' | translate }}
+      {{ 'header.signIn' | transloco }}
     </button>
   }
 
@@ -136,7 +136,7 @@
     mat-icon-button
     class="cce-header__hamburger"
     (click)="toggleMobileMenu()"
-    [attr.aria-label]="'header.menu' | translate"
+    [attr.aria-label]="'header.menu' | transloco"
     [attr.aria-expanded]="mobileMenuOpen()"
     aria-controls="cce-primary-nav"
   >

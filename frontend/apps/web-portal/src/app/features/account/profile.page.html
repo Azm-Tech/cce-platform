@@ -1,9 +1,9 @@
 <section class="cce-profile">
   <header class="cce-profile__title-row">
-    <h1 class="cce-profile__title">{{ 'account.profile.title' | translate }}</h1>
+    <h1 class="cce-profile__title">{{ 'account.profile.title' | transloco }}</h1>
     @if (profile() && mode() === 'view') {
       <button mat-stroked-button type="button" (click)="enterEditMode()">
-        {{ 'account.profile.editButton' | translate }}
+        {{ 'account.profile.editButton' | transloco }}
       </button>
     }
   </header>
@@ -12,16 +12,16 @@
 
   @if (notProvisioned()) {
     <div class="cce-profile__not-provisioned" role="alert">
-      <p>{{ 'account.profile.notProvisioned' | translate }}</p>
+      <p>{{ 'account.profile.notProvisioned' | transloco }}</p>
       <button mat-stroked-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   } @else if (errorKind()) {
     <div class="cce-profile__error" role="alert">
-      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
       <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
@@ -45,23 +45,23 @@
 
         <dl class="cce-profile__fields">
           <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.localePreference' | translate }}</dt>
+            <dt>{{ 'account.profile.field.localePreference' | transloco }}</dt>
             <dd>{{ p.localePreference }}</dd>
           </div>
           <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.knowledgeLevel' | translate }}</dt>
+            <dt>{{ 'account.profile.field.knowledgeLevel' | transloco }}</dt>
             <dd>
               <span class="cce-profile__badge">
-                {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | translate }}
+                {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
               </span>
             </dd>
           </div>
           <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.country' | translate }}</dt>
+            <dt>{{ 'account.profile.field.country' | transloco }}</dt>
             <dd>{{ countryName() }}</dd>
           </div>
           <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.interests' | translate }}</dt>
+            <dt>{{ 'account.profile.field.interests' | transloco }}</dt>
             <dd>
               @if (p.interests.length) {
                 <mat-chip-set>
@@ -84,12 +84,12 @@
       >
         @if (saveErrorKind()) {
           <div class="cce-profile__error" role="alert">
-            {{ ('errors.' + saveErrorKind()) | translate }}
+            {{ ('errors.' + saveErrorKind()) | transloco }}
           </div>
         }
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.localePreference' | translate }}</mat-label>
+          <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
           <mat-select formControlName="localePreference">
             <mat-option value="en">English</mat-option>
             <mat-option value="ar">العربية</mat-option>
@@ -97,23 +97,23 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.knowledgeLevel' | translate }}</mat-label>
+          <mat-label>{{ 'account.profile.field.knowledgeLevel' | transloco }}</mat-label>
           <mat-select formControlName="knowledgeLevel">
             @for (level of knowledgeLevels; track level) {
               <mat-option [value]="level">
-                {{ ('account.knowledgeLevel.' + level) | translate }}
+                {{ ('account.knowledgeLevel.' + level) | transloco }}
               </mat-option>
             }
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.interests' | translate }}</mat-label>
+          <mat-label>{{ 'account.profile.field.interests' | transloco }}</mat-label>
           <input matInput type="text" formControlName="interests" placeholder="waste, water, carbon" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.country' | translate }}</mat-label>
+          <mat-label>{{ 'account.profile.field.country' | transloco }}</mat-label>
           <mat-select formControlName="countryId">
             <mat-option [value]="null">—</mat-option>
             @for (c of countries(); track c.id) {
@@ -125,7 +125,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.avatarUrl' | translate }}</mat-label>
+          <mat-label>{{ 'account.profile.field.avatarUrl' | transloco }}</mat-label>
           <input matInput type="url" formControlName="avatarUrl" />
         </mat-form-field>
 
@@ -136,7 +136,7 @@
             [disabled]="saving()"
             (click)="cancelEdit()"
           >
-            {{ 'account.profile.cancelButton' | translate }}
+            {{ 'account.profile.cancelButton' | transloco }}
           </button>
           <button
             mat-flat-button
@@ -144,7 +144,7 @@
             type="submit"
             [disabled]="form.invalid || saving()"
           >
-            {{ 'account.profile.saveButton' | translate }}
+            {{ 'account.profile.saveButton' | transloco }}
           </button>
         </div>
       </form>

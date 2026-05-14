@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
 import { NodeDetailPanelComponent } from './node-detail-panel.component';
 
@@ -33,7 +33,7 @@ describe('NodeDetailPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NodeDetailPanelComponent, TranslateModule.forRoot()],
+      imports: [NodeDetailPanelComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import type { PublicPost } from './community.types';
 
@@ -20,7 +20,7 @@ import type { PublicPost } from './community.types';
 @Component({
   selector: 'cce-post-summary',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-post-summary" [routerLink]="['/community', 'posts', post().id]"
        [attr.aria-label]="title()">

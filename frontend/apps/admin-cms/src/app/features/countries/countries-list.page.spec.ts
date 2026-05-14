@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesListPage } from './countries-list.page';
 import { CountryApiService, type Result } from './country-api.service';
 import type { Country, PagedResult } from './country.types';
@@ -23,7 +23,7 @@ describe('CountriesListPage', () => {
   beforeEach(async () => {
     listCountries = jest.fn().mockResolvedValue(ok({ items: [C], page: 1, pageSize: 20, total: 1 }));
     await TestBed.configureTestingModule({
-      imports: [CountriesListPage, TranslateModule.forRoot()],
+      imports: [CountriesListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

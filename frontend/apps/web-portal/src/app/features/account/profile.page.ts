@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CountriesApiService } from '../countries/countries-api.service';
@@ -34,7 +34,7 @@ interface ProfileFormShape {
     CommonModule, ReactiveFormsModule,
     MatButtonModule, MatChipsModule, MatFormFieldModule, MatIconModule,
     MatInputModule, MatProgressBarModule, MatRadioModule, MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertRequest } from './expert.types';
 import { RejectExpertDialogComponent } from './reject-expert.dialog';
@@ -30,7 +30,7 @@ describe('RejectExpertDialogComponent', () => {
     reject = jest.fn();
     dialogRef = { close: jest.fn() };
     TestBed.configureTestingModule({
-      imports: [RejectExpertDialogComponent, TranslateModule.forRoot()],
+      imports: [RejectExpertDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: ExpertApiService, useValue: { reject } },

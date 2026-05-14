@@ -1,7 +1,7 @@
 <section class="cce-post-detail">
   <a class="cce-post-detail__back" routerLink="/community">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'community.detail.backToCommunity' | translate }}
+    {{ 'community.detail.backToCommunity' | transloco }}
   </a>
 
   @if (loading()) {
@@ -14,18 +14,18 @@
       <span class="cce-post-detail__notfound-art" aria-hidden="true">
         <mat-icon>chat_bubble_outline</mat-icon>
       </span>
-      <h1>{{ 'community.notFound' | translate }}</h1>
-      <p>{{ 'community.detail.postNotFoundDesc' | translate }}</p>
+      <h1>{{ 'community.notFound' | transloco }}</h1>
+      <p>{{ 'community.detail.postNotFoundDesc' | transloco }}</p>
       <a mat-flat-button color="primary" routerLink="/community">
         <mat-icon>arrow_back</mat-icon>
-        {{ 'community.detail.backToCommunity' | translate }}
+        {{ 'community.detail.backToCommunity' | transloco }}
       </a>
     </div>
   } @else if (errorKind()) {
     <div class="cce-post-detail__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + errorKind()) | translate }}</span>
-      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
@@ -56,7 +56,7 @@
         <div class="cce-post-detail__author">
           <span class="cce-post-detail__author-row">
             <span class="cce-post-detail__author-name">
-              {{ 'community.detail.memberHandle' | translate }}
+              {{ 'community.detail.memberHandle' | transloco }}
             </span>
             <span class="cce-post-detail__author-handle">
               {{ authorHandle(p.authorId) }}
@@ -71,22 +71,22 @@
             @if (p.answeredReplyId) {
               <span class="cce-post-detail__chip cce-post-detail__chip--resolved">
                 <mat-icon aria-hidden="true">check_circle</mat-icon>
-                {{ 'community.detail.resolvedTag' | translate }}
+                {{ 'community.detail.resolvedTag' | transloco }}
               </span>
             } @else if (p.isAnswerable) {
               <span class="cce-post-detail__chip cce-post-detail__chip--question">
                 <mat-icon aria-hidden="true">help_outline</mat-icon>
-                {{ 'community.detail.questionTag' | translate }}
+                {{ 'community.detail.questionTag' | transloco }}
               </span>
             } @else {
               <span class="cce-post-detail__chip cce-post-detail__chip--discussion">
                 <mat-icon aria-hidden="true">forum</mat-icon>
-                {{ 'community.detail.discussionTag' | translate }}
+                {{ 'community.detail.discussionTag' | transloco }}
               </span>
             }
             @if (postShowLangBadge()) {
               <span class="cce-post-detail__chip cce-post-detail__chip--lang">
-                {{ 'community.languageBadge' | translate:{ locale: p.locale } }}
+                {{ 'community.languageBadge' | transloco:{ locale: p.locale } }}
               </span>
             }
           </span>
@@ -96,7 +96,7 @@
           type="button"
           mat-icon-button
           class="cce-post-detail__more"
-          [attr.aria-label]="'community.detail.actionMore' | translate"
+          [attr.aria-label]="'community.detail.actionMore' | transloco"
         >
           <mat-icon>more_horiz</mat-icon>
         </button>
@@ -110,7 +110,7 @@
           <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
           {{ (total() === 1
               ? 'community.detail.repliesCountSingular'
-              : 'community.detail.repliesCount') | translate:{ count: total() } }}
+              : 'community.detail.repliesCount') | transloco:{ count: total() } }}
         </span>
       </div>
 
@@ -128,7 +128,7 @@
           (click)="focusComposer()"
         >
           <mat-icon>chat_bubble_outline</mat-icon>
-          <span>{{ 'community.detail.actionReply' | translate }}</span>
+          <span>{{ 'community.detail.actionReply' | transloco }}</span>
         </button>
 
         @if (isAuthenticated()) {
@@ -140,7 +140,7 @@
             [entityId]="p.id"
           >
             <mat-icon>bookmark_border</mat-icon>
-            <span>{{ 'community.detail.actionSave' | translate }}</span>
+            <span>{{ 'community.detail.actionSave' | transloco }}</span>
           </button>
         }
 
@@ -150,7 +150,7 @@
           (click)="copyLink()"
         >
           <mat-icon>share</mat-icon>
-          <span>{{ 'community.detail.actionShare' | translate }}</span>
+          <span>{{ 'community.detail.actionShare' | transloco }}</span>
         </button>
       </div>
     </article>
@@ -159,7 +159,7 @@
     <section class="cce-post-detail__compose" #composer>
       <h2 class="cce-post-detail__section-title">
         <mat-icon aria-hidden="true">edit_note</mat-icon>
-        {{ 'community.detail.composeTitle' | translate }}
+        {{ 'community.detail.composeTitle' | transloco }}
       </h2>
       @if (isAuthenticated()) {
         <cce-compose-reply-form
@@ -175,7 +175,7 @@
     <section class="cce-post-detail__replies">
       <h2 class="cce-post-detail__section-title">
         <mat-icon aria-hidden="true">forum</mat-icon>
-        {{ 'community.detail.repliesTitle' | translate }}
+        {{ 'community.detail.repliesTitle' | transloco }}
         @if (total() > 0) {
           <span class="cce-post-detail__section-count">{{ total() }}</span>
         }
@@ -186,7 +186,7 @@
           <span class="cce-post-detail__empty-art" aria-hidden="true">
             <mat-icon>chat_bubble_outline</mat-icon>
           </span>
-          <p>{{ 'community.detail.noReplies' | translate }}</p>
+          <p>{{ 'community.detail.noReplies' | transloco }}</p>
         </div>
       }
 

@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { KnowledgeApiService } from './knowledge-api.service';
 import { getMockResource, getMockVideo } from './mock-data';
 import { MOCK_RESOURCES } from './mock-data';
@@ -20,7 +20,7 @@ import type { Resource, ResourceListItem } from './knowledge.types';
   imports: [
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './resource-detail.page.html',
   styleUrl: './resource-detail.page.scss',

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService, type Result } from './countries-api.service';
 import type { Country } from './country.types';
 import { CountriesGridPage } from './countries-grid.page';
@@ -48,7 +48,7 @@ describe('CountriesGridPage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [CountriesGridPage, TranslateModule.forRoot()],
+      imports: [CountriesGridPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

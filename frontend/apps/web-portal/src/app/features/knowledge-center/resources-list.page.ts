@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FilterRailComponent } from '../../core/layout/filter-rail.component';
 import { CategoriesTreeComponent } from './categories-tree.component';
 import { KnowledgeApiService } from './knowledge-api.service';
@@ -29,7 +29,7 @@ import {
     CommonModule, FormsModule,
     MatFormFieldModule, MatInputModule, MatPaginatorModule,
     MatProgressBarModule, MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
     FilterRailComponent, CategoriesTreeComponent, ResourceCardComponent, WorkbenchHeroComponent,
   ],
   templateUrl: './resources-list.page.html',

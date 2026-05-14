@@ -1,47 +1,47 @@
 <h2 mat-dialog-title>
-  {{ (isEdit ? 'news.edit.title' : 'news.create.title') | translate }}
+  {{ (isEdit ? 'news.edit.title' : 'news.create.title') | transloco }}
 </h2>
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-news-form">
     <div class="cce-news-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.titleAr' | translate }}</mat-label>
+        <mat-label>{{ 'news.field.titleAr' | transloco }}</mat-label>
         <input matInput formControlName="titleAr" />
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.titleEn' | translate }}</mat-label>
+        <mat-label>{{ 'news.field.titleEn' | transloco }}</mat-label>
         <input matInput formControlName="titleEn" />
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'news.field.slug' | translate }}</mat-label>
+      <mat-label>{{ 'news.field.slug' | transloco }}</mat-label>
       <input matInput formControlName="slug" />
     </mat-form-field>
     <div class="cce-news-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.contentAr' | translate }}</mat-label>
+        <mat-label>{{ 'news.field.contentAr' | transloco }}</mat-label>
         <textarea matInput formControlName="contentAr" rows="5"></textarea>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.contentEn' | translate }}</mat-label>
+        <mat-label>{{ 'news.field.contentEn' | transloco }}</mat-label>
         <textarea matInput formControlName="contentEn" rows="5"></textarea>
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'news.field.featuredImageUrl' | translate }}</mat-label>
+      <mat-label>{{ 'news.field.featuredImageUrl' | transloco }}</mat-label>
       <input matInput formControlName="featuredImageUrl" />
     </mat-form-field>
     @if (errorKind(); as kind) {
-      <div class="cce-news-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      <div class="cce-news-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
   <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
     @if (saving()) { <mat-spinner diameter="20" /> }
-    @else { {{ (isEdit ? 'news.edit.save' : 'news.create.save') | translate }} }
+    @else { {{ (isEdit ? 'news.edit.save' : 'news.create.save') | transloco }} }
   </button>
 </mat-dialog-actions>

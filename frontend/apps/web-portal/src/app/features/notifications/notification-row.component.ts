@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { UserNotification } from './notification.types';
 
 @Component({
   selector: 'cce-notification-row',
   standalone: true,
-  imports: [CommonModule, DatePipe, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <article
       class="cce-notification-row"

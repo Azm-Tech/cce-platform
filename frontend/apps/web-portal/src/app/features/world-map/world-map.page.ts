@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ALL_CITIES, WorldMapComponent, type AnyCity, type FeaturedCity } from './world-map.component';
 
 type CarbonTier = 'low' | 'medium' | 'high';
@@ -64,7 +64,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
 @Component({
   selector: 'cce-world-map-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, WorldMapComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, WorldMapComponent, TranslocoModule],
   template: `
     <div class="cce-explore">
       <header class="cce-explore__header">

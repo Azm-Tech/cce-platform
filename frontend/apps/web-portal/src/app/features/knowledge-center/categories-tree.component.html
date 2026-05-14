@@ -5,7 +5,7 @@
     [class.cce-cat-tree__item--selected]="selected() === null"
     (click)="select(null)"
   >
-    {{ 'resources.filter.allCategories' | translate }}
+    {{ 'resources.filter.allCategories' | transloco }}
   </button>
   <ul class="cce-cat-tree__list">
     @for (root of roots(); track root.id) {

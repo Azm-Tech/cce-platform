@@ -1,6 +1,12 @@
-import type { HttpClient } from '@angular/common/http';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { inject, Injectable } from '@angular/core';
+import { Translation, TranslocoLoader } from '@jsverse/transloco';
+import { HttpClient } from '@angular/common/http';
 
-export function ngxTranslateHttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
+@Injectable({ providedIn: 'root' })
+export class TranslocoHttpLoader implements TranslocoLoader {
+  private http = inject(HttpClient);
+
+  getTranslation(lang: string) {
+    return this.http.get<Translation>(`/assets/i18n/${lang}.json`);
+  }
 }

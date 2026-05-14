@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -37,7 +37,7 @@ import type { StateRepAssignment } from './identity.types';
     MatPaginatorModule,
     MatProgressBarModule,
     MatTableModule,
-    TranslateModule,
+    TranslocoModule,
     PermissionDirective,
   ],
   templateUrl: './state-rep-list.page.html',

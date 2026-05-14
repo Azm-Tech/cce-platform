@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
 import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
@@ -26,7 +26,7 @@ import type { PublicPostReply } from './community.types';
   imports: [
     CommonModule, DatePipe,
     MatIconModule,
-    TranslateModule,
+    TranslocoModule,
     ComposeReplyFormComponent,
     LikeDislikeControlComponent,
     MarkAnswerButtonComponent,

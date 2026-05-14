@@ -1,8 +1,8 @@
 <section class="cce-news-list">
   <cce-workbench-hero
-    [eyebrow]="'news.eyebrow' | translate"
-    [title]="'news.title' | translate"
-    [subtitle]="'news.subtitle' | translate"
+    [eyebrow]="'news.eyebrow' | transloco"
+    [title]="'news.title' | transloco"
+    [subtitle]="'news.subtitle' | transloco"
   />
 
   <!-- ─── Toolbar ─────────────────────────────────────────── -->
@@ -12,16 +12,16 @@
       <input
         type="search"
         class="cce-list-toolbar__search-input"
-        [placeholder]="'news.searchPlaceholder' | translate"
+        [placeholder]="'news.searchPlaceholder' | transloco"
         [ngModel]="query()"
         (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'news.searchPlaceholder' | translate"
+        [attr.aria-label]="'news.searchPlaceholder' | transloco"
       />
       @if (query()) {
         <button
           type="button"
           class="cce-list-toolbar__search-clear"
-          [attr.aria-label]="'news.clearSearch' | translate"
+          [attr.aria-label]="'news.clearSearch' | transloco"
           (click)="clearQuery()"
         >
           <mat-icon>close</mat-icon>
@@ -39,7 +39,7 @@
       (click)="toggleFilters()"
     >
       <mat-icon aria-hidden="true">tune</mat-icon>
-      {{ 'news.filters.open' | translate }}
+      {{ 'news.filters.open' | transloco }}
       @if (activeChips().length > 0) {
         <span class="cce-list-toolbar__chip-badge">{{ activeChips().length }}</span>
       }
@@ -80,23 +80,23 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">label</mat-icon>
-        {{ 'news.filters.status' | translate }}
+        {{ 'news.filters.status' | transloco }}
       </legend>
       <div class="cce-list-filters__seg">
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="status() === 'all'"
                 (click)="setStatus('all')">
-          {{ 'news.filters.statusAll' | translate }}
+          {{ 'news.filters.statusAll' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="status() === 'featured'"
                 (click)="setStatus('featured')">
-          {{ 'news.filters.statusFeatured' | translate }}
+          {{ 'news.filters.statusFeatured' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="status() === 'draft'"
                 (click)="setStatus('draft')">
-          {{ 'news.filters.statusDraft' | translate }}
+          {{ 'news.filters.statusDraft' | transloco }}
         </button>
       </div>
     </fieldset>
@@ -104,15 +104,15 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">date_range</mat-icon>
-        {{ 'news.filters.dateRange' | translate }}
+        {{ 'news.filters.dateRange' | transloco }}
       </legend>
       <div class="cce-list-filters__date-row">
         <label class="cce-list-filters__date">
-          <span>{{ 'news.filters.from' | translate }}</span>
+          <span>{{ 'news.filters.from' | transloco }}</span>
           <input type="date" [ngModel]="dateFrom()" (ngModelChange)="setDateFrom($event)" />
         </label>
         <label class="cce-list-filters__date">
-          <span>{{ 'news.filters.to' | translate }}</span>
+          <span>{{ 'news.filters.to' | transloco }}</span>
           <input type="date" [ngModel]="dateTo()" (ngModelChange)="setDateTo($event)" />
         </label>
       </div>
@@ -121,18 +121,18 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">sort</mat-icon>
-        {{ 'news.filters.sort' | translate }}
+        {{ 'news.filters.sort' | transloco }}
       </legend>
       <div class="cce-list-filters__seg">
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="sortOrder() === 'newest'"
                 (click)="setSort('newest')">
-          {{ 'news.filters.sortNewest' | translate }}
+          {{ 'news.filters.sortNewest' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="sortOrder() === 'oldest'"
                 (click)="setSort('oldest')">
-          {{ 'news.filters.sortOldest' | translate }}
+          {{ 'news.filters.sortOldest' | transloco }}
         </button>
       </div>
     </fieldset>
@@ -141,14 +141,14 @@
   <!-- ─── Active filter chips ─────────────────────────────── -->
   @if (activeChips().length > 0) {
     <div class="cce-list-active" role="status">
-      <span class="cce-list-active__label">{{ 'news.filters.active' | translate }}:</span>
+      <span class="cce-list-active__label">{{ 'news.filters.active' | transloco }}:</span>
       @for (chip of activeChips(); track chip.id) {
         <span class="cce-list-active__chip">
           {{ chip.label }}
           <button
             type="button"
             class="cce-list-active__chip-x"
-            [attr.aria-label]="'news.clearSearch' | translate"
+            [attr.aria-label]="'news.clearSearch' | transloco"
             (click)="removeChip(chip.id)"
           >
             <mat-icon>close</mat-icon>
@@ -156,7 +156,7 @@
         </span>
       }
       <button type="button" class="cce-list-active__clear" (click)="clearAllFilters()">
-        {{ 'news.filters.clearAll' | translate }}
+        {{ 'news.filters.clearAll' | transloco }}
       </button>
     </div>
   }
@@ -169,8 +169,8 @@
   @if (errorKind(); as kind) {
     <div class="cce-list-error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
@@ -196,8 +196,8 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>newspaper</mat-icon>
       </span>
-      <h2>{{ 'news.empty' | translate }}</h2>
-      <p>{{ 'news.emptyDesc' | translate }}</p>
+      <h2>{{ 'news.empty' | transloco }}</h2>
+      <p>{{ 'news.emptyDesc' | transloco }}</p>
     </div>
   }
 
@@ -207,9 +207,9 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>search_off</mat-icon>
       </span>
-      <h2>{{ 'news.filteredEmpty' | translate }}</h2>
+      <h2>{{ 'news.filteredEmpty' | transloco }}</h2>
       <button type="button" class="cce-list-toolbar__chip" (click)="clearAllFilters()">
-        {{ 'news.filters.clearAll' | translate }}
+        {{ 'news.filters.clearAll' | transloco }}
       </button>
     </div>
   }

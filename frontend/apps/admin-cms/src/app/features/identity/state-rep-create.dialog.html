@@ -1,26 +1,26 @@
-<h2 mat-dialog-title>{{ 'stateRep.create.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'stateRep.create.title' | transloco }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-state-rep-create__form">
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'stateRep.create.user' | translate }}</mat-label>
+      <mat-label>{{ 'stateRep.create.user' | transloco }}</mat-label>
       <input matInput formControlName="userId" autocomplete="off" />
       @if (form.controls.userId.touched && form.controls.userId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+        <mat-error>{{ 'stateRep.create.invalidGuid' | transloco }}</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'stateRep.create.country' | translate }}</mat-label>
+      <mat-label>{{ 'stateRep.create.country' | transloco }}</mat-label>
       <input matInput formControlName="countryId" autocomplete="off" />
       @if (form.controls.countryId.touched && form.controls.countryId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+        <mat-error>{{ 'stateRep.create.invalidGuid' | transloco }}</mat-error>
       }
     </mat-form-field>
 
     @if (errorKind(); as kind) {
       <div class="cce-state-rep-create__error" role="alert">
-        {{ ('errors.' + kind) | translate }}
+        {{ ('errors.' + kind) | transloco }}
       </div>
     }
   </form>
@@ -28,7 +28,7 @@
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
   <button
     type="button"
@@ -40,7 +40,7 @@
     @if (saving()) {
       <mat-spinner diameter="20" />
     } @else {
-      {{ 'stateRep.create.save' | translate }}
+      {{ 'stateRep.create.save' | transloco }}
     }
   </button>
 </mat-dialog-actions>

@@ -1,6 +1,6 @@
-<section class="cce-notifications-drawer" role="region" [attr.aria-label]="'notifications.title' | translate">
+<section class="cce-notifications-drawer" role="region" [attr.aria-label]="'notifications.title' | transloco">
   <header class="cce-notifications-drawer__header">
-    <h2 class="cce-notifications-drawer__title">{{ 'notifications.title' | translate }}</h2>
+    <h2 class="cce-notifications-drawer__title">{{ 'notifications.title' | transloco }}</h2>
     @if (hasUnread()) {
       <button
         type="button"
@@ -8,7 +8,7 @@
         class="cce-notifications-drawer__mark-all"
         (click)="onMarkAllRead()"
       >
-        {{ 'notifications.markAllRead' | translate }}
+        {{ 'notifications.markAllRead' | transloco }}
       </button>
     }
   </header>
@@ -17,16 +17,16 @@
 
   @if (errorKind(); as kind) {
     <div class="cce-notifications-drawer__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
       <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
 
   @if (empty()) {
     <p class="cce-notifications-drawer__empty">
-      {{ 'notifications.empty' | translate }}
+      {{ 'notifications.empty' | transloco }}
     </p>
   }
 

@@ -2,7 +2,7 @@
   <nav
     class="cce-tabs-bar"
     role="tablist"
-    [attr.aria-label]="'knowledgeMaps.tabs.label' | translate"
+    [attr.aria-label]="'knowledgeMaps.tabs.label' | transloco"
   >
     @for (tab of tabs(); track tab.id) {
       <button
@@ -17,7 +17,7 @@
         <button
           type="button"
           class="cce-tabs-bar__close"
-          [attr.aria-label]="'knowledgeMaps.tabs.close' | translate"
+          [attr.aria-label]="'knowledgeMaps.tabs.close' | transloco"
           (click)="onClose(tab, $event)"
         >
           <mat-icon>close</mat-icon>

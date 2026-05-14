@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService } from './community-api.service';
@@ -16,7 +16,7 @@ import { SignInCtaComponent } from './sign-in-cta.component';
 @Component({
   selector: 'cce-rate-post-control',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule, SignInCtaComponent],
+  imports: [CommonModule, MatIconModule, TranslocoModule, SignInCtaComponent],
   templateUrl: './rate-post-control.component.html',
   styleUrl: './rate-post-control.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

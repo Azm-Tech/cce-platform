@@ -7,7 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { NotificationApiService } from './notification-api.service';
 import {
   NOTIFICATION_CHANNELS,
@@ -35,7 +35,7 @@ interface NotificationForm {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatButtonModule, MatCheckboxModule,
-    MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, TranslateModule,
+    MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, TranslocoModule,
   ],
   templateUrl: './notification-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

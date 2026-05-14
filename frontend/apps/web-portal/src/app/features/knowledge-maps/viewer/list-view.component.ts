@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   NODE_TYPES,
   type KnowledgeMapEdge,
@@ -44,7 +44,7 @@ interface EdgeBreakdown {
 @Component({
   selector: 'cce-list-view',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, MatIconModule, TranslocoModule],
   templateUrl: './list-view.component.html',
   styleUrl: './list-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { FollowsApiService } from './follows-api.service';
 import type { FollowEntityType, MyFollows } from './follows.types';
@@ -24,7 +24,7 @@ interface Section {
   imports: [
     CommonModule, RouterLink,
     MatButtonModule, MatChipsModule, MatIconModule, MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './follows.page.html',
   styleUrl: './follows.page.scss',

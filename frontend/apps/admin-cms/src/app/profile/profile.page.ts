@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { map } from 'rxjs';
@@ -9,7 +9,7 @@ import { map } from 'rxjs';
 @Component({
   selector: 'cce-profile-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, TranslateModule],
+  imports: [CommonModule, MatCardModule, TranslocoModule],
   templateUrl: './profile.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

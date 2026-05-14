@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PublishingApiService } from './publishing-api.service';
 import type { Event as CceEvent } from './publishing.types';
 
@@ -18,7 +18,7 @@ export interface RescheduleEventDialogData {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatButtonModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, TranslateModule,
+    MatFormFieldModule, MatInputModule, TranslocoModule,
   ],
   templateUrl: './reschedule-event.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

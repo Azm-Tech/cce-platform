@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowDirective } from '../follows/follow.directive';
@@ -26,7 +26,7 @@ import type { PublicPost, PublicTopic } from './community.types';
   imports: [
     CommonModule, RouterLink,
     MatButtonModule, MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
     FollowDirective, PostSummaryComponent, SignInCtaComponent,
   ],
   templateUrl: './topic-detail.page.html',

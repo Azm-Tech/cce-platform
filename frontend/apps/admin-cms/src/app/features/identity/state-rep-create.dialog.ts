@@ -6,7 +6,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IdentityApiService } from './identity-api.service';
 import type { StateRepAssignment } from './identity.types';
 
@@ -34,7 +34,7 @@ interface StateRepCreateForm {
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './state-rep-create.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

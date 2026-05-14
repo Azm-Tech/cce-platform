@@ -5,7 +5,7 @@ import { ToastService } from '@frontend/ui-kit';
 
 /**
  * Lazy-resolve ToastService only when an error fires. Eager `inject(ToastService)`
- * at the top of the interceptor pulls in TranslateService via ToastService's
+ * at the top of the interceptor pulls in TranslocoService via ToastService's
  * dependency chain, which transitively needs HttpClient (TranslateLoader factory).
  * If the very first HTTP request is the env.json bootstrap fetch, that creates
  * a circular DI on `ToastService` mid-request. Resolving the toast lazily inside

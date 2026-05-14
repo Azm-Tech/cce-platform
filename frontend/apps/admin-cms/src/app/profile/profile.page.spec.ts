@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { ProfilePage } from './profile.page';
@@ -9,7 +9,7 @@ describe('ProfilePage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfilePage, TranslateModule.forRoot()],
+      imports: [ProfilePage, TranslocoModule.forRoot()],
       providers: [
         {
           provide: OidcSecurityService,

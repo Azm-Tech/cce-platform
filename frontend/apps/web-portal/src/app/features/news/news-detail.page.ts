@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { NewsApiService } from './news-api.service';
 import type { NewsArticle } from './news.types';
 
@@ -13,7 +13,7 @@ import type { NewsArticle } from './news.types';
   standalone: true,
   imports: [
     CommonModule, DatePipe, RouterLink,
-    MatButtonModule, MatIconModule, TranslateModule,
+    MatButtonModule, MatIconModule, TranslocoModule,
   ],
   templateUrl: './news-detail.page.html',
   styleUrl: './news-detail.page.scss',

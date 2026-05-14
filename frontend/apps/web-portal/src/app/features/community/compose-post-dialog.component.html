@@ -1,15 +1,15 @@
-<h2 mat-dialog-title>{{ 'community.compose.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'community.compose.title' | transloco }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-compose-post" (ngSubmit)="submit()">
     @if (errorKind()) {
       <div class="cce-compose-post__error" role="alert">
-        {{ ('errors.' + errorKind()) | translate }}
+        {{ ('errors.' + errorKind()) | transloco }}
       </div>
     }
 
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'community.compose.content' | translate }}</mat-label>
+      <mat-label>{{ 'community.compose.content' | transloco }}</mat-label>
       <textarea
         matInput
         formControlName="content"
@@ -19,20 +19,20 @@
     </mat-form-field>
 
     <mat-radio-group formControlName="locale" class="cce-compose-post__locale">
-      <span class="cce-compose-post__label">{{ 'community.compose.locale' | translate }}:</span>
+      <span class="cce-compose-post__label">{{ 'community.compose.locale' | transloco }}:</span>
       <mat-radio-button value="en">English</mat-radio-button>
       <mat-radio-button value="ar">العربية</mat-radio-button>
     </mat-radio-group>
 
     <mat-checkbox formControlName="isAnswerable" class="cce-compose-post__checkbox">
-      {{ 'community.compose.isAnswerable' | translate }}
+      {{ 'community.compose.isAnswerable' | transloco }}
     </mat-checkbox>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button type="button" [disabled]="submitting()" (click)="cancel()">
-    {{ 'account.profile.cancelButton' | translate }}
+    {{ 'account.profile.cancelButton' | transloco }}
   </button>
   <button
     mat-flat-button
@@ -41,6 +41,6 @@
     [disabled]="form.invalid || submitting()"
     (click)="submit()"
   >
-    {{ 'community.compose.submit' | translate }}
+    {{ 'community.compose.submit' | transloco }}
   </button>
 </mat-dialog-actions>

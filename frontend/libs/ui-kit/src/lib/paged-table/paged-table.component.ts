@@ -9,7 +9,7 @@ import {
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 /**
  * Column descriptor for a paged-table row of type T.
@@ -43,7 +43,7 @@ export interface PagedTablePageChange {
     MatTableModule,
     MatPaginatorModule,
     MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './paged-table.component.html',
   styleUrl: './paged-table.component.scss',

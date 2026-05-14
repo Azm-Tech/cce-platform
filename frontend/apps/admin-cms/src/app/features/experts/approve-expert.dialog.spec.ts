@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ApproveExpertDialogComponent } from './approve-expert.dialog';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertRequest } from './expert.types';
@@ -30,7 +30,7 @@ describe('ApproveExpertDialogComponent', () => {
     approve = jest.fn();
     dialogRef = { close: jest.fn() };
     TestBed.configureTestingModule({
-      imports: [ApproveExpertDialogComponent, TranslateModule.forRoot()],
+      imports: [ApproveExpertDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: ExpertApiService, useValue: { approve } },

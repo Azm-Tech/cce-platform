@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PublishingApiService } from './publishing-api.service';
 import { PAGE_TYPES, type Page, type PageType } from './publishing.types';
 
@@ -29,7 +29,7 @@ interface PageForm {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatButtonModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatSelectModule, TranslateModule,
+    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatSelectModule, TranslocoModule,
   ],
   templateUrl: './page-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

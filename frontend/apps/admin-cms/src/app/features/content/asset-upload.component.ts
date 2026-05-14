@@ -10,7 +10,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ContentApiService } from './content-api.service';
 import type { AssetFile } from './content.types';
 
@@ -22,7 +22,7 @@ import type { AssetFile } from './content.types';
 @Component({
   selector: 'cce-asset-upload',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatProgressBarModule, TranslateModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatProgressBarModule, TranslocoModule],
   templateUrl: './asset-upload.component.html',
   styleUrl: './asset-upload.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

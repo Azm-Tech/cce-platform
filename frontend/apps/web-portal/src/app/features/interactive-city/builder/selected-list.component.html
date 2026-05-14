@@ -1,7 +1,7 @@
 <section class="cce-selected" aria-labelledby="cce-selected-title">
   <header class="cce-selected__header">
     <h2 id="cce-selected-title" class="cce-selected__title">
-      {{ 'interactiveCity.selected.title' | translate: { count: count().size } }}
+      {{ 'interactiveCity.selected.title' | transloco: { count: count().size } }}
     </h2>
 
     <button
@@ -11,12 +11,12 @@
       [disabled]="count().size === 0"
       (click)="clearAll()"
     >
-      {{ 'interactiveCity.selected.clear' | translate }}
+      {{ 'interactiveCity.selected.clear' | transloco }}
     </button>
   </header>
 
   @if (count().size === 0) {
-    <p class="cce-selected__empty">{{ 'interactiveCity.selected.empty' | translate }}</p>
+    <p class="cce-selected__empty">{{ 'interactiveCity.selected.empty' | transloco }}</p>
   } @else {
     <ul class="cce-selected__list">
       @for (t of selectedTechnologies(); track t.id) {
@@ -25,16 +25,16 @@
             <span class="cce-selected__item-name">{{ nameOf(t) }}</span>
             <span class="cce-selected__item-stats">
               {{ t.carbonImpactKgPerYear | number }}
-              {{ 'interactiveCity.totals.carbonUnit' | translate }}
+              {{ 'interactiveCity.totals.carbonUnit' | transloco }}
               ·
               {{ t.costUsd | number }}
-              {{ 'interactiveCity.totals.costUnit' | translate }}
+              {{ 'interactiveCity.totals.costUnit' | transloco }}
             </span>
           </div>
           <button
             type="button"
             mat-icon-button
-            [attr.aria-label]="('interactiveCity.selected.remove' | translate) + ': ' + nameOf(t)"
+            [attr.aria-label]="('interactiveCity.selected.remove' | transloco) + ': ' + nameOf(t)"
             (click)="remove(t.id)"
           >
             <mat-icon>close</mat-icon>

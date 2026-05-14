@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
 
@@ -25,7 +25,7 @@ describe('ComposeReplyFormComponent', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [ComposeReplyFormComponent, TranslateModule.forRoot()],
+      imports: [ComposeReplyFormComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { createReply } },

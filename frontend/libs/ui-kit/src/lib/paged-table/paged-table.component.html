@@ -5,7 +5,7 @@
 <table mat-table [dataSource]="rows" class="cce-paged-table">
   @for (col of columns; track col.key) {
     <ng-container [matColumnDef]="col.key">
-      <th mat-header-cell *matHeaderCellDef>{{ col.labelKey | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef>{{ col.labelKey | transloco }}</th>
       <td mat-cell *matCellDef="let row">{{ col.cell(row) }}</td>
     </ng-container>
   }

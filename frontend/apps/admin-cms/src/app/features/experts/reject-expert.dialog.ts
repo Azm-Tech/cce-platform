@@ -10,7 +10,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertRequest } from './expert.types';
 
@@ -35,7 +35,7 @@ interface RejectForm {
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './reject-expert.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

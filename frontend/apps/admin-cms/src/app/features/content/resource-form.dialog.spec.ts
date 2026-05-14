@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ContentApiService } from './content-api.service';
 import {
   ResourceFormDialogComponent,
@@ -46,7 +46,7 @@ function configure(data: ResourceFormDialogData) {
   const updateResource = jest.fn();
   const dialogRef = { close: jest.fn() };
   TestBed.configureTestingModule({
-    imports: [ResourceFormDialogComponent, TranslateModule.forRoot()],
+    imports: [ResourceFormDialogComponent, TranslocoModule.forRoot()],
     providers: [
       provideNoopAnimations(),
       { provide: ContentApiService, useValue: { createResource, updateResource, uploadAsset: jest.fn() } },

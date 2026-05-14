@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PublishingApiService } from './publishing-api.service';
 import type { Event } from './publishing.types';
 
@@ -32,7 +32,7 @@ interface EventForm {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatButtonModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, TranslateModule,
+    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, TranslocoModule,
   ],
   templateUrl: './event-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

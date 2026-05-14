@@ -7,7 +7,7 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AssistantStore } from './assistant-store.service';
 import { MessageBubbleComponent } from './message-bubble.component';
 import { TypingIndicatorComponent } from './typing-indicator.component';
@@ -24,7 +24,7 @@ import { TypingIndicatorComponent } from './typing-indicator.component';
 @Component({
   selector: 'cce-message-list',
   standalone: true,
-  imports: [TranslateModule, MessageBubbleComponent, TypingIndicatorComponent],
+  imports: [TranslocoModule, MessageBubbleComponent, TypingIndicatorComponent],
   templateUrl: './message-list.component.html',
   styleUrl: './message-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

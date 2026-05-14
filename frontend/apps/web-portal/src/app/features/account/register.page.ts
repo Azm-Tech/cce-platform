@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 
 interface RegistrationFormModel {
@@ -48,7 +48,7 @@ type SubmitState =
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   template: `
     <section class="cce-register">

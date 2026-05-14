@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { HealthClient, type HealthResponse } from './health.client';
 
 @Component({
   selector: 'cce-health-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, TranslateModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './health.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

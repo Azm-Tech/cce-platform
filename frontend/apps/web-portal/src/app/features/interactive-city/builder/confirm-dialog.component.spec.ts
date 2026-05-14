@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ConfirmDialogComponent, type ConfirmDialogData } from './confirm-dialog.component';
 
 describe('ConfirmDialogComponent', () => {
@@ -11,7 +11,7 @@ describe('ConfirmDialogComponent', () => {
   function setUp(data: ConfirmDialogData): void {
     dialogRef = { close: jest.fn() };
     TestBed.configureTestingModule({
-      imports: [ConfirmDialogComponent, TranslateModule.forRoot()],
+      imports: [ConfirmDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: MatDialogRef, useValue: dialogRef },

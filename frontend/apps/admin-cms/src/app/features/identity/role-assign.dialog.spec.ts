@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IdentityApiService, type Result } from './identity-api.service';
 import type { UserDetail } from './identity.types';
 import { RoleAssignDialogComponent } from './role-assign.dialog';
@@ -30,7 +30,7 @@ describe('RoleAssignDialogComponent', () => {
     assignRoles = jest.fn();
     api = { assignRoles };
     TestBed.configureTestingModule({
-      imports: [RoleAssignDialogComponent, TranslateModule.forRoot()],
+      imports: [RoleAssignDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: IdentityApiService, useValue: api },

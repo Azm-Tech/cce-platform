@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { KnowledgeMapsApiService } from './knowledge-maps-api.service';
@@ -31,7 +31,7 @@ import type { KnowledgeMap } from './knowledge-maps.types';
     CommonModule, FormsModule, RouterLink,
     MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
     MatInputModule, MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
     WorkbenchHeroComponent,
   ],
   templateUrl: './knowledge-maps-list.page.html',

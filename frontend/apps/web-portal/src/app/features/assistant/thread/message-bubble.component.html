@@ -13,7 +13,7 @@
   <div class="cce-bubble__body">
     <header class="cce-bubble__role">
       {{
-        (isUser() ? 'assistant.message.user' : 'assistant.message.assistant') | translate
+        (isUser() ? 'assistant.message.user' : 'assistant.message.assistant') | transloco
       }}
     </header>
 
@@ -23,12 +23,12 @@
 
     @if (isError()) {
       <p class="cce-bubble__error" role="alert">
-        {{ ('assistant.errors.' + (message().errorKind ?? 'unknown')) | translate }}
+        {{ ('assistant.errors.' + (message().errorKind ?? 'unknown')) | transloco }}
       </p>
     }
 
     @if (message().citations.length > 0) {
-      <ul class="cce-bubble__citations" [attr.aria-label]="'assistant.citations.title' | translate">
+      <ul class="cce-bubble__citations" [attr.aria-label]="'assistant.citations.title' | transloco">
         @for (c of message().citations; track c.id; let i = $index) {
           <li>
             <cce-citation-chip [citation]="c" [index]="i + 1" variant="footer" />
@@ -42,7 +42,7 @@
         <button
           type="button"
           mat-icon-button
-          [attr.aria-label]="'assistant.message.copy' | translate"
+          [attr.aria-label]="'assistant.message.copy' | transloco"
           (click)="copyToClipboard()"
         >
           <mat-icon>content_copy</mat-icon>
@@ -55,7 +55,7 @@
           (click)="regenerate.emit()"
         >
           <mat-icon>refresh</mat-icon>
-          {{ 'assistant.message.regenerate' | translate }}
+          {{ 'assistant.message.regenerate' | transloco }}
         </button>
       }
       @if (showRetry()) {
@@ -66,7 +66,7 @@
           (click)="retry.emit()"
         >
           <mat-icon>replay</mat-icon>
-          {{ 'assistant.message.retry' | translate }}
+          {{ 'assistant.message.retry' | transloco }}
         </button>
       }
     </div>

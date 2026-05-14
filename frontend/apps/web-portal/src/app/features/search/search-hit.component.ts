@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { SearchHit, SearchableType } from './search.types';
 
 /**
@@ -31,7 +31,7 @@ function resolveDetailLink(hit: SearchHit): string | null {
 @Component({
   selector: 'cce-search-hit',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, RouterLink, MatCardModule, TranslateModule],
+  imports: [CommonModule, DecimalPipe, RouterLink, MatCardModule, TranslocoModule],
   template: `
     @if (detailLink(); as link) {
       <a class="cce-search-hit cce-search-hit--linked" [routerLink]="link">

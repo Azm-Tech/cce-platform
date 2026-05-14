@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AssistantApiService } from './assistant-api.service';
 import { AssistantPage } from './assistant.page';
@@ -12,7 +12,7 @@ import { AssistantStore } from './thread/assistant-store.service';
 describe('AssistantPage', () => {
   function setUp(queryParams: Record<string, string> = {}) {
     TestBed.configureTestingModule({
-      imports: [AssistantPage, TranslateModule.forRoot()],
+      imports: [AssistantPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

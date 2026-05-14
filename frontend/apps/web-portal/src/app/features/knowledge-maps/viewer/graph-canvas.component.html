@@ -6,8 +6,8 @@
     <button
       type="button"
       class="cce-graph-controls__btn"
-      [attr.aria-label]="'knowledgeMaps.graph.zoomIn' | translate"
-      [title]="'knowledgeMaps.graph.zoomIn' | translate"
+      [attr.aria-label]="'knowledgeMaps.graph.zoomIn' | transloco"
+      [title]="'knowledgeMaps.graph.zoomIn' | transloco"
       (click)="zoomIn()"
     >
       <mat-icon>add</mat-icon>
@@ -15,8 +15,8 @@
     <button
       type="button"
       class="cce-graph-controls__btn"
-      [attr.aria-label]="'knowledgeMaps.graph.zoomOut' | translate"
-      [title]="'knowledgeMaps.graph.zoomOut' | translate"
+      [attr.aria-label]="'knowledgeMaps.graph.zoomOut' | transloco"
+      [title]="'knowledgeMaps.graph.zoomOut' | transloco"
       (click)="zoomOut()"
     >
       <mat-icon>remove</mat-icon>
@@ -25,8 +25,8 @@
     <button
       type="button"
       class="cce-graph-controls__btn"
-      [attr.aria-label]="'knowledgeMaps.graph.fit' | translate"
-      [title]="'knowledgeMaps.graph.fit' | translate"
+      [attr.aria-label]="'knowledgeMaps.graph.fit' | transloco"
+      [title]="'knowledgeMaps.graph.fit' | transloco"
       (click)="fit()"
     >
       <mat-icon>fit_screen</mat-icon>
@@ -34,8 +34,8 @@
     <button
       type="button"
       class="cce-graph-controls__btn"
-      [attr.aria-label]="'knowledgeMaps.graph.center' | translate"
-      [title]="'knowledgeMaps.graph.center' | translate"
+      [attr.aria-label]="'knowledgeMaps.graph.center' | transloco"
+      [title]="'knowledgeMaps.graph.center' | transloco"
       (click)="resetView()"
     >
       <mat-icon>my_location</mat-icon>
@@ -44,41 +44,41 @@
 
   <!-- ─── Legend — always visible at the bottom-leading corner ─── -->
   <aside class="cce-graph-legend" role="region"
-         [attr.aria-label]="'knowledgeMaps.graph.legendTitle' | translate">
+         [attr.aria-label]="'knowledgeMaps.graph.legendTitle' | transloco">
     <h3 class="cce-graph-legend__title">
       <mat-icon aria-hidden="true">info</mat-icon>
-      {{ 'knowledgeMaps.graph.legendTitle' | translate }}
+      {{ 'knowledgeMaps.graph.legendTitle' | transloco }}
     </h3>
 
     <dl class="cce-graph-legend__group">
-      <dt>{{ 'knowledgeMaps.filter.title' | translate }}</dt>
+      <dt>{{ 'knowledgeMaps.filter.title' | transloco }}</dt>
       <dd>
         <span class="cce-graph-legend__node cce-graph-legend__node--tech" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.Technology' | translate }}
+        {{ 'knowledgeMaps.detail.nodeType.Technology' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__node cce-graph-legend__node--sector" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.Sector' | translate }}
+        {{ 'knowledgeMaps.detail.nodeType.Sector' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__node cce-graph-legend__node--subtopic" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.SubTopic' | translate }}
+        {{ 'knowledgeMaps.detail.nodeType.SubTopic' | transloco }}
       </dd>
     </dl>
 
     <dl class="cce-graph-legend__group">
-      <dt>{{ 'knowledgeMaps.detail.outboundEdges' | translate }}</dt>
+      <dt>{{ 'knowledgeMaps.detail.outboundEdges' | transloco }}</dt>
       <dd>
         <span class="cce-graph-legend__edge cce-graph-legend__edge--parent" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.ParentOf' | translate }}
+        {{ 'knowledgeMaps.detail.relationshipType.ParentOf' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__edge cce-graph-legend__edge--related" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.RelatedTo' | translate }}
+        {{ 'knowledgeMaps.detail.relationshipType.RelatedTo' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__edge cce-graph-legend__edge--required" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.RequiredBy' | translate }}
+        {{ 'knowledgeMaps.detail.relationshipType.RequiredBy' | transloco }}
       </dd>
     </dl>
   </aside>
@@ -89,9 +89,9 @@
       <span class="cce-graph-canvas__empty-art" aria-hidden="true">
         <mat-icon>filter_alt_off</mat-icon>
       </span>
-      <p>{{ 'knowledgeMaps.graph.allDimmed' | translate }}</p>
+      <p>{{ 'knowledgeMaps.graph.allDimmed' | transloco }}</p>
       <button type="button" class="cce-graph-canvas__empty-cta" (click)="clearFilters()">
-        {{ 'knowledgeMaps.graph.allDimmedClear' | translate }}
+        {{ 'knowledgeMaps.graph.allDimmedClear' | transloco }}
       </button>
     </div>
   }

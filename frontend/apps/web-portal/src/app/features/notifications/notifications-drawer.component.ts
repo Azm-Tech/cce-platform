@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { NotificationsApiService } from './notifications-api.service';
@@ -24,7 +24,7 @@ import type { UserNotification } from './notification.types';
   imports: [
     CommonModule,
     MatButtonModule, MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslateModule, NotificationRowComponent,
+    TranslocoModule, NotificationRowComponent,
   ],
   templateUrl: './notifications-drawer.component.html',
   styleUrl: './notifications-drawer.component.scss',

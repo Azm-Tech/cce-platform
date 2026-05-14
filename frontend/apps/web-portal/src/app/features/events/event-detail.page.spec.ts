@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { EventsApiService, type Result } from './events-api.service';
 import type { Event } from './event.types';
 import { EventDetailPage } from './event-detail.page';
@@ -37,7 +37,7 @@ describe('EventDetailPage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [EventDetailPage, TranslateModule.forRoot()],
+      imports: [EventDetailPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

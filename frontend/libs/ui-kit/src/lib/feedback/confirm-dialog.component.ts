@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export interface ConfirmDialogData {
   titleKey: string;
@@ -14,7 +14,7 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'cce-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, TranslateModule],
+  imports: [CommonModule, MatButtonModule, MatDialogModule, TranslocoModule],
   template: `
     <h2 mat-dialog-title>{{ data.titleKey | translate }}</h2>
     <mat-dialog-content>{{ data.messageKey | translate }}</mat-dialog-content>

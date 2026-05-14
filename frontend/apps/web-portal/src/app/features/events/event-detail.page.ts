@@ -7,7 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { EventsApiService } from './events-api.service';
 import type { Event } from './event.types';
 
@@ -28,7 +28,7 @@ type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
   imports: [
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './event-detail.page.html',
   styleUrl: './event-detail.page.scss',
@@ -39,7 +39,7 @@ export class EventDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
 
   readonly event = signal<Event | null>(null);
   readonly loading = signal(false);
@@ -107,8 +107,8 @@ export class EventDetailPage implements OnInit {
     const e = this.event();
     if (!e) return '';
     const bucket = this.timeBucket();
-    if (bucket === 'live') return this.t.instant('events.detail.countdownLive');
-    if (bucket === 'today') return this.t.instant('events.detail.countdownToday');
+    if (bucket === 'live') return this.t.translate('events.detail.countdownLive');
+    if (bucket === 'today') return this.t.translate('events.detail.countdownToday');
 
     const now = Date.now();
     const target =
@@ -135,11 +135,11 @@ export class EventDetailPage implements OnInit {
       value = Math.max(1, minutes);
       unitKey = value === 1 ? 'events.detail.unitMinute' : 'events.detail.unitMinutes';
     }
-    const unit = this.t.instant(unitKey);
+    const unit = this.t.translate(unitKey);
     const phrase = bucket === 'past'
       ? 'events.detail.countdownEndedAgo'
       : 'events.detail.countdownIn';
-    return this.t.instant(phrase, { value, unit });
+    return this.t.translate(phrase, { value, unit });
   });
 
   /** Type chip key (online / in person / webinar). */

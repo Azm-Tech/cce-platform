@@ -1,8 +1,8 @@
 <section class="cce-topics-list">
   <cce-workbench-hero
-    [eyebrow]="'community.eyebrow' | translate"
-    [title]="'community.title' | translate"
-    [subtitle]="'community.subtitle' | translate"
+    [eyebrow]="'community.eyebrow' | transloco"
+    [title]="'community.title' | transloco"
+    [subtitle]="'community.subtitle' | transloco"
   />
 
   <!-- ─── Toolbar ─────────────────────────────────────────── -->
@@ -12,16 +12,16 @@
       <input
         type="search"
         class="cce-list-toolbar__search-input"
-        [placeholder]="'community.searchPlaceholder' | translate"
+        [placeholder]="'community.searchPlaceholder' | transloco"
         [ngModel]="query()"
         (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'community.searchPlaceholder' | translate"
+        [attr.aria-label]="'community.searchPlaceholder' | transloco"
       />
       @if (query()) {
         <button
           type="button"
           class="cce-list-toolbar__search-clear"
-          [attr.aria-label]="'community.clearSearch' | translate"
+          [attr.aria-label]="'community.clearSearch' | transloco"
           (click)="clearQuery()"
         >
           <mat-icon>close</mat-icon>
@@ -39,7 +39,7 @@
       (click)="toggleFilters()"
     >
       <mat-icon aria-hidden="true">tune</mat-icon>
-      {{ 'community.filters.open' | translate }}
+      {{ 'community.filters.open' | transloco }}
       @if (activeChips().length > 0) {
         <span class="cce-list-toolbar__chip-badge">{{ activeChips().length }}</span>
       }
@@ -80,23 +80,23 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">sort</mat-icon>
-        {{ 'community.filters.sort' | translate }}
+        {{ 'community.filters.sort' | transloco }}
       </legend>
       <div class="cce-list-filters__seg">
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="sortOrder() === 'default'"
                 (click)="setSort('default')">
-          {{ 'community.filters.sortDefault' | translate }}
+          {{ 'community.filters.sortDefault' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alpha'"
                 (click)="setSort('alpha')">
-          {{ 'community.filters.sortAlpha' | translate }}
+          {{ 'community.filters.sortAlpha' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alphaReverse'"
                 (click)="setSort('alphaReverse')">
-          {{ 'community.filters.sortAlphaReverse' | translate }}
+          {{ 'community.filters.sortAlphaReverse' | transloco }}
         </button>
       </div>
     </fieldset>
@@ -105,14 +105,14 @@
   <!-- ─── Active filter chips ─────────────────────────────── -->
   @if (activeChips().length > 0) {
     <div class="cce-list-active" role="status">
-      <span class="cce-list-active__label">{{ 'community.filters.active' | translate }}:</span>
+      <span class="cce-list-active__label">{{ 'community.filters.active' | transloco }}:</span>
       @for (chip of activeChips(); track chip.id) {
         <span class="cce-list-active__chip">
           {{ chip.label }}
           <button
             type="button"
             class="cce-list-active__chip-x"
-            [attr.aria-label]="'community.clearSearch' | translate"
+            [attr.aria-label]="'community.clearSearch' | transloco"
             (click)="removeChip(chip.id)"
           >
             <mat-icon>close</mat-icon>
@@ -120,7 +120,7 @@
         </span>
       }
       <button type="button" class="cce-list-active__clear" (click)="clearAllFilters()">
-        {{ 'community.filters.clearAll' | translate }}
+        {{ 'community.filters.clearAll' | transloco }}
       </button>
     </div>
   }
@@ -133,8 +133,8 @@
   @if (errorKind(); as kind) {
     <div class="cce-list-error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
@@ -160,8 +160,8 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>forum</mat-icon>
       </span>
-      <h2>{{ 'community.empty.topics' | translate }}</h2>
-      <p>{{ 'community.emptyDesc' | translate }}</p>
+      <h2>{{ 'community.empty.topics' | transloco }}</h2>
+      <p>{{ 'community.emptyDesc' | transloco }}</p>
     </div>
   }
 
@@ -171,9 +171,9 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>search_off</mat-icon>
       </span>
-      <h2>{{ 'community.filteredEmpty' | translate }}</h2>
+      <h2>{{ 'community.filteredEmpty' | transloco }}</h2>
       <button type="button" class="cce-list-toolbar__chip" (click)="clearQuery()">
-        {{ 'community.clearSearch' | translate }}
+        {{ 'community.clearSearch' | transloco }}
       </button>
     </div>
   }

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { EventsApiService, type Result } from './events-api.service';
 import type { Event, PagedResult } from './event.types';
 import { EventsListPage } from './events-list.page';
@@ -35,7 +35,7 @@ describe('EventsListPage', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [EventsListPage, TranslateModule.forRoot()],
+      imports: [EventsListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService } from './countries-api.service';
 import { getMockKapsarc, getMockProfile } from './countries-mock';
 import { flagEmojiFor, flagUrlFor } from './flag-helpers';
@@ -19,7 +19,7 @@ import type { Country, CountryProfile, KapsarcSnapshot } from './country.types';
   imports: [
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatProgressBarModule, MatIconModule,
-    TranslateModule, KapsarcSnapshotComponent,
+    TranslocoModule, KapsarcSnapshotComponent,
   ],
   templateUrl: './country-detail.page.html',
   styleUrl: './country-detail.page.scss',

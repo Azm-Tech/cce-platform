@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 interface SettingsModel {
   general: {
@@ -112,7 +112,7 @@ const DEFAULT_SETTINGS: SettingsModel = {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.scss',

@@ -2,18 +2,17 @@ import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@ang
 import { authInterceptor } from './core/http/auth.interceptor';
 import { serverErrorInterceptor } from './core/http/server-error.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
-import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from '@angular/core';
+import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject, isDevMode } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { provideAuth } from 'angular-auth-oidc-client';
-import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
 import { buildCceOidcConfig } from '@frontend/auth';
 import { appRoutes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { EnvService } from './core/env.service';
-import { ngxTranslateHttpLoaderFactory } from './core/translate-loader.factory';
+import { TranslocoHttpLoader } from './core/translate-loader.factory';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,16 +23,14 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([correlationIdInterceptor, authInterceptor, serverErrorInterceptor]),
     ),
     provideAnimationsAsync(),
-    ...(TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: ngxTranslateHttpLoaderFactory,
-        deps: [HttpClient],
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'ar',
+        prodMode: !isDevMode(),
       },
-      defaultLanguage: 'ar',
-    }).providers ?? []),
-    // OIDC config is built dynamically AFTER env.json loads, so provideAuth uses a placeholder
-    // here and we re-configure it inside provideAppInitializer once env is available.
+      loader: TranslocoHttpLoader
+    }),
     provideAuth({
       config: buildCceOidcConfig({
         authority: 'http://localhost:8080/realms/cce-internal',
@@ -48,17 +45,11 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAppInitializer(async () => {
       const env = inject(EnvService);
-      const translate = inject(TranslateService);
+      const translate = inject(TranslocoService);
       const locale = inject(LocaleService);
       const auth = inject(AuthService);
       await env.load();
-      translate.setDefaultLang('ar');
-      await firstValueFrom(translate.use(locale.locale()));
-      // Bootstrap user + permissions. Without this the side-nav stays
-      // empty (every nav item is gated by *ccePermission, and with
-      // currentUser = null every check fails). AuthService.refresh()
-      // tries /api/me first, then falls back to deriving the user
-      // and permissions from the cce-dev-role cookie.
+      translate.setActiveLang(locale.locale());
       await auth.refresh();
     }),
   ],

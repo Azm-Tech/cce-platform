@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ToastService } from './toast.service';
 
 describe('ToastService', () => {
@@ -15,7 +15,7 @@ describe('ToastService', () => {
       providers: [
         ToastService,
         { provide: MatSnackBar, useValue: snack },
-        { provide: TranslateService, useValue: translate },
+        { provide: TranslocoService, useValue: translate },
       ],
     });
     sut = TestBed.inject(ToastService);

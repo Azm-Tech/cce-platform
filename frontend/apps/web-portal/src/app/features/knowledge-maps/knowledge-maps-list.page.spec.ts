@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { KnowledgeMapsApiService, type Result } from './knowledge-maps-api.service';
 import type { KnowledgeMap } from './knowledge-maps.types';
 import { KnowledgeMapsListPage } from './knowledge-maps-list.page';
@@ -29,7 +29,7 @@ describe('KnowledgeMapsListPage', () => {
     listMaps = jest.fn().mockResolvedValue(ok([SAMPLE]));
 
     await TestBed.configureTestingModule({
-      imports: [KnowledgeMapsListPage, TranslateModule.forRoot()],
+      imports: [KnowledgeMapsListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

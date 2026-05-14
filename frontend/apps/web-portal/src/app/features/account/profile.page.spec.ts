@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AccountApiService, type Result } from './account-api.service';
 import { CountriesApiService } from '../countries/countries-api.service';
 import type { Country } from '../countries/country.types';
@@ -51,7 +51,7 @@ describe('ProfilePage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [ProfilePage, TranslateModule.forRoot()],
+      imports: [ProfilePage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

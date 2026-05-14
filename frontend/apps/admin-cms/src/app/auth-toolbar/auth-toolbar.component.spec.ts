@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { AuthToolbarComponent } from './auth-toolbar.component';
@@ -15,7 +15,7 @@ describe('AuthToolbarComponent', () => {
       logoff: jest.fn().mockReturnValue(of({})),
     } as unknown as jest.Mocked<Pick<OidcSecurityService, 'authorize' | 'logoff'>>;
     await TestBed.configureTestingModule({
-      imports: [AuthToolbarComponent, TranslateModule.forRoot()],
+      imports: [AuthToolbarComponent, TranslocoModule.forRoot()],
       providers: [
         {
           provide: OidcSecurityService,

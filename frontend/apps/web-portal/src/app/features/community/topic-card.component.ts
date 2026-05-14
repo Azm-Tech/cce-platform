@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { PublicTopic } from './community.types';
 
 /**
@@ -13,7 +13,7 @@ import type { PublicTopic } from './community.types';
 @Component({
   selector: 'cce-topic-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, TranslateModule],
+  imports: [CommonModule, RouterLink, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-topic-card" [routerLink]="['/community', 'topics', topic().slug]"
        [attr.aria-label]="name()">

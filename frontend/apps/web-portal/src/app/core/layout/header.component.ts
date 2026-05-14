@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { LocaleSwitcherComponent } from '../../locale-switcher/locale-switcher.component';
@@ -23,7 +23,7 @@ const UNREAD_POLL_MS = 60_000;
   imports: [
     CommonModule, RouterLink, RouterLinkActive,
     MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
-    TranslateModule, LocaleSwitcherComponent, SearchBoxComponent,
+    TranslocoModule, LocaleSwitcherComponent, SearchBoxComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

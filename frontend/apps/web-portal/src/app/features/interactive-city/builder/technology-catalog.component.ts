@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import type { CityTechnology } from '../interactive-city.types';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
@@ -33,7 +33,7 @@ interface CatalogGroup {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './technology-catalog.component.html',
   styleUrl: './technology-catalog.component.scss',

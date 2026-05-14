@@ -10,7 +10,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -25,7 +25,7 @@ import type { News } from './publishing.types';
     CommonModule, DatePipe, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatPaginatorModule, MatProgressBarModule, MatSelectModule, MatTableModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './news-list.page.html',
   styleUrl: './news-list.page.scss',

@@ -5,7 +5,7 @@ import { signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import type { PagedResult, PublicPost, PublicTopic } from './community.types';
@@ -54,7 +54,7 @@ describe('TopicDetailPage', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [TopicDetailPage, TranslateModule.forRoot()],
+      imports: [TopicDetailPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

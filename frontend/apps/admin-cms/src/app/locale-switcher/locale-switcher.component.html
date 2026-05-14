@@ -3,7 +3,7 @@
   mat-button
   shellHeaderEnd
   (click)="toggle()"
-  [attr.aria-label]="('common.locale.switchTo' | translate) + ' ' + ('common.locale.' + nextLabel() | translate)"
+  [attr.aria-label]="('common.locale.switchTo' | transloco) + ' ' + ('common.locale.' + nextLabel() | transloco)"
 >
-  {{ "common.locale." + nextLabel() | translate }}
+  {{ "common.locale." + nextLabel() | transloco }}
 </button>

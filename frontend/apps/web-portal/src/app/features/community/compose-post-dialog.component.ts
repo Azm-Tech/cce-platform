@@ -9,7 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CommunityApiService } from './community-api.service';
@@ -37,7 +37,7 @@ interface ComposePostFormShape {
     CommonModule, ReactiveFormsModule,
     MatDialogModule, MatButtonModule, MatCheckboxModule,
     MatFormFieldModule, MatInputModule, MatRadioModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './compose-post-dialog.component.html',
   styleUrl: './compose-post-dialog.component.scss',

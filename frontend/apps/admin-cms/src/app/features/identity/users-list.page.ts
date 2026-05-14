@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   PagedTableColumn,
   PagedTableComponent,
@@ -29,7 +29,7 @@ import { KNOWN_ROLES, type UserListItem } from './identity.types';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
     PagedTableComponent,
   ],
   templateUrl: './users-list.page.html',

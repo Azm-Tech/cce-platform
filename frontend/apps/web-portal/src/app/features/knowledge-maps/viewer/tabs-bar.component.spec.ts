@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { ViewerTab } from './map-viewer-store.service';
 import { TabsBarComponent } from './tabs-bar.component';
 
@@ -24,7 +24,7 @@ describe('TabsBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TabsBarComponent, TranslateModule.forRoot()],
+      imports: [TabsBarComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(TabsBarComponent);

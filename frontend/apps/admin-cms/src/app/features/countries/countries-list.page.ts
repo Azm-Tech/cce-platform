@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CountryApiService } from './country-api.service';
 import type { Country } from './country.types';
 
@@ -18,7 +18,7 @@ import type { Country } from './country.types';
   imports: [
     CommonModule, FormsModule, RouterLink,
     MatButtonModule, MatFormFieldModule, MatInputModule,
-    MatPaginatorModule, MatProgressBarModule, MatTableModule, TranslateModule,
+    MatPaginatorModule, MatProgressBarModule, MatTableModule, TranslocoModule,
   ],
   templateUrl: './countries-list.page.html',
   styleUrl: './countries.scss',

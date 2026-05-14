@@ -1,26 +1,26 @@
-<h2 mat-dialog-title>{{ 'experts.reject.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'experts.reject.title' | transloco }}</h2>
 
 <mat-dialog-content>
   <p class="cce-reject-expert__requester">{{ data.requesterName ?? data.requestId }}</p>
   <form [formGroup]="form" class="cce-reject-expert__form">
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'experts.reject.reasonAr' | translate }}</mat-label>
+      <mat-label>{{ 'experts.reject.reasonAr' | transloco }}</mat-label>
       <textarea matInput formControlName="rejectionReasonAr" rows="3"></textarea>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'experts.reject.reasonEn' | translate }}</mat-label>
+      <mat-label>{{ 'experts.reject.reasonEn' | transloco }}</mat-label>
       <textarea matInput formControlName="rejectionReasonEn" rows="3"></textarea>
     </mat-form-field>
 
     @if (errorKind(); as kind) {
-      <div class="cce-reject-expert__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      <div class="cce-reject-expert__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
   <button
     type="button"
@@ -32,7 +32,7 @@
     @if (saving()) {
       <mat-spinner diameter="20" />
     } @else {
-      {{ 'experts.reject.save' | translate }}
+      {{ 'experts.reject.save' | transloco }}
     }
   </button>
 </mat-dialog-actions>

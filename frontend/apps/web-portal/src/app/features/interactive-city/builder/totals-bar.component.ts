@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -31,7 +31,7 @@ import {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './totals-bar.component.html',
   styleUrl: './totals-bar.component.scss',

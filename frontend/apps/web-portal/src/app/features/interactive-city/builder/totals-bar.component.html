@@ -3,12 +3,12 @@
     <!-- F009 — city baseline derived from environmental factors -->
     <div class="cce-totals-bar__cell cce-totals-bar__cell--baseline">
       <span class="cce-totals-bar__label">
-        {{ 'interactiveCity.totals.baseline' | translate }}
+        {{ 'interactiveCity.totals.baseline' | transloco }}
       </span>
       <span class="cce-totals-bar__value">
         {{ baselineKgPerYear() | number }}
         <span class="cce-totals-bar__unit">
-          {{ 'interactiveCity.totals.carbonUnit' | translate }}
+          {{ 'interactiveCity.totals.carbonUnit' | transloco }}
         </span>
       </span>
     </div>
@@ -16,7 +16,7 @@
     <!-- Sum of selected technology impacts (negative = reduction) -->
     <div class="cce-totals-bar__cell">
       <span class="cce-totals-bar__label">
-        {{ 'interactiveCity.totals.carbon' | translate }}
+        {{ 'interactiveCity.totals.carbon' | transloco }}
       </span>
       <span
         class="cce-totals-bar__value"
@@ -25,7 +25,7 @@
       >
         {{ liveTotals().totalCarbonImpactKgPerYear | number }}
         <span class="cce-totals-bar__unit">
-          {{ 'interactiveCity.totals.carbonUnit' | translate }}
+          {{ 'interactiveCity.totals.carbonUnit' | transloco }}
         </span>
       </span>
     </div>
@@ -33,7 +33,7 @@
     <!-- F009 — net city footprint + neutrality progress bar -->
     <div class="cce-totals-bar__cell cce-totals-bar__cell--neutrality">
       <span class="cce-totals-bar__label">
-        {{ 'interactiveCity.totals.neutralityProgress' | translate }}
+        {{ 'interactiveCity.totals.neutralityProgress' | transloco }}
       </span>
       <span
         class="cce-totals-bar__value"
@@ -44,7 +44,7 @@
             class="cce-totals-bar__neutrality-icon"
             aria-hidden="true"
           >verified</mat-icon>
-          {{ 'interactiveCity.totals.neutralityAchieved' | translate }}
+          {{ 'interactiveCity.totals.neutralityAchieved' | transloco }}
         } @else {
           {{ neutralityProgressPct() }}<span class="cce-totals-bar__unit">%</span>
         }
@@ -65,19 +65,19 @@
       @if (!isCarbonNeutral()) {
         <span class="cce-totals-bar__neutrality-gap">
           {{ netFootprintKgPerYear() | number }}
-          {{ 'interactiveCity.totals.neutralityGap' | translate }}
+          {{ 'interactiveCity.totals.neutralityGap' | transloco }}
         </span>
       }
     </div>
 
     <div class="cce-totals-bar__cell">
       <span class="cce-totals-bar__label">
-        {{ 'interactiveCity.totals.cost' | translate }}
+        {{ 'interactiveCity.totals.cost' | transloco }}
       </span>
       <span class="cce-totals-bar__value">
         {{ liveTotals().totalCostUsd | number }}
         <span class="cce-totals-bar__unit">
-          {{ 'interactiveCity.totals.costUnit' | translate }}
+          {{ 'interactiveCity.totals.costUnit' | transloco }}
         </span>
       </span>
     </div>
@@ -97,7 +97,7 @@
       (click)="recommendNow()"
     >
       <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-      <span>{{ 'interactiveCity.totals.recommend' | translate }}</span>
+      <span>{{ 'interactiveCity.totals.recommend' | transloco }}</span>
     </button>
 
     <button
@@ -110,9 +110,9 @@
     >
       @if (running()) {
         <mat-spinner diameter="18" />
-        <span>{{ 'interactiveCity.totals.running' | translate }}</span>
+        <span>{{ 'interactiveCity.totals.running' | transloco }}</span>
       } @else {
-        <span>{{ 'interactiveCity.totals.run' | translate }}</span>
+        <span>{{ 'interactiveCity.totals.run' | transloco }}</span>
       }
     </button>
 
@@ -125,9 +125,9 @@
     >
       @if (saving()) {
         <mat-spinner diameter="18" />
-        <span>{{ 'interactiveCity.totals.saving' | translate }}</span>
+        <span>{{ 'interactiveCity.totals.saving' | transloco }}</span>
       } @else {
-        <span>{{ 'interactiveCity.totals.save' | translate }}</span>
+        <span>{{ 'interactiveCity.totals.save' | transloco }}</span>
       }
     </button>
   </div>

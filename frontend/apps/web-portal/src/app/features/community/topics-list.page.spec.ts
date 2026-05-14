@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
 import type { PublicTopic } from './community.types';
 import { TopicsListPage } from './topics-list.page';
@@ -34,7 +34,7 @@ describe('TopicsListPage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [TopicsListPage, TranslateModule.forRoot()],
+      imports: [TopicsListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

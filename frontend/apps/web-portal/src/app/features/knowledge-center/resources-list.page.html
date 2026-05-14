@@ -1,8 +1,8 @@
 <section class="cce-resources-list">
   <cce-workbench-hero
-    [eyebrow]="'resources.eyebrow' | translate"
-    [title]="'resources.title' | translate"
-    [subtitle]="'resources.subtitle' | translate"
+    [eyebrow]="'resources.eyebrow' | transloco"
+    [title]="'resources.title' | transloco"
+    [subtitle]="'resources.subtitle' | transloco"
   />
 
   <div class="cce-resources-list__layout">
@@ -15,7 +15,7 @@
       />
 
       <mat-form-field appearance="outline" class="cce-resources-list__filter">
-        <mat-label>{{ 'resources.filter.country' | translate }}</mat-label>
+        <mat-label>{{ 'resources.filter.country' | transloco }}</mat-label>
         <input matInput
           [ngModel]="countryId()"
           (ngModelChange)="onCountryChange($event)"
@@ -23,14 +23,14 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="cce-resources-list__filter">
-        <mat-label>{{ 'resources.filter.resourceType' | translate }}</mat-label>
+        <mat-label>{{ 'resources.filter.resourceType' | transloco }}</mat-label>
         <mat-select
           [ngModel]="resourceType()"
           (ngModelChange)="onResourceTypeChange($event)"
         >
-          <mat-option [value]="''">{{ 'resources.filter.allTypes' | translate }}</mat-option>
+          <mat-option [value]="''">{{ 'resources.filter.allTypes' | transloco }}</mat-option>
           @for (t of resourceTypes; track t) {
-            <mat-option [value]="t">{{ ('resources.type.' + t) | translate }}</mat-option>
+            <mat-option [value]="t">{{ ('resources.type.' + t) | transloco }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -41,10 +41,10 @@
         <mat-progress-bar mode="indeterminate" />
       }
       @if (errorKind(); as kind) {
-        <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+        <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
       }
       @if (empty()) {
-        <p class="cce-resources-list__empty">{{ 'resources.empty' | translate }}</p>
+        <p class="cce-resources-list__empty">{{ 'resources.empty' | transloco }}</p>
       }
 
       <div class="cce-resources-list__grid">

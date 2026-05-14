@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FilterRailComponent } from './filter-rail.component';
 
 describe('FilterRailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FilterRailComponent, TranslateModule.forRoot()],
+      imports: [FilterRailComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
   });

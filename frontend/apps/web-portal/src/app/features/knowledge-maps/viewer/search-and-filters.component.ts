@@ -13,7 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { NODE_TYPES, type NodeType } from '../knowledge-maps.types';
 
 const SEARCH_DEBOUNCE_MS = 200;
@@ -35,7 +35,7 @@ const SEARCH_DEBOUNCE_MS = 200;
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './search-and-filters.component.html',
   styleUrl: './search-and-filters.component.scss',

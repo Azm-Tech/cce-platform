@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AssistantDialogComponent } from '../../features/assistant/assistant.dialog';
 import { HeaderComponent } from './header.component';
 import { FooterComponent } from './footer.component';
@@ -25,7 +25,7 @@ import { FooterComponent } from './footer.component';
     HeaderComponent,
     FooterComponent,
     MatIconModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './portal-shell.component.html',
   styleUrl: './portal-shell.component.scss',

@@ -1,19 +1,19 @@
 <article class="cce-resource-detail" [attr.data-type]="typeKey()">
   <a class="cce-resource-detail__back" routerLink="/knowledge-center">
     <mat-icon>arrow_back</mat-icon>
-    <span>{{ 'resources.back' | translate }}</span>
+    <span>{{ 'resources.back' | transloco }}</span>
   </a>
 
   @if (loading()) {
     <div class="cce-resource-detail__loading">
       <mat-spinner diameter="24" />
-      <span>{{ 'common.loading' | translate }}</span>
+      <span>{{ 'common.loading' | transloco }}</span>
     </div>
   }
 
   @if (errorKind(); as kind) {
     <div class="cce-resource-detail__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
     </div>
   }
 
@@ -26,7 +26,7 @@
             <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
           </span>
           <span class="cce-resource-detail__type-label">
-            {{ ('resources.type.' + r.resourceType) | translate }}
+            {{ ('resources.type.' + r.resourceType) | transloco }}
           </span>
         </div>
 
@@ -108,10 +108,10 @@
           >
             @if (downloading()) {
               <mat-spinner diameter="18" />
-              <span>{{ 'common.loading' | translate }}</span>
+              <span>{{ 'common.loading' | transloco }}</span>
             } @else {
               <mat-icon>download</mat-icon>
-              <span>{{ 'resources.download.openButton' | translate }}</span>
+              <span>{{ 'resources.download.openButton' | transloco }}</span>
             }
           </button>
           <button
@@ -128,7 +128,7 @@
         <dl class="cce-resource-detail__facts">
           <div class="cce-resource-detail__fact">
             <dt>Type</dt>
-            <dd>{{ ('resources.type.' + r.resourceType) | translate }}</dd>
+            <dd>{{ ('resources.type.' + r.resourceType) | transloco }}</dd>
           </div>
           @if (r.publishedOn) {
             <div class="cce-resource-detail__fact">
@@ -168,7 +168,7 @@
                 </span>
                 <span class="cce-resource-detail__related-text">
                   <span class="cce-resource-detail__related-type">
-                    {{ ('resources.type.' + rel.resourceType) | translate }}
+                    {{ ('resources.type.' + rel.resourceType) | transloco }}
                   </span>
                   <span class="cce-resource-detail__related-name">
                     {{ relatedTitle(rel) }}

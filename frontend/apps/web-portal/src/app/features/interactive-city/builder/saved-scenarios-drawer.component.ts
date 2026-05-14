@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -30,7 +30,7 @@ import {
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './saved-scenarios-drawer.component.html',
   styleUrl: './saved-scenarios-drawer.component.scss',

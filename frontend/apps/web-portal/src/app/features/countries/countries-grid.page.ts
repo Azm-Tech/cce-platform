@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { CountriesApiService } from './countries-api.service';
@@ -30,7 +30,7 @@ interface RegionGroup {
     CommonModule, DatePipe, FormsModule, RouterLink,
     MatButtonModule, MatFormFieldModule, MatIconModule,
     MatInputModule, MatProgressBarModule,
-    TranslateModule,
+    TranslocoModule,
     CountryCardComponent, KapsarcSnapshotComponent, WorkbenchHeroComponent,
   ],
   templateUrl: './countries-grid.page.html',

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { AuthService, CurrentUser } from '../auth/auth.service';
@@ -21,7 +21,7 @@ describe('SideNavComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [SideNavComponent, TranslateModule.forRoot()],
+      imports: [SideNavComponent, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
@@ -30,7 +30,7 @@ describe('SideNavComponent', () => {
     }).compileComponents();
 
     // Stub translate to return the key verbatim
-    const translate = TestBed.inject(TranslateService);
+    const translate = TestBed.inject(TranslocoService);
     jest.spyOn(translate, 'instant').mockImplementation((key: string | string[]) =>
       Array.isArray(key) ? key[0] : key,
     );

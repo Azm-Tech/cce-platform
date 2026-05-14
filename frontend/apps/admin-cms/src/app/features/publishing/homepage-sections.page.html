@@ -1,8 +1,8 @@
-<h1 class="cce-homepage__title">{{ 'homepage.title' | translate }}</h1>
+<h1 class="cce-homepage__title">{{ 'homepage.title' | transloco }}</h1>
 
 @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 @if (errorKind(); as kind) {
-  <div class="cce-homepage__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-homepage__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <div class="cce-homepage__list">
@@ -25,7 +25,7 @@
       </mat-card-header>
       <mat-card-content>
         <mat-form-field appearance="outline" class="cce-homepage__field">
-          <mat-label>{{ 'homepage.field.contentAr' | translate }}</mat-label>
+          <mat-label>{{ 'homepage.field.contentAr' | transloco }}</mat-label>
           <textarea
             matInput
             rows="3"
@@ -34,7 +34,7 @@
           ></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="cce-homepage__field">
-          <mat-label>{{ 'homepage.field.contentEn' | translate }}</mat-label>
+          <mat-label>{{ 'homepage.field.contentEn' | transloco }}</mat-label>
           <textarea
             matInput
             rows="3"
@@ -46,7 +46,7 @@
           [ngModel]="section.isActive"
           (ngModelChange)="update(section, { isActive: $event })"
         >
-          {{ 'homepage.field.isActive' | translate }}
+          {{ 'homepage.field.isActive' | transloco }}
         </mat-checkbox>
       </mat-card-content>
     </mat-card>
@@ -55,11 +55,11 @@
 
 <mat-card class="cce-homepage__create" *ccePermission="'Page.Edit'">
   <mat-card-header>
-    <mat-card-title>{{ 'homepage.create.title' | translate }}</mat-card-title>
+    <mat-card-title>{{ 'homepage.create.title' | transloco }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>
     <mat-form-field appearance="outline" class="cce-homepage__field">
-      <mat-label>{{ 'homepage.field.sectionType' | translate }}</mat-label>
+      <mat-label>{{ 'homepage.field.sectionType' | transloco }}</mat-label>
       <mat-select [ngModel]="newSectionType()" (ngModelChange)="newSectionType.set($event)">
         @for (t of sectionTypes; track t) {
           <mat-option [value]="t">{{ t }}</mat-option>
@@ -67,13 +67,13 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="cce-homepage__field">
-      <mat-label>{{ 'homepage.field.contentAr' | translate }}</mat-label>
+      <mat-label>{{ 'homepage.field.contentAr' | transloco }}</mat-label>
       <textarea matInput rows="3"
         [ngModel]="newContentAr()"
         (ngModelChange)="newContentAr.set($event)"></textarea>
     </mat-form-field>
     <mat-form-field appearance="outline" class="cce-homepage__field">
-      <mat-label>{{ 'homepage.field.contentEn' | translate }}</mat-label>
+      <mat-label>{{ 'homepage.field.contentEn' | transloco }}</mat-label>
       <textarea matInput rows="3"
         [ngModel]="newContentEn()"
         (ngModelChange)="newContentEn.set($event)"></textarea>
@@ -81,7 +81,7 @@
   </mat-card-content>
   <mat-card-actions align="end">
     <button type="button" mat-flat-button color="primary" (click)="create()">
-      {{ 'homepage.create.save' | translate }}
+      {{ 'homepage.create.save' | transloco }}
     </button>
   </mat-card-actions>
 </mat-card>

@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -82,7 +82,7 @@ const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   selector: 'cce-assistant-page',
   standalone: true,
   imports: [
-    TranslateModule,
+    TranslocoModule,
     MatButtonModule,
     MatIconModule,
     MessageListComponent,

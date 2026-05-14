@@ -1,61 +1,61 @@
 <div class="cce-country-detail__header">
   <a mat-button routerLink="/countries">
     <mat-icon>arrow_back</mat-icon>
-    {{ 'countries.detail.back' | translate }}
+    {{ 'countries.detail.back' | transloco }}
   </a>
 </div>
 
 @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 @if (errorKind(); as kind) {
-  <div class="cce-country-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-country-detail__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 @if (country(); as c) {
   <mat-card class="cce-country-detail__card">
     <mat-card-header>
       <mat-card-title>{{ c.nameEn }} ({{ c.isoAlpha3 }})</mat-card-title>
-      <mat-card-subtitle>{{ 'countries.detail.subtitle' | translate }}</mat-card-subtitle>
+      <mat-card-subtitle>{{ 'countries.detail.subtitle' | transloco }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="countryForm" class="cce-country-detail__form">
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.nameAr' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.nameAr' | transloco }}</mat-label>
             <input matInput formControlName="nameAr" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.nameEn' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.nameEn' | transloco }}</mat-label>
             <input matInput formControlName="nameEn" />
           </mat-form-field>
         </div>
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.regionAr' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.regionAr' | transloco }}</mat-label>
             <input matInput formControlName="regionAr" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.regionEn' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.regionEn' | transloco }}</mat-label>
             <input matInput formControlName="regionEn" />
           </mat-form-field>
         </div>
-        <mat-checkbox formControlName="isActive">{{ 'countries.field.isActive' | translate }}</mat-checkbox>
+        <mat-checkbox formControlName="isActive">{{ 'countries.field.isActive' | transloco }}</mat-checkbox>
       </form>
     </mat-card-content>
     <mat-card-actions align="end">
       <button type="button" mat-flat-button color="primary" (click)="saveCountry()" [disabled]="savingCountry()">
-        {{ 'countries.edit.save' | translate }}
+        {{ 'countries.edit.save' | transloco }}
       </button>
     </mat-card-actions>
   </mat-card>
 
   <mat-card class="cce-country-detail__card">
     <mat-card-header>
-      <mat-card-title>{{ 'countries.profile.title' | translate }}</mat-card-title>
+      <mat-card-title>{{ 'countries.profile.title' | transloco }}</mat-card-title>
       <mat-card-subtitle>
         @if (profile(); as p) {
-          {{ 'countries.profile.lastUpdatedOn' | translate }}: {{ p.lastUpdatedOn | date:'medium' }}
+          {{ 'countries.profile.lastUpdatedOn' | transloco }}: {{ p.lastUpdatedOn | date:'medium' }}
         } @else if (profileMissing()) {
-          {{ 'countries.profile.missing' | translate }}
+          {{ 'countries.profile.missing' | transloco }}
         }
       </mat-card-subtitle>
     </mat-card-header>
@@ -63,31 +63,31 @@
       <form [formGroup]="profileForm" class="cce-country-detail__form">
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.descriptionAr' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.descriptionAr' | transloco }}</mat-label>
             <textarea matInput formControlName="descriptionAr" rows="4"></textarea>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.descriptionEn' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.descriptionEn' | transloco }}</mat-label>
             <textarea matInput formControlName="descriptionEn" rows="4"></textarea>
           </mat-form-field>
         </div>
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.keyInitiativesAr' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.keyInitiativesAr' | transloco }}</mat-label>
             <textarea matInput formControlName="keyInitiativesAr" rows="3"></textarea>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.keyInitiativesEn' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.keyInitiativesEn' | transloco }}</mat-label>
             <textarea matInput formControlName="keyInitiativesEn" rows="3"></textarea>
           </mat-form-field>
         </div>
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.contactInfoAr' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.contactInfoAr' | transloco }}</mat-label>
             <input matInput formControlName="contactInfoAr" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.contactInfoEn' | translate }}</mat-label>
+            <mat-label>{{ 'countries.field.contactInfoEn' | transloco }}</mat-label>
             <input matInput formControlName="contactInfoEn" />
           </mat-form-field>
         </div>
@@ -95,7 +95,7 @@
     </mat-card-content>
     <mat-card-actions align="end">
       <button type="button" mat-flat-button color="primary" (click)="saveProfile()" [disabled]="savingProfile()">
-        {{ 'countries.profile.save' | translate }}
+        {{ 'countries.profile.save' | transloco }}
       </button>
     </mat-card-actions>
   </mat-card>

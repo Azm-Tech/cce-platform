@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -23,7 +23,7 @@ import type { ResourceCategory } from './taxonomy.types';
     CommonModule, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule,
     MatPaginatorModule, MatProgressBarModule, MatTableModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './resource-categories.page.html',
   styleUrl: './taxonomies-list.scss',

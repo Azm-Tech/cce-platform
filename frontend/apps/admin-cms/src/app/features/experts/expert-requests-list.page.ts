@@ -9,7 +9,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from '@frontend/ui-kit';
 import { ApproveExpertDialogComponent, type ApproveExpertDialogData } from './approve-expert.dialog';
@@ -35,7 +35,7 @@ import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reje
     MatProgressBarModule,
     MatSelectModule,
     MatTableModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './expert-requests-list.page.html',
   styleUrl: './expert-requests-list.page.scss',

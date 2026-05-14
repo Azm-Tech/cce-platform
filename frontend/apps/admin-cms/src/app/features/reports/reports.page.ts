@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ToastService } from '@frontend/ui-kit';
 import { REPORTS, type ReportConfig } from './reports-config';
@@ -23,7 +23,7 @@ import { ReportsApiService } from './reports-api.service';
   imports: [
     CommonModule, FormsModule,
     MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressSpinnerModule, TranslateModule, PermissionDirective,
+    MatInputModule, MatProgressSpinnerModule, TranslocoModule, PermissionDirective,
   ],
   templateUrl: './reports.page.html',
   styleUrl: './reports.page.scss',

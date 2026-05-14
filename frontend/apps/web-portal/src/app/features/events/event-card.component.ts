@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Event as EventModel } from './event.types';
 
 /**
@@ -15,7 +15,7 @@ import type { Event as EventModel } from './event.types';
 @Component({
   selector: 'cce-event-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-event-card" [routerLink]="['/events', event().id]"
        [attr.aria-label]="title()">

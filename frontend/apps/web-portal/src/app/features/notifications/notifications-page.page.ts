@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { NotificationsDrawerComponent } from './notifications-drawer.component';
 
 /**
@@ -11,7 +11,7 @@ import { NotificationsDrawerComponent } from './notifications-drawer.component';
 @Component({
   selector: 'cce-notifications-page',
   standalone: true,
-  imports: [TranslateModule, NotificationsDrawerComponent],
+  imports: [TranslocoModule, NotificationsDrawerComponent],
   template: `
     <section class="cce-notifications-page">
       <cce-notifications-drawer #drawer />

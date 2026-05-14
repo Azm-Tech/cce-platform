@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -27,7 +27,7 @@ interface StoredCounts {
 @Component({
   selector: 'cce-like-dislike-control',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, MatIconModule, TranslocoModule],
   template: `
     <div class="cce-like-dislike" [class.cce-like-dislike--compact]="compact()">
       <button

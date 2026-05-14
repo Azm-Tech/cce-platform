@@ -1,9 +1,9 @@
-<div class="cce-list-view-wrap" [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate">
+<div class="cce-list-view-wrap" [attr.aria-label]="'knowledgeMaps.viewMode.list' | transloco">
   <!-- ─── Sort toolbar ─────────────────────────────────────── -->
-  <div class="cce-list-view__toolbar" role="group" [attr.aria-label]="'knowledgeMaps.list.sortLabel' | translate">
+  <div class="cce-list-view__toolbar" role="group" [attr.aria-label]="'knowledgeMaps.list.sortLabel' | transloco">
     <span class="cce-list-view__toolbar-label">
       <mat-icon aria-hidden="true">sort</mat-icon>
-      {{ 'knowledgeMaps.list.sortLabel' | translate }}
+      {{ 'knowledgeMaps.list.sortLabel' | transloco }}
     </span>
     <div class="cce-list-view__sort">
       <button
@@ -13,7 +13,7 @@
         [attr.aria-pressed]="sortOrder() === 'default'"
         (click)="setSort('default')"
       >
-        {{ 'knowledgeMaps.list.sortDefault' | translate }}
+        {{ 'knowledgeMaps.list.sortDefault' | transloco }}
       </button>
       <button
         type="button"
@@ -22,7 +22,7 @@
         [attr.aria-pressed]="sortOrder() === 'alpha'"
         (click)="setSort('alpha')"
       >
-        {{ 'knowledgeMaps.list.sortAlpha' | translate }}
+        {{ 'knowledgeMaps.list.sortAlpha' | transloco }}
       </button>
     </div>
   </div>
@@ -40,12 +40,12 @@
           [attr.aria-expanded]="!isCollapsed(group.type)"
           [attr.aria-label]="(isCollapsed(group.type)
               ? 'knowledgeMaps.list.expandSection'
-              : 'knowledgeMaps.list.collapseSection') | translate"
+              : 'knowledgeMaps.list.collapseSection') | transloco"
           (click)="toggleCollapsed(group.type)"
         >
           <span class="cce-list-view__pip" [attr.data-node-type]="group.type" aria-hidden="true"></span>
           <h2 class="cce-list-view__section-title">
-            {{ ('knowledgeMaps.detail.nodeType.' + group.type) | translate }}
+            {{ ('knowledgeMaps.detail.nodeType.' + group.type) | transloco }}
           </h2>
           <span class="cce-list-view__count">{{ group.nodes.length }}</span>
           <mat-icon class="cce-list-view__chevron" aria-hidden="true">
@@ -56,7 +56,7 @@
         @if (!isCollapsed(group.type)) {
           @if (group.nodes.length === 0) {
             <p class="cce-list-view__empty">
-              {{ 'knowledgeMaps.list.noneOfType' | translate }}
+              {{ 'knowledgeMaps.list.noneOfType' | transloco }}
             </p>
           } @else {
             <ul class="cce-list-view__list">
@@ -80,7 +80,7 @@
                             <span
                               class="cce-list-view__edge"
                               [attr.data-rel]="rel"
-                              [title]="('knowledgeMaps.list.edges' + rel) | translate"
+                              [title]="('knowledgeMaps.list.edges' + rel) | transloco"
                             >
                               {{ breakdownOf(n)[rel] }}
                             </span>

@@ -4,7 +4,7 @@ import { signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
 import {
   ComposePostDialogComponent,
@@ -32,7 +32,7 @@ describe('ComposePostDialogComponent', () => {
     const localeSig = signal<'ar' | 'en'>(localeStart);
 
     await TestBed.configureTestingModule({
-      imports: [ComposePostDialogComponent, TranslateModule.forRoot()],
+      imports: [ComposePostDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { createPost } },

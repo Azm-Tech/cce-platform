@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { ToastService } from '@frontend/ui-kit';
 import { ExpertApiService, type Result } from './expert-api.service';
@@ -42,7 +42,7 @@ describe('ExpertRequestsListPage', () => {
     dialog = { open: jest.fn().mockReturnValue(dialogRef) };
     toast = { success: jest.fn() };
     await TestBed.configureTestingModule({
-      imports: [ExpertRequestsListPage, TranslateModule.forRoot()],
+      imports: [ExpertRequestsListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

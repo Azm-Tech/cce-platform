@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Citation } from '../assistant.types';
 
 /**
@@ -13,7 +13,7 @@ import type { Citation } from '../assistant.types';
 @Component({
   selector: 'cce-citation-chip',
   standalone: true,
-  imports: [RouterLink, MatIconModule, MatTooltipModule, TranslateModule],
+  imports: [RouterLink, MatIconModule, MatTooltipModule, TranslocoModule],
   templateUrl: './citation-chip.component.html',
   styleUrl: './citation-chip.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

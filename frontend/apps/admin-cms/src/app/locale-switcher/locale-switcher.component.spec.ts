@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { LocaleSwitcherComponent } from './locale-switcher.component';
 
@@ -7,17 +7,17 @@ describe('LocaleSwitcherComponent', () => {
   let component: LocaleSwitcherComponent;
   let fixture: ComponentFixture<LocaleSwitcherComponent>;
   let locale: LocaleService;
-  let translate: TranslateService;
+  let translate: TranslocoService;
 
   beforeEach(async () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
-      imports: [LocaleSwitcherComponent, TranslateModule.forRoot()],
+      imports: [LocaleSwitcherComponent, TranslocoModule.forRoot()],
       providers: [LocaleService],
     }).compileComponents();
 
     locale = TestBed.inject(LocaleService);
-    translate = TestBed.inject(TranslateService);
+    translate = TestBed.inject(TranslocoService);
     jest.spyOn(translate, 'use');
     fixture = TestBed.createComponent(LocaleSwitcherComponent);
     component = fixture.componentInstance;
