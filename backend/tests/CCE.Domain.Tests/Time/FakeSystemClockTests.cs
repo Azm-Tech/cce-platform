@@ -8,7 +8,7 @@ public class FakeSystemClockTests
     [Fact]
     public void Default_constructor_starts_at_default_reference_moment()
     {
-        ISystemClock clock = new FakeSystemClock();
+        var clock = new FakeSystemClock();
 
         clock.UtcNow.Should().Be(FakeSystemClock.DefaultStart);
     }
@@ -17,7 +17,7 @@ public class FakeSystemClockTests
     public void Constructor_with_explicit_start_uses_that_moment()
     {
         var moment = new DateTimeOffset(2030, 6, 15, 12, 0, 0, TimeSpan.Zero);
-        ISystemClock clock = new FakeSystemClock(moment);
+        var clock = new FakeSystemClock(moment);
 
         clock.UtcNow.Should().Be(moment);
     }
