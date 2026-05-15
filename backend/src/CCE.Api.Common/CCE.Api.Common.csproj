@@ -25,7 +25,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="Microsoft.Identity.Web.UI" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
     <PackageReference Include="StackExchange.Redis" />
@@ -44,6 +43,12 @@
   <ItemGroup>
     <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
     <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Localization\*.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
