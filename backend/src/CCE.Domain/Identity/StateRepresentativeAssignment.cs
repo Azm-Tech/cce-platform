@@ -8,7 +8,7 @@ namespace CCE.Domain.Identity;
 /// AND marks the row deleted (so the unique-active-assignment filtered index ignores it).
 /// </summary>
 [Audited]
-public sealed class StateRepresentativeAssignment : Entity<System.Guid>, ISoftDeletable
+public sealed class StateRepresentativeAssignment : SoftDeletableEntity<System.Guid>
 {
     private StateRepresentativeAssignment(
         System.Guid id,
@@ -40,15 +40,6 @@ public sealed class StateRepresentativeAssignment : Entity<System.Guid>, ISoftDe
 
     /// <summary>Admin <c>User.Id</c> who revoked; null if still active.</summary>
     public System.Guid? RevokedById { get; private set; }
-
-    /// <inheritdoc />
-    public bool IsDeleted { get; private set; }
-
-    /// <inheritdoc />
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-
-    /// <inheritdoc />
-    public System.Guid? DeletedById { get; private set; }
 
     /// <summary>
     /// Factory: create a new active assignment. The "unique active per (User, Country)" invariant
@@ -94,11 +85,8 @@ public sealed class StateRepresentativeAssignment : Entity<System.Guid>, ISoftDe
         {
             throw new DomainException("RevokedById is required.");
         }
-        var now = clock.UtcNow;
-        RevokedOn = now;
+        RevokedOn = clock.UtcNow;
         RevokedById = revokedById;
-        IsDeleted = true;
-        DeletedOn = now;
-        DeletedById = revokedById;
+        SoftDelete(revokedById, clock);
     }
 }

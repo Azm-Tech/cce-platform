@@ -4,7 +4,7 @@ using CCE.Domain.Common;
 namespace CCE.Domain.Community;
 
 [Audited]
-public sealed class Topic : Entity<System.Guid>, ISoftDeletable
+public sealed class Topic : SoftDeletableEntity<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 
@@ -30,9 +30,6 @@ public sealed class Topic : Entity<System.Guid>, ISoftDeletable
     public string? IconUrl { get; private set; }
     public int OrderIndex { get; private set; }
     public bool IsActive { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static Topic Create(
         string nameAr, string nameEn,
@@ -72,13 +69,4 @@ public sealed class Topic : Entity<System.Guid>, ISoftDeletable
     public void Deactivate() => IsActive = false;
 
     public void Activate() => IsActive = true;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

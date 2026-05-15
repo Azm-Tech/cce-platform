@@ -11,7 +11,7 @@ namespace CCE.Domain.Content;
 /// <c>[Timestamp]</c> mapping in Phase 07.
 /// </summary>
 [Audited]
-public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Resource : SoftDeletableAggregateRoot<System.Guid>
 {
     private Resource(
         System.Guid id,
@@ -50,10 +50,6 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
 
     /// <summary>EF-managed concurrency token (rowversion).</summary>
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     /// <summary>True when no country owns this resource (center-managed).</summary>
     public bool IsCenterManaged => CountryId is null;
@@ -133,19 +129,4 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
     }
 
     public void IncrementViewCount() => ViewCount++;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty)
-        {
-            throw new DomainException("DeletedById is required.");
-        }
-        if (IsDeleted)
-        {
-            return;
-        }
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

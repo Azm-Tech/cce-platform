@@ -4,7 +4,7 @@ using CCE.Domain.Common;
 namespace CCE.Domain.KnowledgeMaps;
 
 [Audited]
-public sealed class KnowledgeMap : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class KnowledgeMap : SoftDeletableAggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 
@@ -23,9 +23,6 @@ public sealed class KnowledgeMap : AggregateRoot<System.Guid>, ISoftDeletable
     public string Slug { get; private set; }
     public bool IsActive { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static KnowledgeMap Create(string nameAr, string nameEn,
         string descriptionAr, string descriptionEn, string slug)
@@ -51,13 +48,4 @@ public sealed class KnowledgeMap : AggregateRoot<System.Guid>, ISoftDeletable
 
     public void Activate() => IsActive = true;
     public void Deactivate() => IsActive = false;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

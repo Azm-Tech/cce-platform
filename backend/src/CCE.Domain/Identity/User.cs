@@ -11,6 +11,14 @@ namespace CCE.Domain.Identity;
 [Audited]
 public class User : IdentityUser<System.Guid>
 {
+    public string FirstName { get; private set; } = string.Empty;
+
+    public string LastName { get; private set; } = string.Empty;
+
+    public string JobTitle { get; private set; } = string.Empty;
+
+    public string OrganizationName { get; private set; } = string.Empty;
+
     /// <summary>UI locale preference. Allowed values: <c>"ar"</c>, <c>"en"</c>. Default <c>"ar"</c>.</summary>
     public string LocalePreference { get; private set; } = "ar";
 
@@ -65,6 +73,41 @@ public class User : IdentityUser<System.Guid>
             NormalizedUserName = email.ToUpperInvariant(),
             EmailConfirmed = false,
         };
+    }
+
+    public static User RegisterLocal(
+        string firstName,
+        string lastName,
+        string email,
+        string jobTitle,
+        string organizationName,
+        string phoneNumber)
+    {
+        var user = new User
+        {
+            Id = System.Guid.NewGuid(),
+            UserName = email,
+            NormalizedUserName = email.ToUpperInvariant(),
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            PhoneNumber = phoneNumber,
+            EmailConfirmed = false,
+        };
+        user.UpdateProfile(firstName, lastName, jobTitle, organizationName);
+        return user;
+    }
+
+    public void UpdateProfile(string firstName, string lastName, string jobTitle, string organizationName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName)) throw new DomainException("FirstName is required.");
+        if (string.IsNullOrWhiteSpace(lastName)) throw new DomainException("LastName is required.");
+        if (string.IsNullOrWhiteSpace(jobTitle)) throw new DomainException("JobTitle is required.");
+        if (string.IsNullOrWhiteSpace(organizationName)) throw new DomainException("OrganizationName is required.");
+
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        JobTitle = jobTitle.Trim();
+        OrganizationName = organizationName.Trim();
     }
 
     /// <summary>

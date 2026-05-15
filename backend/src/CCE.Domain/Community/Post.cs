@@ -10,7 +10,7 @@ namespace CCE.Domain.Community;
 /// Content max 8000 chars to keep the read-side cheap.
 /// </summary>
 [Audited]
-public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Post : SoftDeletableAggregateRoot<System.Guid>
 {
     public const int MaxContentLength = 8000;
 
@@ -20,15 +20,13 @@ public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
         System.Guid authorId,
         string content,
         string locale,
-        bool isAnswerable,
-        System.DateTimeOffset createdOn) : base(id)
+        bool isAnswerable) : base(id)
     {
         TopicId = topicId;
         AuthorId = authorId;
         Content = content;
         Locale = locale;
         IsAnswerable = isAnswerable;
-        CreatedOn = createdOn;
     }
 
     public System.Guid TopicId { get; private set; }
@@ -37,10 +35,6 @@ public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
     public string Locale { get; private set; }
     public bool IsAnswerable { get; private set; }
     public System.Guid? AnsweredReplyId { get; private set; }
-    public System.DateTimeOffset CreatedOn { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static Post Create(
         System.Guid topicId,
@@ -61,7 +55,8 @@ public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
         {
             throw new DomainException("locale must be 'ar' or 'en'.");
         }
-        var p = new Post(System.Guid.NewGuid(), topicId, authorId, content, locale, isAnswerable, clock.UtcNow);
+        var p = new Post(System.Guid.NewGuid(), topicId, authorId, content, locale, isAnswerable);
+        p.MarkAsCreated(authorId, clock);
         p.RaiseDomainEvent(new PostCreatedEvent(p.Id, topicId, authorId, locale, p.CreatedOn));
         return p;
     }
@@ -78,7 +73,7 @@ public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
 
     public void ClearAnswer() => AnsweredReplyId = null;
 
-    public void EditContent(string content)
+    public void EditContent(string content, Guid by, ISystemClock clock)
     {
         if (string.IsNullOrWhiteSpace(content)) throw new DomainException("Content is required.");
         if (content.Length > MaxContentLength)
@@ -86,14 +81,6 @@ public sealed class Post : AggregateRoot<System.Guid>, ISoftDeletable
             throw new DomainException($"Content exceeds {MaxContentLength} chars (got {content.Length}).");
         }
         Content = content;
-    }
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
+        MarkAsModified(by, clock);
     }
 }

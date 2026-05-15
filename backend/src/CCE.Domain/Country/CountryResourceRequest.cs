@@ -11,7 +11,7 @@ namespace CCE.Domain.Country;
 /// creates the actual <c>Resource</c>.
 /// </summary>
 [Audited]
-public sealed class CountryResourceRequest : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class CountryResourceRequest : SoftDeletableAggregateRoot<System.Guid>
 {
     private CountryResourceRequest(
         System.Guid id,
@@ -51,10 +51,6 @@ public sealed class CountryResourceRequest : AggregateRoot<System.Guid>, ISoftDe
     public string? AdminNotesEn { get; private set; }
     public System.Guid? ProcessedById { get; private set; }
     public System.DateTimeOffset? ProcessedOn { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
-
     public static CountryResourceRequest Submit(
         System.Guid countryId,
         System.Guid requestedById,

@@ -9,7 +9,7 @@ namespace CCE.Domain.Content;
 /// stable lets external calendar clients (.ics consumers) deduplicate updates by UID.
 /// </summary>
 [Audited]
-public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Event : SoftDeletableAggregateRoot<System.Guid>
 {
     private Event(
         System.Guid id,
@@ -53,9 +53,6 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
     public string ICalUid { get; private set; }
 
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static Event Schedule(
         string titleAr,
@@ -138,14 +135,5 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         }
         StartsOn = startsOn;
         EndsOn = endsOn;
-    }
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
     }
 }

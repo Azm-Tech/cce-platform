@@ -9,7 +9,7 @@ namespace CCE.Domain.Identity;
 /// captured by <see cref="UserId"/> and enforced by a unique index in Phase 08.
 /// </summary>
 [Audited]
-public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
+public sealed class ExpertProfile : SoftDeletableEntity<System.Guid>
 {
     private ExpertProfile(
         System.Guid id,
@@ -47,12 +47,6 @@ public sealed class ExpertProfile : Entity<System.Guid>, ISoftDeletable
     public System.DateTimeOffset ApprovedOn { get; private set; }
 
     public System.Guid ApprovedById { get; private set; }
-
-    public bool IsDeleted { get; private set; }
-
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-
-    public System.Guid? DeletedById { get; private set; }
 
     /// <summary>
     /// Factory: build an <see cref="ExpertProfile"/> from an

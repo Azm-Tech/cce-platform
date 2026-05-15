@@ -9,7 +9,7 @@ namespace CCE.Domain.Content;
 /// Slug is unique (enforced in Phase 08 DB unique index). Soft-deletable, audited.
 /// </summary>
 [Audited]
-public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class News : SoftDeletableAggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 
@@ -42,9 +42,6 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
     public System.DateTimeOffset? PublishedOn { get; private set; }
     public bool IsFeatured { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public bool IsPublished => PublishedOn is not null;
 
@@ -123,13 +120,4 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
     public void MarkFeatured() => IsFeatured = true;
 
     public void UnmarkFeatured() => IsFeatured = false;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

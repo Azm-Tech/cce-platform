@@ -9,7 +9,7 @@ namespace CCE.Domain.Country;
 /// hides a country from public dropdowns without deleting historical references.
 /// </summary>
 [Audited]
-public sealed class Country : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Country : SoftDeletableAggregateRoot<System.Guid>
 {
     private static readonly Regex Alpha3Pattern = new("^[A-Z]{3}$", RegexOptions.Compiled);
     private static readonly Regex Alpha2Pattern = new("^[A-Z]{2}$", RegexOptions.Compiled);
@@ -43,9 +43,6 @@ public sealed class Country : AggregateRoot<System.Guid>, ISoftDeletable
     public string FlagUrl { get; private set; }
     public System.Guid? LatestKapsarcSnapshotId { get; private set; }
     public bool IsActive { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static Country Register(
         string isoAlpha3,
@@ -101,13 +98,4 @@ public sealed class Country : AggregateRoot<System.Guid>, ISoftDeletable
     public void Deactivate() => IsActive = false;
 
     public void Activate() => IsActive = true;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

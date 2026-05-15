@@ -8,7 +8,7 @@ namespace CCE.Domain.Content;
 /// composite unique index. Content is rich-text bilingual.
 /// </summary>
 [Audited]
-public sealed class Page : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Page : SoftDeletableAggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 
@@ -36,9 +36,6 @@ public sealed class Page : AggregateRoot<System.Guid>, ISoftDeletable
     public string ContentAr { get; private set; }
     public string ContentEn { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static Page Create(
         string slug,
@@ -69,14 +66,5 @@ public sealed class Page : AggregateRoot<System.Guid>, ISoftDeletable
         TitleEn = titleEn;
         ContentAr = contentAr;
         ContentEn = contentEn;
-    }
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
     }
 }

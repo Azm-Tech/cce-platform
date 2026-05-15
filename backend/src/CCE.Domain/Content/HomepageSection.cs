@@ -7,7 +7,7 @@ namespace CCE.Domain.Content;
 /// rendering layer queries <c>WHERE IsActive = true ORDER BY OrderIndex</c>.
 /// </summary>
 [Audited]
-public sealed class HomepageSection : Entity<System.Guid>, ISoftDeletable
+public sealed class HomepageSection : SoftDeletableEntity<System.Guid>
 {
     private HomepageSection(
         System.Guid id,
@@ -28,9 +28,6 @@ public sealed class HomepageSection : Entity<System.Guid>, ISoftDeletable
     public string ContentAr { get; private set; }
     public string ContentEn { get; private set; }
     public bool IsActive { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     public static HomepageSection Create(HomepageSectionType type, int orderIndex, string contentAr, string contentEn)
     {
@@ -49,13 +46,4 @@ public sealed class HomepageSection : Entity<System.Guid>, ISoftDeletable
     public void Activate() => IsActive = true;
 
     public void Deactivate() => IsActive = false;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

@@ -10,7 +10,7 @@ namespace CCE.Domain.Identity;
 /// the corresponding <c>ExpertProfile</c>. Soft-deletable for admin recovery flows.
 /// </summary>
 [Audited]
-public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class ExpertRegistrationRequest : SoftDeletableAggregateRoot<System.Guid>
 {
     private ExpertRegistrationRequest(
         System.Guid id,
@@ -47,12 +47,6 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
     public string? RejectionReasonAr { get; private set; }
 
     public string? RejectionReasonEn { get; private set; }
-
-    public bool IsDeleted { get; private set; }
-
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-
-    public System.Guid? DeletedById { get; private set; }
 
     /// <summary>
     /// Submit a new pending registration request. Validates inputs and records the submission moment.
