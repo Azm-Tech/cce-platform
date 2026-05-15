@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdateResource;
 
 public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourceCommand, ResourceDto?>
 {
-    private readonly IResourceService _service;
+    private readonly IResourceRepository _service;
 
-    public UpdateResourceCommandHandler(IResourceService service)
+    public UpdateResourceCommandHandler(IResourceRepository service)
     {
         _service = service;
     }

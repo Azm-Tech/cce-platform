@@ -45,9 +45,9 @@ public class CreateNewsCommandHandlerTests
     private static CreateNewsCommand BuildCmd() =>
         new("خبر", "News", "محتوى", "Content", "first-post", null);
 
-    private static (CreateNewsCommandHandler sut, INewsService service, ICurrentUserAccessor user) BuildSut(bool noUser = false)
+    private static (CreateNewsCommandHandler sut, INewsRepository service, ICurrentUserAccessor user) BuildSut(bool noUser = false)
     {
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         var user = Substitute.For<ICurrentUserAccessor>();
         if (noUser)
             user.GetUserId().Returns((System.Guid?)null);

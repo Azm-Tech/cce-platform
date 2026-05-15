@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
 using CCE.Application.Identity.Commands.RevokeStateRepAssignment;
@@ -42,8 +43,8 @@ public static class IdentityEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetUserByIdQuery(id), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetUserByIdQuery(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.User_Read)
         .WithName("GetUserById");
@@ -54,8 +55,8 @@ public static class IdentityEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new AssignUserRolesCommand(id, body.Roles ?? System.Array.Empty<string>());
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("AssignUserRoles");
@@ -98,8 +99,8 @@ public static class IdentityEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new CreateStateRepAssignmentCommand(body.UserId, body.CountryId);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/state-rep-assignments/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("CreateStateRepAssignment");
@@ -108,8 +109,8 @@ public static class IdentityEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new RevokeStateRepAssignmentCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new RevokeStateRepAssignmentCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("RevokeStateRepAssignment");
@@ -118,8 +119,4 @@ public static class IdentityEndpoints
     }
 }
 
-/// <summary>Body shape for PUT /api/admin/users/{id}/roles.</summary>
-public sealed record AssignUserRolesRequest(IReadOnlyList<string>? Roles);
 
-/// <summary>Body shape for POST /api/admin/state-rep-assignments.</summary>
-public sealed record CreateStateRepAssignmentRequest(System.Guid UserId, System.Guid CountryId);

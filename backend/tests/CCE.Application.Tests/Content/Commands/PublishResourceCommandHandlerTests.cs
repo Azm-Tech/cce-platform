@@ -87,10 +87,10 @@ public class PublishResourceCommandHandlerTests
         dto.PublishedOn.Should().Be(firstPublishedOn);
     }
 
-    private static (PublishResourceCommandHandler sut, IResourceService rs, IAssetService asset) BuildSut()
+    private static (PublishResourceCommandHandler sut, IResourceRepository rs, IAssetRepository asset) BuildSut()
     {
-        var rs = Substitute.For<IResourceService>();
-        var asset = Substitute.For<IAssetService>();
+        var rs = Substitute.For<IResourceRepository>();
+        var asset = Substitute.For<IAssetRepository>();
         var sut = new PublishResourceCommandHandler(rs, asset, new FakeSystemClock());
         return (sut, rs, asset);
     }

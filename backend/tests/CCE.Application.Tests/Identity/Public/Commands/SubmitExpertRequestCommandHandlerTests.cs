@@ -12,7 +12,7 @@ public class SubmitExpertRequestCommandHandlerTests
     public async Task Persists_request_and_returns_dto()
     {
         var clock = new FakeSystemClock();
-        var service = Substitute.For<IExpertRequestSubmissionService>();
+        var service = Substitute.For<IExpertRequestSubmissionRepository>();
         var sut = new SubmitExpertRequestCommandHandler(service, clock);
 
         var requesterId = System.Guid.NewGuid();
@@ -22,15 +22,15 @@ public class SubmitExpertRequestCommandHandlerTests
             "English bio",
             new[] { "Hydrogen", "Solar" });
 
-        var dto = await sut.Handle(cmd, CancellationToken.None);
+        var result = await sut.Handle(cmd, CancellationToken.None);
 
-        dto.Should().NotBeNull();
-        dto.RequestedById.Should().Be(requesterId);
-        dto.RequestedBioAr.Should().Be("سيرة ذاتية");
-        dto.RequestedBioEn.Should().Be("English bio");
-        dto.RequestedTags.Should().BeEquivalentTo(new[] { "Hydrogen", "Solar" });
-        dto.Status.Should().Be(ExpertRegistrationStatus.Pending);
-        dto.ProcessedOn.Should().BeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.RequestedById.Should().Be(requesterId);
+        result.Data.RequestedBioAr.Should().Be("سيرة ذاتية");
+        result.Data.RequestedBioEn.Should().Be("English bio");
+        result.Data.RequestedTags.Should().BeEquivalentTo(new[] { "Hydrogen", "Solar" });
+        result.Data.Status.Should().Be(ExpertRegistrationStatus.Pending);
+        result.Data.ProcessedOn.Should().BeNull();
         await service.Received(1).SaveAsync(Arg.Any<ExpertRegistrationRequest>(), Arg.Any<CancellationToken>());
     }
 
@@ -38,7 +38,7 @@ public class SubmitExpertRequestCommandHandlerTests
     public async Task Domain_throws_when_bio_is_empty()
     {
         var clock = new FakeSystemClock();
-        var service = Substitute.For<IExpertRequestSubmissionService>();
+        var service = Substitute.For<IExpertRequestSubmissionRepository>();
         var sut = new SubmitExpertRequestCommandHandler(service, clock);
 
         var cmd = new SubmitExpertRequestCommand(

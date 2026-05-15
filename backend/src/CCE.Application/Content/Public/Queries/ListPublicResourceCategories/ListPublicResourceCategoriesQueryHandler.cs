@@ -11,10 +11,7 @@ public sealed class ListPublicResourceCategoriesQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListPublicResourceCategoriesQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListPublicResourceCategoriesQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<System.Collections.Generic.IReadOnlyList<PublicResourceCategoryDto>> Handle(
         ListPublicResourceCategoriesQuery request,
@@ -25,7 +22,6 @@ public sealed class ListPublicResourceCategoriesQueryHandler
             .OrderBy(c => c.OrderIndex)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
-
         return list.Select(MapToDto).ToList();
     }
 

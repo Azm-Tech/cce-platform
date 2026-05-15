@@ -11,7 +11,7 @@ public class UpdateResourceCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_resource_not_found()
     {
-        var service = Substitute.For<IResourceService>();
+        var service = Substitute.For<IResourceRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Resource?)null);
         var sut = new UpdateResourceCommandHandler(service);
 
@@ -29,7 +29,7 @@ public class UpdateResourceCommandHandlerTests
             ResourceType.Pdf, System.Guid.NewGuid(), null,
             System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IResourceService>();
+        var service = Substitute.For<IResourceRepository>();
         service.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
 
         var sut = new UpdateResourceCommandHandler(service);
@@ -58,7 +58,7 @@ public class UpdateResourceCommandHandlerTests
             ResourceType.Pdf, System.Guid.NewGuid(), null,
             System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IResourceService>();
+        var service = Substitute.For<IResourceRepository>();
         service.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
 
         var sut = new UpdateResourceCommandHandler(service);
@@ -82,7 +82,7 @@ public class UpdateResourceCommandHandlerTests
             ResourceType.Pdf, System.Guid.NewGuid(), null,
             System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IResourceService>();
+        var service = Substitute.For<IResourceRepository>();
         service.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
         service.UpdateAsync(default!, default!, default).ReturnsForAnyArgs<Task>(_ =>
             throw new ConcurrencyException("conflict"));

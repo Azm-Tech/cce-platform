@@ -4,9 +4,9 @@ namespace CCE.Application.Content.Commands.DeleteResourceCategory;
 
 public sealed class DeleteResourceCategoryCommandHandler : IRequestHandler<DeleteResourceCategoryCommand, Unit>
 {
-    private readonly IResourceCategoryService _service;
+    private readonly IResourceCategoryRepository _service;
 
-    public DeleteResourceCategoryCommandHandler(IResourceCategoryService service)
+    public DeleteResourceCategoryCommandHandler(IResourceCategoryRepository service)
     {
         _service = service;
     }

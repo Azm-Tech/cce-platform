@@ -9,7 +9,7 @@ public class UpdateResourceCategoryCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_category_not_found()
     {
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((ResourceCategory?)null);
         var sut = new UpdateResourceCategoryCommandHandler(service);
 
@@ -22,7 +22,7 @@ public class UpdateResourceCategoryCommandHandlerTests
     public async Task Updates_names_reorder_and_calls_UpdateAsync()
     {
         var category = ResourceCategory.Create("قديم", "Old", "old-slug", null, 1);
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         service.FindAsync(category.Id, Arg.Any<CancellationToken>()).Returns(category);
         var sut = new UpdateResourceCategoryCommandHandler(service);
 
@@ -41,7 +41,7 @@ public class UpdateResourceCategoryCommandHandlerTests
     public async Task Deactivates_when_IsActive_is_false()
     {
         var category = ResourceCategory.Create("نشط", "Active", "active-cat", null, 0);
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         service.FindAsync(category.Id, Arg.Any<CancellationToken>()).Returns(category);
         var sut = new UpdateResourceCategoryCommandHandler(service);
 

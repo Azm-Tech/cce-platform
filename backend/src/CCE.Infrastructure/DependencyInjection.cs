@@ -7,6 +7,7 @@ using CCE.Application.Content;
 using CCE.Application.Content.Public;
 using CCE.Application.Country;
 using CCE.Application.Identity;
+using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Identity.Public;
 using CCE.Application.InteractiveCity;
 using CCE.Application.Notifications;
@@ -23,14 +24,17 @@ using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
+using CCE.Application.Localization;
 using CCE.Domain.Common;
 using CCE.Infrastructure.Email;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
+using CCE.Infrastructure.Localization;
 using CCE.Infrastructure.Persistence;
 using CCE.Infrastructure.Persistence.Interceptors;
 using CCE.Infrastructure.Search;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -57,6 +61,17 @@ public static class DependencyInjection
         // Clock
         services.AddSingleton<ISystemClock, SystemClock>();
 
+        services.Configure<LocalAuthOptions>(configuration.GetSection(LocalAuthOptions.SectionName));
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            var authOptions = configuration.GetSection(LocalAuthOptions.SectionName).Get<LocalAuthOptions>() ?? new LocalAuthOptions();
+            options.TokenLifespan = TimeSpan.FromHours(Math.Max(1, authOptions.PasswordResetTokenHours));
+        });
+
+        // Localization
+        services.AddSingleton<YamlLocalizationStore>();
+        services.AddScoped<ILocalizationService, LocalizationService>();
+
         // Default current-user accessor — API hosts override with HttpContext-based impl.
         services.TryAddScoped<ICurrentUserAccessor, SystemCurrentUserAccessor>();
 
@@ -78,9 +93,29 @@ public static class DependencyInjection
                 sp.GetRequiredService<DomainEventDispatcher>());
         });
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
-        services.AddScoped<IUserSyncService, UserSyncService>();
-        services.AddScoped<IUserRoleAssignmentService, UserRoleAssignmentService>();
-        services.AddScoped<IUserProfileService, UserProfileService>();
+
+        services
+            .AddIdentityCore<CCE.Domain.Identity.User>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 12;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            })
+            .AddRoles<CCE.Domain.Identity.Role>()
+            .AddEntityFrameworkStores<CceDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.AddScoped<IUserSyncRepository, UserSyncRepository>();
+        services.AddScoped<IUserRoleAssignmentRepository, UserRoleAssignmentRepository>();
+        services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.AddScoped<ILocalTokenService, LocalTokenService>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IPasswordResetEmailSender, PasswordResetEmailSender>();
 
         // Sub-11 Phase 01 — Microsoft Graph user-create + CCE-side persist.
         // Factory is singleton (ClientSecretCredential is thread-safe and reusable);
@@ -104,23 +139,23 @@ public static class DependencyInjection
                 _      => ActivatorUtilities.CreateInstance<NullEmailSender>(sp),
             };
         });
-        services.AddScoped<IStateRepAssignmentService, StateRepAssignmentService>();
-        services.AddScoped<IExpertWorkflowService, ExpertWorkflowService>();
-        services.AddScoped<IExpertRequestSubmissionService, ExpertRequestSubmissionService>();
+        services.AddScoped<IStateRepAssignmentRepository, StateRepAssignmentRepository>();
+        services.AddScoped<IExpertWorkflowRepository, ExpertWorkflowRepository>();
+        services.AddScoped<IExpertRequestSubmissionRepository, ExpertRequestSubmissionRepository>();
 
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddSingleton<IHtmlSanitizer, HtmlSanitizerWrapper>();
-        services.AddScoped<IAssetService, AssetService>();
-        services.AddScoped<IResourceCategoryService, ResourceCategoryService>();
-        services.AddScoped<IResourceService, ResourceService>();
-        services.AddScoped<INewsService, NewsService>();
-        services.AddScoped<IEventService, EventService>();
-        services.AddScoped<IPageService, PageService>();
-        services.AddScoped<IHomepageSectionService, HomepageSectionService>();
-        services.AddScoped<ICountryResourceRequestService, CountryResourceRequestService>();
-        services.AddScoped<IResourceViewCountService, ResourceViewCountService>();
+        services.AddScoped<IAssetRepository, AssetRepository>();
+        services.AddScoped<IResourceCategoryRepository, ResourceCategoryRepository>();
+        services.AddScoped<IResourceRepository, ResourceRepository>();
+        services.AddScoped<INewsRepository, NewsRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IPageRepository, PageRepository>();
+        services.AddScoped<IHomepageSectionRepository, HomepageSectionRepository>();
+        services.AddScoped<ICountryResourceRequestRepository, CountryResourceRequestRepository>();
+        services.AddScoped<IResourceViewCountRepository, ResourceViewCountRepository>();
         services.AddScoped<ICountryAdminService, CountryAdminService>();
         services.AddScoped<ICountryProfileService, CountryProfileService>();
         services.AddScoped<ITopicService, TopicService>();

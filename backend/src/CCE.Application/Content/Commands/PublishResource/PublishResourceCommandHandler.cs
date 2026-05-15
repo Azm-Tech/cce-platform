@@ -9,13 +9,13 @@ namespace CCE.Application.Content.Commands.PublishResource;
 
 public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResourceCommand, ResourceDto?>
 {
-    private readonly IResourceService _service;
-    private readonly IAssetService _assetService;
+    private readonly IResourceRepository _service;
+    private readonly IAssetRepository _assetService;
     private readonly ISystemClock _clock;
 
     public PublishResourceCommandHandler(
-        IResourceService service,
-        IAssetService assetService,
+        IResourceRepository service,
+        IAssetRepository assetService,
         ISystemClock clock)
     {
         _service = service;

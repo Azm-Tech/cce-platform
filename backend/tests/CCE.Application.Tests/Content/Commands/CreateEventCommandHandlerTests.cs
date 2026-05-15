@@ -41,9 +41,9 @@ public class CreateEventCommandHandlerTests
         new("حدث", "Event", "وصف", "Description", StartsOn, EndsOn,
             null, null, null, null);
 
-    private static (CreateEventCommandHandler sut, IEventService service) BuildSut()
+    private static (CreateEventCommandHandler sut, IEventRepository service) BuildSut()
     {
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         var sut = new CreateEventCommandHandler(service, new FakeSystemClock());
         return (sut, service);
     }

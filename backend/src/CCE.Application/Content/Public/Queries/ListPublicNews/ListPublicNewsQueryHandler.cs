@@ -10,27 +10,17 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
 {
     private readonly ICceDbContext _db;
 
-    public ListPublicNewsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListPublicNewsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<PublicNewsDto>> Handle(ListPublicNewsQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<News> query = _db.News.Where(n => n.PublishedOn != null);
+        var query = _db.News
+            .Where(n => n.PublishedOn != null)
+            .WhereIf(request.IsFeatured.HasValue, n => n.IsFeatured == request.IsFeatured!.Value)
+            .OrderByDescending(n => n.PublishedOn);
 
-        if (request.IsFeatured is { } isFeatured)
-        {
-            query = query.Where(n => n.IsFeatured == isFeatured);
-        }
-
-        query = query.OrderByDescending(n => n.PublishedOn);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<PublicNewsDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
     internal static PublicNewsDto MapToDto(News n) => new(

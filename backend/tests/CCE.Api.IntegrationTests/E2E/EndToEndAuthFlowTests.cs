@@ -4,11 +4,11 @@ using CCE.Api.Internal;
 
 namespace CCE.Api.IntegrationTests.E2E;
 
-public class EndToEndAuthFlowTests : IClassFixture<CceTestWebApplicationFactory<Program>>
+public class EndToEndAuthFlowTests : IClassFixture<CceTestWebApplicationFactory<CCE.Api.Internal.Program>>
 {
-    private readonly CceTestWebApplicationFactory<Program> _factory;
+    private readonly CceTestWebApplicationFactory<CCE.Api.Internal.Program> _factory;
 
-    public EndToEndAuthFlowTests(CceTestWebApplicationFactory<Program> factory) => _factory = factory;
+    public EndToEndAuthFlowTests(CceTestWebApplicationFactory<CCE.Api.Internal.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Anonymous_health_returns_200()

@@ -9,7 +9,7 @@ public class CreateHomepageSectionCommandHandlerTests
     [Fact]
     public async Task Persists_section_and_returns_dto()
     {
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         var sut = new CreateHomepageSectionCommandHandler(service);
 
         var cmd = new CreateHomepageSectionCommand(

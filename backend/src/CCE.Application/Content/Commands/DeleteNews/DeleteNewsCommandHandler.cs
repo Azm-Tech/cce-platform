@@ -7,11 +7,11 @@ namespace CCE.Application.Content.Commands.DeleteNews;
 
 public sealed class DeleteNewsCommandHandler : IRequestHandler<DeleteNewsCommand, Unit>
 {
-    private readonly INewsService _service;
+    private readonly INewsRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
-    public DeleteNewsCommandHandler(INewsService service, ICurrentUserAccessor currentUser, ISystemClock clock)
+    public DeleteNewsCommandHandler(INewsRepository service, ICurrentUserAccessor currentUser, ISystemClock clock)
     {
         _service = service;
         _currentUser = currentUser;

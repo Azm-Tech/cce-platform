@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdateHomepageSection;
 
 public sealed class UpdateHomepageSectionCommandHandler : IRequestHandler<UpdateHomepageSectionCommand, HomepageSectionDto?>
 {
-    private readonly IHomepageSectionService _service;
+    private readonly IHomepageSectionRepository _service;
 
-    public UpdateHomepageSectionCommandHandler(IHomepageSectionService service)
+    public UpdateHomepageSectionCommandHandler(IHomepageSectionRepository service)
     {
         _service = service;
     }

@@ -12,7 +12,7 @@ public class DeletePageCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_page_missing()
     {
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Page?)null);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         var sut = new DeletePageCommandHandler(service, currentUser, new FakeSystemClock());
@@ -27,7 +27,7 @@ public class DeletePageCommandHandlerTests
     {
         var page = Page.Create("my-slug", PageType.Custom, "ar", "en", "content-ar", "content-en");
 
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(page.Id, Arg.Any<CancellationToken>()).Returns(page);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
@@ -47,7 +47,7 @@ public class DeletePageCommandHandlerTests
         var actorId = System.Guid.NewGuid();
         var page = Page.Create("my-slug", PageType.Custom, "ar", "en", "content-ar", "content-en");
 
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(page.Id, Arg.Any<CancellationToken>()).Returns(page);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();

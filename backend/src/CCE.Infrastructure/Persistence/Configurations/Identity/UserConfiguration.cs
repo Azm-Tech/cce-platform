@@ -8,6 +8,10 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
+        builder.Property(u => u.LastName).HasMaxLength(50).IsRequired();
+        builder.Property(u => u.JobTitle).HasMaxLength(50).IsRequired();
+        builder.Property(u => u.OrganizationName).HasMaxLength(100).IsRequired();
         builder.Property(u => u.LocalePreference).HasMaxLength(2).IsRequired();
         builder.Property(u => u.AvatarUrl).HasMaxLength(2048);
         builder.Property(u => u.Interests).HasColumnType("nvarchar(max)");

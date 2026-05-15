@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdateNews;
 
 public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand, NewsDto?>
 {
-    private readonly INewsService _service;
+    private readonly INewsRepository _service;
 
-    public UpdateNewsCommandHandler(INewsService service)
+    public UpdateNewsCommandHandler(INewsRepository service)
     {
         _service = service;
     }

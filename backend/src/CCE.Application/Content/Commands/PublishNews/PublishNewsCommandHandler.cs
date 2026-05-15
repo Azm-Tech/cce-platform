@@ -8,10 +8,10 @@ namespace CCE.Application.Content.Commands.PublishNews;
 
 public sealed class PublishNewsCommandHandler : IRequestHandler<PublishNewsCommand, NewsDto?>
 {
-    private readonly INewsService _service;
+    private readonly INewsRepository _service;
     private readonly ISystemClock _clock;
 
-    public PublishNewsCommandHandler(INewsService service, ISystemClock clock)
+    public PublishNewsCommandHandler(INewsRepository service, ISystemClock clock)
     {
         _service = service;
         _clock = clock;

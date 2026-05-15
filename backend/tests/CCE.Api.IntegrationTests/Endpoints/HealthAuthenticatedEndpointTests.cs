@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class HealthAuthenticatedEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class HealthAuthenticatedEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
 
-    public HealthAuthenticatedEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+    public HealthAuthenticatedEndpointTests(WebApplicationFactory<CCE.Api.Internal.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Returns_401_without_token()

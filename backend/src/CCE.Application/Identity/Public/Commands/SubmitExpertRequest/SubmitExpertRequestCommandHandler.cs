@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Identity.Public.Dtos;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
@@ -6,18 +7,18 @@ using MediatR;
 namespace CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 
 public sealed class SubmitExpertRequestCommandHandler
-    : IRequestHandler<SubmitExpertRequestCommand, ExpertRequestStatusDto>
+    : IRequestHandler<SubmitExpertRequestCommand, Result<ExpertRequestStatusDto>>
 {
-    private readonly IExpertRequestSubmissionService _service;
+    private readonly IExpertRequestSubmissionRepository _service;
     private readonly ISystemClock _clock;
 
-    public SubmitExpertRequestCommandHandler(IExpertRequestSubmissionService service, ISystemClock clock)
+    public SubmitExpertRequestCommandHandler(IExpertRequestSubmissionRepository service, ISystemClock clock)
     {
         _service = service;
         _clock = clock;
     }
 
-    public async Task<ExpertRequestStatusDto> Handle(SubmitExpertRequestCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ExpertRequestStatusDto>> Handle(SubmitExpertRequestCommand request, CancellationToken cancellationToken)
     {
         var entity = ExpertRegistrationRequest.Submit(
             request.RequesterId,

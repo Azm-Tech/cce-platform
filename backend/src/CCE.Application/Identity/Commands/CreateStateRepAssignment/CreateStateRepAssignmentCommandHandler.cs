@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -8,26 +9,29 @@ using MediatR;
 namespace CCE.Application.Identity.Commands.CreateStateRepAssignment;
 
 public sealed class CreateStateRepAssignmentCommandHandler
-    : IRequestHandler<CreateStateRepAssignmentCommand, StateRepAssignmentDto>
+    : IRequestHandler<CreateStateRepAssignmentCommand, Result<StateRepAssignmentDto>>
 {
     private readonly ICceDbContext _db;
-    private readonly IStateRepAssignmentService _service;
+    private readonly IStateRepAssignmentRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly CCE.Application.Common.Errors _errors;
 
     public CreateStateRepAssignmentCommandHandler(
         ICceDbContext db,
-        IStateRepAssignmentService service,
+        IStateRepAssignmentRepository service,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        CCE.Application.Common.Errors errors)
     {
         _db = db;
         _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _errors = errors;
     }
 
-    public async Task<StateRepAssignmentDto> Handle(
+    public async Task<Result<StateRepAssignmentDto>> Handle(
         CreateStateRepAssignmentCommand request,
         CancellationToken cancellationToken)
     {
@@ -35,20 +39,23 @@ public sealed class CreateStateRepAssignmentCommandHandler
         var userExists = await ExistsAsync(_db.Users.Where(u => u.Id == request.UserId), cancellationToken).ConfigureAwait(false);
         if (!userExists)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"User {request.UserId} not found.");
+            return _errors.UserNotFound();
         }
 
         // Verify country exists.
         var countryExists = await ExistsAsync(_db.Countries.Where(c => c.Id == request.CountryId), cancellationToken).ConfigureAwait(false);
         if (!countryExists)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"Country {request.CountryId} not found.");
+            return _errors.CountryNotFound();
         }
 
-        var assignedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot create state-rep assignment from a request without a user identity.");
+        var assignedById = _currentUser.GetUserId();
+        if (assignedById is null)
+        {
+            return _errors.NotAuthenticated();
+        }
 
-        var assignment = StateRepresentativeAssignment.Assign(request.UserId, request.CountryId, assignedById, _clock);
+        var assignment = StateRepresentativeAssignment.Assign(request.UserId, request.CountryId, assignedById.Value, _clock);
         await _service.SaveAsync(assignment, cancellationToken).ConfigureAwait(false);
 
         // Build the DTO — look up UserName for the assigned user.

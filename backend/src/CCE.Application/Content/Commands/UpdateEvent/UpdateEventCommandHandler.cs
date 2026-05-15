@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdateEvent;
 
 public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, EventDto?>
 {
-    private readonly IEventService _service;
+    private readonly IEventRepository _service;
 
-    public UpdateEventCommandHandler(IEventService service)
+    public UpdateEventCommandHandler(IEventRepository service)
     {
         _service = service;
     }

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class HealthReadyEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class HealthReadyEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public HealthReadyEndpointTests(WebApplicationFactory<Program> factory) => _factory = factory;
+    public HealthReadyEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Returns_200_when_all_dependencies_healthy()

@@ -7,10 +7,12 @@ namespace CCE.Application.Tests.Content.Queries;
 
 public class GetNewsByIdQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
     public async Task Returns_null_when_news_not_found()
     {
-        var db = BuildDb(System.Array.Empty<News>());
+        var db = BuildDb(Array.Empty<News>());
         var sut = new GetNewsByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetNewsByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
@@ -21,21 +23,13 @@ public class GetNewsByIdQueryHandlerTests
     [Fact]
     public async Task Returns_dto_with_all_fields_when_found()
     {
-        var clock = new FakeSystemClock();
         var authorId = System.Guid.NewGuid();
-        var news = News.Draft(
-            "عنوان",
-            "Test News Title",
-            "المحتوى العربي",
-            "English content body",
-            "test-news-title",
-            authorId,
-            "https://example.com/image.jpg",
-            clock);
-        news.Publish(clock);
+        var news = News.Draft("عنوان", "Test News Title", "المحتوى العربي", "English content body",
+            "test-news-title", authorId, "https://example.com/image.jpg", Clock);
+        news.Publish(Clock);
         news.MarkFeatured();
 
-        var db = BuildDb(new[] { news });
+        var db = BuildDb([news]);
         var sut = new GetNewsByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetNewsByIdQuery(news.Id), CancellationToken.None);
@@ -59,10 +53,6 @@ public class GetNewsByIdQueryHandlerTests
     {
         var db = Substitute.For<ICceDbContext>();
         db.News.Returns(news.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Resources.Returns(System.Array.Empty<CCE.Domain.Content.Resource>().AsQueryable());
         return db;
     }
 }

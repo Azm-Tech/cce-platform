@@ -7,11 +7,11 @@ namespace CCE.Application.Content.Commands.DeleteEvent;
 
 public sealed class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, Unit>
 {
-    private readonly IEventService _service;
+    private readonly IEventRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
-    public DeleteEventCommandHandler(IEventService service, ICurrentUserAccessor currentUser, ISystemClock clock)
+    public DeleteEventCommandHandler(IEventRepository service, ICurrentUserAccessor currentUser, ISystemClock clock)
     {
         _service = service;
         _currentUser = currentUser;

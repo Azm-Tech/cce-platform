@@ -11,10 +11,7 @@ public sealed class ListStateRepAssignmentsQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListStateRepAssignmentsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListStateRepAssignmentsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<StateRepAssignmentDto>> Handle(
         ListStateRepAssignmentsQuery request,
@@ -24,36 +21,34 @@ public sealed class ListStateRepAssignmentsQueryHandler
             ? _db.StateRepresentativeAssignments
             : _db.StateRepresentativeAssignments.WithoutSoftDeleteFilter();
 
-        if (request.UserId is { } userId)
+        if (request.UserId is not null)
         {
-            query = query.Where(a => a.UserId == userId);
+            query = query.Where(a => a.UserId == request.UserId.Value);
         }
-        if (request.CountryId is { } countryId)
+        if (request.CountryId is not null)
         {
-            query = query.Where(a => a.CountryId == countryId);
+            query = query.Where(a => a.CountryId == request.CountryId.Value);
         }
 
         query = query.OrderByDescending(a => a.AssignedOn);
 
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
+        var paged = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
-        if (page.Items.Count == 0)
+        if (paged.Items.Count == 0)
         {
             return new PagedResult<StateRepAssignmentDto>(
-                System.Array.Empty<StateRepAssignmentDto>(),
-                page.Page, page.PageSize, page.Total);
+                Array.Empty<StateRepAssignmentDto>(), paged.Page, paged.PageSize, paged.Total);
         }
 
-        var userIds = page.Items.Select(a => a.UserId).Distinct().ToList();
-        var userNames =
+        var userIds = paged.Items.Select(a => a.UserId).Distinct().ToList();
+        var userNamesQuery =
             from u in _db.Users
             where userIds.Contains(u.Id)
             select new UserNameRow(u.Id, u.UserName);
-        var userNameRows = await userNames.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var userNameRows = await userNamesQuery.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var nameByUserId = userNameRows.ToDictionary(r => r.UserId, r => r.UserName);
 
-        var items = page.Items.Select(a => new StateRepAssignmentDto(
+        var items = paged.Items.Select(a => new StateRepAssignmentDto(
             a.Id,
             a.UserId,
             nameByUserId.TryGetValue(a.UserId, out var name) ? name : null,
@@ -64,8 +59,8 @@ public sealed class ListStateRepAssignmentsQueryHandler
             a.RevokedById,
             IsActive: a.RevokedOn is null && !a.IsDeleted)).ToList();
 
-        return new PagedResult<StateRepAssignmentDto>(items, page.Page, page.PageSize, page.Total);
+        return new PagedResult<StateRepAssignmentDto>(items, paged.Page, paged.PageSize, paged.Total);
     }
 
-    private sealed record UserNameRow(System.Guid UserId, string? UserName);
+    private sealed record UserNameRow(Guid UserId, string? UserName);
 }

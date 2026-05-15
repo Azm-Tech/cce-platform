@@ -10,12 +10,12 @@ namespace CCE.Application.Content.Commands.RejectCountryResourceRequest;
 public sealed class RejectCountryResourceRequestCommandHandler
     : IRequestHandler<RejectCountryResourceRequestCommand, CountryResourceRequestDto>
 {
-    private readonly ICountryResourceRequestService _service;
+    private readonly ICountryResourceRequestRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public RejectCountryResourceRequestCommandHandler(
-        ICountryResourceRequestService service,
+        ICountryResourceRequestRepository service,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {

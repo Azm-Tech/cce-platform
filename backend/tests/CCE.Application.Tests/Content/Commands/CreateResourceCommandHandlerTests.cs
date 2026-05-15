@@ -74,10 +74,10 @@ public class CreateResourceCommandHandlerTests
             null,
             assetFileId);
 
-    private static (CreateResourceCommandHandler sut, IResourceService service, IAssetService asset, ICurrentUserAccessor user) BuildSut(bool noUser = false)
+    private static (CreateResourceCommandHandler sut, IResourceRepository service, IAssetRepository asset, ICurrentUserAccessor user) BuildSut(bool noUser = false)
     {
-        var service = Substitute.For<IResourceService>();
-        var asset = Substitute.For<IAssetService>();
+        var service = Substitute.For<IResourceRepository>();
+        var asset = Substitute.For<IAssetRepository>();
         var user = Substitute.For<ICurrentUserAccessor>();
         if (noUser)
             user.GetUserId().Returns((System.Guid?)null);

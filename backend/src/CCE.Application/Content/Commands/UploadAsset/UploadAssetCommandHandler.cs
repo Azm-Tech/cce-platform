@@ -11,7 +11,7 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
 {
     private readonly IFileStorage _storage;
     private readonly IClamAvScanner _scanner;
-    private readonly IAssetService _service;
+    private readonly IAssetRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly ILogger<UploadAssetCommandHandler> _logger;
@@ -19,7 +19,7 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
     public UploadAssetCommandHandler(
         IFileStorage storage,
         IClamAvScanner scanner,
-        IAssetService service,
+        IAssetRepository service,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
         ILogger<UploadAssetCommandHandler> logger)

@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -5,20 +6,21 @@ using MediatR;
 
 namespace CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 
-public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertStatusQuery, ExpertRequestStatusDto?>
+public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertStatusQuery, Result<ExpertRequestStatusDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly CCE.Application.Common.Errors _errors;
 
-    public GetMyExpertStatusQueryHandler(ICceDbContext db)
+    public GetMyExpertStatusQueryHandler(ICceDbContext db, CCE.Application.Common.Errors errors)
     {
         _db = db;
+        _errors = errors;
     }
 
-    public async Task<ExpertRequestStatusDto?> Handle(GetMyExpertStatusQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ExpertRequestStatusDto>> Handle(GetMyExpertStatusQuery request, CancellationToken cancellationToken)
     {
-        var userId = request.UserId;
         var rows = await _db.ExpertRegistrationRequests
-            .Where(r => r.RequestedById == userId)
+            .Where(r => r.RequestedById == request.UserId)
             .OrderByDescending(r => r.SubmittedOn)
             .Take(1)
             .ToListAsyncEither(cancellationToken)
@@ -27,7 +29,7 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
         var entity = rows.FirstOrDefault();
         if (entity is null)
         {
-            return null;
+            return _errors.ExpertRequestNotFound();
         }
 
         return new ExpertRequestStatusDto(

@@ -10,7 +10,7 @@ public class UpdatePageCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_page_not_found()
     {
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Page?)null);
         var sut = new UpdatePageCommandHandler(service);
 
@@ -24,7 +24,7 @@ public class UpdatePageCommandHandlerTests
     {
         var page = Page.Create("test-slug", PageType.Custom, "old-ar", "old-en", "old-content-ar", "old-content-en");
 
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(page.Id, Arg.Any<CancellationToken>()).Returns(page);
 
         var sut = new UpdatePageCommandHandler(service);
@@ -48,7 +48,7 @@ public class UpdatePageCommandHandlerTests
     {
         var page = Page.Create("my-slug", PageType.Custom, "ar", "en", "content-ar", "content-en");
 
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         service.FindAsync(page.Id, Arg.Any<CancellationToken>()).Returns(page);
         service.UpdateAsync(default!, default!, default).ReturnsForAnyArgs<Task>(_ =>
             throw new ConcurrencyException("conflict"));

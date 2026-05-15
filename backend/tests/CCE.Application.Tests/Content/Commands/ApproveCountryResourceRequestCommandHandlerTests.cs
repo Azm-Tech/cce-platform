@@ -13,7 +13,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_request_missing()
     {
-        var service = Substitute.For<ICountryResourceRequestService>();
+        var service = Substitute.For<ICountryResourceRequestRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((CountryResourceRequest?)null);
 
@@ -32,7 +32,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
         var clock = new FakeSystemClock();
         var entity = BuildPendingRequest(clock);
 
-        var service = Substitute.For<ICountryResourceRequestService>();
+        var service = Substitute.For<ICountryResourceRequestRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(entity);
 
@@ -55,7 +55,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
         var adminId = System.Guid.NewGuid();
         var entity = BuildPendingRequest(clock);
 
-        var service = Substitute.For<ICountryResourceRequestService>();
+        var service = Substitute.For<ICountryResourceRequestRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(entity);
 
@@ -87,7 +87,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
     }
 
     private static ApproveCountryResourceRequestCommandHandler BuildSut(
-        ICountryResourceRequestService service,
+        ICountryResourceRequestRepository service,
         ICurrentUserAccessor currentUser,
         FakeSystemClock? clock = null) =>
         new(service, currentUser, clock ?? new FakeSystemClock());

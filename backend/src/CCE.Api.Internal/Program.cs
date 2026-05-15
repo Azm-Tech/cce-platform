@@ -17,16 +17,22 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseCceSerilog();
 
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+    opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddCceMeilisearchIndexer()
-    .AddCceJwtAuth(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration, CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal)
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
@@ -53,6 +59,7 @@ app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "internal");
 
+app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
 app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();

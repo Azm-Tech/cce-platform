@@ -10,7 +10,7 @@ public class PublishNewsCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_news_not_found()
     {
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((News?)null);
         var sut = new PublishNewsCommandHandler(service, new FakeSystemClock());
 
@@ -25,7 +25,7 @@ public class PublishNewsCommandHandlerTests
         var clock = new FakeSystemClock();
         var news = News.Draft("ar", "en", "content-ar", "content-en", "slug", System.Guid.NewGuid(), null, clock);
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
 
         var sut = new PublishNewsCommandHandler(service, clock);
@@ -46,7 +46,7 @@ public class PublishNewsCommandHandlerTests
         news.Publish(clock); // already published
         var firstPublishedOn = news.PublishedOn;
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
 
         var sut = new PublishNewsCommandHandler(service, clock);

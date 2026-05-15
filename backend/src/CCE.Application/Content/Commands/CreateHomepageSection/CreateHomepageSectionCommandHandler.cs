@@ -7,9 +7,9 @@ namespace CCE.Application.Content.Commands.CreateHomepageSection;
 
 public sealed class CreateHomepageSectionCommandHandler : IRequestHandler<CreateHomepageSectionCommand, HomepageSectionDto>
 {
-    private readonly IHomepageSectionService _service;
+    private readonly IHomepageSectionRepository _service;
 
-    public CreateHomepageSectionCommandHandler(IHomepageSectionService service)
+    public CreateHomepageSectionCommandHandler(IHomepageSectionRepository service)
     {
         _service = service;
     }

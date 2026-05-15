@@ -58,9 +58,14 @@ public class PostReplyTests
     [Fact]
     public void EditContent_replaces_text()
     {
-        var r = NewReply(NewClock());
-        r.EditContent("جديد");
+        var clock = NewClock();
+        var r = NewReply(clock);
+        var editor = System.Guid.NewGuid();
+        clock.Advance(System.TimeSpan.FromMinutes(1));
+        r.EditContent("جديد", editor, clock);
         r.Content.Should().Be("جديد");
+        r.LastModifiedOn.Should().Be(clock.UtcNow);
+        r.LastModifiedById.Should().Be(editor);
     }
 
     [Fact]

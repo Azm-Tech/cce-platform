@@ -18,7 +18,7 @@ public class DeleteEventCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_event_missing()
     {
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Event?)null);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         var sut = new DeleteEventCommandHandler(service, currentUser, new FakeSystemClock());
@@ -36,7 +36,7 @@ public class DeleteEventCommandHandlerTests
             "ar", "en", "desc-ar", "desc-en",
             StartsOn, EndsOn, null, null, null, null, clock);
 
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
@@ -58,7 +58,7 @@ public class DeleteEventCommandHandlerTests
             "ar", "en", "desc-ar", "desc-en",
             StartsOn, EndsOn, null, null, null, null, clock);
 
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();

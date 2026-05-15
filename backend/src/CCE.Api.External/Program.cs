@@ -40,7 +40,7 @@ builder.Services
     .AddCceBff(builder.Configuration)
     .AddCceOutputCache(builder.Configuration)
     .AddCceTieredRateLimiter(builder.Configuration)
-    .AddCceJwtAuth(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration, CCE.Application.Identity.Auth.Common.LocalAuthApi.External)
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
@@ -85,6 +85,7 @@ if (builder.Configuration.GetValue<bool>("Auth:DevMode"))
 }
 
 app.MapProfileEndpoints();
+app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.External);
 app.MapNotificationsEndpoints();
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();

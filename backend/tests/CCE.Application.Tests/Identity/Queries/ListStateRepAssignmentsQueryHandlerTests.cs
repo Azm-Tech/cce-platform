@@ -1,9 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
-using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
-using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Tests.Identity.Queries;
 
@@ -127,8 +125,6 @@ public class ListStateRepAssignmentsQueryHandlerTests
         var db = Substitute.For<ICceDbContext>();
         db.StateRepresentativeAssignments.Returns(assignments.AsQueryable());
         db.Users.Returns(users.AsQueryable());
-        db.Roles.Returns(System.Array.Empty<Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<IdentityUserRole<System.Guid>>().AsQueryable());
         return db;
     }
 

@@ -7,13 +7,14 @@ namespace CCE.Application.Tests.Content.Queries;
 
 public class GetEventByIdQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
     private static readonly System.DateTimeOffset BaseTime =
         new(2026, 6, 1, 10, 0, 0, System.TimeSpan.Zero);
 
     [Fact]
     public async Task Returns_null_when_event_not_found()
     {
-        var db = BuildDb(System.Array.Empty<CCE.Domain.Content.Event>());
+        var db = BuildDb(Array.Empty<Event>());
         var sut = new GetEventByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetEventByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
@@ -24,20 +25,11 @@ public class GetEventByIdQueryHandlerTests
     [Fact]
     public async Task Returns_dto_with_all_fields_when_found()
     {
-        var clock = new FakeSystemClock();
-        var ev = CCE.Domain.Content.Event.Schedule(
-            "حدث تجريبي",
-            "Test Event Title",
-            "وصف عربي",
-            "English description",
-            BaseTime,
-            BaseTime.AddHours(3),
-            "الرياض", "Riyadh",
-            "https://example.com/meeting",
-            "https://example.com/image.jpg",
-            clock);
+        var ev = Event.Schedule("حدث تجريبي", "Test Event Title", "وصف عربي", "English description",
+            BaseTime, BaseTime.AddHours(3), "الرياض", "Riyadh",
+            "https://example.com/meeting", "https://example.com/image.jpg", Clock);
 
-        var db = BuildDb(new[] { ev });
+        var db = BuildDb([ev]);
         var sut = new GetEventByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetEventByIdQuery(ev.Id), CancellationToken.None);
@@ -58,14 +50,10 @@ public class GetEventByIdQueryHandlerTests
         result.RowVersion.Should().NotBeNull();
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<CCE.Domain.Content.Event> events)
+    private static ICceDbContext BuildDb(IEnumerable<Event> events)
     {
         var db = Substitute.For<ICceDbContext>();
         db.Events.Returns(events.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Resources.Returns(System.Array.Empty<CCE.Domain.Content.Resource>().AsQueryable());
         return db;
     }
 }

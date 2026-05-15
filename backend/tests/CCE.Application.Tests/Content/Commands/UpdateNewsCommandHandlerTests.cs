@@ -11,7 +11,7 @@ public class UpdateNewsCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_news_not_found()
     {
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((News?)null);
         var sut = new UpdateNewsCommandHandler(service);
 
@@ -27,7 +27,7 @@ public class UpdateNewsCommandHandlerTests
         var news = News.Draft("old-ar", "old-en", "old-content-ar", "old-content-en",
             "old-slug", System.Guid.NewGuid(), null, clock);
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
 
         var sut = new UpdateNewsCommandHandler(service);
@@ -53,7 +53,7 @@ public class UpdateNewsCommandHandlerTests
         var news = News.Draft("ar", "en", "content-ar", "content-en",
             "my-slug", System.Guid.NewGuid(), null, clock);
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
         service.UpdateAsync(default!, default!, default).ReturnsForAnyArgs<Task>(_ =>
             throw new ConcurrencyException("conflict"));

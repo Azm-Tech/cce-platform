@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Endpoints;
 
-public class NotificationsEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class NotificationsEndpointTests : IClassFixture<WebApplicationFactory<CCE.Api.External.Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly WebApplicationFactory<CCE.Api.External.Program> _factory;
 
-    public NotificationsEndpointTests(WebApplicationFactory<Program> factory)
+    public NotificationsEndpointTests(WebApplicationFactory<CCE.Api.External.Program> factory)
     {
         _factory = factory;
     }

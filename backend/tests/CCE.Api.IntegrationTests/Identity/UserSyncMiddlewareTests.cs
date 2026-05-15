@@ -15,7 +15,7 @@ public class UserSyncMiddlewareTests
     [Fact]
     public async Task First_authenticated_request_calls_sync_service()
     {
-        var sync = Substitute.For<IUserSyncService>();
+        var sync = Substitute.For<IUserSyncRepository>();
         var sub = Guid.NewGuid();
         using var host = BuildHost(sync, authenticated: true, sub: sub.ToString());
         var client = host.GetTestClient();
@@ -34,7 +34,7 @@ public class UserSyncMiddlewareTests
     [Fact]
     public async Task Repeat_request_uses_cache_and_does_not_call_sync_service_again()
     {
-        var sync = Substitute.For<IUserSyncService>();
+        var sync = Substitute.For<IUserSyncRepository>();
         using var host = BuildHost(sync, authenticated: true, sub: Guid.NewGuid().ToString());
         var client = host.GetTestClient();
 
@@ -53,7 +53,7 @@ public class UserSyncMiddlewareTests
     [Fact]
     public async Task Anonymous_request_does_not_invoke_sync_service()
     {
-        var sync = Substitute.For<IUserSyncService>();
+        var sync = Substitute.For<IUserSyncRepository>();
         using var host = BuildHost(sync, authenticated: false);
         var client = host.GetTestClient();
 
@@ -67,7 +67,7 @@ public class UserSyncMiddlewareTests
     [Fact]
     public async Task Authenticated_request_with_unparseable_sub_does_not_invoke_sync_service()
     {
-        var sync = Substitute.For<IUserSyncService>();
+        var sync = Substitute.For<IUserSyncRepository>();
         using var host = BuildHost(sync, authenticated: true, sub: "not-a-guid");
         var client = host.GetTestClient();
 
@@ -78,7 +78,7 @@ public class UserSyncMiddlewareTests
             default, default!, default!, default!, default);
     }
 
-    private static IHost BuildHost(IUserSyncService sync, bool authenticated, string sub = "")
+    private static IHost BuildHost(IUserSyncRepository sync, bool authenticated, string sub = "")
     {
         return new HostBuilder()
             .ConfigureWebHost(web =>

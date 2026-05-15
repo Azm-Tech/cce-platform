@@ -7,11 +7,11 @@ namespace CCE.Application.Content.Commands.DeletePage;
 
 public sealed class DeletePageCommandHandler : IRequestHandler<DeletePageCommand, Unit>
 {
-    private readonly IPageService _service;
+    private readonly IPageRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
-    public DeletePageCommandHandler(IPageService service, ICurrentUserAccessor currentUser, ISystemClock clock)
+    public DeletePageCommandHandler(IPageRepository service, ICurrentUserAccessor currentUser, ISystemClock clock)
     {
         _service = service;
         _currentUser = currentUser;

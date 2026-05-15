@@ -2,6 +2,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Identity.Queries.ListUsers;
 
@@ -9,10 +10,7 @@ public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Page
 {
     private readonly ICceDbContext _db;
 
-    public ListUsersQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListUsersQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<UserListItemDto>> Handle(ListUsersQuery request, CancellationToken cancellationToken)
     {
@@ -28,24 +26,25 @@ public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Page
 
         if (!string.IsNullOrWhiteSpace(request.Role))
         {
-            var roleName = request.Role.Trim();
+            var role = request.Role.Trim();
             query = from u in query
                     join ur in _db.UserRoles on u.Id equals ur.UserId
                     join r in _db.Roles on ur.RoleId equals r.Id
-                    where r.Name == roleName
+                    where r.Name == role
                     select u;
         }
 
         query = query.OrderBy(u => u.UserName);
 
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        var paged = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
-        if (page.Items.Count == 0)
+        if (paged.Items.Count == 0)
         {
-            return new PagedResult<UserListItemDto>(System.Array.Empty<UserListItemDto>(), page.Page, page.PageSize, page.Total);
+            return new PagedResult<UserListItemDto>(
+                Array.Empty<UserListItemDto>(), paged.Page, paged.PageSize, paged.Total);
         }
 
-        var userIds = page.Items.Select(u => u.Id).ToList();
+        var userIds = paged.Items.Select(u => u.Id).ToList();
         var pairs =
             from ur in _db.UserRoles
             join r in _db.Roles on ur.RoleId equals r.Id
@@ -57,16 +56,16 @@ public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Page
             .GroupBy(p => p.UserId)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<string>)g.Select(p => p.RoleName).ToList());
 
-        var now = System.DateTimeOffset.UtcNow;
-        var items = page.Items.Select(u => new UserListItemDto(
+        var now = DateTimeOffset.UtcNow;
+        var items = paged.Items.Select(u => new UserListItemDto(
             u.Id,
             u.Email,
             u.UserName,
-            rolesByUser.TryGetValue(u.Id, out var roles) ? roles : System.Array.Empty<string>(),
+            rolesByUser.TryGetValue(u.Id, out var roles) ? roles : Array.Empty<string>(),
             !u.LockoutEnabled || u.LockoutEnd is null || u.LockoutEnd < now)).ToList();
 
-        return new PagedResult<UserListItemDto>(items, page.Page, page.PageSize, page.Total);
+        return new PagedResult<UserListItemDto>(items, paged.Page, paged.PageSize, paged.Total);
     }
 
-    private sealed record RoleAssignmentRow(System.Guid UserId, string RoleName);
+    private sealed record RoleAssignmentRow(Guid UserId, string RoleName);
 }

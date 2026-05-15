@@ -2,7 +2,6 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Queries.ListExpertProfiles;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
-using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Tests.Identity.Queries;
 
@@ -103,11 +102,6 @@ public class ListExpertProfilesQueryHandlerTests
         var db = Substitute.For<ICceDbContext>();
         db.ExpertProfiles.Returns(profiles.AsQueryable());
         db.Users.Returns(users.AsQueryable());
-        db.Roles.Returns(System.Array.Empty<Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Countries.Returns(System.Array.Empty<CCE.Domain.Country.Country>().AsQueryable());
-        db.StateRepresentativeAssignments.Returns(System.Array.Empty<CCE.Domain.Identity.StateRepresentativeAssignment>().AsQueryable());
-        db.ExpertRegistrationRequests.Returns(System.Array.Empty<ExpertRegistrationRequest>().AsQueryable());
         return db;
     }
 

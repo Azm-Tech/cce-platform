@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Identity.Public.Dtos;
 using CCE.Domain.Identity;
 using MediatR;
@@ -10,4 +11,4 @@ public sealed record UpdateMyProfileCommand(
     KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<string> Interests,
     string? AvatarUrl,
-    System.Guid? CountryId) : IRequest<UserProfileDto?>;
+    System.Guid? CountryId) : IRequest<Result<UserProfileDto>>;

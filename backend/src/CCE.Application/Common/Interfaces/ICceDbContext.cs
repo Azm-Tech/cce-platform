@@ -29,6 +29,7 @@ public interface ICceDbContext
     IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
+    IQueryable<RefreshToken> RefreshTokens { get; }
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }

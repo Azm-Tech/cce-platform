@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CCE.Api.IntegrationTests.Auth;
 
-public class InternalJwtAuthTests : IClassFixture<WebApplicationFactory<Program>>
+public class InternalJwtAuthTests : IClassFixture<WebApplicationFactory<CCE.Api.Internal.Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly WebApplicationFactory<CCE.Api.Internal.Program> _factory;
 
-    public InternalJwtAuthTests(WebApplicationFactory<Program> factory) => _factory = factory;
+    public InternalJwtAuthTests(WebApplicationFactory<CCE.Api.Internal.Program> factory) => _factory = factory;
 
     [Fact]
     public async Task Returns_401_without_token()

@@ -11,10 +11,7 @@ public sealed class ListPublicHomepageSectionsQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListPublicHomepageSectionsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListPublicHomepageSectionsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<System.Collections.Generic.IReadOnlyList<PublicHomepageSectionDto>> Handle(
         ListPublicHomepageSectionsQuery request,
@@ -25,7 +22,6 @@ public sealed class ListPublicHomepageSectionsQueryHandler
             .OrderBy(s => s.OrderIndex)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
-
         return list.Select(MapToDto).ToList();
     }
 

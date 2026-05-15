@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
 using CCE.Application.Identity.Queries.ListExpertProfiles;
@@ -38,8 +39,8 @@ public static class ExpertEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new ApproveExpertRequestCommand(id, body.AcademicTitleAr, body.AcademicTitleEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ApproveExpertRequest");
@@ -50,8 +51,8 @@ public static class ExpertEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new RejectExpertRequestCommand(id, body.RejectionReasonAr, body.RejectionReasonEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("RejectExpertRequest");
@@ -76,5 +77,4 @@ public static class ExpertEndpoints
     }
 }
 
-public sealed record ApproveExpertRequestRequest(string AcademicTitleAr, string AcademicTitleEn);
-public sealed record RejectExpertRequestRequest(string RejectionReasonAr, string RejectionReasonEn);
+

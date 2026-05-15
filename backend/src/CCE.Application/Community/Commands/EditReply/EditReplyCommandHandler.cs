@@ -49,7 +49,7 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
         }
 
         var sanitized = _sanitizer.Sanitize(request.Content);
-        reply.EditContent(sanitized);
+        reply.EditContent(sanitized, userId, _clock);
         await _service.UpdateReplyAsync(reply, cancellationToken).ConfigureAwait(false);
         return Unit.Value;
     }
