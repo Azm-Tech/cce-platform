@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Common.Pagination;
@@ -9,7 +10,14 @@ public sealed record PagedResult<T>(
     IReadOnlyList<T> Items,
     int Page,
     int PageSize,
-    long Total);
+    long Total)
+{
+    /// <summary>
+    /// Projects each item into a new shape while preserving pagination metadata.
+    /// </summary>
+    public PagedResult<TOut> Map<TOut>(Func<T, TOut> selector) =>
+        new(Items.Select(selector).ToList(), Page, PageSize, Total);
+}
 
 public static class PaginationExtensions
 {
@@ -31,6 +39,31 @@ public static class PaginationExtensions
             ? await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct).ConfigureAwait(false)
             : query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         return new PagedResult<T>(items, page, pageSize, total);
+    }
+
+    /// <summary>
+    /// Paginates and projects in a single query — SQL only fetches DTO columns.
+    /// Use for list endpoints where you don't need the full entity.
+    /// </summary>
+    public static async Task<PagedResult<TDto>> ToPagedResultAsync<T, TDto>(
+        this IQueryable<T> query,
+        Expression<Func<T, TDto>> projection,
+        int page, int pageSize, CancellationToken ct)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
+
+        var total = query is IAsyncEnumerable<T>
+            ? await query.LongCountAsync(ct).ConfigureAwait(false)
+            : query.LongCount();
+
+        var projected = query.Select(projection);
+        var items = projected is IAsyncEnumerable<TDto>
+            ? await projected.Skip((page - 1) * pageSize).Take(pageSize)
+                .ToListAsync(ct).ConfigureAwait(false)
+            : projected.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        return new PagedResult<TDto>(items, page, pageSize, total);
     }
 
     /// <summary>

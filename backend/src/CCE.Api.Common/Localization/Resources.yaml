@@ -1,0 +1,227 @@
+GENERAL_VALIDATION_ERROR:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+GENERAL_INTERNAL_ERROR:
+  ar: "حدث خطأ غير متوقع"
+  en: "An unexpected error occurred"
+
+GENERAL_UNAUTHORIZED:
+  ar: "الوصول غير مصرح به"
+  en: "Unauthorized access"
+
+GENERAL_FORBIDDEN:
+  ar: "الوصول ممنوع"
+  en: "Forbidden access"
+
+GENERAL_NOT_FOUND:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+GENERAL_BAD_REQUEST:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+GENERAL_SUCCESS_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+GENERAL_SUCCESS_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"
+
+GENERAL_SUCCESS_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Deleted successfully"
+
+GENERAL_SUCCESS_OPERATION:
+  ar: "تمت العملية بنجاح"
+  en: "Operation completed successfully"
+
+IDENTITY_USER_NOT_FOUND:
+  ar: "عذرًا، لم يتم العثور على المستخدم"
+  en: "Sorry, user not found"
+
+IDENTITY_EMAIL_EXISTS:
+  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
+  en: "Sorry, a problem occurred while creating the account"
+
+IDENTITY_USERNAME_EXISTS:
+  ar: "اسم المستخدم مستخدم بالفعل"
+  en: "Username already taken"
+
+IDENTITY_INVALID_CREDENTIALS:
+  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
+  en: "Sorry, a problem occurred during login"
+
+IDENTITY_INVALID_TOKEN:
+  ar: "رمز الوصول غير صالح"
+  en: "Invalid access token"
+
+IDENTITY_ACCOUNT_DEACTIVATED:
+  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
+  en: "Sorry, a problem occurred during login"
+
+IDENTITY_NOT_AUTHENTICATED:
+  ar: "المستخدم غير مصادق"
+  en: "User not authenticated"
+
+IDENTITY_EXPERT_REQUEST_NOT_FOUND:
+  ar: "طلب الخبير غير موجود"
+  en: "Expert request not found"
+
+IDENTITY_STATE_REP_ASSIGNMENT_NOT_FOUND:
+  ar: "التعيين غير موجود"
+  en: "Assignment not found"
+
+IDENTITY_STATE_REP_ASSIGNMENT_EXISTS:
+  ar: "التعيين موجود بالفعل"
+  en: "Assignment already exists"
+
+CONTENT_RESOURCE_NOT_FOUND:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+CONTENT_RESOURCE_DUPLICATE:
+  ar: "المورد موجود بالفعل"
+  en: "Resource already exists"
+
+CONTENT_CATEGORY_NOT_FOUND:
+  ar: "التصنيف غير موجود"
+  en: "Category not found"
+
+CONTENT_CATEGORY_DUPLICATE:
+  ar: "التصنيف موجود بالفعل"
+  en: "Category already exists"
+
+CONTENT_PAGE_NOT_FOUND:
+  ar: "الصفحة غير موجودة"
+  en: "Page not found"
+
+CONTENT_NEWS_NOT_FOUND:
+  ar: "الخبر غير موجود"
+  en: "News not found"
+
+CONTENT_EVENT_NOT_FOUND:
+  ar: "الفعالية غير موجودة"
+  en: "Event not found"
+
+CONTENT_ASSET_NOT_FOUND:
+  ar: "الملف غير موجود"
+  en: "Asset not found"
+
+COMMUNITY_TOPIC_NOT_FOUND:
+  ar: "الموضوع غير موجود"
+  en: "Topic not found"
+
+COMMUNITY_TOPIC_DUPLICATE:
+  ar: "الموضوع موجود بالفعل"
+  en: "Topic already exists"
+
+COMMUNITY_POST_NOT_FOUND:
+  ar: "المنشور غير موجود"
+  en: "Post not found"
+
+COMMUNITY_REPLY_NOT_FOUND:
+  ar: "الرد غير موجود"
+  en: "Reply not found"
+
+COMMUNITY_ALREADY_FOLLOWING:
+  ar: "أنت تتابع هذا بالفعل"
+  en: "You are already following this"
+
+COMMUNITY_NOT_FOLLOWING:
+  ar: "أنت لا تتابع هذا"
+  en: "You are not following this"
+
+COMMUNITY_CANNOT_MARK_ANSWERED:
+  ar: "غير مصرح لك بتحديد الإجابة"
+  en: "You are not authorized to mark the answer"
+
+COMMUNITY_EDIT_WINDOW_EXPIRED:
+  ar: "انتهت فترة التعديل"
+  en: "Edit window has expired"
+
+COUNTRY_COUNTRY_NOT_FOUND:
+  ar: "الدولة غير موجودة"
+  en: "Country not found"
+
+COUNTRY_COUNTRY_PROFILE_NOT_FOUND:
+  ar: "الملف التعريفي غير موجود"
+  en: "Country profile not found"
+
+NOTIFICATIONS_TEMPLATE_NOT_FOUND:
+  ar: "القالب غير موجود"
+  en: "Template not found"
+
+NOTIFICATIONS_NOTIFICATION_NOT_FOUND:
+  ar: "الإشعار غير موجود"
+  en: "Notification not found"
+
+VALIDATION_REQUIRED_FIELD:
+  ar: "هذا الحقل مطلوب"
+  en: "This field is required"
+
+VALIDATION_INVALID_EMAIL:
+  ar: "البريد الإلكتروني غير صالح"
+  en: "Invalid email format"
+
+VALIDATION_MIN_LENGTH:
+  ar: "القيمة قصيرة جدًا"
+  en: "Value is too short"
+
+VALIDATION_MAX_LENGTH:
+  ar: "القيمة طويلة جدًا"
+  en: "Value is too long"
+
+VALIDATION_INVALID_FORMAT:
+  ar: "التنسيق غير صالح"
+  en: "Invalid format"
+
+VALIDATION_INVALID_ENUM:
+  ar: "القيمة المحددة غير صالحة"
+  en: "Selected value is invalid"
+
+CONCURRENCY_CONFLICT:
+  ar: "تم تعديل هذا السجل من قبل مستخدم آخر. يرجى تحديث الصفحة والمحاولة مرة أخرى"
+  en: "This record was modified by another user. Please refresh and try again"
+
+DUPLICATE_VALUE:
+  ar: "القيمة موجودة بالفعل"
+  en: "Value already exists"
+
+CONTENT_HOMEPAGE_SECTION_NOT_FOUND:
+  ar: "القسم غير موجود"
+  en: "Section not found"
+
+CONTENT_PAGE_DUPLICATE:
+  ar: "الصفحة موجودة بالفعل"
+  en: "Page already exists"
+
+CONTENT_COUNTRY_RESOURCE_REQUEST_NOT_FOUND:
+  ar: "طلب المورد غير موجود"
+  en: "Resource request not found"
+
+IDENTITY_EXPERT_REQUEST_ALREADY_EXISTS:
+  ar: "طلب الخبير موجود بالفعل"
+  en: "Expert request already exists"
+
+KNOWLEDGE_MAP_NOT_FOUND:
+  ar: "خريطة المعرفة غير موجودة"
+  en: "Knowledge map not found"
+
+KNOWLEDGE_NODE_NOT_FOUND:
+  ar: "العقدة غير موجودة"
+  en: "Node not found"
+
+KNOWLEDGE_EDGE_NOT_FOUND:
+  ar: "الوصلة غير موجودة"
+  en: "Edge not found"
+
+SCENARIO_NOT_FOUND:
+  ar: "السيناريو غير موجود"
+  en: "Scenario not found"
+
+TECHNOLOGY_NOT_FOUND:
+  ar: "التقنية غير موجودة"
+  en: "Technology not found"
