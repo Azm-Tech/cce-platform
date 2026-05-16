@@ -13,4 +13,4 @@ public sealed record RegisterUserCommand(
     string PhoneNumber,
     string Password,
     string ConfirmPassword)
-    : IRequest<Result<AuthUserDto>>;
+    : IRequest<Response<AuthUserDto>>;

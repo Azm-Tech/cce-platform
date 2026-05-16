@@ -182,6 +182,116 @@ VALIDATION_INVALID_ENUM:
   ar: "القيمة المحددة غير صالحة"
   en: "Selected value is invalid"
 
+# ─── Identity Bare Keys (errors) ───
+
+USER_NOT_FOUND:
+  ar: "عذرًا، لم يتم العثور على المستخدم"
+  en: "Sorry, user not found"
+
+EMAIL_EXISTS:
+  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
+  en: "Sorry, a problem occurred while creating the account"
+
+INVALID_CREDENTIALS:
+  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
+  en: "Sorry, a problem occurred during login"
+
+NOT_AUTHENTICATED:
+  ar: "المستخدم غير مصادق"
+  en: "User not authenticated"
+
+EXPERT_REQUEST_NOT_FOUND:
+  ar: "طلب الخبير غير موجود"
+  en: "Expert request not found"
+
+STATE_REP_ASSIGNMENT_NOT_FOUND:
+  ar: "التعيين غير موجود"
+  en: "Assignment not found"
+
+COUNTRY_NOT_FOUND:
+  ar: "الدولة غير موجودة"
+  en: "Country not found"
+
+INVALID_REFRESH_TOKEN:
+  ar: "رمز التحديث غير صالح"
+  en: "Invalid refresh token"
+
+REGISTRATION_FAILED:
+  ar: "عذرًا، فشل إنشاء الحساب"
+  en: "Sorry, registration failed"
+
+# ─── Identity Bare Keys (success) ───
+
+REGISTER_SUCCESS:
+  ar: "تم إنشاء الحساب بنجاح"
+  en: "Account created successfully"
+
+LOGIN_SUCCESS:
+  ar: "تم تسجيل الدخول بنجاح"
+  en: "Logged in successfully"
+
+LOGOUT_SUCCESS:
+  ar: "تم تسجيل الخروج بنجاح"
+  en: "Logged out successfully"
+
+TOKEN_REFRESHED:
+  ar: "تم تحديث الرمز بنجاح"
+  en: "Token refreshed successfully"
+
+PASSWORD_RESET:
+  ar: "تم إعادة تعيين كلمة المرور بنجاح"
+  en: "Password reset successfully"
+
+ROLES_ASSIGNED:
+  ar: "تم تعيين الأدوار بنجاح"
+  en: "Roles assigned successfully"
+
+EXPERT_REQUEST_APPROVED:
+  ar: "تمت الموافقة على طلب الخبير"
+  en: "Expert request approved"
+
+EXPERT_REQUEST_REJECTED:
+  ar: "تم رفض طلب الخبير"
+  en: "Expert request rejected"
+
+EXPERT_REQUEST_SUBMITTED:
+  ar: "تم تقديم طلب الخبير بنجاح"
+  en: "Expert request submitted successfully"
+
+STATE_REP_ASSIGNMENT_CREATED:
+  ar: "تم إنشاء التعيين بنجاح"
+  en: "Assignment created successfully"
+
+STATE_REP_ASSIGNMENT_REVOKED:
+  ar: "تم إلغاء التعيين بنجاح"
+  en: "Assignment revoked successfully"
+
+PROFILE_UPDATED:
+  ar: "تم تحديث الملف الشخصي بنجاح"
+  en: "Profile updated successfully"
+
+SUCCESS_OPERATION:
+  ar: "تمت العملية بنجاح"
+  en: "Operation completed successfully"
+
+# ─── General Bare Keys (middleware) ───
+
+VALIDATION_ERROR:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+INTERNAL_ERROR:
+  ar: "حدث خطأ غير متوقع"
+  en: "An unexpected error occurred"
+
+BAD_REQUEST:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+RESOURCE_NOT_FOUND_GENERIC:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
 CONCURRENCY_CONFLICT:
   ar: "تم تعديل هذا السجل من قبل مستخدم آخر. يرجى تحديث الصفحة والمحاولة مرة أخرى"
   en: "This record was modified by another user. Please refresh and try again"

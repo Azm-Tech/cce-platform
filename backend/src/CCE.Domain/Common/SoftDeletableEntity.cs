@@ -7,7 +7,7 @@ namespace CCE.Domain.Common;
 /// </summary>
 /// <typeparam name="TId">The ID type.</typeparam>
 public abstract class SoftDeletableEntity<TId> : AuditableEntity<TId>, ISoftDeletable
-    where TId : notnull
+    where TId : IEquatable<TId>
 {
     protected SoftDeletableEntity(TId id) : base(id) { }
 
@@ -28,5 +28,18 @@ public abstract class SoftDeletableEntity<TId> : AuditableEntity<TId>, ISoftDele
         IsDeleted = true;
         DeletedById = by;
         DeletedOn = clock.UtcNow;
+        MarkAsModified(by, clock);
+    }
+
+    /// <summary>
+    /// Restores a soft-deleted entity. Clears delete fields and records the restoration as a modification.
+    /// </summary>
+    public void Restore(Guid by, ISystemClock clock)
+    {
+        if (!IsDeleted) return;
+        IsDeleted = false;
+        DeletedById = null;
+        DeletedOn = null;
+        MarkAsModified(by, clock);
     }
 }

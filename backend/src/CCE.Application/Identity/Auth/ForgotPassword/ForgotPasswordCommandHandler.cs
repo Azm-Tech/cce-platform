@@ -1,33 +1,25 @@
 using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
-using CCE.Domain.Identity;
+using CCE.Application.Messages;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using AppErrorCodes = CCE.Application.Errors.ApplicationErrors;
 
 namespace CCE.Application.Identity.Auth.ForgotPassword;
 
 internal sealed class ForgotPasswordCommandHandler
-    : IRequestHandler<ForgotPasswordCommand, Result<AuthMessageDto>>
+    : IRequestHandler<ForgotPasswordCommand, Response<AuthMessageDto>>
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IPasswordResetEmailSender _emailSender;
+    private readonly IAuthService _auth;
+    private readonly MessageFactory _msg;
 
-    public ForgotPasswordCommandHandler(UserManager<User> userManager, IPasswordResetEmailSender emailSender)
+    public ForgotPasswordCommandHandler(IAuthService auth, MessageFactory msg)
     {
-        _userManager = userManager;
-        _emailSender = emailSender;
+        _auth = auth;
+        _msg = msg;
     }
 
-    public async Task<Result<AuthMessageDto>> Handle(ForgotPasswordCommand request, CancellationToken ct)
+    public async Task<Response<AuthMessageDto>> Handle(ForgotPasswordCommand request, CancellationToken ct)
     {
-        var user = await _userManager.FindByEmailAsync(request.EmailAddress).ConfigureAwait(false);
-        if (user is not null)
-        {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
-            await _emailSender.SendAsync(user, PasswordResetTokenCodec.Encode(token), ct).ConfigureAwait(false);
-        }
-
-        return new AuthMessageDto(AppErrorCodes.Identity.PASSWORD_RESET);
+        await _auth.ForgotPasswordAsync(request.EmailAddress, ct).ConfigureAwait(false);
+        return _msg.Ok(new AuthMessageDto("PASSWORD_RESET"), "PASSWORD_RESET");
     }
 }

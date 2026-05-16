@@ -1,5 +1,7 @@
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
@@ -10,10 +12,11 @@ public class UpdateMyProfileCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_user_not_found()
     {
+        var db = Substitute.For<ICceDbContext>();
         var service = Substitute.For<IUserProfileRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((User?)null);
-        var sut = new UpdateMyProfileCommandHandler(service, BuildErrors());
+        var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
             System.Guid.NewGuid(), "en", KnowledgeLevel.Intermediate,
@@ -21,9 +24,10 @@ public class UpdateMyProfileCommandHandlerTests
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_USER_NOT_FOUND");
-        await service.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
+        service.DidNotReceiveWithAnyArgs().Update(default!);
+        await db.DidNotReceiveWithAnyArgs().SaveChangesAsync(default);
     }
 
     [Fact]
@@ -33,10 +37,10 @@ public class UpdateMyProfileCommandHandlerTests
         var countryId = System.Guid.NewGuid();
         var user = new User { Id = userId, Email = "alice@cce.local", UserName = "alice" };
 
+        var db = Substitute.For<ICceDbContext>();
         var service = Substitute.For<IUserProfileRepository>();
         service.FindAsync(userId, Arg.Any<CancellationToken>()).Returns(user);
-        service.UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>()).Returns(System.Threading.Tasks.Task.CompletedTask);
-        var sut = new UpdateMyProfileCommandHandler(service, BuildErrors());
+        var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
             userId, "en", KnowledgeLevel.Advanced,
@@ -52,7 +56,8 @@ public class UpdateMyProfileCommandHandlerTests
         result.Data.Interests.Should().BeEquivalentTo(new[] { "Hydrogen", "Solar" });
         result.Data.AvatarUrl.Should().Be("https://cdn.example.com/avatar.png");
         result.Data.CountryId.Should().Be(countryId);
-        await service.Received(1).UpdateAsync(user, Arg.Any<CancellationToken>());
+        service.Received(1).Update(user);
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -62,10 +67,10 @@ public class UpdateMyProfileCommandHandlerTests
         var user = new User { Id = userId };
         user.AssignCountry(System.Guid.NewGuid());
 
+        var db = Substitute.For<ICceDbContext>();
         var service = Substitute.For<IUserProfileRepository>();
         service.FindAsync(userId, Arg.Any<CancellationToken>()).Returns(user);
-        service.UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>()).Returns(System.Threading.Tasks.Task.CompletedTask);
-        var sut = new UpdateMyProfileCommandHandler(service, BuildErrors());
+        var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
             userId, "ar", KnowledgeLevel.Beginner,

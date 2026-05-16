@@ -10,7 +10,7 @@ namespace CCE.Domain.Community;
 /// Content max 8000 chars to keep the read-side cheap.
 /// </summary>
 [Audited]
-public sealed class Post : SoftDeletableAggregateRoot<System.Guid>
+public sealed class Post : AggregateRoot<System.Guid>
 {
     public const int MaxContentLength = 8000;
 

@@ -10,7 +10,7 @@ namespace CCE.Domain.Identity;
 /// the corresponding <c>ExpertProfile</c>. Soft-deletable for admin recovery flows.
 /// </summary>
 [Audited]
-public sealed class ExpertRegistrationRequest : SoftDeletableAggregateRoot<System.Guid>
+public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>
 {
     private ExpertRegistrationRequest(
         System.Guid id,

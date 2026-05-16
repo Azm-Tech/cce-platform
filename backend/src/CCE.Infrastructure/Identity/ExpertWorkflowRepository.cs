@@ -5,29 +5,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Infrastructure.Identity;
 
-public sealed class ExpertWorkflowRepository : IExpertWorkflowRepository
+public sealed class ExpertWorkflowRepository
+    : Repository<ExpertRegistrationRequest, System.Guid>, IExpertWorkflowRepository
 {
-    private readonly CceDbContext _db;
-
-    public ExpertWorkflowRepository(CceDbContext db)
-    {
-        _db = db;
-    }
+    public ExpertWorkflowRepository(CceDbContext db) : base(db) { }
 
     public async Task<ExpertRegistrationRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct)
     {
-        return await _db.ExpertRegistrationRequests
+        return await Db.ExpertRegistrationRequests
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.Id == id, ct)
             .ConfigureAwait(false);
     }
 
-    public async Task SaveAsync(ExpertRegistrationRequest request, ExpertProfile? newProfile, CancellationToken ct)
+    public void AddProfile(ExpertProfile profile)
     {
-        if (newProfile is not null)
-        {
-            _db.ExpertProfiles.Add(newProfile);
-        }
-        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
+        Db.ExpertProfiles.Add(profile);
     }
 }

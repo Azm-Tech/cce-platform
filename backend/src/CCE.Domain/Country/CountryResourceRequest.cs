@@ -11,7 +11,7 @@ namespace CCE.Domain.Country;
 /// creates the actual <c>Resource</c>.
 /// </summary>
 [Audited]
-public sealed class CountryResourceRequest : SoftDeletableAggregateRoot<System.Guid>
+public sealed class CountryResourceRequest : AggregateRoot<System.Guid>
 {
     private CountryResourceRequest(
         System.Guid id,

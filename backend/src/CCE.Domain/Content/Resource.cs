@@ -11,7 +11,7 @@ namespace CCE.Domain.Content;
 /// <c>[Timestamp]</c> mapping in Phase 07.
 /// </summary>
 [Audited]
-public sealed class Resource : SoftDeletableAggregateRoot<System.Guid>
+public sealed class Resource : AggregateRoot<System.Guid>
 {
     private Resource(
         System.Guid id,

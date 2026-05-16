@@ -8,4 +8,4 @@ public sealed record SubmitExpertRequestCommand(
     System.Guid RequesterId,
     string RequestedBioAr,
     string RequestedBioEn,
-    IReadOnlyList<string> RequestedTags) : IRequest<Result<ExpertRequestStatusDto>>;
+    IReadOnlyList<string> RequestedTags) : IRequest<Response<ExpertRequestStatusDto>>;

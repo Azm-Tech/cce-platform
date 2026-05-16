@@ -10,4 +10,4 @@ public sealed record LoginCommand(
     LocalAuthApi Api,
     string? IpAddress,
     string? UserAgent)
-    : IRequest<Result<AuthTokenDto>>;
+    : IRequest<Response<AuthTokenDto>>;

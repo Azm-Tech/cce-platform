@@ -6,4 +6,4 @@ namespace CCE.Application.Identity.Commands.CreateStateRepAssignment;
 
 public sealed record CreateStateRepAssignmentCommand(
     System.Guid UserId,
-    System.Guid CountryId) : IRequest<Result<StateRepAssignmentDto>>;
+    System.Guid CountryId) : IRequest<Response<StateRepAssignmentDto>>;

@@ -1,5 +1,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Queries.GetUserById;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
@@ -12,13 +13,12 @@ public class GetUserByIdQueryHandlerTests
     public async Task Returns_null_when_user_not_found()
     {
         var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new GetUserByIdQueryHandler(db, BuildErrors());
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error!.Code.Should().Be("IDENTITY_USER_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class GetUserByIdQueryHandlerTests
         var userRoles = new[] { new IdentityUserRole<System.Guid> { UserId = aliceId, RoleId = superAdminRoleId } };
 
         var db = BuildDb(users, roles, userRoles);
-        var sut = new GetUserByIdQueryHandler(db, BuildErrors());
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(aliceId), CancellationToken.None);
 
@@ -54,7 +54,7 @@ public class GetUserByIdQueryHandlerTests
         alice.LockoutEnd = future;
 
         var db = BuildDb(new[] { alice }, System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new GetUserByIdQueryHandler(db, BuildErrors());
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(aliceId), CancellationToken.None);
 

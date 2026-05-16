@@ -3,6 +3,9 @@ using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
+using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using MediatR;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
@@ -18,13 +21,13 @@ public class AssignUserRolesCommandHandlerTests
         service.ReplaceRolesAsync(Arg.Any<System.Guid>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
             .Returns(false);
         var mediator = Substitute.For<IMediator>();
-        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildErrors());
+        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildMsg());
 
         var result = await sut.Handle(new AssignUserRolesCommand(System.Guid.NewGuid(), new[] { "SuperAdmin" }), CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_USER_NOT_FOUND");
-        await mediator.DidNotReceiveWithAnyArgs().Send<Result<UserDetailDto>>(default!, default);
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
+        await mediator.DidNotReceiveWithAnyArgs().Send<Response<UserDetailDto>>(default!, default);
     }
 
     [Fact]
@@ -40,13 +43,13 @@ public class AssignUserRolesCommandHandlerTests
             new[] { "ContentManager" }, true);
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Is<GetUserByIdQuery>(q => q.Id == id), Arg.Any<CancellationToken>())
-            .Returns(Result<UserDetailDto>.Success(dto));
+            .Returns(Response<UserDetailDto>.Ok(dto, SystemCode.CON900, new LocalizedMessage("ar", "en")));
 
-        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildErrors());
+        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildMsg());
 
         var result = await sut.Handle(new AssignUserRolesCommand(id, new[] { "ContentManager" }), CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
+        result.Success.Should().BeTrue();
         result.Data!.Should().BeEquivalentTo(dto);
     }
 
@@ -58,11 +61,11 @@ public class AssignUserRolesCommandHandlerTests
         service.ReplaceRolesAsync(default, default!, default).ReturnsForAnyArgs(true);
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result<UserDetailDto>.Success(new UserDetailDto(
+            .Returns(Response<UserDetailDto>.Ok(new UserDetailDto(
                 id, "alice@cce.local", "alice", "ar",
                 KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null,
-                new[] { "SuperAdmin", "ContentManager" }, true)));
-        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildErrors());
+                new[] { "SuperAdmin", "ContentManager" }, true), SystemCode.CON900, new LocalizedMessage("ar", "en")));
+        var sut = new AssignUserRolesCommandHandler(service, mediator, BuildMsg());
 
         var roles = new[] { "SuperAdmin", "ContentManager" };
         await sut.Handle(new AssignUserRolesCommand(id, roles), CancellationToken.None);

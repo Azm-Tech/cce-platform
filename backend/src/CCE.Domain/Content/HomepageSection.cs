@@ -7,7 +7,7 @@ namespace CCE.Domain.Content;
 /// rendering layer queries <c>WHERE IsActive = true ORDER BY OrderIndex</c>.
 /// </summary>
 [Audited]
-public sealed class HomepageSection : SoftDeletableEntity<System.Guid>
+public sealed class HomepageSection : AggregateRoot<System.Guid>
 {
     private HomepageSection(
         System.Guid id,

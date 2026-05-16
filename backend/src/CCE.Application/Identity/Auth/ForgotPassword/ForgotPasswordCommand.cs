@@ -5,4 +5,4 @@ using MediatR;
 namespace CCE.Application.Identity.Auth.ForgotPassword;
 
 public sealed record ForgotPasswordCommand(string EmailAddress)
-    : IRequest<Result<AuthMessageDto>>;
+    : IRequest<Response<AuthMessageDto>>;

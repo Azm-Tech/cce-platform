@@ -2,22 +2,23 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 
-public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertStatusQuery, Result<ExpertRequestStatusDto>>
+public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertStatusQuery, Response<ExpertRequestStatusDto>>
 {
     private readonly ICceDbContext _db;
-    private readonly CCE.Application.Common.Errors _errors;
+    private readonly MessageFactory _msg;
 
-    public GetMyExpertStatusQueryHandler(ICceDbContext db, CCE.Application.Common.Errors errors)
+    public GetMyExpertStatusQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
-        _errors = errors;
+        _msg = msg;
     }
 
-    public async Task<Result<ExpertRequestStatusDto>> Handle(GetMyExpertStatusQuery request, CancellationToken cancellationToken)
+    public async Task<Response<ExpertRequestStatusDto>> Handle(GetMyExpertStatusQuery request, CancellationToken cancellationToken)
     {
         var rows = await _db.ExpertRegistrationRequests
             .Where(r => r.RequestedById == request.UserId)
@@ -29,10 +30,10 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
         var entity = rows.FirstOrDefault();
         if (entity is null)
         {
-            return _errors.ExpertRequestNotFound();
+            return _msg.NotFound<ExpertRequestStatusDto>("EXPERT_REQUEST_NOT_FOUND");
         }
 
-        return new ExpertRequestStatusDto(
+        return _msg.Ok(new ExpertRequestStatusDto(
             entity.Id,
             entity.RequestedById,
             entity.RequestedBioAr,
@@ -42,6 +43,6 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
             entity.Status,
             entity.ProcessedOn,
             entity.RejectionReasonAr,
-            entity.RejectionReasonEn);
+            entity.RejectionReasonEn), "SUCCESS_OPERATION");
     }
 }

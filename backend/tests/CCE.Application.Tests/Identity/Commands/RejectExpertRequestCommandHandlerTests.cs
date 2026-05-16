@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
@@ -18,14 +19,14 @@ public class RejectExpertRequestCommandHandlerTests
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((ExpertRegistrationRequest?)null);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(), new FakeSystemClock(), BuildErrors());
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
         var result = await sut.Handle(
             new RejectExpertRequestCommand(System.Guid.NewGuid(), "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_EXPERT_REQUEST_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR002);
     }
 
     [Fact]
@@ -40,14 +41,14 @@ public class RejectExpertRequestCommandHandlerTests
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), currentUser, clock, BuildErrors());
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, currentUser, clock, BuildMsg());
 
         var result = await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_NOT_AUTHENTICATED");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR028);
     }
 
     [Fact]
@@ -63,7 +64,7 @@ public class RejectExpertRequestCommandHandlerTests
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(adminId), clock, BuildErrors());
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var act = async () => await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
@@ -86,8 +87,9 @@ public class RejectExpertRequestCommandHandlerTests
             .Returns(registration);
 
         var users = new[] { BuildUser(requesterId, "alice@cce.local", "alice") };
+        var db = BuildDb(users);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(users), BuildCurrentUser(adminId), clock, BuildErrors());
+        var sut = new RejectExpertRequestCommandHandler(db, service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var result = await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
@@ -97,7 +99,7 @@ public class RejectExpertRequestCommandHandlerTests
         result.Data!.RejectionReasonEn.Should().Be("Insufficient evidence.");
         result.Data!.RejectionReasonAr.Should().Be("غير مؤهل");
         registration.Status.Should().Be(ExpertRegistrationStatus.Rejected);
-        await service.Received(1).SaveAsync(registration, null, Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

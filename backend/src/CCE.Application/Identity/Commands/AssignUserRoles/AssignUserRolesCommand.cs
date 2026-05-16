@@ -9,4 +9,4 @@ namespace CCE.Application.Identity.Commands.AssignUserRoles;
 /// </summary>
 public sealed record AssignUserRolesCommand(
     Guid Id,
-    IReadOnlyList<string> Roles) : IRequest<Result<UserDetailDto>>;
+    IReadOnlyList<string> Roles) : IRequest<Response<UserDetailDto>>;

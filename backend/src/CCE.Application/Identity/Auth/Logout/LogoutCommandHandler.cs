@@ -1,38 +1,25 @@
 using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
-using CCE.Domain.Common;
+using CCE.Application.Messages;
 using MediatR;
-using AppErrorCodes = CCE.Application.Errors.ApplicationErrors;
 
 namespace CCE.Application.Identity.Auth.Logout;
 
 internal sealed class LogoutCommandHandler
-    : IRequestHandler<LogoutCommand, Result<AuthMessageDto>>
+    : IRequestHandler<LogoutCommand, Response<AuthMessageDto>>
 {
-    private readonly ILocalTokenService _tokenService;
-    private readonly IRefreshTokenRepository _refreshTokens;
-    private readonly ISystemClock _clock;
+    private readonly IAuthService _auth;
+    private readonly MessageFactory _msg;
 
-    public LogoutCommandHandler(
-        ILocalTokenService tokenService,
-        IRefreshTokenRepository refreshTokens,
-        ISystemClock clock)
+    public LogoutCommandHandler(IAuthService auth, MessageFactory msg)
     {
-        _tokenService = tokenService;
-        _refreshTokens = refreshTokens;
-        _clock = clock;
+        _auth = auth;
+        _msg = msg;
     }
 
-    public async Task<Result<AuthMessageDto>> Handle(LogoutCommand request, CancellationToken ct)
+    public async Task<Response<AuthMessageDto>> Handle(LogoutCommand request, CancellationToken ct)
     {
-        var tokenHash = _tokenService.HashRefreshToken(request.RefreshToken);
-        var existing = await _refreshTokens.FindByHashAsync(tokenHash, ct).ConfigureAwait(false);
-        if (existing is not null && existing.IsActive(_clock.UtcNow))
-        {
-            existing.Revoke(_clock.UtcNow, request.IpAddress);
-            await _refreshTokens.SaveChangesAsync(ct).ConfigureAwait(false);
-        }
-
-        return new AuthMessageDto(AppErrorCodes.Identity.LOGOUT_SUCCESS);
+        await _auth.LogoutAsync(request.RefreshToken, request.IpAddress, ct).ConfigureAwait(false);
+        return _msg.Ok(new AuthMessageDto("LOGOUT_SUCCESS"), "LOGOUT_SUCCESS");
     }
 }

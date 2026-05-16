@@ -3,7 +3,7 @@ using CCE.Domain.Common;
 namespace CCE.Domain.InteractiveCity;
 
 [Audited]
-public sealed class CityScenario : SoftDeletableAggregateRoot<System.Guid>
+public sealed class CityScenario : AggregateRoot<System.Guid>
 {
     public const int MinTargetYear = 2030;
     public const int MaxTargetYear = 2080;

@@ -4,7 +4,7 @@ using CCE.Domain.Common;
 namespace CCE.Domain.Community;
 
 [Audited]
-public sealed class Topic : SoftDeletableEntity<System.Guid>
+public sealed class Topic : AggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 

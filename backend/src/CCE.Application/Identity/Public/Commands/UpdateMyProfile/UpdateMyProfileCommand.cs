@@ -11,4 +11,4 @@ public sealed record UpdateMyProfileCommand(
     KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<string> Interests,
     string? AvatarUrl,
-    System.Guid? CountryId) : IRequest<Result<UserProfileDto>>;
+    System.Guid? CountryId) : IRequest<Response<UserProfileDto>>;

@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
@@ -18,14 +19,14 @@ public class ApproveExpertRequestCommandHandlerTests
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((ExpertRegistrationRequest?)null);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(), new FakeSystemClock(), BuildErrors());
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
         var result = await sut.Handle(
             new ApproveExpertRequestCommand(System.Guid.NewGuid(), "Dr.", "Dr."),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_EXPERT_REQUEST_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR002);
     }
 
     [Fact]
@@ -40,14 +41,14 @@ public class ApproveExpertRequestCommandHandlerTests
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), currentUser, clock, BuildErrors());
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, currentUser, clock, BuildMsg());
 
         var result = await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "Dr.", "Dr."),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_NOT_AUTHENTICATED");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR028);
     }
 
     [Fact]
@@ -63,7 +64,7 @@ public class ApproveExpertRequestCommandHandlerTests
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(adminId), clock, BuildErrors());
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var act = async () => await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "Dr.", "Dr."),
@@ -86,8 +87,9 @@ public class ApproveExpertRequestCommandHandlerTests
             .Returns(registration);
 
         var users = new[] { BuildUser(requesterId, "alice@cce.local", "alice") };
+        var db = BuildDb(users);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(users), BuildCurrentUser(adminId), clock, BuildErrors());
+        var sut = new ApproveExpertRequestCommandHandler(db, service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var result = await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "أستاذ مساعد", "Assistant Professor"),
@@ -98,7 +100,8 @@ public class ApproveExpertRequestCommandHandlerTests
         result.Data!.AcademicTitleEn.Should().Be("Assistant Professor");
         result.Data!.ExpertiseTags.Should().BeEquivalentTo(new[] { "Hydrogen", "CCS" });
         registration.Status.Should().Be(ExpertRegistrationStatus.Approved);
-        await service.Received(1).SaveAsync(registration, Arg.Any<ExpertProfile>(), Arg.Any<CancellationToken>());
+        service.Received(1).AddProfile(Arg.Is<ExpertProfile>(p => p.UserId == requesterId));
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

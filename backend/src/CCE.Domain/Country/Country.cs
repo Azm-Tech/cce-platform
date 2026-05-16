@@ -9,7 +9,7 @@ namespace CCE.Domain.Country;
 /// hides a country from public dropdowns without deleting historical references.
 /// </summary>
 [Audited]
-public sealed class Country : SoftDeletableAggregateRoot<System.Guid>
+public sealed class Country : AggregateRoot<System.Guid>
 {
     private static readonly Regex Alpha3Pattern = new("^[A-Z]{3}$", RegexOptions.Compiled);
     private static readonly Regex Alpha2Pattern = new("^[A-Z]{2}$", RegexOptions.Compiled);

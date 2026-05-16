@@ -7,4 +7,4 @@ namespace CCE.Application.Identity.Commands.ApproveExpertRequest;
 public sealed record ApproveExpertRequestCommand(
     System.Guid Id,
     string AcademicTitleAr,
-    string AcademicTitleEn) : IRequest<Result<ExpertProfileDto>>;
+    string AcademicTitleEn) : IRequest<Response<ExpertProfileDto>>;

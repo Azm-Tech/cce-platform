@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CCE.Application.Identity.Public.Queries.GetMyProfile;
 
-public sealed record GetMyProfileQuery(System.Guid UserId) : IRequest<Result<UserProfileDto>>;
+public sealed record GetMyProfileQuery(System.Guid UserId) : IRequest<Response<UserProfileDto>>;

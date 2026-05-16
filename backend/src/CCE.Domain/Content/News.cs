@@ -9,7 +9,7 @@ namespace CCE.Domain.Content;
 /// Slug is unique (enforced in Phase 08 DB unique index). Soft-deletable, audited.
 /// </summary>
 [Audited]
-public sealed class News : SoftDeletableAggregateRoot<System.Guid>
+public sealed class News : AggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 

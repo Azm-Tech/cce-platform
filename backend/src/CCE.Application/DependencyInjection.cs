@@ -1,4 +1,5 @@
 using CCE.Application.Common.Behaviors;
+using CCE.Application.Messages;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ public static class DependencyInjection
         {
             cfg.RegisterServicesFromAssembly(assembly);
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ResponseValidationBehavior<,>));
             cfg.AddOpenBehavior(typeof(ResultValidationBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
@@ -23,6 +25,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<CCE.Application.Common.Errors>();
+        services.AddScoped<MessageFactory>();
 
         services.AddSingleton<Reports.ICsvStreamWriter, Reports.CsvStreamWriter>();
 

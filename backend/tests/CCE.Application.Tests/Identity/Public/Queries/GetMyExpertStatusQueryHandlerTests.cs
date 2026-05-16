@@ -1,5 +1,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
@@ -12,13 +13,12 @@ public class GetMyExpertStatusQueryHandlerTests
     public async Task Returns_null_when_no_request_exists()
     {
         var db = BuildDb(System.Array.Empty<ExpertRegistrationRequest>());
-        var sut = new GetMyExpertStatusQueryHandler(db, BuildErrors());
+        var sut = new GetMyExpertStatusQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyExpertStatusQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error!.Code.Should().Be("IDENTITY_EXPERT_REQUEST_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR002);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class GetMyExpertStatusQueryHandlerTests
         var request = ExpertRegistrationRequest.Submit(userId, "سيرة", "Bio", new[] { "Wind" }, clock);
 
         var db = BuildDb(new[] { request });
-        var sut = new GetMyExpertStatusQueryHandler(db, BuildErrors());
+        var sut = new GetMyExpertStatusQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyExpertStatusQuery(userId), CancellationToken.None);
 
@@ -51,7 +51,7 @@ public class GetMyExpertStatusQueryHandlerTests
         var newer = ExpertRegistrationRequest.Submit(userId, "أحدث", "Newer bio", new[] { "Wind" }, clock);
 
         var db = BuildDb(new[] { older, newer });
-        var sut = new GetMyExpertStatusQueryHandler(db, BuildErrors());
+        var sut = new GetMyExpertStatusQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyExpertStatusQuery(userId), CancellationToken.None);
 

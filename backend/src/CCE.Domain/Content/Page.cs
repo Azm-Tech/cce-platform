@@ -8,7 +8,7 @@ namespace CCE.Domain.Content;
 /// composite unique index. Content is rich-text bilingual.
 /// </summary>
 [Audited]
-public sealed class Page : SoftDeletableAggregateRoot<System.Guid>
+public sealed class Page : AggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 

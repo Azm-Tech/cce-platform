@@ -4,18 +4,8 @@ using CCE.Infrastructure.Persistence;
 
 namespace CCE.Infrastructure.Identity;
 
-public sealed class ExpertRequestSubmissionRepository : IExpertRequestSubmissionRepository
+public sealed class ExpertRequestSubmissionRepository
+    : Repository<ExpertRegistrationRequest, System.Guid>, IExpertRequestSubmissionRepository
 {
-    private readonly CceDbContext _db;
-
-    public ExpertRequestSubmissionRepository(CceDbContext db)
-    {
-        _db = db;
-    }
-
-    public async Task SaveAsync(ExpertRegistrationRequest request, CancellationToken ct)
-    {
-        _db.ExpertRegistrationRequests.Add(request);
-        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-    }
+    public ExpertRequestSubmissionRepository(CceDbContext db) : base(db) { }
 }

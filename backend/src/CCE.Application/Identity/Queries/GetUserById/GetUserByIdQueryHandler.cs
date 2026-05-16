@@ -2,28 +2,29 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.GetUserById;
 
-public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<UserDetailDto>>
+public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Response<UserDetailDto>>
 {
     private readonly ICceDbContext _db;
-    private readonly CCE.Application.Common.Errors _errors;
+    private readonly MessageFactory _msg;
 
-    public GetUserByIdQueryHandler(ICceDbContext db, CCE.Application.Common.Errors errors)
+    public GetUserByIdQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
-        _errors = errors;
+        _msg = msg;
     }
 
-    public async Task<Result<UserDetailDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Response<UserDetailDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var user = (await _db.Users.Where(u => u.Id == request.Id).ToListAsyncEither(cancellationToken).ConfigureAwait(false))
             .SingleOrDefault();
         if (user is null)
         {
-            return _errors.UserNotFound();
+            return _msg.UserNotFound<UserDetailDto>();
         }
 
         var roleNames =
@@ -36,7 +37,7 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
         var now = DateTimeOffset.UtcNow;
         var isActive = !user.LockoutEnabled || user.LockoutEnd is null || user.LockoutEnd < now;
 
-        return new UserDetailDto(
+        return _msg.Ok(new UserDetailDto(
             user.Id,
             user.Email,
             user.UserName,
@@ -46,6 +47,6 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
             user.CountryId,
             user.AvatarUrl,
             roles,
-            isActive);
+            isActive), "SUCCESS_OPERATION");
     }
 }

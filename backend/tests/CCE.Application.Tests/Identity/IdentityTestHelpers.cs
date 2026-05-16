@@ -1,18 +1,12 @@
 using CCE.Application.Localization;
+using CCE.Application.Messages;
 using NSubstitute;
 
 namespace CCE.Application.Tests.Identity;
 
-/// <summary>
-/// Shared helpers for Identity handler tests that need a localized <see cref="Errors"/> factory.
-/// </summary>
 public static class IdentityTestHelpers
 {
-    /// <summary>
-    /// Builds a <see cref="CCE.Application.Common.Errors"/> instance backed by an
-    /// <see cref="ILocalizationService"/> stub that returns the key as both Ar and En text.
-    /// </summary>
-    public static CCE.Application.Common.Errors BuildErrors()
+    public static MessageFactory BuildMsg()
     {
         var localization = Substitute.For<ILocalizationService>();
         localization.GetLocalizedMessage(Arg.Any<string>())
@@ -20,6 +14,6 @@ public static class IdentityTestHelpers
                 Ar: call.Arg<string>(),
                 En: call.Arg<string>()));
 
-        return new CCE.Application.Common.Errors(localization);
+        return new MessageFactory(localization);
     }
 }

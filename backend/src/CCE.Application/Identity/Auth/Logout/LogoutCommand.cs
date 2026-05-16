@@ -5,4 +5,4 @@ using MediatR;
 namespace CCE.Application.Identity.Auth.Logout;
 
 public sealed record LogoutCommand(string RefreshToken, string? IpAddress)
-    : IRequest<Result<AuthMessageDto>>;
+    : IRequest<Response<AuthMessageDto>>;

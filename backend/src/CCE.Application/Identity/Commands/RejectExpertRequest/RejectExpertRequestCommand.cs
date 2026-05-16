@@ -7,4 +7,4 @@ namespace CCE.Application.Identity.Commands.RejectExpertRequest;
 public sealed record RejectExpertRequestCommand(
     System.Guid Id,
     string RejectionReasonAr,
-    string RejectionReasonEn) : IRequest<Result<ExpertRequestDto>>;
+    string RejectionReasonEn) : IRequest<Response<ExpertRequestDto>>;

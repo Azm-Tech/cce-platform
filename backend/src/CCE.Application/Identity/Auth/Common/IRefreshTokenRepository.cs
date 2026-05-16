@@ -11,6 +11,4 @@ public interface IRefreshTokenRepository
     Task RevokeFamilyAsync(System.Guid tokenFamilyId, DateTimeOffset revokedAtUtc, string? revokedByIp, CancellationToken ct);
 
     Task RevokeAllForUserAsync(System.Guid userId, DateTimeOffset revokedAtUtc, string? revokedByIp, CancellationToken ct);
-
-    Task SaveChangesAsync(CancellationToken ct);
 }

@@ -7,7 +7,7 @@ namespace CCE.Domain.Common;
 /// </summary>
 /// <typeparam name="TId">The ID type.</typeparam>
 public abstract class AuditableEntity<TId> : Entity<TId>, IAuditable
-    where TId : notnull
+    where TId : IEquatable<TId>
 {
     protected AuditableEntity(TId id) : base(id) { }
 

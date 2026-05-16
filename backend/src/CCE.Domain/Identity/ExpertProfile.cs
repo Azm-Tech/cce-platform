@@ -9,7 +9,7 @@ namespace CCE.Domain.Identity;
 /// captured by <see cref="UserId"/> and enforced by a unique index in Phase 08.
 /// </summary>
 [Audited]
-public sealed class ExpertProfile : SoftDeletableEntity<System.Guid>
+public sealed class ExpertProfile : AggregateRoot<System.Guid>
 {
     private ExpertProfile(
         System.Guid id,

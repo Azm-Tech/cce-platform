@@ -1,10 +1,12 @@
 using CCE.Application.Common;
 using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -31,57 +33,55 @@ public sealed class ExceptionHandlingMiddleware
         {
             await WriteValidationResultAsync(context, ex).ConfigureAwait(false);
         }
-        // Expected business outcomes — not logged (not server errors).
         catch (ConcurrencyException ex)
         {
-            await WriteErrorResultAsync(context, StatusCodes.Status409Conflict,
-                "CONCURRENCY_CONFLICT", ErrorType.Conflict, ex.Message).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
+                "CONCURRENCY_CONFLICT", MessageType.Conflict, ex.Message).ConfigureAwait(false);
         }
         catch (DuplicateException ex)
         {
-            await WriteErrorResultAsync(context, StatusCodes.Status409Conflict,
-                "DUPLICATE_VALUE", ErrorType.Conflict, ex.Message).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
+                "DUPLICATE_VALUE", MessageType.Conflict, ex.Message).ConfigureAwait(false);
         }
         catch (DomainException ex)
         {
-            await WriteErrorResultAsync(context, StatusCodes.Status400BadRequest,
-                "GENERAL_BAD_REQUEST", ErrorType.BusinessRule, ex.Message).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest,
+                "BAD_REQUEST", MessageType.BusinessRule, ex.Message).ConfigureAwait(false);
         }
         catch (System.Collections.Generic.KeyNotFoundException ex)
         {
-            // Legacy — still caught for non-migrated handlers
-            await WriteErrorResultAsync(context, StatusCodes.Status404NotFound,
-                "GENERAL_NOT_FOUND", ErrorType.NotFound, ex.Message).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status404NotFound,
+                "RESOURCE_NOT_FOUND_GENERIC", MessageType.NotFound, ex.Message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
-            await WriteErrorResultAsync(context, StatusCodes.Status500InternalServerError,
-                "GENERAL_INTERNAL_ERROR", ErrorType.Internal, null).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status500InternalServerError,
+                "INTERNAL_ERROR", MessageType.Internal, null).ConfigureAwait(false);
         }
     }
 
-    private static string GetCorrelationId(HttpContext ctx) =>
-        ctx.Items[CorrelationIdMiddleware.ItemKey]?.ToString() ?? Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Writes a unified error response matching the <see cref="Result{T}"/> shape,
-    /// so clients always see the same JSON structure regardless of whether
-    /// the error came from a handler or the middleware.
-    /// </summary>
-    private static async Task WriteErrorResultAsync(
-        HttpContext ctx, int statusCode, string code, ErrorType type, string? fallbackMessage)
+    private static async Task WriteErrorAsync(
+        HttpContext ctx, int statusCode, string domainKey, MessageType type, string? fallbackMessage)
     {
         var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var msg = l?.GetLocalizedMessage(code);
+        var msg = l?.GetLocalizedMessage(domainKey);
+        var code = SystemCodeMap.ToSystemCode(domainKey);
 
-        var error = new Error(
+        var envelope = new
+        {
+            success = false,
             code,
-            msg?.Ar ?? fallbackMessage ?? "خطأ",
-            msg?.En ?? fallbackMessage ?? "Error",
-            type);
-
-        var envelope = new { isSuccess = false, data = (object?)null, error };
+            message = new
+            {
+                ar = msg?.Ar ?? fallbackMessage ?? "خطأ",
+                en = msg?.En ?? fallbackMessage ?? "Error"
+            },
+            data = (object?)null,
+            errors = Array.Empty<object>(),
+            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
+            timestamp = DateTimeOffset.UtcNow,
+        };
 
         ctx.Response.StatusCode = statusCode;
         ctx.Response.ContentType = "application/json";
@@ -91,26 +91,52 @@ public sealed class ExceptionHandlingMiddleware
 
     private static async Task WriteValidationResultAsync(HttpContext ctx, ValidationException ex)
     {
-        var errors = ex.Errors
-            .GroupBy(e => e.PropertyName)
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
-
         var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var msg = l?.GetLocalizedMessage("GENERAL_VALIDATION_ERROR");
+        var headerMsg = l?.GetLocalizedMessage("VALIDATION_ERROR");
+        var headerCode = SystemCodeMap.ToSystemCode("VALIDATION_ERROR");
 
-        var error = new Error(
-            "GENERAL_VALIDATION_ERROR",
-            msg?.Ar ?? "عذرًا، البيانات المدخلة غير صحيحة",
-            msg?.En ?? "Sorry, the entered data is invalid",
-            ErrorType.Validation,
-            errors);
+        var fieldErrors = ex.Errors.Select(e =>
+        {
+            var domainKey = e.ErrorMessage;
+            var valCode = SystemCodeMap.ToSystemCode(domainKey);
+            var valMsg = l?.GetLocalizedMessage(domainKey);
+            return new
+            {
+                field = ToCamelCase(e.PropertyName),
+                code = valCode,
+                message = new
+                {
+                    ar = valMsg?.Ar ?? domainKey,
+                    en = valMsg?.En ?? domainKey
+                }
+            };
+        }).ToList();
 
-        var envelope = new { isSuccess = false, data = (object?)null, error };
+        var envelope = new
+        {
+            success = false,
+            code = headerCode,
+            message = new
+            {
+                ar = headerMsg?.Ar ?? "عذرًا، البيانات المدخلة غير صحيحة",
+                en = headerMsg?.En ?? "Sorry, the entered data is invalid"
+            },
+            data = (object?)null,
+            errors = fieldErrors,
+            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
+            timestamp = DateTimeOffset.UtcNow,
+        };
 
         ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
         ctx.Response.ContentType = "application/json";
         await JsonSerializer.SerializeAsync(ctx.Response.Body, envelope, JsonOptions)
             .ConfigureAwait(false);
+    }
+
+    private static string ToCamelCase(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return name;
+        return char.ToLowerInvariant(name[0]) + name[1..];
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new()

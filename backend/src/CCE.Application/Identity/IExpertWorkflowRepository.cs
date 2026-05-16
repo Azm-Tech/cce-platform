@@ -1,12 +1,13 @@
+using CCE.Application.Common.Interfaces;
 using CCE.Domain.Identity;
 
 namespace CCE.Application.Identity;
 
 /// <summary>
-/// Persistence helper for the expert-registration workflow. Implemented in Infrastructure
-/// (writes via <c>CceDbContext</c>); handlers stay clear of EF tracker calls.
+/// Persistence helper for the expert-registration workflow.
+/// Tracking-only — handlers call <c>ICceDbContext.SaveChangesAsync</c> to commit.
 /// </summary>
-public interface IExpertWorkflowRepository
+public interface IExpertWorkflowRepository : IRepository<ExpertRegistrationRequest, System.Guid>
 {
     /// <summary>
     /// Loads the request by Id, including soft-deleted rows. Returns null when missing.
@@ -14,8 +15,8 @@ public interface IExpertWorkflowRepository
     Task<ExpertRegistrationRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct);
 
     /// <summary>
-    /// Persists in-memory mutations on a tracked request (Approve / Reject domain transitions)
-    /// AND adds the new <paramref name="newProfile"/> if non-null. Single SaveChanges call.
+    /// Registers a new <see cref="ExpertProfile"/> in the change tracker
+    /// (created as a side-effect of approving an expert request).
     /// </summary>
-    Task SaveAsync(ExpertRegistrationRequest request, ExpertProfile? newProfile, CancellationToken ct);
+    void AddProfile(ExpertProfile profile);
 }

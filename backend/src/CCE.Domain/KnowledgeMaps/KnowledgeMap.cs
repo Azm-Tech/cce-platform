@@ -4,7 +4,7 @@ using CCE.Domain.Common;
 namespace CCE.Domain.KnowledgeMaps;
 
 [Audited]
-public sealed class KnowledgeMap : SoftDeletableAggregateRoot<System.Guid>
+public sealed class KnowledgeMap : AggregateRoot<System.Guid>
 {
     private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
 

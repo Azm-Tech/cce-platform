@@ -9,7 +9,7 @@ namespace CCE.Domain.Content;
 /// stable lets external calendar clients (.ics consumers) deduplicate updates by UID.
 /// </summary>
 [Audited]
-public sealed class Event : SoftDeletableAggregateRoot<System.Guid>
+public sealed class Event : AggregateRoot<System.Guid>
 {
     private Event(
         System.Guid id,

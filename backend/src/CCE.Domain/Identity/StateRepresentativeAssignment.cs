@@ -8,7 +8,7 @@ namespace CCE.Domain.Identity;
 /// AND marks the row deleted (so the unique-active-assignment filtered index ignores it).
 /// </summary>
 [Audited]
-public sealed class StateRepresentativeAssignment : SoftDeletableEntity<System.Guid>
+public sealed class StateRepresentativeAssignment : AggregateRoot<System.Guid>
 {
     private StateRepresentativeAssignment(
         System.Guid id,

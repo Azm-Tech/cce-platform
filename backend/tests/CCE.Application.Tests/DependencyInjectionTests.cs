@@ -1,4 +1,5 @@
 using CCE.Application.Health;
+using CCE.Application.Localization;
 using CCE.Domain.Common;
 using CCE.TestInfrastructure.Time;
 using MediatR;
@@ -15,6 +16,12 @@ public class DependencyInjectionTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<ISystemClock>(new FakeSystemClock());
+        services.AddSingleton<ILocalizationService>(_ =>
+        {
+            var l = NSubstitute.Substitute.For<ILocalizationService>();
+            l.GetLocalizedMessage(Arg.Any<string>()).Returns(new LocalizedMessage("ar", "en"));
+            return l;
+        });
         services.AddApplication();
 
         await using var sp = services.BuildServiceProvider();
@@ -32,6 +39,12 @@ public class DependencyInjectionTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<ISystemClock>(new FakeSystemClock());
+        services.AddSingleton<ILocalizationService>(_ =>
+        {
+            var l = NSubstitute.Substitute.For<ILocalizationService>();
+            l.GetLocalizedMessage(Arg.Any<string>()).Returns(new LocalizedMessage("ar", "en"));
+            return l;
+        });
         services.AddApplication();
 
         await using var sp = services.BuildServiceProvider();

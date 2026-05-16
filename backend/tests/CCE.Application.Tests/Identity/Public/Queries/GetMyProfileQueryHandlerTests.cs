@@ -1,5 +1,6 @@
 using CCE.Application.Identity.Public;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
@@ -13,13 +14,12 @@ public class GetMyProfileQueryHandlerTests
         var service = Substitute.For<IUserProfileRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((User?)null);
-        var sut = new GetMyProfileQueryHandler(service, BuildErrors());
+        var sut = new GetMyProfileQueryHandler(service, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error!.Code.Should().Be("IDENTITY_USER_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class GetMyProfileQueryHandlerTests
 
         var service = Substitute.For<IUserProfileRepository>();
         service.FindAsync(userId, Arg.Any<CancellationToken>()).Returns(user);
-        var sut = new GetMyProfileQueryHandler(service, BuildErrors());
+        var sut = new GetMyProfileQueryHandler(service, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(userId), CancellationToken.None);
 

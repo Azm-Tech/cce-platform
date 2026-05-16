@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 
-public sealed record GetMyExpertStatusQuery(System.Guid UserId) : IRequest<Result<ExpertRequestStatusDto>>;
+public sealed record GetMyExpertStatusQuery(System.Guid UserId) : IRequest<Response<ExpertRequestStatusDto>>;

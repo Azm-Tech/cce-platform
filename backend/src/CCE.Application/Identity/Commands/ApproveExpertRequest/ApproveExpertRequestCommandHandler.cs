@@ -2,6 +2,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using MediatR;
@@ -9,52 +10,53 @@ using MediatR;
 namespace CCE.Application.Identity.Commands.ApproveExpertRequest;
 
 public sealed class ApproveExpertRequestCommandHandler
-    : IRequestHandler<ApproveExpertRequestCommand, Result<ExpertProfileDto>>
+    : IRequestHandler<ApproveExpertRequestCommand, Response<ExpertProfileDto>>
 {
-    private readonly IExpertWorkflowRepository _service;
     private readonly ICceDbContext _db;
+    private readonly IExpertWorkflowRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
-    private readonly CCE.Application.Common.Errors _errors;
+    private readonly MessageFactory _msg;
 
     public ApproveExpertRequestCommandHandler(
-        IExpertWorkflowRepository service,
         ICceDbContext db,
+        IExpertWorkflowRepository service,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
-        CCE.Application.Common.Errors errors)
+        MessageFactory msg)
     {
-        _service = service;
         _db = db;
+        _service = service;
         _currentUser = currentUser;
         _clock = clock;
-        _errors = errors;
+        _msg = msg;
     }
 
-    public async Task<Result<ExpertProfileDto>> Handle(
+    public async Task<Response<ExpertProfileDto>> Handle(
         ApproveExpertRequestCommand request,
         CancellationToken cancellationToken)
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
         {
-            return _errors.ExpertRequestNotFound();
+            return _msg.NotFound<ExpertProfileDto>("EXPERT_REQUEST_NOT_FOUND");
         }
 
         var approvedById = _currentUser.GetUserId();
         if (approvedById is null)
         {
-            return _errors.NotAuthenticated();
+            return _msg.NotAuthenticated<ExpertProfileDto>();
         }
 
         registration.Approve(approvedById.Value, _clock);
         var profile = ExpertProfile.CreateFromApprovedRequest(registration, request.AcademicTitleAr, request.AcademicTitleEn, _clock);
-        await _service.SaveAsync(registration, profile, cancellationToken).ConfigureAwait(false);
+        _service.AddProfile(profile);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var userName = (await _db.Users.Where(u => u.Id == registration.RequestedById).Select(u => u.UserName)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
-        return new ExpertProfileDto(
+        return _msg.Ok(new ExpertProfileDto(
             profile.Id,
             profile.UserId,
             userName,
@@ -64,6 +66,6 @@ public sealed class ApproveExpertRequestCommandHandler
             profile.AcademicTitleAr,
             profile.AcademicTitleEn,
             profile.ApprovedOn,
-            profile.ApprovedById);
+            profile.ApprovedById), "EXPERT_REQUEST_APPROVED");
     }
 }

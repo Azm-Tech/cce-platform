@@ -2,6 +2,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
@@ -17,14 +18,14 @@ public class CreateStateRepAssignmentCommandHandlerTests
     {
         var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildErrors());
+            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
         var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(System.Guid.NewGuid(), System.Guid.NewGuid()),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_USER_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
@@ -34,14 +35,14 @@ public class CreateStateRepAssignmentCommandHandlerTests
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
         var db = BuildDb(users, System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildErrors());
+            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
         var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, System.Guid.NewGuid()),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("COUNTRY_COUNTRY_NOT_FOUND");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR070);
     }
 
     [Fact]
@@ -55,14 +56,14 @@ public class CreateStateRepAssignmentCommandHandlerTests
 
         var db = BuildDb(users, new[] { country });
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentRepository>(), currentUser, new FakeSystemClock(), BuildErrors());
+            db, Substitute.For<IStateRepAssignmentRepository>(), currentUser, new FakeSystemClock(), BuildMsg());
 
         var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, country.Id),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Error!.Code.Should().Be("IDENTITY_NOT_AUTHENTICATED");
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR028);
     }
 
     [Fact]
@@ -76,18 +77,19 @@ public class CreateStateRepAssignmentCommandHandlerTests
         var clock = new FakeSystemClock();
 
         var db = BuildDb(users, new[] { country });
-        var sut = new CreateStateRepAssignmentCommandHandler(db, service, currentUser, clock, BuildErrors());
+        var sut = new CreateStateRepAssignmentCommandHandler(db, service, currentUser, clock, BuildMsg());
 
         var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, country.Id),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
+        result.Success.Should().BeTrue();
         result.Data!.UserId.Should().Be(aliceId);
         result.Data!.CountryId.Should().Be(country.Id);
         result.Data!.UserName.Should().Be("alice");
         result.Data!.IsActive.Should().BeTrue();
-        await service.Received(1).SaveAsync(Arg.Any<StateRepresentativeAssignment>(), Arg.Any<CancellationToken>());
+        await service.Received(1).AddAsync(Arg.Any<StateRepresentativeAssignment>(), Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

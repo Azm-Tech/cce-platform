@@ -10,4 +10,4 @@ public sealed record ResetPasswordCommand(
     string NewPassword,
     string ConfirmPassword,
     string? IpAddress)
-    : IRequest<Result<AuthMessageDto>>;
+    : IRequest<Response<AuthMessageDto>>;

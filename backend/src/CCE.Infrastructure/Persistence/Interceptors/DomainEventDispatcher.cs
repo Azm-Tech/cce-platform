@@ -29,7 +29,7 @@ public sealed class DomainEventDispatcher : SaveChangesInterceptor
 
         var entriesWithEvents = ctx.ChangeTracker.Entries()
             .Select(e => e.Entity)
-            .OfType<Entity<System.Guid>>()
+            .OfType<AggregateRoot<System.Guid>>()
             .Where(entity => entity.DomainEvents.Count > 0)
             .ToList();
 
