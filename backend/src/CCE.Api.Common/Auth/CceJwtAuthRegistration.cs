@@ -33,6 +33,7 @@ public static class CceJwtAuthRegistration
                 })
                 .AddScheme<AuthenticationSchemeOptions, DevAuthHandler>(
                     DevAuthHandler.SchemeName, _ => { });
+            services.Configure<LocalAuthOptions>(configuration.GetSection(LocalAuthOptions.SectionName));
             services.AddHostedService<DevUsersSeeder>();
             services.Configure<EntraIdOptions>(configuration.GetSection(EntraIdOptions.SectionName));
             services.AddAuthorization();

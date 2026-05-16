@@ -1,8 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
+using CCE.Application.Identity.Auth.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CCE.Api.Common.Auth;
 
@@ -51,11 +55,17 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
         ["cce-user"]     = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
     };
 
+    private readonly IOptions<LocalAuthOptions> _localAuthOptions;
+
     public DevAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder)
-        : base(options, logger, encoder) { }
+        UrlEncoder encoder,
+        IOptions<LocalAuthOptions> localAuthOptions)
+        : base(options, logger, encoder)
+    {
+        _localAuthOptions = localAuthOptions;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -96,11 +106,60 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
         if (Request.Headers.TryGetValue("Authorization", out var auth))
         {
             var raw = auth.ToString();
+
             const string devPrefix = "Bearer dev:";
             if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 return raw.Substring(devPrefix.Length).Trim();
             }
+
+            // Fallback: try to decode as a real JWT (e.g. issued by /api/auth/login)
+            const string bearerPrefix = "Bearer ";
+            if (raw.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                var token = raw.Substring(bearerPrefix.Length).Trim();
+                return TryReadRoleFromJwt(token);
+            }
+        }
+
+        return null;
+    }
+
+    private string? TryReadRoleFromJwt(string token)
+    {
+        try
+        {
+            var opts = _localAuthOptions.Value;
+            var profiles = new[] { opts.External, opts.Internal };
+            var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+
+            foreach (var profile in profiles)
+            {
+                if (string.IsNullOrWhiteSpace(profile.SigningKey))
+                    continue;
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(profile.SigningKey));
+                var parameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = profile.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = profile.Audience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(2),
+                };
+
+                var principal = handler.ValidateToken(token, parameters, out _);
+                var role = principal.FindFirst("roles")?.Value;
+                if (!string.IsNullOrEmpty(role))
+                    return role;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "Failed to validate JWT in DevAuthHandler fallback");
         }
 
         return null;
