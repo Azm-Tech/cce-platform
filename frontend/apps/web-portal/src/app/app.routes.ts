@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { HealthPage } from './health/health.page';
 import { authGuard } from './core/auth/auth.guard';
+import { guestGuard } from './core/auth/guest.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -41,12 +42,14 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/account/login.page').then((m) => m.LoginPage),
     title: 'CCE — Sign in',
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/account/register.page').then((m) => m.RegisterPage),
     title: 'CCE — Register',

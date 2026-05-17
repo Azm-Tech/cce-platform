@@ -7,6 +7,7 @@ export * from './lib/page-hero/page-hero.component';
 export * from './lib/paged-table/paged-table.component';
 export * from './lib/ui-kit/ui-kit.component';
 export * from './lib/workbench-hero/workbench-hero.component';
+export * from './lib/http/server-error.interceptor';
 
 // SCSS theme entry-point: import via @use "@cce/ui-kit/styles/dga-theme" with mixin `cce-theme`.
 

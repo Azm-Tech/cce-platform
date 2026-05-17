@@ -1,7 +1,8 @@
 import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
 import { authInterceptor } from './core/http/auth.interceptor';
-import { serverErrorInterceptor } from './core/http/server-error.interceptor';
+import { serverErrorInterceptor } from '@frontend/ui-kit';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
+import { localeInterceptor } from '@frontend/i18n';
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject, isDevMode } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([correlationIdInterceptor, authInterceptor, serverErrorInterceptor]),
+      withInterceptors([localeInterceptor, correlationIdInterceptor, authInterceptor, serverErrorInterceptor]),
     ),
     provideAnimationsAsync(),
     provideTransloco({

@@ -2,21 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-
-/**
- * Same-origin or relative-path requests target the CCE backend; everything
- * else (Entra ID discovery, Sentry, KAPSARC) is third-party and must not be
- * tagged with `withCredentials` — that would force a credentialed CORS
- * preflight which Entra ID's discovery endpoint does not allow.
- */
-function isInternalUrl(url: string): boolean {
-  if (url.startsWith('/')) return true;
-  try {
-    return new URL(url).origin === window.location.origin;
-  } catch {
-    return false;
-  }
-}
+import { isInternalUrl } from './is-internal-url';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);

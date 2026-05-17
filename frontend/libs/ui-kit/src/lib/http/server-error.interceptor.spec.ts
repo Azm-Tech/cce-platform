@@ -1,7 +1,7 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ToastService } from '@frontend/ui-kit';
+import { ToastService } from '../feedback/toast.service';
 import { serverErrorInterceptor } from './server-error.interceptor';
 
 describe('serverErrorInterceptor', () => {
@@ -24,19 +24,31 @@ describe('serverErrorInterceptor', () => {
 
   afterEach(() => httpTesting.verify());
 
-  it('shows error toast on 5xx', () => {
+  it('toasts errors.network on status 0', () => {
+    http.get('/x').subscribe({ error: () => undefined });
+    httpTesting.expectOne('/x').flush('', { status: 0, statusText: 'Unknown' });
+    expect(toast.error).toHaveBeenCalledWith('errors.network');
+  });
+
+  it('toasts errors.rateLimit on 429', () => {
+    http.get('/x').subscribe({ error: () => undefined });
+    httpTesting.expectOne('/x').flush('', { status: 429, statusText: 'Too Many Requests' });
+    expect(toast.error).toHaveBeenCalledWith('errors.rateLimit');
+  });
+
+  it('toasts errors.server on 5xx', () => {
     http.get('/x').subscribe({ error: () => undefined });
     httpTesting.expectOne('/x').flush('boom', { status: 500, statusText: 'Server' });
     expect(toast.error).toHaveBeenCalledWith('errors.server');
   });
 
-  it('shows forbidden toast on 403', () => {
+  it('toasts errors.forbidden on 403', () => {
     http.get('/x').subscribe({ error: () => undefined });
     httpTesting.expectOne('/x').flush('nope', { status: 403, statusText: 'Forbidden' });
     expect(toast.error).toHaveBeenCalledWith('errors.forbidden');
   });
 
-  it('does not toast on 200', () => {
+  it('does not toast on 2xx', () => {
     http.get('/x').subscribe();
     httpTesting.expectOne('/x').flush({});
     expect(toast.error).not.toHaveBeenCalled();

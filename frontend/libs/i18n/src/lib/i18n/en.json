@@ -142,6 +142,7 @@
     "server": "Server error. Try again later.",
     "forbidden": "You don't have permission for this action.",
     "network": "Network error. Check your connection.",
+    "rateLimit": "Too many requests. Please wait a moment and try again.",
     "concurrency": "Item was modified by another user. Reload and try again.",
     "duplicate": "Duplicate value — this item already exists.",
     "validation": "Please correct the highlighted fields.",

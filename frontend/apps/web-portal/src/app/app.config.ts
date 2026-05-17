@@ -3,7 +3,8 @@ import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, i
 import { AuthService } from './core/auth/auth.service';
 import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
-import { serverErrorInterceptor } from './core/http/server-error.interceptor';
+import { serverErrorInterceptor } from '@frontend/ui-kit';
+import { localeInterceptor } from '@frontend/i18n';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([correlationIdInterceptor, bffCredentialsInterceptor, serverErrorInterceptor]),
+      withInterceptors([localeInterceptor, correlationIdInterceptor, bffCredentialsInterceptor, serverErrorInterceptor]),
     ),
     provideAnimationsAsync(),
     provideTransloco({
