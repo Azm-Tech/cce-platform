@@ -1,3 +1,4 @@
+using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
@@ -30,13 +31,21 @@ public sealed class UpsertUserInterestCommandHandler
         if (user is null)
             return _msg.UserNotFound<UpsertUserInterestResult>();
 
-        var added = user.ToggleInterest(request.Interest);
+        var oldInterests = user.Interests.ToList();
+        var newList = request.Interests ?? System.Array.Empty<string>();
+
+        user.UpdateInterests(newList);
+
+        var newInterests = user.Interests;
+        var added = newInterests.Except(oldInterests).ToList();
+        var removed = oldInterests.Except(newInterests).ToList();
 
         _service.Update(user);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return _msg.InterestUpserted(new UpsertUserInterestResult(
-            user.Interests,
-            added));
+            newInterests,
+            added,
+            removed));
     }
 }
