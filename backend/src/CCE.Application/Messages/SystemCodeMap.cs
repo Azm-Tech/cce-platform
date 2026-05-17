@@ -8,22 +8,24 @@ public static class SystemCodeMap
 {
     private static readonly Dictionary<string, string> DomainToCode = new(StringComparer.OrdinalIgnoreCase)
     {
-        // ─── Identity Errors ───
+        // ─── Identity Errors (appendix-aligned) ───
         ["USER_NOT_FOUND"] = SystemCode.ERR001,
-        ["EXPERT_REQUEST_NOT_FOUND"] = SystemCode.ERR002,
-        ["STATE_REP_ASSIGNMENT_NOT_FOUND"] = SystemCode.ERR003,
         ["EMAIL_EXISTS"] = SystemCode.ERR019,
         ["INVALID_CREDENTIALS"] = SystemCode.ERR020,
-        ["INVALID_TOKEN"] = SystemCode.ERR021,
-        ["INVALID_REFRESH_TOKEN"] = SystemCode.ERR022,
         ["PASSWORD_RECOVERY_FAILED"] = SystemCode.ERR023,
         ["LOGOUT_FAILED"] = SystemCode.ERR024,
-        ["ACCOUNT_DEACTIVATED"] = SystemCode.ERR025,
-        ["USERNAME_EXISTS"] = SystemCode.ERR026,
-        ["REGISTRATION_FAILED"] = SystemCode.ERR027,
-        ["NOT_AUTHENTICATED"] = SystemCode.ERR028,
-        ["EXPERT_REQUEST_ALREADY_EXISTS"] = SystemCode.ERR029,
-        ["STATE_REP_ASSIGNMENT_EXISTS"] = SystemCode.ERR030,
+
+        // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
+        ["EXPERT_REQUEST_NOT_FOUND"] = SystemCode.ERR400,
+        ["STATE_REP_ASSIGNMENT_NOT_FOUND"] = SystemCode.ERR401,
+        ["INVALID_TOKEN"] = SystemCode.ERR402,
+        ["INVALID_REFRESH_TOKEN"] = SystemCode.ERR403,
+        ["ACCOUNT_DEACTIVATED"] = SystemCode.ERR404,
+        ["USERNAME_EXISTS"] = SystemCode.ERR405,
+        ["REGISTRATION_FAILED"] = SystemCode.ERR406,
+        ["NOT_AUTHENTICATED"] = SystemCode.ERR407,
+        ["EXPERT_REQUEST_ALREADY_EXISTS"] = SystemCode.ERR408,
+        ["STATE_REP_ASSIGNMENT_EXISTS"] = SystemCode.ERR409,
 
         // ─── Content Errors ───
         ["NEWS_NOT_FOUND"] = SystemCode.ERR040,
@@ -80,24 +82,21 @@ public static class SystemCodeMap
         ["CONCURRENCY_CONFLICT"] = SystemCode.ERR907,
         ["DUPLICATE_VALUE"] = SystemCode.ERR908,
 
-        // ─── Identity Success ───
+        // ─── Identity Success (appendix-aligned) ───
         ["LOGIN_SUCCESS"] = SystemCode.CON001,
-        ["REGISTER_SUCCESS"] = SystemCode.CON002,
-        ["LOGOUT_SUCCESS"] = SystemCode.CON003,
         ["TOKEN_REFRESHED"] = SystemCode.CON004,
-        ["USER_UPDATED"] = SystemCode.CON005,
-        ["USER_CREATED"] = SystemCode.CON006,
-        ["USER_DELETED"] = SystemCode.CON007,
-        ["USER_ACTIVATED"] = SystemCode.CON008,
-        ["USER_DEACTIVATED"] = SystemCode.CON009,
-        ["ROLES_ASSIGNED"] = SystemCode.CON010,
-        ["PASSWORD_RESET"] = SystemCode.CON011,
-        ["EXPERT_REQUEST_SUBMITTED"] = SystemCode.CON012,
-        ["EXPERT_REQUEST_APPROVED"] = SystemCode.CON013,
-        ["EXPERT_REQUEST_REJECTED"] = SystemCode.CON014,
-        ["STATE_REP_ASSIGNMENT_CREATED"] = SystemCode.CON015,
-        ["STATE_REP_ASSIGNMENT_REVOKED"] = SystemCode.CON016,
-        ["PROFILE_UPDATED"] = SystemCode.CON017,
+        ["PROFILE_UPDATED"] = SystemCode.CON005,
+        ["EXPERT_REQUEST_SUBMITTED"] = SystemCode.CON006,
+        ["PASSWORD_RESET"] = SystemCode.CON014,
+        ["LOGOUT_SUCCESS"] = SystemCode.CON015,
+        ["REGISTER_SUCCESS"] = SystemCode.CON017,
+
+        // ─── Backend-only Identity Success (appendix numbers already taken) ───
+        ["EXPERT_REQUEST_APPROVED"] = SystemCode.CON050,
+        ["EXPERT_REQUEST_REJECTED"] = SystemCode.CON051,
+        ["STATE_REP_ASSIGNMENT_CREATED"] = SystemCode.CON052,
+        ["STATE_REP_ASSIGNMENT_REVOKED"] = SystemCode.CON053,
+        ["ROLES_ASSIGNED"] = SystemCode.CON054,
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,

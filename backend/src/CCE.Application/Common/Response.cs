@@ -1,4 +1,3 @@
-using CCE.Application.Localization;
 using CCE.Domain.Common;
 using System.Text.Json.Serialization;
 
@@ -8,12 +7,13 @@ namespace CCE.Application.Common;
 /// Unified API response envelope. Every endpoint returns this shape.
 /// Replaces <see cref="Result{T}"/> with proper success messages and error arrays.
 /// Code field uses ERR0xx/CON0xx/VAL0xx numbering.
+/// Message is a single string in the language requested via Accept-Language header.
 /// </summary>
 public sealed record Response<T>
 {
     [JsonInclude] public bool Success { get; private init; }
     [JsonInclude] public string Code { get; private init; } = string.Empty;
-    [JsonInclude] public LocalizedMessage Message { get; private init; } = new("", "");
+    [JsonInclude] public string Message { get; private init; } = string.Empty;
     [JsonInclude] public T? Data { get; private init; }
     [JsonInclude] public IReadOnlyList<FieldError> Errors { get; private init; } = [];
     [JsonInclude] public string TraceId { get; init; } = string.Empty;
@@ -26,7 +26,7 @@ public sealed record Response<T>
 
     // ─── Success Factories ───
 
-    public static Response<T> Ok(T data, string code, LocalizedMessage message) => new()
+    public static Response<T> Ok(T data, string code, string message) => new()
     {
         Success = true,
         Code = code,
@@ -36,7 +36,7 @@ public sealed record Response<T>
     };
 
     /// <summary>Shorthand for void commands that return no data.</summary>
-    public static Response<VoidData> Ok(string code, LocalizedMessage message) => new()
+    public static Response<VoidData> Ok(string code, string message) => new()
     {
         Success = true,
         Code = code,
@@ -47,7 +47,7 @@ public sealed record Response<T>
 
     // ─── Failure Factories ───
 
-    public static Response<T> Fail(string code, LocalizedMessage message, MessageType type) => new()
+    public static Response<T> Fail(string code, string message, MessageType type) => new()
     {
         Success = false,
         Code = code,
@@ -56,7 +56,7 @@ public sealed record Response<T>
     };
 
     public static Response<T> Fail(
-        string code, LocalizedMessage message, MessageType type, IReadOnlyList<FieldError> errors) => new()
+        string code, string message, MessageType type, IReadOnlyList<FieldError> errors) => new()
     {
         Success = false,
         Code = code,
@@ -76,9 +76,9 @@ public sealed record VoidData
 /// <summary>Non-generic companion for void commands.</summary>
 public static class Response
 {
-    public static Response<VoidData> Ok(string code, LocalizedMessage message)
+    public static Response<VoidData> Ok(string code, string message)
         => Response<VoidData>.Ok(code, message);
 
-    public static Response<VoidData> Fail(string code, LocalizedMessage message, MessageType type)
+    public static Response<VoidData> Fail(string code, string message, MessageType type)
         => Response<VoidData>.Fail(code, message, type);
 }

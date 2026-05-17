@@ -6,8 +6,8 @@ namespace CCE.Application.Messages;
 
 /// <summary>
 /// Factory for building <see cref="Response{T}"/> instances with localized messages.
-/// Takes domain keys (e.g. "USER_NOT_FOUND"), resolves bilingual message from Resources.yaml,
-/// and maps to system codes (e.g. "ERR001") via <see cref="SystemCodeMap"/>.
+/// Takes domain keys (e.g. "USER_NOT_FOUND"), resolves message in the request language
+/// from Resources.yaml, and maps to system codes (e.g. "ERR001") via <see cref="SystemCodeMap"/>.
 /// </summary>
 public sealed class MessageFactory
 {
@@ -88,9 +88,5 @@ public sealed class MessageFactory
         return Response<T>.Fail(code, msg, type);
     }
 
-    private LocalizedMessage Localize(string domainKey)
-    {
-        var raw = _l.GetLocalizedMessage(domainKey);
-        return new LocalizedMessage(raw.Ar, raw.En);
-    }
+    private string Localize(string domainKey) => _l.GetString(domainKey);
 }

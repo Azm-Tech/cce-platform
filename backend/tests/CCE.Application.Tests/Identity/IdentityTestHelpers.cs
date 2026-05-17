@@ -9,10 +9,8 @@ public static class IdentityTestHelpers
     public static MessageFactory BuildMsg()
     {
         var localization = Substitute.For<ILocalizationService>();
-        localization.GetLocalizedMessage(Arg.Any<string>())
-            .Returns(call => new LocalizedMessage(
-                Ar: call.Arg<string>(),
-                En: call.Arg<string>()));
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>())
+            .Returns(call => call.ArgAt<string>(0));
 
         return new MessageFactory(localization);
     }

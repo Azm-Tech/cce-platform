@@ -49,24 +49,24 @@ public sealed class ResponseValidationBehavior<TRequest, TResponse>
             {
                 var domainKey = f.ErrorMessage;
                 var valCode = SystemCodeMap.ToSystemCode(domainKey);
-                var msg = _l.GetLocalizedMessage(domainKey);
+                var msg = _l.GetString(domainKey);
                 return new FieldError(
                     ToCamelCase(f.PropertyName),
                     valCode,
-                    new LocalizedMessage(msg.Ar, msg.En));
+                    msg);
             }).ToList();
 
             var headerDomainKey = "VALIDATION_ERROR";
             var headerCode = SystemCodeMap.ToSystemCode(headerDomainKey);
-            var headerMsg = _l.GetLocalizedMessage(headerDomainKey);
+            var headerMsg = _l.GetString(headerDomainKey);
 
             var failMethod = responseType.GetMethod("Fail",
-                new[] { typeof(string), typeof(LocalizedMessage), typeof(MessageType), typeof(IReadOnlyList<FieldError>) });
+                new[] { typeof(string), typeof(string), typeof(MessageType), typeof(IReadOnlyList<FieldError>) });
 
             return (TResponse)failMethod!.Invoke(null, new object[]
             {
                 headerCode,
-                new LocalizedMessage(headerMsg.Ar, headerMsg.En),
+                headerMsg,
                 MessageType.Validation,
                 fieldErrors
             })!;

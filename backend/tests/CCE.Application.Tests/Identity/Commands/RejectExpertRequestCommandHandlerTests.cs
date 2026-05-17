@@ -26,7 +26,7 @@ public class RejectExpertRequestCommandHandlerTests
             CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR002);
+        result.Code.Should().Be(SystemCode.ERR400);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class RejectExpertRequestCommandHandlerTests
             CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR028);
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]

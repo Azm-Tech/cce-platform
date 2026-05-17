@@ -63,7 +63,7 @@ public class CreateStateRepAssignmentCommandHandlerTests
             CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR028);
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]

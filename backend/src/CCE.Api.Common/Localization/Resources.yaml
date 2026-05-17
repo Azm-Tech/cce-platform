@@ -223,24 +223,24 @@ REGISTRATION_FAILED:
 # ─── Identity Bare Keys (success) ───
 
 REGISTER_SUCCESS:
-  ar: "تم إنشاء الحساب بنجاح"
-  en: "Account created successfully"
+  ar: "تم إنشاء المستخدم بنجاح!"
+  en: "User created successfully!"
 
 LOGIN_SUCCESS:
   ar: "تم تسجيل الدخول بنجاح"
   en: "Logged in successfully"
 
 LOGOUT_SUCCESS:
-  ar: "تم تسجيل الخروج بنجاح"
-  en: "Logged out successfully"
+  ar: "تم تسجيل الخروج بنجاح."
+  en: "Logged out successfully."
 
 TOKEN_REFRESHED:
   ar: "تم تحديث الرمز بنجاح"
   en: "Token refreshed successfully"
 
 PASSWORD_RESET:
-  ar: "تم إعادة تعيين كلمة المرور بنجاح"
-  en: "Password reset successfully"
+  ar: "تمت استعادة كلمة المرور بنجاح!"
+  en: "Password recovered successfully!"
 
 ROLES_ASSIGNED:
   ar: "تم تعيين الأدوار بنجاح"
@@ -255,20 +255,20 @@ EXPERT_REQUEST_REJECTED:
   en: "Expert request rejected"
 
 EXPERT_REQUEST_SUBMITTED:
-  ar: "تم تقديم طلب الخبير بنجاح"
-  en: "Expert request submitted successfully"
+  ar: "تم تقديم طلبك بنجاح لتسجيلك كخبير في مجتمع المعرفة. سيتم مراجعة طلبك قريباً."
+  en: "Your request to register as an expert in the Knowledge Community has been submitted successfully. It will be reviewed shortly."
 
 STATE_REP_ASSIGNMENT_CREATED:
-  ar: "تم إنشاء التعيين بنجاح"
-  en: "Assignment created successfully"
+  ar: "تم إرسال طلبك بنجاح. سيتم مراجعته من قبل المشرف قريباً. شكراً لمساهمتك!"
+  en: "Your request has been sent successfully. It will be reviewed by the admin shortly. Thank you for your contribution!"
 
 STATE_REP_ASSIGNMENT_REVOKED:
   ar: "تم إلغاء التعيين بنجاح"
   en: "Assignment revoked successfully"
 
 PROFILE_UPDATED:
-  ar: "تم تحديث الملف الشخصي بنجاح"
-  en: "Profile updated successfully"
+  ar: "تم تحديث بيانات الملف الشخصي بنجاح. يمكنك الآن الاطلاع على المعلومات المحدثة في ملفك الشخصي."
+  en: "Profile data updated successfully. You can now view the updated information in your profile."
 
 SUCCESS_OPERATION:
   ar: "تمت العملية بنجاح"

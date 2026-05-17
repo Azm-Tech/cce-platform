@@ -3,7 +3,6 @@ using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.AssignUserRoles;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
-using CCE.Application.Localization;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
@@ -43,7 +42,7 @@ public class AssignUserRolesCommandHandlerTests
             new[] { "ContentManager" }, true);
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Is<GetUserByIdQuery>(q => q.Id == id), Arg.Any<CancellationToken>())
-            .Returns(Response<UserDetailDto>.Ok(dto, SystemCode.CON900, new LocalizedMessage("ar", "en")));
+            .Returns(Response<UserDetailDto>.Ok(dto, SystemCode.CON900, "ar"));
 
         var sut = new AssignUserRolesCommandHandler(service, mediator, BuildMsg());
 
@@ -60,11 +59,14 @@ public class AssignUserRolesCommandHandlerTests
         var service = Substitute.For<IUserRoleAssignmentRepository>();
         service.ReplaceRolesAsync(default, default!, default).ReturnsForAnyArgs(true);
         var mediator = Substitute.For<IMediator>();
+
+        var dto = new UserDetailDto(
+            id, "alice@cce.local", "alice", "ar",
+            KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null,
+            new[] { "SuperAdmin", "ContentManager" }, true);
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Response<UserDetailDto>.Ok(new UserDetailDto(
-                id, "alice@cce.local", "alice", "ar",
-                KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null,
-                new[] { "SuperAdmin", "ContentManager" }, true), SystemCode.CON900, new LocalizedMessage("ar", "en")));
+            .Returns(Response<UserDetailDto>.Ok(dto, SystemCode.CON900, "ar"));
+
         var sut = new AssignUserRolesCommandHandler(service, mediator, BuildMsg());
 
         var roles = new[] { "SuperAdmin", "ContentManager" };

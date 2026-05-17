@@ -65,18 +65,14 @@ public sealed class ExceptionHandlingMiddleware
         HttpContext ctx, int statusCode, string domainKey, MessageType type, string? fallbackMessage)
     {
         var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var msg = l?.GetLocalizedMessage(domainKey);
+        var msg = l?.GetString(domainKey) ?? fallbackMessage ?? "خطأ";
         var code = SystemCodeMap.ToSystemCode(domainKey);
 
         var envelope = new
         {
             success = false,
             code,
-            message = new
-            {
-                ar = msg?.Ar ?? fallbackMessage ?? "خطأ",
-                en = msg?.En ?? fallbackMessage ?? "Error"
-            },
+            message = msg,
             data = (object?)null,
             errors = Array.Empty<object>(),
             traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
@@ -92,23 +88,19 @@ public sealed class ExceptionHandlingMiddleware
     private static async Task WriteValidationResultAsync(HttpContext ctx, ValidationException ex)
     {
         var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var headerMsg = l?.GetLocalizedMessage("VALIDATION_ERROR");
+        var headerMsg = l?.GetString("VALIDATION_ERROR") ?? "عذرًا، البيانات المدخلة غير صحيحة";
         var headerCode = SystemCodeMap.ToSystemCode("VALIDATION_ERROR");
 
         var fieldErrors = ex.Errors.Select(e =>
         {
             var domainKey = e.ErrorMessage;
             var valCode = SystemCodeMap.ToSystemCode(domainKey);
-            var valMsg = l?.GetLocalizedMessage(domainKey);
+            var valMsg = l?.GetString(domainKey) ?? domainKey;
             return new
             {
                 field = ToCamelCase(e.PropertyName),
                 code = valCode,
-                message = new
-                {
-                    ar = valMsg?.Ar ?? domainKey,
-                    en = valMsg?.En ?? domainKey
-                }
+                message = valMsg
             };
         }).ToList();
 
@@ -116,11 +108,7 @@ public sealed class ExceptionHandlingMiddleware
         {
             success = false,
             code = headerCode,
-            message = new
-            {
-                ar = headerMsg?.Ar ?? "عذرًا، البيانات المدخلة غير صحيحة",
-                en = headerMsg?.En ?? "Sorry, the entered data is invalid"
-            },
+            message = headerMsg,
             data = (object?)null,
             errors = fieldErrors,
             traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,

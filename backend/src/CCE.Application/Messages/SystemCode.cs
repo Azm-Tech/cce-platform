@@ -15,23 +15,36 @@ public static class SystemCode
     //  ERR — Error codes (failures)
     // ════════════════════════════════════════════════════════════════
 
-    // ─── Identity Errors ───
-    public const string ERR001 = "ERR001"; // User not found
-    public const string ERR002 = "ERR002"; // Expert request not found
-    public const string ERR003 = "ERR003"; // State rep assignment not found
+    // ─── Identity Errors (appendix-aligned) ───
+    // ERR001-ERR018 reserved for appendix frontend codes
+    public const string ERR001 = "ERR001"; // User not found (also used as ERR001 in appendix — keep)
+    public const string ERR002 = "ERR002"; // Resource download failure (appendix)
+    public const string ERR003 = "ERR003"; // Resource share failure (appendix)
 
-    public const string ERR019 = "ERR019"; // Email already exists
-    public const string ERR020 = "ERR020"; // Invalid credentials
-    public const string ERR021 = "ERR021"; // Invalid / expired token
-    public const string ERR022 = "ERR022"; // Invalid refresh token
-    public const string ERR023 = "ERR023"; // Password recovery failed
-    public const string ERR024 = "ERR024"; // Logout failed
-    public const string ERR025 = "ERR025"; // Account deactivated
-    public const string ERR026 = "ERR026"; // Username already exists
-    public const string ERR027 = "ERR027"; // Registration failed
-    public const string ERR028 = "ERR028"; // Not authenticated
-    public const string ERR029 = "ERR029"; // Expert request already exists
-    public const string ERR030 = "ERR030"; // State rep assignment already exists
+    public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
+    public const string ERR020 = "ERR020"; // Invalid credentials (appendix)
+    public const string ERR021 = "ERR021"; // Login system error (appendix)
+    public const string ERR022 = "ERR022"; // Email not found in password recovery (appendix)
+    public const string ERR023 = "ERR023"; // Password recovery system error
+    public const string ERR024 = "ERR024"; // Logout failure
+    public const string ERR025 = "ERR025"; // Content update failure (appendix)
+    public const string ERR026 = "ERR026"; // User deletion failure (appendix)
+    public const string ERR027 = "ERR027"; // News/event upload failure (appendix)
+    public const string ERR028 = "ERR028"; // News/event deletion failure (appendix)
+    public const string ERR029 = "ERR029"; // Resource upload failure (appendix)
+    public const string ERR030 = "ERR030"; // Resource deletion failure (appendix)
+
+    // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
+    public const string ERR400 = "ERR400"; // Expert request not found
+    public const string ERR401 = "ERR401"; // State rep assignment not found
+    public const string ERR402 = "ERR402"; // Invalid / expired token
+    public const string ERR403 = "ERR403"; // Invalid refresh token
+    public const string ERR404 = "ERR404"; // Account deactivated
+    public const string ERR405 = "ERR405"; // Username already exists
+    public const string ERR406 = "ERR406"; // Registration failed
+    public const string ERR407 = "ERR407"; // Not authenticated
+    public const string ERR408 = "ERR408"; // Expert request already exists
+    public const string ERR409 = "ERR409"; // State rep assignment already exists
 
     // ─── Content Errors ───
     public const string ERR040 = "ERR040"; // News not found
@@ -92,24 +105,31 @@ public static class SystemCode
     //  CON — Confirmation / Success codes
     // ════════════════════════════════════════════════════════════════
 
-    // ─── Identity Success ───
-    public const string CON001 = "CON001"; // Login success
-    public const string CON002 = "CON002"; // Register success
-    public const string CON003 = "CON003"; // Logout success
-    public const string CON004 = "CON004"; // Token refreshed
-    public const string CON005 = "CON005"; // User updated
-    public const string CON006 = "CON006"; // User created
-    public const string CON007 = "CON007"; // User deleted
-    public const string CON008 = "CON008"; // User activated
-    public const string CON009 = "CON009"; // User deactivated
-    public const string CON010 = "CON010"; // Roles assigned
-    public const string CON011 = "CON011"; // Password reset success
-    public const string CON012 = "CON012"; // Expert request submitted
-    public const string CON013 = "CON013"; // Expert request approved
-    public const string CON014 = "CON014"; // Expert request rejected
-    public const string CON015 = "CON015"; // State rep assignment created
-    public const string CON016 = "CON016"; // State rep assignment revoked
-    public const string CON017 = "CON017"; // Profile updated
+    // ─── Identity Success (appendix-aligned) ───
+    public const string CON001 = "CON001"; // Resource download success (appendix)
+    public const string CON002 = "CON002"; // Resource share success (appendix)
+    public const string CON003 = "CON003"; // Generic share success (appendix)
+    public const string CON004 = "CON004"; // Event added to calendar (appendix)
+    public const string CON005 = "CON005"; // Profile update success (appendix)
+    public const string CON006 = "CON006"; // Expert registration request submitted (appendix)
+    public const string CON007 = "CON007"; // Admin notified of expert request (appendix)
+    public const string CON008 = "CON008"; // Service evaluation submitted (appendix)
+    public const string CON009 = "CON009"; // Personalized suggestions submitted (appendix)
+    public const string CON010 = "CON010"; // Topic follow success (appendix)
+    public const string CON011 = "CON011"; // Post created (appendix)
+    public const string CON012 = "CON012"; // Post follow success (appendix)
+    public const string CON013 = "CON013"; // Reply submitted (appendix)
+    public const string CON014 = "CON014"; // Password recovery success (appendix)
+    public const string CON015 = "CON015"; // Logout success (appendix)
+    public const string CON016 = "CON016"; // Content update success (appendix)
+    public const string CON017 = "CON017"; // User creation success (appendix)
+
+    // ─── Backend-only Identity Success (appendix numbers already taken) ───
+    public const string CON050 = "CON050"; // Expert request approved
+    public const string CON051 = "CON051"; // Expert request rejected
+    public const string CON052 = "CON052"; // State rep assignment created
+    public const string CON053 = "CON053"; // State rep assignment revoked
+    public const string CON054 = "CON054"; // Roles assigned
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

@@ -25,7 +25,7 @@ public class RevokeStateRepAssignmentCommandHandlerTests
         var result = await sut.Handle(new RevokeStateRepAssignmentCommand(System.Guid.NewGuid()), CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR003);
+        result.Code.Should().Be(SystemCode.ERR401);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class RevokeStateRepAssignmentCommandHandlerTests
         var result = await sut.Handle(new RevokeStateRepAssignmentCommand(assignment.Id), CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR028);
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]

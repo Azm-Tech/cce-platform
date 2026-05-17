@@ -19,7 +19,7 @@ public class DependencyInjectionTests
         services.AddSingleton<ILocalizationService>(_ =>
         {
             var l = NSubstitute.Substitute.For<ILocalizationService>();
-            l.GetLocalizedMessage(Arg.Any<string>()).Returns(new LocalizedMessage("ar", "en"));
+            l.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns("ar");
             return l;
         });
         services.AddApplication();
@@ -42,7 +42,7 @@ public class DependencyInjectionTests
         services.AddSingleton<ILocalizationService>(_ =>
         {
             var l = NSubstitute.Substitute.For<ILocalizationService>();
-            l.GetLocalizedMessage(Arg.Any<string>()).Returns(new LocalizedMessage("ar", "en"));
+            l.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns("ar");
             return l;
         });
         services.AddApplication();

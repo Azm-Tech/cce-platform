@@ -18,7 +18,7 @@ public class GetMyExpertStatusQueryHandlerTests
         var result = await sut.Handle(new GetMyExpertStatusQuery(System.Guid.NewGuid()), CancellationToken.None);
 
         result.Success.Should().BeFalse();
-        result.Code.Should().Be(SystemCode.ERR002);
+        result.Code.Should().Be(SystemCode.ERR400);
     }
 
     [Fact]

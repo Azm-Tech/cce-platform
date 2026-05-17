@@ -46,7 +46,17 @@ public sealed class LocalizationService : ILocalizationService
 
     private static string GetTwoLetterCode(string? culture)
     {
-        if (string.IsNullOrWhiteSpace(culture)) return "ar";
+        if (string.IsNullOrWhiteSpace(culture))
+        {
+            try
+            {
+                return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            }
+            catch (CultureNotFoundException)
+            {
+                return "ar";
+            }
+        }
         try
         {
             return new CultureInfo(culture).TwoLetterISOLanguageName;
