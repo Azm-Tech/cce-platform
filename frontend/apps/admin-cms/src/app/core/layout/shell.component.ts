@@ -4,8 +4,8 @@ import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AppShellComponent } from '@frontend/ui-kit';
-import { LocaleSwitcherComponent } from '../../locale-switcher/locale-switcher.component';
-import { AuthToolbarComponent } from '../../auth-toolbar/auth-toolbar.component';
+import { LocaleSwitcherComponent } from '@frontend/i18n';
+import { AuthToolbarComponent } from './auth-toolbar.component';
 import { SideNavComponent } from './side-nav.component';
 
 @Component({

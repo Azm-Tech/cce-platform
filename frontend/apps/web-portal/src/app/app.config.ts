@@ -10,7 +10,7 @@ import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { appRoutes } from './app.routes';
 import { EnvService } from './core/env.service';
-import { TranslocoHttpLoader } from './core/translate-loader.factory';
+import { TranslocoHttpLoader } from '@frontend/i18n';
 
 export const appConfig: ApplicationConfig = {
   providers: [

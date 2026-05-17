@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { devAuthGuard } from './core/auth/dev-auth.guard';
-import { AuthCallbackPage } from './auth-callback/auth-callback.page';
-import { ProfilePage } from './profile/profile.page';
+import { AuthCallbackPage } from './core/auth/auth-callback.page';
+import { ProfilePage } from './features/account/profile.page';
 
 export const appRoutes: Route[] = [
   { path: '', pathMatch: 'full', redirectTo: 'profile' },

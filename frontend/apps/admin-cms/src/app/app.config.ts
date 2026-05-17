@@ -12,7 +12,7 @@ import { buildCceOidcConfig } from '@frontend/auth';
 import { appRoutes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { EnvService } from './core/env.service';
-import { TranslocoHttpLoader } from './core/translate-loader.factory';
+import { TranslocoHttpLoader } from '@frontend/i18n';
 
 export const appConfig: ApplicationConfig = {
   providers: [

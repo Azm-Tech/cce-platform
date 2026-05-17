@@ -9,7 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { LocaleSwitcherComponent } from '../../locale-switcher/locale-switcher.component';
+import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { NotificationsApiService } from '../../features/notifications/notifications-api.service';
 import { NotificationsDrawerComponent } from '../../features/notifications/notifications-drawer.component';
 import { SearchBoxComponent } from './search-box.component';

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DevAuthService } from '../core/auth/dev-auth.service';
+import { DevAuthService } from '../auth/dev-auth.service';
 
 /**
  * Auth toolbar — shows sign-in / sign-out + the current dev role label.
@@ -26,8 +26,6 @@ export class AuthToolbarComponent {
   readonly displayLabel = this.auth.displayLabel;
 
   signIn(): void {
-    // Default to platform-admin role; the dev sign-in cookie shim
-    // bounces back to the current page after setting the cookie.
     this.auth.signIn('cce-admin', window.location.pathname);
   }
 

@@ -1,9 +1,0 @@
-<button
-  type="button"
-  mat-button
-  shellHeaderEnd
-  (click)="toggle()"
-  [attr.aria-label]="('common.locale.switchTo' | transloco) + ' ' + ('common.locale.' + nextLabel() | transloco)"
->
-  {{ "common.locale." + nextLabel() | transloco }}
-</button>
