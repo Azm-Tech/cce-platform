@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { FollowsApiService, type Result } from './follows-api.service';
-import { FollowsRegistryService } from './follows-registry.service';
+import { FollowsStoreService } from './follows-store.service';
 import type { MyFollows } from './follows.types';
 
 const SAMPLE: MyFollows = {
@@ -13,22 +13,22 @@ function ok<T>(value: T): Result<T> {
   return { ok: true, value };
 }
 
-describe('FollowsRegistryService', () => {
-  let sut: FollowsRegistryService;
+describe('FollowsStoreService', () => {
+  let sut: FollowsStoreService;
   let getMyFollows: jest.Mock;
 
   beforeEach(() => {
     getMyFollows = jest.fn().mockResolvedValue(ok(SAMPLE));
     TestBed.configureTestingModule({
       providers: [
-        FollowsRegistryService,
+        FollowsStoreService,
         {
           provide: FollowsApiService,
           useValue: { getMyFollows, follow: jest.fn(), unfollow: jest.fn() },
         },
       ],
     });
-    sut = TestBed.inject(FollowsRegistryService);
+    sut = TestBed.inject(FollowsStoreService);
   });
 
   it('ensureLoaded() calls getMyFollows() exactly once across N invocations', async () => {

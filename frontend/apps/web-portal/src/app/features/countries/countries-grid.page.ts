@@ -12,7 +12,7 @@ import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { CountriesApiService } from './countries-api.service';
 import { CountryCardComponent } from './country-card.component';
-import { getMockKapsarc, getMockProfile } from './countries-mock';
+import { getMockKapsarc, getMockProfile } from './testing/countries-mock';
 import { flagEmojiFor, flagUrlFor } from './flag-helpers';
 import { KapsarcApiService } from './kapsarc-api.service';
 import { KapsarcSnapshotComponent } from './kapsarc-snapshot.component';

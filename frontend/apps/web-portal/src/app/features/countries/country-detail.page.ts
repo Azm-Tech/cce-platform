@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService } from './countries-api.service';
-import { getMockKapsarc, getMockProfile } from './countries-mock';
+import { getMockKapsarc, getMockProfile } from './testing/countries-mock';
 import { flagEmojiFor, flagUrlFor } from './flag-helpers';
 import { KapsarcApiService } from './kapsarc-api.service';
 import { KapsarcSnapshotComponent } from './kapsarc-snapshot.component';

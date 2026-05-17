@@ -11,7 +11,7 @@ import type { FollowEntityType, MyFollows } from './follows.types';
  * GET /api/me/follows; subsequent calls reuse the cached state.
  */
 @Injectable({ providedIn: 'root' })
-export class FollowsRegistryService {
+export class FollowsStoreService {
   private readonly api = inject(FollowsApiService);
 
   private readonly _state = signal<MyFollows | null>(null);

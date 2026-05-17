@@ -9,7 +9,7 @@
  * Real API data wins — this only fires on 404 / network failure.
  */
 
-import type { CountryProfile, KapsarcSnapshot } from './country.types';
+import type { CountryProfile, KapsarcSnapshot } from '../country.types';
 
 interface MockProfile {
   isoAlpha2: string;

@@ -13,7 +13,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { FilterRailComponent } from '../../core/layout/filter-rail.component';
 import { CategoriesTreeComponent } from './categories-tree.component';
 import { KnowledgeApiService } from './knowledge-api.service';
-import { MOCK_CATEGORIES, MOCK_RESOURCES } from './mock-data';
+import { MOCK_CATEGORIES, MOCK_RESOURCES } from './testing/mock-data';
 import { ResourceCardComponent } from './resource-card.component';
 import {
   RESOURCE_TYPES,

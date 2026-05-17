@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FollowDirective } from './follow.directive';
 import { FollowsApiService, type Result } from './follows-api.service';
-import { FollowsRegistryService } from './follows-registry.service';
+import { FollowsStoreService } from './follows-store.service';
 import type { MyFollows } from './follows.types';
 
 const SAMPLE: MyFollows = {
@@ -30,7 +30,7 @@ describe('FollowDirective', () => {
   let fixture: ComponentFixture<HostComponent>;
   let host: HostComponent;
   let api: { follow: jest.Mock; unfollow: jest.Mock; getMyFollows: jest.Mock };
-  let registry: FollowsRegistryService;
+  let registry: FollowsStoreService;
 
   beforeEach(async () => {
     api = {
@@ -42,14 +42,14 @@ describe('FollowDirective', () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
       providers: [
-        FollowsRegistryService,
+        FollowsStoreService,
         { provide: FollowsApiService, useValue: api },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);
     host = fixture.componentInstance;
-    registry = TestBed.inject(FollowsRegistryService);
+    registry = TestBed.inject(FollowsStoreService);
   });
 
   it('ngOnInit calls registry.ensureLoaded (which fetches once)', async () => {

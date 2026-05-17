@@ -9,7 +9,7 @@
  * shows clearly on first paint.
  */
 
-import type { Resource, ResourceCategory, ResourceListItem } from './knowledge.types';
+import type { Resource, ResourceCategory, ResourceListItem } from '../knowledge.types';
 
 /**
  * Demo video URLs for the 5 mock Video resources (r6–r10). These are

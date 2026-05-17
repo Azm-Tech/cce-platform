@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { TranslocoModule } from '@jsverse/transloco';
-import { MOCK_TRANSLATIONS, type TranslationEntry } from './translations-mock';
+import { MOCK_TRANSLATIONS, type TranslationEntry } from './testing/translations-mock';
 
 type Scope = 'all' | TranslationEntry['scope'];
 

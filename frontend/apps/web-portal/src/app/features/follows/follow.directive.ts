@@ -1,12 +1,12 @@
 import { Directive, HostListener, OnInit, computed, inject, input } from '@angular/core';
 import { FollowsApiService } from './follows-api.service';
-import { FollowsRegistryService } from './follows-registry.service';
+import { FollowsStoreService } from './follows-store.service';
 import type { FollowEntityType } from './follows.types';
 
 /**
  * Single-button follow toggle. Drop on any element to bind a click
  * handler that flips the follow state for the given entity, with
- * optimistic updates against the shared FollowsRegistryService.
+ * optimistic updates against the shared FollowsStoreService.
  *
  * Usage:
  *   <button mat-button cceFollow entityType="topic" entityId="t1">…</button>
@@ -22,7 +22,7 @@ import type { FollowEntityType } from './follows.types';
 })
 export class FollowDirective implements OnInit {
   private readonly api = inject(FollowsApiService);
-  private readonly registry = inject(FollowsRegistryService);
+  private readonly registry = inject(FollowsStoreService);
 
   readonly entityType = input.required<FollowEntityType>();
   readonly entityId = input.required<string>();

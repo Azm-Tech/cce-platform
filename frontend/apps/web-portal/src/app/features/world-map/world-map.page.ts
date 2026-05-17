@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inj
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ALL_CITIES, WorldMapComponent, type AnyCity, type FeaturedCity } from './world-map.component';
+import { WorldMapComponent, type AnyCity, type FeaturedCity } from './world-map.component';
+import { CitiesService } from './cities.service';
 
 type CarbonTier = 'low' | 'medium' | 'high';
 
@@ -254,9 +255,10 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
 })
 export class WorldMapPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly citiesService = inject(CitiesService);
 
   readonly regions = REGIONS;
-  readonly totalCities = ALL_CITIES.length;
+  readonly totalCities = computed(() => this.citiesService.allCities().length);
 
   readonly selectedCityId = signal<string | null>(null);
   readonly searchTerm = signal('');
@@ -281,7 +283,7 @@ export class WorldMapPage implements OnInit {
       // as the search term — the existing search filter matches by
       // city.country (case-insensitive) so this lands the user on the
       // cities for their chosen country.
-      const sample = ALL_CITIES.find((c) => c.countryCode === cc);
+      const sample = this.citiesService.allCities().find((c) => c.countryCode === cc);
       if (sample) this.searchTerm.set(sample.country);
     }
   }
@@ -290,7 +292,7 @@ export class WorldMapPage implements OnInit {
     const term = this.searchTerm().trim().toLowerCase();
     const tiers = this.selectedTiers();
     const region = this.selectedRegion();
-    return ALL_CITIES.filter((c) => {
+    return this.citiesService.allCities().filter((c) => {
       if (!tiers.has(c.carbonTier)) return false;
       if (region !== 'all' && COUNTRY_REGION[c.countryCode] !== region) return false;
       if (term && !c.name.toLowerCase().includes(term) && !c.country.toLowerCase().includes(term)) return false;
@@ -319,7 +321,7 @@ export class WorldMapPage implements OnInit {
   readonly selectedCity = computed<AnyCity | null>(() => {
     const id = this.selectedCityId();
     if (!id) return null;
-    return ALL_CITIES.find((c) => c.id === id) ?? null;
+    return this.citiesService.allCities().find((c) => c.id === id) ?? null;
   });
 
   hasFilters(): boolean {

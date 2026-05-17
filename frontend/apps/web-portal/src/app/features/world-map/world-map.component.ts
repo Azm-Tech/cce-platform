@@ -16,22 +16,9 @@ import {
 import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
-import { CITIES, type City } from './cities.data';
-import { CITIES_EXTRA } from './cities-extra.data';
-
-/**
- * Combined city dataset. Featured cities (60) carry full metadata
- * (initiatives, summary). Standard cities (~150) carry only basics.
- * The detail panel handles both shapes.
- */
-export type FeaturedCity = City & { kind: 'featured' };
-export type StandardCity = (typeof CITIES_EXTRA)[number];
-export type AnyCity = FeaturedCity | StandardCity;
-
-export const ALL_CITIES: readonly AnyCity[] = [
-  ...CITIES.map((c): FeaturedCity => ({ ...c, kind: 'featured' as const })),
-  ...CITIES_EXTRA,
-];
+import { CitiesService } from './cities.service';
+import type { AnyCity, FeaturedCity } from './world-map.types';
+export type { AnyCity, FeaturedCity } from './world-map.types';
 
 /** Country-name lookup table (keys: numeric ISO 3166-1 IDs from world-atlas). */
 const COUNTRY_NAMES: Record<string, string> = {
@@ -376,6 +363,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   @Output() readonly mapBackgroundClicked = new EventEmitter<void>();
 
   private readonly http = inject(HttpClient);
+  private readonly citiesService = inject(CitiesService);
   private resizeObserver?: ResizeObserver;
   private projection!: d3.GeoProjection;
   private path!: d3.GeoPath;
@@ -397,11 +385,12 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    const topology = await new Promise<AnyTopology>((resolve) => {
-      this.http
-        .get<AnyTopology>('/assets/world-110m.json')
-        .subscribe((data) => resolve(data));
-    });
+    const [topology] = await Promise.all([
+      new Promise<AnyTopology>((resolve) => {
+        this.http.get<AnyTopology>('/assets/world-110m.json').subscribe((data) => resolve(data));
+      }),
+      this.citiesService.ensureLoaded(),
+    ]);
     this.render(topology);
     this.observeResize();
   }
@@ -598,7 +587,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     // the sphere then projected, so they distort naturally with the map
     // projection. They're clipped to land via #cce-land-clip so the disc
     // doesn't bleed into the ocean for coastal cities.
-    const sortedCities = ALL_CITIES.slice().sort((a, b) => b.population - a.population);
+    const sortedCities = this.citiesService.allCities().slice().sort((a, b) => b.population - a.population);
     // Population → boundary radius in DEGREES. Tuned so:
     //   100K   →  0.15° (~17 km)   small town footprint
     //   1M     →  0.45° (~50 km)   mid-size metro
@@ -761,7 +750,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
-    for (const c of ALL_CITIES) {
+    for (const c of this.citiesService.allCities()) {
       if (!idSet.has(c.id)) continue;
       const p = this.projection([c.lon, c.lat]);
       if (!p) continue;
@@ -871,13 +860,14 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     const pathFn = (d: unknown) => this.path(d as never) ?? '';
     const radiusDeg = (pop: number) =>
       Math.max(0.15, (Math.log10(Math.max(pop, 100000)) - 4) * 0.22);
+    const allCities = this.citiesService.allCities();
     svg
       .select<SVGGElement>('.cce-world-map__city-boundaries')
       .selectAll<SVGPathElement, unknown>('path')
       .each(function () {
         const node = this as SVGPathElement;
         const id = node.getAttribute('data-city-id');
-        const city = ALL_CITIES.find((c) => c.id === id);
+        const city = allCities.find((c) => c.id === id);
         if (!city) return;
         const geom = d3
           .geoCircle()

@@ -10,8 +10,8 @@ import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule } from '@jsverse/transloco';
 import { KnowledgeApiService } from './knowledge-api.service';
-import { getMockResource, getMockVideo } from './mock-data';
-import { MOCK_RESOURCES } from './mock-data';
+import { getMockResource, getMockVideo } from './testing/mock-data';
+import { MOCK_RESOURCES } from './testing/mock-data';
 import type { Resource, ResourceListItem } from './knowledge.types';
 
 @Component({
