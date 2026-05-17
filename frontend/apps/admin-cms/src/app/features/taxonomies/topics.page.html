@@ -46,8 +46,8 @@
       </button>
     </td>
   </ng-container>
-  <tr mat-header-flex flex-wrap -mx-3 *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-flex flex-wrap -mx-3 *matRowDef="let flex flex-wrap -mx-3; columns: displayedColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
 <mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"

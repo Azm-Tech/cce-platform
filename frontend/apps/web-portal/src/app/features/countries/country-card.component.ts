@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, computed, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { TranslocoModule } from '@jsverse/transloco';
 import type { Country } from './country.types';
@@ -8,7 +8,7 @@ import { flagUrlFor, flagEmojiFor } from './flag-helpers';
 @Component({
   selector: 'cce-country-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, TranslocoModule],
+  imports: [MatCardModule, TranslocoModule],
   template: `
     <button
       type="button"

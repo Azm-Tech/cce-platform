@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,9 +27,14 @@ interface NewsForm {
   selector: 'cce-news-form-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatButtonModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    TranslocoModule
+],
   templateUrl: './news-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

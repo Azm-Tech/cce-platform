@@ -49,11 +49,11 @@ function resolveDetailLink(hit: SearchHit): string | null {
           <mat-card-title>{{ title() }}</mat-card-title>
           <mat-card-subtitle>
             <span class="cce-search-hit__type">
-              {{ ('searchType.' + hit().type) | translate }}
+              {{ ('searchType.' + hit().type) | transloco }}
             </span>
             <span
               class="cce-search-hit__score"
-              [attr.aria-label]="'search.score' | translate"
+              [attr.aria-label]="'search.score' | transloco"
             >
               {{ hit().score | number:'1.2-2' }}
             </span>

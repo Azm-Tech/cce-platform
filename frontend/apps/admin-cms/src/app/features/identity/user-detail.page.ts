@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,15 +24,14 @@ import type { UserDetail } from './identity.types';
   selector: 'cce-user-detail',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
     MatIconModule,
     TranslocoModule,
-    PermissionDirective,
-  ],
+    PermissionDirective
+],
   templateUrl: './user-detail.page.html',
   styleUrl: './user-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

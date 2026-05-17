@@ -12,7 +12,7 @@ import type { PublicPostReply } from './community.types';
 /**
  * Reply card rendered in the social-feed style: gradient avatar tile,
  * speech-bubble body, byline with locale-aware time-ago, expert + lang
- * chips, and an action flex flex-wrap -mx-3 with Like / Dislike thumbs + a Reply button
+ * chips, and an action row with Like / Dislike thumbs + a Reply button
  * that opens an inline thread composer in the parent page. Optional
  * "Mark as answer" footer is visible only to the post author for a
  * not-yet-accepted reply.

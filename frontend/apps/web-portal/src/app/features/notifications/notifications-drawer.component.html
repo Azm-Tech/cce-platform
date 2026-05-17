@@ -32,7 +32,7 @@
 
   <div class="cce-notifications-drawer__list" role="list">
     @for (n of rows(); track n.id) {
-      <cce-notification-flex flex-wrap -mx-3
+      <cce-notification-row
         [notification]="n"
         [locale]="locale()"
         (markRead)="onMarkRead($event)"

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -16,10 +16,16 @@ import type { Country } from './country.types';
   selector: 'cce-countries-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    MatButtonModule, MatFormFieldModule, MatInputModule,
-    MatPaginatorModule, MatProgressBarModule, MatTableModule, TranslocoModule,
-  ],
+    FormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatTableModule,
+    TranslocoModule
+],
   templateUrl: './countries-list.page.html',
   styleUrl: './countries.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

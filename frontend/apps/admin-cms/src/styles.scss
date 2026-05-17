@@ -1,10 +1,10 @@
 // CCE admin-cms — global styles. Same theme as web-portal via shared mixin.
 
+@use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
 
 @include theme.cce-theme;
 

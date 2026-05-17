@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, computed, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,10 +21,16 @@ const UNREAD_POLL_MS = 60_000;
   selector: 'cce-header',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, RouterLinkActive,
-    MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
-    TranslocoModule, LocaleSwitcherComponent, SearchBoxComponent,
-  ],
+    RouterLink,
+    RouterLinkActive,
+    MatBadgeModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    TranslocoModule,
+    LocaleSwitcherComponent,
+    SearchBoxComponent
+],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -28,12 +28,17 @@ import type { KnowledgeMap } from './knowledge-maps.types';
   selector: 'cce-knowledge-maps-list-page',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressBarModule,
+    FormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
     TranslocoModule,
-    WorkbenchHeroComponent,
-  ],
+    WorkbenchHeroComponent
+],
   templateUrl: './knowledge-maps-list.page.html',
   styleUrl: './knowledge-maps-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

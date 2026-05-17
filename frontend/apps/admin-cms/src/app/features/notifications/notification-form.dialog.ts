@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,9 +34,15 @@ interface NotificationForm {
   selector: 'cce-notification-form-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatButtonModule, MatCheckboxModule,
-    MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    TranslocoModule
+],
   templateUrl: './notification-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

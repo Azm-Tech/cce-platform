@@ -63,7 +63,7 @@
         <h2 class="cce-settings__panel-title">Branding</h2>
         <p class="cce-settings__panel-hint">Visual identity tokens applied to both apps.</p>
 
-        <div class="cce-settings__color-flex flex-wrap -mx-3">
+        <div class="cce-settings__color-row">
           <mat-form-field appearance="outline">
             <mat-label>Primary color</mat-label>
             <input matInput type="color"
@@ -74,7 +74,7 @@
           <code class="cce-settings__color-code">{{ model().branding.primaryColor }}</code>
         </div>
 
-        <div class="cce-settings__color-flex flex-wrap -mx-3">
+        <div class="cce-settings__color-row">
           <mat-form-field appearance="outline">
             <mat-label>Accent color</mat-label>
             <input matInput type="color"
@@ -123,7 +123,7 @@
             (ngModelChange)="updateEmail('smtpFromName', $event)" />
         </mat-form-field>
 
-        <div class="cce-settings__toggle-flex flex-wrap -mx-3">
+        <div class="cce-settings__toggle-row">
           <mat-slide-toggle
             [ngModel]="model().email.enableTls"
             (ngModelChange)="updateEmail('enableTls', $event)">
@@ -138,7 +138,7 @@
         <h2 class="cce-settings__panel-title">Security</h2>
         <p class="cce-settings__panel-hint">Authentication, session policy, and rotation rules.</p>
 
-        <div class="cce-settings__toggle-flex flex-wrap -mx-3">
+        <div class="cce-settings__toggle-row">
           <mat-slide-toggle
             [ngModel]="model().security.requireMfa"
             (ngModelChange)="updateSecurity('requireMfa', $event)">
@@ -162,7 +162,7 @@
           <mat-hint>Set to 0 to disable rotation enforcement.</mat-hint>
         </mat-form-field>
 
-        <div class="cce-settings__toggle-flex flex-wrap -mx-3">
+        <div class="cce-settings__toggle-row">
           <mat-slide-toggle
             [ngModel]="model().security.allowedSelfRegistration"
             (ngModelChange)="updateSecurity('allowedSelfRegistration', $event)">

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,15 +12,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 
 /**
- * Column descriptor for a paged-table flex flex-wrap -mx-3 of type T.
+ * Column descriptor for a paged-table row of type T.
  * - `key` becomes the matColumnDef name and the displayedColumn order.
  * - `labelKey` is an i18n key resolved via the `translate` pipe.
- * - `cell(flex flex-wrap -mx-3)` returns the rendered cell text.
+ * - `cell(row)` returns the rendered cell text.
  */
 export interface PagedTableColumn<T> {
   readonly key: string;
   readonly labelKey: string;
-  readonly cell: (flex flex-wrap -mx-3: T) => string | number;
+  readonly cell: (row: T) => string | number;
 }
 
 export interface PagedTablePageChange {
@@ -39,12 +39,11 @@ export interface PagedTablePageChange {
   selector: 'cce-paged-table',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatProgressBarModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './paged-table.component.html',
   styleUrl: './paged-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

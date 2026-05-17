@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -16,22 +16,21 @@ import { KNOWN_ROLES, type UserListItem } from './identity.types';
 
 /**
  * Admin → Users list page. Paged Material table with search + role filter.
- * Each flex flex-wrap -mx-3 links to {@link UserDetailPage}. Permission gate is applied at
+ * Each row links to {@link UserDetailPage}. Permission gate is applied at
  * route-level via permissionGuard ('User.Read').
  */
 @Component({
   selector: 'cce-users-list',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     TranslocoModule,
-    PagedTableComponent,
-  ],
+    PagedTableComponent
+],
   templateUrl: './users-list.page.html',
   styleUrl: './users-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

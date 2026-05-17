@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,15 +27,14 @@ export interface RoleAssignDialogData {
   selector: 'cce-role-assign-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './role-assign.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

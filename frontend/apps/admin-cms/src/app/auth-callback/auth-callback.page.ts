@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -17,10 +17,10 @@ import { TranslocoModule } from '@jsverse/transloco';
 @Component({
   selector: 'cce-auth-callback',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [TranslocoModule],
   template: `
     <div class="cce-auth-callback">
-      <p>{{ 'common.loading' | translate }}</p>
+      <p>{{ 'common.loading' | transloco }}</p>
     </div>
   `,
   styles: [

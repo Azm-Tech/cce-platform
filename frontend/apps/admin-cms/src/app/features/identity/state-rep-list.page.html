@@ -32,34 +32,34 @@
 <table mat-table [dataSource]="rows()" class="cce-state-rep-list__table">
   <ng-container matColumnDef="userName">
     <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.user' | transloco }}</th>
-    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.userName ?? flex flex-wrap -mx-3.userId }}</td>
+    <td mat-cell *matCellDef="let row">{{ row.userName ?? row.userId }}</td>
   </ng-container>
 
   <ng-container matColumnDef="countryId">
     <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.country' | transloco }}</th>
-    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.countryId }}</td>
+    <td mat-cell *matCellDef="let row">{{ row.countryId }}</td>
   </ng-container>
 
   <ng-container matColumnDef="assignedOn">
     <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.assignedOn' | transloco }}</th>
-    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.assignedOn | date:'medium' }}</td>
+    <td mat-cell *matCellDef="let row">{{ row.assignedOn | date:'medium' }}</td>
   </ng-container>
 
   <ng-container matColumnDef="isActive">
     <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.active' | transloco }}</th>
-    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.isActive ? '✓' : '✗' }}</td>
+    <td mat-cell *matCellDef="let row">{{ row.isActive ? '✓' : '✗' }}</td>
   </ng-container>
 
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>{{ 'stateRep.col.actions' | transloco }}</th>
-    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">
-      @if (flex flex-wrap -mx-3.isActive) {
+    <td mat-cell *matCellDef="let row">
+      @if (row.isActive) {
         <button
           type="button"
           mat-button
           color="warn"
           *ccePermission="'Role.Assign'"
-          (click)="revoke(flex flex-wrap -mx-3)"
+          (click)="revoke(row)"
         >
           {{ 'stateRep.revoke.openButton' | transloco }}
         </button>
@@ -67,8 +67,8 @@
     </td>
   </ng-container>
 
-  <tr mat-header-flex flex-wrap -mx-3 *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-flex flex-wrap -mx-3 *matRowDef="let flex flex-wrap -mx-3; columns: displayedColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
 <mat-paginator

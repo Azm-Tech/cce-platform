@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,16 +44,18 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
   selector: 'cce-map-viewer-page',
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    MatButtonModule, MatIconModule, MatProgressBarModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
     TranslocoModule,
     GraphCanvasComponent,
     NodeDetailPanelComponent,
     SearchAndFiltersComponent,
     TabsBarComponent,
     ExportMenuComponent,
-    ListViewComponent,
-  ],
+    ListViewComponent
+],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
   styleUrl: './map-viewer.page.scss',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -12,15 +12,14 @@ import { SideNavComponent } from './side-nav.component';
   selector: 'cce-shell',
   standalone: true,
   imports: [
-    CommonModule,
     RouterOutlet,
     MatSidenavModule,
     AppShellComponent,
     SideNavComponent,
     LocaleSwitcherComponent,
     AuthToolbarComponent,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

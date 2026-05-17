@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,14 +26,13 @@ interface CrrForm {
   selector: 'cce-country-resource-request',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './country-resource-request.page.html',
   styleUrl: './country-resource-request.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

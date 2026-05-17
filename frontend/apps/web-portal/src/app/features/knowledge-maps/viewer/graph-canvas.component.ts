@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -44,7 +44,7 @@ import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types
 @Component({
   selector: 'cce-graph-canvas',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslocoModule],
+  imports: [MatIconModule, TranslocoModule],
   templateUrl: './graph-canvas.component.html',
   styleUrl: './graph-canvas.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

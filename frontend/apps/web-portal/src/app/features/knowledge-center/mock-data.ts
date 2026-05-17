@@ -134,7 +134,7 @@ const MOCK_DESCRIPTIONS: Record<string, { en: string; ar: string }> = {
     ar: `مجموعة بيانات سنوية للخريطة الحرارية تعرض انبعاثات ثاني أكسيد الكربون الإقليمية لـ195 دولة، مع مقارنة بين المحاسبة على أساس الإنتاج والاستهلاك.`,
   },
   r12: {
-    en: `Sakaka Solar Plant — Aerial Photography. A curated set of 24 high-resolution aerial photographs of the Sakaka 300 MW PV plant in Al Jouf province, captured in golden-hour light over the December 2024 spring inspection cycle. The set includes wide context shots showing the panel array against the Nafud landscape, mid-altitude flex flex-wrap -mx-3 detail, and close-up tracker pivot points.\n\nLicence: free for editorial and educational use with attribution to the Saudi Green Initiative photo library.`,
+    en: `Sakaka Solar Plant — Aerial Photography. A curated set of 24 high-resolution aerial photographs of the Sakaka 300 MW PV plant in Al Jouf province, captured in golden-hour light over the December 2024 spring inspection cycle. The set includes wide context shots showing the panel array against the Nafud landscape, mid-altitude row detail, and close-up tracker pivot points.\n\nLicence: free for editorial and educational use with attribution to the Saudi Green Initiative photo library.`,
     ar: `مجموعة من 24 صورة جوية عالية الدقة لمحطة سكاكا للطاقة الشمسية بقدرة 300 ميغاواط في منطقة الجوف.`,
   },
   r13: {

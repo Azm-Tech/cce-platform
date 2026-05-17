@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,10 +21,16 @@ import { ReportsApiService } from './reports-api.service';
   selector: 'cce-reports',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressSpinnerModule, TranslocoModule, PermissionDirective,
-  ],
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './reports.page.html',
   styleUrl: './reports.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

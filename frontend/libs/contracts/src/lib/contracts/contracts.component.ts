@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'lib-contracts',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.scss',
 })

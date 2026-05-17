@@ -68,8 +68,8 @@ describe('PagedTableComponent', () => {
     expect(headers).toHaveLength(2);
   });
 
-  it('renders one data flex flex-wrap -mx-3 per flex flex-wrap -mx-3 input', () => {
-    const rows = fixture.nativeElement.querySelectorAll('tr[mat-flex flex-wrap -mx-3]');
+  it('renders one data row per row input', () => {
+    const rows = fixture.nativeElement.querySelectorAll('tr[mat-row]');
     expect(rows).toHaveLength(2);
   });
 

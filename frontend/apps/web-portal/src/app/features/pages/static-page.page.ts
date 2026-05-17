@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LocaleService } from '@frontend/i18n';
@@ -9,7 +9,7 @@ import type { PublicPage } from './page.types';
 @Component({
   selector: 'cce-static-page',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [TranslocoModule],
   templateUrl: './static-page.page.html',
   styleUrl: './static-page.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

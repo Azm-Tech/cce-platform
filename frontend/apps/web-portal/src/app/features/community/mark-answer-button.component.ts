@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -17,7 +17,7 @@ import { CommunityApiService } from './community-api.service';
 @Component({
   selector: 'cce-mark-answer-button',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <button
       type="button"
@@ -28,7 +28,7 @@ import { CommunityApiService } from './community-api.service';
       (click)="onClick()"
     >
       <mat-icon>check_circle</mat-icon>
-      {{ 'community.markAnswer.button' | translate }}
+      {{ 'community.markAnswer.button' | transloco }}
     </button>
   `,
   styles: [

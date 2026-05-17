@@ -15,7 +15,7 @@ import type { AuditEvent } from './audit.types';
 /**
  * Admin → Audit log query page. Server-side pagination + filters
  * (actor, actionPrefix, resourceType, correlationId, from/to date range).
- * Each flex flex-wrap -mx-3 is expandable to show the JSON diff payload when present.
+ * Each row is expandable to show the JSON diff payload when present.
  */
 @Component({
   selector: 'cce-audit',

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,10 +16,13 @@ import { SEARCHABLE_TYPES, type SearchHit, type SearchableType } from './search.
   selector: 'cce-search-results',
   standalone: true,
   imports: [
-    CommonModule,
-    MatButtonModule, MatPaginatorModule, MatProgressBarModule, MatRadioModule,
-    TranslocoModule, SearchHitComponent,
-  ],
+    MatButtonModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    TranslocoModule,
+    SearchHitComponent
+],
   templateUrl: './search-results.page.html',
   styleUrl: './search-results.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

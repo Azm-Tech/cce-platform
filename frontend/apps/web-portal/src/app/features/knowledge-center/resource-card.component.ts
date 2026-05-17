@@ -19,12 +19,12 @@ import type { ResourceListItem } from './knowledge.types';
           <mat-icon mat-card-avatar>{{ iconFor(resource().resourceType) }}</mat-icon>
           <mat-card-title>{{ title() }}</mat-card-title>
           <mat-card-subtitle>
-            {{ ('resources.type.' + resource().resourceType) | translate }}
+            {{ ('resources.type.' + resource().resourceType) | transloco }}
           </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p class="cce-resource-card__meta">
-            <span>{{ 'resources.viewCount' | translate: { count: resource().viewCount } }}</span>
+            <span>{{ 'resources.viewCount' | transloco: { count: resource().viewCount } }}</span>
             @if (resource().publishedOn) {
               <span class="cce-resource-card__date">
                 · {{ resource().publishedOn | date: 'mediumDate' }}

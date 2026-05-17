@@ -36,26 +36,26 @@ import type { Event as EventModel } from './event.types';
       </div>
 
       <div class="cce-event-card__content">
-        <span class="cce-event-card__eyebrow-flex flex-wrap -mx-3">
+        <span class="cce-event-card__eyebrow-row">
           <span class="cce-event-card__eyebrow"
                 [class.cce-event-card__eyebrow--online]="event().onlineMeetingUrl">
             @if (event().onlineMeetingUrl) {
               <mat-icon aria-hidden="true">videocam</mat-icon>
-              {{ 'events.tagOnline' | translate }}
+              {{ 'events.tagOnline' | transloco }}
             } @else {
               <mat-icon aria-hidden="true">place</mat-icon>
-              {{ 'events.tagInPerson' | translate }}
+              {{ 'events.tagInPerson' | transloco }}
             }
           </span>
           <span class="cce-event-card__when"
                 [class.cce-event-card__when--past]="timeBucket() === 'past'"
                 [class.cce-event-card__when--today]="timeBucket() === 'today'">
             @if (timeBucket() === 'today') {
-              {{ 'events.tagToday' | translate }}
+              {{ 'events.tagToday' | transloco }}
             } @else if (timeBucket() === 'past') {
-              {{ 'events.tagPast' | translate }}
+              {{ 'events.tagPast' | transloco }}
             } @else {
-              {{ 'events.tagUpcoming' | translate }}
+              {{ 'events.tagUpcoming' | transloco }}
             }
           </span>
         </span>
@@ -81,7 +81,7 @@ import type { Event as EventModel } from './event.types';
 
         <div class="cce-event-card__foot">
           <span class="cce-event-card__cta">
-            {{ 'events.viewEvent' | translate }}
+            {{ 'events.viewEvent' | transloco }}
             <mat-icon aria-hidden="true">arrow_forward</mat-icon>
           </span>
         </div>

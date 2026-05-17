@@ -13,7 +13,7 @@ interface PagedResult<T> {
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
-/** Lightweight Topic flex flex-wrap -mx-3 used by the topic filter dropdown. */
+/** Lightweight Topic row used by the topic filter dropdown. */
 export interface TopicLite {
   id: string;
   nameEn: string;
@@ -24,7 +24,7 @@ export interface TopicLite {
  * Admin → community moderation API client.
  *
  * Reads from `/api/admin/community/posts` for the moderation list and
- * the existing soft-delete endpoints for the flex flex-wrap -mx-3-level actions. Topic
+ * the existing soft-delete endpoints for the row-level actions. Topic
  * names are sourced from `/api/admin/topics` (TaxonomyApiService also
  * uses this; we don't import it here to keep the moderation feature
  * self-contained).

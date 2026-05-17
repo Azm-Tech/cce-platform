@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,10 +29,13 @@ interface ActiveChip {
   selector: 'cce-topics-list-page',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatIconModule, MatProgressBarModule,
-    TranslocoModule, TopicCardComponent, WorkbenchHeroComponent,
-  ],
+    FormsModule,
+    MatIconModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    TopicCardComponent,
+    WorkbenchHeroComponent
+],
   templateUrl: './topics-list.page.html',
   styleUrl: './topics-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

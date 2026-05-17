@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,11 +25,17 @@ import {
   selector: 'cce-notifications-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatButtonModule, MatFormFieldModule, MatIconModule,
-    MatPaginatorModule, MatProgressBarModule, MatSelectModule, MatTableModule,
-    TranslocoModule, PermissionDirective,
-  ],
+    FormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatTableModule,
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './notifications-list.page.html',
   styleUrl: './notifications.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,8 +90,8 @@ export class NotificationsListPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(flex flex-wrap -mx-3: NotificationTemplate): Promise<void> {
-    const ref = this.dialog.open(NotificationFormDialogComponent, { data: { template: flex flex-wrap -mx-3 }, width: '720px' });
+  async openEdit(row: NotificationTemplate): Promise<void> {
+    const ref = this.dialog.open(NotificationFormDialogComponent, { data: { template: row }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('notifications.edit.toast');
       void this.load();

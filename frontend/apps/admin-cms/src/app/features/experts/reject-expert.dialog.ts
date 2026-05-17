@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,15 +28,14 @@ interface RejectForm {
   selector: 'cce-reject-expert-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './reject-expert.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

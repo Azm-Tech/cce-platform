@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,9 +30,14 @@ interface TopicForm {
   selector: 'cce-topic-form-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatButtonModule, MatCheckboxModule,
-    MatDialogModule, MatFormFieldModule, MatInputModule, TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslocoModule
+],
   templateUrl: './topic-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

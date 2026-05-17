@@ -11,9 +11,9 @@ import { ScenarioBuilderStore } from './scenario-builder-store.service';
 interface FactorRow {
   /** Field name on the EnvironmentalFactors object. */
   key: keyof EnvironmentalFactors;
-  /** Material icon shown on the flex flex-wrap -mx-3. */
+  /** Material icon shown on the row. */
   icon: string;
-  /** i18n key for the flex flex-wrap -mx-3's title. */
+  /** i18n key for the row's title. */
   labelKey: string;
   /** i18n key for the help line under the slider. */
   helpKey: string;
@@ -30,7 +30,7 @@ interface FactorRow {
  * and the carbon-neutrality progress display.
  *
  * Modern + simple: two-column grid on desktop, single column on mobile.
- * Each flex flex-wrap -mx-3 is a card with icon + label + value badge + brand-tinted
+ * Each row is a card with icon + label + value badge + brand-tinted
  * Material slider + a one-line help description.
  */
 @Component({

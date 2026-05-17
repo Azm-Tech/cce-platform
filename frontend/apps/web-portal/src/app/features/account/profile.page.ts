@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
@@ -31,11 +31,17 @@ interface ProfileFormShape {
   selector: 'cce-profile-page',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatButtonModule, MatChipsModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressBarModule, MatRadioModule, MatSelectModule,
-    TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatSelectModule,
+    TranslocoModule
+],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,11 +21,17 @@ import type { Topic } from './taxonomy.types';
   selector: 'cce-topics',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
-    MatPaginatorModule, MatProgressBarModule, MatTableModule,
-    TranslocoModule, PermissionDirective,
-  ],
+    FormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatTableModule,
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './topics.page.html',
   styleUrl: './taxonomies-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,21 +82,21 @@ export class TopicsPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(flex flex-wrap -mx-3: Topic): Promise<void> {
-    const ref = this.dialog.open(TopicFormDialogComponent, { data: { topic: flex flex-wrap -mx-3 }, width: '720px' });
+  async openEdit(row: Topic): Promise<void> {
+    const ref = this.dialog.open(TopicFormDialogComponent, { data: { topic: row }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('taxonomies.topic.edit.toast');
       void this.load();
     }
   }
-  async delete(flex flex-wrap -mx-3: Topic): Promise<void> {
+  async delete(row: Topic): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'taxonomies.topic.delete.title',
       messageKey: 'taxonomies.topic.delete.message',
       confirmKey: 'taxonomies.topic.delete.confirm',
       cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteTopic(flex flex-wrap -mx-3.id);
+    const res = await this.api.deleteTopic(row.id);
     if (res.ok) { this.toast.success('taxonomies.topic.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

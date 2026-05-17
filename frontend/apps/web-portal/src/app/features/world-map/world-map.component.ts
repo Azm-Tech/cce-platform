@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -92,7 +92,7 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
 @Component({
   selector: 'cce-world-map',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="cce-world-map" #host>
       <svg #svg class="cce-world-map__svg" role="img" aria-label="Interactive world map of cities">

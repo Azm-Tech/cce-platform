@@ -7,7 +7,7 @@
  *
  * Design intent for the "Discover" group: collapse the three exploration-
  * heavy entries (Knowledge Center, World Map, Countries) under one
- * label so the top-level flex flex-wrap -mx-3 stays scannable at common laptop widths.
+ * label so the top-level row stays scannable at common laptop widths.
  */
 
 export interface NavLink {

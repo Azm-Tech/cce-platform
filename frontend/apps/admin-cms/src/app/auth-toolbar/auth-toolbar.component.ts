@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DevAuthService } from '../core/auth/dev-auth.service';
@@ -14,7 +14,7 @@ import { DevAuthService } from '../core/auth/dev-auth.service';
 @Component({
   selector: 'cce-auth-toolbar',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, TranslocoModule],
+  imports: [MatButtonModule, TranslocoModule],
   templateUrl: './auth-toolbar.component.html',
   styleUrl: './auth-toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

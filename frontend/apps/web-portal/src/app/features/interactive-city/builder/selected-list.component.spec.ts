@@ -53,7 +53,7 @@ describe('SelectedListComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('interactiveCity.selected.empty');
   });
 
-  it('renders one flex flex-wrap -mx-3 per selected technology', () => {
+  it('renders one row per selected technology', () => {
     store.toggle('a');
     store.toggle('b');
     fixture.detectChanges();

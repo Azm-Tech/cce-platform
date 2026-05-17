@@ -256,7 +256,7 @@ describe('ScenarioBuilderStore', () => {
   });
 
   // ─── delete() ───
-  it('delete() removes the flex flex-wrap -mx-3 from savedScenarios', async () => {
+  it('delete() removes the row from savedScenarios', async () => {
     createStore(true);
     await store.init();
     expect(store.savedScenarios()).toHaveLength(1);

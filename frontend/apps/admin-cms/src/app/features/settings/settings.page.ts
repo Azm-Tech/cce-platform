@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -102,7 +102,6 @@ const DEFAULT_SETTINGS: SettingsModel = {
   selector: 'cce-settings',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -112,8 +111,8 @@ const DEFAULT_SETTINGS: SettingsModel = {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

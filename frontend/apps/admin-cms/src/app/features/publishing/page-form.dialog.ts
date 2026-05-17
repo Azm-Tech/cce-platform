@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,9 +28,15 @@ interface PageForm {
   selector: 'cce-page-form-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatButtonModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatSelectModule, TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    TranslocoModule
+],
   templateUrl: './page-form.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

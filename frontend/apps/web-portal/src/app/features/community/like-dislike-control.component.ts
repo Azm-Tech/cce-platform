@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
@@ -27,7 +27,7 @@ interface StoredCounts {
 @Component({
   selector: 'cce-like-dislike-control',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslocoModule],
+  imports: [MatIconModule, TranslocoModule],
   template: `
     <div class="cce-like-dislike" [class.cce-like-dislike--compact]="compact()">
       <button
@@ -37,14 +37,14 @@ interface StoredCounts {
         [attr.aria-pressed]="vote() === 'like'"
         [attr.aria-label]="(vote() === 'like'
             ? 'community.detail.actionLiked'
-            : 'community.detail.actionLike') | translate"
+            : 'community.detail.actionLike') | transloco"
         (click)="setVote('like')"
       >
         <mat-icon>{{ vote() === 'like' ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
         <span class="cce-like-dislike__label">
           {{ (vote() === 'like'
               ? 'community.detail.actionLiked'
-              : 'community.detail.actionLike') | translate }}
+              : 'community.detail.actionLike') | transloco }}
         </span>
         <span class="cce-like-dislike__count">{{ likeCount() }}</span>
       </button>
@@ -56,14 +56,14 @@ interface StoredCounts {
         [attr.aria-pressed]="vote() === 'dislike'"
         [attr.aria-label]="(vote() === 'dislike'
             ? 'community.detail.actionDisliked'
-            : 'community.detail.actionDislike') | translate"
+            : 'community.detail.actionDislike') | transloco"
         (click)="setVote('dislike')"
       >
         <mat-icon>{{ vote() === 'dislike' ? 'thumb_down' : 'thumb_down_off_alt' }}</mat-icon>
         <span class="cce-like-dislike__label">
           {{ (vote() === 'dislike'
               ? 'community.detail.actionDisliked'
-              : 'community.detail.actionDislike') | translate }}
+              : 'community.detail.actionDislike') | transloco }}
         </span>
         <span class="cce-like-dislike__count">{{ dislikeCount() }}</span>
       </button>

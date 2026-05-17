@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -34,10 +34,14 @@ interface ActiveChip {
   selector: 'cce-news-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslocoModule, NewsCardComponent, WorkbenchHeroComponent,
-  ],
+    FormsModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    NewsCardComponent,
+    WorkbenchHeroComponent
+],
   templateUrl: './news-list.page.html',
   styleUrl: './news-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

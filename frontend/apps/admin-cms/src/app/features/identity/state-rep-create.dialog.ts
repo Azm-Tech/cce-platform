@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,15 +27,14 @@ interface StateRepCreateForm {
   selector: 'cce-state-rep-create-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './state-rep-create.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

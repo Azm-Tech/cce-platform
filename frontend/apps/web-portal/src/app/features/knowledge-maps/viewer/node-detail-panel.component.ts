@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,7 +32,7 @@ import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types
 @Component({
   selector: 'cce-node-detail-panel',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslocoModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './node-detail-panel.component.html',
   styleUrl: './node-detail-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

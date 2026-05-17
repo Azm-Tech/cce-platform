@@ -33,22 +33,22 @@ import type { PublicPost } from './community.types';
           @if (post().answeredReplyId) {
             <span class="cce-post-summary__tag cce-post-summary__tag--answered">
               <mat-icon aria-hidden="true">check_circle</mat-icon>
-              {{ 'community.acceptedAnswer' | translate }}
+              {{ 'community.acceptedAnswer' | transloco }}
             </span>
           } @else if (post().isAnswerable) {
             <span class="cce-post-summary__tag cce-post-summary__tag--question">
               <mat-icon aria-hidden="true">help_outline</mat-icon>
-              {{ 'community.detail.questionTag' | translate }}
+              {{ 'community.detail.questionTag' | transloco }}
             </span>
           } @else {
             <span class="cce-post-summary__tag cce-post-summary__tag--discussion">
               <mat-icon aria-hidden="true">forum</mat-icon>
-              {{ 'community.detail.discussionTag' | translate }}
+              {{ 'community.detail.discussionTag' | transloco }}
             </span>
           }
           @if (showLanguageBadge()) {
             <span class="cce-post-summary__tag cce-post-summary__tag--lang">
-              {{ 'community.languageBadge' | translate:{ locale: post().locale } }}
+              {{ 'community.languageBadge' | transloco:{ locale: post().locale } }}
             </span>
           }
         </div>
@@ -61,11 +61,11 @@ import type { PublicPost } from './community.types';
         <div class="cce-post-summary__foot">
           <span class="cce-post-summary__meta">
             <mat-icon aria-hidden="true">schedule</mat-icon>
-            {{ 'community.detail.askedBy' | translate }}
+            {{ 'community.detail.askedBy' | transloco }}
             {{ post().createdOn | date:'mediumDate' }}
           </span>
           <span class="cce-post-summary__cta">
-            {{ 'community.openPost' | translate }}
+            {{ 'community.openPost' | transloco }}
             <mat-icon aria-hidden="true">arrow_forward</mat-icon>
           </span>
         </div>

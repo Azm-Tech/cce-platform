@@ -35,9 +35,9 @@ import type { NewsArticle } from './news.types';
               [class.cce-news-card__eyebrow--featured]="article().isFeatured">
           @if (article().isFeatured) {
             <mat-icon aria-hidden="true">star</mat-icon>
-            {{ 'news.featured.tag' | translate }}
+            {{ 'news.featured.tag' | transloco }}
           } @else {
-            {{ 'news.tag' | translate }}
+            {{ 'news.tag' | transloco }}
           }
         </span>
 
@@ -51,11 +51,11 @@ import type { NewsArticle } from './news.types';
               {{ article().publishedOn | date:'mediumDate' }}
             } @else {
               <mat-icon aria-hidden="true">edit_note</mat-icon>
-              {{ 'news.draft' | translate }}
+              {{ 'news.draft' | transloco }}
             }
           </span>
           <span class="cce-news-card__cta">
-            {{ 'news.readArticle' | translate }}
+            {{ 'news.readArticle' | transloco }}
             <mat-icon aria-hidden="true">arrow_forward</mat-icon>
           </span>
         </div>

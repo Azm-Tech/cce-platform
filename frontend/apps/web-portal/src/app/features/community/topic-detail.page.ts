@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +24,16 @@ import type { PublicPost, PublicTopic } from './community.types';
   selector: 'cce-topic-detail-page',
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    MatButtonModule, MatIconModule, MatPaginatorModule, MatProgressBarModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
     TranslocoModule,
-    FollowDirective, PostSummaryComponent, SignInCtaComponent,
-  ],
+    FollowDirective,
+    PostSummaryComponent,
+    SignInCtaComponent
+],
   templateUrl: './topic-detail.page.html',
   styleUrl: './topic-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

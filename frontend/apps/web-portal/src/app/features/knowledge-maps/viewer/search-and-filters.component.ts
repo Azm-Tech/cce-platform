@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -29,14 +29,13 @@ const SEARCH_DEBOUNCE_MS = 200;
   selector: 'cce-search-and-filters',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './search-and-filters.component.html',
   styleUrl: './search-and-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -71,7 +71,7 @@ describe('NotificationsDrawerComponent', () => {
     expect(unreadEmits[unreadEmits.length - 1]).toBe(1);
   });
 
-  it('onMarkRead(id) marks the flex flex-wrap -mx-3 Read locally + emits new unread', async () => {
+  it('onMarkRead(id) marks the row Read locally + emits new unread', async () => {
     await component.refresh();
     unreadEmits.length = 0;
     await component.onMarkRead('n1');

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,14 +18,13 @@ import { NAV_GROUPS, NavGroup } from './nav-config';
   selector: 'cce-side-nav',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     MatListModule,
     MatIconModule,
     TranslocoModule,
-    PermissionDirective,
-  ],
+    PermissionDirective
+],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,9 +33,9 @@ export class SideNavComponent {
   private readonly auth = inject(AuthService);
 
   /** All groups. Per-item permission gates are handled by the
-   *  `*ccePermission` structural directive on each flex flex-wrap -mx-3; this
+   *  `*ccePermission` structural directive on each row; this
    *  `visibleGroups` signal additionally hides the *section
-   *  heading* when no flex flex-wrap -mx-3 inside it is visible. */
+   *  heading* when no row inside it is visible. */
   readonly visibleGroups = computed<readonly NavGroup[]>(() => {
     // Subscribe to the auth user signal so this recomputes after sign-in.
     this.auth.currentUser();

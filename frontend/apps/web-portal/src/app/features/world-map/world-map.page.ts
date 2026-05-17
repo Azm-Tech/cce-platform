@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -64,18 +64,18 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
 @Component({
   selector: 'cce-world-map-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, WorldMapComponent, TranslocoModule],
+  imports: [FormsModule, RouterLink, WorldMapComponent, TranslocoModule],
   template: `
     <div class="cce-explore">
       <header class="cce-explore__header">
-        <h1 class="cce-explore__title">{{ 'explore.title' | translate }}</h1>
-        <p class="cce-explore__subtitle">{{ 'explore.subtitle' | translate }}</p>
+        <h1 class="cce-explore__title">{{ 'explore.title' | transloco }}</h1>
+        <p class="cce-explore__subtitle">{{ 'explore.subtitle' | transloco }}</p>
 
         <!-- Filter bar -->
         <div class="cce-explore__filters" role="search">
           <div class="cce-explore__filter cce-explore__filter--search">
             <label class="cce-explore__filter-label" for="cce-search">
-              {{ 'explore.filters.search' | translate }}
+              {{ 'explore.filters.search' | transloco }}
             </label>
             <input
               id="cce-search"
@@ -83,12 +83,12 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
               class="cce-explore__search-input"
               [ngModel]="searchTerm()"
               (ngModelChange)="searchTerm.set($event)"
-              [placeholder]="'explore.filters.searchPlaceholder' | translate"
+              [placeholder]="'explore.filters.searchPlaceholder' | transloco"
             />
           </div>
 
           <div class="cce-explore__filter">
-            <span class="cce-explore__filter-label">{{ 'explore.filters.tier' | translate }}</span>
+            <span class="cce-explore__filter-label">{{ 'explore.filters.tier' | transloco }}</span>
             <div class="cce-explore__pills">
               <button
                 type="button"
@@ -96,7 +96,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
                 [class.cce-explore__pill--active]="selectedTiers().has('low')"
                 (click)="toggleTier('low')"
               >
-                {{ 'explore.legend.low' | translate }}
+                {{ 'explore.legend.low' | transloco }}
               </button>
               <button
                 type="button"
@@ -104,7 +104,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
                 [class.cce-explore__pill--active]="selectedTiers().has('medium')"
                 (click)="toggleTier('medium')"
               >
-                {{ 'explore.legend.medium' | translate }}
+                {{ 'explore.legend.medium' | transloco }}
               </button>
               <button
                 type="button"
@@ -112,14 +112,14 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
                 [class.cce-explore__pill--active]="selectedTiers().has('high')"
                 (click)="toggleTier('high')"
               >
-                {{ 'explore.legend.high' | translate }}
+                {{ 'explore.legend.high' | transloco }}
               </button>
             </div>
           </div>
 
           <div class="cce-explore__filter">
             <label class="cce-explore__filter-label" for="cce-region">
-              {{ 'explore.filters.region' | translate }}
+              {{ 'explore.filters.region' | transloco }}
             </label>
             <select
               id="cce-region"
@@ -128,7 +128,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
               (ngModelChange)="selectedRegion.set($event)"
             >
               @for (r of regions; track r.id) {
-                <option [value]="r.id">{{ r.labelKey | translate }}</option>
+                <option [value]="r.id">{{ r.labelKey | transloco }}</option>
               }
             </select>
           </div>
@@ -139,27 +139,27 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
             (click)="resetFilters()"
             [disabled]="!hasFilters()"
           >
-            {{ 'explore.filters.reset' | translate }}
+            {{ 'explore.filters.reset' | transloco }}
           </button>
         </div>
 
         <!-- Stats bar (analog of the old interactive-city totals bar) -->
         <div class="cce-explore__stats-bar" aria-live="polite">
           <div class="cce-explore__stat-cell">
-            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.shown' | translate }}</span>
+            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.shown' | transloco }}</span>
             <span class="cce-explore__stat-cell-value">
               {{ stats().shown }}<span class="cce-explore__stat-cell-unit">/ {{ totalCities }}</span>
             </span>
           </div>
           <div class="cce-explore__stat-cell">
-            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.totalPop' | translate }}</span>
+            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.totalPop' | transloco }}</span>
             <span class="cce-explore__stat-cell-value">
               {{ formatPopulation(stats().totalPop) }}
-              <span class="cce-explore__stat-cell-unit">{{ 'explore.stats.popUnit' | translate }}</span>
+              <span class="cce-explore__stat-cell-unit">{{ 'explore.stats.popUnit' | transloco }}</span>
             </span>
           </div>
           <div class="cce-explore__stat-cell">
-            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.tierBreakdown' | translate }}</span>
+            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.tierBreakdown' | transloco }}</span>
             <span class="cce-explore__stat-cell-value">
               <span class="cce-explore__tier-mini cce-explore__tier-mini--low">{{ stats().byTier.low }}</span>
               <span class="cce-explore__tier-mini cce-explore__tier-mini--medium">{{ stats().byTier.medium }}</span>
@@ -167,12 +167,12 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
             </span>
           </div>
           <div class="cce-explore__stat-cell">
-            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.regions' | translate }}</span>
+            <span class="cce-explore__stat-cell-label">{{ 'explore.stats.regions' | transloco }}</span>
             <span class="cce-explore__stat-cell-value">{{ stats().regionCount }}</span>
           </div>
         </div>
 
-        <p class="cce-explore__hint">{{ 'explore.zoomHint' | translate }}</p>
+        <p class="cce-explore__hint">{{ 'explore.zoomHint' | transloco }}</p>
       </header>
 
       <div class="cce-explore__stage">
@@ -191,7 +191,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
               type="button"
               class="cce-explore__panel-close"
               (click)="closePanel()"
-              [attr.aria-label]="'explore.close' | translate"
+              [attr.aria-label]="'explore.close' | transloco"
             >
               ✕
             </button>
@@ -205,41 +205,41 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
 
             <dl class="cce-explore__stats">
               <div class="cce-explore__stat">
-                <dt>{{ 'explore.stats.population' | translate }}</dt>
+                <dt>{{ 'explore.stats.population' | transloco }}</dt>
                 <dd>{{ formatPopulation(city.population) }}</dd>
               </div>
               <div class="cce-explore__stat">
-                <dt>{{ 'explore.stats.coords' | translate }}</dt>
+                <dt>{{ 'explore.stats.coords' | transloco }}</dt>
                 <dd>{{ city.lat.toFixed(2) }}°, {{ city.lon.toFixed(2) }}°</dd>
               </div>
               <div class="cce-explore__stat">
-                <dt>{{ 'explore.stats.tier' | translate }}</dt>
+                <dt>{{ 'explore.stats.tier' | transloco }}</dt>
                 <dd class="cce-explore__tier-pill cce-explore__tier-pill--{{ city.carbonTier }}">
-                  {{ ('explore.legend.' + city.carbonTier) | translate }}
+                  {{ ('explore.legend.' + city.carbonTier) | transloco }}
                 </dd>
               </div>
             </dl>
 
             @if (isFeatured(city)) {
-              <h3 class="cce-explore__section-title">{{ 'explore.summary' | translate }}</h3>
+              <h3 class="cce-explore__section-title">{{ 'explore.summary' | transloco }}</h3>
               <p class="cce-explore__summary">{{ city.summary }}</p>
 
-              <h3 class="cce-explore__section-title">{{ 'explore.initiatives' | translate }}</h3>
+              <h3 class="cce-explore__section-title">{{ 'explore.initiatives' | transloco }}</h3>
               <ul class="cce-explore__initiatives">
                 @for (init of city.initiatives; track init) {
                   <li>{{ init }}</li>
                 }
               </ul>
             } @else {
-              <p class="cce-explore__minimal-note">{{ 'explore.minimalNote' | translate }}</p>
+              <p class="cce-explore__minimal-note">{{ 'explore.minimalNote' | transloco }}</p>
             }
 
             <a
               routerLink="/interactive-city"
               class="cce-explore__cta"
-              [attr.aria-label]="'explore.scenarioCta' | translate"
+              [attr.aria-label]="'explore.scenarioCta' | transloco"
             >
-              <span>{{ 'explore.scenarioCta' | translate }}</span>
+              <span>{{ 'explore.scenarioCta' | transloco }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
                 <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
               </svg>

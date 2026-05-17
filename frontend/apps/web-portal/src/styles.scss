@@ -4,11 +4,11 @@
 // SCSS path is relative to the app's project root, so reach into libs/ui-kit/src/lib/styles.
 // Nx's tsconfig path mappings DON'T apply to SCSS — Sass uses the `loadPaths` config from
 // project.json. Phase 09 already set loadPaths to include node_modules; we add libs path here.
+@use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
 
 @include theme.cce-theme;
 

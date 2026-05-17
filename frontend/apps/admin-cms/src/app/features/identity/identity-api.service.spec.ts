@@ -117,7 +117,7 @@ describe('IdentityApiService', () => {
   });
 
   describe('createStateRepAssignment', () => {
-    it('issues POST and returns the created flex flex-wrap -mx-3', async () => {
+    it('issues POST and returns the created row', async () => {
       const promise = sut.createStateRepAssignment({
         userId: '11111111-1111-1111-1111-111111111111',
         countryId: '22222222-2222-2222-2222-222222222222',

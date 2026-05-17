@@ -6,13 +6,13 @@ import { TranslocoModule } from '@jsverse/transloco';
 import type { UserNotification } from './notification.types';
 
 @Component({
-  selector: 'cce-notification-flex flex-wrap -mx-3',
+  selector: 'cce-notification-row',
   standalone: true,
   imports: [CommonModule, DatePipe, MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <article
-      class="cce-notification-flex flex-wrap -mx-3"
-      [class.cce-notification-flex flex-wrap -mx-3--unread]="isUnread()"
+      class="cce-notification-row"
+      [class.cce-notification-row--unread]="isUnread()"
       role="listitem"
     >
       <span class="cce-notification-row__dot" aria-hidden="true"></span>
@@ -21,7 +21,7 @@ import type { UserNotification } from './notification.types';
         <header class="cce-notification-row__header">
           <h3 class="cce-notification-row__subject">{{ subject() }}</h3>
           <span class="cce-notification-row__channel">
-            {{ ('notifications.channel.' + notification().channel) | translate }}
+            {{ ('notifications.channel.' + notification().channel) | transloco }}
           </span>
         </header>
         <p class="cce-notification-row__excerpt">{{ excerpt() }}</p>
@@ -37,7 +37,7 @@ import type { UserNotification } from './notification.types';
           type="button"
           mat-icon-button
           class="cce-notification-row__action"
-          [attr.aria-label]="'notifications.markRead' | translate"
+          [attr.aria-label]="'notifications.markRead' | transloco"
           (click)="markRead.emit(notification().id)"
         >
           <mat-icon>done</mat-icon>
@@ -45,7 +45,7 @@ import type { UserNotification } from './notification.types';
       }
     </article>
   `,
-  styleUrl: './notification-flex flex-wrap -mx-3.component.scss',
+  styleUrl: './notification-row.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationRowComponent {

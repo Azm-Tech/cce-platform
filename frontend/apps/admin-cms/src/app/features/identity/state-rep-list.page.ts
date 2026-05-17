@@ -19,7 +19,7 @@ import type { StateRepAssignment } from './identity.types';
 /**
  * Admin → State-rep assignments list. Paged Material table with
  * "active" toggle, "New assignment" CTA (opens StateRepCreateDialog),
- * and per-flex flex-wrap -mx-3 "Revoke" action (confirm-dialog → DELETE).
+ * and per-row "Revoke" action (confirm-dialog → DELETE).
  *
  * v0.1.0 displays raw GUIDs for countries; Phase 06 swaps in country
  * names once the Country admin endpoint surfaces a name lookup.
@@ -103,7 +103,7 @@ export class StateRepListPage implements OnInit {
     }
   }
 
-  async revoke(flex flex-wrap -mx-3: StateRepAssignment): Promise<void> {
+  async revoke(row: StateRepAssignment): Promise<void> {
     const confirmed = await this.confirm.confirm({
       titleKey: 'stateRep.revoke.title',
       messageKey: 'stateRep.revoke.message',
@@ -111,7 +111,7 @@ export class StateRepListPage implements OnInit {
       cancelKey: 'common.actions.cancel',
     });
     if (!confirmed) return;
-    const res = await this.api.revokeStateRepAssignment(flex flex-wrap -mx-3.id);
+    const res = await this.api.revokeStateRepAssignment(row.id);
     if (res.ok) {
       this.toast.success('stateRep.revoke.toast');
       void this.load();

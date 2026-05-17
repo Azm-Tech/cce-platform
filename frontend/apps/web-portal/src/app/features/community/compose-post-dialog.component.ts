@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
@@ -34,11 +34,15 @@ interface ComposePostFormShape {
   selector: 'cce-compose-post-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatDialogModule, MatButtonModule, MatCheckboxModule,
-    MatFormFieldModule, MatInputModule, MatRadioModule,
-    TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    TranslocoModule
+],
   templateUrl: './compose-post-dialog.component.html',
   styleUrl: './compose-post-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

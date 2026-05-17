@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -42,37 +42,36 @@ type SubmitState =
   selector: 'cce-register',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   template: `
     <section class="cce-register">
-      <h1 class="cce-register__title">{{ 'account.register.title' | translate }}</h1>
+      <h1 class="cce-register__title">{{ 'account.register.title' | transloco }}</h1>
 
       @if (isAuthenticated()) {
-        <p class="cce-register__body">{{ 'account.register.alreadySignedIn' | translate }}</p>
+        <p class="cce-register__body">{{ 'account.register.alreadySignedIn' | transloco }}</p>
         <a mat-flat-button color="primary" routerLink="/me/profile">
-          {{ 'account.register.openProfile' | translate }}
+          {{ 'account.register.openProfile' | transloco }}
         </a>
       } @else {
         @if (state().kind === 'success') {
           <p class="cce-register__body">
-            {{ 'account.register.successBody' | translate }}
+            {{ 'account.register.successBody' | transloco }}
           </p>
           <button type="button" mat-flat-button color="primary" (click)="signIn()">
-            {{ 'account.register.signInButton' | translate }}
+            {{ 'account.register.signInButton' | transloco }}
           </button>
         } @else {
-          <p class="cce-register__body">{{ 'account.register.body' | translate }}</p>
+          <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
 
           <form #form="ngForm" class="cce-register__form" (ngSubmit)="submit(form)">
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.givenNameLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.register.givenNameLabel' | transloco }}</mat-label>
               <input
                 matInput
                 name="givenName"
@@ -83,7 +82,7 @@ type SubmitState =
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.surnameLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.register.surnameLabel' | transloco }}</mat-label>
               <input
                 matInput
                 name="surname"
@@ -94,7 +93,7 @@ type SubmitState =
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.emailLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.register.emailLabel' | transloco }}</mat-label>
               <input
                 matInput
                 name="email"
@@ -106,7 +105,7 @@ type SubmitState =
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.mailNicknameLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.register.mailNicknameLabel' | transloco }}</mat-label>
               <input
                 matInput
                 name="mailNickname"
@@ -114,12 +113,12 @@ type SubmitState =
                 required
                 autocomplete="username"
               />
-              <mat-hint>{{ 'account.register.mailNicknameHint' | translate }}</mat-hint>
+              <mat-hint>{{ 'account.register.mailNicknameHint' | transloco }}</mat-hint>
             </mat-form-field>
 
             @if (state().kind === 'error') {
               <p class="cce-register__error" role="alert">
-                {{ errorMessageKey() | translate }}
+                {{ errorMessageKey() | transloco }}
               </p>
             }
 
@@ -129,18 +128,18 @@ type SubmitState =
               color="primary"
               [disabled]="state().kind === 'submitting' || form.invalid"
             >
-              {{ submitButtonKey() | translate }}
+              {{ submitButtonKey() | transloco }}
             </button>
           </form>
 
-          <p class="cce-register__hint">{{ 'account.register.contactHint' | translate }}</p>
+          <p class="cce-register__hint">{{ 'account.register.contactHint' | transloco }}</p>
           <button
             type="button"
             mat-button
             class="cce-register__signin-link"
             (click)="signIn()"
           >
-            {{ 'account.register.signInExistingButton' | translate }}
+            {{ 'account.register.signInExistingButton' | transloco }}
           </button>
         }
       }

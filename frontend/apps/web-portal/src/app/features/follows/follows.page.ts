@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,10 +22,13 @@ interface Section {
   selector: 'cce-follows-page',
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    MatButtonModule, MatChipsModule, MatIconModule, MatProgressBarModule,
-    TranslocoModule,
-  ],
+    RouterLink,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressBarModule,
+    TranslocoModule
+],
   templateUrl: './follows.page.html',
   styleUrl: './follows.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,10 +32,14 @@ interface ActiveChip {
   selector: 'cce-events-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslocoModule, EventCardComponent, WorkbenchHeroComponent,
-  ],
+    FormsModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    EventCardComponent,
+    WorkbenchHeroComponent
+],
   templateUrl: './events-list.page.html',
   styleUrl: './events-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

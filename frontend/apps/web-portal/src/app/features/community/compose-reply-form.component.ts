@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal } from '@angular/core';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
@@ -23,10 +23,14 @@ interface ComposeReplyFormShape {
   selector: 'cce-compose-reply-form',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatRadioModule,
-    TranslocoModule,
-  ],
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatRadioModule,
+    TranslocoModule
+],
   templateUrl: './compose-reply-form.component.html',
   styleUrl: './compose-reply-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

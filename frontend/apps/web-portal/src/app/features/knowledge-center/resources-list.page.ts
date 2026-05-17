@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,12 +26,18 @@ import {
   selector: 'cce-resources-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatFormFieldModule, MatInputModule, MatPaginatorModule,
-    MatProgressBarModule, MatSelectModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatSelectModule,
     TranslocoModule,
-    FilterRailComponent, CategoriesTreeComponent, ResourceCardComponent, WorkbenchHeroComponent,
-  ],
+    FilterRailComponent,
+    CategoriesTreeComponent,
+    ResourceCardComponent,
+    WorkbenchHeroComponent
+],
   templateUrl: './resources-list.page.html',
   styleUrl: './resources-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

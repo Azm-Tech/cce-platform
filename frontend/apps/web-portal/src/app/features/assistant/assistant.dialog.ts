@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -44,14 +44,13 @@ const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   selector: 'cce-assistant-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
     TranslocoModule,
     MessageListComponent,
-    ComposeBoxComponent,
-  ],
+    ComposeBoxComponent
+],
   providers: [AssistantStore],
   templateUrl: './assistant.dialog.html',
   styleUrl: './assistant.dialog.scss',

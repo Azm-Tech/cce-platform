@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -38,15 +38,14 @@ type LoginState =
   selector: 'cce-login',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   template: `
     <section class="cce-login">
       <div class="cce-login__card">
@@ -55,20 +54,20 @@ type LoginState =
           <span class="cce-login__brand-name">CCE</span>
         </div>
 
-        <h1 class="cce-login__title">{{ 'account.login.title' | translate }}</h1>
-        <p class="cce-login__subtitle">{{ 'account.login.subtitle' | translate }}</p>
+        <h1 class="cce-login__title">{{ 'account.login.title' | transloco }}</h1>
+        <p class="cce-login__subtitle">{{ 'account.login.subtitle' | transloco }}</p>
 
         @if (isAuthenticated()) {
           <div class="cce-login__already">
-            <p>{{ 'account.login.alreadySignedIn' | translate }}</p>
+            <p>{{ 'account.login.alreadySignedIn' | transloco }}</p>
             <a mat-flat-button color="primary" routerLink="/me/profile">
-              {{ 'account.login.openProfile' | translate }}
+              {{ 'account.login.openProfile' | transloco }}
             </a>
           </div>
         } @else {
           <form #form="ngForm" class="cce-login__form" (ngSubmit)="submit(form)">
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.login.emailLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.login.emailLabel' | transloco }}</mat-label>
               <mat-icon matPrefix>mail</mat-icon>
               <input
                 matInput
@@ -82,7 +81,7 @@ type LoginState =
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.login.passwordLabel' | translate }}</mat-label>
+              <mat-label>{{ 'account.login.passwordLabel' | transloco }}</mat-label>
               <mat-icon matPrefix>lock</mat-icon>
               <input
                 matInput
@@ -98,7 +97,7 @@ type LoginState =
                 mat-icon-button
                 matSuffix
                 (click)="toggleShowPassword()"
-                [attr.aria-label]="(showPassword() ? 'account.login.hidePassword' : 'account.login.showPassword') | translate"
+                [attr.aria-label]="(showPassword() ? 'account.login.hidePassword' : 'account.login.showPassword') | transloco"
               >
                 <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
@@ -106,13 +105,13 @@ type LoginState =
 
             <div class="cce-login__row">
               <a class="cce-login__forgot" href="#" (click)="$event.preventDefault()">
-                {{ 'account.login.forgotPassword' | translate }}
+                {{ 'account.login.forgotPassword' | transloco }}
               </a>
             </div>
 
             @if (state().kind === 'error') {
               <p class="cce-login__error" role="alert">
-                {{ errorMessageKey() | translate }}
+                {{ errorMessageKey() | transloco }}
               </p>
             }
 
@@ -123,12 +122,12 @@ type LoginState =
               class="cce-login__submit"
               [disabled]="state().kind === 'submitting' || form.invalid"
             >
-              {{ submitButtonKey() | translate }}
+              {{ submitButtonKey() | transloco }}
             </button>
           </form>
 
           <div class="cce-login__divider">
-            <span>{{ 'account.login.orDemoAs' | translate }}</span>
+            <span>{{ 'account.login.orDemoAs' | transloco }}</span>
           </div>
 
           <div class="cce-login__roles">
@@ -147,9 +146,9 @@ type LoginState =
           </div>
 
           <p class="cce-login__register-line">
-            {{ 'account.login.noAccount' | translate }}
+            {{ 'account.login.noAccount' | transloco }}
             <a routerLink="/register" class="cce-login__register-link">
-              {{ 'account.login.register' | translate }}
+              {{ 'account.login.register' | transloco }}
             </a>
           </p>
         }

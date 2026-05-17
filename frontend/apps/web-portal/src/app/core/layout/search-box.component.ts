@@ -14,7 +14,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     <mat-form-field appearance="outline" class="cce-search-box">
       <mat-icon matPrefix>search</mat-icon>
       <input matInput type="search"
-        [placeholder]="'search.placeholder' | translate"
+        [placeholder]="'search.placeholder' | transloco"
         [ngModel]="query()" (ngModelChange)="query.set($event)"
         (keyup.enter)="submit()" />
     </mat-form-field>

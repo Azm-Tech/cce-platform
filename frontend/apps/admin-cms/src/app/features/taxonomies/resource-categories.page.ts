@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,11 +20,16 @@ import type { ResourceCategory } from './taxonomy.types';
   selector: 'cce-resource-categories',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatButtonModule, MatFormFieldModule, MatIconModule,
-    MatPaginatorModule, MatProgressBarModule, MatTableModule,
-    TranslocoModule, PermissionDirective,
-  ],
+    FormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatTableModule,
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './resource-categories.page.html',
   styleUrl: './taxonomies-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,21 +74,21 @@ export class ResourceCategoriesPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(flex flex-wrap -mx-3: ResourceCategory): Promise<void> {
-    const ref = this.dialog.open(ResourceCategoryFormDialogComponent, { data: { category: flex flex-wrap -mx-3 }, width: '600px' });
+  async openEdit(row: ResourceCategory): Promise<void> {
+    const ref = this.dialog.open(ResourceCategoryFormDialogComponent, { data: { category: row }, width: '600px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('taxonomies.category.edit.toast');
       void this.load();
     }
   }
-  async delete(flex flex-wrap -mx-3: ResourceCategory): Promise<void> {
+  async delete(row: ResourceCategory): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'taxonomies.category.delete.title',
       messageKey: 'taxonomies.category.delete.message',
       confirmKey: 'taxonomies.category.delete.confirm',
       cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteCategory(flex flex-wrap -mx-3.id);
+    const res = await this.api.deleteCategory(row.id);
     if (res.ok) { this.toast.success('taxonomies.category.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

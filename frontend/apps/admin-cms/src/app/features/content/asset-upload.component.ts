@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,7 +22,7 @@ import type { AssetFile } from './content.types';
 @Component({
   selector: 'cce-asset-upload',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatProgressBarModule, TranslocoModule],
+  imports: [MatButtonModule, MatIconModule, MatProgressBarModule, TranslocoModule],
   templateUrl: './asset-upload.component.html',
   styleUrl: './asset-upload.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

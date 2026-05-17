@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,7 +9,7 @@ import { HealthClient, type HealthResponse } from './health.client';
 @Component({
   selector: 'cce-health-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, TranslocoModule],
+  imports: [MatCardModule, MatButtonModule, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './health.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

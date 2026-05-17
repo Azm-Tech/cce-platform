@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,7 +25,7 @@ type Scope = 'all' | TranslationEntry['scope'];
  * UX:
  *   • Search across keys, English, and Arabic content.
  *   • Filter by scope chip (Common / Auth / Nav / Home / Resources / Events / Errors).
- *   • Edit-in-place with keyboard-friendly inputs; flex flex-wrap -mx-3 gets a "modified"
+ *   • Edit-in-place with keyboard-friendly inputs; row gets a "modified"
  *     indicator. Save All commits all dirty rows in one batch (mock).
  *   • Counter chips: total, modified, scopes.
  */
@@ -33,7 +33,6 @@ type Scope = 'all' | TranslationEntry['scope'];
   selector: 'cce-translations',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatChipsModule,
@@ -41,8 +40,8 @@ type Scope = 'all' | TranslationEntry['scope'];
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslocoModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './translations.page.html',
   styleUrl: './translations.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
