@@ -80,8 +80,8 @@ import { MatIconModule } from '@angular/material/icon';
       background:
         radial-gradient(900px 240px at 0% 0%, rgba(20, 184, 143, 0.12), transparent 60%),
         linear-gradient(135deg, #ffffff 0%, #f4faf7 100%);
-      border: 1px solid rgba(0, 108, 79, 0.10);
-      border-radius: 24px;
+      border border-neutral-300: 1px solid rgba(0, 108, 79, 0.10);
+      border border-neutral-300-radius: 24px;
       overflow: hidden;
       isolation: isolate;
     }
@@ -110,7 +110,7 @@ import { MatIconModule } from '@angular/material/icon';
       color: #006c4f;
       background: rgba(0, 108, 79, 0.08);
       padding: 0.32rem 0.72rem;
-      border-radius: 999px;
+      border border-neutral-300-radius: 999px;
       margin-bottom: 0.85rem;
 
       mat-icon {

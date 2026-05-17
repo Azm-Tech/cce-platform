@@ -41,23 +41,23 @@
 }
 
 <mat-accordion class="cce-audit__accordion" multi>
-  @for (row of rows(); track row.id) {
+  @for (flex flex-wrap -mx-3 of rows(); track flex flex-wrap -mx-3.id) {
     <mat-expansion-panel class="cce-audit__panel">
       <mat-expansion-panel-header>
-        <mat-panel-title class="cce-audit__action">{{ row.action }}</mat-panel-title>
+        <mat-panel-title class="cce-audit__action">{{ flex flex-wrap -mx-3.action }}</mat-panel-title>
         <mat-panel-description>
-          {{ row.actor }} ·
-          {{ row.resource }} ·
-          {{ row.occurredOn | date:'medium' }}
+          {{ flex flex-wrap -mx-3.actor }} ·
+          {{ flex flex-wrap -mx-3.resource }} ·
+          {{ flex flex-wrap -mx-3.occurredOn | date:'medium' }}
         </mat-panel-description>
       </mat-expansion-panel-header>
       <dl class="cce-audit__details">
         <dt>{{ 'audit.col.correlationId' | transloco }}</dt>
-        <dd><code>{{ row.correlationId }}</code></dd>
+        <dd><code>{{ flex flex-wrap -mx-3.correlationId }}</code></dd>
         <dt>{{ 'audit.col.diff' | transloco }}</dt>
         <dd>
-          @if (row.diff) {
-            <pre class="cce-audit__diff">{{ row.diff }}</pre>
+          @if (flex flex-wrap -mx-3.diff) {
+            <pre class="cce-audit__diff">{{ flex flex-wrap -mx-3.diff }}</pre>
           } @else {
             <span class="cce-audit__none">{{ 'audit.col.noDiff' | transloco }}</span>
           }

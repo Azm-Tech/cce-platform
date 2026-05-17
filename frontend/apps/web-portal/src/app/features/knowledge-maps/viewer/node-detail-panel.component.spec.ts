@@ -76,7 +76,7 @@ describe('NodeDetailPanelComponent', () => {
     expect(component.description()).toBe('—');
   });
 
-  it('outbound edges list renders one row per edge with the target localized name', () => {
+  it('outbound edges list renders one flex flex-wrap -mx-3 per edge with the target localized name', () => {
     fixture.componentRef.setInput('node', NODE_A);
     fixture.componentRef.setInput('outboundEdges', [EDGE_AB, EDGE_AC]);
     fixture.componentRef.setInput('outboundTargets', [NODE_B, NODE_C]);

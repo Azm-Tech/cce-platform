@@ -1,6 +1,6 @@
 <section class="cce-translations">
   <header class="cce-translations__header">
-    <div class="cce-translations__title-row">
+    <div class="cce-translations__title-flex flex-wrap -mx-3">
       <div>
         <span class="cce-translations__eyebrow">BRD §4.1.24 · TRANSLATIONS</span>
         <h1 class="cce-translations__title">Translations Management</h1>
@@ -9,7 +9,7 @@
         </p>
       </div>
 
-      <div class="cce-translations__stat-row">
+      <div class="cce-translations__stat-flex flex-wrap -mx-3">
         <div class="cce-translations__stat">
           <span class="cce-translations__stat-value">{{ stats().total }}</span>
           <span class="cce-translations__stat-label">Total keys</span>
@@ -70,7 +70,7 @@
     </div>
   } @else {
     <div class="cce-translations__table" role="table">
-      <div class="cce-translations__row cce-translations__row--head" role="row">
+      <div class="cce-translations__row cce-translations__row--head" role="flex flex-wrap -mx-3">
         <div class="cce-translations__cell cce-translations__cell--key" role="columnheader">Key</div>
         <div class="cce-translations__cell cce-translations__cell--scope" role="columnheader">Scope</div>
         <div class="cce-translations__cell" role="columnheader">English</div>
@@ -79,7 +79,7 @@
       </div>
 
       @for (e of filteredEntries(); track trackByKey($index, e)) {
-        <div class="cce-translations__row" [class.cce-translations__row--dirty]="isDirty(e.key)" role="row">
+        <div class="cce-translations__row" [class.cce-translations__row--dirty]="isDirty(e.key)" role="flex flex-wrap -mx-3">
           <div class="cce-translations__cell cce-translations__cell--key" role="cell">
             <code>{{ e.key }}</code>
             @if (isDirty(e.key)) {

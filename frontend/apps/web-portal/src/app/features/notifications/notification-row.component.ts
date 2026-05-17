@@ -6,13 +6,13 @@ import { TranslocoModule } from '@jsverse/transloco';
 import type { UserNotification } from './notification.types';
 
 @Component({
-  selector: 'cce-notification-row',
+  selector: 'cce-notification-flex flex-wrap -mx-3',
   standalone: true,
   imports: [CommonModule, DatePipe, MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <article
-      class="cce-notification-row"
-      [class.cce-notification-row--unread]="isUnread()"
+      class="cce-notification-flex flex-wrap -mx-3"
+      [class.cce-notification-flex flex-wrap -mx-3--unread]="isUnread()"
       role="listitem"
     >
       <span class="cce-notification-row__dot" aria-hidden="true"></span>
@@ -45,7 +45,7 @@ import type { UserNotification } from './notification.types';
       }
     </article>
   `,
-  styleUrl: './notification-row.component.scss',
+  styleUrl: './notification-flex flex-wrap -mx-3.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationRowComponent {

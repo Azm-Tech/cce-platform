@@ -1,5 +1,5 @@
 /**
- * Admin-side community post row — mirrors the backend
+ * Admin-side community post flex flex-wrap -mx-3 — mirrors the backend
  * `CCE.Application.Community.Queries.ListAdminPosts.AdminPostRow` DTO.
  */
 export interface AdminPostRow {

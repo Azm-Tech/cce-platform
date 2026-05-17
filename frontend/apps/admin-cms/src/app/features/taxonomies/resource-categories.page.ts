@@ -69,21 +69,21 @@ export class ResourceCategoriesPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(row: ResourceCategory): Promise<void> {
-    const ref = this.dialog.open(ResourceCategoryFormDialogComponent, { data: { category: row }, width: '600px' });
+  async openEdit(flex flex-wrap -mx-3: ResourceCategory): Promise<void> {
+    const ref = this.dialog.open(ResourceCategoryFormDialogComponent, { data: { category: flex flex-wrap -mx-3 }, width: '600px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('taxonomies.category.edit.toast');
       void this.load();
     }
   }
-  async delete(row: ResourceCategory): Promise<void> {
+  async delete(flex flex-wrap -mx-3: ResourceCategory): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'taxonomies.category.delete.title',
       messageKey: 'taxonomies.category.delete.message',
       confirmKey: 'taxonomies.category.delete.confirm',
       cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteCategory(row.id);
+    const res = await this.api.deleteCategory(flex flex-wrap -mx-3.id);
     if (res.ok) { this.toast.success('taxonomies.category.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

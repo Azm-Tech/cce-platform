@@ -18,7 +18,7 @@ import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } fr
 import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reject-expert.dialog';
 
 /**
- * Admin → Expert requests list. Filterable by status; per-row Approve/Reject
+ * Admin → Expert requests list. Filterable by status; per-flex flex-wrap -mx-3 Approve/Reject
  * actions open dedicated dialogs (Tasks 2.2 + 2.3).
  */
 @Component({
@@ -90,8 +90,8 @@ export class ExpertRequestsListPage implements OnInit {
     void this.load();
   }
 
-  async approve(row: ExpertRequest): Promise<void> {
-    const data: ApproveExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
+  async approve(flex flex-wrap -mx-3: ExpertRequest): Promise<void> {
+    const data: ApproveExpertDialogData = { requestId: flex flex-wrap -mx-3.id, requesterName: flex flex-wrap -mx-3.requestedByUserName };
     const ref = this.dialog.open(ApproveExpertDialogComponent, { data, width: '480px' });
     const updated = await firstValueFrom(ref.afterClosed());
     if (updated) {
@@ -100,8 +100,8 @@ export class ExpertRequestsListPage implements OnInit {
     }
   }
 
-  async reject(row: ExpertRequest): Promise<void> {
-    const data: RejectExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
+  async reject(flex flex-wrap -mx-3: ExpertRequest): Promise<void> {
+    const data: RejectExpertDialogData = { requestId: flex flex-wrap -mx-3.id, requesterName: flex flex-wrap -mx-3.requestedByUserName };
     const ref = this.dialog.open(RejectExpertDialogComponent, { data, width: '520px' });
     const updated = await firstValueFrom(ref.afterClosed());
     if (updated) {

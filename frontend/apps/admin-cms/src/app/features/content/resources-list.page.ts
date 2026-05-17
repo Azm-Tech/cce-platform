@@ -22,7 +22,7 @@ import {
 import type { Resource } from './content.types';
 
 /**
- * Admin → Resources list. Filters: search, isPublished. Per-row actions:
+ * Admin → Resources list. Filters: search, isPublished. Per-flex flex-wrap -mx-3 actions:
  * Edit, Publish (only when not yet published).
  */
 @Component({
@@ -119,8 +119,8 @@ export class ResourcesListPage implements OnInit {
     }
   }
 
-  async openEdit(row: Resource): Promise<void> {
-    const data: ResourceFormDialogData = { resource: row };
+  async openEdit(flex flex-wrap -mx-3: Resource): Promise<void> {
+    const data: ResourceFormDialogData = { resource: flex flex-wrap -mx-3 };
     const ref = this.dialog.open(ResourceFormDialogComponent, { data, width: '720px' });
     const updated = await firstValueFrom(ref.afterClosed());
     if (updated) {
@@ -129,7 +129,7 @@ export class ResourcesListPage implements OnInit {
     }
   }
 
-  async publish(row: Resource): Promise<void> {
+  async publish(flex flex-wrap -mx-3: Resource): Promise<void> {
     const confirmed = await this.confirm.confirm({
       titleKey: 'resources.publish.title',
       messageKey: 'resources.publish.message',
@@ -137,7 +137,7 @@ export class ResourcesListPage implements OnInit {
       cancelKey: 'common.actions.cancel',
     });
     if (!confirmed) return;
-    const res = await this.api.publishResource(row.id);
+    const res = await this.api.publishResource(flex flex-wrap -mx-3.id);
     if (res.ok) {
       this.toast.success('resources.publish.toast');
       void this.load();

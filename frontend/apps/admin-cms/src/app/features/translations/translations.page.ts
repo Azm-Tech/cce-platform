@@ -25,7 +25,7 @@ type Scope = 'all' | TranslationEntry['scope'];
  * UX:
  *   • Search across keys, English, and Arabic content.
  *   • Filter by scope chip (Common / Auth / Nav / Home / Resources / Events / Errors).
- *   • Edit-in-place with keyboard-friendly inputs; row gets a "modified"
+ *   • Edit-in-place with keyboard-friendly inputs; flex flex-wrap -mx-3 gets a "modified"
  *     indicator. Save All commits all dirty rows in one batch (mock).
  *   • Counter chips: total, modified, scopes.
  */

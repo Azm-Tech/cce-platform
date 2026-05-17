@@ -20,7 +20,7 @@ export interface HeroStep {
  *  - Pill **eyebrow** (small ALL-CAPS text + a pulsing brand-green dot).
  *  - Large **gradient title** (deep-green → mid-green → gold).
  *  - Optional **subtitle** capped at ~660 px.
- *  - Optional **3-step quick-start strip** — a row of cards each with a
+ *  - Optional **3-step quick-start strip** — a flex flex-wrap -mx-3 of cards each with a
  *    colored numbered badge (gradient cycles by step index: green → amber →
  *    indigo) + label + description. Only rendered when `steps` is non-empty.
  *
@@ -87,7 +87,7 @@ export interface HeroStep {
 
     .cce-workbench-hero {
       padding-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      border border-neutral-300-bottom: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     /* ─── Eyebrow chip with pulsing dot ───────────────────── */
@@ -102,15 +102,15 @@ export interface HeroStep {
       margin-bottom: 1rem;
       padding: 0.4rem 0.85rem;
       background: rgba(15, 139, 108, 0.08);
-      border: 1px solid rgba(0, 108, 79, 0.18);
-      border-radius: 999px;
+      border border-neutral-300: 1px solid rgba(0, 108, 79, 0.18);
+      border border-neutral-300-radius: 999px;
       text-transform: uppercase;
     }
 
     .cce-workbench-hero__eyebrow-dot {
       width: 6px;
       height: 6px;
-      border-radius: 50%;
+      border border-neutral-300-radius: 50%;
       background: #14b88f;
       box-shadow: 0 0 8px rgba(20, 184, 143, 0.65);
       animation: cceWorkbenchHeroDotPulse 2.4s ease-in-out infinite;
@@ -160,13 +160,13 @@ export interface HeroStep {
       gap: 0.85rem;
       padding: 0.85rem 1rem;
       background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 14px;
+      border border-neutral-300: 1px solid rgba(0, 0, 0, 0.06);
+      border border-neutral-300-radius: 14px;
       box-shadow: 0 4px 14px -10px rgba(0, 48, 31, 0.10);
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      transition: border border-neutral-300-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
     .cce-workbench-hero__step:hover {
-      border-color: rgba(0, 108, 79, 0.25);
+      border border-neutral-300-color: rgba(0, 108, 79, 0.25);
       transform: translateY(-1px);
       box-shadow: 0 10px 22px -10px rgba(0, 48, 31, 0.18);
     }
@@ -174,7 +174,7 @@ export interface HeroStep {
     .cce-workbench-hero__step-num {
       width: 38px;
       height: 38px;
-      border-radius: 12px;
+      border border-neutral-300-radius: 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;

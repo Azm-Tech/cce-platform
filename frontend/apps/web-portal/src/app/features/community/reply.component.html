@@ -17,7 +17,7 @@
       }
 
       <header class="cce-reply__head">
-        <span class="cce-reply__author-row">
+        <span class="cce-reply__author-flex flex-wrap -mx-3">
           <span class="cce-reply__author-name">
             {{ 'community.detail.memberHandle' | transloco }}
           </span>
@@ -57,7 +57,7 @@
       </footer>
     </div>
 
-    <!-- Action row: Like / Dislike / Reply -->
+    <!-- Action flex flex-wrap -mx-3: Like / Dislike / Reply -->
     <div class="cce-reply__actions">
       <cce-like-dislike-control
         [entityId]="reply().id"

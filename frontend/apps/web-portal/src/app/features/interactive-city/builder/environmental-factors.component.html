@@ -38,24 +38,24 @@
   </header>
 
   <div class="cce-env-factors__grid">
-    @for (row of rows; track row.key) {
+    @for (flex flex-wrap -mx-3 of rows; track flex flex-wrap -mx-3.key) {
       <div class="cce-env-factors__row">
         <div class="cce-env-factors__row-head">
           <span class="cce-env-factors__row-icon" aria-hidden="true">
-            <mat-icon>{{ row.icon }}</mat-icon>
+            <mat-icon>{{ flex flex-wrap -mx-3.icon }}</mat-icon>
           </span>
           <div class="cce-env-factors__row-text">
             <span class="cce-env-factors__row-label">
-              {{ row.labelKey | transloco }}
+              {{ flex flex-wrap -mx-3.labelKey | transloco }}
             </span>
             <span class="cce-env-factors__row-help">
-              {{ row.helpKey | transloco }}
+              {{ flex flex-wrap -mx-3.helpKey | transloco }}
             </span>
           </div>
           <span class="cce-env-factors__row-badge" aria-hidden="true">
-            {{ factors()[row.key] }}
-            @if (row.bounds.unit === 'percent') { % }
-            @else if (row.bounds.unit === 'km') {
+            {{ factors()[flex flex-wrap -mx-3.key] }}
+            @if (flex flex-wrap -mx-3.bounds.unit === 'percent') { % }
+            @else if (flex flex-wrap -mx-3.bounds.unit === 'km') {
               <span class="cce-env-factors__row-badge-unit">
                 {{ 'interactiveCity.factors.unitKm' | transloco }}
               </span>
@@ -65,19 +65,19 @@
 
         <mat-slider
           class="cce-env-factors__slider"
-          [min]="row.bounds.min"
-          [max]="row.bounds.max"
-          [step]="row.bounds.step"
+          [min]="flex flex-wrap -mx-3.bounds.min"
+          [max]="flex flex-wrap -mx-3.bounds.max"
+          [step]="flex flex-wrap -mx-3.bounds.step"
           [discrete]="true"
         >
           <input
             matSliderThumb
-            [value]="factors()[row.key]"
-            (valueChange)="setValue(row.key, $event)"
-            [attr.aria-label]="row.labelKey | transloco"
-            [attr.aria-valuemin]="row.bounds.min"
-            [attr.aria-valuemax]="row.bounds.max"
-            [attr.aria-valuenow]="factors()[row.key]"
+            [value]="factors()[flex flex-wrap -mx-3.key]"
+            (valueChange)="setValue(flex flex-wrap -mx-3.key, $event)"
+            [attr.aria-label]="flex flex-wrap -mx-3.labelKey | transloco"
+            [attr.aria-valuemin]="flex flex-wrap -mx-3.bounds.min"
+            [attr.aria-valuemax]="flex flex-wrap -mx-3.bounds.max"
+            [attr.aria-valuenow]="factors()[flex flex-wrap -mx-3.key]"
           />
         </mat-slider>
       </div>

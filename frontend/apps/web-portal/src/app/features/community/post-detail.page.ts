@@ -65,7 +65,7 @@ export class PostDetailPage implements OnInit {
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
 
-  /** Skeleton row count rendered before the post arrives. */
+  /** Skeleton flex flex-wrap -mx-3 count rendered before the post arrives. */
   readonly replySkeletons = Array.from({ length: 3 });
 
   readonly locale = this.localeService.locale;

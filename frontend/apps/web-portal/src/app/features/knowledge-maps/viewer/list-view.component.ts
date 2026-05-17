@@ -34,11 +34,11 @@ interface EdgeBreakdown {
  *     Cytoscape node shape (circle / round-rect / diamond) so the
  *     visual mapping between graph + list views is obvious.
  *   - Sections are collapsible — click the header to fold the rows.
- *   - Each row shows a small composition pill (parent / related /
+ *   - Each flex flex-wrap -mx-3 shows a small composition pill (parent / related /
  *     required outbound counts) so users can spot dense or hub-like
  *     nodes at a glance.
  *
- * Click any node row → emits (nodeSelected) — same handler the
+ * Click any node flex flex-wrap -mx-3 → emits (nodeSelected) — same handler the
  * GraphCanvas uses, so the explore loop is identical in both views.
  */
 @Component({
@@ -105,7 +105,7 @@ export class ListViewComponent {
     return map;
   });
 
-  /** Relationship-type ordering for the per-row composition pills. */
+  /** Relationship-type ordering for the per-flex flex-wrap -mx-3 composition pills. */
   readonly relTypes: readonly RelationshipType[] = ['ParentOf', 'RelatedTo', 'RequiredBy'];
 
   nameOf(n: KnowledgeMapNode): string {

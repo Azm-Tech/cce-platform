@@ -8,7 +8,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { NotificationsApiService } from './notifications-api.service';
-import { NotificationRowComponent } from './notification-row.component';
+import { NotificationRowComponent } from './notification-flex flex-wrap -mx-3.component';
 import type { UserNotification } from './notification.types';
 
 /**

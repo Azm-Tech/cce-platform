@@ -45,50 +45,50 @@
 <table mat-table [dataSource]="rows()" class="cce-resources-list__table">
   <ng-container matColumnDef="titleEn">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.title' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.titleEn }}</td>
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.titleEn }}</td>
   </ng-container>
   <ng-container matColumnDef="resourceType">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.type' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.resourceType }}</td>
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.resourceType }}</td>
   </ng-container>
   <ng-container matColumnDef="isPublished">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.published' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.isPublished ? '✓' : '—' }}</td>
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.isPublished ? '✓' : '—' }}</td>
   </ng-container>
   <ng-container matColumnDef="publishedOn">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.publishedOn' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.publishedOn ? (row.publishedOn | date:'medium') : '—' }}</td>
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.publishedOn ? (flex flex-wrap -mx-3.publishedOn | date:'medium') : '—' }}</td>
   </ng-container>
   <ng-container matColumnDef="views">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.views' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.viewCount }}</td>
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">{{ flex flex-wrap -mx-3.viewCount }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>{{ 'resources.col.actions' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">
+    <td mat-cell *matCellDef="let flex flex-wrap -mx-3">
       <button
         type="button"
         mat-button
         *ccePermission="'Resource.Center.Update'"
-        (click)="openEdit(row)"
+        (click)="openEdit(flex flex-wrap -mx-3)"
       >
         {{ 'resources.edit.openButton' | transloco }}
       </button>
-      @if (!row.isPublished) {
+      @if (!flex flex-wrap -mx-3.isPublished) {
         <button
           type="button"
           mat-button
           color="primary"
           *ccePermission="'Resource.Center.Upload'"
-          (click)="publish(row)"
+          (click)="publish(flex flex-wrap -mx-3)"
         >
           {{ 'resources.publish.openButton' | transloco }}
         </button>
       }
     </td>
   </ng-container>
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  <tr mat-header-flex flex-wrap -mx-3 *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-flex flex-wrap -mx-3 *matRowDef="let flex flex-wrap -mx-3; columns: displayedColumns"></tr>
 </table>
 
 <mat-paginator

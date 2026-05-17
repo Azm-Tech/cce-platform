@@ -38,8 +38,8 @@ export function buildStylesheet(): StylesheetJson {
         'text-outline-color': 'rgba(0, 30, 22, 0.55)',
         'width': 84,
         'height': 84,
-        'border-width': 2,
-        'border-color': 'rgba(0, 60, 44, 0.18)',
+        'border border-neutral-300-width': 2,
+        'border border-neutral-300-color': 'rgba(0, 60, 44, 0.18)',
       },
     },
     // ─── NodeType: Technology — deep brand-green ellipse (primary) ───
@@ -75,16 +75,16 @@ export function buildStylesheet(): StylesheetJson {
         'overlay-color': '#14b88f',
         'overlay-opacity': 0.16,
         'overlay-padding': 8,
-        'border-width': 3,
-        'border-color': 'rgba(20, 184, 143, 0.55)',
+        'border border-neutral-300-width': 3,
+        'border border-neutral-300-color': 'rgba(20, 184, 143, 0.55)',
       },
     },
     // ─── Selected highlight — gold ring (matches portal selection) ───
     {
       selector: 'node:selected',
       style: {
-        'border-width': 5,
-        'border-color': '#c8a045',
+        'border border-neutral-300-width': 5,
+        'border border-neutral-300-color': '#c8a045',
         'overlay-color': '#c8a045',
         'overlay-opacity': 0.12,
         'overlay-padding': 8,

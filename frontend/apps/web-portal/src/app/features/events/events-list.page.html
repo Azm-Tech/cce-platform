@@ -135,7 +135,7 @@
         <mat-icon aria-hidden="true">date_range</mat-icon>
         {{ 'events.filters.dateRange' | transloco }}
       </legend>
-      <div class="cce-list-filters__date-row">
+      <div class="cce-list-filters__date-flex flex-wrap -mx-3">
         <label class="cce-list-filters__date">
           <span>{{ 'events.filters.from' | transloco }}</span>
           <input type="date" [ngModel]="from()" (ngModelChange)="setDateFrom($event)" />

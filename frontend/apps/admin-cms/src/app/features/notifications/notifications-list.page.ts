@@ -84,8 +84,8 @@ export class NotificationsListPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(row: NotificationTemplate): Promise<void> {
-    const ref = this.dialog.open(NotificationFormDialogComponent, { data: { template: row }, width: '720px' });
+  async openEdit(flex flex-wrap -mx-3: NotificationTemplate): Promise<void> {
+    const ref = this.dialog.open(NotificationFormDialogComponent, { data: { template: flex flex-wrap -mx-3 }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('notifications.edit.toast');
       void this.load();

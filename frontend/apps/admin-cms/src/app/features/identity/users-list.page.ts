@@ -16,7 +16,7 @@ import { KNOWN_ROLES, type UserListItem } from './identity.types';
 
 /**
  * Admin → Users list page. Paged Material table with search + role filter.
- * Each row links to {@link UserDetailPage}. Permission gate is applied at
+ * Each flex flex-wrap -mx-3 links to {@link UserDetailPage}. Permission gate is applied at
  * route-level via permissionGuard ('User.Read').
  */
 @Component({

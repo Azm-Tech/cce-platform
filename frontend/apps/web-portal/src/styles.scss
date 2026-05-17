@@ -4,13 +4,13 @@
 // SCSS path is relative to the app's project root, so reach into libs/ui-kit/src/lib/styles.
 // Nx's tsconfig path mappings DON'T apply to SCSS — Sass uses the `loadPaths` config from
 // project.json. Phase 09 already set loadPaths to include node_modules; we add libs path here.
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
 
 @include theme.cce-theme;
-
-// Bootstrap 5 — grid + utilities ONLY (per ADR-0003).
-// Per Phase 09 deviation, we use legacy @import inside a partial to side-step Sass module isolation.
-@import "./bootstrap-grid";
 
 // Document-level resets — make sure the brand-tinted gradient
 // (applied to <body> in `_fancy.scss`) covers the FULL viewport on

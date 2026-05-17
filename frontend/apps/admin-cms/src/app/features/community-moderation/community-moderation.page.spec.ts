@@ -99,7 +99,7 @@ describe('CommunityModerationPage', () => {
     expect(toast.success).toHaveBeenCalledWith('communityModeration.post.toast');
   });
 
-  it('skips deletePost when row is already deleted', async () => {
+  it('skips deletePost when flex flex-wrap -mx-3 is already deleted', async () => {
     await page.deletePost(mockPost({ isDeleted: true }));
     expect(api.softDeletePost).not.toHaveBeenCalled();
   });

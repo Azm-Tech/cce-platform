@@ -77,26 +77,26 @@ export class EventsListPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(row: CceEvent): Promise<void> {
-    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: row }, width: '720px' });
+  async openEdit(flex flex-wrap -mx-3: CceEvent): Promise<void> {
+    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: flex flex-wrap -mx-3 }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.edit.toast');
       void this.load();
     }
   }
-  async reschedule(row: CceEvent): Promise<void> {
-    const ref = this.dialog.open(RescheduleEventDialogComponent, { data: { event: row }, width: '480px' });
+  async reschedule(flex flex-wrap -mx-3: CceEvent): Promise<void> {
+    const ref = this.dialog.open(RescheduleEventDialogComponent, { data: { event: flex flex-wrap -mx-3 }, width: '480px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.reschedule.toast');
       void this.load();
     }
   }
-  async delete(row: CceEvent): Promise<void> {
+  async delete(flex flex-wrap -mx-3: CceEvent): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'events.delete.title', messageKey: 'events.delete.message',
       confirmKey: 'events.delete.confirm', cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteEvent(row.id);
+    const res = await this.api.deleteEvent(flex flex-wrap -mx-3.id);
     if (res.ok) { this.toast.success('events.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

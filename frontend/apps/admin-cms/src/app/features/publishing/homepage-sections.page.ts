@@ -79,11 +79,11 @@ export class HomepageSectionsPage implements OnInit {
     } else this.toast.error(`errors.${res.error.kind}`);
   }
 
-  async update(row: HomepageSection, patch: Partial<{ contentAr: string; contentEn: string; isActive: boolean }>): Promise<void> {
-    const res = await this.api.updateHomepageSection(row.id, {
-      contentAr: patch.contentAr ?? row.contentAr,
-      contentEn: patch.contentEn ?? row.contentEn,
-      isActive: patch.isActive ?? row.isActive,
+  async update(flex flex-wrap -mx-3: HomepageSection, patch: Partial<{ contentAr: string; contentEn: string; isActive: boolean }>): Promise<void> {
+    const res = await this.api.updateHomepageSection(flex flex-wrap -mx-3.id, {
+      contentAr: patch.contentAr ?? flex flex-wrap -mx-3.contentAr,
+      contentEn: patch.contentEn ?? flex flex-wrap -mx-3.contentEn,
+      isActive: patch.isActive ?? flex flex-wrap -mx-3.isActive,
     });
     if (res.ok) {
       this.toast.success('homepage.edit.toast');
@@ -91,26 +91,26 @@ export class HomepageSectionsPage implements OnInit {
     } else this.toast.error(`errors.${res.error.kind}`);
   }
 
-  async delete(row: HomepageSection): Promise<void> {
+  async delete(flex flex-wrap -mx-3: HomepageSection): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'homepage.delete.title', messageKey: 'homepage.delete.message',
       confirmKey: 'homepage.delete.confirm', cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteHomepageSection(row.id);
+    const res = await this.api.deleteHomepageSection(flex flex-wrap -mx-3.id);
     if (res.ok) {
       this.toast.success('homepage.delete.toast');
       void this.load();
     } else this.toast.error(`errors.${res.error.kind}`);
   }
 
-  async moveUp(row: HomepageSection): Promise<void> {
-    const idx = this.rows().findIndex((r) => r.id === row.id);
+  async moveUp(flex flex-wrap -mx-3: HomepageSection): Promise<void> {
+    const idx = this.rows().findIndex((r) => r.id === flex flex-wrap -mx-3.id);
     if (idx <= 0) return;
     await this.swap(idx, idx - 1);
   }
 
-  async moveDown(row: HomepageSection): Promise<void> {
-    const idx = this.rows().findIndex((r) => r.id === row.id);
+  async moveDown(flex flex-wrap -mx-3: HomepageSection): Promise<void> {
+    const idx = this.rows().findIndex((r) => r.id === flex flex-wrap -mx-3.id);
     if (idx < 0 || idx >= this.rows().length - 1) return;
     await this.swap(idx, idx + 1);
   }

@@ -76,21 +76,21 @@ export class TopicsPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(row: Topic): Promise<void> {
-    const ref = this.dialog.open(TopicFormDialogComponent, { data: { topic: row }, width: '720px' });
+  async openEdit(flex flex-wrap -mx-3: Topic): Promise<void> {
+    const ref = this.dialog.open(TopicFormDialogComponent, { data: { topic: flex flex-wrap -mx-3 }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('taxonomies.topic.edit.toast');
       void this.load();
     }
   }
-  async delete(row: Topic): Promise<void> {
+  async delete(flex flex-wrap -mx-3: Topic): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'taxonomies.topic.delete.title',
       messageKey: 'taxonomies.topic.delete.message',
       confirmKey: 'taxonomies.topic.delete.confirm',
       cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteTopic(row.id);
+    const res = await this.api.deleteTopic(flex flex-wrap -mx-3.id);
     if (res.ok) { this.toast.success('taxonomies.topic.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

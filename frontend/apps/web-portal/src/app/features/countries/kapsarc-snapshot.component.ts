@@ -86,20 +86,20 @@ interface SubScoreRow {
           <small>0–100</small>
         </div>
         <ul class="cce-kapsarc-snapshot__sub-scores" role="list">
-          @for (row of subScoreRows(); track row.key) {
-            <li class="cce-kapsarc-snapshot__sub-row">
-              <span class="cce-kapsarc-snapshot__sub-icon" aria-hidden="true">{{ row.icon }}</span>
-              <span class="cce-kapsarc-snapshot__sub-label">{{ row.label }}</span>
-              <div class="cce-kapsarc-snapshot__sub-bar" [attr.aria-label]="row.label + ' score ' + row.value">
+          @for (flex flex-wrap -mx-3 of subScoreRows(); track flex flex-wrap -mx-3.key) {
+            <li class="cce-kapsarc-snapshot__sub-flex flex-wrap -mx-3">
+              <span class="cce-kapsarc-snapshot__sub-icon" aria-hidden="true">{{ flex flex-wrap -mx-3.icon }}</span>
+              <span class="cce-kapsarc-snapshot__sub-label">{{ flex flex-wrap -mx-3.label }}</span>
+              <div class="cce-kapsarc-snapshot__sub-bar" [attr.aria-label]="flex flex-wrap -mx-3.label + ' score ' + flex flex-wrap -mx-3.value">
                 <div
                   class="cce-kapsarc-snapshot__sub-bar-fill"
-                  [class.cce-kapsarc-snapshot__sub-bar-fill--high]="row.value >= 75"
-                  [class.cce-kapsarc-snapshot__sub-bar-fill--mid]="row.value >= 50 && row.value < 75"
-                  [class.cce-kapsarc-snapshot__sub-bar-fill--low]="row.value < 50"
-                  [style.width.%]="row.value">
+                  [class.cce-kapsarc-snapshot__sub-bar-fill--high]="flex flex-wrap -mx-3.value >= 75"
+                  [class.cce-kapsarc-snapshot__sub-bar-fill--mid]="flex flex-wrap -mx-3.value >= 50 && flex flex-wrap -mx-3.value < 75"
+                  [class.cce-kapsarc-snapshot__sub-bar-fill--low]="flex flex-wrap -mx-3.value < 50"
+                  [style.width.%]="flex flex-wrap -mx-3.value">
                 </div>
               </div>
-              <span class="cce-kapsarc-snapshot__sub-value">{{ row.value }}</span>
+              <span class="cce-kapsarc-snapshot__sub-value">{{ flex flex-wrap -mx-3.value }}</span>
             </li>
           }
         </ul>

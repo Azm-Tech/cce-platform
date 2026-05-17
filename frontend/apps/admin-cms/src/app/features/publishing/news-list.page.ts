@@ -82,28 +82,28 @@ export class NewsListPage implements OnInit {
       void this.load();
     }
   }
-  async openEdit(row: News): Promise<void> {
-    const ref = this.dialog.open(NewsFormDialogComponent, { data: { news: row }, width: '720px' });
+  async openEdit(flex flex-wrap -mx-3: News): Promise<void> {
+    const ref = this.dialog.open(NewsFormDialogComponent, { data: { news: flex flex-wrap -mx-3 }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('news.edit.toast');
       void this.load();
     }
   }
-  async publish(row: News): Promise<void> {
+  async publish(flex flex-wrap -mx-3: News): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'news.publish.title', messageKey: 'news.publish.message',
       confirmKey: 'news.publish.confirm', cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.publishNews(row.id);
+    const res = await this.api.publishNews(flex flex-wrap -mx-3.id);
     if (res.ok) { this.toast.success('news.publish.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }
-  async delete(row: News): Promise<void> {
+  async delete(flex flex-wrap -mx-3: News): Promise<void> {
     if (!(await this.confirm.confirm({
       titleKey: 'news.delete.title', messageKey: 'news.delete.message',
       confirmKey: 'news.delete.confirm', cancelKey: 'common.actions.cancel',
     }))) return;
-    const res = await this.api.deleteNews(row.id);
+    const res = await this.api.deleteNews(flex flex-wrap -mx-3.id);
     if (res.ok) { this.toast.success('news.delete.toast'); void this.load(); }
     else this.toast.error(`errors.${res.error.kind}`);
   }

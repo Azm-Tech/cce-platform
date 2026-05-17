@@ -27,7 +27,7 @@ const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  * Admin → Community moderation list.
  *
  * Lists every community post (active + soft-deleted) with filters for
- * topic, locale, status, and free-text search over `content`. Each row
+ * topic, locale, status, and free-text search over `content`. Each flex flex-wrap -mx-3
  * shows status chips (QUESTION / ANSWERED / DELETED), reply count, and
  * action buttons for soft-deleting the post. A quick-action panel at
  * the top lets moderators paste a reply id to soft-delete it directly.
@@ -90,14 +90,14 @@ export class CommunityModerationPage implements OnInit {
     await this.load();
   }
 
-  topicNameOf(row: AdminPostRow): string {
-    return this.locale() === 'ar' ? row.topicNameAr : row.topicNameEn;
+  topicNameOf(flex flex-wrap -mx-3: AdminPostRow): string {
+    return this.locale() === 'ar' ? flex flex-wrap -mx-3.topicNameAr : flex flex-wrap -mx-3.topicNameEn;
   }
 
   /** First 140 chars of `content` for the table cell — full content
-   *  is shown in the row tooltip. */
-  excerptOf(row: AdminPostRow): string {
-    const stripped = row.content.replace(/\s+/g, ' ').trim();
+   *  is shown in the flex flex-wrap -mx-3 tooltip. */
+  excerptOf(flex flex-wrap -mx-3: AdminPostRow): string {
+    const stripped = flex flex-wrap -mx-3.content.replace(/\s+/g, ' ').trim();
     return stripped.length > 140 ? stripped.slice(0, 140) + '…' : stripped;
   }
 
@@ -108,24 +108,24 @@ export class CommunityModerationPage implements OnInit {
    * The template hides the "Open in portal" affordance when this
    * returns null so we don't dangle a broken link.
    */
-  publicPostUrl(row: AdminPostRow): string | null {
+  publicPostUrl(flex flex-wrap -mx-3: AdminPostRow): string | null {
     const base = this.envService.env.webPortalUrl;
     if (!base) return null;
     // Strip a trailing slash if the operator added one — be lenient.
     const origin = base.replace(/\/+$/, '');
-    return `${origin}/community/posts/${row.id}`;
+    return `${origin}/community/posts/${flex flex-wrap -mx-3.id}`;
   }
 
   /** Open the public post in a new tab. Uses `noopener,noreferrer`
    *  so the popup can't navigate the admin tab back. Soft-deleted
    *  posts open too — admins may need to inspect the public-facing
    *  tombstone the user portal renders. */
-  openInPortal(row: AdminPostRow, event?: MouseEvent): void {
+  openInPortal(flex flex-wrap -mx-3: AdminPostRow, event?: MouseEvent): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
-    const url = this.publicPostUrl(row);
+    const url = this.publicPostUrl(flex flex-wrap -mx-3);
     if (!url) return;
     window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -133,8 +133,8 @@ export class CommunityModerationPage implements OnInit {
   /** Open the public post's replies section directly. Uses the
    *  `#replies` anchor that the user-portal's post-detail page
    *  exposes on its replies `<section>`. */
-  openReplies(row: AdminPostRow): void {
-    const url = this.publicPostUrl(row);
+  openReplies(flex flex-wrap -mx-3: AdminPostRow): void {
+    const url = this.publicPostUrl(flex flex-wrap -mx-3);
     if (!url) return;
     window.open(`${url}#replies`, '_blank', 'noopener,noreferrer');
   }
@@ -142,13 +142,13 @@ export class CommunityModerationPage implements OnInit {
   /** Copy the raw post id (the GUID) to the clipboard. Useful for
    *  pasting into the by-ID quick-action panel or into a support
    *  ticket. */
-  async copyId(row: AdminPostRow): Promise<void> {
-    await this.copyToClipboard(row.id, 'communityModeration.action.copyIdToast');
+  async copyId(flex flex-wrap -mx-3: AdminPostRow): Promise<void> {
+    await this.copyToClipboard(flex flex-wrap -mx-3.id, 'communityModeration.action.copyIdToast');
   }
 
   /** Copy the public deep-link to the post (when configured). */
-  async copyLink(row: AdminPostRow): Promise<void> {
-    const url = this.publicPostUrl(row);
+  async copyLink(flex flex-wrap -mx-3: AdminPostRow): Promise<void> {
+    const url = this.publicPostUrl(flex flex-wrap -mx-3);
     if (!url) return;
     await this.copyToClipboard(url, 'communityModeration.action.copyLinkToast');
   }
@@ -220,8 +220,8 @@ export class CommunityModerationPage implements OnInit {
   }
 
   // ─── Row actions ────────────────────────────────────────
-  async deletePost(row: AdminPostRow): Promise<void> {
-    if (row.isDeleted) return;
+  async deletePost(flex flex-wrap -mx-3: AdminPostRow): Promise<void> {
+    if (flex flex-wrap -mx-3.isDeleted) return;
     if (!(await this.confirm.confirm({
       titleKey: 'communityModeration.post.title',
       messageKey: 'communityModeration.post.message',
@@ -229,7 +229,7 @@ export class CommunityModerationPage implements OnInit {
       cancelKey: 'common.actions.cancel',
     }))) return;
     this.busy.set(true);
-    const res = await this.api.softDeletePost(row.id);
+    const res = await this.api.softDeletePost(flex flex-wrap -mx-3.id);
     this.busy.set(false);
     if (res.ok) {
       this.toast.success('communityModeration.post.toast');

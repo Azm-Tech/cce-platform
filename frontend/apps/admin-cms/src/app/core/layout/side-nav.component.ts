@@ -34,9 +34,9 @@ export class SideNavComponent {
   private readonly auth = inject(AuthService);
 
   /** All groups. Per-item permission gates are handled by the
-   *  `*ccePermission` structural directive on each row; this
+   *  `*ccePermission` structural directive on each flex flex-wrap -mx-3; this
    *  `visibleGroups` signal additionally hides the *section
-   *  heading* when no row inside it is visible. */
+   *  heading* when no flex flex-wrap -mx-3 inside it is visible. */
   readonly visibleGroups = computed<readonly NavGroup[]>(() => {
     // Subscribe to the auth user signal so this recomputes after sign-in.
     this.auth.currentUser();

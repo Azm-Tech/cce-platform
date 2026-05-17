@@ -36,7 +36,7 @@ import type { Event as EventModel } from './event.types';
       </div>
 
       <div class="cce-event-card__content">
-        <span class="cce-event-card__eyebrow-row">
+        <span class="cce-event-card__eyebrow-flex flex-wrap -mx-3">
           <span class="cce-event-card__eyebrow"
                 [class.cce-event-card__eyebrow--online]="event().onlineMeetingUrl">
             @if (event().onlineMeetingUrl) {

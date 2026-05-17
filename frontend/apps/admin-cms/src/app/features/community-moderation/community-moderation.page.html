@@ -92,21 +92,21 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of rows(); track row.id) {
-          <tr [class.cce-cm__row--deleted]="row.isDeleted">
+        @for (flex flex-wrap -mx-3 of rows(); track flex flex-wrap -mx-3.id) {
+          <tr [class.cce-cm__row--deleted]="flex flex-wrap -mx-3.isDeleted">
             <td>
               <span class="cce-cm__chips">
-                @if (row.isDeleted) {
+                @if (flex flex-wrap -mx-3.isDeleted) {
                   <span class="cce-cm__chip cce-cm__chip--deleted">
                     <mat-icon aria-hidden="true">delete</mat-icon>
                     {{ 'communityModeration.chip.deleted' | transloco }}
                   </span>
-                } @else if (row.isAnswered) {
+                } @else if (flex flex-wrap -mx-3.isAnswered) {
                   <span class="cce-cm__chip cce-cm__chip--answered">
                     <mat-icon aria-hidden="true">check_circle</mat-icon>
                     {{ 'communityModeration.chip.answered' | transloco }}
                   </span>
-                } @else if (row.isAnswerable) {
+                } @else if (flex flex-wrap -mx-3.isAnswerable) {
                   <span class="cce-cm__chip cce-cm__chip--question">
                     <mat-icon aria-hidden="true">help_outline</mat-icon>
                     {{ 'communityModeration.chip.question' | transloco }}
@@ -120,40 +120,40 @@
               </span>
             </td>
             <td class="cce-cm__col-content">
-              @if (publicPostUrl(row); as url) {
+              @if (publicPostUrl(flex flex-wrap -mx-3); as url) {
                 <a
                   class="cce-cm__excerpt cce-cm__excerpt--link"
                   [href]="url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  [matTooltip]="row.content"
+                  [matTooltip]="flex flex-wrap -mx-3.content"
                   matTooltipPosition="below"
-                  (click)="openInPortal(row, $event)"
+                  (click)="openInPortal(flex flex-wrap -mx-3, $event)"
                 >
-                  {{ excerptOf(row) }}
+                  {{ excerptOf(flex flex-wrap -mx-3) }}
                   <mat-icon class="cce-cm__excerpt-icon" aria-hidden="true">open_in_new</mat-icon>
                 </a>
               } @else {
-                <span class="cce-cm__excerpt" [matTooltip]="row.content" matTooltipPosition="below">
-                  {{ excerptOf(row) }}
+                <span class="cce-cm__excerpt" [matTooltip]="flex flex-wrap -mx-3.content" matTooltipPosition="below">
+                  {{ excerptOf(flex flex-wrap -mx-3) }}
                 </span>
               }
-              <span class="cce-cm__id" [matTooltip]="row.id">{{ row.id.slice(0, 8) }}</span>
+              <span class="cce-cm__id" [matTooltip]="flex flex-wrap -mx-3.id">{{ flex flex-wrap -mx-3.id.slice(0, 8) }}</span>
             </td>
-            <td class="cce-cm__col-topic">{{ topicNameOf(row) }}</td>
+            <td class="cce-cm__col-topic">{{ topicNameOf(flex flex-wrap -mx-3) }}</td>
             <td class="cce-cm__col-replies">
               <span class="cce-cm__replies">
                 <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
-                {{ row.replyCount }}
+                {{ flex flex-wrap -mx-3.replyCount }}
               </span>
             </td>
             <td>
-              <span class="cce-cm__locale-chip">{{ row.locale }}</span>
+              <span class="cce-cm__locale-chip">{{ flex flex-wrap -mx-3.locale }}</span>
             </td>
-            <td class="cce-cm__col-date">{{ row.createdOn | date:'mediumDate' }}</td>
+            <td class="cce-cm__col-date">{{ flex flex-wrap -mx-3.createdOn | date:'mediumDate' }}</td>
             <td class="cce-cm__col-actions">
               <div class="cce-cm__row-actions">
-                @if (publicPostUrl(row); as url) {
+                @if (publicPostUrl(flex flex-wrap -mx-3); as url) {
                   <a
                     mat-icon-button
                     [href]="url"
@@ -161,7 +161,7 @@
                     rel="noopener noreferrer"
                     [matTooltip]="'communityModeration.action.viewOnPortal' | transloco"
                     [attr.aria-label]="'communityModeration.action.viewOnPortal' | transloco"
-                    (click)="openInPortal(row, $event)"
+                    (click)="openInPortal(flex flex-wrap -mx-3, $event)"
                   >
                     <mat-icon>open_in_new</mat-icon>
                   </a>
@@ -171,8 +171,8 @@
                   mat-icon-button
                   color="warn"
                   [matTooltip]="'communityModeration.action.delete' | transloco"
-                  [disabled]="row.isDeleted || busy()"
-                  (click)="deletePost(row)"
+                  [disabled]="flex flex-wrap -mx-3.isDeleted || busy()"
+                  (click)="deletePost(flex flex-wrap -mx-3)"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -187,17 +187,17 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #rowMenu="matMenu" xPosition="before">
-                  @if (publicPostUrl(row)) {
-                    <button mat-menu-item type="button" (click)="openReplies(row)">
+                  @if (publicPostUrl(flex flex-wrap -mx-3)) {
+                    <button mat-menu-item type="button" (click)="openReplies(flex flex-wrap -mx-3)">
                       <mat-icon>forum</mat-icon>
                       <span>{{ 'communityModeration.action.viewReplies' | transloco }}</span>
                     </button>
-                    <button mat-menu-item type="button" (click)="copyLink(row)">
+                    <button mat-menu-item type="button" (click)="copyLink(flex flex-wrap -mx-3)">
                       <mat-icon>link</mat-icon>
                       <span>{{ 'communityModeration.action.copyLink' | transloco }}</span>
                     </button>
                   }
-                  <button mat-menu-item type="button" (click)="copyId(row)">
+                  <button mat-menu-item type="button" (click)="copyId(flex flex-wrap -mx-3)">
                     <mat-icon>content_copy</mat-icon>
                     <span>{{ 'communityModeration.action.copyId' | transloco }}</span>
                   </button>
@@ -229,7 +229,7 @@
     <p class="cce-cm__quick-help">
       {{ 'communityModeration.quick.help' | transloco }}
     </p>
-    <div class="cce-cm__quick-row">
+    <div class="cce-cm__quick-flex flex-wrap -mx-3">
       <mat-form-field appearance="outline" class="cce-cm__quick-field">
         <mat-label>{{ 'communityModeration.reply.id' | transloco }}</mat-label>
         <input

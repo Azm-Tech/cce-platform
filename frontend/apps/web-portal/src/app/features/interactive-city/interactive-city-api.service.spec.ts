@@ -97,7 +97,7 @@ describe('InteractiveCityApiService — scenario methods', () => {
     if (res.ok) expect(res.value).toEqual([]);
   });
 
-  it('saveScenario POSTs to /api/me/interactive-city/scenarios and returns the created row', async () => {
+  it('saveScenario POSTs to /api/me/interactive-city/scenarios and returns the created flex flex-wrap -mx-3', async () => {
     const body: SaveRequest = {
       nameAr: 'سيناريو',
       nameEn: 'Scenario',
