@@ -335,3 +335,11 @@ SCENARIO_NOT_FOUND:
 TECHNOLOGY_NOT_FOUND:
   ar: "التقنية غير موجودة"
   en: "Technology not found"
+
+INTEREST_NOT_FOUND:
+  ar: "الاهتمام غير موجود"
+  en: "Interest not found"
+
+INTEREST_UPSERTED:
+  ar: "تم تحديث الاهتمامات بنجاح"
+  en: "Interests updated successfully"
