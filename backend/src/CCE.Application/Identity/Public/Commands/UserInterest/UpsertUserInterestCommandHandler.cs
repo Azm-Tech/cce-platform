@@ -32,19 +32,35 @@ public sealed class UpsertUserInterestCommandHandler
             return _msg.UserNotFound<UpsertUserInterestResult>();
 
         var oldInterests = user.Interests.ToList();
-        var newList = request.Interests ?? System.Array.Empty<string>();
+        var rawList = request.Interests ?? System.Array.Empty<string>();
 
-        user.UpdateInterests(newList);
+        var normalizedNew = rawList
+            .Select(static s => s?.Trim() ?? string.Empty)
+            .Where(static s => s.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
-        var newInterests = user.Interests;
-        var added = newInterests.Except(oldInterests).ToList();
-        var removed = oldInterests.Except(newInterests).ToList();
+        var oldSet = new HashSet<string>(oldInterests, StringComparer.OrdinalIgnoreCase);
+        var newSet = new HashSet<string>(normalizedNew, StringComparer.OrdinalIgnoreCase);
+
+        if (oldSet.SetEquals(newSet))
+        {
+            return _msg.InterestUpserted(new UpsertUserInterestResult(
+                user.Interests,
+                System.Array.Empty<string>(),
+                System.Array.Empty<string>()));
+        }
+
+        user.UpdateInterests(normalizedNew);
+
+        var added = normalizedNew.Except(oldInterests, StringComparer.OrdinalIgnoreCase).ToList();
+        var removed = oldInterests.Except(normalizedNew, StringComparer.OrdinalIgnoreCase).ToList();
 
         _service.Update(user);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return _msg.InterestUpserted(new UpsertUserInterestResult(
-            newInterests,
+            user.Interests,
             added,
             removed));
     }
