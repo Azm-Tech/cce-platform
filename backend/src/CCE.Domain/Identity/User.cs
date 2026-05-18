@@ -144,21 +144,6 @@ public class User : IdentityUser<System.Guid>
             .ToList();
     }
 
-    /// <summary>
-    /// Toggles an interest. If it exists it is removed; otherwise it is added.
-    /// Returns true if added, false if removed.
-    /// </summary>
-    public bool ToggleInterest(string interest)
-    {
-        if (string.IsNullOrWhiteSpace(interest))
-            throw new DomainException("Interest cannot be null or empty.");
-        var trimmed = interest.Trim();
-        if (Interests.Remove(trimmed))
-            return false;
-        Interests.Add(trimmed);
-        return true;
-    }
-
     public void AssignCountry(System.Guid countryId) => CountryId = countryId;
 
     public void ClearCountry() => CountryId = null;
