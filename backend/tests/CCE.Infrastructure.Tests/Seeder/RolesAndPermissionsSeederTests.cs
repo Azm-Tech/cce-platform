@@ -16,7 +16,7 @@ public class RolesAndPermissionsSeederTests
             .Options);
 
     [Fact]
-    public async Task First_run_creates_5_roles_with_permissions()
+    public async Task First_run_creates_7_roles_with_permissions()
     {
         using var ctx = NewContext();
         var seeder = new RolesAndPermissionsSeeder(ctx, NullLogger<RolesAndPermissionsSeeder>.Instance);
@@ -24,9 +24,9 @@ public class RolesAndPermissionsSeederTests
         await seeder.SeedAsync();
 
         var roles = await ctx.Set<Role>().ToListAsync();
-        roles.Should().HaveCount(5);
-        roles.Select(r => r.Name).Should().Contain(new[] { "cce-admin", "cce-editor",
-            "cce-reviewer", "cce-expert", "cce-user" });
+        roles.Should().HaveCount(7);
+        roles.Select(r => r.Name).Should().Contain(new[] { "cce-super-admin", "cce-admin",
+            "cce-content-manager", "cce-state-representative", "cce-reviewer", "cce-expert", "cce-user" });
 
         var claims = await ctx.Set<IdentityRoleClaim<System.Guid>>().ToListAsync();
         claims.Should().NotBeEmpty();

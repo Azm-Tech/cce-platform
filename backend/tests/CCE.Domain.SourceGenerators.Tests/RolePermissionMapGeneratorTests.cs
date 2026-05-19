@@ -45,20 +45,20 @@ public class RolePermissionMapGeneratorTests
               Page:
                 Edit:
                   description: x
-                  roles: [cce-admin, cce-editor]
+                  roles: [cce-admin, cce-content-manager]
             """;
 
         var generated = GeneratorTestHarness.Run(yaml);
 
         var cceAdminBlock = ExtractRoleBlock(generated, "CceAdmin");
-        var cceEditorBlock = ExtractRoleBlock(generated, "CceEditor");
+        var cceContentManagerBlock = ExtractRoleBlock(generated, "CceContentManager");
 
         cceAdminBlock.Should().Contain("\"Page.Edit\"");
-        cceEditorBlock.Should().Contain("\"Page.Edit\"");
+        cceContentManagerBlock.Should().Contain("\"Page.Edit\"");
     }
 
     [Fact]
-    public void All_six_roles_are_emitted_even_when_some_have_no_permissions()
+    public void All_eight_roles_are_emitted_even_when_some_have_no_permissions()
     {
         const string yaml = """
             groups:
@@ -72,8 +72,10 @@ public class RolePermissionMapGeneratorTests
 
         // Sub-11 Phase 03 Entra ID app-role values, PascalCased for the
         // generated C# property names.
+        generated.Should().Contain("public static IReadOnlyList<string> CceSuperAdmin { get; }");
         generated.Should().Contain("public static IReadOnlyList<string> CceAdmin { get; }");
-        generated.Should().Contain("public static IReadOnlyList<string> CceEditor { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceContentManager { get; }");
+        generated.Should().Contain("public static IReadOnlyList<string> CceStateRepresentative { get; }");
         generated.Should().Contain("public static IReadOnlyList<string> CceReviewer { get; }");
         generated.Should().Contain("public static IReadOnlyList<string> CceExpert { get; }");
         generated.Should().Contain("public static IReadOnlyList<string> CceUser { get; }");
