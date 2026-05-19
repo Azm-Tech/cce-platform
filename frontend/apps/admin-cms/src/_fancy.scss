@@ -94,7 +94,7 @@ body {
 /* =========================================================
    4. Universal focus ring — keyboard accessibility upgrade
    ========================================================= */
-:focus-visible {
+:focus-visible:not(.mat-mdc-input-element):not(.mat-mdc-form-field-input-control) {
   outline: none !important;
   box-shadow: var(--cce-fancy-ring) !important;
   border-radius: 6px;

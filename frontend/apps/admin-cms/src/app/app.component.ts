@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ShellComponent } from './core/layout/shell.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'cce-root',
   standalone: true,
-  imports: [ShellComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

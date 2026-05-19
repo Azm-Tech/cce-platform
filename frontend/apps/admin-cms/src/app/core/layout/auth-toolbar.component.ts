@@ -1,35 +1,34 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DevAuthService } from '../auth/dev-auth.service';
+import { AuthService } from '../auth/auth.service';
 
-/**
- * Auth toolbar — shows sign-in / sign-out + the current dev role label.
- *
- * Uses the cookie-based DevAuthService (replaces OidcSecurityService)
- * which reads the `cce-dev-role` cookie set by the BFF's
- * `/dev/sign-in?role=...` shim. No real OIDC provider needed in dev.
- */
 @Component({
   selector: 'cce-auth-toolbar',
   standalone: true,
-  imports: [MatButtonModule, TranslocoModule],
-  templateUrl: './auth-toolbar.component.html',
-  styleUrl: './auth-toolbar.component.scss',
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
+  template: `
+    @if (isAuthenticated()) {
+      <span class="cce-auth-toolbar__label">{{ userLabel() }}</span>
+      <button mat-icon-button shellHeaderEnd (click)="signOut()" [attr.aria-label]="'account.logout.button' | transloco">
+        <mat-icon>logout</mat-icon>
+      </button>
+    }
+  `,
+  styles: [`.cce-auth-toolbar__label { font-size: 0.875rem; opacity: 0.8; margin-inline-end: 0.25rem; }`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthToolbarComponent {
-  private readonly auth = inject(DevAuthService);
+  private readonly auth = inject(AuthService);
 
   readonly isAuthenticated = this.auth.isAuthenticated;
-  readonly displayLabel = this.auth.displayLabel;
+  readonly userLabel = computed(() => {
+    const u = this.auth.currentUser();
+    return u ? `${u.firstName} ${u.lastName}`.trim() : '';
+  });
 
-  signIn(): void {
-    this.auth.signIn('cce-admin', window.location.pathname);
-  }
-
-  signOut(): void {
-    this.auth.signOut();
+  async signOut(): Promise<void> {
+    await this.auth.signOut();
   }
 }

@@ -931,6 +931,7 @@
       "submittingButton": "Signing in…",
       "errorInvalid": "Invalid email or password.",
       "errorNotFound": "Account not found or not yet active.",
+      "errorForbidden": "Your account does not have access to this panel.",
       "errorGeneric": "We couldn't sign you in. Please try again.",
       "noAccount": "Don't have an account?",
       "register": "Create one",
@@ -994,6 +995,7 @@
     },
     "profile": {
       "title": "My profile",
+      "roles": "Roles",
       "notProvisioned": "We're still setting up your profile. Please retry in a moment.",
       "field": {
         "email": "Email",

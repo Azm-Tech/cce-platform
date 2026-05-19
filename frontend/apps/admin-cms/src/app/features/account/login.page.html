@@ -1,0 +1,61 @@
+<section class="cce-admin-login">
+  <div class="cce-admin-login__card">
+    <div class="cce-admin-login__brand">
+      <span class="cce-admin-login__brand-glyph" aria-hidden="true"></span>
+      <span class="cce-admin-login__brand-name">CCE Admin</span>
+    </div>
+
+    <h1 class="cce-admin-login__title">{{ 'account.login.title' | transloco }}</h1>
+    <p class="cce-admin-login__subtitle">{{ 'account.login.subtitle' | transloco }}</p>
+
+    <form [formGroup]="form" class="cce-admin-login__form" (ngSubmit)="submit()">
+      <mat-form-field>
+        <mat-label>{{ 'account.login.emailLabel' | transloco }}</mat-label>
+        <mat-icon matPrefix>mail</mat-icon>
+        <input
+          matInput
+          type="email"
+          formControlName="emailAddress"
+          autocomplete="email"
+          placeholder="you@cce.gov"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{ 'account.login.passwordLabel' | transloco }}</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input
+          matInput
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="toggleShowPassword()"
+          [attr.aria-label]="(showPassword() ? 'account.login.hidePassword' : 'account.login.showPassword') | transloco"
+        >
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      @if (state().kind === 'error') {
+        <p class="cce-admin-login__error" role="alert">
+          {{ errorMessageKey() | transloco }}
+        </p>
+      }
+
+      <button
+        type="submit"
+        mat-flat-button
+        color="primary"
+        class="cce-admin-login__submit"
+        [disabled]="state().kind === 'submitting' || form.invalid"
+      >
+        {{ submitButtonKey() | transloco }}
+      </button>
+    </form>
+  </div>
+</section>
