@@ -124,7 +124,7 @@ export class HeaderComponent implements OnDestroy {
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly userLabel = computed(() => {
     const u = this.auth.currentUser();
-    return u?.displayNameEn ?? u?.userName ?? u?.email ?? '';
+    return u ? `${u.firstName} ${u.lastName}`.trim() : '';
   });
   readonly unreadCount = signal(0);
   readonly badgeHidden = computed(() => this.unreadCount() === 0);

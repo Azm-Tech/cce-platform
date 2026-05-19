@@ -1,11 +1,11 @@
-import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject, isDevMode } from '@angular/core';
 import { AuthService } from './core/auth/auth.service';
-import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
+import { tokenInterceptor } from './core/http/token.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
 import { serverErrorInterceptor } from '@frontend/ui-kit';
 import { localeInterceptor } from '@frontend/i18n';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
@@ -16,16 +16,17 @@ import { TranslocoHttpLoader } from '@frontend/i18n';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([localeInterceptor, correlationIdInterceptor, bffCredentialsInterceptor, serverErrorInterceptor]),
+      withInterceptors([localeInterceptor, correlationIdInterceptor, tokenInterceptor, serverErrorInterceptor]),
     ),
-    provideAnimationsAsync(),
     provideTransloco({
       config: {
         availableLangs: ['en', 'ar'],
         defaultLang: 'ar',
+        reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },
       loader: TranslocoHttpLoader

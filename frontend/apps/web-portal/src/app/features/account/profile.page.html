@@ -88,7 +88,7 @@
           </div>
         }
 
-        <mat-form-field appearance="outline">
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
           <mat-select formControlName="localePreference">
             <mat-option value="en">English</mat-option>
@@ -96,7 +96,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.knowledgeLevel' | transloco }}</mat-label>
           <mat-select formControlName="knowledgeLevel">
             @for (level of knowledgeLevels; track level) {
@@ -107,12 +107,12 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.interests' | transloco }}</mat-label>
           <input matInput type="text" formControlName="interests" placeholder="waste, water, carbon" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.country' | transloco }}</mat-label>
           <mat-select formControlName="countryId">
             <mat-option [value]="null">—</mat-option>
@@ -124,7 +124,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.avatarUrl' | transloco }}</mat-label>
           <input matInput type="url" formControlName="avatarUrl" />
         </mat-form-field>

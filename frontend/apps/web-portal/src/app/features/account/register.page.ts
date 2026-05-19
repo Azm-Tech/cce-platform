@@ -1,180 +1,125 @@
-
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 
-interface RegistrationFormModel {
-  givenName: string;
-  surname: string;
-  email: string;
-  mailNickname: string;
+function passwordsMatch(group: AbstractControl) {
+  const p = group.get('password')?.value as string;
+  const c = group.get('confirmPassword')?.value as string;
+  return p === c ? null : { passwordMismatch: true };
 }
 
 type SubmitState =
   | { kind: 'idle' }
   | { kind: 'submitting' }
-  | { kind: 'success'; userPrincipalName: string }
+  | { kind: 'success' }
   | { kind: 'error'; messageKey: string };
 
-/**
- * Public registration page.
- *
- * Sub-11d — anonymous self-service is back. Sub-11 Phase 01 made the
- * /api/users/register endpoint admin-only as a stop-gap until an
- * IEmailSender abstraction existed. Sub-11d Tasks A+B added it; the
- * temp password is now delivered via email (subject "Welcome to CCE")
- * instead of returned in the response. The page now POSTs the form
- * directly to /api/users/register and surfaces 201 as "check your
- * inbox", 409 as "account already exists", 400 as field errors.
- *
- * Internal-tenant users (cce.local synced via Entra ID Connect) and
- * partner-tenant users should sign in with their existing accounts;
- * the form below is for external users who don't have an Entra ID
- * account anywhere.
- */
 @Component({
   selector: 'cce-register',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     RouterLink,
-    FormsModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
-    TranslocoModule
-],
-  template: `
-    <section class="cce-register">
-      <h1 class="cce-register__title">{{ 'account.register.title' | transloco }}</h1>
-
-      @if (isAuthenticated()) {
-        <p class="cce-register__body">{{ 'account.register.alreadySignedIn' | transloco }}</p>
-        <a mat-flat-button color="primary" routerLink="/me/profile">
-          {{ 'account.register.openProfile' | transloco }}
-        </a>
-      } @else {
-        @if (state().kind === 'success') {
-          <p class="cce-register__body">
-            {{ 'account.register.successBody' | transloco }}
-          </p>
-          <button type="button" mat-flat-button color="primary" (click)="signIn()">
-            {{ 'account.register.signInButton' | transloco }}
-          </button>
-        } @else {
-          <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
-
-          <form #form="ngForm" class="cce-register__form" (ngSubmit)="submit(form)">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.givenNameLabel' | transloco }}</mat-label>
-              <input
-                matInput
-                name="givenName"
-                [(ngModel)]="model.givenName"
-                required
-                autocomplete="given-name"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.surnameLabel' | transloco }}</mat-label>
-              <input
-                matInput
-                name="surname"
-                [(ngModel)]="model.surname"
-                required
-                autocomplete="family-name"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.emailLabel' | transloco }}</mat-label>
-              <input
-                matInput
-                name="email"
-                type="email"
-                [(ngModel)]="model.email"
-                required
-                autocomplete="email"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.mailNicknameLabel' | transloco }}</mat-label>
-              <input
-                matInput
-                name="mailNickname"
-                [(ngModel)]="model.mailNickname"
-                required
-                autocomplete="username"
-              />
-              <mat-hint>{{ 'account.register.mailNicknameHint' | transloco }}</mat-hint>
-            </mat-form-field>
-
-            @if (state().kind === 'error') {
-              <p class="cce-register__error" role="alert">
-                {{ errorMessageKey() | transloco }}
-              </p>
-            }
-
-            <button
-              type="submit"
-              mat-flat-button
-              color="primary"
-              [disabled]="state().kind === 'submitting' || form.invalid"
-            >
-              {{ submitButtonKey() | transloco }}
-            </button>
-          </form>
-
-          <p class="cce-register__hint">{{ 'account.register.contactHint' | transloco }}</p>
-          <button
-            type="button"
-            mat-button
-            class="cce-register__signin-link"
-            (click)="signIn()"
-          >
-            {{ 'account.register.signInExistingButton' | transloco }}
-          </button>
-        }
-      }
-    </section>
-  `,
+    TranslocoModule,
+  ],
+  templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPage {
   private readonly auth = inject(AuthService);
-  private readonly http = inject(HttpClient);
+  private readonly authApi = inject(AuthApiService);
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
+  readonly showPassword = signal(false);
 
-  model: RegistrationFormModel = {
-    givenName: '',
-    surname: '',
-    email: '',
-    mailNickname: '',
-  };
+  readonly form = new FormGroup(
+    {
+      firstName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^[a-zA-Z؀-ۿ\s'\-]+$/),
+      ]),
+      lastName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^[a-zA-Z؀-ۿ\s'\-]+$/),
+      ]),
+      emailAddress: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(100),
+      ]),
+      jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(15),
+        Validators.pattern(/^\+?[\d\s\-()]+$/),
+      ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(12),
+        Validators.maxLength(20),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
+      ]),
+      confirmPassword: new FormControl('', [Validators.required]),
+    },
+    { validators: passwordsMatch },
+  );
 
-  submit(form: NgForm): void {
-    if (form.invalid || this.state().kind === 'submitting') {
-      return;
-    }
+  get passwordMismatch(): boolean {
+    return (
+      this.form.hasError('passwordMismatch') &&
+      (this.form.get('confirmPassword')?.touched ?? false)
+    );
+  }
+
+  get passwordStrengthError(): boolean {
+    const ctrl = this.form.get('password');
+    return (ctrl?.touched ?? false) && (ctrl?.hasError('pattern') ?? false);
+  }
+
+  toggleShowPassword(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  submit(): void {
+    if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
-    this.http
-      .post<{ entraIdObjectId: string; userPrincipalName: string }>(
-        '/api/users/register',
-        this.model,
-      )
+    const v = this.form.value;
+    this.authApi
+      .register({
+        firstName: v.firstName!,
+        lastName: v.lastName!,
+        emailAddress: v.emailAddress!,
+        jobTitle: v.jobTitle!,
+        organizationName: v.organizationName!,
+        phoneNumber: v.phoneNumber!,
+        password: v.password!,
+        confirmPassword: v.confirmPassword!,
+      })
       .subscribe({
-        next: (response) =>
-          this.state.set({ kind: 'success', userPrincipalName: response.userPrincipalName }),
+        next: () => this.state.set({ kind: 'success' }),
         error: (err: HttpErrorResponse) => {
           if (err.status === 409) {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorConflict' });
@@ -185,10 +130,6 @@ export class RegisterPage {
           }
         },
       });
-  }
-
-  signIn(): void {
-    this.auth.signIn('/me/profile');
   }
 
   errorMessageKey(): string {

@@ -92,6 +92,23 @@
   gap: 0.6rem;
 
   .mat-mdc-form-field { width: 100%; }
+
+  input { outline: none; }
+}
+
+.cce-register__row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.cce-register__field-error {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #991b1b;
 }
 
 .cce-register__error {

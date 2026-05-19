@@ -21,6 +21,13 @@
 // the browser's default white "canvas" beneath. `width: 100%` +
 // `overflow-x: clip` prevents 100vw children (full-bleed pages)
 // from forcing a horizontal scrollbar.
+// Suppress the browser's native focus ring on inputs inside Angular Material
+// form fields — Material renders its own focus indicator on the field wrapper.
+.mat-mdc-input-element:focus,
+.mat-mdc-input-element:focus-visible {
+  outline: none;
+}
+
 html, body {
   margin: 0;
   padding: 0;

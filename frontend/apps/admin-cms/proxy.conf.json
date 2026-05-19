@@ -1,19 +1,7 @@
 {
   "/api": {
-    "target": "http://localhost:5002",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "warn"
-  },
-  "/auth": {
-    "target": "http://localhost:5002",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "warn"
-  },
-  "/dev": {
-    "target": "http://localhost:5002",
-    "secure": false,
+    "target": "https://cce-internal-api.runasp.net",
+    "secure": true,
     "changeOrigin": true,
     "logLevel": "warn"
   }

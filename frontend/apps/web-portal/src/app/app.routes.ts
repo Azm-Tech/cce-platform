@@ -55,6 +55,20 @@ export const appRoutes: Route[] = [
     title: 'CCE — Register',
   },
   {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/forgot-password.page').then((m) => m.ForgotPasswordPage),
+    title: 'CCE — Forgot password',
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/reset-password.page').then((m) => m.ResetPasswordPage),
+    title: 'CCE — Reset password',
+  },
+  {
     path: 'me',
     canActivate: [authGuard],
     loadChildren: () =>

@@ -1,51 +1,33 @@
-
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-
-interface LoginFormModel {
-  email: string;
-  password: string;
-}
+import { AuthApiService } from '../../core/auth/auth-api.service';
 
 type LoginState =
   | { kind: 'idle' }
   | { kind: 'submitting' }
   | { kind: 'error'; messageKey: string };
 
-/**
- * Public sign-in page.
- *
- * The page renders a real-looking email/password form so users have a
- * familiar mental model when arriving from the header's "Sign in"
- * button. On submit, we hand off to the BFF dev-mode shim by calling
- * `AuthService.signIn(returnUrl)` — that hits `/auth/login`, follows
- * the redirect chain through `/dev/sign-in?role=...`, sets the
- * `cce-dev-role` cookie, and lands the user back at `returnUrl`.
- *
- * Quick role buttons sit beneath the form so demos can switch personas
- * (cce-user, cce-pro-user, cce-admin, cce-cms-editor, cce-cms-author)
- * without re-typing credentials. A "Don't have an account? Register"
- * link routes to `/register`.
- */
 @Component({
   selector: 'cce-login',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     RouterLink,
-    FormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   template: `
     <section class="cce-login">
       <div class="cce-login__card">
@@ -65,32 +47,27 @@ type LoginState =
             </a>
           </div>
         } @else {
-          <form #form="ngForm" class="cce-login__form" (ngSubmit)="submit(form)">
-            <mat-form-field appearance="outline">
+          <form [formGroup]="form" class="cce-login__form" (ngSubmit)="submit()">
+            <mat-form-field>
               <mat-label>{{ 'account.login.emailLabel' | transloco }}</mat-label>
               <mat-icon matPrefix>mail</mat-icon>
               <input
                 matInput
                 type="email"
-                name="email"
+                formControlName="emailAddress"
                 autocomplete="email"
-                [(ngModel)]="model.email"
-                required
                 placeholder="you@example.com"
               />
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field>
               <mat-label>{{ 'account.login.passwordLabel' | transloco }}</mat-label>
               <mat-icon matPrefix>lock</mat-icon>
               <input
                 matInput
                 [type]="showPassword() ? 'text' : 'password'"
-                name="password"
+                formControlName="password"
                 autocomplete="current-password"
-                [(ngModel)]="model.password"
-                required
-                minlength="1"
               />
               <button
                 type="button"
@@ -104,7 +81,7 @@ type LoginState =
             </mat-form-field>
 
             <div class="cce-login__row">
-              <a class="cce-login__forgot" href="#" (click)="$event.preventDefault()">
+              <a class="cce-login__forgot" routerLink="/forgot-password">
                 {{ 'account.login.forgotPassword' | transloco }}
               </a>
             </div>
@@ -126,25 +103,6 @@ type LoginState =
             </button>
           </form>
 
-          <div class="cce-login__divider">
-            <span>{{ 'account.login.orDemoAs' | transloco }}</span>
-          </div>
-
-          <div class="cce-login__roles">
-            @for (r of demoRoles; track r.role) {
-              <button
-                type="button"
-                class="cce-login__role"
-                [attr.data-role]="r.role"
-                (click)="signInAs(r.role)"
-              >
-                <span class="cce-login__role-dot"></span>
-                <span class="cce-login__role-label">{{ r.label }}</span>
-                <span class="cce-login__role-desc">{{ r.desc }}</span>
-              </button>
-            }
-          </div>
-
           <p class="cce-login__register-line">
             {{ 'account.login.noAccount' | transloco }}
             <a routerLink="/register" class="cce-login__register-link">
@@ -160,6 +118,7 @@ type LoginState =
 })
 export class LoginPage {
   private readonly auth = inject(AuthService);
+  private readonly authApi = inject(AuthApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -167,57 +126,38 @@ export class LoginPage {
   readonly state = signal<LoginState>({ kind: 'idle' });
   readonly showPassword = signal(false);
 
-  model: LoginFormModel = { email: '', password: '' };
-
-  /**
-   * The five dev-mode roles supported by the BFF's `/dev/sign-in`
-   * handler — verified against the backend's valid-role list:
-   *   cce-admin · cce-editor · cce-reviewer · cce-expert · cce-user
-   * Each maps to a deterministic seeded user so the demo can switch
-   * personas instantly.
-   */
-  readonly demoRoles: ReadonlyArray<{ role: string; label: string; desc: string }> = [
-    { role: 'cce-user',     label: 'End User',     desc: 'Browse + community' },
-    { role: 'cce-expert',   label: 'Verified Expert', desc: 'Trusted contributor' },
-    { role: 'cce-reviewer', label: 'Reviewer',     desc: 'Validate submissions' },
-    { role: 'cce-editor',   label: 'CMS Editor',   desc: 'Manage content' },
-    { role: 'cce-admin',    label: 'Platform Admin', desc: 'Full access' },
-  ];
+  readonly form = new FormGroup({
+    emailAddress: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required]),
+  });
 
   toggleShowPassword(): void {
     this.showPassword.update((v) => !v);
   }
 
-  submit(form: NgForm): void {
-    if (form.invalid || this.state().kind === 'submitting') return;
+  async submit(): Promise<void> {
+    if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
-    // Email/password is cosmetic in dev mode — the BFF doesn't validate
-    // them. Treat any non-empty submission as "sign me in as the
-    // default end-user role". Real production would call a credential
-    // exchange endpoint here.
-    this.signInAs('cce-user');
-  }
-
-  signInAs(role: string): void {
-    // Admin / Editor / Reviewer personas live in the admin-cms app
-    // (port 4201). The web-portal at /:4200 is the public end-user
-    // surface, so signing in as a back-office role on the public app
-    // would land on a profile page with no admin tools. Route those
-    // personas to the admin-cms; the admin app's BFF (5002) sets its
-    // OWN cookie and lands the user on /profile inside admin-cms.
-    const adminPersonas = new Set(['cce-admin', 'cce-editor', 'cce-reviewer']);
-    if (adminPersonas.has(role)) {
-      const adminBase = `${window.location.protocol}//${window.location.hostname}:4201`;
-      window.location.assign(
-        `${adminBase}/dev/sign-in?role=${encodeURIComponent(role)}&returnUrl=${encodeURIComponent('/profile')}`,
+    try {
+      const tokens = await firstValueFrom(
+        this.authApi.login({
+          emailAddress: this.form.value.emailAddress!,
+          password: this.form.value.password!,
+        }),
       );
-      return;
+      this.auth.setSession(tokens);
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      void this.router.navigateByUrl(returnUrl);
+    } catch (err) {
+      const status = (err as HttpErrorResponse).status;
+      if (status === 400 || status === 401) {
+        this.state.set({ kind: 'error', messageKey: 'account.login.errorInvalid' });
+      } else if (status === 404) {
+        this.state.set({ kind: 'error', messageKey: 'account.login.errorNotFound' });
+      } else {
+        this.state.set({ kind: 'error', messageKey: 'account.login.errorGeneric' });
+      }
     }
-    // End-user / verified-expert personas stay on the public web-portal.
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-    window.location.assign(
-      `/dev/sign-in?role=${encodeURIComponent(role)}&returnUrl=${encodeURIComponent(returnUrl)}`,
-    );
   }
 
   errorMessageKey(): string {
