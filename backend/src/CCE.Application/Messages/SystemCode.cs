@@ -21,7 +21,6 @@ public static class SystemCode
     public const string ERR002 = "ERR002"; // Resource download failure (appendix)
     public const string ERR003 = "ERR003"; // Resource share failure (appendix)
 
-    public const string ERR018 = "ERR018"; // Interest not found
     public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
     public const string ERR020 = "ERR020"; // Invalid credentials (appendix)
     public const string ERR021 = "ERR021"; // Login system error (appendix)
@@ -91,6 +90,9 @@ public static class SystemCode
     public const string ERR100 = "ERR100"; // Scenario not found
     public const string ERR101 = "ERR101"; // Technology not found
 
+    // ─── InterestTopic Errors ───
+    public const string ERR110 = "ERR110"; // Interest topic not found
+
     // ─── General Errors ───
     public const string ERR900 = "ERR900"; // Internal server error
     public const string ERR901 = "ERR901"; // Unauthorized access
@@ -132,6 +134,11 @@ public static class SystemCode
     public const string CON052 = "CON052"; // State rep assignment created
     public const string CON053 = "CON053"; // State rep assignment revoked
     public const string CON054 = "CON054"; // Roles assigned
+
+    // ─── InterestTopic Success ───
+    public const string CON055 = "CON055"; // Interest topic created
+    public const string CON056 = "CON056"; // Interest topic updated
+    public const string CON057 = "CON057"; // Interest topic deleted
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

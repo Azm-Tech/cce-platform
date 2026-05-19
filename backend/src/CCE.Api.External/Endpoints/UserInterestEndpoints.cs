@@ -24,7 +24,7 @@ public static class UserInterestEndpoints
             if (userId == System.Guid.Empty) return Results.Unauthorized();
 
             var result = await mediator.Send(
-                new UpsertUserInterestCommand(userId, body.Interests), ct).ConfigureAwait(false);
+                new UpsertUserInterestCommand(userId, body.InterestTopicIds ?? System.Array.Empty<System.Guid>()), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
         .WithName("UpsertUserInterest");
@@ -33,4 +33,4 @@ public static class UserInterestEndpoints
     }
 }
 
-public sealed record UpsertUserInterestRequest(IReadOnlyList<string> Interests);
+public sealed record UpsertUserInterestRequest(IReadOnlyList<System.Guid> InterestTopicIds);

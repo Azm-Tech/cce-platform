@@ -1,8 +1,10 @@
-using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Messages;
+using CCE.Domain.Identity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Identity.Public.Commands.UserInterest;
 
@@ -31,37 +33,49 @@ public sealed class UpsertUserInterestCommandHandler
         if (user is null)
             return _msg.UserNotFound<UpsertUserInterestResult>();
 
-        var oldInterests = user.Interests.ToList();
-        var rawList = request.Interests ?? System.Array.Empty<string>();
+        var newIds = (request.InterestTopicIds ?? System.Array.Empty<System.Guid>())
+            .Distinct()
+            .ToHashSet();
 
-        var normalizedNew = rawList
-            .Select(static s => s?.Trim() ?? string.Empty)
-            .Where(static s => s.Length > 0)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+        var oldIds = user.UserInterestTopics
+            .Select(uit => uit.InterestTopicId)
+            .ToHashSet();
+
+        var toRemove = user.UserInterestTopics
+            .Where(uit => !newIds.Contains(uit.InterestTopicId))
             .ToList();
 
-        var oldSet = new HashSet<string>(oldInterests, StringComparer.OrdinalIgnoreCase);
-        var newSet = new HashSet<string>(normalizedNew, StringComparer.OrdinalIgnoreCase);
+        var toAddIds = newIds
+            .Where(id => !oldIds.Contains(id))
+            .ToList();
 
-        if (oldSet.SetEquals(newSet))
+        foreach (var remove in toRemove)
+            user.UserInterestTopics.Remove(remove);
+
+        foreach (var id in toAddIds)
+            user.UserInterestTopics.Add(new UserInterestTopic
+            {
+                UserId = user.Id,
+                InterestTopicId = id
+            });
+
+        if (toRemove.Count > 0 || toAddIds.Count > 0)
         {
-            return _msg.InterestUpserted(new UpsertUserInterestResult(
-                user.Interests,
-                System.Array.Empty<string>(),
-                System.Array.Empty<string>()));
+            _service.Update(user);
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        user.UpdateInterests(normalizedNew);
-
-        var added = normalizedNew.Except(oldInterests, StringComparer.OrdinalIgnoreCase).ToList();
-        var removed = oldInterests.Except(normalizedNew, StringComparer.OrdinalIgnoreCase).ToList();
-
-        _service.Update(user);
-        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        var currentTopicIds = user.UserInterestTopics
+            .Select(uit => uit.InterestTopicId)
+            .ToHashSet();
+        var currentTopics = await _db.InterestTopics
+            .Where(t => currentTopicIds.Contains(t.Id))
+            .Select(t => new InterestTopicDto(t.Id, t.NameAr, t.NameEn, t.IsActive))
+            .ToListAsync(cancellationToken);
 
         return _msg.InterestUpserted(new UpsertUserInterestResult(
-            user.Interests,
-            added,
-            removed));
+            currentTopics,
+            toAddIds,
+            toRemove.Select(r => r.InterestTopicId).ToList()));
     }
 }

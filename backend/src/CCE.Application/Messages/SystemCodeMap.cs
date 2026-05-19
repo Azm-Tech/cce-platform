@@ -14,7 +14,6 @@ public static class SystemCodeMap
         ["INVALID_CREDENTIALS"] = SystemCode.ERR020,
         ["PASSWORD_RECOVERY_FAILED"] = SystemCode.ERR023,
         ["LOGOUT_FAILED"] = SystemCode.ERR024,
-        ["INTEREST_NOT_FOUND"] = SystemCode.ERR018,
 
         // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
         ["EXPERT_REQUEST_NOT_FOUND"] = SystemCode.ERR400,
@@ -72,6 +71,9 @@ public static class SystemCodeMap
         ["SCENARIO_NOT_FOUND"] = SystemCode.ERR100,
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
 
+        // ─── InterestTopic Errors ───
+        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR110,
+
         // ─── General Errors ───
         ["INTERNAL_ERROR"] = SystemCode.ERR900,
         ["UNAUTHORIZED_ACCESS"] = SystemCode.ERR901,
@@ -99,6 +101,11 @@ public static class SystemCodeMap
         ["STATE_REP_ASSIGNMENT_CREATED"] = SystemCode.CON052,
         ["STATE_REP_ASSIGNMENT_REVOKED"] = SystemCode.CON053,
         ["ROLES_ASSIGNED"] = SystemCode.CON054,
+
+        // ─── InterestTopic Success ───
+        ["INTEREST_TOPIC_CREATED"] = SystemCode.CON055,
+        ["INTEREST_TOPIC_UPDATED"] = SystemCode.CON056,
+        ["INTEREST_TOPIC_DELETED"] = SystemCode.CON057,
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,

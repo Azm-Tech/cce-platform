@@ -1,6 +1,7 @@
 using CCE.Application.Assistant;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.InterestManagement;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
@@ -19,6 +20,7 @@ using CCE.Infrastructure.Assistant;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.InteractiveCity;
+using CCE.Infrastructure.InterestManagement;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
@@ -183,6 +185,9 @@ public static class DependencyInjection
 
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
+
+        // Interest Management
+        services.AddScoped<IInterestTopicRepository, InterestTopicRepository>();
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();

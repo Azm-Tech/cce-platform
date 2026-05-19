@@ -11,15 +11,13 @@ namespace CCE.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "last_updated_on",
-                table: "country_profiles",
-                newName: "created_on");
+            migrationBuilder.Sql(@"
+IF COL_LENGTH('[dbo].[country_profiles]', 'last_updated_on') IS NOT NULL
+    EXEC sp_rename N'[dbo].[country_profiles].[last_updated_on]', N'created_on', 'COLUMN';");
 
-            migrationBuilder.RenameColumn(
-                name: "last_updated_by_id",
-                table: "country_profiles",
-                newName: "created_by_id");
+            migrationBuilder.Sql(@"
+IF COL_LENGTH('[dbo].[country_profiles]', 'last_updated_by_id') IS NOT NULL
+    EXEC sp_rename N'[dbo].[country_profiles].[last_updated_by_id]', N'created_by_id', 'COLUMN';");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "created_by_id",

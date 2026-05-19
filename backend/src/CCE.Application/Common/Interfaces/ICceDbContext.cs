@@ -58,6 +58,7 @@ public interface ICceDbContext
     IQueryable<CityScenario> CityScenarios { get; }
     IQueryable<CityTechnology> CityTechnologies { get; }
     IQueryable<CityScenarioResult> CityScenarioResults { get; }
+    IQueryable<InterestTopic> InterestTopics { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

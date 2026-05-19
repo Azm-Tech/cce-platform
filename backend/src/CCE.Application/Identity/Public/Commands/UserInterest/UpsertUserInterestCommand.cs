@@ -5,4 +5,4 @@ namespace CCE.Application.Identity.Public.Commands.UserInterest;
 
 public sealed record UpsertUserInterestCommand(
     System.Guid UserId,
-    IReadOnlyList<string> Interests) : IRequest<Response<UpsertUserInterestResult>>;
+    IReadOnlyList<System.Guid> InterestTopicIds) : IRequest<Response<UpsertUserInterestResult>>;

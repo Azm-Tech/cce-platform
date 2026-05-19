@@ -104,6 +104,7 @@ app.MapAssistantEndpoints();
 app.MapKapsarcEndpoints();
 app.MapSurveysEndpoints();
 app.MapUserInterestEndpoints();
+app.MapInterestTopicPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

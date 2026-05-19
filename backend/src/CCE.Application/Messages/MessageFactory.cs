@@ -77,6 +77,7 @@ public sealed class MessageFactory
 
     public Response<T> NewsNotFound<T>()      => NotFound<T>("NEWS_NOT_FOUND");
     public Response<T> EventNotFound<T>()     => NotFound<T>("EVENT_NOT_FOUND");
+    public Response<T> InterestTopicNotFound<T>() => NotFound<T>("INTEREST_TOPIC_NOT_FOUND");
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
 

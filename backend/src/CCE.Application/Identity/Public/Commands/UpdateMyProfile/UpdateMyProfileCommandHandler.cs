@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Dtos;
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Messages;
 using MediatR;
 
@@ -29,7 +30,6 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
 
         user.SetLocalePreference(request.LocalePreference);
         user.SetKnowledgeLevel(request.KnowledgeLevel);
-        user.UpdateInterests(request.Interests);
         user.SetAvatarUrl(request.AvatarUrl);
 
         if (request.CountryId is null)
@@ -44,13 +44,21 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
         _service.Update(user);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        var interestTopics = user.UserInterestTopics
+            .Select(uit => new InterestTopicDto(
+                uit.InterestTopic.Id,
+                uit.InterestTopic.NameAr,
+                uit.InterestTopic.NameEn,
+                uit.InterestTopic.IsActive))
+            .ToList();
+
         return _msg.Ok(new UserProfileDto(
             user.Id,
             user.Email,
             user.UserName,
             user.LocalePreference,
             user.KnowledgeLevel,
-            user.Interests,
+            interestTopics,
             user.CountryId,
             user.AvatarUrl), "PROFILE_UPDATED");
     }

@@ -9,6 +9,5 @@ public sealed record UpdateMyProfileCommand(
     System.Guid UserId,
     string LocalePreference,
     KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string> Interests,
     string? AvatarUrl,
     System.Guid? CountryId) : IRequest<Response<UserProfileDto>>;
