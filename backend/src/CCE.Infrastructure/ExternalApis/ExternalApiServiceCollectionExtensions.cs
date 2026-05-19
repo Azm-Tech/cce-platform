@@ -28,7 +28,8 @@ public static class ExternalApiServiceCollectionExtensions
             ContentSerializer = new SystemTextJsonContentSerializer(
                 new System.Text.Json.JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
                 })
         };
 

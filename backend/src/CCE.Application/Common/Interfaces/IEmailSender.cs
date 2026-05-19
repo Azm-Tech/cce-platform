@@ -29,6 +29,7 @@ public interface IEmailSender
     /// <param name="to">Recipient address. Must be a valid RFC-5322 address.</param>
     /// <param name="subject">Subject line. Plain text; no formatting.</param>
     /// <param name="htmlBody">HTML body. Sanitized HTML allowed.</param>
+    /// <param name="templateId">Optional gateway template identifier.</param>
     /// <param name="ct">Cancellation token.</param>
-    Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default);
+    Task SendAsync(string to, string subject, string htmlBody, string? templateId = null, CancellationToken ct = default);
 }

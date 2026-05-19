@@ -9,7 +9,7 @@ namespace CCE.Integration.Communication;
 /// </summary>
 public interface ICommunicationGatewayClient
 {
-    [Post("/api/v1/email/send")]
+    [Post("/integrationgateway/email/send")]
     Task<GatewayResponse> SendEmailAsync([Body] SendEmailRequest request, CancellationToken cancellationToken = default);
 
     [Post("/api/v1/sms/send")]

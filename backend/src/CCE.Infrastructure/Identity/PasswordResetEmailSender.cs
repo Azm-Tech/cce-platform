@@ -36,7 +36,7 @@ public sealed class PasswordResetEmailSender : IPasswordResetEmailSender
             </html>
             """;
 
-        await _emailSender.SendAsync(user.Email ?? string.Empty, "Reset your CCE password", body, ct)
+        await _emailSender.SendAsync(user.Email ?? string.Empty, "Reset your CCE password", body, ct: ct)
             .ConfigureAwait(false);
     }
 }

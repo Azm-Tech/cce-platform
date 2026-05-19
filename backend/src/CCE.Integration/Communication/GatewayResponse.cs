@@ -1,6 +1,6 @@
 namespace CCE.Integration.Communication;
 
 public sealed record GatewayResponse(
-    bool Success,
-    string? MessageId = null,
+    string Status,
+    string? Id = null,
     string? Error = null);

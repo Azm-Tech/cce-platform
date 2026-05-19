@@ -23,7 +23,7 @@ public sealed class SmtpEmailSender : IEmailSender
         _logger = logger;
     }
 
-    public async Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default)
+    public async Task SendAsync(string to, string subject, string htmlBody, string? templateId = null, CancellationToken ct = default)
     {
         var opts = _options.Value;
         using var message = new MimeMessage();
