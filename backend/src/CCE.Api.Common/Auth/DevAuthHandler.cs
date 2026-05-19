@@ -48,11 +48,12 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
     /// </summary>
     public static readonly Dictionary<string, Guid> RoleToUserId = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["cce-admin"]    = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
-        ["cce-editor"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
-        ["cce-reviewer"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
-        ["cce-expert"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
-        ["cce-user"]     = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
+        ["cce-admin"]          = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
+        ["cce-content-manager"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
+        ["cce-state-representative"]      = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000006"),
+        ["cce-reviewer"]       = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
+        ["cce-expert"]         = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
+        ["cce-user"]           = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
     };
 
     private readonly IOptions<LocalAuthOptions> _localAuthOptions;

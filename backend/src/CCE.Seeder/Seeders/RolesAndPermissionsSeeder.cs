@@ -11,8 +11,8 @@ public sealed class RolesAndPermissionsSeeder : ISeeder
 {
     private static readonly string[] SeededRoleNames =
     {
-        "cce-admin", "cce-editor", "cce-reviewer",
-        "cce-expert", "cce-user",
+        "cce-super-admin", "cce-admin", "cce-content-manager", "cce-state-representative",
+        "cce-reviewer", "cce-expert", "cce-user",
     };
 
     private readonly CceDbContext _ctx;
@@ -66,11 +66,13 @@ public sealed class RolesAndPermissionsSeeder : ISeeder
 
     private static IReadOnlyList<string> GetPermissionsForRole(string roleName) => roleName switch
     {
-        "cce-admin"    => RolePermissionMap.CceAdmin,
-        "cce-editor"   => RolePermissionMap.CceEditor,
-        "cce-reviewer" => RolePermissionMap.CceReviewer,
-        "cce-expert"   => RolePermissionMap.CceExpert,
-        "cce-user"     => RolePermissionMap.CceUser,
-        _              => System.Array.Empty<string>(),
+        "cce-super-admin"    => RolePermissionMap.CceSuperAdmin,
+        "cce-admin"          => RolePermissionMap.CceAdmin,
+        "cce-content-manager" => RolePermissionMap.CceContentManager,
+        "cce-state-representative"      => RolePermissionMap.CceStateRepresentative,
+        "cce-reviewer"       => RolePermissionMap.CceReviewer,
+        "cce-expert"         => RolePermissionMap.CceExpert,
+        "cce-user"           => RolePermissionMap.CceUser,
+        _                    => System.Array.Empty<string>(),
     };
 }

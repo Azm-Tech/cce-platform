@@ -64,12 +64,14 @@ public sealed class RoleToPermissionClaimsTransformer : IClaimsTransformation
 
     private static IReadOnlyList<string> ResolveRolePermissions(string role) => role switch
     {
-        "cce-admin"    => RolePermissionMap.CceAdmin,
-        "cce-editor"   => RolePermissionMap.CceEditor,
-        "cce-reviewer" => RolePermissionMap.CceReviewer,
-        "cce-expert"   => RolePermissionMap.CceExpert,
-        "cce-user"     => RolePermissionMap.CceUser,
-        "Anonymous"    => RolePermissionMap.Anonymous,
-        _              => System.Array.Empty<string>(),
+        "cce-super-admin"    => RolePermissionMap.CceSuperAdmin,
+        "cce-admin"          => RolePermissionMap.CceAdmin,
+        "cce-content-manager" => RolePermissionMap.CceContentManager,
+        "cce-state-representative"      => RolePermissionMap.CceStateRepresentative,
+        "cce-reviewer"       => RolePermissionMap.CceReviewer,
+        "cce-expert"         => RolePermissionMap.CceExpert,
+        "cce-user"           => RolePermissionMap.CceUser,
+        "Anonymous"          => RolePermissionMap.Anonymous,
+        _                    => System.Array.Empty<string>(),
     };
 }

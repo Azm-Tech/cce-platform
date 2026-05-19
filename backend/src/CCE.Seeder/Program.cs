@@ -66,9 +66,15 @@ builder.Configuration
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// UserManager (pulled in by AddInfrastructure's AddIdentityCore) requires
+// IDataProtectionProvider for its default token providers. AddDataProtection
+// satisfies this in a non-web host.
+builder.Services.AddDataProtection();
+
 // Register seeders.
-builder.Services.AddScoped<ISeeder, ReferenceDataSeeder>();
 builder.Services.AddScoped<ISeeder, RolesAndPermissionsSeeder>();
+builder.Services.AddScoped<ISeeder, DemoUsersSeeder>();
+builder.Services.AddScoped<ISeeder, ReferenceDataSeeder>();
 builder.Services.AddScoped<ISeeder, KnowledgeMapSeeder>();
 builder.Services.AddScoped<ISeeder, DemoDataSeeder>();
 builder.Services.AddScoped<SeedRunner>();

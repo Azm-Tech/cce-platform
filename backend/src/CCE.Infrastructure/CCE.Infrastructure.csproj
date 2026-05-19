@@ -39,6 +39,9 @@
 
     <PackageReference Include="Anthropic.SDK" />
     <PackageReference Include="prometheus-net" />
+    <PackageReference Include="Refit" />
+    <PackageReference Include="Refit.HttpClientFactory" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Microsoft.Graph" />
@@ -49,6 +52,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
     <ProjectReference Include="..\CCE.Domain\CCE.Domain.csproj" />
+    <ProjectReference Include="..\CCE.Integration\CCE.Integration.csproj" />
   </ItemGroup>
 
 </Project>

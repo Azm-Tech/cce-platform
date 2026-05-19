@@ -26,7 +26,9 @@ using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
 using CCE.Application.Localization;
 using CCE.Domain.Common;
+using CCE.Integration.Communication;
 using CCE.Infrastructure.Email;
+using CCE.Infrastructure.ExternalApis;
 using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Localization;
@@ -127,17 +129,20 @@ public static class DependencyInjection
         services.AddScoped<EntraIdUserSyncService>();
 
         // Sub-11d — outbound email transport. SMTP-backed when
-        // Email:Provider=smtp; otherwise NullEmailSender (logs + discards).
-        // Singleton because both impls are stateless + thread-safe.
+        // Email:Provider=smtp; gateway-backed when Email:Provider=gateway;
+        // otherwise NullEmailSender (logs + discards).
+        // Singleton because all impls are stateless + thread-safe.
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.AddExternalApiClient<ICommunicationGatewayClient>("CommunicationGateway");
         services.AddSingleton<IEmailSender>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<EmailOptions>>();
             var provider = (opts.Value.Provider ?? "null").ToLowerInvariant();
             return provider switch
             {
-                "smtp" => ActivatorUtilities.CreateInstance<SmtpEmailSender>(sp),
-                _      => ActivatorUtilities.CreateInstance<NullEmailSender>(sp),
+                "smtp"    => ActivatorUtilities.CreateInstance<SmtpEmailSender>(sp),
+                "gateway" => ActivatorUtilities.CreateInstance<global::CCE.Infrastructure.Communication.GatewayEmailSender>(sp),
+                _         => ActivatorUtilities.CreateInstance<NullEmailSender>(sp),
             };
         });
         services.AddScoped<IStateRepAssignmentRepository, StateRepAssignmentRepository>();
