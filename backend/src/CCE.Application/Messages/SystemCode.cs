@@ -21,6 +21,7 @@ public static class SystemCode
     public const string ERR002 = "ERR002"; // Resource download failure (appendix)
     public const string ERR003 = "ERR003"; // Resource share failure (appendix)
 
+    public const string ERR018 = "ERR018"; // Interest not found
     public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
     public const string ERR020 = "ERR020"; // Invalid credentials (appendix)
     public const string ERR021 = "ERR021"; // Login system error (appendix)
@@ -115,6 +116,7 @@ public static class SystemCode
     public const string CON007 = "CON007"; // Admin notified of expert request (appendix)
     public const string CON008 = "CON008"; // Service evaluation submitted (appendix)
     public const string CON009 = "CON009"; // Personalized suggestions submitted (appendix)
+    public const string CON018 = "CON018"; // Interest upserted
     public const string CON010 = "CON010"; // Topic follow success (appendix)
     public const string CON011 = "CON011"; // Post created (appendix)
     public const string CON012 = "CON012"; // Post follow success (appendix)

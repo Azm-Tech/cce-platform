@@ -14,6 +14,7 @@ public static class SystemCodeMap
         ["INVALID_CREDENTIALS"] = SystemCode.ERR020,
         ["PASSWORD_RECOVERY_FAILED"] = SystemCode.ERR023,
         ["LOGOUT_FAILED"] = SystemCode.ERR024,
+        ["INTEREST_NOT_FOUND"] = SystemCode.ERR018,
 
         // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
         ["EXPERT_REQUEST_NOT_FOUND"] = SystemCode.ERR400,
@@ -90,6 +91,7 @@ public static class SystemCodeMap
         ["PASSWORD_RESET"] = SystemCode.CON014,
         ["LOGOUT_SUCCESS"] = SystemCode.CON015,
         ["REGISTER_SUCCESS"] = SystemCode.CON017,
+        ["INTEREST_UPSERTED"] = SystemCode.CON018,
 
         // ─── Backend-only Identity Success (appendix numbers already taken) ───
         ["EXPERT_REQUEST_APPROVED"] = SystemCode.CON050,

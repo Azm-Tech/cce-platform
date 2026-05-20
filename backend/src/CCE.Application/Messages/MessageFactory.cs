@@ -68,6 +68,7 @@ public sealed class MessageFactory
     // ─── Convenience shortcuts (Identity domain) ───
 
     public Response<T> UserNotFound<T>()      => NotFound<T>("USER_NOT_FOUND");
+    public Response<T> InterestUpserted<T>(T data) => Ok(data, "INTEREST_UPSERTED");
     public Response<T> EmailExists<T>()       => Conflict<T>("EMAIL_EXISTS");
     public Response<T> InvalidCredentials<T>() => Unauthorized<T>("INVALID_CREDENTIALS");
     public Response<T> NotAuthenticated<T>()  => Unauthorized<T>("NOT_AUTHENTICATED");
