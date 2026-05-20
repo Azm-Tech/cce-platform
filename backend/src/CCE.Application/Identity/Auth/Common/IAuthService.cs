@@ -4,6 +4,8 @@ namespace CCE.Application.Identity.Auth.Common;
 
 public sealed record RegisterResult(User? User, bool EmailTaken);
 
+public sealed record AdminCreateResult(User? User, bool EmailTaken, bool Failed);
+
 public interface IAuthService
 {
     Task<AuthTokenDto?> LoginAsync(string email, string password, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct);
@@ -13,6 +15,8 @@ public interface IAuthService
     Task LogoutAsync(string rawRefreshToken, string? ip, CancellationToken ct);
 
     Task<RegisterResult> RegisterAsync(string firstName, string lastName, string email, string password, string? jobTitle, string? orgName, string? phone, CancellationToken ct);
+
+    Task<AdminCreateResult> AdminCreateUserAsync(string firstName, string lastName, string email, string password, string phone, Guid? countryId, string role, CancellationToken ct);
 
     Task ForgotPasswordAsync(string email, CancellationToken ct);
 

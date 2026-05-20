@@ -121,6 +121,31 @@ public sealed class AuthService : IAuthService
         return new RegisterResult(user, false);
     }
 
+    public async Task<AdminCreateResult> AdminCreateUserAsync(
+        string firstName, string lastName, string email, string password,
+        string phone, Guid? countryId, string role, CancellationToken ct)
+    {
+        var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+        if (existing is not null) return new AdminCreateResult(null, true, false);
+
+        var user = User.CreateByAdmin(firstName, lastName, email, phone);
+        if (countryId.HasValue) user.AssignCountry(countryId.Value);
+
+        var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
+        if (!createResult.Succeeded) return new AdminCreateResult(null, false, true);
+
+        if (!await _roleManager.RoleExistsAsync(role).ConfigureAwait(false))
+        {
+            var roleResult = await _roleManager.CreateAsync(new Role(role)).ConfigureAwait(false);
+            if (!roleResult.Succeeded) return new AdminCreateResult(null, false, true);
+        }
+
+        var addResult = await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
+        if (!addResult.Succeeded) return new AdminCreateResult(null, false, true);
+
+        return new AdminCreateResult(user, false, false);
+    }
+
     public async Task ForgotPasswordAsync(string email, CancellationToken ct)
     {
         var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);

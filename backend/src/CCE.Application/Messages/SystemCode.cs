@@ -20,6 +20,7 @@ public static class SystemCode
     public const string ERR001 = "ERR001"; // User not found (also used as ERR001 in appendix — keep)
     public const string ERR002 = "ERR002"; // Resource download failure (appendix)
     public const string ERR003 = "ERR003"; // Resource share failure (appendix)
+    public const string ERR013 = "ERR013"; // Required fields empty (appendix)
 
     public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
     public const string ERR020 = "ERR020"; // Invalid credentials (appendix)
@@ -123,6 +124,7 @@ public static class SystemCode
     public const string CON015 = "CON015"; // Logout success (appendix)
     public const string CON016 = "CON016"; // Content update success (appendix)
     public const string CON017 = "CON017"; // User creation success (appendix)
+    public const string CON018 = "CON018"; // User deleted successfully (appendix)
 
     // ─── Backend-only Identity Success (appendix numbers already taken) ───
     public const string CON050 = "CON050"; // Expert request approved
@@ -130,6 +132,7 @@ public static class SystemCode
     public const string CON052 = "CON052"; // State rep assignment created
     public const string CON053 = "CON053"; // State rep assignment revoked
     public const string CON054 = "CON054"; // Roles assigned
+    public const string CON055 = "CON055"; // User status changed
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

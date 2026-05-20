@@ -6,40 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class StandardizeCountryProfileAudit : Migration
+    public partial class AddUserStatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
-                IF EXISTS (
-                    SELECT 1 FROM sys.columns c
-                    JOIN sys.tables t ON c.object_id = t.object_id
-                    WHERE t.name = 'country_profiles' AND c.name = 'last_updated_on'
-                )
-                BEGIN
-                    EXEC sp_rename N'[country_profiles].[last_updated_on]', N'created_on', 'COLUMN';
-                END
+            migrationBuilder.RenameColumn(
+                name: "last_updated_on",
+                table: "country_profiles",
+                newName: "created_on");
 
-                IF EXISTS (
-                    SELECT 1 FROM sys.columns c
-                    JOIN sys.tables t ON c.object_id = t.object_id
-                    WHERE t.name = 'country_profiles' AND c.name = 'last_updated_by_id'
-                )
-                BEGIN
-                    EXEC sp_rename N'[country_profiles].[last_updated_by_id]', N'created_by_id', 'COLUMN';
-                END
-            ");
-
-            // migrationBuilder.RenameColumn(
-            //     name: "last_updated_on",
-            //     table: "country_profiles",
-            //     newName: "created_on");
-            //
-            // migrationBuilder.RenameColumn(
-            //     name: "last_updated_by_id",
-            //     table: "country_profiles",
-            //     newName: "created_by_id");
+            migrationBuilder.RenameColumn(
+                name: "last_updated_by_id",
+                table: "country_profiles",
+                newName: "created_by_id");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "created_by_id",
@@ -180,6 +160,51 @@ namespace CCE.Infrastructure.Persistence.Migrations
             migrationBuilder.AddColumn<DateTimeOffset>(
                 name: "last_modified_on",
                 table: "pages",
+                type: "datetimeoffset",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "created_by_id",
+                table: "newsletter_subscriptions",
+                type: "uniqueidentifier",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "created_on",
+                table: "newsletter_subscriptions",
+                type: "datetimeoffset",
+                nullable: false,
+                defaultValue: new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)));
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "deleted_by_id",
+                table: "newsletter_subscriptions",
+                type: "uniqueidentifier",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "deleted_on",
+                table: "newsletter_subscriptions",
+                type: "datetimeoffset",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "is_deleted",
+                table: "newsletter_subscriptions",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "last_modified_by_id",
+                table: "newsletter_subscriptions",
+                type: "uniqueidentifier",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "last_modified_on",
+                table: "newsletter_subscriptions",
                 type: "datetimeoffset",
                 nullable: true);
 
@@ -423,6 +448,13 @@ namespace CCE.Infrastructure.Persistence.Migrations
                 table: "city_scenarios",
                 type: "uniqueidentifier",
                 nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "status",
+                table: "AspNetUsers",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
@@ -518,6 +550,34 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropColumn(
                 name: "created_by_id",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "created_on",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "deleted_by_id",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "deleted_on",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "is_deleted",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "last_modified_by_id",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "last_modified_on",
+                table: "newsletter_subscriptions");
+
+            migrationBuilder.DropColumn(
+                name: "created_by_id",
                 table: "news");
 
             migrationBuilder.DropColumn(
@@ -659,6 +719,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
             migrationBuilder.DropColumn(
                 name: "last_modified_by_id",
                 table: "city_scenarios");
+
+            migrationBuilder.DropColumn(
+                name: "status",
+                table: "AspNetUsers");
 
             migrationBuilder.RenameColumn(
                 name: "created_on",

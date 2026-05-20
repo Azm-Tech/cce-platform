@@ -45,13 +45,11 @@ public class GetUserByIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Returns_is_active_false_when_lockout_active()
+    public async Task Returns_is_active_false_when_user_is_inactive()
     {
         var aliceId = System.Guid.NewGuid();
-        var future = System.DateTimeOffset.UtcNow.AddYears(1);
         var alice = BuildUser(aliceId, "alice@cce.local", "alice");
-        alice.LockoutEnabled = true;
-        alice.LockoutEnd = future;
+        alice.Deactivate();
 
         var db = BuildDb(new[] { alice }, System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
         var sut = new GetUserByIdQueryHandler(db, BuildMsg());

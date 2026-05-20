@@ -1,6 +1,9 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.AssignUserRoles;
+using CCE.Application.Identity.Commands.ChangeUserStatus;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
+using CCE.Application.Identity.Commands.CreateUser;
+using CCE.Application.Identity.Commands.DeleteUser;
 using CCE.Application.Identity.Commands.RevokeStateRepAssignment;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
@@ -49,6 +52,19 @@ public static class IdentityEndpoints
         .RequireAuthorization(Permissions.User_Read)
         .WithName("GetUserById");
 
+        users.MapPost("", async (
+            CreateUserRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new CreateUserCommand(
+                body.FirstName, body.LastName, body.Email, body.Password,
+                body.PhoneNumber, body.CountryId, body.Role);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Create)
+        .WithName("CreateUser");
+
         users.MapPut("/{id:guid}/roles", async (
             System.Guid id,
             AssignUserRolesRequest body,
@@ -60,6 +76,28 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("AssignUserRoles");
+
+        users.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new DeleteUserCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Delete)
+        .WithName("DeleteUser");
+
+        users.MapPut("/{id:guid}/status", async (
+            System.Guid id,
+            ChangeUserStatusRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new ChangeUserStatusCommand(id, body.IsActive);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Update)
+        .WithName("ChangeUserStatus");
 
         // Sub-11d Task D — batch UPN→EntraIdObjectId backfill. Admin-only;
         // referenced by docs/runbooks/entra-id-cutover.md step 7. Lazy
@@ -119,4 +157,13 @@ public static class IdentityEndpoints
     }
 }
 
+public sealed record ChangeUserStatusRequest(bool IsActive);
 
+public sealed record CreateUserRequest(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Password,
+    string PhoneNumber,
+    Guid? CountryId,
+    string Role);

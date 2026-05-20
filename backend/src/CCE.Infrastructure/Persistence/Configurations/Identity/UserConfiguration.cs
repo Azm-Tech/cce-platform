@@ -16,6 +16,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.AvatarUrl).HasMaxLength(2048);
         builder.Property(u => u.Interests).HasColumnType("nvarchar(max)");
         builder.Property(u => u.KnowledgeLevel).HasConversion<int>();
+        builder.Property(u => u.Status).HasConversion<int>();
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");
 
         // Sub-11: filtered unique index on EntraIdObjectId. Only enforces uniqueness on

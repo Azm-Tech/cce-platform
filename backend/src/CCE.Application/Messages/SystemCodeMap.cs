@@ -90,6 +90,7 @@ public static class SystemCodeMap
         ["PASSWORD_RESET"] = SystemCode.CON014,
         ["LOGOUT_SUCCESS"] = SystemCode.CON015,
         ["REGISTER_SUCCESS"] = SystemCode.CON017,
+        ["USER_DELETED"] = SystemCode.CON018,
 
         // ─── Backend-only Identity Success (appendix numbers already taken) ───
         ["EXPERT_REQUEST_APPROVED"] = SystemCode.CON050,
@@ -97,6 +98,7 @@ public static class SystemCodeMap
         ["STATE_REP_ASSIGNMENT_CREATED"] = SystemCode.CON052,
         ["STATE_REP_ASSIGNMENT_REVOKED"] = SystemCode.CON053,
         ["ROLES_ASSIGNED"] = SystemCode.CON054,
+        ["USER_STATUS_CHANGED"] = SystemCode.CON055,
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,

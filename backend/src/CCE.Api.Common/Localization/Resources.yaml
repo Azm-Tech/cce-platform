@@ -246,6 +246,14 @@ ROLES_ASSIGNED:
   ar: "تم تعيين الأدوار بنجاح"
   en: "Roles assigned successfully"
 
+USER_STATUS_CHANGED:
+  ar: "تم تغيير حالة المستخدم بنجاح"
+  en: "User status changed successfully"
+
+USER_DELETED:
+  ar: "تم حذف المستخدم بنجاح"
+  en: "User deleted successfully"
+
 EXPERT_REQUEST_APPROVED:
   ar: "تمت الموافقة على طلب الخبير"
   en: "Expert request approved"

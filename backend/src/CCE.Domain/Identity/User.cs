@@ -34,6 +34,9 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Optional avatar URL (CDN-served).</summary>
     public string? AvatarUrl { get; private set; }
 
+    /// <summary>Admin-managed account status. Default <see cref="UserStatus.Active"/>.</summary>
+    public UserStatus Status { get; private set; } = UserStatus.Active;
+
     /// <summary>
     /// Sub-11: stable Entra ID Object ID (<c>oid</c> claim) for this user. Populated lazily on
     /// first sign-in by <c>EntraIdUserResolver</c>. Null until the user signs in via Entra ID
@@ -122,6 +125,24 @@ public class User : IdentityUser<System.Guid>
         return user;
     }
 
+    public static User CreateByAdmin(string firstName, string lastName, string email, string phone)
+    {
+        return new User
+        {
+            Id = System.Guid.NewGuid(),
+            UserName = email,
+            NormalizedUserName = email.ToUpperInvariant(),
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            PhoneNumber = phone,
+            EmailConfirmed = true,
+            FirstName = firstName.Trim(),
+            LastName = lastName.Trim(),
+            JobTitle = string.Empty,
+            OrganizationName = string.Empty,
+        };
+    }
+
     public void UpdateProfile(string firstName, string lastName, string jobTitle, string organizationName)
     {
         if (string.IsNullOrWhiteSpace(firstName)) throw new DomainException("FirstName is required.");
@@ -169,6 +190,20 @@ public class User : IdentityUser<System.Guid>
             .ToList();
     }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTimeOffset? DeletedOn { get; private set; }
+
+    public Guid? DeletedById { get; private set; }
+
+    public void SoftDelete(Guid by, DateTimeOffset now)
+    {
+        if (IsDeleted) return;
+        IsDeleted = true;
+        DeletedOn = now;
+        DeletedById = by;
+    }
+
     public void AssignCountry(System.Guid countryId) => CountryId = countryId;
 
     public void ClearCountry() => CountryId = null;
@@ -189,4 +224,10 @@ public class User : IdentityUser<System.Guid>
         }
         AvatarUrl = url;
     }
+
+    public void ChangeStatus(UserStatus newStatus) => Status = newStatus;
+
+    public void Activate() => Status = UserStatus.Active;
+
+    public void Deactivate() => Status = UserStatus.Inactive;
 }
