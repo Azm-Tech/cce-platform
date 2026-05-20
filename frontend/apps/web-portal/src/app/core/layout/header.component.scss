@@ -8,6 +8,7 @@
 :host {
   display: block;
   position: relative;
+  z-index: 100;
   isolation: isolate;
   background: #ffffff;
   color: #1c2724;
@@ -336,10 +337,10 @@
   color: rgba(28, 39, 36, 0.30);
   transition: color 0.18s ease, transform 0.18s ease;
 }
-[dir="rtl"] .cce-header__mega-link:hover .cce-header__mega-arrow {
+:host-context([dir="rtl"]) .cce-header__mega-arrow { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-header__mega-link:hover .cce-header__mega-arrow {
   transform: translateX(-3px) scaleX(-1);
 }
-[dir="rtl"] .cce-header__mega-arrow { transform: scaleX(-1); }
 
 /* Right pane — preview image with eyebrow + title overlay */
 .cce-header__mega-preview {
@@ -397,11 +398,8 @@
   line-height: 1.40;
 }
 
-/* RTL — anchor mega panel to the trailing edge of the trigger */
-:host-context([dir="rtl"]) .cce-header__mega {
-  inset-inline-start: auto;
-  inset-inline-end: 0;
-}
+/* RTL handled automatically — inset-inline-start: 0 maps to right: 0 in RTL,
+   anchoring the panel to the trigger's right edge and extending leftward. */
 
 /* Mobile: collapse mega panel into a flat list under the parent label
    (no preview pane, no two-column grid) */

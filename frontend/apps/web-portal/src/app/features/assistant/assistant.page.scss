@@ -272,6 +272,10 @@
   height: 20px;
   transition: color 0.22s ease, transform 0.22s ease;
 }
+:host-context([dir="rtl"]) .cce-assistant__suggestion-arrow { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-assistant__suggestion-btn:hover .cce-assistant__suggestion-arrow {
+  transform: translateX(-3px) scaleX(-1);
+}
 
 /* ─── Capabilities strip ────────────────────────────────── */
 .cce-assistant__capabilities {

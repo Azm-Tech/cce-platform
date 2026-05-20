@@ -148,11 +148,11 @@
   color: #006c4f;
 }
 
-[dir="rtl"] .cce-country-card__body::after {
+:host-context([dir="rtl"]) .cce-country-card__body::after {
   content: '←';
   transform: translateX(4px);
 }
-[dir="rtl"] .cce-country-card:hover .cce-country-card__body::after {
+:host-context([dir="rtl"]) .cce-country-card:hover .cce-country-card__body::after {
   transform: translateX(0);
 }
 

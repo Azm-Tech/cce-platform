@@ -275,6 +275,12 @@ mat-card,
   --mdc-outlined-text-field-input-text-placeholder-color: rgba(28, 39, 36, 0.45);
   --mdc-outlined-text-field-disabled-outline-color: rgba(0, 0, 0, 0.10);
   --mdc-outlined-text-field-disabled-input-text-color: rgba(28, 39, 36, 0.40);
+  --mdc-outlined-text-field-disabled-label-text-color: rgba(28, 39, 36, 0.38);
+  --mdc-outlined-text-field-error-label-text-color: #dc2626;
+  --mdc-outlined-text-field-error-focus-label-text-color: #dc2626;
+  --mdc-outlined-text-field-error-hover-label-text-color: #b91c1c;
+  --mdc-outlined-text-field-caret-color: #006c4f;
+  --mdc-outlined-text-field-error-caret-color: #dc2626;
 
   /* For filled variant */
   --mdc-filled-text-field-container-color: rgba(15, 139, 108, 0.05);
@@ -287,9 +293,10 @@ mat-card,
 
 /* Soft glow ring around outlined fields on focus */
 .mat-mdc-text-field-wrapper.mdc-text-field--outlined:focus-within {
-  box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.15);
+  // outline: 3px solid rgba(15, 139, 108, 0.20);
+  outline-offset: 1px;
   border-radius: 10px;
-  transition: box-shadow 0.20s var(--cce-fancy-easing-soft);
+  transition: outline-color 0.20s var(--cce-fancy-easing-soft);
 }
 
 /* Filled variant — smooth corners + soft hover lift */
@@ -343,7 +350,6 @@ mat-card,
 .mat-mdc-input-element,
 .mdc-text-field input.mat-mdc-form-field-input-control,
 .mdc-text-field textarea.mat-mdc-form-field-input-control {
-  caret-color: #006c4f !important;
   letter-spacing: -0.005em;
 }
 .mat-mdc-input-element::placeholder {

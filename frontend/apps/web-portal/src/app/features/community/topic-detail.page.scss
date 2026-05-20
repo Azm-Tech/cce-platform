@@ -36,8 +36,8 @@
     mat-icon { transform: translateX(-2px); }
   }
 }
-[dir="rtl"] .cce-topic-detail__back mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-topic-detail__back:hover mat-icon { transform: translateX(-2px) scaleX(-1); }
+:host-context([dir="rtl"]) .cce-topic-detail__back mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-topic-detail__back:hover mat-icon { transform: translateX(-2px) scaleX(-1); }
 
 .cce-topic-detail__progress {
   margin-bottom: 1rem;

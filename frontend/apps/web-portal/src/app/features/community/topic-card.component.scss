@@ -107,9 +107,9 @@
   transform: translateX(3px);
 }
 
-[dir="rtl"] .cce-topic-card__cta mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-topic-card:hover .cce-topic-card__cta mat-icon,
-[dir="rtl"] .cce-topic-card:focus-visible .cce-topic-card__cta mat-icon {
+:host-context([dir="rtl"]) .cce-topic-card__cta mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-topic-card:hover .cce-topic-card__cta mat-icon,
+:host-context([dir="rtl"]) .cce-topic-card:focus-visible .cce-topic-card__cta mat-icon {
   transform: translateX(-3px) scaleX(-1);
 }
 

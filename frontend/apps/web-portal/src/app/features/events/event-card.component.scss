@@ -164,9 +164,9 @@
   transform: translateX(3px);
 }
 
-[dir="rtl"] .cce-event-card__cta mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-event-card:hover .cce-event-card__cta mat-icon,
-[dir="rtl"] .cce-event-card:focus-visible .cce-event-card__cta mat-icon {
+:host-context([dir="rtl"]) .cce-event-card__cta mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-event-card:hover .cce-event-card__cta mat-icon,
+:host-context([dir="rtl"]) .cce-event-card:focus-visible .cce-event-card__cta mat-icon {
   transform: translateX(-3px) scaleX(-1);
 }
 

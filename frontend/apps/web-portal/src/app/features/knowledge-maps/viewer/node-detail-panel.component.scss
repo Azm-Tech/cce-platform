@@ -203,8 +203,8 @@
 .cce-node-detail__edge:hover .cce-node-detail__edge-arrow {
   transform: translateX(3px);
 }
-[dir="rtl"] .cce-node-detail__edge-arrow { transform: scaleX(-1); }
-[dir="rtl"] .cce-node-detail__edge:hover .cce-node-detail__edge-arrow {
+:host-context([dir="rtl"]) .cce-node-detail__edge-arrow { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-node-detail__edge:hover .cce-node-detail__edge-arrow {
   transform: translateX(-3px) scaleX(-1);
 }
 

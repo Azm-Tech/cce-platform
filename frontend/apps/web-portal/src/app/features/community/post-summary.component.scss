@@ -173,9 +173,9 @@
 .cce-post-summary:focus-visible .cce-post-summary__cta mat-icon {
   transform: translateX(3px);
 }
-[dir="rtl"] .cce-post-summary__cta mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-post-summary:hover .cce-post-summary__cta mat-icon,
-[dir="rtl"] .cce-post-summary:focus-visible .cce-post-summary__cta mat-icon {
+:host-context([dir="rtl"]) .cce-post-summary__cta mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-post-summary:hover .cce-post-summary__cta mat-icon,
+:host-context([dir="rtl"]) .cce-post-summary:focus-visible .cce-post-summary__cta mat-icon {
   transform: translateX(-3px) scaleX(-1);
 }
 

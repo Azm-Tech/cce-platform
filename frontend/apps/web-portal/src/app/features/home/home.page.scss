@@ -530,6 +530,11 @@
 
 .cce-home__feature-card:hover .cce-home__feature-arrow { transform: translateX(6px); }
 
+:host-context([dir="rtl"]) .cce-home__feature-arrow { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-home__feature-card:hover .cce-home__feature-arrow {
+  transform: translateX(-6px) scaleX(-1);
+}
+
 @keyframes cardFadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }

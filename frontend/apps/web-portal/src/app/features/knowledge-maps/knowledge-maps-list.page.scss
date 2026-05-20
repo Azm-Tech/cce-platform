@@ -320,11 +320,11 @@
   transform: translateX(3px);
 }
 
-[dir="rtl"] .cce-km-list__card:hover .cce-km-list__card-cta mat-icon,
-[dir="rtl"] .cce-km-list__card:focus-visible .cce-km-list__card-cta mat-icon {
+:host-context([dir="rtl"]) .cce-km-list__card:hover .cce-km-list__card-cta mat-icon,
+:host-context([dir="rtl"]) .cce-km-list__card:focus-visible .cce-km-list__card-cta mat-icon {
   transform: translateX(-3px) scaleX(-1);
 }
-[dir="rtl"] .cce-km-list__card-cta mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-km-list__card-cta mat-icon { transform: scaleX(-1); }
 
 /* ─── Skeleton ───────────────────────────────────────────── */
 .cce-km-list__skeleton {

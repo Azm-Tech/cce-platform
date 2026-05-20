@@ -12,3 +12,5 @@
 .cce-news-detail__date { color: rgba(0, 0, 0, 0.6); margin: 0 0 1rem; }
 .cce-news-detail__image { width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; }
 .cce-news-detail__content { line-height: 1.6; }
+
+:host-context([dir="rtl"]) .cce-news-detail__back mat-icon { transform: scaleX(-1); }

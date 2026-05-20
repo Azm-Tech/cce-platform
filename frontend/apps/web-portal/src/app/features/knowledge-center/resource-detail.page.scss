@@ -586,8 +586,11 @@
   }
 }
 
-[dir="rtl"] .cce-resource-detail__related-card:hover .cce-resource-detail__related-arrow {
-  transform: translateX(-3px);
+:host-context([dir="rtl"]) .cce-resource-detail__back mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-resource-detail__back:hover { transform: translateX(2px); }
+:host-context([dir="rtl"]) .cce-resource-detail__related-arrow { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-resource-detail__related-card:hover .cce-resource-detail__related-arrow {
+  transform: translateX(-3px) scaleX(-1);
 }
 
 .cce-resource-detail__related-icon {

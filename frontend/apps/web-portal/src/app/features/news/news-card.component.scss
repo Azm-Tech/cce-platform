@@ -136,9 +136,9 @@
   transform: translateX(3px);
 }
 
-[dir="rtl"] .cce-news-card__cta mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-news-card:hover .cce-news-card__cta mat-icon,
-[dir="rtl"] .cce-news-card:focus-visible .cce-news-card__cta mat-icon {
+:host-context([dir="rtl"]) .cce-news-card__cta mat-icon { transform: scaleX(-1); }
+:host-context([dir="rtl"]) .cce-news-card:hover .cce-news-card__cta mat-icon,
+:host-context([dir="rtl"]) .cce-news-card:focus-visible .cce-news-card__cta mat-icon {
   transform: translateX(-3px) scaleX(-1);
 }
 
