@@ -149,7 +149,7 @@ const COUNTRY_REGION: Record<string, Exclude<RegionId, 'all'>> = {
           <div class="cce-explore__stat-cell">
             <span class="cce-explore__stat-cell-label">{{ 'explore.stats.shown' | transloco }}</span>
             <span class="cce-explore__stat-cell-value">
-              {{ stats().shown }}<span class="cce-explore__stat-cell-unit">/ {{ totalCities }}</span>
+              {{ stats().shown }}<span class="cce-explore__stat-cell-unit">/ {{ totalCities() }}</span>
             </span>
           </div>
           <div class="cce-explore__stat-cell">

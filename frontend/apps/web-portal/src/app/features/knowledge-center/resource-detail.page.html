@@ -110,8 +110,10 @@
               <mat-spinner diameter="18" />
               <span>{{ 'common.loading' | transloco }}</span>
             } @else {
-              <mat-icon>download</mat-icon>
-              <span>{{ 'resources.download.openButton' | transloco }}</span>
+              <ng-container>
+                <mat-icon>download</mat-icon>
+                <span>{{ 'resources.download.openButton' | transloco }}</span>
+              </ng-container>
             }
           </button>
           <button

@@ -5,6 +5,7 @@
 // Nx's tsconfig path mappings DON'T apply to SCSS — Sass uses the `loadPaths` config from
 // project.json. Phase 09 already set loadPaths to include node_modules; we add libs path here.
 @use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
+@use "./fancy";
 
 @tailwind base;
 @tailwind components;
@@ -47,7 +48,7 @@ body { min-height: 100vh; }
 // Global polish layer — applies fancy animations, glass surfaces,
 // custom scrollbar, page transitions, Material upgrades. No per-page
 // changes required; every routed view inherits these.
-@import "./fancy";
+// (loaded via @use at the top of this file)
 
 // ─── Assistant dialog — RIGHT-SIDE SIDE SHEET ─────────────────
 // Anchored to the trailing edge of the viewport (right in LTR,

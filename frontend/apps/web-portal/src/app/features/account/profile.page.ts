@@ -104,8 +104,8 @@ export class ProfilePage implements OnInit {
     if (!p) return;
     this.form.reset({
       localePreference: p.localePreference,
-      knowledgeLevel: p.knowledgeLevel,
-      interests: p.interests.join(', '),
+      knowledgeLevel: p.knowledgeLevel || 'Beginner',
+      interests: p.interests ? p.interests.join(', ') : '',
       countryId: p.countryId,
       avatarUrl: p.avatarUrl,
     });

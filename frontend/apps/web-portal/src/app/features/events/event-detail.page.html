@@ -195,8 +195,10 @@
             <mat-spinner diameter="18" />
             <span>{{ 'events.detail.downloadingCalendar' | transloco }}</span>
           } @else {
-            <mat-icon>event_available</mat-icon>
-            <span>{{ 'events.detail.addToCalendar' | transloco }}</span>
+            <ng-container>
+              <mat-icon>event_available</mat-icon>
+              <span>{{ 'events.detail.addToCalendar' | transloco }}</span>
+            </ng-container>
           }
         </button>
 

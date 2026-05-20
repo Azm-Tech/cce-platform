@@ -51,9 +51,13 @@
           <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.knowledgeLevel' | transloco }}</dt>
             <dd>
-              <span class="cce-profile__badge">
-                {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
-              </span>
+              @if (p.knowledgeLevel) {
+                <span class="cce-profile__badge">
+                  {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
+                </span>
+              } @else {
+                —
+              }
             </dd>
           </div>
           <div class="cce-profile__field">
@@ -63,7 +67,7 @@
           <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.interests' | transloco }}</dt>
             <dd>
-              @if (p.interests.length) {
+              @if (p.interests && p.interests.length) {
                 <mat-chip-set>
                   @for (interest of p.interests; track interest) {
                     <mat-chip>{{ interest }}</mat-chip>
