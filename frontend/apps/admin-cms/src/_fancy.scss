@@ -275,13 +275,6 @@ mat-card,
   --mdc-filled-text-field-focus-active-indicator-color: #006c4f;
 }
 
-/* Soft glow ring around outlined fields on focus.
-   outline renders outside the box so it never overlaps the floating label. */
-.mat-mdc-text-field-wrapper.mdc-text-field--outlined:focus-within {
-  outline: 3px solid rgba(15, 139, 108, 0.20);
-  outline-offset: 1px;
-  border-radius: 10px;
-}
 
 /* Filled variant — smooth corners + soft hover lift */
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
