@@ -134,6 +134,7 @@ public static class DependencyInjection
         // Singleton because all impls are stateless + thread-safe.
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.AddExternalApiClient<ICommunicationGatewayClient>("CommunicationGateway");
+        services.AddExternalApiClient<CCE.Integration.AdminAuth.IAdminAuthGatewayClient>("AdminAuthGateway");
         services.AddSingleton<IEmailSender>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<EmailOptions>>();

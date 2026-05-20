@@ -17,4 +17,6 @@ public interface IAuthService
     Task ForgotPasswordAsync(string email, CancellationToken ct);
 
     Task<string?> ResetPasswordAsync(string email, string encodedToken, string newPassword, string? ip, CancellationToken ct);
+
+    Task<AuthTokenDto?> AdLoginAsync(string username, string password, string? ip, string? userAgent, CancellationToken ct);
 }

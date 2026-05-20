@@ -2,6 +2,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
+using CCE.Integration.AdminAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -18,6 +19,7 @@ public sealed class AuthService : IAuthService
     private readonly ISystemClock _clock;
     private readonly IOptions<LocalAuthOptions> _options;
     private readonly IPasswordResetEmailSender _emailSender;
+    private readonly IAdminAuthGatewayClient _adGateway;
 
     public AuthService(
         UserManager<User> userManager,
@@ -27,7 +29,8 @@ public sealed class AuthService : IAuthService
         ICceDbContext db,
         ISystemClock clock,
         IOptions<LocalAuthOptions> options,
-        IPasswordResetEmailSender emailSender)
+        IPasswordResetEmailSender emailSender,
+        IAdminAuthGatewayClient adGateway)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -37,6 +40,7 @@ public sealed class AuthService : IAuthService
         _clock = clock;
         _options = options;
         _emailSender = emailSender;
+        _adGateway = adGateway;
     }
 
     public async Task<AuthTokenDto?> LoginAsync(string email, string password, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct)
@@ -150,6 +154,70 @@ public sealed class AuthService : IAuthService
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         return null;
+    }
+
+    public async Task<AuthTokenDto?> AdLoginAsync(string username, string password, string? ip, string? userAgent, CancellationToken ct)
+    {
+        var gatewayResponse = await _adGateway.LoginAsync(
+            new AdAuthRequest(username, password), ct).ConfigureAwait(false);
+
+        if (!"success".Equals(gatewayResponse.Status, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var email = gatewayResponse.Email!;
+        var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+
+        if (user is null)
+        {
+            user = User.CreateStubFromAd(
+                email,
+                gatewayResponse.FirstName,
+                gatewayResponse.LastName,
+                gatewayResponse.DisplayName);
+
+            var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
+            if (!createResult.Succeeded)
+            {
+                return null;
+            }
+        }
+
+        await SyncAdRolesAsync(user, gatewayResponse.Groups).ConfigureAwait(false);
+
+        return await IssueAndBuildDtoAsync(user, LocalAuthApi.Internal, ip, userAgent, null, ct).ConfigureAwait(false);
+    }
+
+    private async Task SyncAdRolesAsync(User user, IReadOnlyList<string>? adGroups)
+    {
+        if (adGroups is null || adGroups.Count == 0)
+        {
+            return;
+        }
+
+        var currentRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+        var desiredRoles = adGroups
+            .Select(static g => AdRoleMapper.ToCceRole(g))
+            .OfType<string>()
+            .Distinct()
+            .ToList();
+
+        var rolesToAdd = desiredRoles.Except(currentRoles).ToList();
+        var rolesToRemove = currentRoles.Except(desiredRoles).ToList();
+
+        foreach (var role in rolesToAdd)
+        {
+            if (!await _userManager.IsInRoleAsync(user, role!).ConfigureAwait(false))
+            {
+                await _userManager.AddToRoleAsync(user, role!).ConfigureAwait(false);
+            }
+        }
+
+        foreach (var role in rolesToRemove)
+        {
+            await _userManager.RemoveFromRoleAsync(user, role).ConfigureAwait(false);
+        }
     }
 
     private async Task<AuthTokenDto> IssueAndBuildDtoAsync(User user, LocalAuthApi api, string? ip, string? userAgent, Guid? tokenFamilyId, CancellationToken ct)

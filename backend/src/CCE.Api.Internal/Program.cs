@@ -59,8 +59,9 @@ app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseCceOpenApi(apiTag: "internal");
 
-app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
-app.MapIdentityEndpoints();
+        app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
+        app.MapAdminAuthEndpoints();
+        app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();
 app.MapResourceEndpoints();

@@ -75,6 +75,31 @@ public class User : IdentityUser<System.Guid>
         };
     }
 
+    /// <summary>
+    /// Factory for stub User rows created on first AD login via the integration gateway.
+    /// Profile fields default to empty; operator/admin should prompt for completion.
+    /// </summary>
+    public static User CreateStubFromAd(
+        string email,
+        string? firstName,
+        string? lastName,
+        string? displayName)
+    {
+        return new User
+        {
+            Id = System.Guid.NewGuid(),
+            Email = email,
+            UserName = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            NormalizedUserName = email.ToUpperInvariant(),
+            EmailConfirmed = true,
+            FirstName = firstName ?? displayName ?? string.Empty,
+            LastName = lastName ?? string.Empty,
+            JobTitle = string.Empty,
+            OrganizationName = string.Empty,
+        };
+    }
+
     public static User RegisterLocal(
         string firstName,
         string lastName,
