@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CceAdminRole, CcePortalRole } from '@frontend/contracts';
 
 export interface LoginRequest {
   emailAddress: string;
@@ -34,7 +35,7 @@ export interface AuthUser {
   emailAddress: string;
   firstName: string;
   lastName: string;
-  roles: string[];
+  roles: (CceAdminRole | CcePortalRole)[];
 }
 
 export interface TokenPair {

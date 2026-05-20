@@ -1,52 +1,56 @@
 import {
-  Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, effect, inject,
+  Directive, EmbeddedViewRef, Input, OnChanges,
+  TemplateRef, ViewContainerRef, effect, inject,
 } from '@angular/core';
-import { CcePermission } from '@frontend/contracts';
+import { CcePortalRole } from '@frontend/contracts';
 import { AuthService } from './auth.service';
 
 /**
  * Renders the embedded template only when the signed-in user has the
- * specified permission. Reacts to sign-in / sign-out automatically.
+ * specified portal role. Reacts to sign-in / sign-out automatically.
  *
  * Usage:
- *   <button *ccePermission="CcePermission.NewsUpdate">Publish</button>
+ *   <button *cceIfRole="CcePortalRole.Expert">Mark as answer</button>
+ *
+ * Multiple roles — show if user has ANY of them:
+ *   <div *cceIfRole="[CcePortalRole.Expert, CcePortalRole.User]">...</div>
  *
  * With else:
- *   <div *ccePermission="CcePermission.AuditRead; else noAccess">Audit log</div>
- *   <ng-template #noAccess>Access denied</ng-template>
+ *   <div *cceIfRole="CcePortalRole.Expert; else notExpert">Expert UI</div>
+ *   <ng-template #notExpert>Regular user</ng-template>
  */
 @Directive({
-  selector: '[ccePermission]',
+  selector: '[cceIfRole]',
   standalone: true,
 })
-export class PermissionDirective {
+export class IfRoleDirective implements OnChanges {
   private readonly auth = inject(AuthService);
   private readonly tpl = inject(TemplateRef<unknown>);
   private readonly vcr = inject(ViewContainerRef);
   private viewRef: EmbeddedViewRef<unknown> | null = null;
   private elseViewRef: EmbeddedViewRef<unknown> | null = null;
   private elseTpl: TemplateRef<unknown> | null = null;
-  private requiredPermission: CcePermission | null = null;
 
-  constructor() {
-    effect(() => {
-      this.auth.currentUser();
-      this.update();
-    });
-  }
-
-  @Input({ required: true }) set ccePermission(value: CcePermission) {
-    this.requiredPermission = value;
-    this.update();
-  }
-
-  @Input() set ccePermissionElse(tpl: TemplateRef<unknown> | null) {
+  @Input() cceIfRole: CcePortalRole | CcePortalRole[] = [];
+  @Input() set cceIfRoleElse(tpl: TemplateRef<unknown> | null) {
     this.elseTpl = tpl;
     this.update();
   }
 
+  constructor() {
+    effect(() => {
+      void this.auth.roles(); // track signal
+      this.update();
+    });
+  }
+
+  ngOnChanges(): void {
+    this.update();
+  }
+
   private update(): void {
-    const allowed = this.requiredPermission !== null && this.auth.hasPermission(this.requiredPermission);
+    const roles = Array.isArray(this.cceIfRole) ? this.cceIfRole : [this.cceIfRole];
+    const allowed = roles.some((r) => this.auth.hasRole(r));
 
     if (allowed) {
       if (!this.viewRef) {

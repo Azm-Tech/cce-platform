@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthApiService, AuthUser, TokenPair } from './auth-api.service';
 import { ToastService } from '@frontend/ui-kit';
+import { CcePortalRole } from '@frontend/contracts';
 
 export type CurrentUser = AuthUser;
 
@@ -20,6 +21,15 @@ export class AuthService {
   readonly currentUser = this._currentUser.asReadonly();
   readonly accessToken = this._accessToken.asReadonly();
   readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  readonly roles = computed(() => this._currentUser()?.roles ?? []);
+
+  hasRole(role: CcePortalRole): boolean {
+    return this._currentUser()?.roles.includes(role) ?? false;
+  }
+
+  hasAnyRole(...roles: CcePortalRole[]): boolean {
+    return roles.some((r) => this.hasRole(r));
+  }
 
   setSession(tokens: TokenPair): void {
     this._accessToken.set(tokens.accessToken);

@@ -3,42 +3,53 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthApiService, AuthUser, TokenPair } from './auth-api.service';
 import { ToastService } from '@frontend/ui-kit';
+import { CceAdminRole, CcePermission, CcePortalRole } from '@frontend/contracts';
 
 export interface CurrentUser extends AuthUser {
-  permissions: readonly string[];
+  permissions: readonly CcePermission[];
 }
 
-const PERMISSIONS_BY_ROLE: Record<string, readonly string[]> = {
-  'cce-admin': [
-    'User.Read', 'Role.Assign',
-    'Community.Expert.ApproveRequest', 'Community.Post.Moderate',
-    'Resource.Center.Upload', 'Resource.Country.Approve',
-    'News.Update', 'Event.Manage',
-    'Page.Edit',
-    'Country.Profile.Update',
-    'Notification.TemplateManage',
-    'Report.UserRegistrations',
-    'Audit.Read',
-    'Translation.Manage', 'Settings.Manage',
+const ALL_PERMISSIONS: readonly CcePermission[] = [
+  CcePermission.UserRead,
+  CcePermission.RoleAssign,
+  CcePermission.CommunityExpertApprove,
+  CcePermission.CommunityPostModerate,
+  CcePermission.ResourceCenterUpload,
+  CcePermission.ResourceCountryApprove,
+  CcePermission.NewsUpdate,
+  CcePermission.EventManage,
+  CcePermission.PageEdit,
+  CcePermission.CountryProfileUpdate,
+  CcePermission.NotificationTemplateManage,
+  CcePermission.ReportUserRegistrations,
+  CcePermission.AuditRead,
+  CcePermission.TranslationManage,
+  CcePermission.SettingsManage,
+];
+
+const PERMISSIONS_BY_ROLE: Record<CceAdminRole, readonly CcePermission[]> = {
+  [CceAdminRole.SuperAdmin]: ALL_PERMISSIONS,
+  [CceAdminRole.Admin]:      ALL_PERMISSIONS,
+  [CceAdminRole.ContentManager]: [
+    CcePermission.ResourceCenterUpload,
+    CcePermission.NewsUpdate,
+    CcePermission.EventManage,
+    CcePermission.PageEdit,
+    CcePermission.CountryProfileUpdate,
+    CcePermission.TranslationManage,
   ],
-  'cce-editor': [
-    'Resource.Center.Upload', 'News.Update', 'Event.Manage',
-    'Page.Edit', 'User.Read', 'Translation.Manage',
+  [CceAdminRole.StateRepresentative]: [
+    CcePermission.ResourceCountryApprove,
+    CcePermission.CountryProfileUpdate,
   ],
-  'cce-reviewer': [
-    'Resource.Country.Approve', 'Community.Post.Moderate',
-    'Community.Expert.ApproveRequest', 'User.Read',
-  ],
-  'cce-expert': ['User.Read'],
-  'cce-user': [],
 };
 
 const REFRESH_TOKEN_KEY = 'cce_admin_rt';
 
-function derivePermissions(roles: string[]): readonly string[] {
-  const perms = new Set<string>();
+function derivePermissions(roles: (CceAdminRole | CcePortalRole)[]): readonly CcePermission[] {
+  const perms = new Set<CcePermission>();
   for (const role of roles) {
-    for (const perm of PERMISSIONS_BY_ROLE[role] ?? []) {
+    for (const perm of PERMISSIONS_BY_ROLE[role as CceAdminRole] ?? []) {
       perms.add(perm);
     }
   }
@@ -57,6 +68,15 @@ export class AuthService {
   readonly currentUser = this._currentUser.asReadonly();
   readonly accessToken = this._accessToken.asReadonly();
   readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  readonly roles = computed(() => this._currentUser()?.roles ?? []);
+
+  hasRole(role: CceAdminRole): boolean {
+    return this._currentUser()?.roles.includes(role) ?? false;
+  }
+
+  hasAnyRole(...roles: CceAdminRole[]): boolean {
+    return roles.some((r) => this.hasRole(r));
+  }
 
   setSession(tokens: TokenPair): void {
     this._accessToken.set(tokens.accessToken);
@@ -67,8 +87,12 @@ export class AuthService {
     });
   }
 
-  hasPermission(permission: string): boolean {
+  hasPermission(permission: CcePermission): boolean {
     return this._currentUser()?.permissions.includes(permission) ?? false;
+  }
+
+  hasAnyPermission(...permissions: CcePermission[]): boolean {
+    return permissions.some((p) => this.hasPermission(p));
   }
 
   async refresh(): Promise<void> {
