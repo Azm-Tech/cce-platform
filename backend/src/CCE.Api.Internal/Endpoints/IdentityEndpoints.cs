@@ -37,7 +37,7 @@ public static class IdentityEndpoints
                 Search: search,
                 Role: role);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.User_Read)
         .WithName("ListUsers");

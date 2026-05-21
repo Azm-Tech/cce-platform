@@ -159,6 +159,7 @@ public static class SystemCode
     public const string CON042 = "CON042"; // Notification deleted
 
     // ─── General Success ───
+    public const string CON100 = "CON100"; // Items listed successfully
     public const string CON900 = "CON900"; // Operation completed successfully
     public const string CON901 = "CON901"; // Created successfully (generic)
     public const string CON902 = "CON902"; // Updated successfully (generic)

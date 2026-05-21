@@ -11,14 +11,16 @@ public class ListUsersQueryHandlerTests
     public async Task Returns_empty_paged_result_when_no_users_exist()
     {
         var db = BuildDb(users: System.Array.Empty<User>(), roles: System.Array.Empty<Role>(), userRoles: System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new ListUsersQueryHandler(db);
+        var sut = new ListUsersQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListUsersQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(20);
+        result.Success.Should().BeTrue();
+        result.Code.Should().Be("CON100");
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
+        result.Data.Page.Should().Be(1);
+        result.Data.PageSize.Should().Be(20);
     }
 
     [Fact]
@@ -47,18 +49,19 @@ public class ListUsersQueryHandlerTests
         };
 
         var db = BuildDb(users, roles, userRoles);
-        var sut = new ListUsersQueryHandler(db);
+        var sut = new ListUsersQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListUsersQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Total.Should().Be(2);
-        result.Items.Should().HaveCount(2);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(2);
+        result.Data.Items.Should().HaveCount(2);
 
-        var alice = result.Items.Single(u => u.UserName == "alice");
+        var alice = result.Data.Items.Single(u => u.UserName == "alice");
         alice.Roles.Should().BeEquivalentTo(new[] { "SuperAdmin", "ContentManager" });
         alice.IsActive.Should().BeTrue();
 
-        var bob = result.Items.Single(u => u.UserName == "bob");
+        var bob = result.Data.Items.Single(u => u.UserName == "bob");
         bob.Roles.Should().BeEquivalentTo(new[] { "ContentManager" });
     }
 
@@ -71,12 +74,12 @@ public class ListUsersQueryHandlerTests
             BuildUser(System.Guid.NewGuid(), "bob@example.com", "bob"),
         };
         var db = BuildDb(users, System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new ListUsersQueryHandler(db);
+        var sut = new ListUsersQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListUsersQuery(Search: "cce.local"), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().UserName.Should().Be("alice");
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().UserName.Should().Be("alice");
     }
 
     [Fact]
@@ -104,12 +107,12 @@ public class ListUsersQueryHandlerTests
         };
 
         var db = BuildDb(users, roles, userRoles);
-        var sut = new ListUsersQueryHandler(db);
+        var sut = new ListUsersQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListUsersQuery(Role: "SuperAdmin"), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().UserName.Should().Be("alice");
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().UserName.Should().Be("alice");
     }
 
     private static ICceDbContext BuildDb(

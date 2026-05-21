@@ -117,6 +117,7 @@ public static class SystemCodeMap
         ["NOTIFICATION_DELETED"] = SystemCode.CON042,
 
         // ─── General Success ───
+        ["ITEMS_LISTED"] = SystemCode.CON100,
         ["SUCCESS_OPERATION"] = SystemCode.CON900,
         ["SUCCESS_CREATED"] = SystemCode.CON901,
         ["SUCCESS_UPDATED"] = SystemCode.CON902,

@@ -278,6 +278,10 @@ PROFILE_UPDATED:
   ar: "تم تحديث بيانات الملف الشخصي بنجاح. يمكنك الآن الاطلاع على المعلومات المحدثة في ملفك الشخصي."
   en: "Profile data updated successfully. You can now view the updated information in your profile."
 
+ITEMS_LISTED:
+  ar: "تم جلب العناصر بنجاح"
+  en: "Items listed successfully"
+
 SUCCESS_OPERATION:
   ar: "تمت العملية بنجاح"
   en: "Operation completed successfully"

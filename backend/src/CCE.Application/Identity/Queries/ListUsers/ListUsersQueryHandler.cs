@@ -1,18 +1,25 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Identity.Queries.ListUsers;
 
-public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, PagedResult<UserListItemDto>>
+public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Response<PagedResult<UserListItemDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListUsersQueryHandler(ICceDbContext db) => _db = db;
+    public ListUsersQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<PagedResult<UserListItemDto>> Handle(
+    public async Task<Response<PagedResult<UserListItemDto>>> Handle(
      ListUsersQuery request, CancellationToken cancellationToken)
     {
         var query = _db.Users.Where(u => !u.IsDeleted);
@@ -49,8 +56,10 @@ public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Page
                 .ToList(),
             u.Status == Domain.Identity.UserStatus.Active));
 
-        return await projected
+        var paged = await projected
             .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
+
+        return _msg.Ok(paged, "ITEMS_LISTED");
     }
 }

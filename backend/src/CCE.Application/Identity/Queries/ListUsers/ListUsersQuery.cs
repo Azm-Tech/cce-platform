@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using MediatR;
@@ -14,4 +15,4 @@ public sealed record ListUsersQuery(
     int Page = 1,
     int PageSize = 20,
     string? Search = null,
-    string? Role = null) : IRequest<PagedResult<UserListItemDto>>;
+    string? Role = null) : IRequest<Response<PagedResult<UserListItemDto>>>;
