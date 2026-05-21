@@ -14,24 +14,6 @@
       <a mat-flat-button color="primary" routerLink="/login">
         {{ 'account.register.signInLink' | transloco }}
       </a>
-      <button
-        mat-stroked-button
-        class="cce-register__resend"
-        [disabled]="resendState() === 'sending' || resendState() === 'sent'"
-        (click)="resend()"
-      >
-        {{ resendButtonKey() | transloco }}
-      </button>
-      @if (resendState() === 'sent') {
-        <p class="cce-register__resend-feedback">
-          {{ 'account.register.resendSuccess' | transloco }}
-        </p>
-      }
-      @if (resendState() === 'error') {
-        <p class="cce-register__resend-feedback cce-register__resend-feedback--error">
-          {{ 'account.register.resendError' | transloco }}
-        </p>
-      }
     } @else {
       <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
 
@@ -39,33 +21,51 @@
         <div class="cce-register__row-2">
           <mat-form-field>
             <mat-label>{{ 'account.register.firstNameLabel' | transloco }}</mat-label>
-            <input matInput formControlName="firstName" autocomplete="given-name" />
+            <input matInput formControlName="firstName" autocomplete="given-name" (input)="clearServerError('firstName')" />
+            @if (form.get('firstName')?.hasError('serverError')) {
+              <mat-error>{{ form.get('firstName')?.getError('serverError') }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field>
             <mat-label>{{ 'account.register.lastNameLabel' | transloco }}</mat-label>
-            <input matInput formControlName="lastName" autocomplete="family-name" />
+            <input matInput formControlName="lastName" autocomplete="family-name" (input)="clearServerError('lastName')" />
+            @if (form.get('lastName')?.hasError('serverError')) {
+              <mat-error>{{ form.get('lastName')?.getError('serverError') }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
         <mat-form-field>
           <mat-label>{{ 'account.register.emailLabel' | transloco }}</mat-label>
-          <input matInput type="email" formControlName="emailAddress" autocomplete="email" />
+          <input matInput type="email" formControlName="emailAddress" autocomplete="email" (input)="clearServerError('emailAddress')" />
+          @if (form.get('emailAddress')?.hasError('serverError')) {
+            <mat-error>{{ form.get('emailAddress')?.getError('serverError') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>{{ 'account.register.jobTitleLabel' | transloco }}</mat-label>
-          <input matInput formControlName="jobTitle" autocomplete="organization-title" />
+          <input matInput formControlName="jobTitle" autocomplete="organization-title" (input)="clearServerError('jobTitle')" />
+          @if (form.get('jobTitle')?.hasError('serverError')) {
+            <mat-error>{{ form.get('jobTitle')?.getError('serverError') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>{{ 'account.register.organizationLabel' | transloco }}</mat-label>
-          <input matInput formControlName="organizationName" autocomplete="organization" />
+          <input matInput formControlName="organizationName" autocomplete="organization" (input)="clearServerError('organizationName')" />
+          @if (form.get('organizationName')?.hasError('serverError')) {
+            <mat-error>{{ form.get('organizationName')?.getError('serverError') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
-          <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
+          <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" (input)="clearServerError('phoneNumber')" />
+          @if (form.get('phoneNumber')?.hasError('serverError')) {
+            <mat-error>{{ form.get('phoneNumber')?.getError('serverError') }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field>

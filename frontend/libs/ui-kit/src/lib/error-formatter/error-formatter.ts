@@ -1,5 +1,24 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+/**
+ * Maps the CCE API array-based 400 body to a per-field message map.
+ * Handles both PascalCase and camelCase field names from the server.
+ * Keeps the first error message per field.
+ *
+ * Expected shape: { errors: [{ field, code, message }] }
+ */
+export function toApiFieldErrors(err: HttpErrorResponse): Record<string, string> {
+  if (err.status !== 400) return {};
+  const raw = (err.error as { errors?: { field: string; message: string }[] })?.errors;
+  if (!Array.isArray(raw)) return {};
+  const result: Record<string, string> = {};
+  for (const e of raw) {
+    const key = e.field.charAt(0).toLowerCase() + e.field.slice(1);
+    result[key] ??= e.message;
+  }
+  return result;
+}
+
 /** Map FluentValidation 400 ProblemDetails to a per-field error map. */
 export function toFieldErrors(err: HttpErrorResponse): Record<string, string[]> {
   if (err.status !== 400) return {};

@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { toApiFieldErrors } from '@frontend/ui-kit';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -28,7 +29,6 @@ type SubmitState =
   | { kind: 'success' }
   | { kind: 'error'; messageKey: string };
 
-type ResendState = 'idle' | 'sending' | 'sent' | 'error';
 
 @Component({
   selector: 'cce-register',
@@ -52,7 +52,6 @@ export class RegisterPage {
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
-  readonly resendState = signal<ResendState>('idle');
   readonly showPassword = signal(false);
 
   readonly form = new FormGroup(
@@ -127,7 +126,15 @@ export class RegisterPage {
           if (err.status === 409) {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorConflict' });
           } else if (err.status === 400) {
-            this.state.set({ kind: 'error', messageKey: 'account.register.errorValidation' });
+            const fieldErrors = toApiFieldErrors(err);
+            if (Object.keys(fieldErrors).length > 0) {
+              for (const [field, message] of Object.entries(fieldErrors)) {
+                this.form.get(field)?.setErrors({ serverError: message });
+              }
+              this.state.set({ kind: 'idle' });
+            } else {
+              this.state.set({ kind: 'error', messageKey: 'account.register.errorValidation' });
+            }
           } else {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorGeneric' });
           }
@@ -135,22 +142,14 @@ export class RegisterPage {
       });
   }
 
-  resend(): void {
-    if (this.resendState() === 'sending') return;
-    this.resendState.set('sending');
-    this.authApi.resendVerification(this.form.value.emailAddress!).subscribe({
-      next: () => this.resendState.set('sent'),
-      error: () => this.resendState.set('error'),
-    });
+  clearServerError(field: string): void {
+    const ctrl = this.form.get(field);
+    if (!ctrl?.hasError('serverError')) return;
+    const { serverError: _, ...remaining } = ctrl.errors!;
+    ctrl.setErrors(Object.keys(remaining).length ? remaining : null);
   }
 
-  resendButtonKey(): string {
-    return this.resendState() === 'sending'
-      ? 'account.register.resendingButton'
-      : 'account.register.resendButton';
-  }
-
-  errorMessageKey(): string {
+errorMessageKey(): string {
     const s = this.state();
     return s.kind === 'error' ? s.messageKey : '';
   }

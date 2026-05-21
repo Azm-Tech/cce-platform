@@ -1,9 +1,53 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { toFieldErrors, toFeatureError } from './error-formatter';
+import { toApiFieldErrors, toFieldErrors, toFeatureError } from './error-formatter';
 
 function err(status: number, body: unknown = null): HttpErrorResponse {
   return new HttpErrorResponse({ status, error: body });
 }
+
+describe('toApiFieldErrors', () => {
+  it('returns empty for non-400', () => {
+    expect(toApiFieldErrors(err(500))).toEqual({});
+  });
+
+  it('returns empty when errors is absent', () => {
+    expect(toApiFieldErrors(err(400, { code: 'VAL001' }))).toEqual({});
+  });
+
+  it('returns empty when errors is not an array', () => {
+    expect(toApiFieldErrors(err(400, { errors: {} }))).toEqual({});
+  });
+
+  it('maps camelCase field names to their first message', () => {
+    const body = {
+      errors: [
+        { field: 'firstName', code: 'ERR900', message: 'First name is invalid.' },
+        { field: 'lastName',  code: 'ERR900', message: 'Last name is invalid.' },
+      ],
+    };
+    expect(toApiFieldErrors(err(400, body))).toEqual({
+      firstName: 'First name is invalid.',
+      lastName:  'Last name is invalid.',
+    });
+  });
+
+  it('normalises PascalCase field names to camelCase', () => {
+    const body = {
+      errors: [{ field: 'EmailAddress', code: 'ERR900', message: 'Invalid email.' }],
+    };
+    expect(toApiFieldErrors(err(400, body))).toEqual({ emailAddress: 'Invalid email.' });
+  });
+
+  it('keeps only the first error per field', () => {
+    const body = {
+      errors: [
+        { field: 'firstName', code: 'ERR900', message: 'First error.' },
+        { field: 'firstName', code: 'ERR901', message: 'Second error.' },
+      ],
+    };
+    expect(toApiFieldErrors(err(400, body))).toEqual({ firstName: 'First error.' });
+  });
+});
 
 describe('toFieldErrors', () => {
   it('returns empty for non-400', () => {

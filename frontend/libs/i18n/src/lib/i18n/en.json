@@ -959,7 +959,7 @@
       "passwordMismatch": "Passwords do not match.",
       "submitButton": "Create account",
       "submittingButton": "Creating…",
-      "successBody": "Your account has been created. Please check your email to verify your account before signing in.",
+      "successBody": "Your account has been created. You can now sign in.",
       "resendButton": "Resend verification email",
       "resendingButton": "Sending…",
       "resendSuccess": "Verification email sent. Please check your inbox.",
