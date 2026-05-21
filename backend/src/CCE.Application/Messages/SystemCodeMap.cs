@@ -71,6 +71,14 @@ public static class SystemCodeMap
         ["SCENARIO_NOT_FOUND"] = SystemCode.ERR100,
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
 
+        // ─── Platform Settings Errors ───
+        ["HOMEPAGE_SETTINGS_NOT_FOUND"] = SystemCode.ERR053,
+        ["ABOUT_SETTINGS_NOT_FOUND"] = SystemCode.ERR054,
+        ["POLICIES_SETTINGS_NOT_FOUND"] = SystemCode.ERR055,
+        ["GLOSSARY_ENTRY_NOT_FOUND"] = SystemCode.ERR056,
+        ["KNOWLEDGE_PARTNER_NOT_FOUND"] = SystemCode.ERR057,
+        ["POLICY_SECTION_NOT_FOUND"] = SystemCode.ERR058,
+
         // ─── General Errors ───
         ["INTERNAL_ERROR"] = SystemCode.ERR900,
         ["UNAUTHORIZED_ACCESS"] = SystemCode.ERR901,
@@ -99,6 +107,10 @@ public static class SystemCodeMap
         ["STATE_REP_ASSIGNMENT_REVOKED"] = SystemCode.CON053,
         ["ROLES_ASSIGNED"] = SystemCode.CON054,
         ["USER_STATUS_CHANGED"] = SystemCode.CON055,
+
+        // ─── Platform Settings Success ───
+        ["SETTINGS_UPDATED"] = SystemCode.CON016,
+        ["CONTENT_UPDATE_FAILED"] = SystemCode.ERR025,
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,

@@ -91,6 +91,14 @@ public static class SystemCode
     public const string ERR100 = "ERR100"; // Scenario not found
     public const string ERR101 = "ERR101"; // Technology not found
 
+    // ─── Platform Settings Errors ───
+    public const string ERR053 = "ERR053"; // Homepage settings not found
+    public const string ERR054 = "ERR054"; // About settings not found
+    public const string ERR055 = "ERR055"; // Policies settings not found
+    public const string ERR056 = "ERR056"; // Glossary entry not found
+    public const string ERR057 = "ERR057"; // Knowledge partner not found
+    public const string ERR058 = "ERR058"; // Policy section not found
+
     // ─── General Errors ───
     public const string ERR900 = "ERR900"; // Internal server error
     public const string ERR901 = "ERR901"; // Unauthorized access

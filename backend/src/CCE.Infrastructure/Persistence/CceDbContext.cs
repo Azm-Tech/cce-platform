@@ -10,6 +10,7 @@ using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Notifications;
+using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -81,6 +82,15 @@ public sealed class CceDbContext
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
 
+    // ─── Platform Settings ───
+    public DbSet<HomepageSettings> HomepageSettings => Set<HomepageSettings>();
+    public DbSet<HomepageCountry> HomepageCountries => Set<HomepageCountry>();
+    public DbSet<AboutSettings> AboutSettings => Set<AboutSettings>();
+    public DbSet<GlossaryEntry> GlossaryEntries => Set<GlossaryEntry>();
+    public DbSet<PoliciesSettings> PoliciesSettings => Set<PoliciesSettings>();
+    public DbSet<KnowledgePartner> KnowledgePartners => Set<KnowledgePartner>();
+    public DbSet<PolicySection> PolicySections => Set<PolicySection>();
+
     // ─── ICceDbContext (read-only queryables — no tracking) ───
     IQueryable<User> ICceDbContext.Users => Users.AsNoTracking();
     IQueryable<Role> ICceDbContext.Roles => Roles.AsNoTracking();
@@ -118,6 +128,18 @@ public sealed class CceDbContext
     IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios.AsNoTracking();
     IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies.AsNoTracking();
     IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults.AsNoTracking();
+    IQueryable<HomepageSettings> ICceDbContext.HomepageSettings => HomepageSettings.AsNoTracking();
+    IQueryable<HomepageCountry> ICceDbContext.HomepageCountries => HomepageCountries.AsNoTracking();
+    IQueryable<AboutSettings> ICceDbContext.AboutSettings => AboutSettings.AsNoTracking();
+    IQueryable<GlossaryEntry> ICceDbContext.GlossaryEntries => GlossaryEntries.AsNoTracking();
+    IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
+    IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
+    IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+
+    void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);
+    void ICceDbContext.Delete<T>(T entity) where T : class => Set<T>().Remove(entity);
+    void ICceDbContext.DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class
+        => Set<T>().RemoveRange(entities);
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

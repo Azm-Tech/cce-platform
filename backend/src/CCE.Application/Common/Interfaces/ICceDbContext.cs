@@ -6,6 +6,7 @@ using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Notifications;
+using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
 using Microsoft.AspNetCore.Identity;
 using DomainCountry = CCE.Domain.Country;
@@ -58,6 +59,18 @@ public interface ICceDbContext
     IQueryable<CityScenario> CityScenarios { get; }
     IQueryable<CityTechnology> CityTechnologies { get; }
     IQueryable<CityScenarioResult> CityScenarioResults { get; }
+    IQueryable<HomepageSettings> HomepageSettings { get; }
+    IQueryable<HomepageCountry> HomepageCountries { get; }
+    IQueryable<AboutSettings> AboutSettings { get; }
+    IQueryable<GlossaryEntry> GlossaryEntries { get; }
+    IQueryable<PoliciesSettings> PoliciesSettings { get; }
+    IQueryable<KnowledgePartner> KnowledgePartners { get; }
+    IQueryable<PolicySection> PolicySections { get; }
+
+    // Write operations
+    void Add<T>(T entity) where T : class;
+    void Delete<T>(T entity) where T : class;
+    void DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

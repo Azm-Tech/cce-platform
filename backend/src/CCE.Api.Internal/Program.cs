@@ -78,6 +78,9 @@ app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
+app.MapHomepageSettingsEndpoints();
+app.MapAboutSettingsEndpoints();
+app.MapPoliciesSettingsEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

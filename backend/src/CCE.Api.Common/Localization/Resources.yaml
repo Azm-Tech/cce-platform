@@ -347,3 +347,37 @@ SCENARIO_NOT_FOUND:
 TECHNOLOGY_NOT_FOUND:
   ar: "التقنية غير موجودة"
   en: "Technology not found"
+
+# ─── Platform Settings ───
+
+HOMEPAGE_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات الصفحة الرئيسية"
+  en: "Homepage settings not found"
+
+ABOUT_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات عن المنصة"
+  en: "About settings not found"
+
+POLICIES_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات السياسات"
+  en: "Policies settings not found"
+
+GLOSSARY_ENTRY_NOT_FOUND:
+  ar: "لم يتم العثور على المصطلح"
+  en: "Glossary entry not found"
+
+KNOWLEDGE_PARTNER_NOT_FOUND:
+  ar: "لم يتم العثور على شريك المعرفة"
+  en: "Knowledge partner not found"
+
+POLICY_SECTION_NOT_FOUND:
+  ar: "لم يتم العثور على القسم"
+  en: "Policy section not found"
+
+SETTINGS_UPDATED:
+  ar: "تمت عملية التحديث بنجاح"
+  en: "Content update success"
+
+CONTENT_UPDATE_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء تحديث المحتوى"
+  en: "Sorry, a problem occurred while updating the content"

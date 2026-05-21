@@ -95,6 +95,9 @@ groups:
     Edit:
       description: Edit static pages (about, terms, privacy)
       roles: [cce-super-admin, cce-admin, cce-content-manager]
+    PolicyEdit:
+      description: Edit policies & terms settings (restricted)
+      roles: [cce-super-admin]
   Country:
     Profile:
       Update:

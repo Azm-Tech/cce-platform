@@ -79,6 +79,16 @@ public sealed class MessageFactory
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
 
+    // ─── Convenience shortcuts (Platform Settings domain) ───
+
+    public Response<T> HomepageSettingsNotFound<T>()  => NotFound<T>("HOMEPAGE_SETTINGS_NOT_FOUND");
+    public Response<T> AboutSettingsNotFound<T>()     => NotFound<T>("ABOUT_SETTINGS_NOT_FOUND");
+    public Response<T> PoliciesSettingsNotFound<T>()  => NotFound<T>("POLICIES_SETTINGS_NOT_FOUND");
+    public Response<T> GlossaryEntryNotFound<T>()     => NotFound<T>("GLOSSARY_ENTRY_NOT_FOUND");
+    public Response<T> KnowledgePartnerNotFound<T>()  => NotFound<T>("KNOWLEDGE_PARTNER_NOT_FOUND");
+    public Response<T> PolicySectionNotFound<T>()     => NotFound<T>("POLICY_SECTION_NOT_FOUND");
+    public Response<T> ContentUpdateFailed<T>()       => BusinessRule<T>("CONTENT_UPDATE_FAILED");
+
     // ─── Private ───
 
     private Response<T> Fail<T>(string domainKey, MessageType type)
