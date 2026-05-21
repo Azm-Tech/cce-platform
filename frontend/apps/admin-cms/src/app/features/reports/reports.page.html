@@ -31,6 +31,8 @@
             <mat-spinner diameter="20" />
           } @else {
             <mat-icon>download</mat-icon>
+          }
+          @if (busy() !== report.slug) {
             {{ 'reports.download.openButton' | transloco }}
           }
         </button>
