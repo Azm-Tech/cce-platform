@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AppShellComponent } from '@frontend/ui-kit';
-import { LocaleSwitcherComponent } from '@frontend/i18n';
+import { LocaleSwitcherComponent, LocaleService } from '@frontend/i18n';
 import { AuthToolbarComponent } from './auth-toolbar.component';
 import { SideNavComponent } from './side-nav.component';
 
@@ -26,5 +27,7 @@ import { SideNavComponent } from './side-nav.component';
 })
 export class ShellComponent {
   private readonly translate = inject(TranslocoService);
-  readonly title = this.translate.translate('common.appName') || 'CCE Admin';
+  private readonly localeService = inject(LocaleService);
+  readonly title = toSignal(this.translate.selectTranslate('common.appName'), { initialValue: 'CCE' });
+  readonly dir = computed(() => this.localeService.locale() === 'ar' ? 'rtl' : 'ltr');
 }

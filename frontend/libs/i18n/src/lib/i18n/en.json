@@ -152,6 +152,8 @@
   },
   "nav": {
     "sidebarLabel": "Admin navigation",
+    "adminConsole": "Admin Console",
+    "footerTagline": "Carbon Circular Economy",
     "group": {
       "people": "People & Access",
       "publishing": "Publishing",
@@ -1007,6 +1009,7 @@
       "backToLogin": "Back to sign in"
     },
     "logout": {
+      "button": "Sign out",
       "successMessage": "You've been signed out successfully.",
       "errorMessage": "Sign out failed. Please try again."
     },
