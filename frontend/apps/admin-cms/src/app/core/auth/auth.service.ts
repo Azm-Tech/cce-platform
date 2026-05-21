@@ -37,8 +37,13 @@ const ALL_PERMISSIONS: readonly CcePermission[] = [
   CcePermission.SettingsManage,
 ];
 
+const SUPER_ADMIN_PERMISSIONS: readonly CcePermission[] = [
+  ...ALL_PERMISSIONS,
+  CcePermission.UserDelete,
+];
+
 const PERMISSIONS_BY_ROLE: Record<CceAdminRole, readonly CcePermission[]> = {
-  [CceAdminRole.SuperAdmin]: ALL_PERMISSIONS,
+  [CceAdminRole.SuperAdmin]: SUPER_ADMIN_PERMISSIONS,
   [CceAdminRole.Admin]:      ALL_PERMISSIONS,
   [CceAdminRole.ContentManager]: [
     CcePermission.ResourceCenterUpload,
@@ -104,11 +109,11 @@ export class AuthService {
     }
     this._accessToken.set(tokens.accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-    // Fall back to ALL_PERMISSIONS when the API returns an empty roles array.
+    // Fall back to SUPER_ADMIN_PERMISSIONS when the API returns an empty roles array.
     // Remove once the backend includes roles in the login/refresh response.
     const permissions = tokens.user.roles.length > 0
       ? derivePermissions(tokens.user.roles)
-      : ALL_PERMISSIONS;
+      : SUPER_ADMIN_PERMISSIONS;
     this._currentUser.set({ ...tokens.user, permissions });
     const delay = new Date(tokens.accessTokenExpiresAtUtc).getTime() - Date.now() - 60_000;
     if (delay > 0) {

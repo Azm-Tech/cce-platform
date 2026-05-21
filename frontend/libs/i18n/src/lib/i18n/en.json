@@ -283,13 +283,22 @@
     },
     "detail": {
       "back": "Back to users",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "knowledgeLevel": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
       "field": {
-        "locale": "Locale preference",
+        "locale": "Language preference",
         "knowledgeLevel": "Knowledge level",
         "interests": "Interests",
         "country": "Country",
         "roles": "Roles",
-        "isActive": "Active"
+        "isActive": "Status"
       }
     }
   },
@@ -1044,6 +1053,7 @@
       "signInLink": "Sign in",
       "backToLogin": "Back to sign in"
     },
+    "profile": "Profile",
     "logout": {
       "button": "Sign out",
       "successMessage": "You've been signed out successfully.",

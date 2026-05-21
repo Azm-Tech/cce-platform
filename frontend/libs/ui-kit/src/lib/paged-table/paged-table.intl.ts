@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import { TranslocoService } from '@jsverse/transloco';
-import { Subject, takeUntil } from 'rxjs';
+import { TranslocoEvents, TranslocoService } from '@jsverse/transloco';
+import { Subject, filter, takeUntil } from 'rxjs';
 
 @Injectable()
 export class TranslocoPaginatorIntl extends MatPaginatorIntl implements OnDestroy {
@@ -10,10 +10,24 @@ export class TranslocoPaginatorIntl extends MatPaginatorIntl implements OnDestro
   constructor(private readonly translate: TranslocoService) {
     super();
     this.updateLabels();
+
+    // Re-translate when the active language changes.
     this.translate.langChanges$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.updateLabels();
       this.changes.next();
     });
+
+    // Re-translate once the translation file finishes loading — handles the
+    // case where the intl service is instantiated before translations are ready.
+    this.translate.events$
+      .pipe(
+        filter((e: TranslocoEvents) => e.type === 'translationLoadSuccess'),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.updateLabels();
+        this.changes.next();
+      });
   }
 
   private updateLabels(): void {

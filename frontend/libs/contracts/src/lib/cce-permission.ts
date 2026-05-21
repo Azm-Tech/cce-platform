@@ -5,6 +5,7 @@
 export const CcePermission = {
   // Identity
   UserRead:                   'User.Read',
+  UserDelete:                 'User.Delete',
   RoleAssign:                 'Role.Assign',
   // Community
   CommunityExpertApprove:     'Community.Expert.ApproveRequest',

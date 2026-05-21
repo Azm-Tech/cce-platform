@@ -283,13 +283,22 @@
     },
     "detail": {
       "back": "العودة إلى المستخدمين",
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "knowledgeLevel": {
+        "beginner": "مبتدئ",
+        "intermediate": "متوسط",
+        "advanced": "متقدم"
+      },
       "field": {
         "locale": "اللغة المفضلة",
         "knowledgeLevel": "مستوى المعرفة",
         "interests": "الاهتمامات",
         "country": "الدولة",
         "roles": "الأدوار",
-        "isActive": "نشط"
+        "isActive": "الحالة"
       }
     }
   },
@@ -1044,6 +1053,7 @@
       "signInLink": "تسجيل الدخول",
       "backToLogin": "العودة إلى تسجيل الدخول"
     },
+    "profile": "الملف الشخصي",
     "logout": {
       "button": "تسجيل الخروج",
       "successMessage": "تم تسجيل خروجك بنجاح.",
