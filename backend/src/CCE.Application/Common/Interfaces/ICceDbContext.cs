@@ -5,6 +5,7 @@ using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
+using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
@@ -66,6 +67,9 @@ public interface ICceDbContext
     IQueryable<PoliciesSettings> PoliciesSettings { get; }
     IQueryable<KnowledgePartner> KnowledgePartners { get; }
     IQueryable<PolicySection> PolicySections { get; }
+
+    // ─── Media ───
+    IQueryable<MediaFile> MediaFiles { get; }
 
     // Write operations
     void Add<T>(T entity) where T : class;

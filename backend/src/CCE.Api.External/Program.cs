@@ -64,6 +64,7 @@ app.UseAuthorization();
 app.UseCceUserSync();
 app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
+app.UseStaticFiles();
 
 app.UseCceOpenApi(apiTag: "external");
 
@@ -106,6 +107,7 @@ app.MapSurveysEndpoints();
 app.MapHomepageSettingsPublicEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
+app.MapMediaPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

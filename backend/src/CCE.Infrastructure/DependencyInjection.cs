@@ -5,6 +5,7 @@ using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
 using CCE.Application.Content.Public;
+using CCE.Application.Media;
 using CCE.Application.PlatformSettings;
 using CCE.Application.Country;
 using CCE.Application.Identity;
@@ -20,6 +21,7 @@ using CCE.Infrastructure.Assistant;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.InteractiveCity;
+using CCE.Infrastructure.Media;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
@@ -154,6 +156,14 @@ public static class DependencyInjection
 
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();
+        services.AddKeyedSingleton<IFileStorage>("media", (sp, _) =>
+        {
+            var opts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
+            return new LocalFileStorage(opts.MediaUploadsRoot);
+        });
+
+        // Media upload options (bound from "Media" section in appsettings)
+        services.Configure<MediaUploadOptions>(configuration.GetSection(MediaUploadOptions.SectionName));
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddSingleton<IHtmlSanitizer, HtmlSanitizerWrapper>();
         services.AddScoped<IAssetRepository, AssetRepository>();
@@ -176,6 +186,7 @@ public static class DependencyInjection
         services.AddScoped<IPoliciesSettingsRepository, PoliciesSettingsRepository>();
         services.AddScoped<IKnowledgePartnerRepository, KnowledgePartnerRepository>();
         services.AddScoped<IPolicySectionRepository, PolicySectionRepository>();
+        services.AddScoped<IMediaFileRepository, MediaFileRepository>();
         services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();

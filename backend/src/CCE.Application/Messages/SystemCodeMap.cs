@@ -67,6 +67,12 @@ public static class SystemCodeMap
         ["NODE_NOT_FOUND"] = SystemCode.ERR091,
         ["EDGE_NOT_FOUND"] = SystemCode.ERR092,
 
+        // ─── Media Errors ───
+        ["MEDIA_FILE_NOT_FOUND"] = SystemCode.ERR110,
+        ["INVALID_FILE_TYPE"] = SystemCode.ERR111,
+        ["FILE_TOO_LARGE"] = SystemCode.ERR112,
+        ["EMPTY_FILE"] = SystemCode.ERR113,
+
         // ─── InteractiveCity Errors ───
         ["SCENARIO_NOT_FOUND"] = SystemCode.ERR100,
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
@@ -116,6 +122,11 @@ public static class SystemCodeMap
         ["CONTENT_CREATED"] = SystemCode.CON020,
         ["CONTENT_UPDATED"] = SystemCode.CON021,
         ["CONTENT_DELETED"] = SystemCode.CON022,
+
+        // ─── Media Success ───
+        ["MEDIA_UPLOADED"] = SystemCode.CON020,
+        ["MEDIA_UPDATED"] = SystemCode.CON021,
+        ["MEDIA_DELETED"] = SystemCode.CON022,
         ["CONTENT_PUBLISHED"] = SystemCode.CON023,
         ["CONTENT_ARCHIVED"] = SystemCode.CON024,
         ["RESOURCE_CREATED"] = SystemCode.CON025,

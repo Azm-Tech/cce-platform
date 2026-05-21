@@ -374,6 +374,36 @@ POLICY_SECTION_NOT_FOUND:
   ar: "لم يتم العثور على القسم"
   en: "Policy section not found"
 
+# ─── Media ───
+
+MEDIA_FILE_NOT_FOUND:
+  ar: "لم يتم العثور على الملف"
+  en: "Media file not found"
+
+INVALID_FILE_TYPE:
+  ar: "نوع الملف غير مسموح به"
+  en: "File type is not allowed"
+
+FILE_TOO_LARGE:
+  ar: "حجم الملف يتجاوز الحد المسموح به"
+  en: "File size exceeds the maximum allowed"
+
+EMPTY_FILE:
+  ar: "الملف فارغ"
+  en: "File is empty"
+
+MEDIA_UPLOADED:
+  ar: "تم رفع الملف بنجاح"
+  en: "File uploaded successfully"
+
+MEDIA_UPDATED:
+  ar: "تم تحديث الملف بنجاح"
+  en: "File updated successfully"
+
+MEDIA_DELETED:
+  ar: "تم حذف الملف بنجاح"
+  en: "File deleted successfully"
+
 SETTINGS_UPDATED:
   ar: "تمت عملية التحديث بنجاح"
   en: "Content update success"

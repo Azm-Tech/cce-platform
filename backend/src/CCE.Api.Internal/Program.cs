@@ -56,6 +56,7 @@ app.UseCceUserSync();
 app.UseRateLimiter();
 app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
+app.UseStaticFiles();
 
 app.UseCceOpenApi(apiTag: "internal");
 
@@ -81,6 +82,7 @@ app.MapAuditEndpoints();
 app.MapHomepageSettingsEndpoints();
 app.MapAboutSettingsEndpoints();
 app.MapPoliciesSettingsEndpoints();
+app.MapMediaEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

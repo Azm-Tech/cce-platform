@@ -29,6 +29,9 @@ public sealed class CceInfrastructureOptions
     public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } =
         new[] { "application/pdf", "image/png", "image/jpeg", "image/svg+xml", "video/mp4", "application/zip" };
 
+    /// <summary>Root directory for media file storage. When under wwwroot/, files are also served as static content.</summary>
+    public string MediaUploadsRoot { get; init; } = "./wwwroot/media/";
+
     /// <summary>Meilisearch HTTP base URL. Default <c>http://localhost:7700</c>.</summary>
     public string MeilisearchUrl { get; init; } = "http://localhost:7700";
 

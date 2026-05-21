@@ -9,6 +9,7 @@ using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
+using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
@@ -82,6 +83,9 @@ public sealed class CceDbContext
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
 
+    // ─── Media ───
+    public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
+
     // ─── Platform Settings ───
     public DbSet<HomepageSettings> HomepageSettings => Set<HomepageSettings>();
     public DbSet<HomepageCountry> HomepageCountries => Set<HomepageCountry>();
@@ -135,6 +139,7 @@ public sealed class CceDbContext
     IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
     IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
     IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+    IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
 
     void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);
     void ICceDbContext.Delete<T>(T entity) where T : class => Set<T>().Remove(entity);

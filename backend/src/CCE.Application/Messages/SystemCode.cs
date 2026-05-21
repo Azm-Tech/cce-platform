@@ -87,6 +87,12 @@ public static class SystemCode
     public const string ERR091 = "ERR091"; // Node not found
     public const string ERR092 = "ERR092"; // Edge not found
 
+    // ─── Media Errors ───
+    public const string ERR110 = "ERR110"; // Media file not found
+    public const string ERR111 = "ERR111"; // Invalid file type
+    public const string ERR112 = "ERR112"; // File too large
+    public const string ERR113 = "ERR113"; // Empty file
+
     // ─── InteractiveCity Errors ───
     public const string ERR100 = "ERR100"; // Scenario not found
     public const string ERR101 = "ERR101"; // Technology not found

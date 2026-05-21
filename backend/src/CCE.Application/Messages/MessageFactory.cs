@@ -89,6 +89,13 @@ public sealed class MessageFactory
     public Response<T> PolicySectionNotFound<T>()     => NotFound<T>("POLICY_SECTION_NOT_FOUND");
     public Response<T> ContentUpdateFailed<T>()       => BusinessRule<T>("CONTENT_UPDATE_FAILED");
 
+    // ─── Convenience shortcuts (Media domain) ───
+
+    public Response<T> MediaFileNotFound<T>() => NotFound<T>("MEDIA_FILE_NOT_FOUND");
+    public Response<T> InvalidFileType<T>()   => BusinessRule<T>("INVALID_FILE_TYPE");
+    public Response<T> FileTooLarge<T>()      => BusinessRule<T>("FILE_TOO_LARGE");
+    public Response<T> EmptyFile<T>()         => BusinessRule<T>("EMPTY_FILE");
+
     // ─── Private ───
 
     private Response<T> Fail<T>(string domainKey, MessageType type)
