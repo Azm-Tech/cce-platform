@@ -28,6 +28,8 @@ type SubmitState =
   | { kind: 'success' }
   | { kind: 'error'; messageKey: string };
 
+type ResendState = 'idle' | 'sending' | 'sent' | 'error';
+
 @Component({
   selector: 'cce-register',
   standalone: true,
@@ -50,6 +52,7 @@ export class RegisterPage {
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
+  readonly resendState = signal<ResendState>('idle');
   readonly showPassword = signal(false);
 
   readonly form = new FormGroup(
@@ -130,6 +133,21 @@ export class RegisterPage {
           }
         },
       });
+  }
+
+  resend(): void {
+    if (this.resendState() === 'sending') return;
+    this.resendState.set('sending');
+    this.authApi.resendVerification(this.form.value.emailAddress!).subscribe({
+      next: () => this.resendState.set('sent'),
+      error: () => this.resendState.set('error'),
+    });
+  }
+
+  resendButtonKey(): string {
+    return this.resendState() === 'sending'
+      ? 'account.register.resendingButton'
+      : 'account.register.resendButton';
   }
 
   errorMessageKey(): string {

@@ -1,13 +1,18 @@
 import { Route } from '@angular/router';
 import { CcePermission } from '@frontend/contracts';
 import { authGuard } from './core/auth/auth.guard';
+import { guestGuard } from './core/auth/guest.guard';
 import { permissionGuard } from './core/auth/permission.guard';
 import { ShellComponent } from './core/layout/shell.component';
 import { LoginPage } from './features/account/login.page';
 import { ProfilePage } from './features/account/profile.page';
+import { ForgotPasswordPage } from './features/account/forgot-password.page';
+import { ResetPasswordPage } from './features/account/reset-password.page';
 
 export const appRoutes: Route[] = [
-  { path: 'login', component: LoginPage, title: 'CCE Admin — Sign in' },
+  { path: 'login', component: LoginPage, canActivate: [guestGuard], title: 'CCE Admin — Sign in' },
+  { path: 'forgot-password', component: ForgotPasswordPage, canActivate: [guestGuard], title: 'CCE Admin — Forgot password' },
+  { path: 'reset-password', component: ResetPasswordPage, canActivate: [guestGuard], title: 'CCE Admin — Reset password' },
   {
     path: '',
     component: ShellComponent,

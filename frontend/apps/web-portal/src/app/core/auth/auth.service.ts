@@ -17,6 +17,8 @@ export class AuthService {
 
   private readonly _currentUser = signal<CurrentUser | null>(null);
   private readonly _accessToken = signal<string | null>(null);
+  private _refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private _refreshInFlight: Promise<void> | null = null;
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly accessToken = this._accessToken.asReadonly();
@@ -32,13 +34,29 @@ export class AuthService {
   }
 
   setSession(tokens: TokenPair): void {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
     this._accessToken.set(tokens.accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     this._currentUser.set(tokens.user);
+    const delay = new Date(tokens.accessTokenExpiresAtUtc).getTime() - Date.now() - 60_000;
+    if (delay > 0) {
+      this._refreshTimer = setTimeout(() => void this.refresh(), delay);
+    }
   }
 
-  /** Bootstraps session from stored refresh token. Called from APP_INITIALIZER. */
+  /** Bootstraps session from stored refresh token. Called from APP_INITIALIZER and auth interceptor. */
   async refresh(): Promise<void> {
+    if (this._refreshInFlight) return this._refreshInFlight;
+    this._refreshInFlight = this._doRefresh().finally(() => {
+      this._refreshInFlight = null;
+    });
+    return this._refreshInFlight;
+  }
+
+  private async _doRefresh(): Promise<void> {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     if (!refreshToken) {
       this._currentUser.set(null);
@@ -62,6 +80,10 @@ export class AuthService {
   }
 
   async signOut(): Promise<void> {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     try {
       if (refreshToken) {

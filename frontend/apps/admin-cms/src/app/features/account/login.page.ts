@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthApiService } from '../../core/auth/auth-api.service';
@@ -21,11 +22,13 @@ type LoginState =
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     TranslocoModule,
+    LocaleSwitcherComponent,
   ],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
@@ -60,8 +63,9 @@ export class LoginPage {
         }),
       );
       this.auth.setSession(tokens);
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-      void this.router.navigateByUrl(returnUrl);
+      const raw = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      const safeUrl = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
+      void this.router.navigateByUrl(safeUrl);
     } catch (err) {
       const status = (err as HttpErrorResponse).status;
       if (status === 400 || status === 401) {

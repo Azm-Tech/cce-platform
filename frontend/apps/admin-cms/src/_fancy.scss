@@ -346,6 +346,25 @@ mat-card,
   color: #006c4f !important;
 }
 
+/* ── RTL fix: floating label overlaps with matPrefix icon ── */
+// Angular Material computes the prefix width and applies it as `padding-left`
+// on the label element (correct in LTR). In RTL, that padding-left physically
+// pushes the label text toward the prefix icon instead of away from it.
+[dir="rtl"] {
+  .mat-mdc-form-field .mdc-floating-label {
+    // Cancel the wrong LTR-direction offset Angular Material set in JS.
+    padding-left: 0 !important;
+  }
+
+  // Re-apply the offset on the correct side for single-icon prefix fields.
+  // 52px = icon (24px) + prefix container padding (~16px) + infix gap (~12px).
+  .mat-mdc-form-field:has(.mat-mdc-form-field-icon-prefix) {
+    .mdc-floating-label:not(.mdc-floating-label--float-above) {
+      padding-inline-start: 52px !important;
+    }
+  }
+}
+
 /* ── Mat-select arrow + value ───────────────────────────── */
 .mat-mdc-select-arrow {
   color: rgba(15, 139, 108, 0.65) !important;

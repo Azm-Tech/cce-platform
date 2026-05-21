@@ -69,6 +69,12 @@ export const appRoutes: Route[] = [
     title: 'CCE — Reset password',
   },
   {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/account/verify-email.page').then((m) => m.VerifyEmailPage),
+    title: 'CCE — Verify email',
+  },
+  {
     path: 'me',
     canActivate: [authGuard],
     loadChildren: () =>

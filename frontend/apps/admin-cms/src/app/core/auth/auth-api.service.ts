@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -48,6 +48,19 @@ export class AuthApiService {
 
   logout(refreshToken: string): Observable<void> {
     return this.http.post<void>('/api/auth/logout', { refreshToken });
+  }
+
+  forgotPassword(emailAddress: string, context?: HttpContext): Observable<void> {
+    return this.http.post<void>('/api/auth/forgot-password', { emailAddress }, { context });
+  }
+
+  resetPassword(req: {
+    emailAddress: string;
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Observable<void> {
+    return this.http.post<void>('/api/auth/reset-password', req);
   }
 
   refresh(refreshToken: string): Observable<TokenPair> {

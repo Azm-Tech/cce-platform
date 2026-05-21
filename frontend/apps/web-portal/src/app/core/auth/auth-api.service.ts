@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -61,8 +61,16 @@ export class AuthApiService {
     return this.http.post<void>('/api/auth/register', req);
   }
 
-  forgotPassword(emailAddress: string): Observable<void> {
-    return this.http.post<void>('/api/auth/forgot-password', { emailAddress });
+  verifyEmail(token: string): Observable<void> {
+    return this.http.post<void>('/api/auth/verify-email', { token });
+  }
+
+  resendVerification(emailAddress: string): Observable<void> {
+    return this.http.post<void>('/api/auth/resend-verification', { emailAddress });
+  }
+
+  forgotPassword(emailAddress: string, context?: HttpContext): Observable<void> {
+    return this.http.post<void>('/api/auth/forgot-password', { emailAddress }, { context });
   }
 
   resetPassword(req: {

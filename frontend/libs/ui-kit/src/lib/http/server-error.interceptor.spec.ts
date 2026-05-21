@@ -1,8 +1,8 @@
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ToastService } from '../feedback/toast.service';
-import { serverErrorInterceptor } from './server-error.interceptor';
+import { serverErrorInterceptor, SUPPRESS_ERROR_TOAST } from './server-error.interceptor';
 
 describe('serverErrorInterceptor', () => {
   let http: HttpClient;
@@ -46,6 +46,19 @@ describe('serverErrorInterceptor', () => {
     http.get('/x').subscribe({ error: () => undefined });
     httpTesting.expectOne('/x').flush('nope', { status: 403, statusText: 'Forbidden' });
     expect(toast.error).toHaveBeenCalledWith('errors.forbidden');
+  });
+
+  it('toasts errors.not-found on 404', () => {
+    http.get('/x').subscribe({ error: () => undefined });
+    httpTesting.expectOne('/x').flush('nope', { status: 404, statusText: 'Not Found' });
+    expect(toast.error).toHaveBeenCalledWith('errors.not-found');
+  });
+
+  it('does NOT toast on 404 when SUPPRESS_ERROR_TOAST includes 404', () => {
+    const context = new HttpContext().set(SUPPRESS_ERROR_TOAST, [404]);
+    http.get('/x', { context }).subscribe({ error: () => undefined });
+    httpTesting.expectOne('/x').flush('nope', { status: 404, statusText: 'Not Found' });
+    expect(toast.error).not.toHaveBeenCalled();
   });
 
   it('does not toast on 2xx', () => {

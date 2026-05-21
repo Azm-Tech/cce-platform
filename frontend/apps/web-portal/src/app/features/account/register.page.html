@@ -14,6 +14,24 @@
       <a mat-flat-button color="primary" routerLink="/login">
         {{ 'account.register.signInLink' | transloco }}
       </a>
+      <button
+        mat-stroked-button
+        class="cce-register__resend"
+        [disabled]="resendState() === 'sending' || resendState() === 'sent'"
+        (click)="resend()"
+      >
+        {{ resendButtonKey() | transloco }}
+      </button>
+      @if (resendState() === 'sent') {
+        <p class="cce-register__resend-feedback">
+          {{ 'account.register.resendSuccess' | transloco }}
+        </p>
+      }
+      @if (resendState() === 'error') {
+        <p class="cce-register__resend-feedback cce-register__resend-feedback--error">
+          {{ 'account.register.resendError' | transloco }}
+        </p>
+      }
     } @else {
       <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
 

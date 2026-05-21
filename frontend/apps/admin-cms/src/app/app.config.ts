@@ -6,6 +6,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { serverErrorInterceptor } from '@frontend/ui-kit';
 import { localeInterceptor, LocaleService, TranslocoHttpLoader } from '@frontend/i18n';
 import { tokenInterceptor } from './core/http/token.interceptor';
+import { authInterceptor } from './core/http/auth.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
 import { appRoutes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([localeInterceptor, correlationIdInterceptor, tokenInterceptor, serverErrorInterceptor]),
+      withInterceptors([localeInterceptor, correlationIdInterceptor, tokenInterceptor, serverErrorInterceptor, authInterceptor]),
     ),
     provideTransloco({
       config: {

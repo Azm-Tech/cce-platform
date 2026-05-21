@@ -146,8 +146,9 @@ export class LoginPage {
         }),
       );
       this.auth.setSession(tokens);
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-      void this.router.navigateByUrl(returnUrl);
+      const raw = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      const safeUrl = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
+      void this.router.navigateByUrl(safeUrl);
     } catch (err) {
       const status = (err as HttpErrorResponse).status;
       if (status === 400 || status === 401) {

@@ -922,6 +922,11 @@
     "login": {
       "title": "Sign in to CCE",
       "subtitle": "Welcome back.",
+      "brandTagline": "Powering the Carbon Circular Economy",
+      "brandDesc": "A secure admin panel for managing CCE platform content, users, and operations across 63+ countries.",
+      "statCountries": "Countries",
+      "statResources": "Resources",
+      "statExperts": "Experts",
       "emailLabel": "Email address",
       "passwordLabel": "Password",
       "showPassword": "Show password",
@@ -955,6 +960,10 @@
       "submitButton": "Create account",
       "submittingButton": "Creating…",
       "successBody": "Your account has been created. Please check your email to verify your account before signing in.",
+      "resendButton": "Resend verification email",
+      "resendingButton": "Sending…",
+      "resendSuccess": "Verification email sent. Please check your inbox.",
+      "resendError": "We couldn't resend the email. Please try again.",
       "errorConflict": "An account with that email already exists. Try signing in instead.",
       "errorValidation": "Please check your details and try again.",
       "errorGeneric": "We couldn't create your account. Please try again.",
@@ -988,6 +997,14 @@
       "errorInvalidToken": "This reset link has expired or is invalid. Please request a new one.",
       "errorGeneric": "We couldn't update your password. Please try again.",
       "signInLink": "Sign in"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "verifying": "Verifying your email address…",
+      "successBody": "Your email has been verified. You can now sign in.",
+      "errorBody": "This verification link has expired or is invalid. Please register again or contact support.",
+      "signInLink": "Sign in",
+      "backToLogin": "Back to sign in"
     },
     "logout": {
       "successMessage": "You've been signed out successfully.",

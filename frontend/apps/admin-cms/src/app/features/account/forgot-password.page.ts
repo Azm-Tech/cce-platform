@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 
 type PageState =
@@ -17,7 +18,7 @@ type PageState =
   | { kind: 'error'; messageKey: string };
 
 @Component({
-  selector: 'cce-forgot-password',
+  selector: 'cce-admin-forgot-password',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -27,64 +28,9 @@ type PageState =
     MatIconModule,
     MatInputModule,
     TranslocoModule,
+    LocaleSwitcherComponent,
   ],
-  template: `
-    <section class="cce-auth">
-      <div class="cce-auth__card">
-        <div class="cce-auth__brand">
-          <span class="cce-auth__brand-glyph" aria-hidden="true"></span>
-          <span class="cce-auth__brand-name">CCE</span>
-        </div>
-
-        <h1 class="cce-auth__title">{{ 'account.forgotPassword.title' | transloco }}</h1>
-
-        @if (state().kind === 'success') {
-          <p class="cce-auth__subtitle">{{ 'account.forgotPassword.successBody' | transloco }}</p>
-          <a routerLink="/login" mat-flat-button color="primary" class="cce-auth__submit">
-            {{ 'account.forgotPassword.backToLogin' | transloco }}
-          </a>
-        } @else {
-          <p class="cce-auth__subtitle">{{ 'account.forgotPassword.subtitle' | transloco }}</p>
-
-          <form [formGroup]="form" class="cce-auth__form" (ngSubmit)="submit()">
-            <mat-form-field>
-              <mat-label>{{ 'account.forgotPassword.emailLabel' | transloco }}</mat-label>
-              <mat-icon matPrefix>mail</mat-icon>
-              <input
-                matInput
-                type="email"
-                formControlName="emailAddress"
-                autocomplete="email"
-                placeholder="you@example.com"
-              />
-            </mat-form-field>
-
-            @if (state().kind === 'error') {
-              <p class="cce-auth__error" role="alert">
-                {{ errorMessageKey() | transloco }}
-              </p>
-            }
-
-            <button
-              type="submit"
-              mat-flat-button
-              color="primary"
-              class="cce-auth__submit"
-              [disabled]="state().kind === 'submitting' || form.invalid"
-            >
-              {{ submitButtonKey() | transloco }}
-            </button>
-          </form>
-
-          <p class="cce-auth__footer-line">
-            <a routerLink="/login" class="cce-auth__footer-link">
-              {{ 'account.forgotPassword.backToLogin' | transloco }}
-            </a>
-          </p>
-        }
-      </div>
-    </section>
-  `,
+  templateUrl: './forgot-password.page.html',
   styleUrl: './forgot-password.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
