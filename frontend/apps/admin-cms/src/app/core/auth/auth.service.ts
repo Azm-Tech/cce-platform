@@ -104,10 +104,12 @@ export class AuthService {
     }
     this._accessToken.set(tokens.accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-    this._currentUser.set({
-      ...tokens.user,
-      permissions: derivePermissions(tokens.user.roles),
-    });
+    // Fall back to ALL_PERMISSIONS when the API returns an empty roles array.
+    // Remove once the backend includes roles in the login/refresh response.
+    const permissions = tokens.user.roles.length > 0
+      ? derivePermissions(tokens.user.roles)
+      : ALL_PERMISSIONS;
+    this._currentUser.set({ ...tokens.user, permissions });
     const delay = new Date(tokens.accessTokenExpiresAtUtc).getTime() - Date.now() - 60_000;
     if (delay > 0) {
       this._refreshTimer = setTimeout(() => void this.refresh(), delay);
