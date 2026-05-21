@@ -13,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
-import { toApiFieldErrors } from '@frontend/ui-kit';
+import { toApiFieldErrors, PASSWORD_STRENGTH_VALIDATORS } from '@frontend/ui-kit';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -78,12 +78,7 @@ export class RegisterPage {
         Validators.maxLength(15),
         Validators.pattern(/^\+?[\d\s\-()]+$/),
       ]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(12),
-        Validators.maxLength(20),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
-      ]),
+      password: new FormControl('', [Validators.required, ...PASSWORD_STRENGTH_VALIDATORS]),
       confirmPassword: new FormControl('', [Validators.required]),
     },
     { validators: passwordsMatch },

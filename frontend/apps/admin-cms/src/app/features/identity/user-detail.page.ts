@@ -1,6 +1,6 @@
 
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,8 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
-import { ToastService } from '@frontend/ui-kit';
+import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import type { FeatureError } from '@frontend/ui-kit';
+import { RoleLabelPipe } from './role-label.pipe';
 import { IdentityApiService } from './identity-api.service';
 import { RoleAssignDialogComponent, type RoleAssignDialogData } from './role-assign.dialog';
 import type { UserDetail } from './identity.types';
@@ -30,8 +31,9 @@ import type { UserDetail } from './identity.types';
     MatChipsModule,
     MatIconModule,
     TranslocoModule,
-    PermissionDirective
-],
+    PermissionDirective,
+    RoleLabelPipe,
+  ],
   templateUrl: './user-detail.page.html',
   styleUrl: './user-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,8 +41,10 @@ import type { UserDetail } from './identity.types';
 export class UserDetailPage implements OnInit {
   private readonly api = inject(IdentityApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmDialogService);
 
   readonly user = signal<UserDetail | null>(null);
   readonly loading = signal(false);
@@ -62,6 +66,25 @@ export class UserDetailPage implements OnInit {
     this.loading.set(false);
     if (res.ok) this.user.set(res.value);
     else this.error.set(res.error);
+  }
+
+  async deleteUser(): Promise<void> {
+    const u = this.user();
+    if (!u) return;
+    const confirmed = await this.confirm.confirm({
+      titleKey: 'users.delete.confirmTitle',
+      messageKey: 'users.delete.confirmMessage',
+      confirmKey: 'users.delete.confirmButton',
+      cancelKey: 'common.actions.cancel',
+    });
+    if (!confirmed) return;
+    const res = await this.api.deleteUser(u.id);
+    if (res.ok) {
+      this.toast.success('users.delete.successToast');
+      void this.router.navigate(['/users']);
+    } else {
+      this.toast.error('users.delete.errorGeneric');
+    }
   }
 
   async openRoleAssign(): Promise<void> {

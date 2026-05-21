@@ -234,6 +234,7 @@
   },
   "users": {
     "title": "المستخدمون",
+    "createButton": "مستخدم جديد",
     "col": {
       "userName": "اسم المستخدم",
       "email": "البريد الإلكتروني",
@@ -244,6 +245,41 @@
       "search": "بحث",
       "role": "الدور",
       "allRoles": "كل الأدوار"
+    },
+    "role": {
+      "superAdmin": "مدير النظام",
+      "admin": "مشرف",
+      "contentManager": "مشرف محتوى",
+      "stateRepresentative": "ممثل دولة",
+      "communityExpert": "خبير المجتمع",
+      "registeredUser": "مستخدم مسجل"
+    },
+    "create": {
+      "title": "إنشاء مستخدم",
+      "firstNameLabel": "الاسم الأول",
+      "lastNameLabel": "اسم العائلة",
+      "emailLabel": "البريد الإلكتروني",
+      "phoneLabel": "رقم الهاتف",
+      "countryLabel": "الدولة",
+      "roleLabel": "الدور",
+      "passwordLabel": "كلمة المرور",
+      "togglePassword": "إظهار/إخفاء كلمة المرور",
+      "submitButton": "إنشاء مستخدم",
+      "successToast": "تم إنشاء المستخدم بنجاح.",
+      "errorRequired": "هذا الحقل مطلوب.",
+      "errorEmail": "أدخل بريدًا إلكترونيًا صحيحًا.",
+      "errorPasswordLength": "يجب أن تتراوح كلمة المرور بين 12 و20 حرفًا.",
+      "errorPasswordStrength": "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم.",
+      "errorConflict": "يوجد مستخدم بهذا البريد الإلكتروني بالفعل.",
+      "errorGeneric": "فشل إنشاء المستخدم. يُرجى المحاولة مرة أخرى."
+    },
+    "delete": {
+      "button": "حذف المستخدم",
+      "confirmTitle": "حذف المستخدم",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.",
+      "confirmButton": "حذف",
+      "successToast": "تم حذف المستخدم بنجاح.",
+      "errorGeneric": "فشل حذف المستخدم. يُرجى المحاولة مرة أخرى."
     },
     "detail": {
       "back": "العودة إلى المستخدمين",
@@ -1520,5 +1556,14 @@
       "diff": "الفرق",
       "noDiff": "لا يوجد فرق مسجّل."
     }
+  },
+  "paginator": {
+    "itemsPerPage": "عناصر لكل صفحة:",
+    "nextPage": "الصفحة التالية",
+    "previousPage": "الصفحة السابقة",
+    "firstPage": "الصفحة الأولى",
+    "lastPage": "الصفحة الأخيرة",
+    "range": "{{ start }} – {{ end }} من {{ length }}",
+    "rangeEmpty": "0 من {{ length }}"
   }
 }

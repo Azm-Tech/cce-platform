@@ -1,4 +1,10 @@
-<h1 class="cce-users-list__title">{{ 'users.title' | transloco }}</h1>
+<div class="cce-users-list__header">
+  <h1 class="cce-users-list__title">{{ 'users.title' | transloco }}</h1>
+  <button type="button" mat-flat-button color="primary" (click)="openCreate()">
+    <mat-icon>person_add</mat-icon>
+    {{ 'users.createButton' | transloco }}
+  </button>
+</div>
 
 <div class="cce-users-list__filters">
   <mat-form-field appearance="outline" class="cce-users-list__filter">
@@ -18,8 +24,8 @@
       (ngModelChange)="onRoleFilter($event)"
     >
       <mat-option value="">{{ 'users.filter.allRoles' | transloco }}</mat-option>
-      @for (role of knownRoles; track role) {
-        <mat-option [value]="role">{{ role }}</mat-option>
+      @for (opt of knownRoleOptions; track opt.value) {
+        <mat-option [value]="opt.value">{{ opt.labelKey | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -37,4 +43,5 @@
   [pageSize]="pageSize()"
   [loading]="loading()"
   (pageChange)="onPage($event)"
+  (rowClick)="onRowClick($event)"
 />

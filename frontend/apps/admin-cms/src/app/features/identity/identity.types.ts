@@ -49,10 +49,38 @@ export interface StateRepAssignment {
 
 /** Roles known to the backend (CCE.Domain.RolePermissionMap.KnownRoles). */
 export const KNOWN_ROLES = [
-  'SuperAdmin',
-  'ContentManager',
-  'StateRepresentative',
-  'CommunityExpert',
-  'RegisteredUser',
+  'cce-super-admin',
+  'cce-admin',
+  'cce-content-manager',
+  'cce-state-representative',
+  'cce-community-expert',
+  'cce-user',
 ] as const;
 export type RoleName = (typeof KNOWN_ROLES)[number];
+
+/** All known roles with translation keys — used in filter dropdowns. */
+export const KNOWN_ROLE_OPTIONS: readonly { value: string; labelKey: string }[] = [
+  { value: 'cce-super-admin',          labelKey: 'users.role.superAdmin' },
+  { value: 'cce-admin',                labelKey: 'users.role.admin' },
+  { value: 'cce-content-manager',      labelKey: 'users.role.contentManager' },
+  { value: 'cce-state-representative', labelKey: 'users.role.stateRepresentative' },
+  { value: 'cce-community-expert',     labelKey: 'users.role.communityExpert' },
+  { value: 'cce-user',                 labelKey: 'users.role.registeredUser' },
+];
+
+/** Roles a super-admin can assign when creating a new user. */
+export const ASSIGNABLE_ROLES: readonly { value: string; labelKey: string }[] = [
+  { value: 'cce-admin',                labelKey: 'users.role.admin' },
+  { value: 'cce-content-manager',      labelKey: 'users.role.contentManager' },
+  { value: 'cce-state-representative', labelKey: 'users.role.stateRepresentative' },
+];
+
+export interface CreateUserBody {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  countryId: string;
+  role: string;
+}

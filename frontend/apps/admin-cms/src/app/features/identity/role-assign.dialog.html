@@ -9,8 +9,8 @@
       (ngModelChange)="onSelectionChange($event)"
       [disabled]="saving()"
     >
-      @for (role of knownRoles; track role) {
-        <mat-option [value]="role">{{ role }}</mat-option>
+      @for (opt of knownRoleOptions; track opt.value) {
+        <mat-option [value]="opt.value">{{ opt.labelKey | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>

@@ -44,6 +44,9 @@
 :host ::ng-deep .mat-mdc-row:hover {
   background: rgba(20, 184, 143, 0.05) !important;
 }
+:host ::ng-deep .mat-mdc-row.cce-paged-table__row--clickable {
+  cursor: pointer;
+}
 :host ::ng-deep .mat-mdc-cell {
   font-size: 0.92rem !important;
   color: #1c2724 !important;

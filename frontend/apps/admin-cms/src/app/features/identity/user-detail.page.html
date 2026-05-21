@@ -44,7 +44,7 @@
           @if (u.roles.length) {
             <mat-chip-set>
               @for (r of u.roles; track r) {
-                <mat-chip>{{ r }}</mat-chip>
+                <mat-chip>{{ r | roleLabel | transloco }}</mat-chip>
               }
             </mat-chip-set>
           } @else {
@@ -56,6 +56,16 @@
       </dl>
     </mat-card-content>
     <mat-card-actions align="end">
+      <button
+        type="button"
+        mat-button
+        color="warn"
+        *ccePermission="'User.Read'"
+        (click)="deleteUser()"
+      >
+        <mat-icon>delete</mat-icon>
+        {{ 'users.delete.button' | transloco }}
+      </button>
       <button
         type="button"
         mat-flat-button

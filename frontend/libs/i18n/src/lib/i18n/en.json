@@ -234,6 +234,7 @@
   },
   "users": {
     "title": "Users",
+    "createButton": "New User",
     "col": {
       "userName": "User name",
       "email": "Email",
@@ -244,6 +245,41 @@
       "search": "Search",
       "role": "Role",
       "allRoles": "All roles"
+    },
+    "role": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "contentManager": "Content Manager",
+      "stateRepresentative": "Country Representative",
+      "communityExpert": "Community Expert",
+      "registeredUser": "Registered User"
+    },
+    "create": {
+      "title": "Create User",
+      "firstNameLabel": "First Name",
+      "lastNameLabel": "Last Name",
+      "emailLabel": "Email Address",
+      "phoneLabel": "Phone Number",
+      "countryLabel": "Country",
+      "roleLabel": "Role",
+      "passwordLabel": "Password",
+      "togglePassword": "Toggle password visibility",
+      "submitButton": "Create User",
+      "successToast": "User created successfully.",
+      "errorRequired": "This field is required.",
+      "errorEmail": "Enter a valid email address.",
+      "errorPasswordLength": "Password must be between 12 and 20 characters.",
+      "errorPasswordStrength": "Password must contain uppercase, lowercase, and a number.",
+      "errorConflict": "A user with this email already exists.",
+      "errorGeneric": "Failed to create user. Please try again."
+    },
+    "delete": {
+      "button": "Delete User",
+      "confirmTitle": "Delete User",
+      "confirmMessage": "Are you sure you want to delete this user? This action cannot be undone.",
+      "confirmButton": "Delete",
+      "successToast": "User deleted successfully.",
+      "errorGeneric": "Failed to delete user. Please try again."
     },
     "detail": {
       "back": "Back to users",
@@ -1520,5 +1556,14 @@
       "diff": "Diff",
       "noDiff": "No diff recorded."
     }
+  },
+  "paginator": {
+    "itemsPerPage": "Items per page:",
+    "nextPage": "Next page",
+    "previousPage": "Previous page",
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "range": "{{ start }} – {{ end }} of {{ length }}",
+    "rangeEmpty": "0 of {{ length }}"
   }
 }

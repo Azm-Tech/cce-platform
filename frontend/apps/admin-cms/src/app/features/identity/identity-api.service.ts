@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
+  CreateUserBody,
   PagedResult,
   StateRepAssignment,
   UserDetail,
@@ -39,6 +40,18 @@ export class IdentityApiService {
   async getUser(id: string): Promise<Result<UserDetail>> {
     return this.run(() =>
       firstValueFrom(this.http.get<UserDetail>(`/api/admin/users/${id}`)),
+    );
+  }
+
+  async createUser(body: CreateUserBody): Promise<Result<UserListItem>> {
+    return this.run(() =>
+      firstValueFrom(this.http.post<UserListItem>('/api/admin/users', body)),
+    );
+  }
+
+  async deleteUser(id: string): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.delete<void>(`/api/admin/users/${id}`)),
     );
   }
 
