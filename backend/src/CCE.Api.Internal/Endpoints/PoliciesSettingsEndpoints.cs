@@ -2,7 +2,7 @@ using CCE.Api.Common.Extensions;
 using CCE.Application.Common;
 using CCE.Application.PlatformSettings.Commands.CreatePolicySection;
 using CCE.Application.PlatformSettings.Commands.DeletePolicySection;
-using CCE.Application.PlatformSettings.Commands.UpdatePoliciesSettings;
+using CCE.Application.PlatformSettings.Commands.ReorderPolicySection;
 using CCE.Application.PlatformSettings.Commands.UpdatePolicySection;
 using CCE.Application.PlatformSettings.Queries.GetPoliciesSettings;
 using CCE.Domain;
@@ -26,18 +26,6 @@ public static class PoliciesSettingsEndpoints
         })
         .RequireAuthorization(Permissions.Page_PolicyEdit)
         .WithName("GetPoliciesSettings");
-
-        policies.MapPut("", async (UpdatePoliciesSettingsRequest body, IMediator mediator, CancellationToken ct) =>
-        {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
-            var cmd = new UpdatePoliciesSettingsCommand(rowVersion);
-            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return result.ToHttpResult();
-        })
-        .RequireAuthorization(Permissions.Page_PolicyEdit)
-        .WithName("UpdatePoliciesSettings");
 
         policies.MapPost("/sections", async (
             CreatePolicySectionRequest body,
@@ -64,6 +52,18 @@ public static class PoliciesSettingsEndpoints
         .RequireAuthorization(Permissions.Page_PolicyEdit)
         .WithName("UpdatePolicySection");
 
+        policies.MapPut("/sections/{id:guid}/order", async (
+            System.Guid id,
+            ReorderPolicySectionRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new ReorderPolicySectionCommand(id, body.OrderIndex);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Page_PolicyEdit)
+        .WithName("ReorderPolicySection");
+
         policies.MapDelete("/sections/{id:guid}", async (
             System.Guid id,
             IMediator mediator, CancellationToken ct) =>
@@ -78,9 +78,6 @@ public static class PoliciesSettingsEndpoints
     }
 }
 
-public sealed record UpdatePoliciesSettingsRequest(
-    string RowVersion);
-
 public sealed record CreatePolicySectionRequest(
     int Type,
     string TitleAr,
@@ -93,3 +90,5 @@ public sealed record UpdatePolicySectionRequest(
     string TitleEn,
     string ContentAr,
     string ContentEn);
+
+public sealed record ReorderPolicySectionRequest(int OrderIndex);

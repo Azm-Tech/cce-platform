@@ -37,8 +37,9 @@ public sealed class GetPoliciesSettingsQueryHandler
         return _msg.Ok(new PoliciesSettingsDto(
             settings.Id,
             sections.Select(s => new PolicySectionDto(
-                s.Id, (int)s.Type, s.TitleAr, s.TitleEn,
-                s.ContentAr, s.ContentEn, s.OrderIndex)).ToList(),
-            Convert.ToBase64String(settings.RowVersion)), "ITEMS_LISTED");
+                s.Id, (int)s.Type,
+                new LocalizedTextDto(s.Title.Ar, s.Title.En),
+                new LocalizedTextDto(s.Content.Ar, s.Content.En),
+                s.OrderIndex)).ToList()), "ITEMS_LISTED");
     }
 }

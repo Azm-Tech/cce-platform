@@ -10,10 +10,15 @@ internal sealed class GlossaryEntryConfiguration : IEntityTypeConfiguration<Glos
     {
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedNever();
-        builder.Property(e => e.TermAr).HasMaxLength(100).IsRequired();
-        builder.Property(e => e.TermEn).HasMaxLength(100).IsRequired();
-        builder.Property(e => e.DefinitionAr).HasMaxLength(1000).IsRequired();
-        builder.Property(e => e.DefinitionEn).HasMaxLength(1000).IsRequired();
-        builder.Ignore(e => e.DomainEvents);
+        builder.OwnsOne(e => e.Term, term =>
+        {
+            term.Property(t => t.Ar).HasMaxLength(100).IsRequired();
+            term.Property(t => t.En).HasMaxLength(100).IsRequired();
+        });
+        builder.OwnsOne(e => e.Definition, def =>
+        {
+            def.Property(d => d.Ar).HasMaxLength(1000).IsRequired();
+            def.Property(d => d.En).HasMaxLength(1000).IsRequired();
+        });
     }
 }

@@ -159,6 +159,11 @@ public static class SystemCode
     public const string CON027 = "CON027"; // Resource deleted
     public const string CON028 = "CON028"; // Resource published
 
+    // ─── Media Success ───
+    public const string CON029 = "CON029"; // Media uploaded
+    public const string CON036 = "CON036"; // Media updated
+    public const string CON037 = "CON037"; // Media deleted
+
     // ─── Community Success ───
     public const string CON030 = "CON030"; // Topic created
     public const string CON031 = "CON031"; // Post created

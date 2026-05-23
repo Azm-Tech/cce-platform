@@ -12,5 +12,8 @@ public sealed class HomepageSettingsRepository : IHomepageSettingsRepository
     public HomepageSettingsRepository(CceDbContext db) => _db = db;
 
     public async Task<HomepageSettings?> GetAsync(CancellationToken ct)
-        => await _db.HomepageSettings.FirstOrDefaultAsync(ct).ConfigureAwait(false);
+        => await _db.HomepageSettings
+            .Include(s => s.Countries)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
 }

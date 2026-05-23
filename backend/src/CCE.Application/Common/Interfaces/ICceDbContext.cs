@@ -76,5 +76,7 @@ public interface ICceDbContext
     void Delete<T>(T entity) where T : class;
     void DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class;
 
+    void SetExpectedRowVersion<T>(T entity, byte[] expectedRowVersion) where T : class;
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

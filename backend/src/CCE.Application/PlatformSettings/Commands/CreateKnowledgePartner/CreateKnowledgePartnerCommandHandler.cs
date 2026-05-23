@@ -1,52 +1,55 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
-using CCE.Application.PlatformSettings.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.PlatformSettings;
+using CCE.Domain.PlatformSettings.ValueObjects;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.CreateKnowledgePartner;
 
 public sealed class CreateKnowledgePartnerCommandHandler
-    : IRequestHandler<CreateKnowledgePartnerCommand, Response<KnowledgePartnerDto>>
+    : IRequestHandler<CreateKnowledgePartnerCommand, Response<System.Guid>>
 {
-    private readonly IAboutSettingsRepository _aboutRepo;
+    private readonly IAboutSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
+    private readonly ICurrentUserAccessor _currentUser;
+    private readonly ISystemClock _clock;
 
     public CreateKnowledgePartnerCommandHandler(
-        IAboutSettingsRepository aboutRepo, ICceDbContext db, MessageFactory msg)
+        IAboutSettingsRepository repo,
+        ICceDbContext db,
+        MessageFactory msg,
+        ICurrentUserAccessor currentUser,
+        ISystemClock clock)
     {
-        _aboutRepo = aboutRepo;
+        _repo = repo;
         _db = db;
         _msg = msg;
+        _currentUser = currentUser;
+        _clock = clock;
     }
 
-    public async Task<Response<KnowledgePartnerDto>> Handle(
+    public async Task<Response<System.Guid>> Handle(
         CreateKnowledgePartnerCommand request, CancellationToken cancellationToken)
     {
-        var about = await _aboutRepo.GetAsync(cancellationToken).ConfigureAwait(false);
+        var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<KnowledgePartnerDto>();
+            return _msg.AboutSettingsNotFound<System.Guid>();
 
-        var maxOrder = await _db.KnowledgePartners
-            .Where(p => p.AboutSettingsId == about.Id)
-            .Select(p => (int?)p.OrderIndex)
-            .ToListAsyncEither(cancellationToken)
-            .ConfigureAwait(false);
-        var nextOrder = (maxOrder.FirstOrDefault() ?? -1) + 1;
+        var userId = _currentUser.GetUserId()
+            ?? throw new DomainException("User identity required.");
+        var name = LocalizedText.Create(request.NameAr, request.NameEn);
+        LocalizedText? description = null;
+        if (!string.IsNullOrWhiteSpace(request.DescriptionAr) && !string.IsNullOrWhiteSpace(request.DescriptionEn))
+        {
+            description = LocalizedText.Create(request.DescriptionAr, request.DescriptionEn);
+        }
 
-        var partner = KnowledgePartner.Create(
-            about.Id, request.NameAr, request.NameEn,
-            request.LogoUrl, request.WebsiteUrl,
-            request.DescriptionAr, request.DescriptionEn, nextOrder);
-
-        _db.Add(partner);
+        var partner = about.AddKnowledgePartner(name, description, request.LogoUrl, request.WebsiteUrl, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(new KnowledgePartnerDto(
-            partner.Id, partner.NameAr, partner.NameEn, partner.LogoUrl, partner.WebsiteUrl,
-            partner.DescriptionAr, partner.DescriptionEn, partner.OrderIndex), "CONTENT_CREATED");
+        return _msg.Ok(partner.Id, "CONTENT_CREATED");
     }
 }

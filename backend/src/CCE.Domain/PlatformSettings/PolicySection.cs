@@ -1,78 +1,61 @@
 using CCE.Domain.Common;
+using CCE.Domain.PlatformSettings.ValueObjects;
 
 namespace CCE.Domain.PlatformSettings;
 
-public sealed class PolicySection : AggregateRoot<System.Guid>
+public sealed class PolicySection : AuditableEntity<System.Guid>
 {
+    private PolicySection() : base(System.Guid.Empty) { } // EF Core materialization
+
     private PolicySection(
         System.Guid id,
         System.Guid policiesSettingsId,
         PolicySectionType type,
-        string titleAr,
-        string titleEn,
-        string contentAr,
-        string contentEn,
+        LocalizedText title,
+        LocalizedText content,
         int orderIndex) : base(id)
     {
         PoliciesSettingsId = policiesSettingsId;
         Type = type;
-        TitleAr = titleAr;
-        TitleEn = titleEn;
-        ContentAr = contentAr;
-        ContentEn = contentEn;
+        Title = title;
+        Content = content;
         OrderIndex = orderIndex;
     }
 
     public System.Guid PoliciesSettingsId { get; private set; }
     public PolicySectionType Type { get; private set; }
-    public string TitleAr { get; private set; }
-    public string TitleEn { get; private set; }
-    public string ContentAr { get; private set; }
-    public string ContentEn { get; private set; }
+    public LocalizedText Title { get; private set; } = null!;
+    public LocalizedText Content { get; private set; } = null!;
     public int OrderIndex { get; private set; }
 
     public static PolicySection Create(
         System.Guid policiesSettingsId,
         PolicySectionType type,
-        string titleAr,
-        string titleEn,
-        string contentAr,
-        string contentEn,
-        int orderIndex = 0)
+        LocalizedText title,
+        LocalizedText content,
+        int orderIndex,
+        System.Guid by,
+        ISystemClock clock)
     {
         if (policiesSettingsId == System.Guid.Empty)
             throw new DomainException("PoliciesSettingsId is required.");
-        if (string.IsNullOrWhiteSpace(titleAr))
-            throw new DomainException("TitleAr is required.");
-        if (string.IsNullOrWhiteSpace(titleEn))
-            throw new DomainException("TitleEn is required.");
-        if (string.IsNullOrWhiteSpace(contentAr))
-            throw new DomainException("ContentAr is required.");
-        if (string.IsNullOrWhiteSpace(contentEn))
-            throw new DomainException("ContentEn is required.");
-        return new PolicySection(
+
+        var section = new PolicySection(
             System.Guid.NewGuid(), policiesSettingsId,
-            type, titleAr, titleEn, contentAr, contentEn, orderIndex);
+            type, title, content, orderIndex);
+        section.MarkAsCreated(by, clock);
+        return section;
     }
 
     public void UpdateContent(
-        string titleAr,
-        string titleEn,
-        string contentAr,
-        string contentEn)
+        LocalizedText title,
+        LocalizedText content,
+        System.Guid by,
+        ISystemClock clock)
     {
-        if (string.IsNullOrWhiteSpace(titleAr))
-            throw new DomainException("TitleAr is required.");
-        if (string.IsNullOrWhiteSpace(titleEn))
-            throw new DomainException("TitleEn is required.");
-        if (string.IsNullOrWhiteSpace(contentAr))
-            throw new DomainException("ContentAr is required.");
-        if (string.IsNullOrWhiteSpace(contentEn))
-            throw new DomainException("ContentEn is required.");
-        TitleAr = titleAr;
-        TitleEn = titleEn;
-        ContentAr = contentAr;
-        ContentEn = contentEn;
+        Title = title;
+        Content = content;
+        MarkAsModified(by, clock);
     }
 
     public void Reorder(int orderIndex) => OrderIndex = orderIndex;

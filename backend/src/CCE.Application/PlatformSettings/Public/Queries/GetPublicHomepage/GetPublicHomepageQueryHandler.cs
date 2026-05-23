@@ -3,6 +3,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
+using CCE.Application.PlatformSettings.Dtos;
 using CCE.Application.PlatformSettings.Public.Dtos;
 using CCE.Domain.Content;
 using CCE.Domain.PlatformSettings;
@@ -46,8 +47,7 @@ public sealed class GetPublicHomepageQueryHandler
 
         return _msg.Ok(new PublicHomepageDto(
             settings.VideoUrl,
-            settings.ObjectiveAr,
-            settings.ObjectiveEn,
+            new LocalizedTextDto(settings.Objective.Ar, settings.Objective.En),
             settings.CceConceptsAr,
             settings.CceConceptsEn,
             countries,

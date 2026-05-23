@@ -1,79 +1,69 @@
 using CCE.Domain.Common;
+using CCE.Domain.PlatformSettings.ValueObjects;
 
 namespace CCE.Domain.PlatformSettings;
 
-public sealed class KnowledgePartner : AggregateRoot<System.Guid>
+public sealed class KnowledgePartner : AuditableEntity<System.Guid>
 {
+    private KnowledgePartner() : base(System.Guid.Empty) { } // EF Core materialization
+
     private KnowledgePartner(
         System.Guid id,
         System.Guid aboutSettingsId,
-        string nameAr,
-        string nameEn,
+        LocalizedText name,
+        LocalizedText? description,
         string? logoUrl,
         string? websiteUrl,
-        string? descriptionAr,
-        string? descriptionEn,
         int orderIndex) : base(id)
     {
         AboutSettingsId = aboutSettingsId;
-        NameAr = nameAr;
-        NameEn = nameEn;
+        Name = name;
+        Description = description;
         LogoUrl = logoUrl;
         WebsiteUrl = websiteUrl;
-        DescriptionAr = descriptionAr;
-        DescriptionEn = descriptionEn;
         OrderIndex = orderIndex;
     }
 
     public System.Guid AboutSettingsId { get; private set; }
-    public string NameAr { get; private set; }
-    public string NameEn { get; private set; }
+    public LocalizedText Name { get; private set; } = null!;
+    public LocalizedText? Description { get; private set; }
     public string? LogoUrl { get; private set; }
     public string? WebsiteUrl { get; private set; }
-    public string? DescriptionAr { get; private set; }
-    public string? DescriptionEn { get; private set; }
     public int OrderIndex { get; private set; }
 
     public static KnowledgePartner Create(
         System.Guid aboutSettingsId,
-        string nameAr,
-        string nameEn,
+        LocalizedText name,
+        LocalizedText? description,
         string? logoUrl,
         string? websiteUrl,
-        string? descriptionAr,
-        string? descriptionEn,
-        int orderIndex = 0)
+        int orderIndex,
+        System.Guid by,
+        ISystemClock clock)
     {
         if (aboutSettingsId == System.Guid.Empty)
             throw new DomainException("AboutSettingsId is required.");
-        if (string.IsNullOrWhiteSpace(nameAr))
-            throw new DomainException("NameAr is required.");
-        if (string.IsNullOrWhiteSpace(nameEn))
-            throw new DomainException("NameEn is required.");
-        return new KnowledgePartner(
+
+        var partner = new KnowledgePartner(
             System.Guid.NewGuid(), aboutSettingsId,
-            nameAr, nameEn, logoUrl, websiteUrl,
-            descriptionAr, descriptionEn, orderIndex);
+            name, description, logoUrl, websiteUrl, orderIndex);
+        partner.MarkAsCreated(by, clock);
+        return partner;
     }
 
     public void UpdateContent(
-        string nameAr,
-        string nameEn,
+        LocalizedText name,
+        LocalizedText? description,
         string? logoUrl,
         string? websiteUrl,
-        string? descriptionAr,
-        string? descriptionEn)
+        System.Guid by,
+        ISystemClock clock)
     {
-        if (string.IsNullOrWhiteSpace(nameAr))
-            throw new DomainException("NameAr is required.");
-        if (string.IsNullOrWhiteSpace(nameEn))
-            throw new DomainException("NameEn is required.");
-        NameAr = nameAr;
-        NameEn = nameEn;
+        Name = name;
+        Description = description;
         LogoUrl = logoUrl;
         WebsiteUrl = websiteUrl;
-        DescriptionAr = descriptionAr;
-        DescriptionEn = descriptionEn;
+        MarkAsModified(by, clock);
     }
 
     public void Reorder(int orderIndex) => OrderIndex = orderIndex;

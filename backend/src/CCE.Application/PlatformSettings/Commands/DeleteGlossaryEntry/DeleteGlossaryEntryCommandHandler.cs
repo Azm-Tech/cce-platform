@@ -9,12 +9,14 @@ namespace CCE.Application.PlatformSettings.Commands.DeleteGlossaryEntry;
 public sealed class DeleteGlossaryEntryCommandHandler
     : IRequestHandler<DeleteGlossaryEntryCommand, Response<VoidData>>
 {
-    private readonly IGlossaryEntryRepository _repo;
+    private readonly IAboutSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
 
     public DeleteGlossaryEntryCommandHandler(
-        IGlossaryEntryRepository repo, ICceDbContext db, MessageFactory msg)
+        IAboutSettingsRepository repo,
+        ICceDbContext db,
+        MessageFactory msg)
     {
         _repo = repo;
         _db = db;
@@ -24,11 +26,15 @@ public sealed class DeleteGlossaryEntryCommandHandler
     public async Task<Response<VoidData>> Handle(
         DeleteGlossaryEntryCommand request, CancellationToken cancellationToken)
     {
-        var entry = await _repo.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
+        if (about is null)
+            return _msg.AboutSettingsNotFound<VoidData>();
+
+        var entry = about.GlossaryEntries.FirstOrDefault(e => e.Id == request.Id);
         if (entry is null)
             return _msg.GlossaryEntryNotFound<VoidData>();
 
-        _db.Delete(entry);
+        about.RemoveGlossaryEntry(entry);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok("CONTENT_DELETED");

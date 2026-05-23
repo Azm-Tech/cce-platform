@@ -10,12 +10,17 @@ internal sealed class KnowledgePartnerConfiguration : IEntityTypeConfiguration<K
     {
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedNever();
-        builder.Property(p => p.NameAr).HasMaxLength(200).IsRequired();
-        builder.Property(p => p.NameEn).HasMaxLength(200).IsRequired();
+        builder.OwnsOne(p => p.Name, name =>
+        {
+            name.Property(n => n.Ar).HasMaxLength(200).IsRequired();
+            name.Property(n => n.En).HasMaxLength(200).IsRequired();
+        });
+        builder.OwnsOne(p => p.Description, desc =>
+        {
+            desc.Property(d => d.Ar).HasMaxLength(1000);
+            desc.Property(d => d.En).HasMaxLength(1000);
+        });
         builder.Property(p => p.LogoUrl).HasColumnType("nvarchar(max)");
         builder.Property(p => p.WebsiteUrl).HasColumnType("nvarchar(max)");
-        builder.Property(p => p.DescriptionAr).HasMaxLength(1000);
-        builder.Property(p => p.DescriptionEn).HasMaxLength(1000);
-        builder.Ignore(p => p.DomainEvents);
     }
 }

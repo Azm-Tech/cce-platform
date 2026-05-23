@@ -32,12 +32,9 @@ public static class AboutSettingsEndpoints
 
         about.MapPut("", async (UpdateAboutSettingsRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpdateAboutSettingsCommand(
                 body.DescriptionAr, body.DescriptionEn,
-                body.HowToUseVideoUrl, rowVersion);
+                body.HowToUseVideoUrl);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
@@ -121,8 +118,7 @@ public static class AboutSettingsEndpoints
 public sealed record UpdateAboutSettingsRequest(
     string DescriptionAr,
     string DescriptionEn,
-    string? HowToUseVideoUrl,
-    string RowVersion);
+    string? HowToUseVideoUrl);
 
 public sealed record CreateGlossaryEntryRequest(
     string TermAr,

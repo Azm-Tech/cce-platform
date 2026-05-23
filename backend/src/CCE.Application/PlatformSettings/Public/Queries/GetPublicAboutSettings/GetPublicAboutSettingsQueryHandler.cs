@@ -2,6 +2,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
+using CCE.Application.PlatformSettings.Dtos;
 using CCE.Application.PlatformSettings.Public.Dtos;
 using CCE.Domain.PlatformSettings;
 using MediatR;
@@ -41,12 +42,15 @@ public sealed class GetPublicAboutSettingsQueryHandler
             .ConfigureAwait(false);
 
         return _msg.Ok(new PublicAboutSettingsDto(
-            settings.DescriptionAr,
-            settings.DescriptionEn,
+            new LocalizedTextDto(settings.Description.Ar, settings.Description.En),
             settings.HowToUseVideoUrl,
-            glossary.Select(e => new PublicGlossaryEntryDto(e.TermAr, e.TermEn, e.DefinitionAr, e.DefinitionEn)).ToList(),
+            glossary.Select(e => new PublicGlossaryEntryDto(
+                new LocalizedTextDto(e.Term.Ar, e.Term.En),
+                new LocalizedTextDto(e.Definition.Ar, e.Definition.En))).ToList(),
             partners.Select(p => new PublicKnowledgePartnerDto(
-                p.NameAr, p.NameEn, p.LogoUrl, p.WebsiteUrl,
-                p.DescriptionAr, p.DescriptionEn)).ToList()), "ITEMS_LISTED");
+                new LocalizedTextDto(p.Name.Ar, p.Name.En),
+                p.LogoUrl,
+                p.WebsiteUrl,
+                p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En))).ToList()), "ITEMS_LISTED");
     }
 }

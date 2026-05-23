@@ -1,5 +1,4 @@
 using CCE.Application.Common;
-using CCE.Application.PlatformSettings.Dtos;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateHomepageSettings;
@@ -10,5 +9,4 @@ public sealed record UpdateHomepageSettingsCommand(
     string ObjectiveEn,
     string CceConceptsAr,
     string CceConceptsEn,
-    System.Collections.Generic.IReadOnlyList<System.Guid> ParticipatingCountryIds,
-    byte[] RowVersion) : IRequest<Response<HomepageSettingsDto>>;
+    System.Collections.Generic.IReadOnlyList<System.Guid> ParticipatingCountryIds) : IRequest<Response<System.Guid>>;

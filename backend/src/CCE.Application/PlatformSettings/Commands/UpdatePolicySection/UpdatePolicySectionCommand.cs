@@ -1,5 +1,4 @@
 using CCE.Application.Common;
-using CCE.Application.PlatformSettings.Dtos;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdatePolicySection;
@@ -9,4 +8,4 @@ public sealed record UpdatePolicySectionCommand(
     string TitleAr,
     string TitleEn,
     string ContentAr,
-    string ContentEn) : IRequest<Response<PolicySectionDto>>;
+    string ContentEn) : IRequest<Response<System.Guid>>;

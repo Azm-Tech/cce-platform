@@ -11,10 +11,15 @@ internal sealed class PolicySectionConfiguration : IEntityTypeConfiguration<Poli
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.Type).IsRequired();
-        builder.Property(s => s.TitleAr).HasMaxLength(500).IsRequired();
-        builder.Property(s => s.TitleEn).HasMaxLength(500).IsRequired();
-        builder.Property(s => s.ContentAr).HasColumnType("nvarchar(max)").IsRequired();
-        builder.Property(s => s.ContentEn).HasColumnType("nvarchar(max)").IsRequired();
-        builder.Ignore(s => s.DomainEvents);
+        builder.OwnsOne(s => s.Title, title =>
+        {
+            title.Property(t => t.Ar).HasMaxLength(500).IsRequired();
+            title.Property(t => t.En).HasMaxLength(500).IsRequired();
+        });
+        builder.OwnsOne(s => s.Content, content =>
+        {
+            content.Property(c => c.Ar).HasColumnType("nvarchar(max)").IsRequired();
+            content.Property(c => c.En).HasColumnType("nvarchar(max)").IsRequired();
+        });
     }
 }

@@ -1,5 +1,4 @@
 using CCE.Application.Common;
-using CCE.Application.PlatformSettings.Dtos;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateKnowledgePartner;
@@ -11,4 +10,4 @@ public sealed record UpdateKnowledgePartnerCommand(
     string? LogoUrl,
     string? WebsiteUrl,
     string? DescriptionAr,
-    string? DescriptionEn) : IRequest<Response<KnowledgePartnerDto>>;
+    string? DescriptionEn) : IRequest<Response<System.Guid>>;

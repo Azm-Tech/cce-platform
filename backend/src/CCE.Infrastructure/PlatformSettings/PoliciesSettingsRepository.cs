@@ -12,5 +12,8 @@ public sealed class PoliciesSettingsRepository : IPoliciesSettingsRepository
     public PoliciesSettingsRepository(CceDbContext db) => _db = db;
 
     public async Task<PoliciesSettings?> GetAsync(CancellationToken ct)
-        => await _db.PoliciesSettings.FirstOrDefaultAsync(ct).ConfigureAwait(false);
+        => await _db.PoliciesSettings
+            .Include(s => s.Sections)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
 }

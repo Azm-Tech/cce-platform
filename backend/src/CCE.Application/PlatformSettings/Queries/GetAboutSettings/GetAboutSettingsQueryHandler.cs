@@ -42,14 +42,19 @@ public sealed class GetAboutSettingsQueryHandler
 
         return _msg.Ok(new AboutSettingsDto(
             settings.Id,
-            settings.DescriptionAr,
-            settings.DescriptionEn,
+            new LocalizedTextDto(settings.Description.Ar, settings.Description.En),
             settings.HowToUseVideoUrl,
             glossary.Select(e => new GlossaryEntryDto(
-                e.Id, e.TermAr, e.TermEn, e.DefinitionAr, e.DefinitionEn, e.OrderIndex)).ToList(),
+                e.Id,
+                new LocalizedTextDto(e.Term.Ar, e.Term.En),
+                new LocalizedTextDto(e.Definition.Ar, e.Definition.En),
+                e.OrderIndex)).ToList(),
             partners.Select(p => new KnowledgePartnerDto(
-                p.Id, p.NameAr, p.NameEn, p.LogoUrl, p.WebsiteUrl,
-                p.DescriptionAr, p.DescriptionEn, p.OrderIndex)).ToList(),
-            Convert.ToBase64String(settings.RowVersion)), "ITEMS_LISTED");
+                p.Id,
+                new LocalizedTextDto(p.Name.Ar, p.Name.En),
+                p.LogoUrl,
+                p.WebsiteUrl,
+                p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En),
+                p.OrderIndex)).ToList()), "ITEMS_LISTED");
     }
 }

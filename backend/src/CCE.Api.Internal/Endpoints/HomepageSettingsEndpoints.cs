@@ -26,17 +26,13 @@ public static class HomepageSettingsEndpoints
 
         settings.MapPut("", async (UpdateHomepageSettingsRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpdateHomepageSettingsCommand(
                 body.VideoUrl,
                 body.ObjectiveAr,
                 body.ObjectiveEn,
                 body.CceConceptsAr,
                 body.CceConceptsEn,
-                body.ParticipatingCountryIds,
-                rowVersion);
+                body.ParticipatingCountryIds);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
@@ -53,5 +49,4 @@ public sealed record UpdateHomepageSettingsRequest(
     string ObjectiveEn,
     string CceConceptsAr,
     string CceConceptsEn,
-    System.Collections.Generic.IReadOnlyList<System.Guid> ParticipatingCountryIds,
-    string RowVersion);
+    System.Collections.Generic.IReadOnlyList<System.Guid> ParticipatingCountryIds);

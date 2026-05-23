@@ -1,67 +1,59 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
-using CCE.Application.PlatformSettings.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.PlatformSettings;
+using CCE.Domain.PlatformSettings.ValueObjects;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateHomepageSettings;
 
 public sealed class UpdateHomepageSettingsCommandHandler
-    : IRequestHandler<UpdateHomepageSettingsCommand, Response<HomepageSettingsDto>>
+    : IRequestHandler<UpdateHomepageSettingsCommand, Response<System.Guid>>
 {
     private readonly IHomepageSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
+    private readonly ICurrentUserAccessor _currentUser;
+    private readonly ISystemClock _clock;
 
     public UpdateHomepageSettingsCommandHandler(
-        IHomepageSettingsRepository repo, ICceDbContext db, MessageFactory msg)
+        IHomepageSettingsRepository repo,
+        ICceDbContext db,
+        MessageFactory msg,
+        ICurrentUserAccessor currentUser,
+        ISystemClock clock)
     {
         _repo = repo;
         _db = db;
         _msg = msg;
+        _currentUser = currentUser;
+        _clock = clock;
     }
 
-    public async Task<Response<HomepageSettingsDto>> Handle(
+    public async Task<Response<System.Guid>> Handle(
         UpdateHomepageSettingsCommand request, CancellationToken cancellationToken)
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.HomepageSettingsNotFound<HomepageSettingsDto>();
+            return _msg.HomepageSettingsNotFound<System.Guid>();
+
+        var userId = _currentUser.GetUserId()
+            ?? throw new DomainException("User identity required.");
+        var objective = LocalizedText.Create(request.ObjectiveAr, request.ObjectiveEn);
 
         settings.UpdateContent(
             request.VideoUrl,
-            request.ObjectiveAr,
-            request.ObjectiveEn,
+            objective,
             request.CceConceptsAr,
-            request.CceConceptsEn);
+            request.CceConceptsEn,
+            userId,
+            _clock);
 
-        var existing = _db.HomepageCountries
-            .Where(hc => hc.HomepageSettingsId == settings.Id);
-        _db.DeleteRange(existing);
-
-        var order = 0;
-        foreach (var countryId in request.ParticipatingCountryIds)
-        {
-            _db.Add(HomepageCountry.Create(settings.Id, countryId, order++));
-        }
+        settings.SyncCountries(request.ParticipatingCountryIds, userId, _clock);
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        var countries = _db.HomepageCountries
-            .Where(hc => hc.HomepageSettingsId == settings.Id)
-            .OrderBy(hc => hc.OrderIndex)
-            .Select(hc => new HomepageCountryDto(hc.Id, hc.CountryId, hc.OrderIndex))
-            .ToList();
-
-        return _msg.Ok(new HomepageSettingsDto(
-            settings.Id,
-            settings.VideoUrl,
-            settings.ObjectiveAr,
-            settings.ObjectiveEn,
-            settings.CceConceptsAr,
-            settings.CceConceptsEn,
-            countries,
-            Convert.ToBase64String(settings.RowVersion)), "SETTINGS_UPDATED");
+        return _msg.Ok(settings.Id, "SETTINGS_UPDATED");
     }
 }

@@ -1,7 +1,7 @@
+using CCE.Application.PlatformSettings.Dtos;
+
 namespace CCE.Application.PlatformSettings.Public.Dtos;
 
 public sealed record PublicGlossaryEntryDto(
-    string TermAr,
-    string TermEn,
-    string DefinitionAr,
-    string DefinitionEn);
+    LocalizedTextDto Term,
+    LocalizedTextDto Definition);

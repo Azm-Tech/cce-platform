@@ -2,6 +2,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
+using CCE.Application.PlatformSettings.Dtos;
 using CCE.Application.PlatformSettings.Public.Dtos;
 using CCE.Domain.PlatformSettings;
 using MediatR;
@@ -36,7 +37,8 @@ public sealed class GetPublicPoliciesSettingsQueryHandler
 
         return _msg.Ok(new PublicPoliciesSettingsDto(
             sections.Select(s => new PublicPolicySectionDto(
-                (int)s.Type, s.TitleAr, s.TitleEn,
-                s.ContentAr, s.ContentEn)).ToList()), "ITEMS_LISTED");
+                (int)s.Type,
+                new LocalizedTextDto(s.Title.Ar, s.Title.En),
+                new LocalizedTextDto(s.Content.Ar, s.Content.En))).ToList()), "ITEMS_LISTED");
     }
 }

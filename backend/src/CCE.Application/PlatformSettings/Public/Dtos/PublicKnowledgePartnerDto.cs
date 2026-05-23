@@ -1,9 +1,9 @@
+using CCE.Application.PlatformSettings.Dtos;
+
 namespace CCE.Application.PlatformSettings.Public.Dtos;
 
 public sealed record PublicKnowledgePartnerDto(
-    string NameAr,
-    string NameEn,
+    LocalizedTextDto Name,
     string? LogoUrl,
     string? WebsiteUrl,
-    string? DescriptionAr,
-    string? DescriptionEn);
+    LocalizedTextDto? Description);

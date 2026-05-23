@@ -11,6 +11,7 @@ internal sealed class PoliciesSettingsConfiguration : IEntityTypeConfiguration<P
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.RowVersion).IsRowVersion();
+        builder.HasMany(s => s.Sections).WithOne().HasForeignKey(s => s.PoliciesSettingsId);
         builder.Ignore(s => s.DomainEvents);
     }
 }

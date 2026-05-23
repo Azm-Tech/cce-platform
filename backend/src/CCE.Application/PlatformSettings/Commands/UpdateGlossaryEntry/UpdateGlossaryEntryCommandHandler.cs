@@ -1,42 +1,55 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
-using CCE.Application.PlatformSettings.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.PlatformSettings;
+using CCE.Domain.PlatformSettings.ValueObjects;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateGlossaryEntry;
 
 public sealed class UpdateGlossaryEntryCommandHandler
-    : IRequestHandler<UpdateGlossaryEntryCommand, Response<GlossaryEntryDto>>
+    : IRequestHandler<UpdateGlossaryEntryCommand, Response<System.Guid>>
 {
-    private readonly IGlossaryEntryRepository _repo;
+    private readonly IAboutSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
+    private readonly ICurrentUserAccessor _currentUser;
+    private readonly ISystemClock _clock;
 
     public UpdateGlossaryEntryCommandHandler(
-        IGlossaryEntryRepository repo, ICceDbContext db, MessageFactory msg)
+        IAboutSettingsRepository repo,
+        ICceDbContext db,
+        MessageFactory msg,
+        ICurrentUserAccessor currentUser,
+        ISystemClock clock)
     {
         _repo = repo;
         _db = db;
         _msg = msg;
+        _currentUser = currentUser;
+        _clock = clock;
     }
 
-    public async Task<Response<GlossaryEntryDto>> Handle(
+    public async Task<Response<System.Guid>> Handle(
         UpdateGlossaryEntryCommand request, CancellationToken cancellationToken)
     {
-        var entry = await _repo.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
+        if (about is null)
+            return _msg.AboutSettingsNotFound<System.Guid>();
+
+        var entry = about.GlossaryEntries.FirstOrDefault(e => e.Id == request.Id);
         if (entry is null)
-            return _msg.GlossaryEntryNotFound<GlossaryEntryDto>();
+            return _msg.GlossaryEntryNotFound<System.Guid>();
 
-        entry.UpdateContent(
-            request.TermAr, request.TermEn,
-            request.DefinitionAr, request.DefinitionEn);
+        var userId = _currentUser.GetUserId()
+            ?? throw new DomainException("User identity required.");
+        var term = LocalizedText.Create(request.TermAr, request.TermEn);
+        var definition = LocalizedText.Create(request.DefinitionAr, request.DefinitionEn);
 
+        about.UpdateGlossaryEntry(entry, term, definition, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(new GlossaryEntryDto(
-            entry.Id, entry.TermAr, entry.TermEn,
-            entry.DefinitionAr, entry.DefinitionEn, entry.OrderIndex), "CONTENT_UPDATED");
+        return _msg.Ok(entry.Id, "CONTENT_UPDATED");
     }
 }

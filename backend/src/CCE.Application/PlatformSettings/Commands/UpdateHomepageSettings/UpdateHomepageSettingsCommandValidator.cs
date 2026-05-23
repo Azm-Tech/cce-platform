@@ -9,7 +9,5 @@ public sealed class UpdateHomepageSettingsCommandValidator
     {
         RuleFor(x => x.ObjectiveAr).NotEmpty().MaximumLength(1000);
         RuleFor(x => x.ObjectiveEn).NotEmpty().MaximumLength(1000);
-        RuleFor(x => x.RowVersion).NotNull().Must(rv => rv.Length == 8)
-            .WithMessage("RowVersion must be exactly 8 bytes.");
     }
 }

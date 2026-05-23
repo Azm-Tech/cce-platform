@@ -1,61 +1,51 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
-using CCE.Application.PlatformSettings.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.PlatformSettings;
+using CCE.Domain.PlatformSettings.ValueObjects;
 using MediatR;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateAboutSettings;
 
 public sealed class UpdateAboutSettingsCommandHandler
-    : IRequestHandler<UpdateAboutSettingsCommand, Response<AboutSettingsDto>>
+    : IRequestHandler<UpdateAboutSettingsCommand, Response<System.Guid>>
 {
     private readonly IAboutSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
+    private readonly ICurrentUserAccessor _currentUser;
+    private readonly ISystemClock _clock;
 
     public UpdateAboutSettingsCommandHandler(
-        IAboutSettingsRepository repo, ICceDbContext db, MessageFactory msg)
+        IAboutSettingsRepository repo,
+        ICceDbContext db,
+        MessageFactory msg,
+        ICurrentUserAccessor currentUser,
+        ISystemClock clock)
     {
         _repo = repo;
         _db = db;
         _msg = msg;
+        _currentUser = currentUser;
+        _clock = clock;
     }
 
-    public async Task<Response<AboutSettingsDto>> Handle(
+    public async Task<Response<System.Guid>> Handle(
         UpdateAboutSettingsCommand request, CancellationToken cancellationToken)
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.AboutSettingsNotFound<AboutSettingsDto>();
+            return _msg.AboutSettingsNotFound<System.Guid>();
 
-        settings.UpdateContent(request.DescriptionAr, request.DescriptionEn, request.HowToUseVideoUrl);
+        var userId = _currentUser.GetUserId()
+            ?? throw new DomainException("User identity required.");
+        var description = LocalizedText.Create(request.DescriptionAr, request.DescriptionEn);
+
+        settings.UpdateContent(description, request.HowToUseVideoUrl, userId, _clock);
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        var glossary = await _db.GlossaryEntries
-            .Where(e => e.AboutSettingsId == settings.Id)
-            .OrderBy(e => e.OrderIndex)
-            .ToListAsyncEither(cancellationToken)
-            .ConfigureAwait(false);
-
-        var partners = await _db.KnowledgePartners
-            .Where(p => p.AboutSettingsId == settings.Id)
-            .OrderBy(p => p.OrderIndex)
-            .ToListAsyncEither(cancellationToken)
-            .ConfigureAwait(false);
-
-        return _msg.Ok(new AboutSettingsDto(
-            settings.Id,
-            settings.DescriptionAr,
-            settings.DescriptionEn,
-            settings.HowToUseVideoUrl,
-            glossary.Select(e => new GlossaryEntryDto(
-                e.Id, e.TermAr, e.TermEn, e.DefinitionAr, e.DefinitionEn, e.OrderIndex)).ToList(),
-            partners.Select(p => new KnowledgePartnerDto(
-                p.Id, p.NameAr, p.NameEn, p.LogoUrl, p.WebsiteUrl,
-                p.DescriptionAr, p.DescriptionEn, p.OrderIndex)).ToList(),
-            Convert.ToBase64String(settings.RowVersion)), "SETTINGS_UPDATED");
+        return _msg.Ok(settings.Id, "SETTINGS_UPDATED");
     }
 }

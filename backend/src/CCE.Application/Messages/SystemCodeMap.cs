@@ -124,9 +124,9 @@ public static class SystemCodeMap
         ["CONTENT_DELETED"] = SystemCode.CON022,
 
         // ─── Media Success ───
-        ["MEDIA_UPLOADED"] = SystemCode.CON020,
-        ["MEDIA_UPDATED"] = SystemCode.CON021,
-        ["MEDIA_DELETED"] = SystemCode.CON022,
+        ["MEDIA_UPLOADED"] = SystemCode.CON029,
+        ["MEDIA_UPDATED"] = SystemCode.CON036,
+        ["MEDIA_DELETED"] = SystemCode.CON037,
         ["CONTENT_PUBLISHED"] = SystemCode.CON023,
         ["CONTENT_ARCHIVED"] = SystemCode.CON024,
         ["RESOURCE_CREATED"] = SystemCode.CON025,

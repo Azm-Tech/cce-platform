@@ -146,6 +146,21 @@ public sealed class CceDbContext
     void ICceDbContext.DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class
         => Set<T>().RemoveRange(entities);
 
+    void ICceDbContext.SetExpectedRowVersion<T>(T entity, byte[] expectedRowVersion) where T : class
+        => this.SetExpectedRowVersion(entity, expectedRowVersion);
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyException("Concurrent update conflict.", ex);
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

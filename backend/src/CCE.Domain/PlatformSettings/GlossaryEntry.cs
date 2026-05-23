@@ -1,74 +1,57 @@
 using CCE.Domain.Common;
+using CCE.Domain.PlatformSettings.ValueObjects;
 
 namespace CCE.Domain.PlatformSettings;
 
-public sealed class GlossaryEntry : AggregateRoot<System.Guid>
+public sealed class GlossaryEntry : AuditableEntity<System.Guid>
 {
+    private GlossaryEntry() : base(System.Guid.Empty) { } // EF Core materialization
+
     private GlossaryEntry(
         System.Guid id,
         System.Guid aboutSettingsId,
-        string termAr,
-        string termEn,
-        string definitionAr,
-        string definitionEn,
+        LocalizedText term,
+        LocalizedText definition,
         int orderIndex) : base(id)
     {
         AboutSettingsId = aboutSettingsId;
-        TermAr = termAr;
-        TermEn = termEn;
-        DefinitionAr = definitionAr;
-        DefinitionEn = definitionEn;
+        Term = term;
+        Definition = definition;
         OrderIndex = orderIndex;
     }
 
     public System.Guid AboutSettingsId { get; private set; }
-    public string TermAr { get; private set; }
-    public string TermEn { get; private set; }
-    public string DefinitionAr { get; private set; }
-    public string DefinitionEn { get; private set; }
+    public LocalizedText Term { get; private set; } = null!;
+    public LocalizedText Definition { get; private set; } = null!;
     public int OrderIndex { get; private set; }
 
     public static GlossaryEntry Create(
         System.Guid aboutSettingsId,
-        string termAr,
-        string termEn,
-        string definitionAr,
-        string definitionEn,
-        int orderIndex)
+        LocalizedText term,
+        LocalizedText definition,
+        int orderIndex,
+        System.Guid by,
+        ISystemClock clock)
     {
         if (aboutSettingsId == System.Guid.Empty)
             throw new DomainException("AboutSettingsId is required.");
-        if (string.IsNullOrWhiteSpace(termAr))
-            throw new DomainException("TermAr is required.");
-        if (string.IsNullOrWhiteSpace(termEn))
-            throw new DomainException("TermEn is required.");
-        if (string.IsNullOrWhiteSpace(definitionAr))
-            throw new DomainException("DefinitionAr is required.");
-        if (string.IsNullOrWhiteSpace(definitionEn))
-            throw new DomainException("DefinitionEn is required.");
-        return new GlossaryEntry(
+
+        var entry = new GlossaryEntry(
             System.Guid.NewGuid(), aboutSettingsId,
-            termAr, termEn, definitionAr, definitionEn, orderIndex);
+            term, definition, orderIndex);
+        entry.MarkAsCreated(by, clock);
+        return entry;
     }
 
     public void UpdateContent(
-        string termAr,
-        string termEn,
-        string definitionAr,
-        string definitionEn)
+        LocalizedText term,
+        LocalizedText definition,
+        System.Guid by,
+        ISystemClock clock)
     {
-        if (string.IsNullOrWhiteSpace(termAr))
-            throw new DomainException("TermAr is required.");
-        if (string.IsNullOrWhiteSpace(termEn))
-            throw new DomainException("TermEn is required.");
-        if (string.IsNullOrWhiteSpace(definitionAr))
-            throw new DomainException("DefinitionAr is required.");
-        if (string.IsNullOrWhiteSpace(definitionEn))
-            throw new DomainException("DefinitionEn is required.");
-        TermAr = termAr;
-        TermEn = termEn;
-        DefinitionAr = definitionAr;
-        DefinitionEn = definitionEn;
+        Term = term;
+        Definition = definition;
+        MarkAsModified(by, clock);
     }
 
     public void Reorder(int orderIndex) => OrderIndex = orderIndex;

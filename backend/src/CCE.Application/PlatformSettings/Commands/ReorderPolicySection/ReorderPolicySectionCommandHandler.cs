@@ -4,16 +4,16 @@ using CCE.Application.Messages;
 using CCE.Domain.PlatformSettings;
 using MediatR;
 
-namespace CCE.Application.PlatformSettings.Commands.DeletePolicySection;
+namespace CCE.Application.PlatformSettings.Commands.ReorderPolicySection;
 
-public sealed class DeletePolicySectionCommandHandler
-    : IRequestHandler<DeletePolicySectionCommand, Response<VoidData>>
+public sealed class ReorderPolicySectionCommandHandler
+    : IRequestHandler<ReorderPolicySectionCommand, Response<System.Guid>>
 {
     private readonly IPoliciesSettingsRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
 
-    public DeletePolicySectionCommandHandler(
+    public ReorderPolicySectionCommandHandler(
         IPoliciesSettingsRepository repo,
         ICceDbContext db,
         MessageFactory msg)
@@ -23,20 +23,20 @@ public sealed class DeletePolicySectionCommandHandler
         _msg = msg;
     }
 
-    public async Task<Response<VoidData>> Handle(
-        DeletePolicySectionCommand request, CancellationToken cancellationToken)
+    public async Task<Response<System.Guid>> Handle(
+        ReorderPolicySectionCommand request, CancellationToken cancellationToken)
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<VoidData>();
+            return _msg.PoliciesSettingsNotFound<System.Guid>();
 
         var section = settings.Sections.FirstOrDefault(s => s.Id == request.Id);
         if (section is null)
-            return _msg.PolicySectionNotFound<VoidData>();
+            return _msg.PolicySectionNotFound<System.Guid>();
 
-        settings.RemoveSection(section);
+        settings.ReorderSection(section, request.OrderIndex);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok("CONTENT_DELETED");
+        return _msg.Ok(section.Id, "SECTION_REORDERED");
     }
 }

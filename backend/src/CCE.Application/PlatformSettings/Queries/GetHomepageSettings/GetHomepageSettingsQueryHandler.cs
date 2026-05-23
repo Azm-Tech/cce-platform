@@ -38,11 +38,9 @@ public sealed class GetHomepageSettingsQueryHandler
         return _msg.Ok(new HomepageSettingsDto(
             settings.Id,
             settings.VideoUrl,
-            settings.ObjectiveAr,
-            settings.ObjectiveEn,
+            new LocalizedTextDto(settings.Objective.Ar, settings.Objective.En),
             settings.CceConceptsAr,
             settings.CceConceptsEn,
-            countries,
-            Convert.ToBase64String(settings.RowVersion)), "ITEMS_LISTED");
+            countries), "ITEMS_LISTED");
     }
 }

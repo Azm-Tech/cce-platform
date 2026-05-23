@@ -2,6 +2,7 @@ using CCE.Domain.Common;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.PlatformSettings;
+using CCE.Domain.PlatformSettings.ValueObjects;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -257,10 +258,14 @@ public sealed class ReferenceDataSeeder : ISeeder
     // ─── Platform Settings (singleton rows) ───
     private async Task SeedPlatformSettingsAsync(CancellationToken ct)
     {
+        var systemUser = DeterministicGuid.From("platform_settings:seeder");
+
         var hcId = DeterministicGuid.From("platform_settings:homepage");
         if (!await _ctx.HomepageSettings.AnyAsync(x => x.Id == hcId, ct).ConfigureAwait(false))
         {
-            var hs = HomepageSettings.Create("أهداف المنصة", "Platform objectives");
+            var hs = HomepageSettings.Create(
+                LocalizedText.Create("أهداف المنصة", "Platform objectives"),
+                systemUser, _clock);
             typeof(HomepageSettings).GetProperty(nameof(hs.Id))!.SetValue(hs, hcId);
             _ctx.HomepageSettings.Add(hs);
         }
@@ -268,7 +273,9 @@ public sealed class ReferenceDataSeeder : ISeeder
         var acId = DeterministicGuid.From("platform_settings:about");
         if (!await _ctx.AboutSettings.AnyAsync(x => x.Id == acId, ct).ConfigureAwait(false))
         {
-            var ac = AboutSettings.Create("وصف المنصة", "Platform description");
+            var ac = AboutSettings.Create(
+                LocalizedText.Create("وصف المنصة", "Platform description"),
+                systemUser, _clock);
             typeof(AboutSettings).GetProperty(nameof(ac.Id))!.SetValue(ac, acId);
             _ctx.AboutSettings.Add(ac);
         }
@@ -276,7 +283,7 @@ public sealed class ReferenceDataSeeder : ISeeder
         var pcId = DeterministicGuid.From("platform_settings:policies");
         if (!await _ctx.PoliciesSettings.AnyAsync(x => x.Id == pcId, ct).ConfigureAwait(false))
         {
-            var pc = PoliciesSettings.Create();
+            var pc = PoliciesSettings.Create(systemUser, _clock);
             typeof(PoliciesSettings).GetProperty(nameof(pc.Id))!.SetValue(pc, pcId);
             _ctx.PoliciesSettings.Add(pc);
         }
