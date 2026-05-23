@@ -1,9 +1,12 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Common;
+using CCE.Application.Notifications;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
+using CCE.Domain.Notifications;
 using CCE.Integration.AdminAuth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace CCE.Infrastructure.Identity;
@@ -18,7 +21,8 @@ public sealed class AuthService : IAuthService
     private readonly ICceDbContext _db;
     private readonly ISystemClock _clock;
     private readonly IOptions<LocalAuthOptions> _options;
-    private readonly IPasswordResetEmailSender _emailSender;
+    private readonly INotificationGateway _gateway;
+    private readonly IConfiguration _config;
     private readonly IAdminAuthGatewayClient _adGateway;
 
     public AuthService(
@@ -29,7 +33,8 @@ public sealed class AuthService : IAuthService
         ICceDbContext db,
         ISystemClock clock,
         IOptions<LocalAuthOptions> options,
-        IPasswordResetEmailSender emailSender,
+        INotificationGateway gateway,
+        IConfiguration config,
         IAdminAuthGatewayClient adGateway)
     {
         _userManager = userManager;
@@ -39,7 +44,8 @@ public sealed class AuthService : IAuthService
         _db = db;
         _clock = clock;
         _options = options;
-        _emailSender = emailSender;
+        _gateway = gateway;
+        _config = config;
         _adGateway = adGateway;
     }
 
@@ -152,7 +158,23 @@ public sealed class AuthService : IAuthService
         if (user is not null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
-            await _emailSender.SendAsync(user, PasswordResetTokenCodec.Encode(token), ct).ConfigureAwait(false);
+            var encodedToken = PasswordResetTokenCodec.Encode(token);
+            var baseUrl = _config.GetValue<string>("Frontend:PasswordResetUrl")
+                ?? "http://localhost:4200/reset-password";
+            var separator = baseUrl.Contains('?', StringComparison.Ordinal) ? '&' : '?';
+            var resetUrl = $"{baseUrl}{separator}email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
+
+            await _gateway.SendAsync(new NotificationDispatchRequest(
+                TemplateCode: "PASSWORD_RESET",
+                RecipientUserId: user.Id,
+                Channels: [NotificationChannel.Email, NotificationChannel.Sms],
+                Variables: new Dictionary<string, string>
+                {
+                    ["Name"] = user.FirstName,
+                    ["ResetUrl"] = resetUrl
+                },
+                Locale: user.LocalePreference,
+                BypassSettings: true), ct).ConfigureAwait(false);
         }
     }
 

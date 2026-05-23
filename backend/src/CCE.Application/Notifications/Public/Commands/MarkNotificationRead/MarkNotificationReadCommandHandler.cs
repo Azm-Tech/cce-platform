@@ -1,29 +1,41 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
+using CCE.Application.Notifications.Public;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Notifications.Public.Commands.MarkNotificationRead;
 
-public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNotificationReadCommand, Unit>
+public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNotificationReadCommand, Response<VoidData>>
 {
-    private readonly IUserNotificationService _service;
+    private readonly IUserNotificationRepository _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
     private readonly ISystemClock _clock;
 
-    public MarkNotificationReadCommandHandler(IUserNotificationService service, ISystemClock clock)
+    public MarkNotificationReadCommandHandler(
+        IUserNotificationRepository repo,
+        ICceDbContext db,
+        MessageFactory msg,
+        ISystemClock clock)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _msg = msg;
         _clock = clock;
     }
 
-    public async Task<Unit> Handle(MarkNotificationReadCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(MarkNotificationReadCommand request, CancellationToken cancellationToken)
     {
-        var notif = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var notif = await _repo.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
         if (notif is null || notif.UserId != request.UserId)
-            throw new KeyNotFoundException($"Notification {request.Id} not found.");
+            return _msg.NotificationLogNotFound<VoidData>();
 
         notif.MarkRead(_clock);
-        await _service.UpdateAsync(notif, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return Unit.Value;
+        return _msg.NotificationMarkedRead();
     }
 }

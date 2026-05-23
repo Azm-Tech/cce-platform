@@ -17,6 +17,6 @@ internal sealed class NotificationTemplateConfiguration : IEntityTypeConfigurati
         builder.Property(t => t.BodyEn).HasColumnType("nvarchar(max)");
         builder.Property(t => t.Channel).HasConversion<int>();
         builder.Property(t => t.VariableSchemaJson).HasColumnType("nvarchar(max)");
-        builder.HasIndex(t => t.Code).IsUnique().HasDatabaseName("ux_notification_template_code");
+        builder.HasIndex(t => new { t.Code, t.Channel }).IsUnique().HasDatabaseName("ux_notification_template_code_channel");
     }
 }

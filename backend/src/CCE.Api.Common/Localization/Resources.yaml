@@ -411,3 +411,23 @@ SETTINGS_UPDATED:
 CONTENT_UPDATE_FAILED:
   ar: "عذراً، حدثت مشكلة أثناء تحديث المحتوى"
   en: "Sorry, a problem occurred while updating the content"
+
+NOTIFICATION_SETTINGS_UPDATED:
+  ar: "تم تحديث إعدادات الإشعارات بنجاح"
+  en: "Notification settings updated successfully"
+
+NOTIFICATION_RETRIED:
+  ar: "تمت إعادة إرسال الإشعار بنجاح"
+  en: "Notification retried successfully"
+
+NOTIFICATIONS_MARKED_READ:
+  ar: "تم تحديد الإشعارات كمقروءة"
+  en: "Notifications marked as read"
+
+NOTIFICATION_TEMPLATE_CREATED:
+  ar: "تم إنشاء قالب الإشعار بنجاح"
+  en: "Notification template created successfully"
+
+NOTIFICATION_TEMPLATE_UPDATED:
+  ar: "تم تحديث قالب الإشعار بنجاح"
+  en: "Notification template updated successfully"

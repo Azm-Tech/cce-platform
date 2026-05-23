@@ -1,5 +1,7 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Application.Notifications.Dtos;
 using CCE.Application.Notifications.Queries.ListNotificationTemplates;
 using MediatR;
@@ -7,16 +9,18 @@ using MediatR;
 namespace CCE.Application.Notifications.Queries.GetNotificationTemplateById;
 
 public sealed class GetNotificationTemplateByIdQueryHandler
-    : IRequestHandler<GetNotificationTemplateByIdQuery, NotificationTemplateDto?>
+    : IRequestHandler<GetNotificationTemplateByIdQuery, Response<NotificationTemplateDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetNotificationTemplateByIdQueryHandler(ICceDbContext db)
+    public GetNotificationTemplateByIdQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<NotificationTemplateDto?> Handle(
+    public async Task<Response<NotificationTemplateDto>> Handle(
         GetNotificationTemplateByIdQuery request,
         CancellationToken cancellationToken)
     {
@@ -25,6 +29,8 @@ public sealed class GetNotificationTemplateByIdQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
         var template = list.SingleOrDefault();
-        return template is null ? null : ListNotificationTemplatesQueryHandler.MapToDto(template);
+        return template is null
+            ? _msg.NotificationTemplateNotFound<NotificationTemplateDto>()
+            : _msg.Ok(ListNotificationTemplatesQueryHandler.MapToDto(template), "ITEMS_LISTED");
     }
 }

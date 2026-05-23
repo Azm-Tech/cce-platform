@@ -51,6 +51,8 @@ public interface ICceDbContext
     IQueryable<PostFollow> PostFollows { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
     IQueryable<UserNotification> UserNotifications { get; }
+    IQueryable<NotificationLog> NotificationLogs { get; }
+    IQueryable<UserNotificationSettings> UserNotificationSettings { get; }
     IQueryable<ServiceRating> ServiceRatings { get; }
     IQueryable<AuditEvent> AuditEvents { get; }
     IQueryable<KnowledgeMap> KnowledgeMaps { get; }

@@ -176,6 +176,11 @@ public static class SystemCode
     public const string CON040 = "CON040"; // Notification created
     public const string CON041 = "CON041"; // Notification marked read
     public const string CON042 = "CON042"; // Notification deleted
+    public const string CON043 = "CON043"; // Notification settings updated
+    public const string CON044 = "CON044"; // Notification retried
+    public const string CON045 = "CON045"; // Notifications marked read
+    public const string CON046 = "CON046"; // Notification template created
+    public const string CON047 = "CON047"; // Notification template updated
 
     // ─── General Success ───
     public const string CON100 = "CON100"; // Items listed successfully

@@ -13,6 +13,7 @@ using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Identity.Public;
 using CCE.Application.InteractiveCity;
 using CCE.Application.Notifications;
+using CCE.Application.Notifications.Messages;
 using CCE.Application.Notifications.Public;
 using CCE.Application.Reports;
 using CCE.Application.Search;
@@ -25,6 +26,7 @@ using CCE.Infrastructure.Media;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
+using CCE.Infrastructure.Notifications.Messaging;
 using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
 using CCE.Application.Localization;
@@ -121,7 +123,6 @@ public static class DependencyInjection
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
         services.AddScoped<ILocalTokenService, LocalTokenService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-        services.AddScoped<IPasswordResetEmailSender, PasswordResetEmailSender>();
         services.AddScoped<IAuthService, AuthService>();
 
         // Sub-11 Phase 01 — Microsoft Graph user-create + CCE-side persist.
@@ -185,8 +186,20 @@ public static class DependencyInjection
         services.AddScoped<IPoliciesSettingsRepository, PoliciesSettingsRepository>();
 
         services.AddScoped<IMediaFileRepository, MediaFileRepository>();
-        services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
-        services.AddScoped<IUserNotificationService, UserNotificationService>();
+        services.AddScoped<INotificationTemplateRepository, NotificationTemplateRepository>();
+        services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+        services.AddScoped<IUserNotificationSettingsRepository, UserNotificationSettingsRepository>();
+        services.AddScoped<INotificationLogRepository, NotificationLogRepository>();
+        services.AddScoped<ICommunityReadService, CommunityReadService>();
+
+        // Notification gateway
+        services.AddScoped<INotificationGateway, NotificationGateway>();
+        services.AddScoped<INotificationMessageDispatcher, InProcessNotificationMessageDispatcher>();
+        services.AddScoped<INotificationTemplateRenderer, NotificationTemplateRenderer>();
+        services.AddScoped<INotificationChannelHandler, EmailNotificationChannelSender>();
+        services.AddScoped<INotificationChannelHandler, SmsNotificationChannelSender>();
+        services.AddScoped<INotificationChannelHandler, InAppNotificationChannelSender>();
+        services.AddScoped<ISignalRNotificationPublisher, SignalRNotificationPublisher>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();
@@ -206,6 +219,10 @@ public static class DependencyInjection
 
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
+
+        // Messaging (MassTransit) — transport selected by Messaging:Transport in appsettings.
+        // InMemory by default (no broker); set to RabbitMQ in production.
+        services.AddCceMessaging(configuration);
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();

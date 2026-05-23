@@ -138,6 +138,11 @@ public static class SystemCodeMap
         ["NOTIFICATION_CREATED"] = SystemCode.CON040,
         ["NOTIFICATION_MARKED_READ"] = SystemCode.CON041,
         ["NOTIFICATION_DELETED"] = SystemCode.CON042,
+        ["NOTIFICATION_SETTINGS_UPDATED"] = SystemCode.CON043,
+        ["NOTIFICATION_RETRIED"] = SystemCode.CON044,
+        ["NOTIFICATIONS_MARKED_READ"] = SystemCode.CON045,
+        ["NOTIFICATION_TEMPLATE_CREATED"] = SystemCode.CON046,
+        ["NOTIFICATION_TEMPLATE_UPDATED"] = SystemCode.CON047,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,

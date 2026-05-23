@@ -43,6 +43,7 @@ builder.Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
+builder.Services.AddSignalR().AddJsonProtocol();
 
 var app = builder.Build();
 
@@ -78,6 +79,7 @@ app.MapHomepageSectionEndpoints();
 app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
+app.MapNotificationLogEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
 app.MapHomepageSettingsEndpoints();

@@ -152,6 +152,12 @@ groups:
     TemplateManage:
       description: Manage notification templates
       roles: [cce-super-admin, cce-admin]
+    LogView:
+      description: View notification logs and retry failed deliveries
+      roles: [cce-super-admin, cce-admin]
+    Send:
+      description: Send manual/admin notifications
+      roles: [cce-super-admin, cce-admin]
   Audit:
     Read:
       description: Query the audit-event log
