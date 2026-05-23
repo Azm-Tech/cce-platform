@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CCE.Application.Notifications.Messages;
 
 namespace CCE.Infrastructure.Notifications.Messaging;
 

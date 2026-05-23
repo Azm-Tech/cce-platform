@@ -253,6 +253,16 @@ public sealed class ReferenceDataSeeder : ISeeder
          "تم إنشاء منشور جديد في الموضوع الذي تتابعه.", "A new post was created in a topic you follow.",
          CCE.Domain.Notifications.NotificationChannel.InApp),
 
+        // OTP_VERIFICATION
+        ("OTP_VERIFICATION", "رمز التحقق", "Verification Code",
+         "رمز التحقق الخاص بك هو: {{Code}}. صالح لمدة 5 دقائق.",
+         "Your verification code is: {{Code}}. Valid for 5 minutes.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("OTP_VERIFICATION", "رمز التحقق", "Verification Code",
+         "رمز التحقق: {{Code}}",
+         "Your code: {{Code}}",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+
         // PASSWORD_RESET
         ("PASSWORD_RESET", "استعادة كلمة المرور", "Reset your password",
          "مرحباً {{Name}}، استخدم الرابط التالي لإعادة تعيين كلمة المرور: {{ResetUrl}}",

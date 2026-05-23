@@ -412,6 +412,31 @@ CONTENT_UPDATE_FAILED:
   ar: "عذراً، حدثت مشكلة أثناء تحديث المحتوى"
   en: "Sorry, a problem occurred while updating the content"
 
+OTP_NOT_FOUND:
+  ar: "طلب التحقق غير موجود."
+  en: "Verification request not found."
+OTP_EXPIRED:
+  ar: "انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد."
+  en: "The verification code has expired. Please request a new one."
+OTP_INVALID_CODE:
+  ar: "رمز التحقق غير صحيح."
+  en: "The verification code is incorrect."
+OTP_MAX_ATTEMPTS:
+  ar: "تجاوزت الحد الأقصى لمحاولات التحقق. يرجى طلب رمز جديد."
+  en: "Maximum verification attempts reached. Please request a new code."
+OTP_COOLDOWN_ACTIVE:
+  ar: "يرجى الانتظار 60 ثانية قبل طلب رمز جديد."
+  en: "Please wait 60 seconds before requesting a new code."
+OTP_INVALIDATED:
+  ar: "تم إلغاء صلاحية رمز التحقق هذا."
+  en: "This verification code has been invalidated."
+OTP_SENT:
+  ar: "تم إرسال رمز التحقق بنجاح."
+  en: "Verification code sent successfully."
+OTP_VERIFIED:
+  ar: "تم التحقق بنجاح."
+  en: "Verification successful."
+
 NOTIFICATION_SETTINGS_UPDATED:
   ar: "تم تحديث إعدادات الإشعارات بنجاح"
   en: "Notification settings updated successfully"
