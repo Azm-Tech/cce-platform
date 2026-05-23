@@ -85,6 +85,14 @@ public static class SystemCodeMap
         ["KNOWLEDGE_PARTNER_NOT_FOUND"] = SystemCode.ERR057,
         ["POLICY_SECTION_NOT_FOUND"] = SystemCode.ERR058,
 
+        // ─── Verification Errors ───
+        ["OTP_NOT_FOUND"] = SystemCode.ERR120,
+        ["OTP_EXPIRED"] = SystemCode.ERR121,
+        ["OTP_INVALID_CODE"] = SystemCode.ERR122,
+        ["OTP_MAX_ATTEMPTS"] = SystemCode.ERR123,
+        ["OTP_COOLDOWN_ACTIVE"] = SystemCode.ERR124,
+        ["OTP_INVALIDATED"] = SystemCode.ERR125,
+
         // ─── General Errors ───
         ["INTERNAL_ERROR"] = SystemCode.ERR900,
         ["UNAUTHORIZED_ACCESS"] = SystemCode.ERR901,
@@ -143,6 +151,10 @@ public static class SystemCodeMap
         ["NOTIFICATIONS_MARKED_READ"] = SystemCode.CON045,
         ["NOTIFICATION_TEMPLATE_CREATED"] = SystemCode.CON046,
         ["NOTIFICATION_TEMPLATE_UPDATED"] = SystemCode.CON047,
+
+        // ─── Verification Success ───
+        ["OTP_SENT"] = SystemCode.CON060,
+        ["OTP_VERIFIED"] = SystemCode.CON061,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,

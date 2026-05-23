@@ -13,6 +13,7 @@ using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
+using CCE.Domain.Verification;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +82,10 @@ public sealed class CceDbContext
     public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
     public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
 
+    // ─── Verification ───
+    public DbSet<OtpVerification> OtpVerifications => Set<OtpVerification>();
+    public DbSet<UserVerification> UserVerifications => Set<UserVerification>();
+
     // ─── Surveys ───
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
@@ -143,9 +148,12 @@ public sealed class CceDbContext
     IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
     IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
     IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+    IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
+    IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
     IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
 
     void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);
+    void ICceDbContext.Attach<T>(T entity) where T : class => Set<T>().Attach(entity);
     void ICceDbContext.Delete<T>(T entity) where T : class => Set<T>().Remove(entity);
     void ICceDbContext.DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class
         => Set<T>().RemoveRange(entities);

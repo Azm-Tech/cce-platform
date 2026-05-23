@@ -96,6 +96,15 @@ public sealed class MessageFactory
     public Response<T> FileTooLarge<T>()      => BusinessRule<T>("FILE_TOO_LARGE");
     public Response<T> EmptyFile<T>()         => BusinessRule<T>("EMPTY_FILE");
 
+    // ─── Convenience shortcuts (Verification domain) ───
+
+    public Response<T> OtpNotFound<T>()        => NotFound<T>("OTP_NOT_FOUND");
+    public Response<T> OtpExpired<T>()         => BusinessRule<T>("OTP_EXPIRED");
+    public Response<T> OtpInvalidCode<T>()     => BusinessRule<T>("OTP_INVALID_CODE");
+    public Response<T> OtpMaxAttempts<T>()     => BusinessRule<T>("OTP_MAX_ATTEMPTS");
+    public Response<T> OtpCooldownActive<T>()  => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
+    public Response<T> OtpInvalidated<T>()     => BusinessRule<T>("OTP_INVALIDATED");
+
     // ─── Convenience shortcuts (Notification domain) ───
 
     public Response<T> NotificationTemplateNotFound<T>() => NotFound<T>("TEMPLATE_NOT_FOUND");

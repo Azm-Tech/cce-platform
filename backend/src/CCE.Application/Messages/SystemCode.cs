@@ -105,6 +105,14 @@ public static class SystemCode
     public const string ERR057 = "ERR057"; // Knowledge partner not found
     public const string ERR058 = "ERR058"; // Policy section not found
 
+    // ─── Verification Errors ───
+    public const string ERR120 = "ERR120"; // OTP not found
+    public const string ERR121 = "ERR121"; // OTP expired
+    public const string ERR122 = "ERR122"; // OTP invalid code
+    public const string ERR123 = "ERR123"; // OTP max attempts exceeded
+    public const string ERR124 = "ERR124"; // OTP cooldown active
+    public const string ERR125 = "ERR125"; // OTP invalidated
+
     // ─── General Errors ───
     public const string ERR900 = "ERR900"; // Internal server error
     public const string ERR901 = "ERR901"; // Unauthorized access
@@ -171,6 +179,10 @@ public static class SystemCode
     public const string CON033 = "CON033"; // Followed successfully
     public const string CON034 = "CON034"; // Unfollowed successfully
     public const string CON035 = "CON035"; // Marked as answered
+
+    // ─── Verification Success ───
+    public const string CON060 = "CON060"; // OTP sent
+    public const string CON061 = "CON061"; // OTP verified
 
     // ─── Notification Success ───
     public const string CON040 = "CON040"; // Notification created

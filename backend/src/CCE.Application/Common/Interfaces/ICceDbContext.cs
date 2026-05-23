@@ -9,6 +9,7 @@ using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
+using CCE.Domain.Verification;
 using Microsoft.AspNetCore.Identity;
 using DomainCountry = CCE.Domain.Country;
 
@@ -70,11 +71,16 @@ public interface ICceDbContext
     IQueryable<KnowledgePartner> KnowledgePartners { get; }
     IQueryable<PolicySection> PolicySections { get; }
 
+    // ─── Verification ───
+    IQueryable<OtpVerification> OtpVerifications { get; }
+    IQueryable<UserVerification> UserVerifications { get; }
+
     // ─── Media ───
     IQueryable<MediaFile> MediaFiles { get; }
 
     // Write operations
     void Add<T>(T entity) where T : class;
+    void Attach<T>(T entity) where T : class;
     void Delete<T>(T entity) where T : class;
     void DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class;
 

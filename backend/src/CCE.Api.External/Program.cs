@@ -8,6 +8,7 @@ using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Api.External.Endpoints;
+using CCE.Api.External.Endpoints.Verification;
 using CCE.Api.External.Hubs;
 using CCE.Application;
 using CCE.Infrastructure.Notifications;
@@ -116,6 +117,7 @@ app.MapHomepageSettingsPublicEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();
+app.MapVerificationEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

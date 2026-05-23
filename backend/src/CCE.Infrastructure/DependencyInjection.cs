@@ -29,6 +29,7 @@ using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Notifications.Messaging;
 using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
+using CCE.Application.Verification;
 using CCE.Application.Localization;
 using CCE.Domain.Common;
 using CCE.Integration.Communication;
@@ -38,6 +39,8 @@ using CCE.Infrastructure.Files;
 using CCE.Infrastructure.Identity;
 using CCE.Infrastructure.Localization;
 using CCE.Infrastructure.Persistence;
+using CCE.Infrastructure.Persistence.Repositories;
+using CCE.Infrastructure.Security;
 using CCE.Infrastructure.Persistence.Interceptors;
 using CCE.Infrastructure.PlatformSettings;
 using CCE.Infrastructure.Search;
@@ -191,6 +194,12 @@ public static class DependencyInjection
         services.AddScoped<IUserNotificationSettingsRepository, UserNotificationSettingsRepository>();
         services.AddScoped<INotificationLogRepository, NotificationLogRepository>();
         services.AddScoped<ICommunityReadService, CommunityReadService>();
+
+        // Verification (OTP)
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IOtpVerificationRepository, OtpVerificationRepository>();
+        services.AddScoped<IUserVerificationRepository, UserVerificationRepository>();
+        services.AddSingleton<IOtpCodeGenerator, OtpCodeGenerator>();
 
         // Notification gateway
         services.AddScoped<INotificationGateway, NotificationGateway>();
