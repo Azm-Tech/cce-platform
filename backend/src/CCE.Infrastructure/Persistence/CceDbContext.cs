@@ -78,6 +78,8 @@ public sealed class CceDbContext
     // ─── Notifications ───
     public DbSet<NotificationTemplate> NotificationTemplates => Set<NotificationTemplate>();
     public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
+    public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
+    public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
 
     // ─── Surveys ───
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
@@ -123,6 +125,8 @@ public sealed class CceDbContext
     IQueryable<PostFollow> ICceDbContext.PostFollows => PostFollows.AsNoTracking();
     IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates.AsNoTracking();
     IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications.AsNoTracking();
+    IQueryable<NotificationLog> ICceDbContext.NotificationLogs => NotificationLogs.AsNoTracking();
+    IQueryable<UserNotificationSettings> ICceDbContext.UserNotificationSettings => UserNotificationSettings.AsNoTracking();
     IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings.AsNoTracking();
     IQueryable<AuditEvent> ICceDbContext.AuditEvents => AuditEvents.AsNoTracking();
     IQueryable<KnowledgeMap> ICceDbContext.KnowledgeMaps => KnowledgeMaps.AsNoTracking();

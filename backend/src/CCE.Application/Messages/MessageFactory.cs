@@ -96,6 +96,17 @@ public sealed class MessageFactory
     public Response<T> FileTooLarge<T>()      => BusinessRule<T>("FILE_TOO_LARGE");
     public Response<T> EmptyFile<T>()         => BusinessRule<T>("EMPTY_FILE");
 
+    // ─── Convenience shortcuts (Notification domain) ───
+
+    public Response<T> NotificationTemplateNotFound<T>() => NotFound<T>("TEMPLATE_NOT_FOUND");
+    public Response<T> NotificationLogNotFound<T>()    => NotFound<T>("NOTIFICATION_NOT_FOUND");
+    public Response<VoidData> NotificationSettingsUpdated() => Ok("NOTIFICATION_SETTINGS_UPDATED");
+    public Response<VoidData> NotificationMarkedRead()       => Ok("NOTIFICATION_MARKED_READ");
+    public Response<int> NotificationsMarkedRead(int count)  => Ok(count, "NOTIFICATIONS_MARKED_READ");
+    public Response<T> NotificationRetried<T>(T data)      => Ok(data, "NOTIFICATION_RETRIED");
+    public Response<T> NotificationTemplateCreated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_CREATED");
+    public Response<T> NotificationTemplateUpdated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_UPDATED");
+
     // ─── Private ───
 
     private Response<T> Fail<T>(string domainKey, MessageType type)

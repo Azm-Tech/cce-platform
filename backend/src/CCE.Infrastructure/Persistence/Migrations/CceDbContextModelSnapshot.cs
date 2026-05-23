@@ -2382,6 +2382,83 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("media_files", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Notifications.NotificationLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("int")
+                        .HasColumnName("attempt_count");
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("int")
+                        .HasColumnName("channel");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("error");
+
+                    b.Property<DateTimeOffset?>("FailedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("failed_on");
+
+                    b.Property<string>("PayloadJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("payload_json");
+
+                    b.Property<string>("ProviderMessageId")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("provider_message_id");
+
+                    b.Property<Guid?>("RecipientUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("recipient_user_id");
+
+                    b.Property<DateTimeOffset?>("SentOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("sent_on");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TemplateCode")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("template_code");
+
+                    b.Property<Guid?>("TemplateId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("template_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notification_logs");
+
+                    b.HasIndex("CorrelationId")
+                        .HasDatabaseName("ix_notification_log_correlation_id");
+
+                    b.HasIndex("TemplateCode", "Channel")
+                        .HasDatabaseName("ix_notification_log_template_channel");
+
+                    b.HasIndex("RecipientUserId", "Status", "CreatedOn")
+                        .HasDatabaseName("ix_notification_log_recipient_status_created");
+
+                    b.ToTable("notification_logs", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Notifications.NotificationTemplate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2432,9 +2509,9 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_notification_templates");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("Code", "Channel")
                         .IsUnique()
-                        .HasDatabaseName("ux_notification_template_code");
+                        .HasDatabaseName("ux_notification_template_code_channel");
 
                     b.ToTable("notification_templates", (string)null);
                 });
@@ -2499,6 +2576,44 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_user_notification_user_status");
 
                     b.ToTable("user_notifications", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Notifications.UserNotificationSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("int")
+                        .HasColumnName("channel");
+
+                    b.Property<string>("EventCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("event_code");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_enabled");
+
+                    b.Property<DateTimeOffset>("UpdatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("updated_on");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_notification_settings");
+
+                    b.HasIndex("UserId", "Channel", "EventCode")
+                        .IsUnique()
+                        .HasDatabaseName("ux_user_notification_settings_user_channel_event")
+                        .HasFilter("[event_code] IS NOT NULL");
+
+                    b.ToTable("user_notification_settings", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>

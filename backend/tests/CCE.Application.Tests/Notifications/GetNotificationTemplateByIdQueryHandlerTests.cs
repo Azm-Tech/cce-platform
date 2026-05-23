@@ -7,14 +7,15 @@ namespace CCE.Application.Tests.Notifications;
 public class GetNotificationTemplateByIdQueryHandlerTests
 {
     [Fact]
-    public async Task Returns_null_when_template_not_found()
+    public async Task Returns_failure_response_when_template_not_found()
     {
         var db = BuildDb(System.Array.Empty<NotificationTemplate>());
-        var sut = new GetNotificationTemplateByIdQueryHandler(db);
+        var sut = new GetNotificationTemplateByIdQueryHandler(db, NotificationTestMessages.Create());
 
         var result = await sut.Handle(new GetNotificationTemplateByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Data.Should().BeNull();
     }
 
     [Fact]
@@ -30,20 +31,20 @@ public class GetNotificationTemplateByIdQueryHandlerTests
             "{\"name\": \"string\"}");
 
         var db = BuildDb(new[] { template });
-        var sut = new GetNotificationTemplateByIdQueryHandler(db);
+        var sut = new GetNotificationTemplateByIdQueryHandler(db, NotificationTestMessages.Create());
 
         var result = await sut.Handle(new GetNotificationTemplateByIdQuery(template.Id), CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Id.Should().Be(template.Id);
-        result.Code.Should().Be("WELCOME_EMAIL");
-        result.SubjectAr.Should().Be("مرحبا");
-        result.SubjectEn.Should().Be("Welcome");
-        result.BodyAr.Should().Be("جسم عربي");
-        result.BodyEn.Should().Be("English body");
-        result.Channel.Should().Be(NotificationChannel.Email);
-        result.VariableSchemaJson.Should().Be("{\"name\": \"string\"}");
-        result.IsActive.Should().BeTrue();
+        result.Data!.Id.Should().Be(template.Id);
+        result.Data.Code.Should().Be("WELCOME_EMAIL");
+        result.Data.SubjectAr.Should().Be("مرحبا");
+        result.Data.SubjectEn.Should().Be("Welcome");
+        result.Data.BodyAr.Should().Be("جسم عربي");
+        result.Data.BodyEn.Should().Be("English body");
+        result.Data.Channel.Should().Be(NotificationChannel.Email);
+        result.Data.VariableSchemaJson.Should().Be("{\"name\": \"string\"}");
+        result.Data.IsActive.Should().BeTrue();
     }
 
     private static ICceDbContext BuildDb(IEnumerable<NotificationTemplate> templates)

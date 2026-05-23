@@ -163,29 +163,116 @@ public sealed class ReferenceDataSeeder : ISeeder
         string BodyAr, string BodyEn,
         CCE.Domain.Notifications.NotificationChannel Channel)[] InitialTemplates =
     {
+        // ACCOUNT_CREATED
         ("ACCOUNT_CREATED", "تم إنشاء حسابك", "Your account is created",
          "مرحباً {{Name}}، تم إنشاء حسابك بنجاح.", "Hi {{Name}}, your account is now active.",
          CCE.Domain.Notifications.NotificationChannel.Email),
+        ("ACCOUNT_CREATED", "تم إنشاء حسابك", "Your account is created",
+         "مرحباً {{Name}}، تم إنشاء حسابك بنجاح.", "Hi {{Name}}, your account is now active.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("ACCOUNT_CREATED", "تم إنشاء حسابك", "Your account is created",
+         "مرحباً {{Name}}، تم إنشاء حسابك بنجاح.", "Hi {{Name}}, your account is now active.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // EXPERT_REQUEST_APPROVED
         ("EXPERT_REQUEST_APPROVED", "تمت الموافقة على طلبك", "Your expert request was approved",
          "مرحباً {{Name}}، تمت الموافقة على طلب الخبير الخاص بك.",
          "Hi {{Name}}, your expert-registration request has been approved.",
          CCE.Domain.Notifications.NotificationChannel.Email),
+        ("EXPERT_REQUEST_APPROVED", "تمت الموافقة", "Approved",
+         "تمت الموافقة على طلب الخبير.", "Your expert request has been approved.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("EXPERT_REQUEST_APPROVED", "تمت الموافقة على طلبك", "Your expert request was approved",
+         "مرحباً {{Name}}، تمت الموافقة على طلب الخبير الخاص بك.",
+         "Hi {{Name}}, your expert-registration request has been approved.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // EXPERT_REQUEST_REJECTED
         ("EXPERT_REQUEST_REJECTED", "تم رفض طلبك", "Your expert request was rejected",
          "نأسف، تم رفض طلب الخبير: {{Reason}}", "Sorry, your expert request was rejected: {{Reason}}",
          CCE.Domain.Notifications.NotificationChannel.Email),
+        ("EXPERT_REQUEST_REJECTED", "تم الرفض", "Rejected",
+         "نأسف، تم رفض طلب الخبير.", "Sorry, your expert request was rejected.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("EXPERT_REQUEST_REJECTED", "تم رفض طلبك", "Your expert request was rejected",
+         "نأسف، تم رفض طلب الخبير: {{Reason}}", "Sorry, your expert request was rejected: {{Reason}}",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // RESOURCE_REQUEST_APPROVED
+        ("RESOURCE_REQUEST_APPROVED", "تمت الموافقة على المورد", "Country resource approved",
+         "تمت الموافقة على مساهمة الدولة الخاصة بك.", "Your country resource submission was approved.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("RESOURCE_REQUEST_APPROVED", "تمت الموافقة", "Approved",
+         "تمت الموافقة على المورد.", "Your country resource was approved.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
         ("RESOURCE_REQUEST_APPROVED", "تمت الموافقة على المورد", "Country resource approved",
          "تمت الموافقة على مساهمة الدولة الخاصة بك.", "Your country resource submission was approved.",
          CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // NEWS_PUBLISHED
+        ("NEWS_PUBLISHED", "تم نشر خبر", "News published",
+         "تم نشر الخبر.", "Your news article has been published.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("NEWS_PUBLISHED", "تم النشر", "Published",
+         "تم نشر الخبر.", "News published.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("NEWS_PUBLISHED", "تم نشر خبر", "News published",
+         "تم نشر الخبر.", "Your news article has been published.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // RESOURCE_PUBLISHED
+        ("RESOURCE_PUBLISHED", "تم نشر مورد", "Resource published",
+         "تم نشر المورد.", "Your resource has been published.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("RESOURCE_PUBLISHED", "تم النشر", "Published",
+         "تم نشر المورد.", "Resource published.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("RESOURCE_PUBLISHED", "تم نشر مورد", "Resource published",
+         "تم نشر المورد.", "Your resource has been published.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // EVENT_SCHEDULED
+        ("EVENT_SCHEDULED", "تم جدولة فعالية", "Event scheduled",
+         "تم جدولة الفعالية.", "The event has been scheduled.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("EVENT_SCHEDULED", "تم الجدولة", "Scheduled",
+         "تم جدولة الفعالية.", "Event scheduled.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("EVENT_SCHEDULED", "تم جدولة فعالية", "Event scheduled",
+         "تم جدولة الفعالية.", "The event has been scheduled.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // COMMUNITY_POST_CREATED
+        ("COMMUNITY_POST_CREATED", "منشور جديد", "New post",
+         "تم إنشاء منشور جديد في الموضوع الذي تتابعه.", "A new post was created in a topic you follow.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("COMMUNITY_POST_CREATED", "منشور جديد", "New post",
+         "منشور جديد.", "New post.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+        ("COMMUNITY_POST_CREATED", "منشور جديد", "New post",
+         "تم إنشاء منشور جديد في الموضوع الذي تتابعه.", "A new post was created in a topic you follow.",
+         CCE.Domain.Notifications.NotificationChannel.InApp),
+
+        // PASSWORD_RESET
+        ("PASSWORD_RESET", "استعادة كلمة المرور", "Reset your password",
+         "مرحباً {{Name}}، استخدم الرابط التالي لإعادة تعيين كلمة المرور: {{ResetUrl}}",
+         "Hi {{Name}}, use the link below to reset your password: {{ResetUrl}}",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+        ("PASSWORD_RESET", "استعادة كلمة المرور", "Reset your password",
+         "مرحباً {{Name}}، رابط إعادة تعيين كلمة المرور: {{ResetUrl}}",
+         "Hi {{Name}}, reset your password: {{ResetUrl}}",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
     };
 
     private async Task SeedNotificationTemplatesAsync(CancellationToken ct)
     {
         foreach (var t in InitialTemplates)
         {
-            var id = DeterministicGuid.From($"template:{t.Code}");
             var exists = await _ctx.NotificationTemplates
-                .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
+                .AnyAsync(x => x.Code == t.Code && x.Channel == t.Channel, ct)
+                .ConfigureAwait(false);
             if (exists) continue;
+            var id = DeterministicGuid.From($"template:{t.Code}:{(int)t.Channel}");
             var template = CCE.Domain.Notifications.NotificationTemplate.Define(
                 t.Code, t.SubjectAr, t.SubjectEn, t.BodyAr, t.BodyEn, t.Channel, "{}");
             typeof(CCE.Domain.Notifications.NotificationTemplate)

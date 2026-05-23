@@ -1,5 +1,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Notifications.Public.Queries.ListMyNotifications;
+using CCE.Application.Tests.Notifications;
 using CCE.Domain.Notifications;
 using CCE.TestInfrastructure.Time;
 
@@ -20,13 +21,13 @@ public class ListMyNotificationsQueryHandlerTests
     public async Task Returns_empty_when_user_has_no_notifications()
     {
         var db = BuildDb(System.Array.Empty<UserNotification>());
-        var sut = new ListMyNotificationsQueryHandler(db);
+        var sut = new ListMyNotificationsQueryHandler(db, NotificationTestMessages.Create());
         var userId = System.Guid.NewGuid();
 
         var result = await sut.Handle(new ListMyNotificationsQuery(userId), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
     }
 
     [Fact]
@@ -38,12 +39,12 @@ public class ListMyNotificationsQueryHandlerTests
         var other = MakeSent(otherId);
 
         var db = BuildDb(new[] { mine, other });
-        var sut = new ListMyNotificationsQueryHandler(db);
+        var sut = new ListMyNotificationsQueryHandler(db, NotificationTestMessages.Create());
 
         var result = await sut.Handle(new ListMyNotificationsQuery(myId), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().Id.Should().Be(mine.Id);
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().Id.Should().Be(mine.Id);
     }
 
     [Fact]
@@ -61,14 +62,14 @@ public class ListMyNotificationsQueryHandlerTests
         read.MarkRead(clock);
 
         var db = BuildDb(new[] { sent, read });
-        var sut = new ListMyNotificationsQueryHandler(db);
+        var sut = new ListMyNotificationsQueryHandler(db, NotificationTestMessages.Create());
 
         var result = await sut.Handle(
             new ListMyNotificationsQuery(userId, Status: NotificationStatus.Sent),
             CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().Status.Should().Be(NotificationStatus.Sent);
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().Status.Should().Be(NotificationStatus.Sent);
     }
 
     private static ICceDbContext BuildDb(IEnumerable<UserNotification> notifications)

@@ -8,12 +8,15 @@ using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
 using CCE.Api.External.Endpoints;
+using CCE.Api.External.Hubs;
 using CCE.Application;
+using CCE.Infrastructure.Notifications;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.Globalization;
@@ -50,6 +53,8 @@ builder.Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
+builder.Services.Replace(ServiceDescriptor.Singleton<IUserIdProvider, SubClaimUserIdProvider>());
+builder.Services.AddSignalR().AddJsonProtocol();
 
 var app = builder.Build();
 
@@ -83,8 +88,10 @@ app.MapGet("/auth/echo", (HttpContext ctx) =>
 // deployments leave the flag false → endpoints are never mounted.
 if (builder.Configuration.GetValue<bool>("Auth:DevMode"))
 {
-    app.MapDevAuthEndpoints();
+        app.MapDevAuthEndpoints();
 }
+
+app.MapHub<NotificationsHub>("/hubs/notifications");
 
 app.MapProfileEndpoints();
 app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.External);

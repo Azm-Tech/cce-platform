@@ -1,27 +1,35 @@
-using CCE.Application.Notifications.Dtos;
-using CCE.Application.Notifications.Queries.ListNotificationTemplates;
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Notifications.Commands.UpdateNotificationTemplate;
 
 public sealed class UpdateNotificationTemplateCommandHandler
-    : IRequestHandler<UpdateNotificationTemplateCommand, NotificationTemplateDto?>
+    : IRequestHandler<UpdateNotificationTemplateCommand, Response<System.Guid>>
 {
-    private readonly INotificationTemplateService _service;
+    private readonly INotificationTemplateRepository _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public UpdateNotificationTemplateCommandHandler(INotificationTemplateService service)
+    public UpdateNotificationTemplateCommandHandler(
+        INotificationTemplateRepository repo,
+        ICceDbContext db,
+        MessageFactory msg)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _msg = msg;
     }
 
-    public async Task<NotificationTemplateDto?> Handle(
+    public async Task<Response<System.Guid>> Handle(
         UpdateNotificationTemplateCommand request,
         CancellationToken cancellationToken)
     {
-        var template = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var template = await _repo.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (template is null)
         {
-            return null;
+            return _msg.NotificationTemplateNotFound<System.Guid>();
         }
 
         template.UpdateContent(request.SubjectAr, request.SubjectEn, request.BodyAr, request.BodyEn);
@@ -31,8 +39,8 @@ public sealed class UpdateNotificationTemplateCommandHandler
         else
             template.Deactivate();
 
-        await _service.UpdateAsync(template, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListNotificationTemplatesQueryHandler.MapToDto(template);
+        return _msg.NotificationTemplateUpdated(template.Id);
     }
 }
