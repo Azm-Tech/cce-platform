@@ -44,6 +44,7 @@ builder.Services
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
+    .AddCceOpenTelemetry(builder.Configuration, "CCE.Api.External")
     .AddCceOpenApi("CCE External API");
 
 builder.Services.AddHttpContextAccessor();

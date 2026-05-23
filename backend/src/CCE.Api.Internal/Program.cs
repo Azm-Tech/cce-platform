@@ -36,6 +36,7 @@ builder.Services
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
+    .AddCceOpenTelemetry(builder.Configuration, "CCE.Api.Internal")
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE Internal API");
 
