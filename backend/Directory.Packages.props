@@ -110,6 +110,14 @@
     <PackageVersion Include="WireMock.Net" Version="1.7.0" />
   </ItemGroup>
 
+  <ItemGroup Label="Messaging (MassTransit)">
+    <!-- MassTransit core + RabbitMQ transport. All MIT-licensed, no commercial licence required. -->
+    <PackageVersion Include="MassTransit" Version="8.3.7" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.7" />
+    <!-- In-memory transport used in tests and when Messaging:Transport=InMemory -->
+    <PackageVersion Include="MassTransit.Testing.Helpers" Version="8.3.7" />
+  </ItemGroup>
+
   <ItemGroup Label="Rate limiting (built-in 8+, no package) and problem-details helpers">
     <PackageVersion Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
   </ItemGroup>
@@ -144,6 +152,15 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Seq + OpenTelemetry">
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="8.0.0" />
+    <PackageVersion Include="OpenTelemetry" Version="1.11.2" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.2" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.11.0" />
   </ItemGroup>
 
 </Project>

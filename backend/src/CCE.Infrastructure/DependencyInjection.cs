@@ -26,6 +26,7 @@ using CCE.Infrastructure.Media;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
+using CCE.Infrastructure.Notifications.Messaging;
 using CCE.Infrastructure.Reports;
 using CCE.Infrastructure.Surveys;
 using CCE.Application.Localization;
@@ -218,6 +219,10 @@ public static class DependencyInjection
 
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
+
+        // Messaging (MassTransit) — transport selected by Messaging:Transport in appsettings.
+        // InMemory by default (no broker); set to RabbitMQ in production.
+        services.AddCceMessaging(configuration);
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();

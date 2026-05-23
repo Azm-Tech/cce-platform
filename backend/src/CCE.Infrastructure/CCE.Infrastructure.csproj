@@ -41,6 +41,8 @@
     <PackageReference Include="Microsoft.Graph" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" />
     <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="MassTransit.RabbitMQ" />
   </ItemGroup>
 
   <ItemGroup>
