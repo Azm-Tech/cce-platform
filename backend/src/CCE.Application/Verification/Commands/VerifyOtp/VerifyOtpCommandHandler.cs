@@ -95,7 +95,7 @@ internal sealed class VerifyOtpCommandHandler
 
         if (userId is null) return null;
 
-        _userRepo.StampConfirmed(userId.Value, entity.TypeId);
+        await _userRepo.StampConfirmedAsync(userId.Value, entity.TypeId, ct).ConfigureAwait(false);
         return userId;
     }
 }

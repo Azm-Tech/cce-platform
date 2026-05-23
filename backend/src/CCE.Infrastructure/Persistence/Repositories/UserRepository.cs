@@ -29,9 +29,15 @@ public sealed class UserRepository : IUserRepository
         };
     }
 
-    public void StampConfirmed(Guid userId, OtpVerificationType type)
+    public async Task StampConfirmedAsync(Guid userId, OtpVerificationType type, CancellationToken ct)
     {
-        var stub = new User { Id = userId };
+        var stamp = await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.ConcurrencyStamp)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        var stub = new User { Id = userId, ConcurrencyStamp = stamp ?? string.Empty };
         _db.Attach(stub);
         if (type == OtpVerificationType.Email)
             stub.EmailConfirmed = true;
