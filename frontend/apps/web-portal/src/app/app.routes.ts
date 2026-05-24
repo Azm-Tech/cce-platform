@@ -75,6 +75,13 @@ export const appRoutes: Route[] = [
     title: 'CCE — Verify email',
   },
   {
+    path: 'verify-phone',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/verify-phone.page').then((m) => m.VerifyPhonePage),
+    title: 'CCE — Verify phone',
+  },
+  {
     path: 'me',
     canActivate: [authGuard],
     loadChildren: () =>

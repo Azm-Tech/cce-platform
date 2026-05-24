@@ -4,5 +4,11 @@
     "secure": true,
     "changeOrigin": true,
     "logLevel": "warn"
+  },
+  "/verification": {
+    "target": "https://cce-external-api.runasp.net",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "warn"
   }
 }

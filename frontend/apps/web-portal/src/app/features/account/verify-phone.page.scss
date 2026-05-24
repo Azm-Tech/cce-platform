@@ -1,0 +1,163 @@
+:host {
+  display: block;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  padding-block: 3rem 4rem;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  min-height: calc(100vh - 80px);
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; padding-block: 2rem 3rem; }
+}
+
+.cce-auth {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.cce-auth__card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 44px -16px rgba(0, 48, 31, 0.18);
+  padding: 2rem 2rem 1.75rem;
+}
+
+.cce-auth__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.cce-auth__brand-glyph {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+  box-shadow: 0 4px 10px -4px rgba(15, 139, 108, 0.55);
+}
+.cce-auth__brand-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.10em;
+  color: #006c4f;
+}
+
+.cce-auth__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.20;
+  color: #1c2724;
+}
+
+.cce-auth__subtitle {
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: rgba(28, 39, 36, 0.62);
+  line-height: 1.50;
+}
+
+.cce-auth__error {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.20);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.cce-auth__submit {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.45) !important;
+  text-transform: uppercase !important;
+  font-size: 0.85rem !important;
+
+  &[disabled] {
+    background: rgba(28, 39, 36, 0.18) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: none !important;
+  }
+}
+
+.cce-auth__footer-line {
+  text-align: center;
+  margin: 1.25rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.92rem;
+  color: rgba(28, 39, 36, 0.65);
+}
+
+.cce-auth__footer-link {
+  font-weight: 700;
+  color: #006c4f;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+/* ── OTP boxes ─────────────────────────────────────────────── */
+.cce-otp {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.cce-otp__box {
+  width: 46px;
+  height: 54px;
+  border: 2px solid rgba(0, 108, 79, 0.22);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1c2724;
+  background: #fff;
+  outline: none;
+  caret-color: transparent;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+
+  &:focus {
+    border-color: #006c4f;
+    box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.12);
+  }
+
+  &.cce-otp__box--filled {
+    border-color: rgba(0, 108, 79, 0.45);
+    background: rgba(0, 108, 79, 0.04);
+  }
+}
+
+@media (max-width: 400px) {
+  .cce-otp { gap: 0.35rem; }
+  .cce-otp__box { width: 40px; height: 48px; font-size: 1.3rem; }
+  .cce-auth__card { padding: 1.5rem 1rem; }
+}

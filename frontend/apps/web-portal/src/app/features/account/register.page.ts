@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,7 +26,6 @@ function passwordsMatch(group: AbstractControl) {
 type SubmitState =
   | { kind: 'idle' }
   | { kind: 'submitting' }
-  | { kind: 'success' }
   | { kind: 'error'; messageKey: string };
 
 
@@ -49,6 +48,7 @@ type SubmitState =
 export class RegisterPage {
   private readonly auth = inject(AuthService);
   private readonly authApi = inject(AuthApiService);
+  private readonly router = inject(Router);
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
@@ -116,7 +116,10 @@ export class RegisterPage {
         confirmPassword: v.confirmPassword!,
       })
       .subscribe({
-        next: () => this.state.set({ kind: 'success' }),
+        next: () =>
+          this.router.navigate(['/verify-phone'], {
+            state: { phoneNumber: v.phoneNumber },
+          }),
         error: (err: HttpErrorResponse) => {
           if (err.status === 409) {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorConflict' });

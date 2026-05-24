@@ -7,17 +7,9 @@
       {{ 'account.register.openProfile' | transloco }}
     </a>
   } @else {
-    @if (state().kind === 'success') {
-      <p class="cce-register__body">
-        {{ 'account.register.successBody' | transloco }}
-      </p>
-      <a mat-flat-button color="primary" routerLink="/login">
-        {{ 'account.register.signInLink' | transloco }}
-      </a>
-    } @else {
-      <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
+    <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
 
-      <form [formGroup]="form" class="cce-register__form" (ngSubmit)="submit()">
+    <form [formGroup]="form" class="cce-register__form" (ngSubmit)="submit()">
         <div class="cce-register__row-2">
           <mat-form-field>
             <mat-label>{{ 'account.register.firstNameLabel' | transloco }}</mat-label>
@@ -126,12 +118,11 @@
         </button>
       </form>
 
-      <p class="cce-register__hint">
-        {{ 'account.register.alreadyHaveAccount' | transloco }}
-        <a routerLink="/login" class="cce-register__signin-link">
-          {{ 'account.register.signInLink' | transloco }}
-        </a>
-      </p>
-    }
+    <p class="cce-register__hint">
+      {{ 'account.register.alreadyHaveAccount' | transloco }}
+      <a routerLink="/login" class="cce-register__signin-link">
+        {{ 'account.register.signInLink' | transloco }}
+      </a>
+    </p>
   }
 </section>

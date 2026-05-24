@@ -82,6 +82,24 @@ export class AuthApiService {
     return this.http.post<void>('/api/auth/reset-password', req);
   }
 
+  requestPhoneOtp(phoneNumber: string): Observable<{ verificationId: string }> {
+    return this.http
+      .post<ApiEnvelope<{ verificationId: string }>>('/verification/request', {
+        contact: phoneNumber,
+        typeId: 0, // OtpVerificationType.Sms
+      })
+      .pipe(
+        map((res) => {
+          if (!res.success) throw { apiCode: res.code };
+          return res.data;
+        }),
+      );
+  }
+
+  verifyPhoneOtp(verificationId: string, code: string): Observable<void> {
+    return this.http.post<void>('/verification/verify', { verificationId, code });
+  }
+
   logout(refreshToken: string): Observable<void> {
     return this.http.post<void>('/api/auth/logout', { refreshToken });
   }
