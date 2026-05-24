@@ -3,12 +3,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
-import { PASSWORD_STRENGTH_VALIDATORS } from '@frontend/ui-kit';
 import { CountryApiService } from '../countries/country-api.service';
 import type { Country } from '../countries/country.types';
 import { IdentityApiService } from './identity-api.service';
@@ -18,7 +16,6 @@ interface CreateForm {
   firstName: FormControl<string>;
   lastName: FormControl<string>;
   email: FormControl<string>;
-  password: FormControl<string>;
   phoneNumber: FormControl<string>;
   countryId: FormControl<string>;
   role: FormControl<string>;
@@ -32,7 +29,6 @@ interface CreateForm {
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
@@ -50,7 +46,6 @@ export class UserCreateDialogComponent implements OnInit {
   readonly countries = signal<Country[]>([]);
   readonly saving = signal(false);
   readonly errorKey = signal<string | null>(null);
-  readonly showPassword = signal(false);
   readonly assignableRoles = ASSIGNABLE_ROLES;
 
   readonly form = new FormGroup<CreateForm>({
@@ -65,10 +60,6 @@ export class UserCreateDialogComponent implements OnInit {
     email: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.email, Validators.maxLength(100)],
-    }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, ...PASSWORD_STRENGTH_VALIDATORS],
     }),
     phoneNumber: new FormControl('', {
       nonNullable: true,

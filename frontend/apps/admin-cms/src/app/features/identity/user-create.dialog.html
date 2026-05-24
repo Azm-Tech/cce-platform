@@ -35,34 +35,7 @@
       } @else if (fieldError('email')) {
         <mat-error>{{ fieldError('email') }}</mat-error>
       }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="cce-user-create__full">
-      <mat-label>{{ 'users.create.passwordLabel' | transloco }}</mat-label>
-      <input
-        matInput
-        [type]="showPassword() ? 'text' : 'password'"
-        formControlName="password"
-        autocomplete="new-password"
-      />
-      <button
-        type="button"
-        mat-icon-button
-        matSuffix
-        (click)="showPassword.set(!showPassword())"
-        [attr.aria-label]="'users.create.togglePassword' | transloco"
-      >
-        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
-        <mat-error>{{ 'users.create.errorRequired' | transloco }}</mat-error>
-      } @else if ((form.get('password')?.hasError('minlength') || form.get('password')?.hasError('maxlength')) && form.get('password')?.touched) {
-        <mat-error>{{ 'users.create.errorPasswordLength' | transloco }}</mat-error>
-      } @else if (form.get('password')?.hasError('pattern') && form.get('password')?.touched) {
-        <mat-error>{{ 'users.create.errorPasswordStrength' | transloco }}</mat-error>
-      } @else if (fieldError('password')) {
-        <mat-error>{{ fieldError('password') }}</mat-error>
-      }
+      <mat-hint>{{ 'users.create.emailHint' | transloco }}</mat-hint>
     </mat-form-field>
 
     <div class="cce-user-create__row">
