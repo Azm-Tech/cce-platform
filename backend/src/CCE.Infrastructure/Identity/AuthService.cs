@@ -160,9 +160,8 @@ public sealed class AuthService : IAuthService
         var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
         var encodedToken = PasswordResetTokenCodec.Encode(token);
         var baseUrl = _config.GetValue<string>("Frontend:PasswordResetUrl")
-            ?? "http://localhost:4200/reset-password";
-        var separator = baseUrl.Contains('?', StringComparison.Ordinal) ? '&' : '?';
-        var resetUrl = $"{baseUrl}{separator}email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
+            ?? "http://localhost:4100";
+        var resetUrl = $"{baseUrl}/reset-password?email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
 
         await _gateway.SendAsync(new NotificationDispatchRequest(
             TemplateCode: "PASSWORD_RESET",
@@ -187,9 +186,8 @@ public sealed class AuthService : IAuthService
             var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
             var encodedToken = PasswordResetTokenCodec.Encode(token);
             var baseUrl = _config.GetValue<string>("Frontend:PasswordResetUrl")
-                ?? "http://localhost:4200/reset-password";
-            var separator = baseUrl.Contains('?', StringComparison.Ordinal) ? '&' : '?';
-            var resetUrl = $"{baseUrl}{separator}email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
+                ?? "http://localhost:4100";
+            var resetUrl = $"{baseUrl}/reset-password?email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
 
             await _gateway.SendAsync(new NotificationDispatchRequest(
                 TemplateCode: "PASSWORD_RESET",
