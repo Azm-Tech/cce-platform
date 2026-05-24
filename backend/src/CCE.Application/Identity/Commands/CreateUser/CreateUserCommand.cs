@@ -8,7 +8,6 @@ public sealed record CreateUserCommand(
     string FirstName,
     string LastName,
     string Email,
-    string Password,
     string PhoneNumber,
     Guid? CountryId,
     string Role) : IRequest<Response<UserDetailDto>>;

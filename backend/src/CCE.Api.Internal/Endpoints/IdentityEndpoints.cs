@@ -57,7 +57,7 @@ public static class IdentityEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var cmd = new CreateUserCommand(
-                body.FirstName, body.LastName, body.Email, body.Password,
+                body.FirstName, body.LastName, body.Email,
                 body.PhoneNumber, body.CountryId, body.Role);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
@@ -163,7 +163,6 @@ public sealed record CreateUserRequest(
     string FirstName,
     string LastName,
     string Email,
-    string Password,
     string PhoneNumber,
     Guid? CountryId,
     string Role);

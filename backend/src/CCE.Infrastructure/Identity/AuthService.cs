@@ -60,6 +60,13 @@ public sealed class AuthService : IAuthService
         if (!await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false))
             return null;
 
+        if (api == LocalAuthApi.Internal)
+        {
+            var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+            var isAdmin = roles.Any(r => r is "cce-admin" or "cce-editor" or "cce-reviewer" or "cce-expert");
+            if (!isAdmin) return null;
+        }
+
         return await IssueAndBuildDtoAsync(user, api, ip, userAgent, null, ct).ConfigureAwait(false);
     }
 
@@ -128,28 +135,48 @@ public sealed class AuthService : IAuthService
     }
 
     public async Task<AdminCreateResult> AdminCreateUserAsync(
-        string firstName, string lastName, string email, string password,
+        string firstName, string lastName, string email,
         string phone, Guid? countryId, string role, CancellationToken ct)
     {
         var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
-        if (existing is not null) return new AdminCreateResult(null, true, false);
+        if (existing is not null) return new AdminCreateResult(null, true, false, false);
 
         var user = User.CreateByAdmin(firstName, lastName, email, phone);
         if (countryId.HasValue) user.AssignCountry(countryId.Value);
 
-        var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
-        if (!createResult.Succeeded) return new AdminCreateResult(null, false, true);
+        var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
+        if (!createResult.Succeeded) return new AdminCreateResult(null, false, true, false);
 
         if (!await _roleManager.RoleExistsAsync(role).ConfigureAwait(false))
         {
             var roleResult = await _roleManager.CreateAsync(new Role(role)).ConfigureAwait(false);
-            if (!roleResult.Succeeded) return new AdminCreateResult(null, false, true);
+            if (!roleResult.Succeeded) return new AdminCreateResult(null, false, true, false);
         }
 
         var addResult = await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
-        if (!addResult.Succeeded) return new AdminCreateResult(null, false, true);
+        if (!addResult.Succeeded) return new AdminCreateResult(null, false, true, false);
 
-        return new AdminCreateResult(user, false, false);
+        // Generate and send password-reset link so the user can set their own password.
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
+        var encodedToken = PasswordResetTokenCodec.Encode(token);
+        var baseUrl = _config.GetValue<string>("Frontend:PasswordResetUrl")
+            ?? "http://localhost:4200/reset-password";
+        var separator = baseUrl.Contains('?', StringComparison.Ordinal) ? '&' : '?';
+        var resetUrl = $"{baseUrl}{separator}email={Uri.EscapeDataString(user.Email ?? string.Empty)}&token={Uri.EscapeDataString(encodedToken)}";
+
+        await _gateway.SendAsync(new NotificationDispatchRequest(
+            TemplateCode: "PASSWORD_RESET",
+            RecipientUserId: user.Id,
+            Channels: [NotificationChannel.Email],
+            Variables: new Dictionary<string, string>
+            {
+                ["Name"] = user.FirstName,
+                ["ResetUrl"] = resetUrl
+            },
+            Locale: user.LocalePreference,
+            BypassSettings: true), ct).ConfigureAwait(false);
+
+        return new AdminCreateResult(user, false, false, true);
     }
 
     public async Task ForgotPasswordAsync(string email, CancellationToken ct)
@@ -167,7 +194,7 @@ public sealed class AuthService : IAuthService
             await _gateway.SendAsync(new NotificationDispatchRequest(
                 TemplateCode: "PASSWORD_RESET",
                 RecipientUserId: user.Id,
-                Channels: [NotificationChannel.Email, NotificationChannel.Sms],
+                Channels: [NotificationChannel.Email],
                 Variables: new Dictionary<string, string>
                 {
                     ["Name"] = user.FirstName,
