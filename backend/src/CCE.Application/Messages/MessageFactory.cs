@@ -87,6 +87,7 @@ public sealed class MessageFactory
     public Response<T> GlossaryEntryNotFound<T>()     => NotFound<T>("GLOSSARY_ENTRY_NOT_FOUND");
     public Response<T> KnowledgePartnerNotFound<T>()  => NotFound<T>("KNOWLEDGE_PARTNER_NOT_FOUND");
     public Response<T> PolicySectionNotFound<T>()     => NotFound<T>("POLICY_SECTION_NOT_FOUND");
+    public Response<T> FaqNotFound<T>()               => NotFound<T>("FAQ_NOT_FOUND");
     public Response<T> ContentUpdateFailed<T>()       => BusinessRule<T>("CONTENT_UPDATE_FAILED");
 
     // ─── Convenience shortcuts (Media domain) ───

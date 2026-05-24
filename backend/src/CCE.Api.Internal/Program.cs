@@ -85,6 +85,7 @@ app.MapAuditEndpoints();
 app.MapHomepageSettingsEndpoints();
 app.MapAboutSettingsEndpoints();
 app.MapPoliciesSettingsEndpoints();
+app.MapFaqEndpoints();
 app.MapMediaEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,

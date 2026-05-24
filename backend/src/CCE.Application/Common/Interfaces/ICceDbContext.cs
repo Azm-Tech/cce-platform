@@ -70,6 +70,7 @@ public interface ICceDbContext
     IQueryable<PoliciesSettings> PoliciesSettings { get; }
     IQueryable<KnowledgePartner> KnowledgePartners { get; }
     IQueryable<PolicySection> PolicySections { get; }
+    IQueryable<Faq> Faqs { get; }
 
     // ─── Verification ───
     IQueryable<OtpVerification> OtpVerifications { get; }

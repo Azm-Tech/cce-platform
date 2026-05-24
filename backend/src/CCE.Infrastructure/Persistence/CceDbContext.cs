@@ -101,6 +101,7 @@ public sealed class CceDbContext
     public DbSet<PoliciesSettings> PoliciesSettings => Set<PoliciesSettings>();
     public DbSet<KnowledgePartner> KnowledgePartners => Set<KnowledgePartner>();
     public DbSet<PolicySection> PolicySections => Set<PolicySection>();
+    public DbSet<Faq> Faqs => Set<Faq>();
 
     // ─── ICceDbContext (read-only queryables — no tracking) ───
     IQueryable<User> ICceDbContext.Users => Users.AsNoTracking();
@@ -148,6 +149,7 @@ public sealed class CceDbContext
     IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
     IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
     IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+    IQueryable<Faq> ICceDbContext.Faqs => Faqs.AsNoTracking();
     IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
     IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
     IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
