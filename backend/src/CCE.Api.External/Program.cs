@@ -116,6 +116,7 @@ app.MapSurveysEndpoints();
 app.MapHomepageSettingsPublicEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
+app.MapFaqPublicEndpoints();
 app.MapMediaPublicEndpoints();
 app.MapVerificationEndpoints();
 
