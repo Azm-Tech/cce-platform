@@ -29,7 +29,8 @@ public static class AuthEndpoints
                 body.OrganizationName,
                 body.PhoneNumber,
                 body.Password,
-                body.ConfirmPassword), ct).ConfigureAwait(false);
+                body.ConfirmPassword,
+                body.CountryCodeId), ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()

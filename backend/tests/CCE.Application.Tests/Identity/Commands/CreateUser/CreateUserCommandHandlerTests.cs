@@ -19,7 +19,7 @@ public class CreateUserCommandHandlerTests
         var auth = Substitute.For<IAuthService>();
         auth.AdminCreateUserAsync(
                 Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<Guid?>(),
+                Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<Guid?>(),
                 Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new AdminCreateResult(null, true, false, false));
 
@@ -27,7 +27,7 @@ public class CreateUserCommandHandlerTests
         var sut = new CreateUserCommandHandler(auth, mediator, BuildMsg());
 
         var result = await sut.Handle(
-            new CreateUserCommand("A", "B", "a@b.c", "123", null, "cce-admin"),
+            new CreateUserCommand("A", "B", "a@b.c", "123", null, null, "cce-admin"),
             CancellationToken.None);
 
         result.Success.Should().BeFalse();
@@ -40,7 +40,7 @@ public class CreateUserCommandHandlerTests
         var auth = Substitute.For<IAuthService>();
         auth.AdminCreateUserAsync(
                 Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<Guid?>(),
+                Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<Guid?>(),
                 Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new AdminCreateResult(null, false, true, false));
 
@@ -48,7 +48,7 @@ public class CreateUserCommandHandlerTests
         var sut = new CreateUserCommandHandler(auth, mediator, BuildMsg());
 
         var result = await sut.Handle(
-            new CreateUserCommand("A", "B", "a@b.c", "123", null, "cce-admin"),
+            new CreateUserCommand("A", "B", "a@b.c", "123", null, null, "cce-admin"),
             CancellationToken.None);
 
         result.Success.Should().BeFalse();
@@ -71,13 +71,13 @@ public class CreateUserCommandHandlerTests
         var auth = Substitute.For<IAuthService>();
         auth.AdminCreateUserAsync(
                 Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<string>(), Arg.Any<Guid?>(),
+                Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<Guid?>(),
                 Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new AdminCreateResult(user, false, false, true));
 
         var expectedDto = new UserDetailDto(
             userId, "a@b.c", "a@b.c", "ar", KnowledgeLevel.Beginner,
-            new List<string>(), null, null, new[] { "cce-admin" }, true);
+            new List<string>(), null, null, null, new[] { "cce-admin" }, true);
 
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())
@@ -86,7 +86,7 @@ public class CreateUserCommandHandlerTests
         var sut = new CreateUserCommandHandler(auth, mediator, BuildMsg());
 
         var result = await sut.Handle(
-            new CreateUserCommand("A", "B", "a@b.c", "123", null, "cce-admin"),
+            new CreateUserCommand("A", "B", "a@b.c", "123", null, null, "cce-admin"),
             CancellationToken.None);
 
         result.Success.Should().BeTrue();

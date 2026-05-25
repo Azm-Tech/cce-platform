@@ -38,7 +38,7 @@ public class AssignUserRolesCommandHandlerTests
             .Returns(true);
 
         var dto = new UserDetailDto(id, "alice@cce.local", "alice", "ar",
-            KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null,
+            KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null, null,
             new[] { "ContentManager" }, true);
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Is<GetUserByIdQuery>(q => q.Id == id), Arg.Any<CancellationToken>())
@@ -62,7 +62,7 @@ public class AssignUserRolesCommandHandlerTests
 
         var dto = new UserDetailDto(
             id, "alice@cce.local", "alice", "ar",
-            KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null,
+            KnowledgeLevel.Beginner, System.Array.Empty<string>(), null, null, null,
             new[] { "SuperAdmin", "ContentManager" }, true);
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())
             .Returns(Response<UserDetailDto>.Ok(dto, SystemCode.CON900, "ar"));

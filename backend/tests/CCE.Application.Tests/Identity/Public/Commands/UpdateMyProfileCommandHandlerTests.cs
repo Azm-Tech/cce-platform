@@ -20,7 +20,7 @@ public class UpdateMyProfileCommandHandlerTests
 
         var cmd = new UpdateMyProfileCommand(
             System.Guid.NewGuid(), "en", KnowledgeLevel.Intermediate,
-            System.Array.Empty<string>(), null, null);
+            System.Array.Empty<string>(), null, null, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
@@ -46,7 +46,7 @@ public class UpdateMyProfileCommandHandlerTests
             userId, "en", KnowledgeLevel.Advanced,
             new[] { "Hydrogen", "Solar" },
             "https://cdn.example.com/avatar.png",
-            countryId);
+            countryId, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
@@ -74,7 +74,7 @@ public class UpdateMyProfileCommandHandlerTests
 
         var cmd = new UpdateMyProfileCommand(
             userId, "ar", KnowledgeLevel.Beginner,
-            System.Array.Empty<string>(), null, null);
+            System.Array.Empty<string>(), null, null, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 

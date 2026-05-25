@@ -116,6 +116,12 @@ public sealed class MessageFactory
     public Response<T> NotificationTemplateCreated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_CREATED");
     public Response<T> NotificationTemplateUpdated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_UPDATED");
 
+    // ─── Convenience shortcuts (Lookups domain) ───
+
+    public Response<T> CountryCodeNotFound<T>() => NotFound<T>("COUNTRY_CODE_NOT_FOUND");
+    public Response<T> LookupCreated<T>(T data) => Ok(data, "LOOKUP_CREATED");
+    public Response<T> LookupUpdated<T>(T data) => Ok(data, "LOOKUP_UPDATED");
+
     // ─── Private ───
 
     private Response<T> Fail<T>(string domainKey, MessageType type)

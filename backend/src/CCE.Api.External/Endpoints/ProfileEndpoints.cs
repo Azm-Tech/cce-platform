@@ -34,7 +34,8 @@ public static class ProfileEndpoints
                 body.OrganizationName,
                 body.PhoneNumber,
                 body.Password,
-                body.ConfirmPassword), ct).ConfigureAwait(false);
+                body.ConfirmPassword,
+                body.CountryCodeId), ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()
@@ -79,7 +80,7 @@ public static class ProfileEndpoints
             var cmd = new UpdateMyProfileCommand(
                 userId, body.LocalePreference, body.KnowledgeLevel,
                 body.Interests ?? System.Array.Empty<string>(),
-                body.AvatarUrl, body.CountryId);
+                body.AvatarUrl, body.CountryId, body.CountryCodeId);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })

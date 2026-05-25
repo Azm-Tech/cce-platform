@@ -10,4 +10,5 @@ public sealed record UserProfileDto(
     KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<string> Interests,
     System.Guid? CountryId,
+    System.Guid? CountryCodeId,
     string? AvatarUrl);

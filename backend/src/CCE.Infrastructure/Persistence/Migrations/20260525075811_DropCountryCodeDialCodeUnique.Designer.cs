@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525075811_DropCountryCodeDialCodeUnique")]
+    partial class DropCountryCodeDialCodeUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1771,10 +1774,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("concurrency_stamp");
 
-                    b.Property<Guid?>("CountryCodeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("country_code_id");
-
                     b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("country_id");
@@ -1892,9 +1891,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_asp_net_users");
-
-                    b.HasIndex("CountryCodeId")
-                        .HasDatabaseName("ix_users_country_code_id");
 
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_users_country_id");

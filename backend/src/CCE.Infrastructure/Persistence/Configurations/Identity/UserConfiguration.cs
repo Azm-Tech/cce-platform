@@ -18,6 +18,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.KnowledgeLevel).HasConversion<int>();
         builder.Property(u => u.Status).HasConversion<int>();
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");
+        builder.HasIndex(u => u.CountryCodeId).HasDatabaseName("ix_users_country_code_id");
 
         // Sub-11: filtered unique index on EntraIdObjectId. Only enforces uniqueness on
         // non-null values so existing rows pre-cutover (NULL) don't conflict, and so that

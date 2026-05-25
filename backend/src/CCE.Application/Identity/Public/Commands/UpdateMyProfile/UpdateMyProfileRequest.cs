@@ -5,4 +5,5 @@ public sealed record UpdateMyProfileRequest(
     Domain.Identity.KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<string>? Interests,
     string? AvatarUrl,
-    System.Guid? CountryId);
+    System.Guid? CountryId,
+    System.Guid? CountryCodeId);
