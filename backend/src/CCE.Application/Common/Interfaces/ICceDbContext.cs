@@ -32,6 +32,7 @@ public interface ICceDbContext
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
     IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
+    IQueryable<ExpertRequestAttachment> ExpertRequestAttachments { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
     IQueryable<RefreshToken> RefreshTokens { get; }
     IQueryable<AssetFile> AssetFiles { get; }

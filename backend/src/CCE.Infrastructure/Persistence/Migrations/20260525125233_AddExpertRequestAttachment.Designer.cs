@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525125233_AddExpertRequestAttachment")]
+    partial class AddExpertRequestAttachment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1487,6 +1490,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("attachment_id");
+
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("created_by_id");
@@ -1572,37 +1579,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_expert_request_status");
 
                     b.ToTable("expert_registration_requests", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Identity.ExpertRequestAttachment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("AssetFileId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("asset_file_id");
-
-                    b.Property<int>("AttachmentType")
-                        .HasColumnType("int")
-                        .HasColumnName("attachment_type");
-
-                    b.Property<Guid>("ExpertRequestId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("expert_request_id");
-
-                    b.Property<DateTimeOffset>("UploadedAt")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("uploaded_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_expert_request_attachments");
-
-                    b.HasIndex("ExpertRequestId")
-                        .HasDatabaseName("ix_expert_request_attachments_expert_request_id");
-
-                    b.ToTable("expert_request_attachments", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
@@ -3413,16 +3389,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CCE.Domain.Identity.ExpertRequestAttachment", b =>
-                {
-                    b.HasOne("CCE.Domain.Identity.ExpertRegistrationRequest", null)
-                        .WithMany("Attachments")
-                        .HasForeignKey("ExpertRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_expert_request_attachments_expert_registration_requests_expert_request_id");
-                });
-
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
                 {
                     b.HasOne("CCE.Domain.Identity.User", null)
@@ -3812,11 +3778,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
-                });
-
-            modelBuilder.Entity("CCE.Domain.Identity.ExpertRegistrationRequest", b =>
-                {
-                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>

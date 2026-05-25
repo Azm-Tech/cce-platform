@@ -8,4 +8,5 @@ public sealed record SubmitExpertRequestCommand(
     System.Guid RequesterId,
     string RequestedBioAr,
     string RequestedBioEn,
-    IReadOnlyList<string> RequestedTags) : IRequest<Response<ExpertRequestStatusDto>>;
+    IReadOnlyList<string> RequestedTags,
+    System.Guid CvAssetFileId) : IRequest<Response<ExpertRequestStatusDto>>;

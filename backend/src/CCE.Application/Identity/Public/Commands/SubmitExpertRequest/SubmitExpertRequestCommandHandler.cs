@@ -1,8 +1,10 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using MediatR;
 
@@ -30,12 +32,28 @@ public sealed class SubmitExpertRequestCommandHandler
 
     public async Task<Response<ExpertRequestStatusDto>> Handle(SubmitExpertRequestCommand request, CancellationToken cancellationToken)
     {
+        // READ: validate CV asset via ICceDbContext directly
+        var assets = await _db.AssetFiles
+            .Where(a => a.Id == request.CvAssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+
+        var asset = assets.FirstOrDefault();
+        if (asset is null)
+            return _msg.AssetNotFound<ExpertRequestStatusDto>();
+        if (asset.VirusScanStatus != VirusScanStatus.Clean)
+            return _msg.AssetNotClean<ExpertRequestStatusDto>();
+
+        // WRITE: create aggregate via domain factory
         var entity = ExpertRegistrationRequest.Submit(
             request.RequesterId,
             request.RequestedBioAr,
             request.RequestedBioEn,
             request.RequestedTags,
+            request.CvAssetFileId,
             _clock);
+
+        // fetch-add via generic repository, save via ICceDbContext (unit of work)
         await _service.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -45,6 +63,7 @@ public sealed class SubmitExpertRequestCommandHandler
             entity.RequestedBioAr,
             entity.RequestedBioEn,
             entity.RequestedTags.ToList(),
+            entity.Attachments.Select(a => new ExpertRequestAttachmentDto(a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt)).ToList(),
             entity.SubmittedOn,
             entity.Status,
             entity.ProcessedOn,

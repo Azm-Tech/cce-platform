@@ -78,6 +78,12 @@ public sealed class MessageFactory
     public Response<T> EventNotFound<T>()     => NotFound<T>("EVENT_NOT_FOUND");
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
+    public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
+    public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");
+
+    // ─── Convenience shortcuts (Identity / Expert domain) ───
+
+    public Response<T> ExpertRequestNotFound<T>() => NotFound<T>("EXPERT_REQUEST_NOT_FOUND");
 
     // ─── Convenience shortcuts (Platform Settings domain) ───
 

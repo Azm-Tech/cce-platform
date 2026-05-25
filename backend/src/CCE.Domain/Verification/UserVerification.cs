@@ -2,6 +2,7 @@ using CCE.Domain.Common;
 
 namespace CCE.Domain.Verification;
 
+[Audited]
 public sealed class UserVerification : AggregateRoot<Guid>
 {
     private UserVerification() : base(Guid.NewGuid()) { }

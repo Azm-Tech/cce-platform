@@ -35,6 +35,7 @@ public static class SystemCodeMap
         ["CATEGORY_NOT_FOUND"] = SystemCode.ERR044,
         ["ASSET_NOT_FOUND"] = SystemCode.ERR045,
         ["HOMEPAGE_SECTION_NOT_FOUND"] = SystemCode.ERR046,
+        ["ASSET_NOT_CLEAN"] = SystemCode.ERR059,
         ["COUNTRY_RESOURCE_REQUEST_NOT_FOUND"] = SystemCode.ERR047,
         ["RESOURCE_DUPLICATE"] = SystemCode.ERR048,
         ["CATEGORY_DUPLICATE"] = SystemCode.ERR049,
@@ -130,6 +131,9 @@ public static class SystemCodeMap
         ["CONTENT_CREATED"] = SystemCode.CON020,
         ["CONTENT_UPDATED"] = SystemCode.CON021,
         ["CONTENT_DELETED"] = SystemCode.CON022,
+
+        // ─── Asset Success ───
+        ["ASSET_UPLOADED"] = SystemCode.CON038,
 
         // ─── Media Success ───
         ["MEDIA_UPLOADED"] = SystemCode.CON029,

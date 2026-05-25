@@ -1,7 +1,8 @@
+using CCE.Api.Common.Auth;
 using CCE.Api.Common.Extensions;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Commands.UploadAsset;
 using CCE.Application.Content.Queries.GetAssetById;
-using CCE.Domain;
 using CCE.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -9,29 +10,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
-namespace CCE.Api.Internal.Endpoints;
+namespace CCE.Api.External.Endpoints;
 
 public static class AssetEndpoints
 {
-    private const long MaxRequestSizeBytes = 100L * 1024L * 1024L; // 100 MB
-
     public static IEndpointRouteBuilder MapAssetEndpoints(this IEndpointRouteBuilder app)
     {
-        var assets = app.MapGroup("/api/admin/assets").WithTags("Assets");
+        var assets = app.MapGroup("/api/assets").WithTags("Assets").RequireAuthorization();
 
         assets.MapPost("", async (
-            HttpContext httpContext,
+            IFormFile file,
+            ICurrentUserAccessor currentUser,
             IMediator mediator,
             IOptions<CceInfrastructureOptions> infraOpts,
-            CancellationToken cancellationToken) =>
+            CancellationToken ct) =>
         {
-            if (!httpContext.Request.HasFormContentType)
-                return Results.BadRequest(new { error = "Multipart form-data with a single 'file' field is required." });
+            if (currentUser.GetUserId() is null) return Results.Unauthorized();
 
-            var form = await httpContext.Request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
-            var file = form.Files["file"] ?? (form.Files.Count > 0 ? form.Files[0] : null);
             if (file is null || file.Length == 0)
-                return Results.BadRequest(new { error = "Upload requires a non-empty 'file' field." });
+                return Results.BadRequest(new { error = "Upload requires a non-empty file." });
 
             var allowed = infraOpts.Value.AllowedAssetMimeTypes;
             if (!allowed.Contains(file.ContentType, System.StringComparer.OrdinalIgnoreCase))
@@ -40,25 +37,32 @@ public static class AssetEndpoints
             await using var stream = file.OpenReadStream();
             var result = await mediator.Send(
                 new UploadAssetCommand(stream, file.FileName, file.ContentType, file.Length),
-                cancellationToken).ConfigureAwait(false);
+                ct).ConfigureAwait(false);
 
             return result.Success
-                ? Results.Created($"/api/admin/assets/{result.Data!.Id}", result)
+                ? Results.Created($"/api/assets/{result.Data!.Id}", result)
                 : result.ToHttpResult();
         })
-        .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("UploadAsset")
         .DisableAntiforgery()
-        .WithMetadata(new RequestSizeLimitMetadataImpl(MaxRequestSizeBytes));
+        .WithMetadata(new RequestSizeLimitMetadataImpl(20L * 1024L * 1024L));
 
-        assets.MapGet("/{id:guid}", async (
+        assets.MapGet("{id:guid}", async (
             System.Guid id,
-            IMediator mediator, CancellationToken cancellationToken) =>
+            ICurrentUserAccessor currentUser,
+            IMediator mediator,
+            CancellationToken ct) =>
         {
-            var result = await mediator.Send(new GetAssetByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+
+            var result = await mediator.Send(new GetAssetByIdQuery(id), ct).ConfigureAwait(false);
+
+            if (!result.Success || result.Data!.UploadedById != userId)
+                return Results.NotFound();
+
             return result.ToHttpResult();
         })
-        .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("GetAssetById");
 
         return app;

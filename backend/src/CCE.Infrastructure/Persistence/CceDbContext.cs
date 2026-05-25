@@ -39,6 +39,7 @@ public sealed class CceDbContext
     public DbSet<StateRepresentativeAssignment> StateRepresentativeAssignments => Set<StateRepresentativeAssignment>();
     public DbSet<ExpertProfile> ExpertProfiles => Set<ExpertProfile>();
     public DbSet<ExpertRegistrationRequest> ExpertRegistrationRequests => Set<ExpertRegistrationRequest>();
+    public DbSet<ExpertRequestAttachment> ExpertRequestAttachments => Set<ExpertRequestAttachment>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     // ─── Content ───
@@ -113,6 +114,7 @@ public sealed class CceDbContext
     IQueryable<StateRepresentativeAssignment> ICceDbContext.StateRepresentativeAssignments => StateRepresentativeAssignments.AsNoTracking();
     IQueryable<CCE.Domain.Country.Country> ICceDbContext.Countries => Countries.AsNoTracking();
     IQueryable<ExpertRegistrationRequest> ICceDbContext.ExpertRegistrationRequests => ExpertRegistrationRequests.AsNoTracking();
+    IQueryable<ExpertRequestAttachment> ICceDbContext.ExpertRequestAttachments => ExpertRequestAttachments.AsNoTracking();
     IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles.AsNoTracking();
     IQueryable<RefreshToken> ICceDbContext.RefreshTokens => RefreshTokens.AsNoTracking();
     IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles.AsNoTracking();

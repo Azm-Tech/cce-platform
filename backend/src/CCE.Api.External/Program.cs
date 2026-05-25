@@ -95,6 +95,7 @@ if (builder.Configuration.GetValue<bool>("Auth:DevMode"))
 app.MapHub<NotificationsHub>("/hubs/notifications");
 
 app.MapProfileEndpoints();
+app.MapAssetEndpoints();
 app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.External);
 app.MapNotificationsEndpoints();
 app.MapNewsPublicEndpoints();

@@ -31,7 +31,7 @@ public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResou
             return null;
         }
 
-        var asset = await _assetService.FindAsync(resource.AssetFileId, cancellationToken).ConfigureAwait(false);
+        var asset = await _assetService.GetByIdAsync(resource.AssetFileId, cancellationToken).ConfigureAwait(false);
         if (asset is null)
         {
             throw new DomainException($"Asset {resource.AssetFileId} not found for resource {resource.Id}.");

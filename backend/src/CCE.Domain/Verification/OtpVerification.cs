@@ -2,6 +2,7 @@ using CCE.Domain.Common;
 
 namespace CCE.Domain.Verification;
 
+[Audited]
 public sealed class OtpVerification : AggregateRoot<Guid>
 {
     private OtpVerification() : base(Guid.NewGuid()) { }

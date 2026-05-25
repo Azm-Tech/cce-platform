@@ -3,6 +3,7 @@ using CCE.Application.Identity.Public;
 using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
@@ -15,7 +16,12 @@ public class SubmitExpertRequestCommandHandlerTests
     public async Task Persists_request_and_returns_dto()
     {
         var clock = new FakeSystemClock();
+        var cvAsset = AssetFile.Register("https://cdn.example.com/cv.pdf", "cv.pdf", 1024, "application/pdf", System.Guid.NewGuid(), clock);
+        cvAsset.MarkClean(clock);
+
         var db = Substitute.For<ICceDbContext>();
+        db.AssetFiles.Returns(new[] { cvAsset }.AsQueryable());
+
         var service = Substitute.For<IExpertRequestSubmissionRepository>();
         var sut = new SubmitExpertRequestCommandHandler(db, service, clock, BuildMsg());
 
@@ -24,7 +30,8 @@ public class SubmitExpertRequestCommandHandlerTests
             requesterId,
             "سيرة ذاتية",
             "English bio",
-            new[] { "Hydrogen", "Solar" });
+            new[] { "Hydrogen", "Solar" },
+            cvAsset.Id);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
@@ -40,23 +47,78 @@ public class SubmitExpertRequestCommandHandlerTests
     }
 
     [Fact]
-    public async Task Domain_throws_when_bio_is_empty()
+    public async Task Domain_throws_when_tags_are_empty()
     {
         var clock = new FakeSystemClock();
+        var cvAsset = AssetFile.Register("https://cdn.example.com/cv.pdf", "cv.pdf", 1024, "application/pdf", System.Guid.NewGuid(), clock);
+        cvAsset.MarkClean(clock);
+
         var db = Substitute.For<ICceDbContext>();
+        db.AssetFiles.Returns(new[] { cvAsset }.AsQueryable());
+
         var service = Substitute.For<IExpertRequestSubmissionRepository>();
         var sut = new SubmitExpertRequestCommandHandler(db, service, clock, BuildMsg());
 
         var cmd = new SubmitExpertRequestCommand(
             System.Guid.NewGuid(),
-            "",
+            "سيرة ذاتية",
             "English bio",
-            System.Array.Empty<string>());
+            System.Array.Empty<string>(),
+            cvAsset.Id);
 
         var act = async () => await sut.Handle(cmd, CancellationToken.None);
 
         await act.Should().ThrowAsync<DomainException>();
         await service.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await db.DidNotReceiveWithAnyArgs().SaveChangesAsync(default);
+    }
+
+    [Fact]
+    public async Task Returns_not_found_when_cv_asset_missing()
+    {
+        var clock = new FakeSystemClock();
+        var db = Substitute.For<ICceDbContext>();
+        db.AssetFiles.Returns(System.Array.Empty<AssetFile>().AsQueryable());
+
+        var service = Substitute.For<IExpertRequestSubmissionRepository>();
+        var sut = new SubmitExpertRequestCommandHandler(db, service, clock, BuildMsg());
+
+        var cmd = new SubmitExpertRequestCommand(
+            System.Guid.NewGuid(),
+            "سيرة ذاتية",
+            "English bio",
+            new[] { "Hydrogen" },
+            System.Guid.NewGuid());
+
+        var result = await sut.Handle(cmd, CancellationToken.None);
+
+        result.Success.Should().BeFalse();
+        await service.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+    }
+
+    [Fact]
+    public async Task Returns_error_when_cv_asset_not_clean()
+    {
+        var clock = new FakeSystemClock();
+        var cvAsset = AssetFile.Register("https://cdn.example.com/cv.pdf", "cv.pdf", 1024, "application/pdf", System.Guid.NewGuid(), clock);
+        cvAsset.MarkInfected(clock);
+
+        var db = Substitute.For<ICceDbContext>();
+        db.AssetFiles.Returns(new[] { cvAsset }.AsQueryable());
+
+        var service = Substitute.For<IExpertRequestSubmissionRepository>();
+        var sut = new SubmitExpertRequestCommandHandler(db, service, clock, BuildMsg());
+
+        var cmd = new SubmitExpertRequestCommand(
+            System.Guid.NewGuid(),
+            "سيرة ذاتية",
+            "English bio",
+            new[] { "Hydrogen" },
+            cvAsset.Id);
+
+        var result = await sut.Handle(cmd, CancellationToken.None);
+
+        result.Success.Should().BeFalse();
+        await service.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
     }
 }

@@ -61,6 +61,7 @@ public static class SystemCode
     public const string ERR050 = "ERR050"; // Page duplicate
     public const string ERR051 = "ERR051"; // News duplicate
     public const string ERR052 = "ERR052"; // Event duplicate
+    public const string ERR059 = "ERR059"; // Asset not clean (virus scan not passed)
 
     // ─── Community Errors ───
     public const string ERR060 = "ERR060"; // Topic not found
@@ -171,6 +172,9 @@ public static class SystemCode
     public const string CON029 = "CON029"; // Media uploaded
     public const string CON036 = "CON036"; // Media updated
     public const string CON037 = "CON037"; // Media deleted
+
+    // ─── Asset Success ───
+    public const string CON038 = "CON038"; // Asset uploaded
 
     // ─── Community Success ───
     public const string CON030 = "CON030"; // Topic created

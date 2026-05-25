@@ -6,6 +6,11 @@ public sealed class UpdateMyProfileCommandValidator : AbstractValidator<UpdateMy
 {
     public UpdateMyProfileCommandValidator()
     {
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.JobTitle).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.OrganizationName).NotEmpty().MaximumLength(200);
+
         RuleFor(x => x.LocalePreference)
             .NotEmpty()
             .Must(l => l == "ar" || l == "en")
