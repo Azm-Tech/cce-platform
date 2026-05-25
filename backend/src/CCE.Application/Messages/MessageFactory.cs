@@ -1,4 +1,5 @@
 using CCE.Application.Common;
+using CCE.Application.Errors;
 using CCE.Application.Localization;
 using CCE.Domain.Common;
 
@@ -104,6 +105,10 @@ public sealed class MessageFactory
     public Response<T> OtpMaxAttempts<T>()     => BusinessRule<T>("OTP_MAX_ATTEMPTS");
     public Response<T> OtpCooldownActive<T>()  => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
     public Response<T> OtpInvalidated<T>()     => BusinessRule<T>("OTP_INVALIDATED");
+
+    // ─── Convenience shortcuts (Evaluation domain) ───
+    public Response<VoidData> EvaluationSubmitted()  => Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);
+    public Response<T> EvaluationNotFound<T>()       => NotFound<T>(ApplicationErrors.Evaluation.EVALUATION_NOT_FOUND);
 
     // ─── Convenience shortcuts (Notification domain) ───
 

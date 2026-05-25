@@ -55,6 +55,9 @@ public sealed class Errors
     public Error PostNotFound()      => NotFound($"COMMUNITY_{ApplicationErrors.Community.POST_NOT_FOUND}");
     public Error ReplyNotFound()     => NotFound($"COMMUNITY_{ApplicationErrors.Community.REPLY_NOT_FOUND}");
 
+    // ─── Convenience: Evaluation domain ───
+    public Error EvaluationNotFound() => NotFound($"EVALUATION_{ApplicationErrors.Evaluation.EVALUATION_NOT_FOUND}");
+
     // ─── Convenience: Country domain ───
     public Error CountryNotFound()   => NotFound($"COUNTRY_{ApplicationErrors.Country.COUNTRY_NOT_FOUND}");
 

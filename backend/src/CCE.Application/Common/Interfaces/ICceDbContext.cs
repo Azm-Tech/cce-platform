@@ -2,6 +2,7 @@ using System.Linq;
 using CCE.Domain.Audit;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
+using CCE.Domain.Evaluation;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
@@ -74,6 +75,9 @@ public interface ICceDbContext
     // ─── Verification ───
     IQueryable<OtpVerification> OtpVerifications { get; }
     IQueryable<UserVerification> UserVerifications { get; }
+
+    // ─── Evaluation ───
+    IQueryable<ServiceEvaluation> ServiceEvaluations { get; }
 
     // ─── Media ───
     IQueryable<MediaFile> MediaFiles { get; }

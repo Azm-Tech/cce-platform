@@ -104,6 +104,12 @@ public static class ApplicationErrors
         public const string TECHNOLOGY_NOT_FOUND = "TECHNOLOGY_NOT_FOUND";
     }
 
+    public static class Evaluation
+    {
+        public const string EVALUATION_NOT_FOUND = "EVALUATION_NOT_FOUND";
+        public const string EVALUATION_SUBMITTED = "EVALUATION_SUBMITTED";
+    }
+
     public static class Validation
     {
         public const string REQUIRED_FIELD = "REQUIRED_FIELD";

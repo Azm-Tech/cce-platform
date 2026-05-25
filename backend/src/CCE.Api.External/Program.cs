@@ -113,6 +113,7 @@ app.MapInteractiveCityEndpoints();
 app.MapAssistantEndpoints();
 app.MapKapsarcEndpoints();
 app.MapSurveysEndpoints();
+app.MapEvaluationEndpoints();
 app.MapHomepageSettingsPublicEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();

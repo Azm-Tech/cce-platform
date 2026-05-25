@@ -456,3 +456,11 @@ NOTIFICATION_TEMPLATE_CREATED:
 NOTIFICATION_TEMPLATE_UPDATED:
   ar: "تم تحديث قالب الإشعار بنجاح"
   en: "Notification template updated successfully"
+
+EVALUATION_NOT_FOUND:
+  ar: "التقييم غير موجود"
+  en: "Evaluation not found"
+
+EVALUATION_SUBMITTED:
+  ar: "تم تقديم التقييم بنجاح"
+  en: "Evaluation submitted successfully"
