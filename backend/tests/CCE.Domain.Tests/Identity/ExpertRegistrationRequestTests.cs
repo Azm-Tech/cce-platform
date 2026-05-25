@@ -15,6 +15,7 @@ public class ExpertRegistrationRequestTests
             bioAr: "خبير",
             bioEn: "Expert",
             tags: new[] { "Solar", "Storage" },
+            cvAssetFileId: System.Guid.NewGuid(),
             clock: clock);
 
     [Fact]
@@ -38,8 +39,8 @@ public class ExpertRegistrationRequestTests
     public void Submit_with_empty_bios_throws()
     {
         var clock = NewClock();
-        var act1 = () => ExpertRegistrationRequest.Submit(System.Guid.NewGuid(), "", "Expert", new[] { "x" }, clock);
-        var act2 = () => ExpertRegistrationRequest.Submit(System.Guid.NewGuid(), "خبير", "", new[] { "x" }, clock);
+        var act1 = () => ExpertRegistrationRequest.Submit(System.Guid.NewGuid(), "", "Expert", new[] { "x" }, System.Guid.NewGuid(), clock);
+        var act2 = () => ExpertRegistrationRequest.Submit(System.Guid.NewGuid(), "خبير", "", new[] { "x" }, System.Guid.NewGuid(), clock);
         act1.Should().Throw<DomainException>();
         act2.Should().Throw<DomainException>();
     }
@@ -48,7 +49,7 @@ public class ExpertRegistrationRequestTests
     public void Submit_with_empty_requesterId_throws()
     {
         var clock = NewClock();
-        var act = () => ExpertRegistrationRequest.Submit(System.Guid.Empty, "خبير", "Expert", new[] { "x" }, clock);
+        var act = () => ExpertRegistrationRequest.Submit(System.Guid.Empty, "خبير", "Expert", new[] { "x" }, System.Guid.NewGuid(), clock);
         act.Should().Throw<DomainException>().WithMessage("*RequesterId*");
     }
 

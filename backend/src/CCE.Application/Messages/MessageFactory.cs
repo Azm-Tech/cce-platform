@@ -78,6 +78,12 @@ public sealed class MessageFactory
     public Response<T> EventNotFound<T>()     => NotFound<T>("EVENT_NOT_FOUND");
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
+    public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
+    public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");
+
+    // ─── Convenience shortcuts (Identity / Expert domain) ───
+
+    public Response<T> ExpertRequestNotFound<T>() => NotFound<T>("EXPERT_REQUEST_NOT_FOUND");
 
     // ─── Convenience shortcuts (Platform Settings domain) ───
 
@@ -115,6 +121,12 @@ public sealed class MessageFactory
     public Response<T> NotificationRetried<T>(T data)      => Ok(data, "NOTIFICATION_RETRIED");
     public Response<T> NotificationTemplateCreated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_CREATED");
     public Response<T> NotificationTemplateUpdated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_UPDATED");
+
+    // ─── Convenience shortcuts (Lookups domain) ───
+
+    public Response<T> CountryCodeNotFound<T>() => NotFound<T>("COUNTRY_CODE_NOT_FOUND");
+    public Response<T> LookupCreated<T>(T data) => Ok(data, "LOOKUP_CREATED");
+    public Response<T> LookupUpdated<T>(T data) => Ok(data, "LOOKUP_UPDATED");
 
     // ─── Private ───
 

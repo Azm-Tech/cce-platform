@@ -28,7 +28,7 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
 
     public async Task<ResourceDto> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
     {
-        var asset = await _assetService.FindAsync(request.AssetFileId, cancellationToken).ConfigureAwait(false);
+        var asset = await _assetService.GetByIdAsync(request.AssetFileId, cancellationToken).ConfigureAwait(false);
         if (asset is null)
         {
             throw new System.Collections.Generic.KeyNotFoundException($"Asset {request.AssetFileId} not found.");

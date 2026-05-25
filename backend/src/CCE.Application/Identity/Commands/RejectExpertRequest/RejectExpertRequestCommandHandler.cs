@@ -37,9 +37,7 @@ public sealed class RejectExpertRequestCommandHandler
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
-        {
-            return _msg.NotFound<ExpertRequestDto>("EXPERT_REQUEST_NOT_FOUND");
-        }
+            return _msg.ExpertRequestNotFound<ExpertRequestDto>();
 
         var rejectedById = _currentUser.GetUserId();
         if (rejectedById is null)

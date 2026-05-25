@@ -34,7 +34,7 @@ public class RejectExpertRequestCommandHandlerTests
     {
         var clock = new FakeSystemClock();
         var registration = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, clock);
+            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, System.Guid.NewGuid(), clock);
         var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
@@ -56,7 +56,7 @@ public class RejectExpertRequestCommandHandlerTests
     {
         var clock = new FakeSystemClock();
         var registration = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, clock);
+            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, System.Guid.NewGuid(), clock);
         var adminId = System.Guid.NewGuid();
         registration.Approve(adminId, clock); // already approved — not Pending
 
@@ -80,7 +80,7 @@ public class RejectExpertRequestCommandHandlerTests
         var requesterId = System.Guid.NewGuid();
         var adminId = System.Guid.NewGuid();
         var registration = ExpertRegistrationRequest.Submit(
-            requesterId, "bio-ar", "bio-en", new[] { "Hydrogen", "CCS" }, clock);
+            requesterId, "bio-ar", "bio-en", new[] { "Hydrogen", "CCS" }, System.Guid.NewGuid(), clock);
 
         var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())

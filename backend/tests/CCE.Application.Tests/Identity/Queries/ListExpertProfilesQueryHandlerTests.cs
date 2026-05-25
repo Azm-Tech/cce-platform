@@ -90,7 +90,7 @@ public class ListExpertProfilesQueryHandlerTests
         string titleEn,
         FakeSystemClock clock)
     {
-        var request = ExpertRegistrationRequest.Submit(userId, bioAr, bioEn, tags, clock);
+        var request = ExpertRegistrationRequest.Submit(userId, bioAr, bioEn, tags, System.Guid.NewGuid(), clock);
         request.Approve(adminId, clock);
         return ExpertProfile.CreateFromApprovedRequest(request, titleAr, titleEn, clock);
     }

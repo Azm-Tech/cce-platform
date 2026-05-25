@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Commands.UploadAsset;
 using CCE.Application.Content.Queries.GetAssetById;
 using CCE.Domain;
@@ -25,28 +26,25 @@ public static class AssetEndpoints
             CancellationToken cancellationToken) =>
         {
             if (!httpContext.Request.HasFormContentType)
-            {
                 return Results.BadRequest(new { error = "Multipart form-data with a single 'file' field is required." });
-            }
+
             var form = await httpContext.Request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
             var file = form.Files["file"] ?? (form.Files.Count > 0 ? form.Files[0] : null);
             if (file is null || file.Length == 0)
-            {
                 return Results.BadRequest(new { error = "Upload requires a non-empty 'file' field." });
-            }
 
             var allowed = infraOpts.Value.AllowedAssetMimeTypes;
             if (!allowed.Contains(file.ContentType, System.StringComparer.OrdinalIgnoreCase))
-            {
                 return Results.StatusCode(StatusCodes.Status415UnsupportedMediaType);
-            }
 
             await using var stream = file.OpenReadStream();
-            var dto = await mediator.Send(
+            var result = await mediator.Send(
                 new UploadAssetCommand(stream, file.FileName, file.ContentType, file.Length),
                 cancellationToken).ConfigureAwait(false);
 
-            return Results.Created($"/api/admin/assets/{dto.Id}", dto);
+            return result.Success
+                ? Results.Created($"/api/admin/assets/{result.Data!.Id}", result)
+                : result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("UploadAsset")
@@ -57,8 +55,8 @@ public static class AssetEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetAssetByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetAssetByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("GetAssetById");

@@ -5,6 +5,7 @@ using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
+using CCE.Domain.Lookups;
 using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
@@ -31,6 +32,7 @@ public interface ICceDbContext
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
     IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
+    IQueryable<ExpertRequestAttachment> ExpertRequestAttachments { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
     IQueryable<RefreshToken> RefreshTokens { get; }
     IQueryable<AssetFile> AssetFiles { get; }
@@ -70,6 +72,9 @@ public interface ICceDbContext
     IQueryable<PoliciesSettings> PoliciesSettings { get; }
     IQueryable<KnowledgePartner> KnowledgePartners { get; }
     IQueryable<PolicySection> PolicySections { get; }
+
+    // ─── Lookups ───
+    IQueryable<CountryCode> CountryCodes { get; }
 
     // ─── Verification ───
     IQueryable<OtpVerification> OtpVerifications { get; }

@@ -8,6 +8,7 @@ public sealed record ExpertRequestStatusDto(
     string RequestedBioAr,
     string RequestedBioEn,
     IReadOnlyList<string> RequestedTags,
+    IReadOnlyList<ExpertRequestAttachmentDto> Attachments,
     System.DateTimeOffset SubmittedOn,
     ExpertRegistrationStatus Status,
     System.DateTimeOffset? ProcessedOn,

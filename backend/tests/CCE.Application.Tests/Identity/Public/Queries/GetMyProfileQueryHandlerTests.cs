@@ -1,4 +1,4 @@
-using CCE.Application.Identity.Public;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
 using CCE.Application.Messages;
 using CCE.Domain.Identity;
@@ -11,10 +11,9 @@ public class GetMyProfileQueryHandlerTests
     [Fact]
     public async Task Returns_null_when_user_not_found()
     {
-        var service = Substitute.For<IUserProfileRepository>();
-        service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
-            .Returns((User?)null);
-        var sut = new GetMyProfileQueryHandler(service, BuildMsg());
+        var db = Substitute.For<ICceDbContext>();
+        db.Users.Returns(System.Array.Empty<User>().AsQueryable());
+        var sut = new GetMyProfileQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(System.Guid.NewGuid()), CancellationToken.None);
 
@@ -33,9 +32,9 @@ public class GetMyProfileQueryHandlerTests
             UserName = "alice",
         };
 
-        var service = Substitute.For<IUserProfileRepository>();
-        service.FindAsync(userId, Arg.Any<CancellationToken>()).Returns(user);
-        var sut = new GetMyProfileQueryHandler(service, BuildMsg());
+        var db = Substitute.For<ICceDbContext>();
+        db.Users.Returns(new[] { user }.AsQueryable());
+        var sut = new GetMyProfileQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(userId), CancellationToken.None);
 

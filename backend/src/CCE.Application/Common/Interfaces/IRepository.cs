@@ -3,7 +3,7 @@ using CCE.Domain.Common;
 namespace CCE.Application.Common.Interfaces;
 
 public interface IRepository<T, TId>
-    where T : AggregateRoot<TId>
+    where T : Entity<TId>
     where TId : IEquatable<TId>
 {
     Task<T?> GetByIdAsync(TId id, CancellationToken ct = default);

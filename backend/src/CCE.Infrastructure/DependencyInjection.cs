@@ -218,6 +218,9 @@ public static class DependencyInjection
         services.AddScoped<IResourceReportService, ResourceReportService>();
         services.AddScoped<ICountryProfilesReportService, CountryProfilesReportService>();
 
+        // Generic repository for aggregate roots
+        services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+
         // Surveys
         services.AddScoped<IServiceRatingService, ServiceRatingService>();
 

@@ -38,9 +38,7 @@ public sealed class ApproveExpertRequestCommandHandler
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
-        {
-            return _msg.NotFound<ExpertProfileDto>("EXPERT_REQUEST_NOT_FOUND");
-        }
+            return _msg.ExpertRequestNotFound<ExpertProfileDto>();
 
         var approvedById = _currentUser.GetUserId();
         if (approvedById is null)

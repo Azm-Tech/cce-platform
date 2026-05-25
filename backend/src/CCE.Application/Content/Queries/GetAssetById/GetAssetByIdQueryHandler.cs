@@ -1,28 +1,35 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Content.Queries.GetAssetById;
 
-public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery, AssetFileDto?>
+public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery, Response<AssetFileDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetAssetByIdQueryHandler(ICceDbContext db) => _db = db;
+    public GetAssetByIdQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<AssetFileDto?> Handle(GetAssetByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Response<AssetFileDto>> Handle(GetAssetByIdQuery request, CancellationToken cancellationToken)
     {
         var list = await _db.AssetFiles
             .Where(a => a.Id == request.Id)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
+
         var asset = list.SingleOrDefault();
         if (asset is null)
-        {
-            return null;
-        }
-        return new AssetFileDto(
+            return _msg.AssetNotFound<AssetFileDto>();
+
+        return _msg.Ok(new AssetFileDto(
             asset.Id,
             asset.Url,
             asset.OriginalFileName,
@@ -31,6 +38,6 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
             asset.UploadedById,
             asset.UploadedOn,
             asset.VirusScanStatus,
-            asset.ScannedOn);
+            asset.ScannedOn), "SUCCESS_OPERATION");
     }
 }

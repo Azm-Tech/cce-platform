@@ -26,7 +26,7 @@ public class GetMyExpertStatusQueryHandlerTests
     {
         var clock = new FakeSystemClock();
         var userId = System.Guid.NewGuid();
-        var request = ExpertRegistrationRequest.Submit(userId, "سيرة", "Bio", new[] { "Wind" }, clock);
+        var request = ExpertRegistrationRequest.Submit(userId, "سيرة", "Bio", new[] { "Wind" }, System.Guid.NewGuid(), clock);
 
         var db = BuildDb(new[] { request });
         var sut = new GetMyExpertStatusQueryHandler(db, BuildMsg());
@@ -46,9 +46,9 @@ public class GetMyExpertStatusQueryHandlerTests
     {
         var clock = new FakeSystemClock();
         var userId = System.Guid.NewGuid();
-        var older = ExpertRegistrationRequest.Submit(userId, "قديمة", "Older bio", new[] { "Solar" }, clock);
+        var older = ExpertRegistrationRequest.Submit(userId, "قديمة", "Older bio", new[] { "Solar" }, System.Guid.NewGuid(), clock);
         clock.Advance(System.TimeSpan.FromDays(1));
-        var newer = ExpertRegistrationRequest.Submit(userId, "أحدث", "Newer bio", new[] { "Wind" }, clock);
+        var newer = ExpertRegistrationRequest.Submit(userId, "أحدث", "Newer bio", new[] { "Wind" }, System.Guid.NewGuid(), clock);
 
         var db = BuildDb(new[] { older, newer });
         var sut = new GetMyExpertStatusQueryHandler(db, BuildMsg());
@@ -61,8 +61,10 @@ public class GetMyExpertStatusQueryHandlerTests
 
     private static ICceDbContext BuildDb(IEnumerable<ExpertRegistrationRequest> requests)
     {
+        var all = requests.ToList();
         var db = Substitute.For<ICceDbContext>();
-        db.ExpertRegistrationRequests.Returns(requests.AsQueryable());
+        db.ExpertRegistrationRequests.Returns(all.AsQueryable());
+        db.ExpertRequestAttachments.Returns(all.SelectMany(r => r.Attachments).AsQueryable());
         return db;
     }
 }
