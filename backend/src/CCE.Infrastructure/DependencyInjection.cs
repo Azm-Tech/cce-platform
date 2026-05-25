@@ -187,6 +187,7 @@ public static class DependencyInjection
         services.AddScoped<IHomepageSettingsRepository, HomepageSettingsRepository>();
         services.AddScoped<IAboutSettingsRepository, AboutSettingsRepository>();
         services.AddScoped<IPoliciesSettingsRepository, PoliciesSettingsRepository>();
+        services.AddScoped<IFaqRepository, FaqRepository>();
 
         services.AddScoped<IMediaFileRepository, MediaFileRepository>();
         services.AddScoped<INotificationTemplateRepository, NotificationTemplateRepository>();
