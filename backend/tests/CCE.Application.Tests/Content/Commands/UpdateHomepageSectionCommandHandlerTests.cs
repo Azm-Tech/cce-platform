@@ -9,7 +9,7 @@ public class UpdateHomepageSectionCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_section_not_found()
     {
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((HomepageSection?)null);
         var sut = new UpdateHomepageSectionCommandHandler(service);
 
@@ -26,7 +26,7 @@ public class UpdateHomepageSectionCommandHandlerTests
         var section = HomepageSection.Create(HomepageSectionType.Hero, 0, "old-ar", "old-en");
         section.Deactivate();
 
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(section.Id, Arg.Any<CancellationToken>()).Returns(section);
         var sut = new UpdateHomepageSectionCommandHandler(service);
 
@@ -46,7 +46,7 @@ public class UpdateHomepageSectionCommandHandlerTests
     {
         var section = HomepageSection.Create(HomepageSectionType.FeaturedNews, 1, "ar", "en");
 
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(section.Id, Arg.Any<CancellationToken>()).Returns(section);
         var sut = new UpdateHomepageSectionCommandHandler(service);
 

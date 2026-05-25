@@ -10,36 +10,20 @@ public sealed class ListPagesQueryHandler : IRequestHandler<ListPagesQuery, Page
 {
     private readonly ICceDbContext _db;
 
-    public ListPagesQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListPagesQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<PageDto>> Handle(ListPagesQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<Page> query = _db.Pages;
+        var query = _db.Pages
+            .WhereIf(!string.IsNullOrWhiteSpace(request.Search),
+                p => p.Slug.Contains(request.Search!) ||
+                     p.TitleAr.Contains(request.Search!) ||
+                     p.TitleEn.Contains(request.Search!))
+            .WhereIf(request.PageType.HasValue, p => p.PageType == request.PageType!.Value)
+            .OrderBy(p => p.Slug);
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            var term = request.Search.Trim();
-            query = query.Where(p =>
-                p.Slug.Contains(term) ||
-                p.TitleAr.Contains(term) ||
-                p.TitleEn.Contains(term));
-        }
-
-        if (request.PageType is { } pageType)
-        {
-            query = query.Where(p => p.PageType == pageType);
-        }
-
-        query = query.OrderBy(p => p.Slug);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<PageDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
     internal static PageDto MapToDto(Page p) => new(

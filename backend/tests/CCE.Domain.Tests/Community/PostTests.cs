@@ -76,8 +76,13 @@ public class PostTests
     [Fact]
     public void EditContent_updates_text()
     {
-        var p = NewQuestion(NewClock());
-        p.EditContent("نص جديد");
+        var clock = NewClock();
+        var p = NewQuestion(clock);
+        var editor = System.Guid.NewGuid();
+        clock.Advance(System.TimeSpan.FromMinutes(1));
+        p.EditContent("نص جديد", editor, clock);
         p.Content.Should().Be("نص جديد");
+        p.LastModifiedOn.Should().Be(clock.UtcNow);
+        p.LastModifiedById.Should().Be(editor);
     }
 }

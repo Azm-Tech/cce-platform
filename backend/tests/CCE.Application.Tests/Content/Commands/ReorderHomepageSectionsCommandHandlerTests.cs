@@ -8,7 +8,7 @@ public class ReorderHomepageSectionsCommandHandlerTests
     [Fact]
     public async Task Forwards_assignments_to_service()
     {
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         var sut = new ReorderHomepageSectionsCommandHandler(service);
         var assignments = new[]
         {

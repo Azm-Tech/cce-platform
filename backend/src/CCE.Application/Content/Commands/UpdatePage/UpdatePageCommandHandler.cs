@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdatePage;
 
 public sealed class UpdatePageCommandHandler : IRequestHandler<UpdatePageCommand, PageDto?>
 {
-    private readonly IPageService _service;
+    private readonly IPageRepository _service;
 
-    public UpdatePageCommandHandler(IPageService service)
+    public UpdatePageCommandHandler(IPageRepository service)
     {
         _service = service;
     }

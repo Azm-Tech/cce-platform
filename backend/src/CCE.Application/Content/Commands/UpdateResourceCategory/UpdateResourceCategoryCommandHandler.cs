@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.UpdateResourceCategory;
 
 public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<UpdateResourceCategoryCommand, ResourceCategoryDto?>
 {
-    private readonly IResourceCategoryService _service;
+    private readonly IResourceCategoryRepository _service;
 
-    public UpdateResourceCategoryCommandHandler(IResourceCategoryService service)
+    public UpdateResourceCategoryCommandHandler(IResourceCategoryRepository service)
     {
         _service = service;
     }

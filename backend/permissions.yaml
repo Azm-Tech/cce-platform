@@ -17,14 +17,15 @@
 #   - Stable: never rename — deprecate old + add new instead.
 #
 # Known roles (defined in PermissionsGenerator.KnownRoles):
-#   cce-admin, cce-editor, cce-reviewer, cce-expert, cce-user, Anonymous
+#   cce-super-admin, cce-admin, cce-content-manager, cce-state-representative,
+#   cce-reviewer, cce-expert, cce-user, Anonymous
 #   These match the appRoles[].value entries in
 #   infra/entra/app-registration-manifest.json (Sub-11 Phase 02).
 #   Sub-11 Phase 03 mapping from legacy Keycloak names:
-#     SuperAdmin           → cce-admin
-#     ContentManager       → cce-editor
-#     StateRepresentative  → cce-editor (merged — content authoring is broad
-#                                         enough to cover country resources)
+#     SuperAdmin           → cce-super-admin
+#     Admin                → cce-admin
+#     ContentManager       → cce-content-manager
+#     StateRepresentative  → cce-state-representative
 #     CommunityExpert      → cce-expert
 #     RegisteredUser       → cce-user
 #     (new in Sub-11)      → cce-reviewer (review queue + read-only on content)
@@ -34,146 +35,155 @@ groups:
     Health:
       Read:
         description: Read system health probe
-        roles: [cce-admin]
+        roles: [cce-super-admin, cce-admin]
   User:
     Read:
       description: Read user profiles
-      roles: [cce-admin, cce-editor, cce-reviewer]
+      roles: [cce-super-admin, cce-admin, cce-reviewer]
     Create:
       description: Create user accounts (admin path)
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     Update:
       description: Update user profile fields (admin path)
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     Delete:
       description: Soft-delete a user
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     Restore:
       description: Undelete a previously soft-deleted user
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
   Role:
     Assign:
       description: Assign a role to a user
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
   Resource:
     Center:
       Upload:
         description: Upload a center-managed resource
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
       Update:
         description: Edit a center-managed resource
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
       Delete:
         description: Soft-delete a center resource
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
     Country:
       Approve:
         description: Approve a country resource request
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
       Reject:
         description: Reject a country resource request
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
       Submit:
         description: Submit a country resource for approval
-        roles: [cce-editor]
+        roles: [cce-state-representative]
   News:
     Publish:
       description: Publish news articles
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
     Update:
       description: Edit news article
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
     Delete:
       description: Soft-delete news article
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
   Event:
     Manage:
       description: Create/update/delete events
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
   Page:
     Edit:
       description: Edit static pages (about, terms, privacy)
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
+    PolicyEdit:
+      description: Edit policies & terms settings (restricted)
+      roles: [cce-super-admin]
   Country:
     Profile:
       Update:
         description: Edit country profile content
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-state-representative]
   Community:
     Post:
       Create:
         description: Create a community post
-        roles: [cce-user, cce-expert, cce-editor, cce-admin]
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
       Reply:
         description: Reply to a community post
-        roles: [cce-user, cce-expert, cce-editor, cce-admin]
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
       Rate:
         description: Rate a community post
-        roles: [cce-user, cce-expert, cce-editor, cce-admin]
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
       Moderate:
         description: Soft-delete or restore a community post (moderation)
-        roles: [cce-admin, cce-editor]
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
       Follow:
         description: Follow posts/topics/users
-        roles: [cce-user, cce-expert, cce-editor, cce-admin]
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
     Expert:
       RegisterRequest:
         description: Submit expert registration request
         roles: [cce-user]
       ApproveRequest:
         description: Approve or reject an expert registration request
-        roles: [cce-admin, cce-editor, cce-reviewer]
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-reviewer]
   KnowledgeMap:
     View:
       description: View knowledge maps
-      roles: [Anonymous, cce-user, cce-expert, cce-editor, cce-reviewer, cce-admin]
+      roles: [Anonymous, cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
     Manage:
       description: Create/update/delete knowledge maps
-      roles: [cce-admin, cce-editor]
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
   InteractiveCity:
     Run:
       description: Run an Interactive City simulation
-      roles: [Anonymous, cce-user, cce-expert, cce-editor, cce-admin]
+      roles: [Anonymous, cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
     SaveScenario:
       description: Save a scenario to user profile
-      roles: [cce-user, cce-expert, cce-editor, cce-admin]
+      roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
   Survey:
     Submit:
       description: Submit a service rating
-      roles: [Anonymous, cce-user, cce-expert, cce-editor, cce-reviewer, cce-admin]
+      roles: [Anonymous, cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
     ReadAll:
       description: Read all survey responses
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
   Notification:
     TemplateManage:
       description: Manage notification templates
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
+    LogView:
+      description: View notification logs and retry failed deliveries
+      roles: [cce-super-admin, cce-admin]
+    Send:
+      description: Send manual/admin notifications
+      roles: [cce-super-admin, cce-admin]
   Audit:
     Read:
       description: Query the audit-event log
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
   Report:
     UserRegistrations:
       description: Generate user-registration report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     ExpertList:
       description: Generate community-experts report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     SatisfactionSurvey:
       description: Generate satisfaction-survey report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     CommunityPosts:
       description: Generate community-posts report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     News:
       description: Generate news report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     Events:
       description: Generate events report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     Resources:
       description: Generate resources report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]
     CountryProfiles:
       description: Generate country profiles report
-      roles: [cce-admin]
+      roles: [cce-super-admin, cce-admin]

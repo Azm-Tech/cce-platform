@@ -42,51 +42,59 @@ public sealed class RedisOutputCacheMiddleware
         }
 
         var key = BuildKey(ctx);
-        var db = _redis.GetDatabase();
-        var hit = await db.StringGetAsync(key).ConfigureAwait(false);
-        if (hit.HasValue)
-        {
-            try
-            {
-                var envelope = JsonSerializer.Deserialize<Envelope>(hit.ToString());
-                if (envelope is not null)
-                {
-                    ctx.Response.ContentType = envelope.ContentType;
-                    var bytes = System.Convert.FromBase64String(envelope.Body);
-                    ctx.Response.StatusCode = StatusCodes.Status200OK;
-                    await ctx.Response.Body.WriteAsync(bytes).ConfigureAwait(false);
-                    return;
-                }
-            }
-            catch (JsonException ex)
-            {
-                _logger.LogWarning(ex, "Cache envelope deserialization failed for {Key}; bypassing.", key);
-            }
-        }
-
-        // No cache hit — capture response into a memory stream while letting downstream write to it.
-        var originalBody = ctx.Response.Body;
-        await using var capture = new MemoryStream();
-        ctx.Response.Body = capture;
         try
         {
-            await _next(ctx).ConfigureAwait(false);
-            capture.Position = 0;
-            var captured = capture.ToArray();
-
-            // Only cache successful responses (2xx).
-            if (ctx.Response.StatusCode >= 200 && ctx.Response.StatusCode < 300)
+            var db = _redis.GetDatabase();
+            var hit = await db.StringGetAsync(key).ConfigureAwait(false);
+            if (hit.HasValue)
             {
-                var envelope = new Envelope(ctx.Response.ContentType ?? "application/octet-stream", System.Convert.ToBase64String(captured));
-                var ttl = System.TimeSpan.FromSeconds(_infraOpts.Value.OutputCacheTtlSeconds);
-                await db.StringSetAsync(key, JsonSerializer.Serialize(envelope), ttl).ConfigureAwait(false);
+                try
+                {
+                    var envelope = JsonSerializer.Deserialize<Envelope>(hit.ToString());
+                    if (envelope is not null)
+                    {
+                        ctx.Response.ContentType = envelope.ContentType;
+                        var bytes = System.Convert.FromBase64String(envelope.Body);
+                        ctx.Response.StatusCode = StatusCodes.Status200OK;
+                        await ctx.Response.Body.WriteAsync(bytes).ConfigureAwait(false);
+                        return;
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogWarning(ex, "Cache envelope deserialization failed for {Key}; bypassing.", key);
+                }
             }
 
-            await originalBody.WriteAsync(captured).ConfigureAwait(false);
+            // No cache hit — capture response into a memory stream while letting downstream write to it.
+            var originalBody = ctx.Response.Body;
+            await using var capture = new MemoryStream();
+            ctx.Response.Body = capture;
+            try
+            {
+                await _next(ctx).ConfigureAwait(false);
+                capture.Position = 0;
+                var captured = capture.ToArray();
+
+                // Only cache successful responses (2xx).
+                if (ctx.Response.StatusCode >= 200 && ctx.Response.StatusCode < 300)
+                {
+                    var envelope = new Envelope(ctx.Response.ContentType ?? "application/octet-stream", System.Convert.ToBase64String(captured));
+                    var ttl = System.TimeSpan.FromSeconds(_infraOpts.Value.OutputCacheTtlSeconds);
+                    await db.StringSetAsync(key, JsonSerializer.Serialize(envelope), ttl).ConfigureAwait(false);
+                }
+
+                await originalBody.WriteAsync(captured).ConfigureAwait(false);
+            }
+            finally
+            {
+                ctx.Response.Body = originalBody;
+            }
         }
-        finally
+        catch (RedisException ex)
         {
-            ctx.Response.Body = originalBody;
+            _logger.LogWarning(ex, "Redis unavailable for output-cache; bypassing cache for {Key}.", key);
+            await _next(ctx).ConfigureAwait(false);
         }
     }
 

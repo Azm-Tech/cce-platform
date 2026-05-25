@@ -1,10 +1,12 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using Microsoft.AspNetCore.Identity;
+using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
 namespace CCE.Application.Tests.Identity.Commands;
 
@@ -13,17 +15,18 @@ public class ApproveExpertRequestCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_request_missing()
     {
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((ExpertRegistrationRequest?)null);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(), new FakeSystemClock());
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new ApproveExpertRequestCommand(System.Guid.NewGuid(), "Dr.", "Dr."),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR400);
     }
 
     [Fact]
@@ -32,19 +35,20 @@ public class ApproveExpertRequestCommandHandlerTests
         var clock = new FakeSystemClock();
         var registration = ExpertRegistrationRequest.Submit(
             System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, clock);
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), currentUser, clock);
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, currentUser, clock, BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "Dr.", "Dr."),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<DomainException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]
@@ -56,11 +60,11 @@ public class ApproveExpertRequestCommandHandlerTests
         var adminId = System.Guid.NewGuid();
         registration.Approve(adminId, clock); // already approved
 
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(adminId), clock);
+        var sut = new ApproveExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var act = async () => await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "Dr.", "Dr."),
@@ -78,24 +82,26 @@ public class ApproveExpertRequestCommandHandlerTests
         var registration = ExpertRegistrationRequest.Submit(
             requesterId, "bio-ar", "bio-en", new[] { "Hydrogen", "CCS" }, clock);
 
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
         var users = new[] { BuildUser(requesterId, "alice@cce.local", "alice") };
+        var db = BuildDb(users);
 
-        var sut = new ApproveExpertRequestCommandHandler(service, BuildDb(users), BuildCurrentUser(adminId), clock);
+        var sut = new ApproveExpertRequestCommandHandler(db, service, BuildCurrentUser(adminId), clock, BuildMsg());
 
-        var dto = await sut.Handle(
+        var result = await sut.Handle(
             new ApproveExpertRequestCommand(registration.Id, "أستاذ مساعد", "Assistant Professor"),
             CancellationToken.None);
 
-        dto.UserId.Should().Be(requesterId);
-        dto.UserName.Should().Be("alice");
-        dto.AcademicTitleEn.Should().Be("Assistant Professor");
-        dto.ExpertiseTags.Should().BeEquivalentTo(new[] { "Hydrogen", "CCS" });
+        result.Data!.UserId.Should().Be(requesterId);
+        result.Data!.UserName.Should().Be("alice");
+        result.Data!.AcademicTitleEn.Should().Be("Assistant Professor");
+        result.Data!.ExpertiseTags.Should().BeEquivalentTo(new[] { "Hydrogen", "CCS" });
         registration.Status.Should().Be(ExpertRegistrationStatus.Approved);
-        await service.Received(1).SaveAsync(registration, Arg.Any<ExpertProfile>(), Arg.Any<CancellationToken>());
+        service.Received(1).AddProfile(Arg.Is<ExpertProfile>(p => p.UserId == requesterId));
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

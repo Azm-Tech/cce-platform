@@ -8,10 +8,10 @@ namespace CCE.Application.Content.Commands.CreateEvent;
 
 public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, EventDto>
 {
-    private readonly IEventService _service;
+    private readonly IEventRepository _service;
     private readonly ISystemClock _clock;
 
-    public CreateEventCommandHandler(IEventService service, ISystemClock clock)
+    public CreateEventCommandHandler(IEventRepository service, ISystemClock clock)
     {
         _service = service;
         _clock = clock;

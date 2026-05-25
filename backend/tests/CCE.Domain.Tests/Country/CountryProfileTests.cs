@@ -18,7 +18,10 @@ public class CountryProfileTests
             System.Guid.NewGuid(), clock);
 
         p.DescriptionAr.Should().Be("وصف");
-        p.LastUpdatedOn.Should().Be(clock.UtcNow);
+        p.CreatedOn.Should().Be(clock.UtcNow);
+        p.CreatedById.Should().NotBe(Guid.Empty);
+        p.LastModifiedOn.Should().Be(clock.UtcNow);
+        p.LastModifiedById.Should().Be(p.CreatedById);
         p.RowVersion.Should().NotBeNull();
     }
 
@@ -43,8 +46,8 @@ public class CountryProfileTests
         p.Update("ج", "new", "ج", "new", "info", "info-en", updater, clock);
 
         p.DescriptionAr.Should().Be("ج");
-        p.LastUpdatedOn.Should().Be(clock.UtcNow);
-        p.LastUpdatedById.Should().Be(updater);
+        p.LastModifiedOn.Should().Be(clock.UtcNow);
+        p.LastModifiedById.Should().Be(updater);
         p.ContactInfoAr.Should().Be("info");
     }
 

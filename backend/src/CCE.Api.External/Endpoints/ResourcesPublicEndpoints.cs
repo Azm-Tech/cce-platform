@@ -47,7 +47,7 @@ public static class ResourcesPublicEndpoints
             HttpContext httpContext,
             ICceDbContext db,
             IFileStorage storage,
-            IResourceViewCountService viewCounter,
+            IResourceViewCountRepository viewCounter,
             CancellationToken cancellationToken) =>
         {
             // Load resource + asset metadata in a single round trip.

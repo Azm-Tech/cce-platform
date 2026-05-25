@@ -44,7 +44,8 @@ public sealed class PersonaMatrixTests :
 
     public static readonly string[] Personas =
     {
-        "anonymous", "cce-admin", "cce-editor", "cce-reviewer", "cce-expert", "cce-user",
+        "anonymous", "cce-super-admin", "cce-admin", "cce-content-manager", "cce-state-representative",
+        "cce-reviewer", "cce-expert", "cce-user",
     };
 
     /// <summary>
@@ -53,37 +54,43 @@ public sealed class PersonaMatrixTests :
     /// </summary>
     private static readonly (string Label, ApiHost Host, string Path, Dictionary<string, PersonaOutcome> Expected)[] Probes =
     {
-        // GET /api/admin/users (User.Read) — admin/editor/reviewer allowed
+        // GET /api/admin/users (User.Read) — super-admin/admin/reviewer allowed
         ("GET /api/admin/users", ApiHost.Internal, "/api/admin/users", new()
         {
-            ["anonymous"]    = PersonaOutcome.AnonymousUnauthorized,
-            ["cce-admin"]    = PersonaOutcome.Allowed,
-            ["cce-editor"]   = PersonaOutcome.Allowed,
-            ["cce-reviewer"] = PersonaOutcome.Allowed,
-            ["cce-expert"]   = PersonaOutcome.Forbidden,
-            ["cce-user"]     = PersonaOutcome.Forbidden,
+            ["anonymous"]         = PersonaOutcome.AnonymousUnauthorized,
+            ["cce-super-admin"]   = PersonaOutcome.Allowed,
+            ["cce-admin"]         = PersonaOutcome.Allowed,
+            ["cce-content-manager"] = PersonaOutcome.Forbidden,
+            ["cce-state-representative"]     = PersonaOutcome.Forbidden,
+            ["cce-reviewer"]      = PersonaOutcome.Allowed,
+            ["cce-expert"]        = PersonaOutcome.Forbidden,
+            ["cce-user"]          = PersonaOutcome.Forbidden,
         }),
 
-        // GET /api/admin/audit-events (Audit.Read) — admin only
+        // GET /api/admin/audit-events (Audit.Read) — super-admin/admin only
         ("GET /api/admin/audit-events", ApiHost.Internal, "/api/admin/audit-events", new()
         {
-            ["anonymous"]    = PersonaOutcome.AnonymousUnauthorized,
-            ["cce-admin"]    = PersonaOutcome.Allowed,
-            ["cce-editor"]   = PersonaOutcome.Forbidden,
-            ["cce-reviewer"] = PersonaOutcome.Forbidden,
-            ["cce-expert"]   = PersonaOutcome.Forbidden,
-            ["cce-user"]     = PersonaOutcome.Forbidden,
+            ["anonymous"]         = PersonaOutcome.AnonymousUnauthorized,
+            ["cce-super-admin"]   = PersonaOutcome.Allowed,
+            ["cce-admin"]         = PersonaOutcome.Allowed,
+            ["cce-content-manager"] = PersonaOutcome.Forbidden,
+            ["cce-state-representative"]     = PersonaOutcome.Forbidden,
+            ["cce-reviewer"]      = PersonaOutcome.Forbidden,
+            ["cce-expert"]        = PersonaOutcome.Forbidden,
+            ["cce-user"]          = PersonaOutcome.Forbidden,
         }),
 
-        // GET /api/admin/expert-requests (Community.Expert.ApproveRequest) — admin/editor/reviewer
+        // GET /api/admin/expert-requests (Community.Expert.ApproveRequest) — super-admin/admin/content-manager/reviewer
         ("GET /api/admin/expert-requests", ApiHost.Internal, "/api/admin/expert-requests", new()
         {
-            ["anonymous"]    = PersonaOutcome.AnonymousUnauthorized,
-            ["cce-admin"]    = PersonaOutcome.Allowed,
-            ["cce-editor"]   = PersonaOutcome.Allowed,
-            ["cce-reviewer"] = PersonaOutcome.Allowed,
-            ["cce-expert"]   = PersonaOutcome.Forbidden,
-            ["cce-user"]     = PersonaOutcome.Forbidden,
+            ["anonymous"]         = PersonaOutcome.AnonymousUnauthorized,
+            ["cce-super-admin"]   = PersonaOutcome.Allowed,
+            ["cce-admin"]         = PersonaOutcome.Allowed,
+            ["cce-content-manager"] = PersonaOutcome.Allowed,
+            ["cce-state-representative"]     = PersonaOutcome.Forbidden,
+            ["cce-reviewer"]      = PersonaOutcome.Allowed,
+            ["cce-expert"]        = PersonaOutcome.Forbidden,
+            ["cce-user"]          = PersonaOutcome.Forbidden,
         }),
 
         // /api/me + /api/admin/reports/* probes deferred — those endpoints

@@ -8,9 +8,9 @@ namespace CCE.Application.Content.Commands.CreatePage;
 
 public sealed class CreatePageCommandHandler : IRequestHandler<CreatePageCommand, PageDto>
 {
-    private readonly IPageService _service;
+    private readonly IPageRepository _service;
 
-    public CreatePageCommandHandler(IPageService service)
+    public CreatePageCommandHandler(IPageRepository service)
     {
         _service = service;
     }

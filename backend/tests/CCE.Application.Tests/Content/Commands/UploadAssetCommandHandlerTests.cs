@@ -78,7 +78,7 @@ public class UploadAssetCommandHandlerTests
     private static UploadAssetCommandHandler BuildSut(
         out IFileStorage storage,
         out IClamAvScanner scanner,
-        out IAssetService service,
+        out IAssetRepository service,
         System.Guid? currentUserId)
     {
         storage = Substitute.For<IFileStorage>();
@@ -86,7 +86,7 @@ public class UploadAssetCommandHandlerTests
         // Individual tests that need to verify DeleteAsync can override this.
         storage.SaveAsync(default!, default!, default).ReturnsForAnyArgs(Task.FromResult("uploads/default/key.bin"));
         scanner = Substitute.For<IClamAvScanner>();
-        service = Substitute.For<IAssetService>();
+        service = Substitute.For<IAssetRepository>();
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns(currentUserId);
         return new UploadAssetCommandHandler(

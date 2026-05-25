@@ -9,8 +9,11 @@ using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
+using CCE.Domain.Media;
 using CCE.Domain.Notifications;
+using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
+using CCE.Domain.Verification;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +38,7 @@ public sealed class CceDbContext
     public DbSet<StateRepresentativeAssignment> StateRepresentativeAssignments => Set<StateRepresentativeAssignment>();
     public DbSet<ExpertProfile> ExpertProfiles => Set<ExpertProfile>();
     public DbSet<ExpertRegistrationRequest> ExpertRegistrationRequests => Set<ExpertRegistrationRequest>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     // ─── Content ───
     public DbSet<AssetFile> AssetFiles => Set<AssetFile>();
@@ -75,49 +79,101 @@ public sealed class CceDbContext
     // ─── Notifications ───
     public DbSet<NotificationTemplate> NotificationTemplates => Set<NotificationTemplate>();
     public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
+    public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
+    public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
+
+    // ─── Verification ───
+    public DbSet<OtpVerification> OtpVerifications => Set<OtpVerification>();
+    public DbSet<UserVerification> UserVerifications => Set<UserVerification>();
 
     // ─── Surveys ───
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
 
-    // ─── ICceDbContext explicit interface implementations ───
-    // DbSet<T> implements IQueryable<T>; the inherited Identity DbSets (Users/Roles/UserRoles)
-    // and the domain DbSet below satisfy the interface through these explicit projections.
-    IQueryable<User> ICceDbContext.Users => Users;
-    IQueryable<Role> ICceDbContext.Roles => Roles;
-    IQueryable<IdentityUserRole<System.Guid>> ICceDbContext.UserRoles => UserRoles;
-    IQueryable<StateRepresentativeAssignment> ICceDbContext.StateRepresentativeAssignments => StateRepresentativeAssignments;
-    IQueryable<CCE.Domain.Country.Country> ICceDbContext.Countries => Countries;
-    IQueryable<ExpertRegistrationRequest> ICceDbContext.ExpertRegistrationRequests => ExpertRegistrationRequests;
-    IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles;
-    IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles;
-    IQueryable<ResourceCategory> ICceDbContext.ResourceCategories => ResourceCategories;
-    IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources;
-    IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests;
-    IQueryable<CountryProfile> ICceDbContext.CountryProfiles => CountryProfiles;
-    IQueryable<CountryKapsarcSnapshot> ICceDbContext.CountryKapsarcSnapshots => CountryKapsarcSnapshots;
-    IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News;
-    IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events;
-    IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages;
-    IQueryable<HomepageSection> ICceDbContext.HomepageSections => HomepageSections;
-    IQueryable<Topic> ICceDbContext.Topics => Topics;
-    IQueryable<Post> ICceDbContext.Posts => Posts;
-    IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies;
-    IQueryable<PostRating> ICceDbContext.PostRatings => PostRatings;
-    IQueryable<TopicFollow> ICceDbContext.TopicFollows => TopicFollows;
-    IQueryable<UserFollow> ICceDbContext.UserFollows => UserFollows;
-    IQueryable<PostFollow> ICceDbContext.PostFollows => PostFollows;
-    IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates;
-    IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications;
-    IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings;
-    IQueryable<AuditEvent> ICceDbContext.AuditEvents => AuditEvents;
-    IQueryable<KnowledgeMap> ICceDbContext.KnowledgeMaps => KnowledgeMaps;
-    IQueryable<KnowledgeMapNode> ICceDbContext.KnowledgeMapNodes => KnowledgeMapNodes;
-    IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges;
-    IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations;
-    IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios;
-    IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies;
-    IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults;
+    // ─── Media ───
+    public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
+
+    // ─── Platform Settings ───
+    public DbSet<HomepageSettings> HomepageSettings => Set<HomepageSettings>();
+    public DbSet<HomepageCountry> HomepageCountries => Set<HomepageCountry>();
+    public DbSet<AboutSettings> AboutSettings => Set<AboutSettings>();
+    public DbSet<GlossaryEntry> GlossaryEntries => Set<GlossaryEntry>();
+    public DbSet<PoliciesSettings> PoliciesSettings => Set<PoliciesSettings>();
+    public DbSet<KnowledgePartner> KnowledgePartners => Set<KnowledgePartner>();
+    public DbSet<PolicySection> PolicySections => Set<PolicySection>();
+    public DbSet<Faq> Faqs => Set<Faq>();
+
+    // ─── ICceDbContext (read-only queryables — no tracking) ───
+    IQueryable<User> ICceDbContext.Users => Users.AsNoTracking();
+    IQueryable<Role> ICceDbContext.Roles => Roles.AsNoTracking();
+    IQueryable<IdentityUserRole<System.Guid>> ICceDbContext.UserRoles => UserRoles.AsNoTracking();
+    IQueryable<StateRepresentativeAssignment> ICceDbContext.StateRepresentativeAssignments => StateRepresentativeAssignments.AsNoTracking();
+    IQueryable<CCE.Domain.Country.Country> ICceDbContext.Countries => Countries.AsNoTracking();
+    IQueryable<ExpertRegistrationRequest> ICceDbContext.ExpertRegistrationRequests => ExpertRegistrationRequests.AsNoTracking();
+    IQueryable<ExpertProfile> ICceDbContext.ExpertProfiles => ExpertProfiles.AsNoTracking();
+    IQueryable<RefreshToken> ICceDbContext.RefreshTokens => RefreshTokens.AsNoTracking();
+    IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles.AsNoTracking();
+    IQueryable<ResourceCategory> ICceDbContext.ResourceCategories => ResourceCategories.AsNoTracking();
+    IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources.AsNoTracking();
+    IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests.AsNoTracking();
+    IQueryable<CountryProfile> ICceDbContext.CountryProfiles => CountryProfiles.AsNoTracking();
+    IQueryable<CountryKapsarcSnapshot> ICceDbContext.CountryKapsarcSnapshots => CountryKapsarcSnapshots.AsNoTracking();
+    IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News.AsNoTracking();
+    IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events.AsNoTracking();
+    IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages.AsNoTracking();
+    IQueryable<HomepageSection> ICceDbContext.HomepageSections => HomepageSections.AsNoTracking();
+    IQueryable<Topic> ICceDbContext.Topics => Topics.AsNoTracking();
+    IQueryable<Post> ICceDbContext.Posts => Posts.AsNoTracking();
+    IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies.AsNoTracking();
+    IQueryable<PostRating> ICceDbContext.PostRatings => PostRatings.AsNoTracking();
+    IQueryable<TopicFollow> ICceDbContext.TopicFollows => TopicFollows.AsNoTracking();
+    IQueryable<UserFollow> ICceDbContext.UserFollows => UserFollows.AsNoTracking();
+    IQueryable<PostFollow> ICceDbContext.PostFollows => PostFollows.AsNoTracking();
+    IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates.AsNoTracking();
+    IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications.AsNoTracking();
+    IQueryable<NotificationLog> ICceDbContext.NotificationLogs => NotificationLogs.AsNoTracking();
+    IQueryable<UserNotificationSettings> ICceDbContext.UserNotificationSettings => UserNotificationSettings.AsNoTracking();
+    IQueryable<ServiceRating> ICceDbContext.ServiceRatings => ServiceRatings.AsNoTracking();
+    IQueryable<AuditEvent> ICceDbContext.AuditEvents => AuditEvents.AsNoTracking();
+    IQueryable<KnowledgeMap> ICceDbContext.KnowledgeMaps => KnowledgeMaps.AsNoTracking();
+    IQueryable<KnowledgeMapNode> ICceDbContext.KnowledgeMapNodes => KnowledgeMapNodes.AsNoTracking();
+    IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges.AsNoTracking();
+    IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations.AsNoTracking();
+    IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios.AsNoTracking();
+    IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies.AsNoTracking();
+    IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults.AsNoTracking();
+    IQueryable<HomepageSettings> ICceDbContext.HomepageSettings => HomepageSettings.AsNoTracking();
+    IQueryable<HomepageCountry> ICceDbContext.HomepageCountries => HomepageCountries.AsNoTracking();
+    IQueryable<AboutSettings> ICceDbContext.AboutSettings => AboutSettings.AsNoTracking();
+    IQueryable<GlossaryEntry> ICceDbContext.GlossaryEntries => GlossaryEntries.AsNoTracking();
+    IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
+    IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
+    IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+    IQueryable<Faq> ICceDbContext.Faqs => Faqs.AsNoTracking();
+    IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
+    IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
+    IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
+
+    void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);
+    void ICceDbContext.Attach<T>(T entity) where T : class => Set<T>().Attach(entity);
+    void ICceDbContext.Delete<T>(T entity) where T : class => Set<T>().Remove(entity);
+    void ICceDbContext.DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class
+        => Set<T>().RemoveRange(entities);
+
+    void ICceDbContext.SetExpectedRowVersion<T>(T entity, byte[] expectedRowVersion) where T : class
+        => this.SetExpectedRowVersion(entity, expectedRowVersion);
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyException("Concurrent update conflict.", ex);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -33,8 +33,8 @@ public sealed class CountryProfilesReportService : ICountryProfilesReportService
                 x.Country.NameEn, x.Country.NameAr, x.Country.RegionEn,
                 CountryIsActive = x.Country.IsActive,
                 HasProfile = x.Profile != null,
-                LastProfileUpdatedOn = x.Profile != null ? (System.DateTimeOffset?)x.Profile.LastUpdatedOn : null,
-                LastProfileUpdatedById = x.Profile != null ? (System.Guid?)x.Profile.LastUpdatedById : null,
+                LastProfileUpdatedOn = x.Profile != null ? (DateTimeOffset?)(x.Profile.LastModifiedOn ?? x.Profile.CreatedOn) : null,
+                LastProfileUpdatedById = x.Profile != null ? (Guid?)(x.Profile.LastModifiedById ?? x.Profile.CreatedById) : null,
             });
 
         if (from.HasValue) query = query.Where(x => x.LastProfileUpdatedOn >= from);

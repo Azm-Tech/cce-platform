@@ -1,23 +1,30 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Identity.Public.Commands.UpdateMyProfile;
 
-public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProfileCommand, UserProfileDto?>
+public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProfileCommand, Response<UserProfileDto>>
 {
-    private readonly IUserProfileService _service;
+    private readonly ICceDbContext _db;
+    private readonly IUserProfileRepository _service;
+    private readonly MessageFactory _msg;
 
-    public UpdateMyProfileCommandHandler(IUserProfileService service)
+    public UpdateMyProfileCommandHandler(ICceDbContext db, IUserProfileRepository service, MessageFactory msg)
     {
+        _db = db;
         _service = service;
+        _msg = msg;
     }
 
-    public async Task<UserProfileDto?> Handle(UpdateMyProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Response<UserProfileDto>> Handle(UpdateMyProfileCommand request, CancellationToken cancellationToken)
     {
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
         {
-            return null;
+            return _msg.UserNotFound<UserProfileDto>();
         }
 
         user.SetLocalePreference(request.LocalePreference);
@@ -34,9 +41,10 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
             user.AssignCountry(request.CountryId.Value);
         }
 
-        await _service.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
+        _service.Update(user);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new UserProfileDto(
+        return _msg.Ok(new UserProfileDto(
             user.Id,
             user.Email,
             user.UserName,
@@ -44,6 +52,6 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
             user.KnowledgeLevel,
             user.Interests,
             user.CountryId,
-            user.AvatarUrl);
+            user.AvatarUrl), "PROFILE_UPDATED");
     }
 }

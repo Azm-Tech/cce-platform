@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.ReorderHomepageSections;
 public sealed class ReorderHomepageSectionsCommandHandler
     : IRequestHandler<ReorderHomepageSectionsCommand, Unit>
 {
-    private readonly IHomepageSectionService _service;
+    private readonly IHomepageSectionRepository _service;
 
-    public ReorderHomepageSectionsCommandHandler(IHomepageSectionService service)
+    public ReorderHomepageSectionsCommandHandler(IHomepageSectionRepository service)
     {
         _service = service;
     }

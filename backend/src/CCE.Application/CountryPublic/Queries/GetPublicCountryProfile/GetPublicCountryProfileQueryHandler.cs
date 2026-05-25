@@ -48,5 +48,5 @@ public sealed class GetPublicCountryProfileQueryHandler
         p.KeyInitiativesEn,
         p.ContactInfoAr,
         p.ContactInfoEn,
-        p.LastUpdatedOn);
+        p.LastModifiedOn ?? p.CreatedOn);
 }

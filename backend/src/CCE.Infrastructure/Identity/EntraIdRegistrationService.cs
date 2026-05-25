@@ -103,7 +103,7 @@ public sealed class EntraIdRegistrationService
         {
             var subject = "Welcome to CCE — your account is ready";
             var body = BuildWelcomeEmailHtml(dto, tempPassword);
-            await _emailSender.SendAsync(created.UserPrincipalName!, subject, body, ct).ConfigureAwait(false);
+            await _emailSender.SendAsync(created.UserPrincipalName!, subject, body, ct: ct).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

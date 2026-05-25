@@ -48,10 +48,13 @@ public class UsersEndpointTests :
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await resp.Content.ReadAsStringAsync();
         var doc = JsonDocument.Parse(body).RootElement;
-        doc.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
-        doc.GetProperty("page").GetInt32().Should().Be(1);
-        doc.GetProperty("pageSize").GetInt32().Should().Be(20);
-        doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
+        doc.GetProperty("success").GetBoolean().Should().BeTrue();
+        doc.GetProperty("code").GetString().Should().Be("CON100");
+        var data = doc.GetProperty("data");
+        data.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
+        data.GetProperty("page").GetInt32().Should().Be(1);
+        data.GetProperty("pageSize").GetInt32().Should().Be(20);
+        data.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -109,5 +112,69 @@ public class UsersEndpointTests :
         var resp = await client.PostAsync(new Uri("/api/admin/users/sync", UriKind.Relative), content: null);
 
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Put_status_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new { isActive = true });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}/status", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Put_status_with_unknown_user_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+        using var body = JsonContent.Create(new { isActive = true });
+
+        var resp = await client.PutAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}/status", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Post_create_user_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+        using var body = JsonContent.Create(new
+        {
+            firstName = "Ali",
+            lastName = "Ahmed",
+            email = "test@cce.local",
+            password = "pass1234",
+            phoneNumber = "1234567890",
+            countryId = (Guid?)null,
+            role = "cce-admin",
+        });
+
+        var resp = await client.PostAsync(new Uri("/api/admin/users", UriKind.Relative), body);
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Delete_user_anonymous_returns_401()
+    {
+        using var client = _factory.CreateClient();
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Delete_user_with_unknown_id_returns_404()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AccessToken);
+
+        var resp = await client.DeleteAsync(new Uri($"/api/admin/users/{System.Guid.NewGuid()}", UriKind.Relative));
+
+        resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

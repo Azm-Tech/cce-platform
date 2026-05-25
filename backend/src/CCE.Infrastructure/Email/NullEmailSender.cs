@@ -18,7 +18,7 @@ public sealed class NullEmailSender : IEmailSender
 
     public NullEmailSender(ILogger<NullEmailSender> logger) => _logger = logger;
 
-    public Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default)
+    public Task SendAsync(string to, string subject, string htmlBody, string? templateId = null, CancellationToken ct = default)
     {
         _logger.LogInformation(
             "[NullEmailSender] Would have sent email to {To} with subject {Subject} (body suppressed)",

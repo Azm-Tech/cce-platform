@@ -1,5 +1,7 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Application.Notifications.Public.Dtos;
 using CCE.Domain.Notifications;
 using MediatR;
@@ -7,16 +9,18 @@ using MediatR;
 namespace CCE.Application.Notifications.Public.Queries.ListMyNotifications;
 
 public sealed class ListMyNotificationsQueryHandler
-    : IRequestHandler<ListMyNotificationsQuery, PagedResult<UserNotificationDto>>
+    : IRequestHandler<ListMyNotificationsQuery, Response<PagedResult<UserNotificationDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListMyNotificationsQueryHandler(ICceDbContext db)
+    public ListMyNotificationsQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<UserNotificationDto>> Handle(
+    public async Task<Response<PagedResult<UserNotificationDto>>> Handle(
         ListMyNotificationsQuery request,
         CancellationToken cancellationToken)
     {
@@ -34,7 +38,8 @@ public sealed class ListMyNotificationsQueryHandler
             .ConfigureAwait(false);
 
         var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<UserNotificationDto>(items, page.Page, page.PageSize, page.Total);
+        var result = new PagedResult<UserNotificationDto>(items, page.Page, page.PageSize, page.Total);
+        return _msg.Ok(result, "ITEMS_LISTED");
     }
 
     internal static UserNotificationDto MapToDto(UserNotification n) => new(

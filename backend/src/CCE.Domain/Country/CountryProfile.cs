@@ -8,7 +8,7 @@ namespace CCE.Domain.Country;
 /// optimistic concurrency on edit.
 /// </summary>
 [Audited]
-public sealed class CountryProfile : Entity<System.Guid>
+public sealed class CountryProfile : AuditableEntity<System.Guid>
 {
     private CountryProfile(
         System.Guid id,
@@ -18,9 +18,7 @@ public sealed class CountryProfile : Entity<System.Guid>
         string keyInitiativesAr,
         string keyInitiativesEn,
         string? contactInfoAr,
-        string? contactInfoEn,
-        System.Guid lastUpdatedById,
-        System.DateTimeOffset lastUpdatedOn) : base(id)
+        string? contactInfoEn) : base(id)
     {
         CountryId = countryId;
         DescriptionAr = descriptionAr;
@@ -29,8 +27,6 @@ public sealed class CountryProfile : Entity<System.Guid>
         KeyInitiativesEn = keyInitiativesEn;
         ContactInfoAr = contactInfoAr;
         ContactInfoEn = contactInfoEn;
-        LastUpdatedById = lastUpdatedById;
-        LastUpdatedOn = lastUpdatedOn;
     }
 
     public System.Guid CountryId { get; private set; }
@@ -40,8 +36,6 @@ public sealed class CountryProfile : Entity<System.Guid>
     public string KeyInitiativesEn { get; private set; }
     public string? ContactInfoAr { get; private set; }
     public string? ContactInfoEn { get; private set; }
-    public System.Guid LastUpdatedById { get; private set; }
-    public System.DateTimeOffset LastUpdatedOn { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
 
     public static CountryProfile Create(
@@ -61,7 +55,7 @@ public sealed class CountryProfile : Entity<System.Guid>
         if (string.IsNullOrWhiteSpace(keyInitiativesAr)) throw new DomainException("KeyInitiativesAr is required.");
         if (string.IsNullOrWhiteSpace(keyInitiativesEn)) throw new DomainException("KeyInitiativesEn is required.");
         if (createdById == System.Guid.Empty) throw new DomainException("CreatedById is required.");
-        return new CountryProfile(
+        var p = new CountryProfile(
             id: System.Guid.NewGuid(),
             countryId: countryId,
             descriptionAr: descriptionAr,
@@ -69,9 +63,10 @@ public sealed class CountryProfile : Entity<System.Guid>
             keyInitiativesAr: keyInitiativesAr,
             keyInitiativesEn: keyInitiativesEn,
             contactInfoAr: contactInfoAr,
-            contactInfoEn: contactInfoEn,
-            lastUpdatedById: createdById,
-            lastUpdatedOn: clock.UtcNow);
+            contactInfoEn: contactInfoEn);
+        p.MarkAsCreated(createdById, clock);
+        p.MarkAsModified(createdById, clock);
+        return p;
     }
 
     public void Update(
@@ -95,7 +90,6 @@ public sealed class CountryProfile : Entity<System.Guid>
         KeyInitiativesEn = keyInitiativesEn;
         ContactInfoAr = contactInfoAr;
         ContactInfoEn = contactInfoEn;
-        LastUpdatedById = updatedById;
-        LastUpdatedOn = clock.UtcNow;
+        MarkAsModified(updatedById, clock);
     }
 }

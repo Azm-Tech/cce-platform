@@ -1,7 +1,8 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Identity;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using MediatR;
@@ -9,46 +10,53 @@ using MediatR;
 namespace CCE.Application.Identity.Commands.ApproveExpertRequest;
 
 public sealed class ApproveExpertRequestCommandHandler
-    : IRequestHandler<ApproveExpertRequestCommand, ExpertProfileDto>
+    : IRequestHandler<ApproveExpertRequestCommand, Response<ExpertProfileDto>>
 {
-    private readonly IExpertWorkflowService _service;
     private readonly ICceDbContext _db;
+    private readonly IExpertWorkflowRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
 
     public ApproveExpertRequestCommandHandler(
-        IExpertWorkflowService service,
         ICceDbContext db,
+        IExpertWorkflowRepository service,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        MessageFactory msg)
     {
-        _service = service;
         _db = db;
+        _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _msg = msg;
     }
 
-    public async Task<ExpertProfileDto> Handle(
+    public async Task<Response<ExpertProfileDto>> Handle(
         ApproveExpertRequestCommand request,
         CancellationToken cancellationToken)
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"Expert registration request {request.Id} not found.");
+            return _msg.NotFound<ExpertProfileDto>("EXPERT_REQUEST_NOT_FOUND");
         }
 
-        var approvedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot approve an expert request from a request without a user identity.");
+        var approvedById = _currentUser.GetUserId();
+        if (approvedById is null)
+        {
+            return _msg.NotAuthenticated<ExpertProfileDto>();
+        }
 
-        registration.Approve(approvedById, _clock);
+        registration.Approve(approvedById.Value, _clock);
         var profile = ExpertProfile.CreateFromApprovedRequest(registration, request.AcademicTitleAr, request.AcademicTitleEn, _clock);
-        await _service.SaveAsync(registration, profile, cancellationToken).ConfigureAwait(false);
+        _service.AddProfile(profile);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var userName = (await _db.Users.Where(u => u.Id == registration.RequestedById).Select(u => u.UserName)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
-        return new ExpertProfileDto(
+        return _msg.Ok(new ExpertProfileDto(
             profile.Id,
             profile.UserId,
             userName,
@@ -58,6 +66,6 @@ public sealed class ApproveExpertRequestCommandHandler
             profile.AcademicTitleAr,
             profile.AcademicTitleEn,
             profile.ApprovedOn,
-            profile.ApprovedById);
+            profile.ApprovedById), "EXPERT_REQUEST_APPROVED");
     }
 }

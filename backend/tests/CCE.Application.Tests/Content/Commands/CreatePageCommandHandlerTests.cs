@@ -34,9 +34,9 @@ public class CreatePageCommandHandlerTests
     private static CreatePageCommand BuildCmd() =>
         new("test-slug", PageType.Custom, "ar", "en", "content-ar", "content-en");
 
-    private static (CreatePageCommandHandler sut, IPageService service) BuildSut()
+    private static (CreatePageCommandHandler sut, IPageRepository service) BuildSut()
     {
-        var service = Substitute.For<IPageService>();
+        var service = Substitute.For<IPageRepository>();
         var sut = new CreatePageCommandHandler(service);
         return (sut, service);
     }

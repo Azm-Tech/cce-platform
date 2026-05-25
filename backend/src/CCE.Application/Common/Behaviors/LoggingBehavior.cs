@@ -22,16 +22,16 @@ public sealed class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
         CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
-        _logger.LogInformation("Handling {RequestName}", requestName);
+        //_logger.LogInformation("Handling {RequestName}", requestName);
 
         var sw = Stopwatch.StartNew();
         var response = await next().ConfigureAwait(false);
         sw.Stop();
 
-        _logger.LogInformation(
-            "Handled {RequestName} in {ElapsedMs}ms",
-            requestName,
-            sw.ElapsedMilliseconds);
+        //_logger.LogInformation(
+        //    "Handled {RequestName} in {ElapsedMs}ms",
+        //    requestName,
+        //    sw.ElapsedMilliseconds);
 
         return response;
     }

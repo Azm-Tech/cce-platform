@@ -9,7 +9,7 @@ public class DeleteResourceCategoryCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFoundException_when_category_not_found()
     {
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((ResourceCategory?)null);
         var sut = new DeleteResourceCategoryCommandHandler(service);
 
@@ -22,7 +22,7 @@ public class DeleteResourceCategoryCommandHandlerTests
     public async Task Deactivates_category_and_calls_UpdateAsync()
     {
         var category = ResourceCategory.Create("نشط", "Active", "active-del", null, 0);
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         service.FindAsync(category.Id, Arg.Any<CancellationToken>()).Returns(category);
         var sut = new DeleteResourceCategoryCommandHandler(service);
 

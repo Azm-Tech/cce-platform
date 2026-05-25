@@ -7,9 +7,9 @@ namespace CCE.Application.Content.Commands.CreateResourceCategory;
 
 public sealed class CreateResourceCategoryCommandHandler : IRequestHandler<CreateResourceCategoryCommand, ResourceCategoryDto>
 {
-    private readonly IResourceCategoryService _service;
+    private readonly IResourceCategoryRepository _service;
 
-    public CreateResourceCategoryCommandHandler(IResourceCategoryService service)
+    public CreateResourceCategoryCommandHandler(IResourceCategoryRepository service)
     {
         _service = service;
     }

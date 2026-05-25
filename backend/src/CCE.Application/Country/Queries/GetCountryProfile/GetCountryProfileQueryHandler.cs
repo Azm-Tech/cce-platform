@@ -29,7 +29,7 @@ public sealed class GetCountryProfileQueryHandler : IRequestHandler<GetCountryPr
             profile.KeyInitiativesEn,
             profile.ContactInfoAr,
             profile.ContactInfoEn,
-            profile.LastUpdatedById,
-            profile.LastUpdatedOn,
+            profile.LastModifiedById ?? profile.CreatedById,
+            profile.LastModifiedOn ?? profile.CreatedOn,
             System.Convert.ToBase64String(profile.RowVersion));
 }

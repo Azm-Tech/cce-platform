@@ -17,7 +17,7 @@ public class UpdateEventCommandHandlerTests
     [Fact]
     public async Task Returns_null_when_event_not_found()
     {
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Event?)null);
         var sut = new UpdateEventCommandHandler(service);
 
@@ -34,7 +34,7 @@ public class UpdateEventCommandHandlerTests
             "old-ar", "old-en", "old-desc-ar", "old-desc-en",
             StartsOn, EndsOn, null, null, null, null, clock);
 
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
 
         var sut = new UpdateEventCommandHandler(service);
@@ -63,7 +63,7 @@ public class UpdateEventCommandHandlerTests
             "ar", "en", "desc-ar", "desc-en",
             StartsOn, EndsOn, null, null, null, null, clock);
 
-        var service = Substitute.For<IEventService>();
+        var service = Substitute.For<IEventRepository>();
         service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
         service.UpdateAsync(default!, default!, default).ReturnsForAnyArgs<Task>(_ =>
             throw new ConcurrencyException("conflict"));

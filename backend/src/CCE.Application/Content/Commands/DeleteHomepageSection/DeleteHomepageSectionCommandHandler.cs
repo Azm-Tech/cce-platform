@@ -6,11 +6,11 @@ namespace CCE.Application.Content.Commands.DeleteHomepageSection;
 
 public sealed class DeleteHomepageSectionCommandHandler : IRequestHandler<DeleteHomepageSectionCommand, Unit>
 {
-    private readonly IHomepageSectionService _service;
+    private readonly IHomepageSectionRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
-    public DeleteHomepageSectionCommandHandler(IHomepageSectionService service, ICurrentUserAccessor currentUser, ISystemClock clock)
+    public DeleteHomepageSectionCommandHandler(IHomepageSectionRepository service, ICurrentUserAccessor currentUser, ISystemClock clock)
     {
         _service = service;
         _currentUser = currentUser;

@@ -28,7 +28,7 @@ public sealed class UserSyncMiddleware
     public async Task InvokeAsync(
         HttpContext context,
         IMemoryCache cache,
-        IUserSyncService syncService)
+        IUserSyncRepository syncService)
     {
         if (context.User.Identity?.IsAuthenticated != true)
         {

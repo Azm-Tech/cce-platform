@@ -12,7 +12,7 @@ public class DeleteNewsCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_news_missing()
     {
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((News?)null);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         var sut = new DeleteNewsCommandHandler(service, currentUser, new FakeSystemClock());
@@ -28,7 +28,7 @@ public class DeleteNewsCommandHandlerTests
         var clock = new FakeSystemClock();
         var news = News.Draft("ar", "en", "content-ar", "content-en", "slug", System.Guid.NewGuid(), null, clock);
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
@@ -48,7 +48,7 @@ public class DeleteNewsCommandHandlerTests
         var actorId = System.Guid.NewGuid();
         var news = News.Draft("ar", "en", "content-ar", "content-en", "slug", System.Guid.NewGuid(), null, clock);
 
-        var service = Substitute.For<INewsService>();
+        var service = Substitute.For<INewsRepository>();
         service.FindAsync(news.Id, Arg.Any<CancellationToken>()).Returns(news);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();

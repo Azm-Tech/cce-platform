@@ -6,9 +6,9 @@ namespace CCE.Application.Content.Commands.RescheduleEvent;
 
 public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEventCommand, EventDto?>
 {
-    private readonly IEventService _service;
+    private readonly IEventRepository _service;
 
-    public RescheduleEventCommandHandler(IEventService service)
+    public RescheduleEventCommandHandler(IEventRepository service)
     {
         _service = service;
     }

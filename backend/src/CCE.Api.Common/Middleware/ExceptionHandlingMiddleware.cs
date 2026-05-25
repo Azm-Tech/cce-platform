@@ -1,9 +1,14 @@
+using CCE.Application.Common;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CCE.Api.Common.Middleware;
 
@@ -26,98 +31,106 @@ public sealed class ExceptionHandlingMiddleware
         }
         catch (ValidationException ex)
         {
-            await WriteValidationProblemAsync(context, ex).ConfigureAwait(false);
+            await WriteValidationResultAsync(context, ex).ConfigureAwait(false);
         }
-        // Expected business outcomes — not logged (not server errors).
         catch (ConcurrencyException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
-                title: "Concurrent edit",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/concurrency").ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
+                "CONCURRENCY_CONFLICT", MessageType.Conflict, ex.Message).ConfigureAwait(false);
         }
         catch (DuplicateException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
-                title: "Duplicate value",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/duplicate").ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
+                "DUPLICATE_VALUE", MessageType.Conflict, ex.Message).ConfigureAwait(false);
         }
         catch (DomainException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
-                title: "Invariant violated",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/invariant").ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest,
+                "BAD_REQUEST", MessageType.BusinessRule, ex.Message).ConfigureAwait(false);
         }
         catch (System.Collections.Generic.KeyNotFoundException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status404NotFound,
-                title: "Resource not found",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/not-found").ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status404NotFound,
+                "RESOURCE_NOT_FOUND_GENERIC", MessageType.NotFound, ex.Message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
-            await WriteServerErrorAsync(context, ex).ConfigureAwait(false);
+            await WriteErrorAsync(context, StatusCodes.Status500InternalServerError,
+                "INTERNAL_ERROR", MessageType.Internal, null).ConfigureAwait(false);
         }
     }
 
-    private static string GetCorrelationId(HttpContext ctx) =>
-        ctx.Items[CorrelationIdMiddleware.ItemKey]?.ToString() ?? Guid.NewGuid().ToString();
-
-    private static async Task WriteValidationProblemAsync(HttpContext ctx, ValidationException ex)
+    private static async Task WriteErrorAsync(
+        HttpContext ctx, int statusCode, string domainKey, MessageType type, string? fallbackMessage)
     {
-        var errors = ex.Errors
-            .GroupBy(e => e.PropertyName)
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+        var l = ctx.RequestServices.GetService<ILocalizationService>();
+        var msg = l?.GetString(domainKey) ?? fallbackMessage ?? "خطأ";
+        var code = SystemCodeMap.ToSystemCode(domainKey);
 
-        var problem = new ValidationProblemDetails(errors)
+        var envelope = new
         {
-            Status = StatusCodes.Status400BadRequest,
-            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-            Title = "One or more validation errors occurred."
+            success = false,
+            code,
+            message = msg,
+            data = (object?)null,
+            errors = Array.Empty<object>(),
+            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
+            timestamp = DateTimeOffset.UtcNow,
         };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
-
-        ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
-    }
-
-    private static async Task WriteProblemAsync(
-        HttpContext ctx, int statusCode, string title, string detail, string type)
-    {
-        var problem = new ProblemDetails
-        {
-            Status = statusCode,
-            Type = type,
-            Title = title,
-            Detail = detail,
-            Instance = ctx.Request.Path,
-        };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
 
         ctx.Response.StatusCode = statusCode;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
+        ctx.Response.ContentType = "application/json";
+        await JsonSerializer.SerializeAsync(ctx.Response.Body, envelope, JsonOptions)
+            .ConfigureAwait(false);
     }
 
-    private static async Task WriteServerErrorAsync(HttpContext ctx, Exception ex)
+    private static async Task WriteValidationResultAsync(HttpContext ctx, ValidationException ex)
     {
-        _ = ex; // intentionally unused — never expose to clients
-        var problem = new ProblemDetails
-        {
-            Status = StatusCodes.Status500InternalServerError,
-            Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-            Title = "An unexpected error occurred.",
-            Detail = "See server logs by correlation id for details."
-        };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
+        var l = ctx.RequestServices.GetService<ILocalizationService>();
+        var headerMsg = l?.GetString("VALIDATION_ERROR") ?? "عذرًا، البيانات المدخلة غير صحيحة";
+        var headerCode = SystemCodeMap.ToSystemCode("VALIDATION_ERROR");
 
-        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
+        var fieldErrors = ex.Errors.Select(e =>
+        {
+            var domainKey = e.ErrorMessage;
+            var valCode = SystemCodeMap.ToSystemCode(domainKey);
+            var valMsg = l?.GetString(domainKey) ?? domainKey;
+            return new
+            {
+                field = ToCamelCase(e.PropertyName),
+                code = valCode,
+                message = valMsg
+            };
+        }).ToList();
+
+        var envelope = new
+        {
+            success = false,
+            code = headerCode,
+            message = headerMsg,
+            data = (object?)null,
+            errors = fieldErrors,
+            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
+            timestamp = DateTimeOffset.UtcNow,
+        };
+
+        ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
+        ctx.Response.ContentType = "application/json";
+        await JsonSerializer.SerializeAsync(ctx.Response.Body, envelope, JsonOptions)
+            .ConfigureAwait(false);
     }
+
+    private static string ToCamelCase(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return name;
+        return char.ToLowerInvariant(name[0]) + name[1..];
+    }
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
 }

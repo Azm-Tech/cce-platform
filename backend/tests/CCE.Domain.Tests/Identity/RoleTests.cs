@@ -9,7 +9,7 @@ public class RoleTests
     {
         var baseType = typeof(Role).BaseType!;
         baseType.Name.Should().Be("IdentityRole`1");
-        baseType.GetGenericArguments()[0].Should().Be(typeof(System.Guid));
+        baseType.GetGenericArguments()[0].Should().Be<System.Guid>();
     }
 
     [Fact]

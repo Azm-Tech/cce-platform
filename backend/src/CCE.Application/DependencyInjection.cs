@@ -1,4 +1,5 @@
 using CCE.Application.Common.Behaviors;
+using CCE.Application.Messages;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,16 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
-            // Pipeline behavior order matters — first registered runs outermost.
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ResponseValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ResultValidationBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(assembly);
+
+        services.AddScoped<CCE.Application.Common.Errors>();
+        services.AddScoped<MessageFactory>();
 
         services.AddSingleton<Reports.ICsvStreamWriter, Reports.CsvStreamWriter>();
 

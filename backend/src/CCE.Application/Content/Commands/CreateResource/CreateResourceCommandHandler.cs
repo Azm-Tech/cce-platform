@@ -9,14 +9,14 @@ namespace CCE.Application.Content.Commands.CreateResource;
 
 public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourceCommand, ResourceDto>
 {
-    private readonly IResourceService _service;
-    private readonly IAssetService _assetService;
+    private readonly IResourceRepository _service;
+    private readonly IAssetRepository _assetService;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public CreateResourceCommandHandler(
-        IResourceService service,
-        IAssetService assetService,
+        IResourceRepository service,
+        IAssetRepository assetService,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {

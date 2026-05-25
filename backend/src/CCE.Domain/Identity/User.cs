@@ -11,6 +11,14 @@ namespace CCE.Domain.Identity;
 [Audited]
 public class User : IdentityUser<System.Guid>
 {
+    public string FirstName { get; private set; } = string.Empty;
+
+    public string LastName { get; private set; } = string.Empty;
+
+    public string JobTitle { get; private set; } = string.Empty;
+
+    public string OrganizationName { get; private set; } = string.Empty;
+
     /// <summary>UI locale preference. Allowed values: <c>"ar"</c>, <c>"en"</c>. Default <c>"ar"</c>.</summary>
     public string LocalePreference { get; private set; } = "ar";
 
@@ -25,6 +33,9 @@ public class User : IdentityUser<System.Guid>
 
     /// <summary>Optional avatar URL (CDN-served).</summary>
     public string? AvatarUrl { get; private set; }
+
+    /// <summary>Admin-managed account status. Default <see cref="UserStatus.Active"/>.</summary>
+    public UserStatus Status { get; private set; } = UserStatus.Active;
 
     /// <summary>
     /// Sub-11: stable Entra ID Object ID (<c>oid</c> claim) for this user. Populated lazily on
@@ -68,6 +79,84 @@ public class User : IdentityUser<System.Guid>
     }
 
     /// <summary>
+    /// Factory for stub User rows created on first AD login via the integration gateway.
+    /// Profile fields default to empty; operator/admin should prompt for completion.
+    /// </summary>
+    public static User CreateStubFromAd(
+        string email,
+        string? firstName,
+        string? lastName,
+        string? displayName)
+    {
+        return new User
+        {
+            Id = System.Guid.NewGuid(),
+            Email = email,
+            UserName = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            NormalizedUserName = email.ToUpperInvariant(),
+            EmailConfirmed = true,
+            FirstName = firstName ?? displayName ?? string.Empty,
+            LastName = lastName ?? string.Empty,
+            JobTitle = string.Empty,
+            OrganizationName = string.Empty,
+        };
+    }
+
+    public static User RegisterLocal(
+        string firstName,
+        string lastName,
+        string email,
+        string jobTitle,
+        string organizationName,
+        string phoneNumber)
+    {
+        var user = new User
+        {
+            Id = System.Guid.NewGuid(),
+            UserName = email,
+            NormalizedUserName = email.ToUpperInvariant(),
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            PhoneNumber = phoneNumber,
+            EmailConfirmed = false,
+        };
+        user.UpdateProfile(firstName, lastName, jobTitle, organizationName);
+        return user;
+    }
+
+    public static User CreateByAdmin(string firstName, string lastName, string email, string phone)
+    {
+        return new User
+        {
+            Id = System.Guid.NewGuid(),
+            UserName = email,
+            NormalizedUserName = email.ToUpperInvariant(),
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            PhoneNumber = phone,
+            EmailConfirmed = true,
+            FirstName = firstName.Trim(),
+            LastName = lastName.Trim(),
+            JobTitle = string.Empty,
+            OrganizationName = string.Empty,
+        };
+    }
+
+    public void UpdateProfile(string firstName, string lastName, string jobTitle, string organizationName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName)) throw new DomainException("FirstName is required.");
+        if (string.IsNullOrWhiteSpace(lastName)) throw new DomainException("LastName is required.");
+        if (string.IsNullOrWhiteSpace(jobTitle)) throw new DomainException("JobTitle is required.");
+        if (string.IsNullOrWhiteSpace(organizationName)) throw new DomainException("OrganizationName is required.");
+
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        JobTitle = jobTitle.Trim();
+        OrganizationName = organizationName.Trim();
+    }
+
+    /// <summary>
     /// Updates the locale preference. Only <c>"ar"</c> and <c>"en"</c> are accepted.
     /// </summary>
     public void SetLocalePreference(string locale)
@@ -101,6 +190,20 @@ public class User : IdentityUser<System.Guid>
             .ToList();
     }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTimeOffset? DeletedOn { get; private set; }
+
+    public Guid? DeletedById { get; private set; }
+
+    public void SoftDelete(Guid by, DateTimeOffset now)
+    {
+        if (IsDeleted) return;
+        IsDeleted = true;
+        DeletedOn = now;
+        DeletedById = by;
+    }
+
     public void AssignCountry(System.Guid countryId) => CountryId = countryId;
 
     public void ClearCountry() => CountryId = null;
@@ -121,4 +224,10 @@ public class User : IdentityUser<System.Guid>
         }
         AvatarUrl = url;
     }
+
+    public void ChangeStatus(UserStatus newStatus) => Status = newStatus;
+
+    public void Activate() => Status = UserStatus.Active;
+
+    public void Deactivate() => Status = UserStatus.Inactive;
 }

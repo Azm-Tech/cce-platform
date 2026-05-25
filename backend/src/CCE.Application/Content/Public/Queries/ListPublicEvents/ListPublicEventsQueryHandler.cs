@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
+using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Public.Queries.ListPublicEvents;
@@ -9,35 +10,29 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
 {
     private readonly ICceDbContext _db;
 
-    public ListPublicEventsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListPublicEventsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<PublicEventDto>> Handle(ListPublicEventsQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<CCE.Domain.Content.Event> query = _db.Events;
+        var query = _db.Events.AsQueryable();
 
-        if (request.From is { } from && request.To is { } to)
+        if (request.From.HasValue && request.To.HasValue)
         {
-            query = query.Where(e => e.StartsOn >= from && e.StartsOn <= to);
+            query = query.Where(e => e.StartsOn >= request.From.Value && e.StartsOn <= request.To.Value);
         }
         else
         {
-            var now = System.DateTimeOffset.UtcNow;
+            var now = DateTimeOffset.UtcNow;
             query = query.Where(e => e.StartsOn >= now);
         }
 
         query = query.OrderBy(e => e.StartsOn);
 
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<PublicEventDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
-    internal static PublicEventDto MapToDto(CCE.Domain.Content.Event e) => new(
+    internal static PublicEventDto MapToDto(Event e) => new(
         e.Id,
         e.TitleAr,
         e.TitleEn,

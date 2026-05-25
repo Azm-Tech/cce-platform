@@ -11,34 +11,19 @@ public sealed class ListResourceCategoriesQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListResourceCategoriesQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListResourceCategoriesQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<ResourceCategoryDto>> Handle(
         ListResourceCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<ResourceCategory> query = _db.ResourceCategories;
+        var query = _db.ResourceCategories
+            .WhereIf(request.ParentId.HasValue, c => c.ParentId == request.ParentId!.Value)
+            .WhereIf(request.IsActive.HasValue, c => c.IsActive == request.IsActive!.Value)
+            .OrderBy(c => c.OrderIndex);
 
-        if (request.ParentId is { } parentId)
-        {
-            query = query.Where(c => c.ParentId == parentId);
-        }
-
-        if (request.IsActive is { } isActive)
-        {
-            query = query.Where(c => c.IsActive == isActive);
-        }
-
-        query = query.OrderBy(c => c.OrderIndex);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<ResourceCategoryDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
     internal static ResourceCategoryDto MapToDto(ResourceCategory c) => new(

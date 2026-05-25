@@ -2,8 +2,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Sentry.Serilog;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using Serilog.Sinks.Seq;
+using System.Diagnostics;
 
 namespace CCE.Api.Common.Observability;
 
@@ -32,6 +35,7 @@ public static class LoggingExtensions
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
+                .Enrich.With(new TraceIdEnricher())
                 .Enrich.WithProperty("app", ctx.HostingEnvironment.ApplicationName)
                 .Enrich.WithProperty("env", ctx.HostingEnvironment.EnvironmentName)
                 .WriteTo.Console(new CompactJsonFormatter());
@@ -48,6 +52,13 @@ public static class LoggingExtensions
             if (!string.IsNullOrWhiteSpace(sentryDsn))
             {
                 cfg.WriteTo.Sentry(o => ConfigureSentry(o, sentryDsn, ctx.Configuration, ctx.HostingEnvironment.EnvironmentName));
+            }
+
+            var seqUrl = ctx.Configuration["Seq:ServerUrl"];
+            var seqApiKey = ctx.Configuration["Seq:ApiKey"];
+            if (!string.IsNullOrWhiteSpace(seqUrl))
+            {
+                cfg.WriteTo.Seq(seqUrl, apiKey: seqApiKey);
             }
         });
     }
@@ -75,6 +86,21 @@ public static class LoggingExtensions
         }
         options.MinimumEventLevel = LogEventLevel.Warning;
         options.MinimumBreadcrumbLevel = LogEventLevel.Information;
+    }
+
+    private sealed class TraceIdEnricher : ILogEventEnricher
+    {
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            var activity = Activity.Current;
+            if (activity is null)
+            {
+                return;
+            }
+
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("TraceId", activity.TraceId.ToString()));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("SpanId", activity.SpanId.ToString()));
+        }
     }
 
     private static LogEventLevel? ParseLevel(string? value)

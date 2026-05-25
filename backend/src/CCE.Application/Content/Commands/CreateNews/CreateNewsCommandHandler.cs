@@ -9,12 +9,12 @@ namespace CCE.Application.Content.Commands.CreateNews;
 
 public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand, NewsDto>
 {
-    private readonly INewsService _service;
+    private readonly INewsRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public CreateNewsCommandHandler(
-        INewsService service,
+        INewsRepository service,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {

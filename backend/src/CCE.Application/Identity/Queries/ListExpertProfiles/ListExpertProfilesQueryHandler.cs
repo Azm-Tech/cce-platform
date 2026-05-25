@@ -1,7 +1,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
-using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.ListExpertProfiles;
@@ -11,16 +10,13 @@ public sealed class ListExpertProfilesQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListExpertProfilesQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListExpertProfilesQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<ExpertProfileDto>> Handle(
         ListExpertProfilesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<ExpertProfile> query = _db.ExpertProfiles;
+        IQueryable<CCE.Domain.Identity.ExpertProfile> query = _db.ExpertProfiles;
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -34,17 +30,15 @@ public sealed class ListExpertProfilesQueryHandler
 
         query = query.OrderByDescending(p => p.ApprovedOn);
 
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
+        var paged = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
-        if (page.Items.Count == 0)
+        if (paged.Items.Count == 0)
         {
             return new PagedResult<ExpertProfileDto>(
-                System.Array.Empty<ExpertProfileDto>(),
-                page.Page, page.PageSize, page.Total);
+                Array.Empty<ExpertProfileDto>(), paged.Page, paged.PageSize, paged.Total);
         }
 
-        var userIds = page.Items.Select(p => p.UserId).Distinct().ToList();
+        var userIds = paged.Items.Select(p => p.UserId).Distinct().ToList();
         var userNamesQuery =
             from u in _db.Users
             where userIds.Contains(u.Id)
@@ -52,7 +46,7 @@ public sealed class ListExpertProfilesQueryHandler
         var userNameRows = await userNamesQuery.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var nameByUserId = userNameRows.ToDictionary(r => r.UserId, r => r.UserName);
 
-        var items = page.Items.Select(p => new ExpertProfileDto(
+        var items = paged.Items.Select(p => new ExpertProfileDto(
             p.Id,
             p.UserId,
             nameByUserId.TryGetValue(p.UserId, out var name) ? name : null,
@@ -64,8 +58,8 @@ public sealed class ListExpertProfilesQueryHandler
             p.ApprovedOn,
             p.ApprovedById)).ToList();
 
-        return new PagedResult<ExpertProfileDto>(items, page.Page, page.PageSize, page.Total);
+        return new PagedResult<ExpertProfileDto>(items, paged.Page, paged.PageSize, paged.Total);
     }
 
-    private sealed record UserNameRow(System.Guid UserId, string? UserName);
+    private sealed record UserNameRow(Guid UserId, string? UserName);
 }

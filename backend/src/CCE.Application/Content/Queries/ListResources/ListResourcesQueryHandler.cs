@@ -11,51 +11,30 @@ public sealed class ListResourcesQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListResourcesQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListResourcesQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<ResourceDto>> Handle(
         ListResourcesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<Resource> query = _db.Resources;
+        var query = _db.Resources
+            .WhereIf(!string.IsNullOrWhiteSpace(request.Search),
+                r => r.TitleAr.Contains(request.Search!) ||
+                     r.TitleEn.Contains(request.Search!) ||
+                     r.DescriptionAr.Contains(request.Search!) ||
+                     r.DescriptionEn.Contains(request.Search!))
+            .WhereIf(request.CategoryId.HasValue, r => r.CategoryId == request.CategoryId!.Value)
+            .WhereIf(request.CountryId.HasValue,  r => r.CountryId == request.CountryId!.Value)
+            .WhereIf(request.IsPublished == true,  r => r.PublishedOn != null)
+            .WhereIf(request.IsPublished == false, r => r.PublishedOn == null)
+            .OrderByDescending(r => r.PublishedOn ?? DateTimeOffset.MinValue)
+            .ThenByDescending(r => r.Id);
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            var term = request.Search.Trim();
-            query = query.Where(r =>
-                r.TitleAr.Contains(term) ||
-                r.TitleEn.Contains(term) ||
-                r.DescriptionAr.Contains(term) ||
-                r.DescriptionEn.Contains(term));
-        }
-        if (request.CategoryId is { } categoryId)
-        {
-            query = query.Where(r => r.CategoryId == categoryId);
-        }
-        if (request.CountryId is { } countryId)
-        {
-            query = query.Where(r => r.CountryId == countryId);
-        }
-        if (request.IsPublished is { } isPublished)
-        {
-            query = isPublished
-                ? query.Where(r => r.PublishedOn != null)
-                : query.Where(r => r.PublishedOn == null);
-        }
-        query = query.OrderByDescending(r => r.PublishedOn ?? System.DateTimeOffset.MinValue)
-                     .ThenByDescending(r => r.Id);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<ResourceDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
-    private static ResourceDto MapToDto(Resource r) => new(
+    internal static ResourceDto MapToDto(Resource r) => new(
         r.Id,
         r.TitleAr,
         r.TitleEn,

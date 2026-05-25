@@ -35,8 +35,10 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
     // SuperAdmin-style names to Entra ID app-role values.
     private static readonly string[] KnownRoles =
     {
+        "cce-super-admin",
         "cce-admin",
-        "cce-editor",
+        "cce-content-manager",
+        "cce-state-representative",
         "cce-reviewer",
         "cce-expert",
         "cce-user",

@@ -16,6 +16,12 @@ public sealed class LocalFileStorage : IFileStorage
         _root = options.Value.LocalUploadsRoot;
     }
 
+    /// <summary>Creates storage rooted at an arbitrary path (used for media files).</summary>
+    public LocalFileStorage(string root)
+    {
+        _root = root;
+    }
+
     public async Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct)
     {
         var now = System.DateTimeOffset.UtcNow;

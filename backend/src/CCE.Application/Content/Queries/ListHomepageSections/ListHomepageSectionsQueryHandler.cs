@@ -11,10 +11,7 @@ public sealed class ListHomepageSectionsQueryHandler
 {
     private readonly ICceDbContext _db;
 
-    public ListHomepageSectionsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListHomepageSectionsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<System.Collections.Generic.IReadOnlyList<HomepageSectionDto>> Handle(
         ListHomepageSectionsQuery request,

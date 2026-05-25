@@ -1,5 +1,9 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.AssignUserRoles;
+using CCE.Application.Identity.Commands.ChangeUserStatus;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
+using CCE.Application.Identity.Commands.CreateUser;
+using CCE.Application.Identity.Commands.DeleteUser;
 using CCE.Application.Identity.Commands.RevokeStateRepAssignment;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
@@ -33,7 +37,7 @@ public static class IdentityEndpoints
                 Search: search,
                 Role: role);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.User_Read)
         .WithName("ListUsers");
@@ -42,11 +46,24 @@ public static class IdentityEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetUserByIdQuery(id), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetUserByIdQuery(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.User_Read)
         .WithName("GetUserById");
+
+        users.MapPost("", async (
+            CreateUserRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new CreateUserCommand(
+                body.FirstName, body.LastName, body.Email, body.Password,
+                body.PhoneNumber, body.CountryId, body.Role);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Create)
+        .WithName("CreateUser");
 
         users.MapPut("/{id:guid}/roles", async (
             System.Guid id,
@@ -54,11 +71,33 @@ public static class IdentityEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new AssignUserRolesCommand(id, body.Roles ?? System.Array.Empty<string>());
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("AssignUserRoles");
+
+        users.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new DeleteUserCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Delete)
+        .WithName("DeleteUser");
+
+        users.MapPut("/{id:guid}/status", async (
+            System.Guid id,
+            ChangeUserStatusRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new ChangeUserStatusCommand(id, body.IsActive);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.User_Update)
+        .WithName("ChangeUserStatus");
 
         // Sub-11d Task D — batch UPN→EntraIdObjectId backfill. Admin-only;
         // referenced by docs/runbooks/entra-id-cutover.md step 7. Lazy
@@ -98,8 +137,8 @@ public static class IdentityEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new CreateStateRepAssignmentCommand(body.UserId, body.CountryId);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/state-rep-assignments/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("CreateStateRepAssignment");
@@ -108,8 +147,8 @@ public static class IdentityEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new RevokeStateRepAssignmentCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new RevokeStateRepAssignmentCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("RevokeStateRepAssignment");
@@ -118,8 +157,13 @@ public static class IdentityEndpoints
     }
 }
 
-/// <summary>Body shape for PUT /api/admin/users/{id}/roles.</summary>
-public sealed record AssignUserRolesRequest(IReadOnlyList<string>? Roles);
+public sealed record ChangeUserStatusRequest(bool IsActive);
 
-/// <summary>Body shape for POST /api/admin/state-rep-assignments.</summary>
-public sealed record CreateStateRepAssignmentRequest(System.Guid UserId, System.Guid CountryId);
+public sealed record CreateUserRequest(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Password,
+    string PhoneNumber,
+    Guid? CountryId,
+    string Role);

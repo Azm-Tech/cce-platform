@@ -1,8 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
+using CCE.Application.Identity.Auth.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CCE.Api.Common.Auth;
 
@@ -44,65 +48,130 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
     /// </summary>
     public static readonly Dictionary<string, Guid> RoleToUserId = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["cce-admin"]    = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
-        ["cce-editor"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
-        ["cce-reviewer"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
-        ["cce-expert"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
-        ["cce-user"]     = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
+        ["cce-super-admin"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000000"),
+        ["cce-admin"]          = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
+        ["cce-content-manager"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
+        ["cce-state-representative"]      = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000006"),
+        ["cce-reviewer"]       = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
+        ["cce-expert"]         = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
+        ["cce-user"]           = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
     };
+
+    private readonly IOptions<LocalAuthOptions> _localAuthOptions;
 
     public DevAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder)
-        : base(options, logger, encoder) { }
+        UrlEncoder encoder,
+        IOptions<LocalAuthOptions> localAuthOptions)
+        : base(options, logger, encoder)
+    {
+        _localAuthOptions = localAuthOptions;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var role = ReadRole();
-        if (string.IsNullOrEmpty(role))
+        var roles = ReadRoles();
+        if (roles is null || roles.Count == 0)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        if (!RoleToUserId.TryGetValue(role, out var userId))
+        // Use the first recognised role for the deterministic userId lookup.
+        var primaryRole = roles.FirstOrDefault(r => RoleToUserId.ContainsKey(r))
+                          ?? roles[0];
+        if (!RoleToUserId.TryGetValue(primaryRole, out var userId))
         {
-            return Task.FromResult(AuthenticateResult.Fail($"Unknown dev role '{role}'"));
+            return Task.FromResult(AuthenticateResult.Fail($"Unknown dev role '{primaryRole}'"));
         }
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim("sub", userId.ToString()),
-            new Claim("oid", userId.ToString()),
-            new Claim("preferred_username", $"{role}@cce.local"),
-            new Claim("name", $"Dev {role}"),
-            new Claim("roles", role),
-            new Claim("email", $"{role}@cce.local"),
+            new("sub", userId.ToString()),
+            new("oid", userId.ToString()),
+            new("preferred_username", $"{primaryRole}@cce.local"),
+            new("name", $"Dev {primaryRole}"),
+            new("email", $"{primaryRole}@cce.local"),
         };
+        claims.AddRange(roles.Select(role => new Claim("roles", role)));
+
         var identity = new ClaimsIdentity(claims, SchemeName, "preferred_username", "roles");
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, SchemeName);
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 
-    private string? ReadRole()
+    private List<string>? ReadRoles()
     {
         // Prefer cookie (browser path); fall back to bearer header (curl / Postman).
         if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
         {
-            return cookieValue.Trim();
+            return new List<string> { cookieValue.Trim() };
         }
 
         if (Request.Headers.TryGetValue("Authorization", out var auth))
         {
             var raw = auth.ToString();
+
             const string devPrefix = "Bearer dev:";
             if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return raw.Substring(devPrefix.Length).Trim();
+                return new List<string> { raw.Substring(devPrefix.Length).Trim() };
+            }
+
+            // Fallback: try to decode as a real JWT (e.g. issued by /api/auth/login)
+            const string bearerPrefix = "Bearer ";
+            if (raw.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                var token = raw.Substring(bearerPrefix.Length).Trim();
+                return TryReadRolesFromJwt(token);
             }
         }
 
+        return null;
+    }
+
+    private List<string>? TryReadRolesFromJwt(string token)
+    {
+        var opts = _localAuthOptions.Value;
+        var profiles = new[] { opts.External, opts.Internal };
+        var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+
+        foreach (var profile in profiles)
+        {
+            if (string.IsNullOrWhiteSpace(profile.SigningKey))
+                continue;
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(profile.SigningKey));
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = profile.Issuer,
+                ValidateAudience = true,
+                ValidAudience = profile.Audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(2),
+            };
+
+            ClaimsPrincipal? principal;
+            try
+            {
+                principal = handler.ValidateToken(token, parameters, out _);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug(ex, "JWT validation failed for profile {Issuer} in DevAuthHandler", profile.Issuer);
+                continue;
+            }
+
+            var roles = principal.FindAll("roles").Select(c => c.Value).ToList();
+            if (roles.Count > 0)
+                return roles;
+        }
+
+        Logger.LogWarning("JWT validation failed for all profiles in DevAuthHandler");
         return null;
     }
 }

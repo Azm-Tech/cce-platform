@@ -9,7 +9,7 @@ public class GetPageByIdQueryHandlerTests
     [Fact]
     public async Task Returns_null_when_page_not_found()
     {
-        var db = BuildDb(System.Array.Empty<Page>());
+        var db = BuildDb(Array.Empty<Page>());
         var sut = new GetPageByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetPageByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
@@ -22,7 +22,7 @@ public class GetPageByIdQueryHandlerTests
     {
         var page = Page.Create("test-slug", PageType.Custom, "ar", "en", "content-ar", "content-en");
 
-        var db = BuildDb(new[] { page });
+        var db = BuildDb([page]);
         var sut = new GetPageByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetPageByIdQuery(page.Id), CancellationToken.None);

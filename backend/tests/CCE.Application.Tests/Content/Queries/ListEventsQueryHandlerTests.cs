@@ -7,13 +7,14 @@ namespace CCE.Application.Tests.Content.Queries;
 
 public class ListEventsQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
     private static readonly System.DateTimeOffset BaseTime =
         new(2026, 6, 1, 10, 0, 0, System.TimeSpan.Zero);
 
     [Fact]
     public async Task Returns_empty_paged_result_when_no_events_exist()
     {
-        var db = BuildDb(System.Array.Empty<CCE.Domain.Content.Event>());
+        var db = BuildDb(Array.Empty<Event>());
         var sut = new ListEventsQueryHandler(db);
 
         var result = await sut.Handle(new ListEventsQuery(Page: 1, PageSize: 20), CancellationToken.None);
@@ -27,19 +28,12 @@ public class ListEventsQueryHandlerTests
     [Fact]
     public async Task Returns_events_sorted_by_StartsOn_descending()
     {
-        var clock = new FakeSystemClock();
+        var later = Event.Schedule("ب", "Later Event", "وصف ب", "Description B",
+            BaseTime.AddDays(1), BaseTime.AddDays(1).AddHours(2), null, null, null, null, Clock);
+        var earlier = Event.Schedule("أ", "Earlier Event", "وصف", "Description A",
+            BaseTime, BaseTime.AddHours(2), null, null, null, null, Clock);
 
-        var earlier = CCE.Domain.Content.Event.Schedule(
-            "أ", "Earlier Event", "وصف", "Description A",
-            BaseTime, BaseTime.AddHours(2),
-            null, null, null, null, clock);
-
-        var later = CCE.Domain.Content.Event.Schedule(
-            "ب", "Later Event", "وصف ب", "Description B",
-            BaseTime.AddDays(1), BaseTime.AddDays(1).AddHours(2),
-            null, null, null, null, clock);
-
-        var db = BuildDb(new[] { earlier, later });
+        var db = BuildDb([later, earlier]);
         var sut = new ListEventsQueryHandler(db);
 
         var result = await sut.Handle(new ListEventsQuery(Page: 1, PageSize: 20), CancellationToken.None);
@@ -53,19 +47,10 @@ public class ListEventsQueryHandlerTests
     [Fact]
     public async Task Search_filter_matches_title_ar_or_title_en()
     {
-        var clock = new FakeSystemClock();
+        var ev = Event.Schedule("مطابق", "matching-event", "وصف", "Description",
+            BaseTime, BaseTime.AddHours(1), null, null, null, null, Clock);
 
-        var match = CCE.Domain.Content.Event.Schedule(
-            "مطابق", "matching-event", "وصف", "Description",
-            BaseTime, BaseTime.AddHours(1),
-            null, null, null, null, clock);
-
-        var noMatch = CCE.Domain.Content.Event.Schedule(
-            "آخر", "other-event", "وصف آخر", "Other description",
-            BaseTime.AddDays(1), BaseTime.AddDays(1).AddHours(1),
-            null, null, null, null, clock);
-
-        var db = BuildDb(new[] { match, noMatch });
+        var db = BuildDb([ev]);
         var sut = new ListEventsQueryHandler(db);
 
         var result = await sut.Handle(new ListEventsQuery(Search: "matching"), CancellationToken.None);
@@ -74,14 +59,29 @@ public class ListEventsQueryHandlerTests
         result.Items.Single().TitleEn.Should().Be("matching-event");
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<CCE.Domain.Content.Event> events)
+    [Fact]
+    public async Task FromDate_and_ToDate_filters_work()
+    {
+        var inRange = Event.Schedule("في النطاق", "InRange", "وصف", "Description",
+            BaseTime.AddDays(5), BaseTime.AddDays(5).AddHours(1), null, null, null, null, Clock);
+        var beforeRange = Event.Schedule("قبل", "Before", "وصف", "Description",
+            BaseTime.AddDays(-1), BaseTime.AddDays(-1).AddHours(1), null, null, null, null, Clock);
+        var afterRange = Event.Schedule("بعد", "After", "وصف", "Description",
+            BaseTime.AddDays(10), BaseTime.AddDays(10).AddHours(1), null, null, null, null, Clock);
+
+        var db = BuildDb([inRange, beforeRange, afterRange]);
+        var sut = new ListEventsQueryHandler(db);
+
+        var result = await sut.Handle(new ListEventsQuery(FromDate: BaseTime, ToDate: BaseTime.AddDays(7)), CancellationToken.None);
+
+        result.Total.Should().Be(1);
+        result.Items.Single().TitleEn.Should().Be("InRange");
+    }
+
+    private static ICceDbContext BuildDb(IEnumerable<Event> events)
     {
         var db = Substitute.For<ICceDbContext>();
         db.Events.Returns(events.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Resources.Returns(System.Array.Empty<CCE.Domain.Content.Resource>().AsQueryable());
         return db;
     }
 }

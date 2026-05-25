@@ -1,27 +1,41 @@
+using CCE.Application.Common;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Identity.Commands.AssignUserRoles;
 
-public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRolesCommand, UserDetailDto?>
+public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRolesCommand, Response<UserDetailDto>>
 {
-    private readonly IUserRoleAssignmentService _service;
+    private readonly IUserRoleAssignmentRepository _service;
     private readonly IMediator _mediator;
+    private readonly MessageFactory _msg;
 
-    public AssignUserRolesCommandHandler(IUserRoleAssignmentService service, IMediator mediator)
+    public AssignUserRolesCommandHandler(
+        IUserRoleAssignmentRepository service,
+        IMediator mediator,
+        MessageFactory msg)
     {
         _service = service;
         _mediator = mediator;
+        _msg = msg;
     }
 
-    public async Task<UserDetailDto?> Handle(AssignUserRolesCommand request, CancellationToken cancellationToken)
+    public async Task<Response<UserDetailDto>> Handle(AssignUserRolesCommand request, CancellationToken cancellationToken)
     {
         var ok = await _service.ReplaceRolesAsync(request.Id, request.Roles, cancellationToken).ConfigureAwait(false);
         if (!ok)
         {
-            return null;
+            return _msg.UserNotFound<UserDetailDto>();
         }
-        return await _mediator.Send(new GetUserByIdQuery(request.Id), cancellationToken).ConfigureAwait(false);
+
+        var result = await _mediator.Send(new GetUserByIdQuery(request.Id), cancellationToken).ConfigureAwait(false);
+        if (!result.Success)
+        {
+            return result;
+        }
+
+        return _msg.Ok(result.Data!, "ROLES_ASSIGNED");
     }
 }

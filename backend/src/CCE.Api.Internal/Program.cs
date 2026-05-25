@@ -17,25 +17,33 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseCceSerilog();
 
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+    opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddCceMeilisearchIndexer()
-    .AddCceJwtAuth(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration, CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal)
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
+    .AddCceOpenTelemetry(builder.Configuration, "CCE.Api.Internal")
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE Internal API");
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
+builder.Services.AddSignalR().AddJsonProtocol();
 
 var app = builder.Build();
 
@@ -50,10 +58,13 @@ app.UseCceUserSync();
 app.UseRateLimiter();
 app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
+app.UseStaticFiles();
 
 app.UseCceOpenApi(apiTag: "internal");
 
-app.MapIdentityEndpoints();
+        app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
+        app.MapAdminAuthEndpoints();
+        app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();
 app.MapResourceEndpoints();
@@ -68,8 +79,14 @@ app.MapHomepageSectionEndpoints();
 app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
+app.MapNotificationLogEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
+app.MapHomepageSettingsEndpoints();
+app.MapAboutSettingsEndpoints();
+app.MapPoliciesSettingsEndpoints();
+app.MapFaqEndpoints();
+app.MapMediaEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

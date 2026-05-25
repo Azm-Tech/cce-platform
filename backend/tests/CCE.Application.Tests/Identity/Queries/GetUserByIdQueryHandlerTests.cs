@@ -1,7 +1,9 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Queries.GetUserById;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
+using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
 namespace CCE.Application.Tests.Identity.Queries;
 
@@ -11,11 +13,12 @@ public class GetUserByIdQueryHandlerTests
     public async Task Returns_null_when_user_not_found()
     {
         var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new GetUserByIdQueryHandler(db);
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
@@ -28,35 +31,33 @@ public class GetUserByIdQueryHandlerTests
         var userRoles = new[] { new IdentityUserRole<System.Guid> { UserId = aliceId, RoleId = superAdminRoleId } };
 
         var db = BuildDb(users, roles, userRoles);
-        var sut = new GetUserByIdQueryHandler(db);
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(aliceId), CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Id.Should().Be(aliceId);
-        result.UserName.Should().Be("alice");
-        result.Email.Should().Be("alice@cce.local");
-        result.Roles.Should().BeEquivalentTo(new[] { "SuperAdmin" });
-        result.IsActive.Should().BeTrue();
-        result.LocalePreference.Should().Be("ar");
+        result.Data!.Id.Should().Be(aliceId);
+        result.Data.UserName.Should().Be("alice");
+        result.Data.Email.Should().Be("alice@cce.local");
+        result.Data.Roles.Should().BeEquivalentTo(new[] { "SuperAdmin" });
+        result.Data.IsActive.Should().BeTrue();
+        result.Data.LocalePreference.Should().Be("ar");
     }
 
     [Fact]
-    public async Task Returns_is_active_false_when_lockout_active()
+    public async Task Returns_is_active_false_when_user_is_inactive()
     {
         var aliceId = System.Guid.NewGuid();
-        var future = System.DateTimeOffset.UtcNow.AddYears(1);
         var alice = BuildUser(aliceId, "alice@cce.local", "alice");
-        alice.LockoutEnabled = true;
-        alice.LockoutEnd = future;
+        alice.Deactivate();
 
         var db = BuildDb(new[] { alice }, System.Array.Empty<Role>(), System.Array.Empty<IdentityUserRole<System.Guid>>());
-        var sut = new GetUserByIdQueryHandler(db);
+        var sut = new GetUserByIdQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetUserByIdQuery(aliceId), CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.IsActive.Should().BeFalse();
+        result.Data!.IsActive.Should().BeFalse();
     }
 
     private static ICceDbContext BuildDb(

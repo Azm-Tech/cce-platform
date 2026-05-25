@@ -9,7 +9,7 @@ public class GetResourceCategoryByIdQueryHandlerTests
     [Fact]
     public async Task Returns_null_when_category_not_found()
     {
-        var db = BuildDb(System.Array.Empty<ResourceCategory>());
+        var db = BuildDb(Array.Empty<ResourceCategory>());
         var sut = new GetResourceCategoryByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetResourceCategoryByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
@@ -22,7 +22,7 @@ public class GetResourceCategoryByIdQueryHandlerTests
     {
         var category = ResourceCategory.Create("تقنية", "Technology", "technology", null, 5);
 
-        var db = BuildDb(new[] { category });
+        var db = BuildDb([category]);
         var sut = new GetResourceCategoryByIdQueryHandler(db);
 
         var result = await sut.Handle(new GetResourceCategoryByIdQuery(category.Id), CancellationToken.None);

@@ -10,7 +10,7 @@ namespace CCE.Domain.Content;
 /// active. Unsubscribing keeps the row but stamps <see cref="UnsubscribedOn"/>.
 /// </summary>
 [Audited]
-public sealed class NewsletterSubscription : Entity<System.Guid>
+public sealed class NewsletterSubscription : AggregateRoot<System.Guid>
 {
     private static readonly Regex EmailPattern = new(@"^[^\s@]+@[^\s@]+\.[^\s@]+$", RegexOptions.Compiled);
 

@@ -1,19 +1,15 @@
 using CCE.Api.Common.Auth;
+using CCE.Api.Common.Extensions;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Identity.Auth.Register;
 using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
 using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
-using CCE.Domain.Identity;
-using CCE.Infrastructure.Identity;
-using CCE.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CCE.Api.External.Endpoints;
 
@@ -23,97 +19,23 @@ public static class ProfileEndpoints
     {
         var users = app.MapGroup("/api/users").WithTags("Profile");
 
-        // Sub-11d — anonymous self-service registration via Microsoft Graph.
-        // Sub-11 Phase 01 made this admin-only as a stop-gap until an
-        // IEmailSender existed; Sub-11d Task A added the abstraction +
-        // Task B wired it into EntraIdRegistrationService, so the temp
-        // password is now delivered via email instead of returned in the
-        // response. Endpoint is anonymous again — the welcome email is
-        // the user's only credential channel.
-        //
-        // Response shape: 201 with the new user's UPN + objectId only.
-        // The temporary password is intentionally NOT in the response
-        // (would leak to logs / screen-captures); operators check the
-        // email transport on registration failure.
+        // Compatibility route for older frontend calls. Sprint 01 local auth
+        // owns registration now; it creates the user only and does not auto-login.
         users.MapPost("/register", async (
             RegisterUserRequest body,
-            HttpContext httpCtx,
-            IConfiguration config,
-            EntraIdRegistrationService registrationService,
-            CceDbContext db,
+            IMediator mediator,
             CancellationToken ct) =>
         {
-            if (body is null
-                || string.IsNullOrWhiteSpace(body.GivenName)
-                || string.IsNullOrWhiteSpace(body.Surname)
-                || string.IsNullOrWhiteSpace(body.Email)
-                || string.IsNullOrWhiteSpace(body.MailNickname))
-            {
-                return Results.BadRequest(new { error = "GivenName, Surname, Email, MailNickname are required." });
-            }
-
-            // ─── Dev-mode shortcut ──────────────────────────────────────────
-            // Without a real Entra ID tenant the Graph user-create call
-            // can't succeed (placeholder ClientId in appsettings.Development.json).
-            // In dev we synthesize a CCE.DB User row directly + sign the
-            // user in via the dev cookie so the registration flow is usable
-            // end-to-end on localhost.
-            var devMode = config.GetValue<bool>("Auth:DevMode");
-            if (devMode)
-            {
-                var normalizedEmail = body.Email.ToUpperInvariant();
-                var existing = await db.Users
-                    .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail, ct)
-                    .ConfigureAwait(false);
-                if (existing is not null)
-                {
-                    return Results.Conflict(new { error = "An account with that email already exists." });
-                }
-                var newUser = new User
-                {
-                    Id = Guid.NewGuid(),
-                    UserName = body.Email,
-                    NormalizedUserName = body.Email.ToUpperInvariant(),
-                    Email = body.Email,
-                    NormalizedEmail = body.Email.ToUpperInvariant(),
-                    EmailConfirmed = true,
-                };
-                db.Users.Add(newUser);
-                await db.SaveChangesAsync(ct).ConfigureAwait(false);
-
-                // Auto-sign-in via the dev cookie so the SPA picks the user up.
-                httpCtx.Response.Cookies.Append(DevAuthHandler.DevCookieName, "cce-user", new CookieOptions
-                {
-                    HttpOnly = false,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax,
-                    Path = "/",
-                    Expires = DateTimeOffset.UtcNow.AddDays(7),
-                });
-
-                return Results.Created($"/api/users/{newUser.Id}",
-                    new RegisterUserResponse(newUser.Id, body.Email, $"{body.GivenName} {body.Surname}"));
-            }
-
-            // ─── Production path: Microsoft Graph user-create ───────────────
-            var dto = new RegistrationRequest(body.GivenName, body.Surname, body.Email, body.MailNickname);
-            try
-            {
-                var result = await registrationService.CreateUserAsync(dto, ct).ConfigureAwait(false);
-                var response = new RegisterUserResponse(
-                    result.EntraIdObjectId,
-                    result.UserPrincipalName,
-                    result.DisplayName);
-                return Results.Created($"/api/users/{result.EntraIdObjectId}", response);
-            }
-            catch (EntraIdRegistrationConflictException)
-            {
-                return Results.Conflict(new { error = "User principal name already exists in Entra ID." });
-            }
-            catch (EntraIdRegistrationAuthorizationException)
-            {
-                return Results.StatusCode(StatusCodes.Status403Forbidden);
-            }
+            var result = await mediator.Send(new RegisterUserCommand(
+                body.FirstName,
+                body.LastName,
+                body.EmailAddress,
+                body.JobTitle,
+                body.OrganizationName,
+                body.PhoneNumber,
+                body.Password,
+                body.ConfirmPassword), ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()
         .WithName("RegisterUser");
@@ -129,8 +51,8 @@ public static class ProfileEndpoints
             var cmd = new SubmitExpertRequestCommand(
                 userId, body.RequestedBioAr, body.RequestedBioEn,
                 body.RequestedTags ?? System.Array.Empty<string>());
-            var dto = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Created("/api/me/expert-status", dto);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .WithName("SubmitExpertRequest");
 
@@ -142,8 +64,8 @@ public static class ProfileEndpoints
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
             if (userId == System.Guid.Empty) return Results.Unauthorized();
-            var dto = await mediator.Send(new GetMyProfileQuery(userId), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetMyProfileQuery(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .WithName("GetMyProfile");
 
@@ -158,8 +80,8 @@ public static class ProfileEndpoints
                 userId, body.LocalePreference, body.KnowledgeLevel,
                 body.Interests ?? System.Array.Empty<string>(),
                 body.AvatarUrl, body.CountryId);
-            var dto = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .WithName("UpdateMyProfile");
 
@@ -169,38 +91,11 @@ public static class ProfileEndpoints
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
             if (userId == System.Guid.Empty) return Results.Unauthorized();
-            var dto = await mediator.Send(new GetMyExpertStatusQuery(userId), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetMyExpertStatusQuery(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .WithName("GetMyExpertStatus");
 
         return app;
     }
 }
-
-public sealed record UpdateMyProfileRequest(
-    string LocalePreference,
-    KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string>? Interests,
-    string? AvatarUrl,
-    System.Guid? CountryId);
-
-public sealed record SubmitExpertRequestRequest(
-    string RequestedBioAr,
-    string RequestedBioEn,
-    IReadOnlyList<string>? RequestedTags);
-
-public sealed record RegisterUserRequest(
-    string GivenName,
-    string Surname,
-    string Email,
-    string MailNickname);
-
-/// <summary>
-/// Sub-11d — public response shape for /api/users/register. Excludes
-/// the temporary password (delivered via the welcome email instead).
-/// </summary>
-public sealed record RegisterUserResponse(
-    System.Guid EntraIdObjectId,
-    string UserPrincipalName,
-    string DisplayName);

@@ -1,7 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
-using CCE.Application.Content.Queries.ListResourceCategories;
+using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Queries.GetResourceCategoryById;
@@ -10,10 +10,7 @@ public sealed class GetResourceCategoryByIdQueryHandler : IRequestHandler<GetRes
 {
     private readonly ICceDbContext _db;
 
-    public GetResourceCategoryByIdQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public GetResourceCategoryByIdQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<ResourceCategoryDto?> Handle(GetResourceCategoryByIdQuery request, CancellationToken cancellationToken)
     {
@@ -22,6 +19,15 @@ public sealed class GetResourceCategoryByIdQueryHandler : IRequestHandler<GetRes
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
         var category = list.SingleOrDefault();
-        return category is null ? null : ListResourceCategoriesQueryHandler.MapToDto(category);
+        return category is null ? null : MapToDto(category);
     }
+
+    internal static ResourceCategoryDto MapToDto(ResourceCategory c) => new(
+        c.Id,
+        c.NameAr,
+        c.NameEn,
+        c.Slug,
+        c.ParentId,
+        c.OrderIndex,
+        c.IsActive);
 }

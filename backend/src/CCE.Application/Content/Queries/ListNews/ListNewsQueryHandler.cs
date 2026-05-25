@@ -10,39 +10,23 @@ public sealed class ListNewsQueryHandler : IRequestHandler<ListNewsQuery, PagedR
 {
     private readonly ICceDbContext _db;
 
-    public ListNewsQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public ListNewsQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PagedResult<NewsDto>> Handle(ListNewsQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<News> query = _db.News;
+        var query = _db.News
+            .WhereIf(!string.IsNullOrWhiteSpace(request.Search),
+                n => n.TitleAr.Contains(request.Search!) ||
+                     n.TitleEn.Contains(request.Search!) ||
+                     n.Slug.Contains(request.Search!))
+            .WhereIf(request.IsPublished == true,  n => n.PublishedOn != null)
+            .WhereIf(request.IsPublished == false, n => n.PublishedOn == null)
+            .WhereIf(request.IsFeatured.HasValue,  n => n.IsFeatured == request.IsFeatured!.Value)
+            .OrderByDescending(n => n.PublishedOn ?? DateTimeOffset.MinValue)
+            .ThenByDescending(n => n.Id);
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            var term = request.Search.Trim();
-            query = query.Where(n =>
-                n.TitleAr.Contains(term) ||
-                n.TitleEn.Contains(term) ||
-                n.Slug.Contains(term));
-        }
-        if (request.IsPublished is { } isPublished)
-        {
-            query = isPublished ? query.Where(n => n.PublishedOn != null) : query.Where(n => n.PublishedOn == null);
-        }
-        if (request.IsFeatured is { } isFeatured)
-        {
-            query = query.Where(n => n.IsFeatured == isFeatured);
-        }
-        query = query.OrderByDescending(n => n.PublishedOn ?? System.DateTimeOffset.MinValue)
-                     .ThenByDescending(n => n.Id);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<NewsDto>(items, page.Page, page.PageSize, page.Total);
+        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
+        return result.Map(MapToDto);
     }
 
     internal static NewsDto MapToDto(News n) => new(

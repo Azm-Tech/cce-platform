@@ -5,8 +5,11 @@ using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
+using CCE.Domain.Media;
 using CCE.Domain.Notifications;
+using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
+using CCE.Domain.Verification;
 using Microsoft.AspNetCore.Identity;
 using DomainCountry = CCE.Domain.Country;
 
@@ -29,6 +32,7 @@ public interface ICceDbContext
     IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
     IQueryable<ExpertProfile> ExpertProfiles { get; }
+    IQueryable<RefreshToken> RefreshTokens { get; }
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }
@@ -48,6 +52,8 @@ public interface ICceDbContext
     IQueryable<PostFollow> PostFollows { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
     IQueryable<UserNotification> UserNotifications { get; }
+    IQueryable<NotificationLog> NotificationLogs { get; }
+    IQueryable<UserNotificationSettings> UserNotificationSettings { get; }
     IQueryable<ServiceRating> ServiceRatings { get; }
     IQueryable<AuditEvent> AuditEvents { get; }
     IQueryable<KnowledgeMap> KnowledgeMaps { get; }
@@ -57,6 +63,29 @@ public interface ICceDbContext
     IQueryable<CityScenario> CityScenarios { get; }
     IQueryable<CityTechnology> CityTechnologies { get; }
     IQueryable<CityScenarioResult> CityScenarioResults { get; }
+    IQueryable<HomepageSettings> HomepageSettings { get; }
+    IQueryable<HomepageCountry> HomepageCountries { get; }
+    IQueryable<AboutSettings> AboutSettings { get; }
+    IQueryable<GlossaryEntry> GlossaryEntries { get; }
+    IQueryable<PoliciesSettings> PoliciesSettings { get; }
+    IQueryable<KnowledgePartner> KnowledgePartners { get; }
+    IQueryable<PolicySection> PolicySections { get; }
+    IQueryable<Faq> Faqs { get; }
+
+    // ─── Verification ───
+    IQueryable<OtpVerification> OtpVerifications { get; }
+    IQueryable<UserVerification> UserVerifications { get; }
+
+    // ─── Media ───
+    IQueryable<MediaFile> MediaFiles { get; }
+
+    // Write operations
+    void Add<T>(T entity) where T : class;
+    void Attach<T>(T entity) where T : class;
+    void Delete<T>(T entity) where T : class;
+    void DeleteRange<T>(System.Collections.Generic.IEnumerable<T> entities) where T : class;
+
+    void SetExpectedRowVersion<T>(T entity, byte[] expectedRowVersion) where T : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -7,10 +7,12 @@ namespace CCE.Application.Tests.Content.Public.Queries;
 
 public class ListPublicNewsQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
     public async Task Returns_empty_paged_result_when_no_news_exist()
     {
-        var db = BuildDb(System.Array.Empty<News>());
+        var db = BuildDb(Array.Empty<News>());
         var sut = new ListPublicNewsQueryHandler(db);
 
         var result = await sut.Handle(new ListPublicNewsQuery(Page: 1, PageSize: 20), CancellationToken.None);
@@ -24,14 +26,12 @@ public class ListPublicNewsQueryHandlerTests
     [Fact]
     public async Task Only_published_news_are_returned()
     {
-        var clock = new FakeSystemClock();
-        var authorId = System.Guid.NewGuid();
+        var published = News.Draft("منشور", "Published", "محتوى", "Content", "published-slug", System.Guid.NewGuid(), null, Clock);
+        published.Publish(Clock);
 
-        var published = News.Draft("منشور", "Published", "محتوى", "Content", "published-slug", authorId, null, clock);
-        var draft = News.Draft("مسودة", "Draft", "محتوى", "Content", "draft-slug", authorId, null, clock);
-        published.Publish(clock);
+        var draft = News.Draft("مسودة", "Draft", "محتوى", "Content", "draft-slug", System.Guid.NewGuid(), null, Clock);
 
-        var db = BuildDb(new[] { published, draft });
+        var db = BuildDb([published, draft]);
         var sut = new ListPublicNewsQueryHandler(db);
 
         var result = await sut.Handle(new ListPublicNewsQuery(Page: 1, PageSize: 20), CancellationToken.None);
@@ -43,16 +43,14 @@ public class ListPublicNewsQueryHandlerTests
     [Fact]
     public async Task IsFeatured_filter_returns_only_featured_published_news()
     {
-        var clock = new FakeSystemClock();
-        var authorId = System.Guid.NewGuid();
-
-        var featured = News.Draft("مميز", "Featured", "محتوى", "Content", "featured-slug", authorId, null, clock);
-        var regular = News.Draft("عادي", "Regular", "محتوى", "Content", "regular-slug", authorId, null, clock);
-        featured.Publish(clock);
+        var featured = News.Draft("مميز", "Featured", "محتوى", "Content", "featured-slug", System.Guid.NewGuid(), null, Clock);
+        featured.Publish(Clock);
         featured.MarkFeatured();
-        regular.Publish(clock);
 
-        var db = BuildDb(new[] { featured, regular });
+        var notFeatured = News.Draft("عادي", "Regular", "محتوى", "Content", "regular-slug", System.Guid.NewGuid(), null, Clock);
+        notFeatured.Publish(Clock);
+
+        var db = BuildDb([featured, notFeatured]);
         var sut = new ListPublicNewsQueryHandler(db);
 
         var result = await sut.Handle(new ListPublicNewsQuery(Page: 1, PageSize: 20, IsFeatured: true), CancellationToken.None);
@@ -66,10 +64,6 @@ public class ListPublicNewsQueryHandlerTests
     {
         var db = Substitute.For<ICceDbContext>();
         db.News.Returns(news.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Resources.Returns(System.Array.Empty<CCE.Domain.Content.Resource>().AsQueryable());
         return db;
     }
 }

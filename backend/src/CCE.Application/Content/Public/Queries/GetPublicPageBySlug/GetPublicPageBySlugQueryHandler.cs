@@ -10,10 +10,7 @@ public sealed class GetPublicPageBySlugQueryHandler : IRequestHandler<GetPublicP
 {
     private readonly ICceDbContext _db;
 
-    public GetPublicPageBySlugQueryHandler(ICceDbContext db)
-    {
-        _db = db;
-    }
+    public GetPublicPageBySlugQueryHandler(ICceDbContext db) => _db = db;
 
     public async Task<PublicPageDto?> Handle(GetPublicPageBySlugQuery request, CancellationToken cancellationToken)
     {
@@ -21,9 +18,8 @@ public sealed class GetPublicPageBySlugQueryHandler : IRequestHandler<GetPublicP
             .Where(p => p.Slug == request.Slug)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
-
-        var page = list.SingleOrDefault();
-        return page is null ? null : MapToDto(page);
+        var pageEntity = list.SingleOrDefault();
+        return pageEntity is null ? null : MapToDto(pageEntity);
     }
 
     internal static PublicPageDto MapToDto(Page p) => new(

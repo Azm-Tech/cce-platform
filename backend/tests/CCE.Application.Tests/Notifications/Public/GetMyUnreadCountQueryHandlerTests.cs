@@ -1,5 +1,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Notifications.Public.Queries.GetMyUnreadCount;
+using CCE.Application.Tests.Notifications;
 using CCE.Domain.Notifications;
 using CCE.TestInfrastructure.Time;
 
@@ -31,10 +32,10 @@ public class GetMyUnreadCountQueryHandlerTests
 
         var db = Substitute.For<ICceDbContext>();
         db.UserNotifications.Returns(new[] { sent1, sent2, read, pending }.AsQueryable());
-        var sut = new GetMyUnreadCountQueryHandler(db);
+        var sut = new GetMyUnreadCountQueryHandler(db, NotificationTestMessages.Create());
 
-        var count = await sut.Handle(new GetMyUnreadCountQuery(userId), CancellationToken.None);
+        var result = await sut.Handle(new GetMyUnreadCountQuery(userId), CancellationToken.None);
 
-        count.Should().Be(2);
+        result.Data.Should().Be(2);
     }
 }

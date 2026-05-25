@@ -12,7 +12,7 @@ public class DeleteHomepageSectionCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_section_missing()
     {
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((HomepageSection?)null);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         var sut = new DeleteHomepageSectionCommandHandler(service, currentUser, new FakeSystemClock());
@@ -27,7 +27,7 @@ public class DeleteHomepageSectionCommandHandlerTests
     {
         var section = HomepageSection.Create(HomepageSectionType.Hero, 0, "ar", "en");
 
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(section.Id, Arg.Any<CancellationToken>()).Returns(section);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
@@ -47,7 +47,7 @@ public class DeleteHomepageSectionCommandHandlerTests
         var actorId = System.Guid.NewGuid();
         var section = HomepageSection.Create(HomepageSectionType.Hero, 0, "ar", "en");
 
-        var service = Substitute.For<IHomepageSectionService>();
+        var service = Substitute.For<IHomepageSectionRepository>();
         service.FindAsync(section.Id, Arg.Any<CancellationToken>()).Returns(section);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
