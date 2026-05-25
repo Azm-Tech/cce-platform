@@ -5,24 +5,26 @@ using CCE.Domain.Common;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.PlatformSettings.ValueObjects;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.PlatformSettings.Commands.UpdateFaq;
 
 public sealed class UpdateFaqCommandHandler
     : IRequestHandler<UpdateFaqCommand, Response<System.Guid>>
 {
+    private readonly IFaqRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public UpdateFaqCommandHandler(
+        IFaqRepository repo,
         ICceDbContext db,
         MessageFactory msg,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {
+        _repo = repo;
         _db = db;
         _msg = msg;
         _currentUser = currentUser;
@@ -32,8 +34,7 @@ public sealed class UpdateFaqCommandHandler
     public async Task<Response<System.Guid>> Handle(
         UpdateFaqCommand request, CancellationToken cancellationToken)
     {
-        var faq = await _db.Faqs
-            .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken)
+        var faq = await _repo.GetByIdAsync(request.Id, cancellationToken)
             .ConfigureAwait(false);
 
         if (faq is null)

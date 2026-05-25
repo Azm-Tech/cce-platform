@@ -11,17 +11,20 @@ namespace CCE.Application.PlatformSettings.Commands.CreateFaq;
 public sealed class CreateFaqCommandHandler
     : IRequestHandler<CreateFaqCommand, Response<System.Guid>>
 {
+    private readonly IFaqRepository _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public CreateFaqCommandHandler(
+        IFaqRepository repo,
         ICceDbContext db,
         MessageFactory msg,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {
+        _repo = repo;
         _db = db;
         _msg = msg;
         _currentUser = currentUser;
@@ -37,7 +40,7 @@ public sealed class CreateFaqCommandHandler
         var answer = LocalizedText.Create(request.AnswerAr, request.AnswerEn);
 
         var faq = Faq.Create(question, answer, request.Order, userId, _clock);
-        _db.Add(faq);
+        _repo.Add(faq);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(faq.Id, "CONTENT_CREATED");
