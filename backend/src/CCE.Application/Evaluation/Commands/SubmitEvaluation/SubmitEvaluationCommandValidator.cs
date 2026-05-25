@@ -7,9 +7,17 @@ public sealed class SubmitEvaluationCommandValidator : AbstractValidator<SubmitE
 {
     public SubmitEvaluationCommandValidator()
     {
-        RuleFor(x => x.OverallSatisfaction).IsInEnum().NotEqual(EvaluationRating.None);
-        RuleFor(x => x.EaseOfUse).IsInEnum().NotEqual(EvaluationRating.None);
-        RuleFor(x => x.ContentSuitability).IsInEnum().NotEqual(EvaluationRating.None);
-        RuleFor(x => x.Feedback).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.OverallSatisfaction)
+            .IsInEnum().WithErrorCode("INVALID_ENUM")
+            .NotEqual(EvaluationRating.None).WithErrorCode("REQUIRED_FIELD");
+        RuleFor(x => x.EaseOfUse)
+            .IsInEnum().WithErrorCode("INVALID_ENUM")
+            .NotEqual(EvaluationRating.None).WithErrorCode("REQUIRED_FIELD");
+        RuleFor(x => x.ContentSuitability)
+            .IsInEnum().WithErrorCode("INVALID_ENUM")
+            .NotEqual(EvaluationRating.None).WithErrorCode("REQUIRED_FIELD");
+        RuleFor(x => x.Feedback)
+            .NotEmpty().WithErrorCode("REQUIRED_FIELD")
+            .MaximumLength(500).WithErrorCode("MAX_LENGTH");
     }
 }

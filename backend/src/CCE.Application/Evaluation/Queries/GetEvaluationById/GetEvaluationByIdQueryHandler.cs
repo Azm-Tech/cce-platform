@@ -1,27 +1,36 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Evaluation.DTOs;
+using CCE.Application.Messages;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Evaluation.Queries.GetEvaluationById;
 
 public sealed class GetEvaluationByIdQueryHandler
-    : IRequestHandler<GetEvaluationByIdQuery, ServiceEvaluationDto?>
+    : IRequestHandler<GetEvaluationByIdQuery, Response<ServiceEvaluationDto>>
 {
-    private readonly IEvaluationRepository _repository;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetEvaluationByIdQueryHandler(IEvaluationRepository repository)
+    public GetEvaluationByIdQueryHandler(ICceDbContext db, MessageFactory msg)
     {
-        _repository = repository;
+        _db = db;
+        _msg = msg;
     }
 
-    public async Task<ServiceEvaluationDto?> Handle(
+    public async Task<Response<ServiceEvaluationDto>> Handle(
         GetEvaluationByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var evaluation = await _repository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var evaluation = await _db.ServiceEvaluations
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken)
+            .ConfigureAwait(false);
 
-        if (evaluation is null) return null;
+        if (evaluation is null)
+            return _msg.EvaluationNotFound<ServiceEvaluationDto>();
 
-        return new ServiceEvaluationDto(
+        var dto = new ServiceEvaluationDto(
             evaluation.Id,
             evaluation.OverallSatisfaction,
             evaluation.EaseOfUse,
@@ -30,5 +39,7 @@ public sealed class GetEvaluationByIdQueryHandler
             evaluation.UserId,
             evaluation.CreatedOn,
             evaluation.CreatedById);
+
+        return _msg.Ok(dto, "ITEMS_LISTED");
     }
 }

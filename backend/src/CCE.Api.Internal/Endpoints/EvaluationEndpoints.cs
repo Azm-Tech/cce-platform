@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Evaluation.Queries.GetAllEvaluations;
 using CCE.Application.Evaluation.Queries.GetEvaluationById;
 using CCE.Domain;
@@ -20,7 +21,7 @@ public static class EvaluationEndpoints
             CancellationToken ct) =>
         {
             var result = await mediator.Send(new GetAllEvaluationsQuery(), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Survey_ReadAll)
         .WithName("GetAllEvaluations");
@@ -32,7 +33,7 @@ public static class EvaluationEndpoints
             CancellationToken ct) =>
         {
             var result = await mediator.Send(new GetEvaluationByIdQuery(id), ct).ConfigureAwait(false);
-            return result is null ? Results.NotFound() : Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Survey_ReadAll)
         .WithName("GetEvaluationById");

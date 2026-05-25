@@ -47,9 +47,10 @@ public sealed class ResponseValidationBehavior<TRequest, TResponse>
         {
             var fieldErrors = failures.Select(f =>
             {
-                var domainKey = f.ErrorMessage;
+                var domainKey = f.ErrorCode;
                 var valCode = SystemCodeMap.ToSystemCode(domainKey);
                 var msg = _l.GetString(domainKey);
+                if (msg == domainKey) msg = f.ErrorMessage;
                 return new FieldError(
                     ToCamelCase(f.PropertyName),
                     valCode,
