@@ -26,6 +26,7 @@ public static class DependencyInjection
 
         services.AddScoped<CCE.Application.Common.Errors>();
         services.AddScoped<MessageFactory>();
+        services.AddScoped<CCE.Application.Identity.Public.Commands.ContactChangeOtpService>();
 
         services.AddSingleton<Reports.ICsvStreamWriter, Reports.CsvStreamWriter>();
 

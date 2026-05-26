@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260526095022_AddOtpVerificationUserId")]
+    partial class AddOtpVerificationUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3468,7 +3471,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CountryCodeId");
 
-                            b1.ToTable("country_codes", (string)null);
+                            b1.ToTable("country_codes");
 
                             b1.WithOwner()
                                 .HasForeignKey("CountryCodeId")
@@ -3501,7 +3504,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("AboutSettingsId");
 
-                            b1.ToTable("about_settings", (string)null);
+                            b1.ToTable("about_settings");
 
                             b1.WithOwner()
                                 .HasForeignKey("AboutSettingsId")
@@ -3541,7 +3544,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries", (string)null);
+                            b1.ToTable("glossary_entries");
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3568,7 +3571,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries", (string)null);
+                            b1.ToTable("glossary_entries");
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3614,7 +3617,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("HomepageSettingsId");
 
-                            b1.ToTable("homepage_settings", (string)null);
+                            b1.ToTable("homepage_settings");
 
                             b1.WithOwner()
                                 .HasForeignKey("HomepageSettingsId")
@@ -3654,7 +3657,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners", (string)null);
+                            b1.ToTable("knowledge_partners");
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3681,7 +3684,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners", (string)null);
+                            b1.ToTable("knowledge_partners");
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3721,7 +3724,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections", (string)null);
+                            b1.ToTable("policy_sections");
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")
@@ -3748,7 +3751,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections", (string)null);
+                            b1.ToTable("policy_sections");
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")

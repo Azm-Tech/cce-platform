@@ -20,6 +20,13 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");
         builder.HasIndex(u => u.CountryCodeId).HasDatabaseName("ix_users_country_code_id");
 
+        // Enforce unique email at the database level to prevent duplicate accounts.
+        // Filtered index: only non-null values (Identity allows null emails historically).
+        builder.HasIndex(u => u.NormalizedEmail)
+            .HasDatabaseName("ix_users_normalized_email_unique")
+            .IsUnique()
+            .HasFilter("[normalized_email] IS NOT NULL");
+
         // Sub-11: filtered unique index on EntraIdObjectId. Only enforces uniqueness on
         // non-null values so existing rows pre-cutover (NULL) don't conflict, and so that
         // the lazy-resolver's idempotent linkage stays safe under concurrent first-sign-ins.

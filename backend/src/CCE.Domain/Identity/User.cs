@@ -232,6 +232,28 @@ public class User : IdentityUser<System.Guid>
         AvatarUrl = url;
     }
 
+    public void UpdateEmail(string newEmail)
+    {
+        if (string.IsNullOrWhiteSpace(newEmail)) throw new DomainException("Email is required.");
+        var trimmed = newEmail.Trim();
+        Email = trimmed;
+        NormalizedEmail = trimmed.ToUpperInvariant();
+        UserName = trimmed;
+        NormalizedUserName = trimmed.ToUpperInvariant();
+        EmailConfirmed = true;
+    }
+
+    public void UpdatePhoneNumber(string newPhone, System.Guid? countryCodeId)
+    {
+        if (string.IsNullOrWhiteSpace(newPhone)) throw new DomainException("Phone number is required.");
+        PhoneNumber = NormalizePhone(newPhone);
+        PhoneNumberConfirmed = true;
+        CountryCodeId = countryCodeId;
+    }
+
+    public static string NormalizePhone(string phone)
+        => new string(System.Linq.Enumerable.Where(phone, char.IsDigit).ToArray());
+
     public void ChangeStatus(UserStatus newStatus) => Status = newStatus;
 
     public void Activate() => Status = UserStatus.Active;
