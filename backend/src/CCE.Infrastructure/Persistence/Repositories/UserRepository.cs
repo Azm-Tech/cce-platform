@@ -29,6 +29,24 @@ public sealed class UserRepository : IUserRepository
         };
     }
 
+    public async Task<bool> IsContactTakenAsync(string contact, OtpVerificationType type, Guid excludeUserId, CancellationToken ct)
+    {
+        if (type == OtpVerificationType.Email)
+        {
+            var normalized = contact.ToUpperInvariant();
+            return await _db.Users
+                .AnyAsync(u => u.NormalizedEmail == normalized && u.Id != excludeUserId, ct)
+                .ConfigureAwait(false);
+        }
+        if (type == OtpVerificationType.Sms)
+        {
+            return await _db.Users
+                .AnyAsync(u => u.PhoneNumber == contact && u.Id != excludeUserId, ct)
+                .ConfigureAwait(false);
+        }
+        return false;
+    }
+
     public async Task StampConfirmedAsync(Guid userId, OtpVerificationType type, CancellationToken ct)
     {
         var stamp = await _db.Users

@@ -104,12 +104,15 @@ public sealed class MessageFactory
 
     // ─── Convenience shortcuts (Verification domain) ───
 
-    public Response<T> OtpNotFound<T>()        => NotFound<T>("OTP_NOT_FOUND");
-    public Response<T> OtpExpired<T>()         => BusinessRule<T>("OTP_EXPIRED");
-    public Response<T> OtpInvalidCode<T>()     => BusinessRule<T>("OTP_INVALID_CODE");
-    public Response<T> OtpMaxAttempts<T>()     => BusinessRule<T>("OTP_MAX_ATTEMPTS");
-    public Response<T> OtpCooldownActive<T>()  => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
-    public Response<T> OtpInvalidated<T>()     => BusinessRule<T>("OTP_INVALIDATED");
+    public Response<T> OtpNotFound<T>()           => NotFound<T>("OTP_NOT_FOUND");
+    public Response<T> OtpExpired<T>()            => BusinessRule<T>("OTP_EXPIRED");
+    public Response<T> OtpInvalidCode<T>()        => BusinessRule<T>("OTP_INVALID_CODE");
+    public Response<T> OtpMaxAttempts<T>()        => BusinessRule<T>("OTP_MAX_ATTEMPTS");
+    public Response<T> OtpCooldownActive<T>()     => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
+    public Response<T> OtpInvalidated<T>()        => BusinessRule<T>("OTP_INVALIDATED");
+    public Response<T> ContactAlreadyTaken<T>()   => Conflict<T>("CONTACT_ALREADY_TAKEN");
+    public Response<VoidData> EmailUpdated()      => Ok("EMAIL_UPDATED");
+    public Response<VoidData> PhoneUpdated()      => Ok("PHONE_UPDATED");
 
     // ─── Convenience shortcuts (Notification domain) ───
 

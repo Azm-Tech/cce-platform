@@ -113,6 +113,7 @@ public static class SystemCode
     public const string ERR123 = "ERR123"; // OTP max attempts exceeded
     public const string ERR124 = "ERR124"; // OTP cooldown active
     public const string ERR125 = "ERR125"; // OTP invalidated
+    public const string ERR126 = "ERR126"; // Contact already taken
 
     // ─── General Errors ───
     public const string ERR900 = "ERR900"; // Internal server error
@@ -187,6 +188,8 @@ public static class SystemCode
     // ─── Verification Success ───
     public const string CON060 = "CON060"; // OTP sent
     public const string CON061 = "CON061"; // OTP verified
+    public const string CON062 = "CON062"; // Email updated
+    public const string CON063 = "CON063"; // Phone updated
 
     // ─── Notification Success ───
     public const string CON040 = "CON040"; // Notification created

@@ -93,6 +93,7 @@ public static class SystemCodeMap
         ["OTP_MAX_ATTEMPTS"] = SystemCode.ERR123,
         ["OTP_COOLDOWN_ACTIVE"] = SystemCode.ERR124,
         ["OTP_INVALIDATED"] = SystemCode.ERR125,
+        ["CONTACT_ALREADY_TAKEN"] = SystemCode.ERR126,
 
         // ─── General Errors ───
         ["INTERNAL_ERROR"] = SystemCode.ERR900,
@@ -159,6 +160,8 @@ public static class SystemCodeMap
         // ─── Verification Success ───
         ["OTP_SENT"] = SystemCode.CON060,
         ["OTP_VERIFIED"] = SystemCode.CON061,
+        ["EMAIL_UPDATED"] = SystemCode.CON062,
+        ["PHONE_UPDATED"] = SystemCode.CON063,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,

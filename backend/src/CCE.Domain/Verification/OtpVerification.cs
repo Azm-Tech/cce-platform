@@ -18,11 +18,19 @@ public sealed class OtpVerification : AggregateRoot<Guid>
     public bool IsVerified { get; private set; }
     public bool IsInvalidated { get; private set; }
 
+    /// <summary>Optional user identifier. Null for anonymous flows (registration), set for authenticated contact-change flows.</summary>
+    public Guid? UserId { get; private set; }
+
+    /// <summary>Optional JSON payload for context that varies by OTP flow (e.g. CountryCodeId for phone change).</summary>
+    public string? ExtraData { get; private set; }
+
     public static OtpVerification Create(
         string contact,
         OtpVerificationType typeId,
         string codeHash,
-        DateTimeOffset now)
+        DateTimeOffset now,
+        string? extraData = null,
+        Guid? userId = null)
     {
         return new OtpVerification(Guid.NewGuid())
         {
@@ -35,6 +43,8 @@ public sealed class OtpVerification : AggregateRoot<Guid>
             AttemptCount = 0,
             IsVerified = false,
             IsInvalidated = false,
+            UserId = userId,
+            ExtraData = extraData,
         };
     }
 
@@ -45,13 +55,17 @@ public sealed class OtpVerification : AggregateRoot<Guid>
 
     public bool HasExceededMaxAttempts() => AttemptCount >= 5;
 
-    public void Refresh(string newCodeHash, DateTimeOffset now)
+    public void Refresh(string newCodeHash, DateTimeOffset now, string? extraData = null, Guid? userId = null)
     {
         CodeHash = newCodeHash;
         ExpiresAt = now.AddMinutes(5);
         LastSentAt = now;
         AttemptCount = 0;
         IsInvalidated = false;
+        if (extraData is not null)
+            ExtraData = extraData;
+        if (userId is not null)
+            UserId = userId;
     }
 
     public void IncrementAttempt() => AttemptCount++;

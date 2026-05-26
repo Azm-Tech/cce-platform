@@ -54,7 +54,7 @@ internal sealed class RequestVerificationCommandHandler
         }
         else
         {
-            entity = OtpVerification.Create(request.Contact, request.TypeId, codeHash, now);
+            entity = OtpVerification.Create(request.Contact, request.TypeId, codeHash, now, userId: null);
             await _otpRepo.AddAsync(entity, ct).ConfigureAwait(false);
         }
 

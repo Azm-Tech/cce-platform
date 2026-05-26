@@ -2,6 +2,10 @@ using CCE.Api.Common.Auth;
 using CCE.Api.Common.Extensions;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Register;
+using CCE.Application.Identity.Public.Commands.ConfirmEmailChange;
+using CCE.Application.Identity.Public.Commands.ConfirmPhoneChange;
+using CCE.Application.Identity.Public.Commands.RequestEmailChange;
+using CCE.Application.Identity.Public.Commands.RequestPhoneChange;
 using CCE.Application.Identity.Public.Commands.SubmitExpertRequest;
 using CCE.Application.Identity.Public.Commands.UpdateMyProfile;
 using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
@@ -99,6 +103,58 @@ public static class ProfileEndpoints
             return result.ToHttpResult();
         })
         .WithName("GetMyExpertStatus");
+
+        me.MapPost("/email/request-change", async (
+            RequestEmailChangeRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(
+                new RequestEmailChangeCommand(userId, body.NewEmail), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .WithName("RequestEmailChange");
+
+        me.MapPost("/email/confirm-change", async (
+            ConfirmEmailChangeRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(
+                new ConfirmEmailChangeCommand(userId, body.VerificationId, body.Code), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .WithName("ConfirmEmailChange");
+
+        me.MapPost("/phone/request-change", async (
+            RequestPhoneChangeRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(
+                new RequestPhoneChangeCommand(userId, body.NewPhone, body.CountryCodeId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .WithName("RequestPhoneChange");
+
+        me.MapPost("/phone/confirm-change", async (
+            ConfirmPhoneChangeRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(
+                new ConfirmPhoneChangeCommand(userId, body.VerificationId, body.Code), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .WithName("ConfirmPhoneChange");
 
         return app;
     }
