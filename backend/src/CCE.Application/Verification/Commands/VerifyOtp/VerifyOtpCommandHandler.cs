@@ -74,7 +74,7 @@ internal sealed class VerifyOtpCommandHandler
 
         if (userVerification is null)
         {
-            userVerification = UserVerification.Create(null, entity.Contact, entity.TypeId);
+            userVerification = UserVerification.Create(entity.UserId, entity.Contact, entity.TypeId);
             await _verificationRepo.AddAsync(userVerification, ct).ConfigureAwait(false);
         }
         userVerification.MarkVerified(now);
@@ -89,6 +89,14 @@ internal sealed class VerifyOtpCommandHandler
 
     private async Task<Guid?> StampUserConfirmedAsync(OtpVerification entity, CancellationToken ct)
     {
+        // Prefer the explicit user link from the OTP record over ambiguous contact lookup
+        if (entity.UserId.HasValue)
+        {
+            await _userRepo.StampConfirmedAsync(entity.UserId.Value, entity.TypeId, ct).ConfigureAwait(false);
+            return entity.UserId.Value;
+        }
+
+        // Fallback for anonymous flows (registration) where OTP was not bound to a user
         var userId = await _userRepo
             .FindUserIdByContactAsync(entity.Contact, entity.TypeId, ct)
             .ConfigureAwait(false);

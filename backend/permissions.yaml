@@ -187,3 +187,7 @@ groups:
     CountryProfiles:
       description: Generate country profiles report
       roles: [cce-super-admin, cce-admin]
+  Lookup:
+    Manage:
+      description: Manage lookup tables (nationalities, country phone codes)
+      roles: [cce-super-admin]

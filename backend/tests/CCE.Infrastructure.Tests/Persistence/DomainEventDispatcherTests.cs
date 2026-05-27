@@ -28,7 +28,7 @@ public class DomainEventDispatcherTests
         var (ctx, publisher) = Build();
         var clock = new FakeSystemClock();
         var req = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, clock);
+            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, System.Guid.NewGuid(), clock);
         req.Approve(System.Guid.NewGuid(), clock);
 
         ctx.ExpertRegistrationRequests.Add(req);
@@ -45,7 +45,7 @@ public class DomainEventDispatcherTests
         var (ctx, _) = Build();
         var clock = new FakeSystemClock();
         var req = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, clock);
+            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, System.Guid.NewGuid(), clock);
         req.Approve(System.Guid.NewGuid(), clock);
         ctx.ExpertRegistrationRequests.Add(req);
 

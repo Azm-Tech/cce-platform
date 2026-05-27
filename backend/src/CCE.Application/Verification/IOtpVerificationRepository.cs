@@ -8,4 +8,8 @@ public interface IOtpVerificationRepository : IRepository<OtpVerification, Guid>
     Task<OtpVerification?> FindActiveAsync(
         string contact, OtpVerificationType typeId,
         DateTimeOffset now, CancellationToken ct = default);
+
+    Task<OtpVerification?> FindActiveAsync(
+        string contact, OtpVerificationType typeId,
+        DateTimeOffset now, Guid? userId, CancellationToken ct = default);
 }

@@ -13,7 +13,7 @@ public class CreateResourceCommandHandlerTests
     public async Task Throws_KeyNotFound_when_asset_missing()
     {
         var (sut, _, asset, _) = BuildSut();
-        asset.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
+        asset.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
 
         var act = async () => await sut.Handle(BuildCmd(System.Guid.NewGuid()), CancellationToken.None);
 
@@ -26,7 +26,7 @@ public class CreateResourceCommandHandlerTests
         var (sut, _, asset, _) = BuildSut();
         var clock = new FakeSystemClock();
         var pendingAsset = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
-        asset.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(pendingAsset);
+        asset.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(pendingAsset);
 
         var act = async () => await sut.Handle(BuildCmd(pendingAsset.Id), CancellationToken.None);
 
@@ -40,7 +40,7 @@ public class CreateResourceCommandHandlerTests
         var clock = new FakeSystemClock();
         var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
         clean.MarkClean(clock);
-        asset.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(clean);
+        asset.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(clean);
 
         var act = async () => await sut.Handle(BuildCmd(clean.Id), CancellationToken.None);
 
@@ -54,7 +54,7 @@ public class CreateResourceCommandHandlerTests
         var clock = new FakeSystemClock();
         var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
         clean.MarkClean(clock);
-        asset.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(clean);
+        asset.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns(clean);
 
         var dto = await sut.Handle(BuildCmd(clean.Id), CancellationToken.None);
 

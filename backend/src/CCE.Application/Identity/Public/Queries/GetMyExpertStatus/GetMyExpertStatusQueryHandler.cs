@@ -29,9 +29,12 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
 
         var entity = rows.FirstOrDefault();
         if (entity is null)
-        {
-            return _msg.NotFound<ExpertRequestStatusDto>("EXPERT_REQUEST_NOT_FOUND");
-        }
+            return _msg.ExpertRequestNotFound<ExpertRequestStatusDto>();
+
+        var attachments = await _db.ExpertRequestAttachments
+            .Where(a => a.ExpertRequestId == entity.Id)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
 
         return _msg.Ok(new ExpertRequestStatusDto(
             entity.Id,
@@ -39,6 +42,7 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
             entity.RequestedBioAr,
             entity.RequestedBioEn,
             entity.RequestedTags.ToList(),
+            attachments.Select(a => new ExpertRequestAttachmentDto(a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt)).ToList(),
             entity.SubmittedOn,
             entity.Status,
             entity.ProcessedOn,

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CCE.Infrastructure.Persistence;
 
 public class Repository<T, TId> : IRepository<T, TId>
-    where T : AggregateRoot<TId>
+    where T : Entity<TId>
     where TId : IEquatable<TId>
 {
     protected CceDbContext Db { get; }

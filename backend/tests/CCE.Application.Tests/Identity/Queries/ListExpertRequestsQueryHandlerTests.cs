@@ -28,8 +28,8 @@ public class ListExpertRequestsQueryHandlerTests
         var aliceId = System.Guid.NewGuid();
         var bobId = System.Guid.NewGuid();
 
-        var aliceRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة أليس", "Alice Bio", new[] { "energy", "solar" }, clock);
-        var bobRequest = ExpertRegistrationRequest.Submit(bobId, "سيرة بوب", "Bob Bio", new[] { "wind" }, clock);
+        var aliceRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة أليس", "Alice Bio", new[] { "energy", "solar" }, System.Guid.NewGuid(), clock);
+        var bobRequest = ExpertRegistrationRequest.Submit(bobId, "سيرة بوب", "Bob Bio", new[] { "wind" }, System.Guid.NewGuid(), clock);
 
         var users = new[]
         {
@@ -62,8 +62,8 @@ public class ListExpertRequestsQueryHandlerTests
         var aliceId = System.Guid.NewGuid();
         var adminId = System.Guid.NewGuid();
 
-        var pendingRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة", "Bio", new[] { "energy" }, clock);
-        var approvedRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة 2", "Bio 2", new[] { "solar" }, clock);
+        var pendingRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة", "Bio", new[] { "energy" }, System.Guid.NewGuid(), clock);
+        var approvedRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة 2", "Bio 2", new[] { "solar" }, System.Guid.NewGuid(), clock);
         approvedRequest.Approve(adminId, clock);
 
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
@@ -85,8 +85,8 @@ public class ListExpertRequestsQueryHandlerTests
         var aliceId = System.Guid.NewGuid();
         var bobId = System.Guid.NewGuid();
 
-        var aliceRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة أليس", "Alice Bio", new[] { "energy" }, clock);
-        var bobRequest = ExpertRegistrationRequest.Submit(bobId, "سيرة بوب", "Bob Bio", new[] { "wind" }, clock);
+        var aliceRequest = ExpertRegistrationRequest.Submit(aliceId, "سيرة أليس", "Alice Bio", new[] { "energy" }, System.Guid.NewGuid(), clock);
+        var bobRequest = ExpertRegistrationRequest.Submit(bobId, "سيرة بوب", "Bob Bio", new[] { "wind" }, System.Guid.NewGuid(), clock);
 
         var users = new[]
         {

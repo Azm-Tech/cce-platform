@@ -26,7 +26,7 @@ public class PublishResourceCommandHandlerTests
         var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), assetId, clock);
         resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
         var pendingAsset = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
-        assetService.FindAsync(assetId, Arg.Any<CancellationToken>()).Returns(pendingAsset);
+        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(pendingAsset);
 
         var act = async () => await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
@@ -40,7 +40,7 @@ public class PublishResourceCommandHandlerTests
         var (sut, resourceService, assetService) = BuildSut();
         var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
         resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
-        assetService.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
+        assetService.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
 
         var act = async () => await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
@@ -57,7 +57,7 @@ public class PublishResourceCommandHandlerTests
         resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
         var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
         clean.MarkClean(clock);
-        assetService.FindAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
+        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
 
         var dto = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
@@ -78,7 +78,7 @@ public class PublishResourceCommandHandlerTests
         resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
         var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
         clean.MarkClean(clock);
-        assetService.FindAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
+        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
 
         var firstPublishedOn = resource.PublishedOn;
         var dto = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);

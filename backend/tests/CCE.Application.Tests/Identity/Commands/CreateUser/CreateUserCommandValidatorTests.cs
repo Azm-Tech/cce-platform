@@ -8,7 +8,7 @@ public class CreateUserCommandValidatorTests
     public void Valid_command_passes()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "pass1234", "1234567890", null, "cce-admin");
+        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "1234567890", null, null, "cce-admin");
 
         var result = sut.Validate(cmd);
 
@@ -19,7 +19,7 @@ public class CreateUserCommandValidatorTests
     public void Missing_first_name_is_rejected()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("", "B", "a@b.c", "pass1234", "123", null, "cce-admin");
+        var cmd = new CreateUserCommand("", "B", "a@b.c", "123", null, null, "cce-admin");
 
         var result = sut.Validate(cmd);
 
@@ -31,7 +31,7 @@ public class CreateUserCommandValidatorTests
     public void First_name_with_numbers_is_rejected()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali123", "B", "a@b.c", "pass1234", "123", null, "cce-admin");
+        var cmd = new CreateUserCommand("Ali123", "B", "a@b.c", "123", null, null, "cce-admin");
 
         var result = sut.Validate(cmd);
 
@@ -43,7 +43,7 @@ public class CreateUserCommandValidatorTests
     public void Invalid_email_is_rejected()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali", "Ahmed", "not-an-email", "pass1234", "123", null, "cce-admin");
+        var cmd = new CreateUserCommand("Ali", "Ahmed", "not-an-email", "123", null, null, "cce-admin");
 
         var result = sut.Validate(cmd);
 
@@ -52,22 +52,10 @@ public class CreateUserCommandValidatorTests
     }
 
     [Fact]
-    public void Password_too_short_is_rejected()
-    {
-        var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "123", "123", null, "cce-admin");
-
-        var result = sut.Validate(cmd);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(CreateUserCommand.Password));
-    }
-
-    [Fact]
     public void Unknown_role_is_rejected()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "pass1234", "123", null, "cce-user");
+        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "123", null, null, "cce-user");
 
         var result = sut.Validate(cmd);
 
@@ -79,7 +67,7 @@ public class CreateUserCommandValidatorTests
     public void Empty_role_is_rejected()
     {
         var sut = new CreateUserCommandValidator();
-        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "pass1234", "123", null, "");
+        var cmd = new CreateUserCommand("Ali", "Ahmed", "a@b.c", "123", null, null, "");
 
         var result = sut.Validate(cmd);
 

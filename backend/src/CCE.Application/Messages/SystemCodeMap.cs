@@ -35,6 +35,7 @@ public static class SystemCodeMap
         ["CATEGORY_NOT_FOUND"] = SystemCode.ERR044,
         ["ASSET_NOT_FOUND"] = SystemCode.ERR045,
         ["HOMEPAGE_SECTION_NOT_FOUND"] = SystemCode.ERR046,
+        ["ASSET_NOT_CLEAN"] = SystemCode.ERR059,
         ["COUNTRY_RESOURCE_REQUEST_NOT_FOUND"] = SystemCode.ERR047,
         ["RESOURCE_DUPLICATE"] = SystemCode.ERR048,
         ["CATEGORY_DUPLICATE"] = SystemCode.ERR049,
@@ -92,6 +93,7 @@ public static class SystemCodeMap
         ["OTP_MAX_ATTEMPTS"] = SystemCode.ERR123,
         ["OTP_COOLDOWN_ACTIVE"] = SystemCode.ERR124,
         ["OTP_INVALIDATED"] = SystemCode.ERR125,
+        ["CONTACT_ALREADY_TAKEN"] = SystemCode.ERR126,
 
         // ─── Evaluation Errors ───
         ["EVALUATION_NOT_FOUND"] = SystemCode.ERR009,
@@ -134,6 +136,9 @@ public static class SystemCodeMap
         ["CONTENT_UPDATED"] = SystemCode.CON021,
         ["CONTENT_DELETED"] = SystemCode.CON022,
 
+        // ─── Asset Success ───
+        ["ASSET_UPLOADED"] = SystemCode.CON038,
+
         // ─── Media Success ───
         ["MEDIA_UPLOADED"] = SystemCode.CON029,
         ["MEDIA_UPDATED"] = SystemCode.CON036,
@@ -158,6 +163,8 @@ public static class SystemCodeMap
         // ─── Verification Success ───
         ["OTP_SENT"] = SystemCode.CON060,
         ["OTP_VERIFIED"] = SystemCode.CON061,
+        ["EMAIL_UPDATED"] = SystemCode.CON062,
+        ["PHONE_UPDATED"] = SystemCode.CON063,
 
         // ─── Evaluation Success ───
         ["EVALUATION_SUBMITTED"] = SystemCode.CON008,

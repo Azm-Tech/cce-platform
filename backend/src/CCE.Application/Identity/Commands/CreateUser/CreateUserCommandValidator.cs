@@ -18,7 +18,6 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
         RuleFor(c => c.LastName).NotEmpty().MaximumLength(50)
             .Matches(@"^\p{L}+$").WithMessage("Last name must contain letters only.");
         RuleFor(c => c.Email).NotEmpty().MaximumLength(100).EmailAddress();
-        RuleFor(c => c.Password).NotEmpty().MinimumLength(8);
         RuleFor(c => c.PhoneNumber).NotEmpty().MaximumLength(15);
         RuleFor(c => c.Role).NotEmpty().Must(r => AllowedRoles.Contains(r))
             .WithMessage($"Role must be one of: {string.Join(", ", AllowedRoles)}.");

@@ -46,7 +46,7 @@ public class ChangeUserStatusCommandHandlerTests
 
         var expectedDto = new UserDetailDto(
             userId, "a@b.c", "a", "ar", KnowledgeLevel.Beginner,
-            new List<string>(), null, null, Array.Empty<string>(), true);
+            new List<string>(), null, null, null, Array.Empty<string>(), true);
 
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())
@@ -78,7 +78,7 @@ public class ChangeUserStatusCommandHandlerTests
 
         var expectedDto = new UserDetailDto(
             userId, "a@b.c", "a", "ar", KnowledgeLevel.Beginner,
-            new List<string>(), null, null, Array.Empty<string>(), false);
+            new List<string>(), null, null, null, Array.Empty<string>(), false);
 
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Any<GetUserByIdQuery>(), Arg.Any<CancellationToken>())

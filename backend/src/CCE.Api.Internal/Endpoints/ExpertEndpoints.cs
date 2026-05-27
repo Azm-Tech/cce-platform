@@ -1,6 +1,7 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
+using CCE.Application.Identity.Queries.GetExpertRequestById;
 using CCE.Application.Identity.Queries.ListExpertProfiles;
 using CCE.Application.Identity.Queries.ListExpertRequests;
 using CCE.Domain;
@@ -32,6 +33,16 @@ public static class ExpertEndpoints
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertRequests");
+
+        requests.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetExpertRequestByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
+        .WithName("GetExpertRequestById");
 
         requests.MapPost("/{id:guid}/approve", async (
             System.Guid id,

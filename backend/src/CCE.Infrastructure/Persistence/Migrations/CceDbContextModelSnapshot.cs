@@ -1627,6 +1627,37 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("expert_registration_requests", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Identity.ExpertRequestAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AssetFileId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("asset_file_id");
+
+                    b.Property<int>("AttachmentType")
+                        .HasColumnType("int")
+                        .HasColumnName("attachment_type");
+
+                    b.Property<Guid>("ExpertRequestId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("expert_request_id");
+
+                    b.Property<DateTimeOffset>("UploadedAt")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("uploaded_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_expert_request_attachments");
+
+                    b.HasIndex("ExpertRequestId")
+                        .HasDatabaseName("ix_expert_request_attachments_expert_request_id");
+
+                    b.ToTable("expert_request_attachments", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1824,6 +1855,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("concurrency_stamp");
 
+                    b.Property<Guid?>("CountryCodeId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("country_code_id");
+
                     b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("country_id");
@@ -1942,6 +1977,9 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_asp_net_users");
 
+                    b.HasIndex("CountryCodeId")
+                        .HasDatabaseName("ix_users_country_code_id");
+
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_users_country_id");
 
@@ -1951,7 +1989,9 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasFilter("[entra_id_object_id] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_normalized_email_unique")
+                        .HasFilter("[normalized_email] IS NOT NULL");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
@@ -2355,6 +2395,59 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_km_node_map_order");
 
                     b.ToTable("knowledge_map_nodes", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Lookups.CountryCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<DateTimeOffset?>("DeletedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<string>("DialCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
+                        .HasColumnName("dial_code");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_country_codes");
+
+                    b.HasIndex("DialCode")
+                        .HasDatabaseName("ix_country_code_dial_code");
+
+                    b.ToTable("country_codes", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Media.MediaFile", b =>
@@ -3139,6 +3232,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("expires_at");
 
+                    b.Property<string>("ExtraData")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("extra_data");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
@@ -3167,11 +3264,18 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasColumnName("type_id");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("pk_otp_verifications");
 
                     b.HasIndex("Contact", "TypeId")
                         .HasDatabaseName("ix_otp_verifications_contact_type_id");
+
+                    b.HasIndex("UserId", "Contact", "TypeId")
+                        .HasDatabaseName("ix_otp_verifications_user_contact_type");
 
                     b.ToTable("otp_verifications", (string)null);
                 });
@@ -3375,6 +3479,16 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Identity.ExpertRequestAttachment", b =>
+                {
+                    b.HasOne("CCE.Domain.Identity.ExpertRegistrationRequest", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ExpertRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_expert_request_attachments_expert_registration_requests_expert_request_id");
+                });
+
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
                 {
                     b.HasOne("CCE.Domain.Identity.User", null)
@@ -3383,6 +3497,39 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_refresh_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Lookups.CountryCode", b =>
+                {
+                    b.OwnsOne("CCE.Domain.PlatformSettings.ValueObjects.LocalizedText", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("CountryCodeId")
+                                .HasColumnType("uniqueidentifier")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Ar")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("name_ar");
+
+                            b1.Property<string>("En")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("name_en");
+
+                            b1.HasKey("CountryCodeId");
+
+                            b1.ToTable("country_codes", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("CountryCodeId")
+                                .HasConstraintName("fk_country_codes_country_codes_id");
+                        });
+
+                    b.Navigation("Name")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>
@@ -3407,7 +3554,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("AboutSettingsId");
 
-                            b1.ToTable("about_settings");
+                            b1.ToTable("about_settings", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("AboutSettingsId")
@@ -3447,7 +3594,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries");
+                            b1.ToTable("glossary_entries", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3474,7 +3621,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries");
+                            b1.ToTable("glossary_entries", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3520,7 +3667,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("HomepageSettingsId");
 
-                            b1.ToTable("homepage_settings");
+                            b1.ToTable("homepage_settings", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("HomepageSettingsId")
@@ -3560,7 +3707,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners");
+                            b1.ToTable("knowledge_partners", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3587,7 +3734,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners");
+                            b1.ToTable("knowledge_partners", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3627,7 +3774,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections");
+                            b1.ToTable("policy_sections", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")
@@ -3654,7 +3801,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections");
+                            b1.ToTable("policy_sections", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")
@@ -3731,6 +3878,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Identity.ExpertRegistrationRequest", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>

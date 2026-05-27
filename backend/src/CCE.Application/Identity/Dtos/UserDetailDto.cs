@@ -13,6 +13,7 @@ public sealed record UserDetailDto(
     KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<string> Interests,
     System.Guid? CountryId,
+    System.Guid? CountryCodeId,
     string? AvatarUrl,
     IReadOnlyList<string> Roles,
     bool IsActive);

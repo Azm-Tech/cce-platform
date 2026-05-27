@@ -50,6 +50,7 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
             user.KnowledgeLevel,
             user.Interests,
             user.CountryId,
+            user.CountryCodeId,
             user.AvatarUrl,
             System.Array.Empty<string>(),
             user.Status == Domain.Identity.UserStatus.Active), "USER_DELETED");

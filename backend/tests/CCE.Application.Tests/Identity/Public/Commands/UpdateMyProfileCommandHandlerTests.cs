@@ -19,8 +19,8 @@ public class UpdateMyProfileCommandHandlerTests
         var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
-            System.Guid.NewGuid(), "en", KnowledgeLevel.Intermediate,
-            System.Array.Empty<string>(), null, null);
+            System.Guid.NewGuid(), "First", "Last", "Engineer", "ACME", "en", KnowledgeLevel.Intermediate,
+            System.Array.Empty<string>(), null, null, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
@@ -43,10 +43,10 @@ public class UpdateMyProfileCommandHandlerTests
         var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
-            userId, "en", KnowledgeLevel.Advanced,
+            userId, "Alice", "Smith", "Researcher", "KAPSARC", "en", KnowledgeLevel.Advanced,
             new[] { "Hydrogen", "Solar" },
             "https://cdn.example.com/avatar.png",
-            countryId);
+            countryId, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
@@ -73,8 +73,8 @@ public class UpdateMyProfileCommandHandlerTests
         var sut = new UpdateMyProfileCommandHandler(db, service, BuildMsg());
 
         var cmd = new UpdateMyProfileCommand(
-            userId, "ar", KnowledgeLevel.Beginner,
-            System.Array.Empty<string>(), null, null);
+            userId, "Alice", "Smith", "Researcher", "KAPSARC", "ar", KnowledgeLevel.Beginner,
+            System.Array.Empty<string>(), null, null, null);
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 

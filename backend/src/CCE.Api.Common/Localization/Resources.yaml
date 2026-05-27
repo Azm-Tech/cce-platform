@@ -51,16 +51,8 @@ IDENTITY_USERNAME_EXISTS:
   en: "Username already taken"
 
 IDENTITY_INVALID_CREDENTIALS:
-  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
-  en: "Sorry, a problem occurred during login"
-
-IDENTITY_INVALID_TOKEN:
-  ar: "رمز الوصول غير صالح"
-  en: "Invalid access token"
-
-IDENTITY_ACCOUNT_DEACTIVATED:
-  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
-  en: "Sorry, a problem occurred during login"
+  ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+  en: "Invalid email or password"
 
 IDENTITY_NOT_AUTHENTICATED:
   ar: "المستخدم غير مصادق"
@@ -77,6 +69,14 @@ IDENTITY_STATE_REP_ASSIGNMENT_NOT_FOUND:
 IDENTITY_STATE_REP_ASSIGNMENT_EXISTS:
   ar: "التعيين موجود بالفعل"
   en: "Assignment already exists"
+
+IDENTITY_INVALID_TOKEN:
+  ar: "رمز الوصول غير صالح"
+  en: "Invalid access token"
+
+IDENTITY_ACCOUNT_DEACTIVATED:
+  ar: "الحساب غير نشط"
+  en: "Account is deactivated"
 
 CONTENT_RESOURCE_NOT_FOUND:
   ar: "المورد غير موجود"
@@ -201,12 +201,12 @@ USER_NOT_FOUND:
   en: "Sorry, user not found"
 
 EMAIL_EXISTS:
-  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
-  en: "Sorry, a problem occurred while creating the account"
+  ar: "البريد الإلكتروني مستخدم بالفعل"
+  en: "An account with this email already exists"
 
 INVALID_CREDENTIALS:
-  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
-  en: "Sorry, a problem occurred during login"
+  ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+  en: "Invalid email or password"
 
 NOT_AUTHENTICATED:
   ar: "المستخدم غير مصادق"
