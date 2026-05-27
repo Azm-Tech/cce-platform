@@ -23,8 +23,8 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
     public async Task<Response<UserDetailDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var result = await _auth.AdminCreateUserAsync(
-            request.FirstName, request.LastName, request.Email, request.Password,
-            request.PhoneNumber, request.CountryId, request.Role, cancellationToken).ConfigureAwait(false);
+            request.FirstName, request.LastName, request.Email,
+            request.PhoneNumber, request.CountryId, request.CountryCodeId, request.Role, cancellationToken).ConfigureAwait(false);
 
         if (result.EmailTaken) return _msg.EmailExists<UserDetailDto>();
         if (result.Failed || result.User is null) return _msg.BusinessRule<UserDetailDto>("REGISTRATION_FAILED");
@@ -32,6 +32,6 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
         var detail = await _mediator.Send(new GetUserByIdQuery(result.User.Id), cancellationToken).ConfigureAwait(false);
         if (!detail.Success) return detail;
 
-        return _msg.Ok(detail.Data!, "REGISTER_SUCCESS");
+        return _msg.Ok(detail.Data!, result.PasswordResetSent ? "USER_CREATED" : "REGISTER_SUCCESS");
     }
 }

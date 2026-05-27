@@ -71,7 +71,15 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var roles = ReadRoles();
+        // PRIORITY 1: If the request carries a real JWT (e.g. from /api/auth/login),
+        // authenticate as the real user and skip dev-mode entirely.
+        var realJwtResult = TryAuthenticateRealJwt();
+        if (realJwtResult is not null)
+            return Task.FromResult(realJwtResult);
+
+        // PRIORITY 2: Dev-mode auth — cookie or dev-prefixed bearer header.
+        // Only reached when no valid real JWT is present.
+        var roles = ReadDevRoles();
         if (roles is null || roles.Count == 0)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
@@ -101,38 +109,29 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 
-    private List<string>? ReadRoles()
+    /// <summary>
+    /// Attempts to validate the Authorization header as a real JWT issued by
+    /// <c>/api/auth/login</c>. Returns <c>null</c> when no header is present,
+    /// the token is invalid, or it is a dev-mode token.
+    /// </summary>
+    private AuthenticateResult? TryAuthenticateRealJwt()
     {
-        // Prefer cookie (browser path); fall back to bearer header (curl / Postman).
-        if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
-        {
-            return new List<string> { cookieValue.Trim() };
-        }
+        if (!Request.Headers.TryGetValue("Authorization", out var auth))
+            return null;
 
-        if (Request.Headers.TryGetValue("Authorization", out var auth))
-        {
-            var raw = auth.ToString();
+        var raw = auth.ToString();
 
-            const string devPrefix = "Bearer dev:";
-            if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                return new List<string> { raw.Substring(devPrefix.Length).Trim() };
-            }
+        // Skip dev-prefixed tokens — they are handled by the dev-mode path.
+        const string devPrefix = "Bearer dev:";
+        if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
+            return null;
 
-            // Fallback: try to decode as a real JWT (e.g. issued by /api/auth/login)
-            const string bearerPrefix = "Bearer ";
-            if (raw.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                var token = raw.Substring(bearerPrefix.Length).Trim();
-                return TryReadRolesFromJwt(token);
-            }
-        }
+        const string bearerPrefix = "Bearer ";
+        if (!raw.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+            return null;
 
-        return null;
-    }
+        var token = raw.Substring(bearerPrefix.Length).Trim();
 
-    private List<string>? TryReadRolesFromJwt(string token)
-    {
         var opts = _localAuthOptions.Value;
         var profiles = new[] { opts.External, opts.Internal };
         var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
@@ -155,7 +154,7 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
                 ClockSkew = TimeSpan.FromMinutes(2),
             };
 
-            ClaimsPrincipal? principal;
+            ClaimsPrincipal principal;
             try
             {
                 principal = handler.ValidateToken(token, parameters, out _);
@@ -166,12 +165,61 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
                 continue;
             }
 
-            var roles = principal.FindAll("roles").Select(c => c.Value).ToList();
-            if (roles.Count > 0)
-                return roles;
+            // Extract claims directly from the validated JWT — do NOT remap to dev users.
+            var sub = principal.FindFirstValue("sub")
+                      ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(sub))
+                continue;
+
+            var email = principal.FindFirstValue("email") ?? string.Empty;
+            var preferredUsername = principal.FindFirstValue("preferred_username") ?? email;
+            var name = principal.FindFirstValue("name")
+                       ?? principal.FindFirstValue(ClaimTypes.Name)
+                       ?? preferredUsername;
+
+            var claims = new List<Claim>
+            {
+                new("sub", sub),
+                new("oid", sub),
+                new("preferred_username", preferredUsername),
+                new("name", name),
+                new("email", email),
+            };
+            claims.AddRange(principal.FindAll("roles").Select(c => new Claim("roles", c.Value)));
+
+            var identity = new ClaimsIdentity(claims, SchemeName, "preferred_username", "roles");
+            var realPrincipal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(realPrincipal, SchemeName);
+            return AuthenticateResult.Success(ticket);
         }
 
-        Logger.LogWarning("JWT validation failed for all profiles in DevAuthHandler");
+        Logger.LogDebug("No valid real JWT found in DevAuthHandler; falling back to dev-mode auth");
+        return null;
+    }
+
+    /// <summary>
+    /// Reads dev-mode credentials from cookie or the <c>Bearer dev:&lt;role&gt;</c> header.
+    /// Returns <c>null</c> when neither is present.
+    /// </summary>
+    private List<string>? ReadDevRoles()
+    {
+        // Prefer bearer header (curl / Postman) over cookie.
+        if (Request.Headers.TryGetValue("Authorization", out var auth))
+        {
+            var raw = auth.ToString();
+            const string devPrefix = "Bearer dev:";
+            if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return new List<string> { raw.Substring(devPrefix.Length).Trim() };
+            }
+        }
+
+        // Fall back to cookie (browser path).
+        if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
+        {
+            return new List<string> { cookieValue.Trim() };
+        }
+
         return null;
     }
 }

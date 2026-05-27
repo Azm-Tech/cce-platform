@@ -79,6 +79,12 @@ public sealed class MessageFactory
     public Response<T> EventNotFound<T>()     => NotFound<T>("EVENT_NOT_FOUND");
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
+    public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
+    public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");
+
+    // ─── Convenience shortcuts (Identity / Expert domain) ───
+
+    public Response<T> ExpertRequestNotFound<T>() => NotFound<T>("EXPERT_REQUEST_NOT_FOUND");
 
     // ─── Convenience shortcuts (Platform Settings domain) ───
 
@@ -99,12 +105,15 @@ public sealed class MessageFactory
 
     // ─── Convenience shortcuts (Verification domain) ───
 
-    public Response<T> OtpNotFound<T>()        => NotFound<T>("OTP_NOT_FOUND");
-    public Response<T> OtpExpired<T>()         => BusinessRule<T>("OTP_EXPIRED");
-    public Response<T> OtpInvalidCode<T>()     => BusinessRule<T>("OTP_INVALID_CODE");
-    public Response<T> OtpMaxAttempts<T>()     => BusinessRule<T>("OTP_MAX_ATTEMPTS");
-    public Response<T> OtpCooldownActive<T>()  => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
-    public Response<T> OtpInvalidated<T>()     => BusinessRule<T>("OTP_INVALIDATED");
+    public Response<T> OtpNotFound<T>()           => NotFound<T>("OTP_NOT_FOUND");
+    public Response<T> OtpExpired<T>()            => BusinessRule<T>("OTP_EXPIRED");
+    public Response<T> OtpInvalidCode<T>()        => BusinessRule<T>("OTP_INVALID_CODE");
+    public Response<T> OtpMaxAttempts<T>()        => BusinessRule<T>("OTP_MAX_ATTEMPTS");
+    public Response<T> OtpCooldownActive<T>()     => BusinessRule<T>("OTP_COOLDOWN_ACTIVE");
+    public Response<T> OtpInvalidated<T>()        => BusinessRule<T>("OTP_INVALIDATED");
+    public Response<T> ContactAlreadyTaken<T>()   => Conflict<T>("CONTACT_ALREADY_TAKEN");
+    public Response<VoidData> EmailUpdated()      => Ok("EMAIL_UPDATED");
+    public Response<VoidData> PhoneUpdated()      => Ok("PHONE_UPDATED");
 
     // ─── Convenience shortcuts (Evaluation domain) ───
     public Response<VoidData> EvaluationSubmitted()  => Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);
@@ -120,6 +129,12 @@ public sealed class MessageFactory
     public Response<T> NotificationRetried<T>(T data)      => Ok(data, "NOTIFICATION_RETRIED");
     public Response<T> NotificationTemplateCreated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_CREATED");
     public Response<T> NotificationTemplateUpdated<T>(T data) => Ok(data, "NOTIFICATION_TEMPLATE_UPDATED");
+
+    // ─── Convenience shortcuts (Lookups domain) ───
+
+    public Response<T> CountryCodeNotFound<T>() => NotFound<T>("COUNTRY_CODE_NOT_FOUND");
+    public Response<T> LookupCreated<T>(T data) => Ok(data, "LOOKUP_CREATED");
+    public Response<T> LookupUpdated<T>(T data) => Ok(data, "LOOKUP_UPDATED");
 
     // ─── Private ───
 

@@ -1,5 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Queries.GetAssetById;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
 
@@ -10,14 +12,14 @@ public class GetAssetByIdQueryHandlerTests
     private static readonly FakeSystemClock Clock = new();
 
     [Fact]
-    public async Task Returns_null_when_asset_not_found()
+    public async Task Returns_not_found_when_asset_missing()
     {
-        var db = BuildDb(Array.Empty<AssetFile>());
-        var sut = new GetAssetByIdQueryHandler(db);
+        var sut = BuildSut(Array.Empty<AssetFile>());
 
         var result = await sut.Handle(new GetAssetByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR045);
     }
 
     [Fact]
@@ -32,25 +34,26 @@ public class GetAssetByIdQueryHandlerTests
             Clock);
         asset.MarkClean(Clock);
 
-        var db = BuildDb([asset]);
-        var sut = new GetAssetByIdQueryHandler(db);
+        var sut = BuildSut([asset]);
 
         var result = await sut.Handle(new GetAssetByIdQuery(asset.Id), CancellationToken.None);
 
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(asset.Id);
-        result.Url.Should().Be("uploads/2026/04/abc.pdf");
-        result.OriginalFileName.Should().Be("report.pdf");
-        result.SizeBytes.Should().Be(1024);
-        result.MimeType.Should().Be("application/pdf");
-        result.VirusScanStatus.Should().Be(VirusScanStatus.Clean);
-        result.ScannedOn.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data!.Id.Should().Be(asset.Id);
+        result.Data.Url.Should().Be("uploads/2026/04/abc.pdf");
+        result.Data.OriginalFileName.Should().Be("report.pdf");
+        result.Data.SizeBytes.Should().Be(1024);
+        result.Data.MimeType.Should().Be("application/pdf");
+        result.Data.VirusScanStatus.Should().Be(VirusScanStatus.Clean);
+        result.Data.ScannedOn.Should().NotBeNull();
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<AssetFile> assets)
+    private static GetAssetByIdQueryHandler BuildSut(IEnumerable<AssetFile> assets)
     {
         var db = Substitute.For<ICceDbContext>();
         db.AssetFiles.Returns(assets.AsQueryable());
-        return db;
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new GetAssetByIdQueryHandler(db, new MessageFactory(localization));
     }
 }

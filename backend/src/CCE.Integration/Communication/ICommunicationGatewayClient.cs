@@ -12,6 +12,6 @@ public interface ICommunicationGatewayClient
     [Post("/integrationgateway/email/send")]
     Task<GatewayResponse> SendEmailAsync([Body] SendEmailRequest request, CancellationToken cancellationToken = default);
 
-    [Post("/api/v1/sms/send")]
+    [Post("/integrationgateway/sms/send")]
     Task<GatewayResponse> SendSmsAsync([Body] SendSmsRequest request, CancellationToken cancellationToken = default);
 }

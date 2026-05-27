@@ -263,6 +263,18 @@ public sealed class ReferenceDataSeeder : ISeeder
          "Your code: {{Code}}",
          CCE.Domain.Notifications.NotificationChannel.Sms),
 
+        // EMAIL_CHANGE_OTP
+        ("EMAIL_CHANGE_OTP", "تأكيد تغيير البريد الإلكتروني", "Confirm Email Change",
+         "رمز التحقق لتغيير بريدك الإلكتروني هو: {{Code}}. صالح لمدة 5 دقائق.",
+         "Your email change verification code is: {{Code}}. Valid for 5 minutes.",
+         CCE.Domain.Notifications.NotificationChannel.Email),
+
+        // PHONE_CHANGE_OTP
+        ("PHONE_CHANGE_OTP", "تأكيد تغيير رقم الجوال", "Confirm Phone Change",
+         "رمز التحقق لتغيير رقم جوالك هو: {{Code}}. صالح لمدة 5 دقائق.",
+         "Your phone change verification code is: {{Code}}. Valid for 5 minutes.",
+         CCE.Domain.Notifications.NotificationChannel.Sms),
+
         // PASSWORD_RESET
         ("PASSWORD_RESET", "استعادة كلمة المرور", "Reset your password",
          "مرحباً {{Name}}، استخدم الرابط التالي لإعادة تعيين كلمة المرور: {{ResetUrl}}",

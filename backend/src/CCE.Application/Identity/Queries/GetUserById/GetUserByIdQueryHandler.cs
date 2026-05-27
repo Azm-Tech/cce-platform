@@ -32,6 +32,7 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
                 u.KnowledgeLevel,
                 u.Interests,
                 u.CountryId,
+                u.CountryCodeId,
                 u.AvatarUrl,
                 _db.UserRoles
                     .Join(_db.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })

@@ -85,8 +85,13 @@ app.MapAuditEndpoints();
 app.MapHomepageSettingsEndpoints();
 app.MapAboutSettingsEndpoints();
 app.MapPoliciesSettingsEndpoints();
+<<<<<<< feat/services-evaluation
 app.MapMediaEndpoints();
 app.MapEvaluationEndpoints();
+=======
+        app.MapMediaEndpoints();
+        app.MapCountryCodeEndpoints();
+>>>>>>> develop
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

@@ -17,6 +17,10 @@ internal sealed class ExpertRegistrationRequestConfiguration
         builder.Property(r => r.RejectionReasonAr).HasMaxLength(1000);
         builder.Property(r => r.RejectionReasonEn).HasMaxLength(1000);
         builder.Property(r => r.Status).HasConversion<int>();
+        builder.HasMany(r => r.Attachments)
+            .WithOne()
+            .HasForeignKey(a => a.ExpertRequestId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(r => r.RequestedById).HasDatabaseName("ix_expert_request_requested_by");
         builder.HasIndex(r => r.Status).HasDatabaseName("ix_expert_request_status");
         builder.Ignore(r => r.DomainEvents);
