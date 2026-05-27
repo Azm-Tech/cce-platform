@@ -15,14 +15,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                 name: "service_evaluations",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     overall_satisfaction = table.Column<int>(type: "int", nullable: false),
                     ease_of_use = table.Column<int>(type: "int", nullable: false),
                     content_suitability = table.Column<int>(type: "int", nullable: false),
                     feedback = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     created_on = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    created_by_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    created_by_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     last_modified_on = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     last_modified_by_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },

@@ -5,7 +5,6 @@ namespace CCE.Domain.Evaluation;
 [Audited]
 public sealed class ServiceEvaluation : AuditableEntity<System.Guid>
 {
-    private static readonly System.Guid AnonymousVisitorId = new("00000000-0000-0000-0000-000000000001");
 
     private ServiceEvaluation(
         System.Guid id,
@@ -54,7 +53,7 @@ public sealed class ServiceEvaluation : AuditableEntity<System.Guid>
             userId);
 
         entity.CreatedOn = clock.UtcNow;
-        entity.CreatedById = userId ?? AnonymousVisitorId;
+        entity.CreatedById = userId;
 
         return entity;
     }

@@ -17,10 +17,11 @@ public static class EvaluationEndpoints
 
         // GET /api/admin/evaluations — list all (admin only)
         group.MapGet("", async (
+            int? page, int? pageSize,
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var result = await mediator.Send(new GetAllEvaluationsQuery(), ct).ConfigureAwait(false);
+            var result = await mediator.Send(new GetAllEvaluationsQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Survey_ReadAll)

@@ -16,6 +16,5 @@ public sealed class EvaluationRepository : IEvaluationRepository
     public async Task AddAsync(ServiceEvaluation evaluation, CancellationToken ct)
     {
         _db.ServiceEvaluations.Add(evaluation);
-        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 }

@@ -4,11 +4,13 @@ using CCE.Application.Evaluation.DTOs;
 using CCE.Application.Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using CCE.Application.Common.Pagination;
 
 namespace CCE.Application.Evaluation.Queries.GetAllEvaluations;
 
 public sealed class GetAllEvaluationsQueryHandler
-    : IRequestHandler<GetAllEvaluationsQuery, Response<List<ServiceEvaluationDto>>>
+    : IRequestHandler<GetAllEvaluationsQuery, 
+    Response<PagedResult<ServiceEvaluationDto>>>
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
@@ -19,16 +21,16 @@ public sealed class GetAllEvaluationsQueryHandler
         _msg = msg;
     }
 
-    public async Task<Response<List<ServiceEvaluationDto>>> Handle(
+    public async Task<Response<PagedResult<ServiceEvaluationDto>>> Handle(
         GetAllEvaluationsQuery request,
         CancellationToken cancellationToken)
     {
-        var evaluations = await _db.ServiceEvaluations
-            .OrderByDescending(e => e.CreatedOn)
-            .ToListAsync(cancellationToken)
+        var query = _db.ServiceEvaluations
+            .OrderByDescending(e => e.CreatedOn);
+        var page = await query.ToPagedResultAsync(
+            request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
-
-        var dtos = evaluations.Select(e => new ServiceEvaluationDto(
+        var result = page.Map(e => new ServiceEvaluationDto(
             e.Id,
             e.OverallSatisfaction,
             e.EaseOfUse,
@@ -36,8 +38,7 @@ public sealed class GetAllEvaluationsQueryHandler
             e.Feedback,
             e.UserId,
             e.CreatedOn,
-            e.CreatedById)).ToList();
-
-        return _msg.Ok(dtos, "ITEMS_LISTED");
+            e.CreatedById));
+        return _msg.Ok(result, "ITEMS_LISTED");
     }
 }

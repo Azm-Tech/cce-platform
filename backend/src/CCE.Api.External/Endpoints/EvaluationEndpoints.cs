@@ -20,15 +20,7 @@ public static class EvaluationEndpoints
             IMediator mediator,
             CancellationToken ct) =>
         {
-            if (!Enum.IsDefined(typeof(EvaluationRating), body.OverallSatisfaction) || body.OverallSatisfaction == 0)
-                return Results.BadRequest(new { error = "OverallSatisfaction must be 1-5 (1=Excellent, 2=Satisfied, 3=Neutral, 4=Dissatisfied, 5=Poor)." });
-
-            if (!Enum.IsDefined(typeof(EvaluationRating), body.EaseOfUse) || body.EaseOfUse == 0)
-                return Results.BadRequest(new { error = "EaseOfUse must be 1-5 (1=Excellent, 2=Satisfied, 3=Neutral, 4=Dissatisfied, 5=Poor)." });
-
-            if (!Enum.IsDefined(typeof(EvaluationRating), body.ContentSuitability) || body.ContentSuitability == 0)
-                return Results.BadRequest(new { error = "ContentSuitability must be 1-5 (1=Excellent, 2=Satisfied, 3=Neutral, 4=Dissatisfied, 5=Poor)." });
-
+            
             var cmd = new SubmitEvaluationCommand(
                 (EvaluationRating)body.OverallSatisfaction,
                 (EvaluationRating)body.EaseOfUse,

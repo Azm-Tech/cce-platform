@@ -15,17 +15,20 @@ public sealed class SubmitEvaluationCommandHandler
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _messageFactory;
+    private readonly ICceDbContext _db; 
 
     public SubmitEvaluationCommandHandler(
         IEvaluationRepository repository,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
-        MessageFactory messageFactory)
+        MessageFactory messageFactory,
+        ICceDbContext db)
     {
         _repository = repository;
         _currentUser = currentUser;
         _clock = clock;
         _messageFactory = messageFactory;
+        _db = db; 
     }
 
     public async Task<Response<VoidData>> Handle(
@@ -43,7 +46,8 @@ public sealed class SubmitEvaluationCommandHandler
             _clock);
 
         await _repository.AddAsync(evaluation, cancellationToken).ConfigureAwait(false);
-
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        
         return _messageFactory.Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);
     }
 }
