@@ -115,6 +115,9 @@ public static class SystemCode
     public const string ERR125 = "ERR125"; // OTP invalidated
     public const string ERR126 = "ERR126"; // Contact already taken
 
+    // ─── Evaluation Errors ───
+    public const string ERR009 = "ERR009"; // Evaluation not found
+
     // ─── General Errors ───
     public const string ERR900 = "ERR900"; // Internal server error
     public const string ERR901 = "ERR901"; // Unauthorized access

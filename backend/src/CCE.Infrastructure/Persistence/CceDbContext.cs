@@ -6,6 +6,7 @@ using CCE.Domain.Common;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
 using CCE.Domain.Country;
+using CCE.Domain.Evaluation;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.KnowledgeMaps;
@@ -92,6 +93,9 @@ public sealed class CceDbContext
     public DbSet<ServiceRating> ServiceRatings => Set<ServiceRating>();
     public DbSet<SearchQueryLog> SearchQueryLogs => Set<SearchQueryLog>();
 
+    // ─── Evaluation ───
+    public DbSet<ServiceEvaluation> ServiceEvaluations => Set<ServiceEvaluation>();
+
     // ─── Media ───
     public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
 
@@ -157,6 +161,7 @@ public sealed class CceDbContext
     IQueryable<CountryCode> ICceDbContext.CountryCodes => CountryCodes.AsNoTracking();
     IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
     IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
+    IQueryable<ServiceEvaluation> ICceDbContext.ServiceEvaluations => ServiceEvaluations.AsNoTracking();
     IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
 
     void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);

@@ -95,6 +95,9 @@ public static class SystemCodeMap
         ["OTP_INVALIDATED"] = SystemCode.ERR125,
         ["CONTACT_ALREADY_TAKEN"] = SystemCode.ERR126,
 
+        // ─── Evaluation Errors ───
+        ["EVALUATION_NOT_FOUND"] = SystemCode.ERR009,
+
         // ─── General Errors ───
         ["INTERNAL_ERROR"] = SystemCode.ERR900,
         ["UNAUTHORIZED_ACCESS"] = SystemCode.ERR901,
@@ -162,6 +165,9 @@ public static class SystemCodeMap
         ["OTP_VERIFIED"] = SystemCode.CON061,
         ["EMAIL_UPDATED"] = SystemCode.CON062,
         ["PHONE_UPDATED"] = SystemCode.CON063,
+
+        // ─── Evaluation Success ───
+        ["EVALUATION_SUBMITTED"] = SystemCode.CON008,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,

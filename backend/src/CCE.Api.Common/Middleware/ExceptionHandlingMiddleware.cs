@@ -93,9 +93,10 @@ public sealed class ExceptionHandlingMiddleware
 
         var fieldErrors = ex.Errors.Select(e =>
         {
-            var domainKey = e.ErrorMessage;
+            var domainKey = e.ErrorCode;
             var valCode = SystemCodeMap.ToSystemCode(domainKey);
             var valMsg = l?.GetString(domainKey) ?? domainKey;
+            if (valMsg == domainKey) valMsg = e.ErrorMessage;
             return new
             {
                 field = ToCamelCase(e.PropertyName),

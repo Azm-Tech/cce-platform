@@ -162,6 +162,10 @@ VALIDATION_REQUIRED_FIELD:
   ar: "هذا الحقل مطلوب"
   en: "This field is required"
 
+REQUIRED_FIELD:
+  ar: "هذا الحقل مطلوب"
+  en: "This field is required"
+
 VALIDATION_INVALID_EMAIL:
   ar: "البريد الإلكتروني غير صالح"
   en: "Invalid email format"
@@ -174,11 +178,19 @@ VALIDATION_MAX_LENGTH:
   ar: "القيمة طويلة جدًا"
   en: "Value is too long"
 
+MAX_LENGTH:
+  ar: "القيمة طويلة جدًا"
+  en: "Value is too long"
+
 VALIDATION_INVALID_FORMAT:
   ar: "التنسيق غير صالح"
   en: "Invalid format"
 
 VALIDATION_INVALID_ENUM:
+  ar: "القيمة المحددة غير صالحة"
+  en: "Selected value is invalid"
+
+INVALID_ENUM:
   ar: "القيمة المحددة غير صالحة"
   en: "Selected value is invalid"
 
@@ -456,3 +468,11 @@ NOTIFICATION_TEMPLATE_CREATED:
 NOTIFICATION_TEMPLATE_UPDATED:
   ar: "تم تحديث قالب الإشعار بنجاح"
   en: "Notification template updated successfully"
+
+EVALUATION_NOT_FOUND:
+  ar: "التقييم غير موجود"
+  en: "Evaluation not found"
+
+EVALUATION_SUBMITTED:
+  ar: "تم تقديم التقييم بنجاح"
+  en: "Evaluation submitted successfully"

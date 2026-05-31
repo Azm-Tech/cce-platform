@@ -1,4 +1,5 @@
 using CCE.Application.Common;
+using CCE.Application.Errors;
 using CCE.Application.Localization;
 using CCE.Domain.Common;
 
@@ -113,6 +114,10 @@ public sealed class MessageFactory
     public Response<T> ContactAlreadyTaken<T>()   => Conflict<T>("CONTACT_ALREADY_TAKEN");
     public Response<VoidData> EmailUpdated()      => Ok("EMAIL_UPDATED");
     public Response<VoidData> PhoneUpdated()      => Ok("PHONE_UPDATED");
+
+    // ─── Convenience shortcuts (Evaluation domain) ───
+    public Response<VoidData> EvaluationSubmitted()  => Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);
+    public Response<T> EvaluationNotFound<T>()       => NotFound<T>(ApplicationErrors.Evaluation.EVALUATION_NOT_FOUND);
 
     // ─── Convenience shortcuts (Notification domain) ───
 

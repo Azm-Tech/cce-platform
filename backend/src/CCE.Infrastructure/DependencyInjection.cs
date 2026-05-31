@@ -5,6 +5,7 @@ using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
 using CCE.Application.Content.Public;
+using CCE.Application.Evaluation;
 using CCE.Application.Media;
 using CCE.Application.PlatformSettings;
 using CCE.Application.Country;
@@ -28,6 +29,7 @@ using CCE.Infrastructure.Country;
 using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Notifications.Messaging;
 using CCE.Infrastructure.Reports;
+using CCE.Infrastructure.Evaluation;
 using CCE.Infrastructure.Surveys;
 using CCE.Application.Verification;
 using CCE.Application.Localization;
@@ -223,6 +225,9 @@ public static class DependencyInjection
 
         // Surveys
         services.AddScoped<IServiceRatingService, ServiceRatingService>();
+
+        // Evaluation
+        services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 
         // Smart assistant — factory routes to stub or Anthropic based on
         // Assistant:Provider config + ANTHROPIC_API_KEY env-var (Sub-10a).
