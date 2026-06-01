@@ -89,6 +89,44 @@
   font-size: 0.85rem;
 }
 
+.cce-profile__expert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &--approved { background: #d4edda; color: #155724; }
+  &--pending  { background: #fff3cd; color: #856404; }
+}
+
+.cce-profile__expert-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0, 108, 79, 0.06) 0%, rgba(20, 184, 143, 0.06) 100%);
+  border: 1px solid rgba(0, 108, 79, 0.15);
+  flex-wrap: wrap;
+}
+
+.cce-profile__expert-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  strong { font-size: 0.95rem; color: #1c2724; }
+  span   { font-size: 0.85rem; color: rgba(28, 39, 36, 0.62); }
+}
+
 .cce-profile__form {
   background: #fff;
   border-radius: 8px;

@@ -1085,7 +1085,8 @@
         "jobTitle": "المسمى الوظيفي",
         "organizationName": "المنظمة",
         "countryCode": "رمز البلد (الهاتف)",
-        "avatarUpload": "رفع صورة"
+        "avatarUpload": "رفع صورة",
+        "nationality": "الجنسية"
       },
       "editButton": "تعديل",
       "saveButton": "حفظ",
@@ -1093,7 +1094,16 @@
       "toast": {
         "saved": "تم حفظ الملف الشخصي."
       },
-      "avatarUploadError": "فشل رفع الصورة. يرجى المحاولة مجدداً."
+      "avatarUploadError": "فشل رفع الصورة. يرجى المحاولة مجدداً.",
+      "expertCta": {
+        "title": "انضم كخبير",
+        "body": "شارك معرفتك مع مجتمع CCE من خلال التقدم للحصول على وضع الخبير.",
+        "button": "تقدم الآن"
+      },
+      "expertStatus": {
+        "Pending": "الطلب قيد المراجعة",
+        "Approved": "خبير معتمد"
+      }
     },
     "logout": {
       "button": "تسجيل الخروج",
@@ -1111,7 +1121,8 @@
       "field": {
         "bioAr": "السيرة (عربي)",
         "bioEn": "السيرة (إنجليزي)",
-        "tags": "المواضيع (مفصولة بفواصل)"
+        "tags": "المواضيع (مفصولة بفواصل)",
+        "cvUpload": "إرفاق السيرة الذاتية (PDF, DOC)"
       },
       "submitButton": "إرسال الطلب",
       "resubmitButton": "إرسال طلب جديد",
@@ -1122,7 +1133,8 @@
       },
       "toast": {
         "submitted": "تم إرسال الطلب."
-      }
+      },
+      "cvUploadError": "فشل رفع السيرة الذاتية. يرجى المحاولة مجدداً."
     },
     "serviceRating": {
       "openButton": "قيّم هذه الصفحة",

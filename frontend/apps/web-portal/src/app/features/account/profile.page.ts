@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
 } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,10 +14,10 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CountriesApiService } from '../countries/countries-api.service';
-import type { Country, CountryCode } from '../countries/country.types';
+import type { CountryCode } from '../countries/country.types';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
-import { KNOWLEDGE_LEVELS, type KnowledgeLevel, type UpdateMyProfilePayload, type UserProfile } from './account.types';
+import { KNOWLEDGE_LEVELS, type ExpertRegistrationStatus, type ExpertRequestStatus, type KnowledgeLevel, type UpdateMyProfilePayload, type UserProfile } from './account.types';
 
 interface ProfileFormShape {
   firstName: FormControl<string>;
@@ -26,7 +27,6 @@ interface ProfileFormShape {
   localePreference: FormControl<string>;
   knowledgeLevel: FormControl<KnowledgeLevel>;
   interests: FormControl<string>;
-  countryId: FormControl<string | null>;
   countryCodeId: FormControl<string | null>;
   avatarUrl: FormControl<string | null>;
 }
@@ -36,6 +36,7 @@ interface ProfileFormShape {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,
@@ -58,8 +59,9 @@ export class ProfilePage implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly profile = signal<UserProfile | null>(null);
-  readonly countries = signal<Country[]>([]);
   readonly countryCodes = signal<CountryCode[]>([]);
+  readonly expertStatus = signal<ExpertRequestStatus | null>(null);
+  readonly expertStatusLoaded = signal(false);
   readonly loading = signal(false);
   readonly saving = signal(false);
   readonly uploading = signal(false);
@@ -72,12 +74,16 @@ export class ProfilePage implements OnInit {
 
   readonly notProvisioned = computed(() => this.errorKind() === 'not-found');
 
-  readonly countryName = computed(() => {
-    const p = this.profile();
-    if (!p?.countryId) return '—';
-    const match = this.countries().find((c) => c.id === p.countryId);
-    if (!match) return '—';
-    return this.locale() === 'ar' ? match.nameAr : match.nameEn;
+  readonly showExpertCta = computed(() => {
+    if (!this.expertStatusLoaded()) return false;
+    const s = this.expertStatus();
+    return s === null || s.status === 'Rejected';
+  });
+
+  readonly expertBadgeStatus = computed<ExpertRegistrationStatus | null>(() => {
+    const s = this.expertStatus();
+    if (!s || s.status === 'Rejected') return null;
+    return s.status;
   });
 
   readonly countryCodeLabel = computed(() => {
@@ -85,7 +91,7 @@ export class ProfilePage implements OnInit {
     if (!p?.countryCodeId) return '—';
     const match = this.countryCodes().find((c) => c.id === p.countryCodeId);
     if (!match) return '—';
-    return `${match.dialCode} ${this.locale() === 'ar' ? match.name.ar : match.name.en}`;
+    return this.locale() === 'ar' ? match.name.ar : match.name.en;
   });
 
   readonly form: FormGroup<ProfileFormShape> = this.fb.nonNullable.group({
@@ -96,7 +102,6 @@ export class ProfilePage implements OnInit {
     localePreference: this.fb.nonNullable.control('en', Validators.required),
     knowledgeLevel: this.fb.nonNullable.control<KnowledgeLevel>('Beginner', Validators.required),
     interests: this.fb.nonNullable.control(''),
-    countryId: this.fb.control<string | null>(null),
     countryCodeId: this.fb.control<string | null>(null),
     avatarUrl: this.fb.control<string | null>(null),
   });
@@ -108,16 +113,19 @@ export class ProfilePage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
-    const [profileRes, countriesRes, countryCodesRes] = await Promise.all([
+    const [profileRes, countryCodesRes, expertRes] = await Promise.all([
       this.api.getProfile(),
-      this.countriesApi.listCountries({}),
       this.countriesApi.listCountryCodes({ isActive: true }),
+      this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
     if (profileRes.ok) this.profile.set(profileRes.value);
     else this.errorKind.set(profileRes.error.kind);
-    if (countriesRes.ok) this.countries.set(countriesRes.value);
     if (countryCodesRes.ok) this.countryCodes.set(countryCodesRes.value);
+    if (expertRes.ok) {
+      this.expertStatus.set(expertRes.value);
+      this.expertStatusLoaded.set(true);
+    }
   }
 
   enterEditMode(): void {
@@ -131,7 +139,6 @@ export class ProfilePage implements OnInit {
       localePreference: p.localePreference,
       knowledgeLevel: p.knowledgeLevel || 'Beginner',
       interests: p.interests ? p.interests.join(', ') : '',
-      countryId: p.countryId,
       countryCodeId: p.countryCodeId,
       avatarUrl: p.avatarUrl,
     });
@@ -156,7 +163,6 @@ export class ProfilePage implements OnInit {
       knowledgeLevel: v.knowledgeLevel,
       interests: this.parseInterests(v.interests),
       avatarUrl: v.avatarUrl,
-      countryId: v.countryId,
       countryCodeId: v.countryCodeId,
     };
     this.saving.set(true);

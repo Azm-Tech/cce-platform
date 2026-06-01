@@ -61,12 +61,8 @@
             <dd>{{ p.organizationName || '—' }}</dd>
           </div>
           <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.countryCode' | transloco }}</dt>
+            <dt>{{ 'account.profile.field.nationality' | transloco }}</dt>
             <dd dir="ltr">{{ countryCodeLabel() }}</dd>
-          </div>
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.country' | transloco }}</dt>
-            <dd>{{ countryName() }}</dd>
           </div>
           <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.localePreference' | transloco }}</dt>
@@ -99,6 +95,25 @@
             </dd>
           </div>
         </dl>
+
+        @if (expertBadgeStatus()) {
+          <div class="cce-profile__expert-badge cce-profile__expert-badge--{{ expertBadgeStatus()!.toLowerCase() }}">
+            <mat-icon aria-hidden="true">verified</mat-icon>
+            {{ ('account.profile.expertStatus.' + expertBadgeStatus()) | transloco }}
+          </div>
+        }
+
+        @if (showExpertCta()) {
+          <div class="cce-profile__expert-cta">
+            <div class="cce-profile__expert-cta-text">
+              <strong>{{ 'account.profile.expertCta.title' | transloco }}</strong>
+              <span>{{ 'account.profile.expertCta.body' | transloco }}</span>
+            </div>
+            <a mat-flat-button color="primary" routerLink="/me/expert-request">
+              {{ 'account.profile.expertCta.button' | transloco }}
+            </a>
+          </div>
+        }
       </article>
     } @else {
       <form
@@ -133,25 +148,12 @@
         </mat-form-field>
 
         <mat-form-field>
-          <mat-label>{{ 'account.profile.field.countryCode' | transloco }}</mat-label>
+          <mat-label>{{ 'account.profile.field.nationality' | transloco }}</mat-label>
           <mat-select formControlName="countryCodeId">
             <mat-option [value]="null">—</mat-option>
             @for (cc of countryCodes(); track cc.id) {
               <mat-option [value]="cc.id">
-                <span dir="ltr">{{ cc.dialCode }}</span>
-                &nbsp;{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>{{ 'account.profile.field.country' | transloco }}</mat-label>
-          <mat-select formControlName="countryId">
-            <mat-option [value]="null">—</mat-option>
-            @for (c of countries(); track c.id) {
-              <mat-option [value]="c.id">
-                {{ locale() === 'ar' ? c.nameAr : c.nameEn }}
+                {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
               </mat-option>
             }
           </mat-select>

@@ -17,12 +17,20 @@ export class MediaApiService {
   private readonly http = inject(HttpClient);
 
   async uploadFile(file: File): Promise<Result<MediaAsset>> {
+    return this.upload('/api/media', file);
+  }
+
+  async uploadAsset(file: File): Promise<Result<MediaAsset>> {
+    return this.upload('/api/assets', file);
+  }
+
+  private async upload(endpoint: string, file: File): Promise<Result<MediaAsset>> {
     const body = new FormData();
     body.append('file', file);
     try {
       const asset = await firstValueFrom(
         this.http
-          .post<{ data: MediaAsset }>('/api/media', body)
+          .post<{ data: MediaAsset }>(endpoint, body)
           .pipe(map((res) => res.data)),
       );
       return { ok: true, value: asset };

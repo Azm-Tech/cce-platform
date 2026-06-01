@@ -10,6 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
+import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
 import type { ExpertRequestStatus, SubmitExpertRequestPayload } from './account.types';
 
@@ -33,6 +34,7 @@ interface ExpertFormShape {
 })
 export class ExpertRequestPage implements OnInit {
   private readonly api = inject(AccountApiService);
+  private readonly mediaApi = inject(MediaApiService);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
@@ -40,6 +42,9 @@ export class ExpertRequestPage implements OnInit {
   readonly status = signal<ExpertRequestStatus | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
+  readonly uploadingCv = signal(false);
+  readonly cvFileName = signal<string | null>(null);
+  readonly cvAssetFileId = signal<string | null>(null);
   readonly errorKind = signal<string | null>(null);
   readonly submitErrorKind = signal<string | null>(null);
 
@@ -80,7 +85,23 @@ export class ExpertRequestPage implements OnInit {
   resubmit(): void {
     this.form.reset();
     this.submitErrorKind.set(null);
+    this.cvFileName.set(null);
+    this.cvAssetFileId.set(null);
     this.showForm.set(true);
+  }
+
+  async onCvFileChange(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploadingCv.set(true);
+    const res = await this.mediaApi.uploadAsset(file);
+    this.uploadingCv.set(false);
+    if (res.ok) {
+      this.cvAssetFileId.set(res.value.id);
+      this.cvFileName.set(file.name);
+    } else {
+      this.toast.error('account.expert.cvUploadError');
+    }
   }
 
   async submit(): Promise<void> {
@@ -90,6 +111,7 @@ export class ExpertRequestPage implements OnInit {
       requestedBioAr: v.requestedBioAr,
       requestedBioEn: v.requestedBioEn,
       requestedTags: this.parseTags(v.requestedTags),
+      cvAssetFileId: this.cvAssetFileId(),
     };
     this.submitting.set(true);
     this.submitErrorKind.set(null);

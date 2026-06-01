@@ -71,12 +71,31 @@
         <input matInput type="text" formControlName="requestedTags" placeholder="waste, water, carbon" />
       </mat-form-field>
 
+      <div class="cce-expert-request__cv-upload">
+        <label class="cce-expert-request__cv-label" [class.cce-expert-request__cv-label--busy]="uploadingCv()">
+          <input type="file" accept=".pdf,.doc,.docx" (change)="onCvFileChange($event)" [disabled]="uploadingCv()" hidden />
+          @if (uploadingCv()) {
+            <mat-progress-bar mode="indeterminate" />
+          } @else {
+            <span class="cce-expert-request__cv-icon">attach_file</span>
+            @if (cvFileName()) {
+              {{ cvFileName() }}
+            } @else {
+              {{ 'account.expert.field.cvUpload' | transloco }}
+            }
+          }
+        </label>
+        @if (cvFileName()) {
+          <span class="cce-expert-request__cv-check">✓</span>
+        }
+      </div>
+
       <div class="cce-expert-request__form-actions">
         <button
           mat-flat-button
           color="primary"
           type="submit"
-          [disabled]="form.invalid || submitting()"
+          [disabled]="form.invalid || submitting() || uploadingCv()"
         >
           {{ 'account.expert.submitButton' | transloco }}
         </button>

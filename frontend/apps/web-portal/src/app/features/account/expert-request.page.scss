@@ -43,3 +43,52 @@
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.cce-expert-request__cv-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.cce-expert-request__cv-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 108, 79, 0.5);
+  color: #006c4f;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover { background: rgba(0, 108, 79, 0.06); }
+
+  &--busy {
+    cursor: default;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.38);
+    width: 200px;
+
+    mat-progress-bar { width: 100%; }
+  }
+}
+
+.cce-expert-request__cv-icon {
+  font-family: 'Material Icons';
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cce-expert-request__cv-check {
+  color: #155724;
+  font-weight: 700;
+}

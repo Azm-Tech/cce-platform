@@ -61,6 +61,7 @@ export interface SubmitExpertRequestPayload {
   requestedBioAr: string;
   requestedBioEn: string;
   requestedTags?: string[];
+  cvAssetFileId?: string | null;
 }
 
 export interface ServiceRatingPayload {

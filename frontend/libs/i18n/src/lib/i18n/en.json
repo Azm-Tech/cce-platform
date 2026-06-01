@@ -1085,7 +1085,8 @@
         "jobTitle": "Job title",
         "organizationName": "Organization",
         "countryCode": "Phone country code",
-        "avatarUpload": "Upload photo"
+        "avatarUpload": "Upload photo",
+        "nationality": "Nationality"
       },
       "editButton": "Edit",
       "saveButton": "Save",
@@ -1093,7 +1094,16 @@
       "toast": {
         "saved": "Profile saved."
       },
-      "avatarUploadError": "Failed to upload photo. Please try again."
+      "avatarUploadError": "Failed to upload photo. Please try again.",
+      "expertCta": {
+        "title": "Become an Expert",
+        "body": "Share your knowledge with the CCE community by applying for expert status.",
+        "button": "Apply now"
+      },
+      "expertStatus": {
+        "Pending": "Application under review",
+        "Approved": "Verified Expert"
+      }
     },
     "logout": {
       "button": "Sign out",
@@ -1111,7 +1121,8 @@
       "field": {
         "bioAr": "Biography (Arabic)",
         "bioEn": "Biography (English)",
-        "tags": "Topics (comma-separated)"
+        "tags": "Topics (comma-separated)",
+        "cvUpload": "Attach CV (PDF, DOC)"
       },
       "submitButton": "Submit request",
       "resubmitButton": "Submit a new request",
@@ -1122,7 +1133,8 @@
       },
       "toast": {
         "submitted": "Request submitted."
-      }
+      },
+      "cvUploadError": "Failed to upload CV. Please try again."
     },
     "serviceRating": {
       "openButton": "Rate this page",
