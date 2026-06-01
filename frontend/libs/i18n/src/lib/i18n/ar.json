@@ -1018,7 +1018,8 @@
       "alreadyHaveAccount": "لديك حساب بالفعل؟",
       "signInLink": "تسجيل الدخول",
       "alreadySignedIn": "أنت مسجل الدخول بالفعل.",
-      "openProfile": "فتح ملفي الشخصي"
+      "openProfile": "فتح ملفي الشخصي",
+      "phoneCodeLabel": "الكود"
     },
     "forgotPassword": {
       "title": "إعادة تعيين كلمة المرور",
@@ -1067,12 +1068,6 @@
       "errorRateLimit": "يرجى الانتظار 60 ثانية قبل طلب رمز جديد.",
       "errorGeneric": "حدث خطأ. يرجى المحاولة مرة أخرى."
     },
-    "profile": "الملف الشخصي",
-    "logout": {
-      "button": "تسجيل الخروج",
-      "successMessage": "تم تسجيل خروجك بنجاح.",
-      "errorMessage": "فشل تسجيل الخروج. يُرجى المحاولة مرة أخرى."
-    },
     "profile": {
       "title": "ملفي الشخصي",
       "roles": "الأدوار",
@@ -1084,14 +1079,26 @@
         "knowledgeLevel": "مستوى المعرفة",
         "interests": "الاهتمامات",
         "country": "الدولة",
-        "avatarUrl": "رابط الصورة الشخصية"
+        "avatarUrl": "رابط الصورة الشخصية",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "jobTitle": "المسمى الوظيفي",
+        "organizationName": "المنظمة",
+        "countryCode": "رمز البلد (الهاتف)",
+        "avatarUpload": "رفع صورة"
       },
       "editButton": "تعديل",
       "saveButton": "حفظ",
       "cancelButton": "إلغاء",
       "toast": {
         "saved": "تم حفظ الملف الشخصي."
-      }
+      },
+      "avatarUploadError": "فشل رفع الصورة. يرجى المحاولة مجدداً."
+    },
+    "logout": {
+      "button": "تسجيل الخروج",
+      "successMessage": "تم تسجيل خروجك بنجاح.",
+      "errorMessage": "فشل تسجيل الخروج. يُرجى المحاولة مرة أخرى."
     },
     "knowledgeLevel": {
       "Beginner": "مبتدئ",

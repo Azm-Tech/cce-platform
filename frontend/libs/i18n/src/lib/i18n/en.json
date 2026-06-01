@@ -1018,7 +1018,8 @@
       "alreadyHaveAccount": "Already have an account?",
       "signInLink": "Sign in",
       "alreadySignedIn": "You're already signed in.",
-      "openProfile": "Open my profile"
+      "openProfile": "Open my profile",
+      "phoneCodeLabel": "Code"
     },
     "forgotPassword": {
       "title": "Reset your password",
@@ -1067,12 +1068,6 @@
       "errorRateLimit": "Please wait 60 seconds before requesting a new code.",
       "errorGeneric": "Something went wrong. Please try again."
     },
-    "profile": "Profile",
-    "logout": {
-      "button": "Sign out",
-      "successMessage": "You've been signed out successfully.",
-      "errorMessage": "Sign out failed. Please try again."
-    },
     "profile": {
       "title": "My profile",
       "roles": "Roles",
@@ -1084,14 +1079,26 @@
         "knowledgeLevel": "Knowledge level",
         "interests": "Interests",
         "country": "Country",
-        "avatarUrl": "Avatar URL"
+        "avatarUrl": "Avatar URL",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "jobTitle": "Job title",
+        "organizationName": "Organization",
+        "countryCode": "Phone country code",
+        "avatarUpload": "Upload photo"
       },
       "editButton": "Edit",
       "saveButton": "Save",
       "cancelButton": "Cancel",
       "toast": {
         "saved": "Profile saved."
-      }
+      },
+      "avatarUploadError": "Failed to upload photo. Please try again."
+    },
+    "logout": {
+      "button": "Sign out",
+      "successMessage": "You've been signed out successfully.",
+      "errorMessage": "Sign out failed. Please try again."
     },
     "knowledgeLevel": {
       "Beginner": "Beginner",

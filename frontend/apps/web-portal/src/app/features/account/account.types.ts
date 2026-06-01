@@ -19,19 +19,29 @@ export interface UserProfile {
   id: string;
   email: string | null;
   userName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  jobTitle: string | null;
+  organizationName: string | null;
   localePreference: string;
   knowledgeLevel: KnowledgeLevel;
   interests: string[];
   countryId: string | null;
+  countryCodeId: string | null;
   avatarUrl: string | null;
 }
 
 export interface UpdateMyProfilePayload {
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  organizationName: string;
   localePreference: string;
   knowledgeLevel: KnowledgeLevel;
   interests?: string[];
   avatarUrl?: string | null;
   countryId?: string | null;
+  countryCodeId?: string | null;
 }
 
 export interface ExpertRequestStatus {

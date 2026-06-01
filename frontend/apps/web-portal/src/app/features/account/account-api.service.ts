@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   ExpertRequestStatus,
@@ -17,11 +18,19 @@ export class AccountApiService {
   private readonly http = inject(HttpClient);
 
   async getProfile(): Promise<Result<UserProfile>> {
-    return this.run(() => firstValueFrom(this.http.get<UserProfile>('/api/me')));
+    return this.run(() =>
+      firstValueFrom(
+        this.http.get<{ data: UserProfile }>('/api/me').pipe(map((res) => res.data)),
+      ),
+    );
   }
 
   async updateProfile(payload: UpdateMyProfilePayload): Promise<Result<UserProfile>> {
-    return this.run(() => firstValueFrom(this.http.put<UserProfile>('/api/me', payload)));
+    return this.run(() =>
+      firstValueFrom(
+        this.http.put<{ data: UserProfile }>('/api/me', payload).pipe(map((res) => res.data)),
+      ),
+    );
   }
 
   /**

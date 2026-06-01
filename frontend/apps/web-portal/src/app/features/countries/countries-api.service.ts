@@ -11,7 +11,17 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class CountriesApiService {
   private readonly http = inject(HttpClient);
 
+  private activeCountryCodesCache: Promise<Result<CountryCode[]>> | null = null;
+
   async listCountryCodes(opts: { search?: string; isActive?: boolean } = {}): Promise<Result<CountryCode[]>> {
+    if (opts.isActive === true && !opts.search) {
+      this.activeCountryCodesCache ??= this.fetchCountryCodes(opts);
+      return this.activeCountryCodesCache;
+    }
+    return this.fetchCountryCodes(opts);
+  }
+
+  private fetchCountryCodes(opts: { search?: string; isActive?: boolean }): Promise<Result<CountryCode[]>> {
     let params = new HttpParams();
     if (opts.search) params = params.set('search', opts.search);
     if (opts.isActive !== undefined) params = params.set('isActive', String(opts.isActive));

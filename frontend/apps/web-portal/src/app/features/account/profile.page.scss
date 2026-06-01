@@ -106,3 +106,58 @@
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.cce-profile__avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+.cce-profile__avatar-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.cce-profile__avatar-preview-fallback {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: rgba(0, 0, 0, 0.32);
+  flex-shrink: 0;
+}
+
+.cce-profile__avatar-upload-actions { flex: 1; }
+
+.cce-profile__avatar-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 108, 79, 0.5);
+  color: #006c4f;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(0, 108, 79, 0.06); }
+
+  &--busy {
+    cursor: default;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.38);
+    width: 160px;
+
+    mat-progress-bar { width: 100%; }
+  }
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}

@@ -104,6 +104,23 @@
   @media (max-width: 480px) { grid-template-columns: 1fr; }
 }
 
+.cce-register__phone-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+/* needs same specificity as .cce-register__form .mat-mdc-form-field to win the cascade */
+.cce-register__form .cce-register__phone-code {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.cce-register__phone-number {
+  flex: 1;
+  min-width: 0;
+}
+
 .cce-register__field-error {
   margin: 0 0 0.4rem;
   font-size: 0.82rem;

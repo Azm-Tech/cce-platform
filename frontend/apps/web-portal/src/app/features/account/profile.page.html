@@ -45,6 +45,30 @@
 
         <dl class="cce-profile__fields">
           <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.firstName' | transloco }}</dt>
+            <dd>{{ p.firstName || '—' }}</dd>
+          </div>
+          <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.lastName' | transloco }}</dt>
+            <dd>{{ p.lastName || '—' }}</dd>
+          </div>
+          <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.jobTitle' | transloco }}</dt>
+            <dd>{{ p.jobTitle || '—' }}</dd>
+          </div>
+          <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.organizationName' | transloco }}</dt>
+            <dd>{{ p.organizationName || '—' }}</dd>
+          </div>
+          <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.countryCode' | transloco }}</dt>
+            <dd dir="ltr">{{ countryCodeLabel() }}</dd>
+          </div>
+          <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.country' | transloco }}</dt>
+            <dd>{{ countryName() }}</dd>
+          </div>
+          <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.localePreference' | transloco }}</dt>
             <dd>{{ p.localePreference }}</dd>
           </div>
@@ -59,10 +83,6 @@
                 —
               }
             </dd>
-          </div>
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.country' | transloco }}</dt>
-            <dd>{{ countryName() }}</dd>
           </div>
           <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.interests' | transloco }}</dt>
@@ -93,6 +113,51 @@
         }
 
         <mat-form-field>
+          <mat-label>{{ 'account.profile.field.firstName' | transloco }}</mat-label>
+          <input matInput formControlName="firstName" autocomplete="given-name" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.profile.field.lastName' | transloco }}</mat-label>
+          <input matInput formControlName="lastName" autocomplete="family-name" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.profile.field.jobTitle' | transloco }}</mat-label>
+          <input matInput formControlName="jobTitle" autocomplete="organization-title" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.profile.field.organizationName' | transloco }}</mat-label>
+          <input matInput formControlName="organizationName" autocomplete="organization" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.profile.field.countryCode' | transloco }}</mat-label>
+          <mat-select formControlName="countryCodeId">
+            <mat-option [value]="null">—</mat-option>
+            @for (cc of countryCodes(); track cc.id) {
+              <mat-option [value]="cc.id">
+                <span dir="ltr">{{ cc.dialCode }}</span>
+                &nbsp;{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.profile.field.country' | transloco }}</mat-label>
+          <mat-select formControlName="countryId">
+            <mat-option [value]="null">—</mat-option>
+            @for (c of countries(); track c.id) {
+              <mat-option [value]="c.id">
+                {{ locale() === 'ar' ? c.nameAr : c.nameEn }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
           <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
           <mat-select formControlName="localePreference">
             <mat-option value="en">English</mat-option>
@@ -116,22 +181,24 @@
           <input matInput type="text" formControlName="interests" placeholder="waste, water, carbon" />
         </mat-form-field>
 
-        <mat-form-field>
-          <mat-label>{{ 'account.profile.field.country' | transloco }}</mat-label>
-          <mat-select formControlName="countryId">
-            <mat-option [value]="null">—</mat-option>
-            @for (c of countries(); track c.id) {
-              <mat-option [value]="c.id">
-                {{ locale() === 'ar' ? c.nameAr : c.nameEn }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>{{ 'account.profile.field.avatarUrl' | transloco }}</mat-label>
-          <input matInput type="url" formControlName="avatarUrl" />
-        </mat-form-field>
+        <div class="cce-profile__avatar-upload">
+          @if (form.get('avatarUrl')?.value) {
+            <img class="cce-profile__avatar-preview" [src]="form.get('avatarUrl')?.value" alt="" width="64" height="64" />
+          } @else {
+            <mat-icon class="cce-profile__avatar-preview-fallback" aria-hidden="true">account_circle</mat-icon>
+          }
+          <div class="cce-profile__avatar-upload-actions">
+            <label class="cce-profile__avatar-upload-label" [class.cce-profile__avatar-upload-label--busy]="uploading()">
+              <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
+              @if (uploading()) {
+                <mat-progress-bar mode="indeterminate" />
+              } @else {
+                <mat-icon>upload</mat-icon>
+                {{ 'account.profile.field.avatarUpload' | transloco }}
+              }
+            </label>
+          </div>
+        </div>
 
         <div class="cce-profile__form-actions">
           <button

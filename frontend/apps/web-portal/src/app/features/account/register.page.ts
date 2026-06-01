@@ -82,10 +82,11 @@ export class RegisterPage implements OnInit {
       jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
       organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
       countryCodeId: new FormControl('', [Validators.required]),
+      phoneCountryCodeId: new FormControl('', [Validators.required]),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.maxLength(15),
-        Validators.pattern(/^\+?[\d\s\-()]+$/),
+        Validators.pattern(/^[\d\s\-()]+$/),
       ]),
       password: new FormControl('', [Validators.required, ...PASSWORD_STRENGTH_VALIDATORS]),
       confirmPassword: new FormControl('', [Validators.required]),
@@ -118,6 +119,10 @@ export class RegisterPage implements OnInit {
     if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
     const v = this.form.value;
+    const phoneCode = this.countryCodes().find((cc) => cc.id === v.phoneCountryCodeId);
+    const fullPhone = phoneCode
+      ? `${phoneCode.dialCode}${v.phoneNumber!.replace(/\s/g, '')}`
+      : v.phoneNumber!;
     this.authApi
       .register({
         firstName: v.firstName!,
@@ -126,14 +131,14 @@ export class RegisterPage implements OnInit {
         jobTitle: v.jobTitle!,
         organizationName: v.organizationName!,
         countryCodeId: v.countryCodeId!,
-        phoneNumber: v.phoneNumber!,
+        phoneNumber: fullPhone,
         password: v.password!,
         confirmPassword: v.confirmPassword!,
       })
       .subscribe({
         next: () =>
           this.router.navigate(['/verify-phone'], {
-            state: { phoneNumber: v.phoneNumber },
+            state: { phoneNumber: fullPhone },
           }),
         error: (err: HttpErrorResponse) => {
           if (err.status === 409) {
