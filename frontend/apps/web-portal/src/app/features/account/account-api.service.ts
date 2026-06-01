@@ -41,7 +41,7 @@ export class AccountApiService {
   async getExpertStatus(): Promise<Result<ExpertRequestStatus | null>> {
     try {
       const value = await firstValueFrom(
-        this.http.get<ExpertRequestStatus>('/api/me/expert-status'),
+        this.http.get<{ data: ExpertRequestStatus }>('/api/me/expert-status').pipe(map((res) => res.data)),
       );
       return { ok: true, value };
     } catch (err) {
@@ -56,7 +56,7 @@ export class AccountApiService {
   ): Promise<Result<ExpertRequestStatus>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.post<ExpertRequestStatus>('/api/users/expert-request', payload),
+        this.http.post<{ data: ExpertRequestStatus }>('/api/users/expert-request', payload).pipe(map((res) => res.data)),
       ),
     );
   }

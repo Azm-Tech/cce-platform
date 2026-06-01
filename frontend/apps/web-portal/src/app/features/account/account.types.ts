@@ -21,6 +21,7 @@ export interface UserProfile {
   userName: string | null;
   firstName: string | null;
   lastName: string | null;
+  phoneNumber: string | null;
   jobTitle: string | null;
   organizationName: string | null;
   localePreference: string;

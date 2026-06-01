@@ -49,6 +49,10 @@
             <dd>{{ p.firstName || '—' }}</dd>
           </div>
           <div class="cce-profile__field">
+            <dt>{{ 'account.profile.field.phoneNumber' | transloco }}</dt>
+            <dd dir="ltr">{{ p.phoneNumber || '—' }}</dd>
+          </div>
+          <div class="cce-profile__field">
             <dt>{{ 'account.profile.field.lastName' | transloco }}</dt>
             <dd>{{ p.lastName || '—' }}</dd>
           </div>
@@ -94,20 +98,28 @@
               }
             </dd>
           </div>
+          @if (expertStatusLoaded()) {
+            <div class="cce-profile__field">
+              <dt>{{ 'account.profile.field.expertStatus' | transloco }}</dt>
+              <dd>
+                @if (expertBadgeStatus(); as badge) {
+                  <div class="cce-profile__expert-badge cce-profile__expert-badge--{{ badge.toLowerCase() }}">
+                    <mat-icon aria-hidden="true">
+                      @switch (badge) {
+                        @case ('Approved') { verified }
+                        @case ('Pending') { schedule }
+                        @case ('Rejected') { cancel }
+                      }
+                    </mat-icon>
+                    {{ ('account.profile.expertStatus.' + badge) | transloco }}
+                  </div>
+                } @else {
+                  <span class="cce-profile__expert-none">{{ 'account.profile.expertStatus.None' | transloco }}</span>
+                }
+              </dd>
+            </div>
+          }
         </dl>
-
-        @if (expertBadgeStatus(); as badge) {
-          <div class="cce-profile__expert-badge cce-profile__expert-badge--{{ badge.toLowerCase() }}">
-            <mat-icon aria-hidden="true">
-              @switch (badge) {
-                @case ('Approved') { verified }
-                @case ('Pending') { schedule }
-                @case ('Rejected') { cancel }
-              }
-            </mat-icon>
-            {{ ('account.profile.expertStatus.' + badge) | transloco }}
-          </div>
-        }
 
         @if (showExpertCta()) {
           <div class="cce-profile__expert-cta">

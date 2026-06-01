@@ -40,7 +40,7 @@ export class ExpertRequestsListPage implements OnInit {
   readonly displayedColumns = ['user', 'submitted', 'tags', 'cv', 'status', 'actions'];
   readonly statuses = EXPERT_STATUSES;
 
-  readonly statusFilter = signal<ExpertRegistrationStatus | ''>('Pending');
+  readonly statusFilter = signal<ExpertRegistrationStatus | ''>('');
   readonly page = signal(1);
   readonly pageSize = signal(20);
   readonly rows = signal<ExpertRequest[]>([]);
