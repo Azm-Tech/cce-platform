@@ -41,21 +41,31 @@
     <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.tags' | transloco }}</th>
     <td mat-cell *matCellDef="let row">{{ row.requestedTags.join(', ') || '—' }}</td>
   </ng-container>
+  <ng-container matColumnDef="cv">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.cv' | transloco }}</th>
+    <td mat-cell *matCellDef="let row">
+      @if (row.cvUrl) {
+        <a mat-icon-button [href]="row.cvUrl" target="_blank" rel="noopener"
+           [attr.aria-label]="'experts.requests.col.cvDownload' | transloco">
+          <mat-icon>download</mat-icon>
+        </a>
+      } @else if (row.cvAssetFileId) {
+        <mat-icon class="cce-expert-requests__cv-attached" title="CV attached">attach_file</mat-icon>
+      } @else {
+        <span class="cce-expert-requests__cv-none">—</span>
+      }
+    </td>
+  </ng-container>
   <ng-container matColumnDef="status">
     <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.status' | transloco }}</th>
     <td mat-cell *matCellDef="let row">{{ ('experts.status.' + row.status) | transloco }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.actions' | transloco }}</th>
+    <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let row">
-      @if (row.status === 'Pending') {
-        <button type="button" mat-button color="primary" (click)="approve(row)">
-          {{ 'experts.requests.action.approve' | transloco }}
-        </button>
-        <button type="button" mat-button color="warn" (click)="reject(row)">
-          {{ 'experts.requests.action.reject' | transloco }}
-        </button>
-      }
+      <a mat-icon-button [routerLink]="row.id" [attr.aria-label]="'experts.detail.viewButton' | transloco">
+        <mat-icon class="cce-expert-requests__dir-icon">chevron_right</mat-icon>
+      </a>
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -1,7 +1,36 @@
 <h2 mat-dialog-title>{{ 'experts.reject.title' | transloco }}</h2>
 
 <mat-dialog-content>
-  <p class="cce-reject-expert__requester">{{ data.requesterName ?? data.requestId }}</p>
+  <p class="cce-expert-dialog__requester">{{ data.requesterName ?? data.requestId }}</p>
+
+  <div class="cce-expert-dialog__submission">
+    <div class="cce-expert-dialog__bio-row">
+      <div class="cce-expert-dialog__bio">
+        <span class="cce-expert-dialog__bio-label">{{ 'experts.review.bioAr' | transloco }}</span>
+        <p class="cce-expert-dialog__bio-text" dir="rtl" lang="ar">{{ data.bioAr }}</p>
+      </div>
+      <div class="cce-expert-dialog__bio">
+        <span class="cce-expert-dialog__bio-label">{{ 'experts.review.bioEn' | transloco }}</span>
+        <p class="cce-expert-dialog__bio-text">{{ data.bioEn }}</p>
+      </div>
+    </div>
+    @if (data.requestedTags.length) {
+      <div class="cce-expert-dialog__tags">
+        <span class="cce-expert-dialog__bio-label">{{ 'experts.review.tags' | transloco }}</span>
+        <div class="cce-expert-dialog__tag-list">
+          @for (tag of data.requestedTags; track tag) {
+            <span class="cce-expert-dialog__tag">{{ tag }}</span>
+          }
+        </div>
+      </div>
+    }
+    @if (data.cvUrl) {
+      <a class="cce-expert-dialog__cv-link" [href]="data.cvUrl" target="_blank" rel="noopener">
+        <mat-icon>download</mat-icon>{{ 'experts.review.downloadCv' | transloco }}
+      </a>
+    }
+  </div>
+
   <form [formGroup]="form" class="cce-reject-expert__form">
     <mat-form-field appearance="outline">
       <mat-label>{{ 'experts.reject.reasonAr' | transloco }}</mat-label>

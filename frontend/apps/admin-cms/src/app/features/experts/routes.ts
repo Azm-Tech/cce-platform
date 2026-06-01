@@ -21,4 +21,11 @@ export const EXPERTS_ROUTES: Routes = [
     data: { permission: 'Community.Expert.ApproveRequest' },
     canMatch: [permissionGuard],
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./expert-request-detail.page').then((m) => m.ExpertRequestDetailPage),
+    data: { permission: 'Community.Expert.ApproveRequest' },
+    canMatch: [permissionGuard],
+  },
 ];

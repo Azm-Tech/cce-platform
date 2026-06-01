@@ -1,0 +1,82 @@
+.cce-expert-dialog__requester {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cce-expert-dialog__submission {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.cce-expert-dialog__bio-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+}
+
+.cce-expert-dialog__bio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cce-expert-dialog__bio-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cce-expert-dialog__bio-text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.78);
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.cce-expert-dialog__tags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cce-expert-dialog__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cce-expert-dialog__tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.07);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.cce-expert-dialog__cv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1565c0;
+  text-decoration: none;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  &:hover { text-decoration: underline; }
+}

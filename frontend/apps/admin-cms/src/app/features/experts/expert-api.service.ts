@@ -20,6 +20,14 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class ExpertApiService {
   private readonly http = inject(HttpClient);
 
+  async getRequest(id: string): Promise<Result<ExpertRequest>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http.get<ExpertRequest>(`/api/admin/expert-requests/${id}`),
+      ),
+    );
+  }
+
   async listRequests(opts: {
     page?: number;
     pageSize?: number;

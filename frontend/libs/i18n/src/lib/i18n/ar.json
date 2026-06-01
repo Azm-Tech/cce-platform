@@ -353,6 +353,17 @@
       "tags": "وسوم الخبرة",
       "downloadCv": "تحميل السيرة الذاتية"
     },
+    "detail": {
+      "backButton": "العودة إلى الطلبات",
+      "viewButton": "عرض التفاصيل",
+      "submissionSection": "بيانات الطلب",
+      "decisionSection": "القرار",
+      "field": {
+        "processedOn": "تاريخ المعالجة",
+        "rejectionReasonAr": "سبب الرفض (عربي)",
+        "rejectionReasonEn": "سبب الرفض (إنجليزي)"
+      }
+    },
     "profiles": {
       "title": "ملفات الخبراء",
       "viewProfilesButton": "عرض الملفات",
@@ -1094,7 +1105,9 @@
         "organizationName": "المنظمة",
         "countryCode": "رمز البلد (الهاتف)",
         "avatarUpload": "رفع صورة",
-        "nationality": "الجنسية"
+        "nationality": "الجنسية",
+        "phoneNumber": "رقم الهاتف",
+        "expertStatus": "حالة الخبير"
       },
       "editButton": "تعديل",
       "saveButton": "حفظ",
@@ -1110,6 +1123,7 @@
         "reapplyButton": "إعادة التقديم"
       },
       "expertStatus": {
+        "None": "لم يتم التقديم",
         "Pending": "الطلب قيد المراجعة",
         "Approved": "خبير معتمد",
         "Rejected": "تم رفض الطلب"

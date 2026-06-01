@@ -8,6 +8,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -17,6 +18,10 @@ import type { ExpertRequest } from './expert.types';
 export interface RejectExpertDialogData {
   requestId: string;
   requesterName: string | null;
+  bioAr: string;
+  bioEn: string;
+  requestedTags: string[];
+  cvUrl: string | null;
 }
 
 interface RejectForm {
@@ -32,11 +37,13 @@ interface RejectForm {
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   templateUrl: './reject-expert.dialog.html',
+  styleUrl: './reject-expert.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RejectExpertDialogComponent {

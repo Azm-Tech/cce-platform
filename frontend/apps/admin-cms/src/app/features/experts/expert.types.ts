@@ -26,6 +26,8 @@ export interface ExpertRequest {
   processedOn: string | null;
   rejectionReasonAr: string | null;
   rejectionReasonEn: string | null;
+  cvAssetFileId: string | null;
+  cvUrl: string | null;
 }
 
 export interface ExpertProfile {

@@ -1,0 +1,105 @@
+<div class="cce-expert-detail__header">
+  <a mat-button routerLink="/experts">
+    <mat-icon class="cce-expert-detail__dir-icon">arrow_back</mat-icon>
+    {{ 'experts.detail.backButton' | transloco }}
+  </a>
+</div>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (errorKind(); as kind) {
+  <div class="cce-expert-detail__error" role="alert">
+    {{ ('errors.' + kind) | transloco }}
+  </div>
+}
+
+@if (request(); as r) {
+  <div class="cce-expert-detail__title-row">
+    <h1 class="cce-expert-detail__title">{{ r.requestedByUserName ?? r.requestedById }}</h1>
+    <span class="cce-expert-detail__status cce-expert-detail__status--{{ r.status.toLowerCase() }}">
+      {{ ('experts.status.' + r.status) | transloco }}
+    </span>
+  </div>
+
+  <p class="cce-expert-detail__meta">
+    {{ 'experts.requests.col.submitted' | transloco }}: {{ r.submittedOn | date:'medium' }}
+  </p>
+
+  <div class="cce-expert-detail__card">
+    <h2 class="cce-expert-detail__section-title">{{ 'experts.detail.submissionSection' | transloco }}</h2>
+
+    <div class="cce-expert-detail__bio-row">
+      <div class="cce-expert-detail__bio">
+        <span class="cce-expert-detail__label">{{ 'experts.review.bioAr' | transloco }}</span>
+        <p class="cce-expert-detail__bio-text" dir="rtl" lang="ar">{{ r.requestedBioAr || '—' }}</p>
+      </div>
+      <div class="cce-expert-detail__bio">
+        <span class="cce-expert-detail__label">{{ 'experts.review.bioEn' | transloco }}</span>
+        <p class="cce-expert-detail__bio-text">{{ r.requestedBioEn || '—' }}</p>
+      </div>
+    </div>
+
+    @if (r.requestedTags.length) {
+      <div class="cce-expert-detail__field">
+        <span class="cce-expert-detail__label">{{ 'experts.review.tags' | transloco }}</span>
+        <div class="cce-expert-detail__tag-list">
+          @for (tag of r.requestedTags; track tag) {
+            <span class="cce-expert-detail__tag">{{ tag }}</span>
+          }
+        </div>
+      </div>
+    }
+
+    @if (r.cvUrl) {
+      <div class="cce-expert-detail__field">
+        <span class="cce-expert-detail__label">{{ 'experts.requests.col.cv' | transloco }}</span>
+        <a class="cce-expert-detail__cv-link" [href]="r.cvUrl" target="_blank" rel="noopener">
+          <mat-icon>download</mat-icon>{{ 'experts.review.downloadCv' | transloco }}
+        </a>
+      </div>
+    }
+  </div>
+
+  @if (r.status === 'Approved') {
+    <div class="cce-expert-detail__card cce-expert-detail__card--approved">
+      <h2 class="cce-expert-detail__section-title">{{ 'experts.detail.decisionSection' | transloco }}</h2>
+      @if (r.processedOn) {
+        <p class="cce-expert-detail__meta">{{ 'experts.detail.field.processedOn' | transloco }}: {{ r.processedOn | date:'medium' }}</p>
+      }
+    </div>
+  }
+
+  @if (r.status === 'Rejected') {
+    <div class="cce-expert-detail__card cce-expert-detail__card--rejected">
+      <h2 class="cce-expert-detail__section-title">{{ 'experts.detail.decisionSection' | transloco }}</h2>
+      <div class="cce-expert-detail__bio-row">
+        <div class="cce-expert-detail__bio">
+          <span class="cce-expert-detail__label">{{ 'experts.detail.field.rejectionReasonAr' | transloco }}</span>
+          <p class="cce-expert-detail__bio-text" dir="rtl" lang="ar">{{ r.rejectionReasonAr ?? '—' }}</p>
+        </div>
+        <div class="cce-expert-detail__bio">
+          <span class="cce-expert-detail__label">{{ 'experts.detail.field.rejectionReasonEn' | transloco }}</span>
+          <p class="cce-expert-detail__bio-text">{{ r.rejectionReasonEn ?? '—' }}</p>
+        </div>
+      </div>
+      @if (r.processedOn) {
+        <p class="cce-expert-detail__meta">{{ 'experts.detail.field.processedOn' | transloco }}: {{ r.processedOn | date:'medium' }}</p>
+      }
+    </div>
+  }
+
+  @if (r.status === 'Pending') {
+    <div class="cce-expert-detail__actions">
+      <button type="button" mat-flat-button color="primary" (click)="approve()">
+        <mat-icon>check_circle</mat-icon>
+        {{ 'experts.requests.action.approve' | transloco }}
+      </button>
+      <button type="button" mat-flat-button color="warn" (click)="reject()">
+        <mat-icon>cancel</mat-icon>
+        {{ 'experts.requests.action.reject' | transloco }}
+      </button>
+    </div>
+  }
+}

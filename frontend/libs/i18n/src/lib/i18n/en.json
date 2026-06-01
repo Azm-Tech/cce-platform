@@ -353,6 +353,17 @@
       "tags": "Expertise tags",
       "downloadCv": "Download CV"
     },
+    "detail": {
+      "backButton": "Back to requests",
+      "viewButton": "View details",
+      "submissionSection": "Submission",
+      "decisionSection": "Decision",
+      "field": {
+        "processedOn": "Processed on",
+        "rejectionReasonAr": "Rejection reason (Arabic)",
+        "rejectionReasonEn": "Rejection reason (English)"
+      }
+    },
     "profiles": {
       "title": "Expert profiles",
       "viewProfilesButton": "View profiles",
@@ -1094,7 +1105,9 @@
         "organizationName": "Organization",
         "countryCode": "Phone country code",
         "avatarUpload": "Upload photo",
-        "nationality": "Nationality"
+        "nationality": "Nationality",
+        "phoneNumber": "Phone number",
+        "expertStatus": "Expert status"
       },
       "editButton": "Edit",
       "saveButton": "Save",
@@ -1110,6 +1123,7 @@
         "reapplyButton": "Reapply"
       },
       "expertStatus": {
+        "None": "Not applied",
         "Pending": "Application under review",
         "Approved": "Verified Expert",
         "Rejected": "Application rejected"

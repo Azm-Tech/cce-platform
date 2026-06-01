@@ -3,24 +3,16 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
-import { firstValueFrom } from 'rxjs';
-import { ToastService } from '@frontend/ui-kit';
-import { ApproveExpertDialogComponent, type ApproveExpertDialogData } from './approve-expert.dialog';
 import { ExpertApiService } from './expert-api.service';
 import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } from './expert.types';
-import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reject-expert.dialog';
 
-/**
- * Admin → Expert requests list. Filterable by status; per-row Approve/Reject
- * actions open dedicated dialogs (Tasks 2.2 + 2.3).
- */
 @Component({
   selector: 'cce-expert-requests-list',
   standalone: true,
@@ -31,6 +23,7 @@ import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reje
     RouterLink,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatSelectModule,
@@ -43,10 +36,8 @@ import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reje
 })
 export class ExpertRequestsListPage implements OnInit {
   private readonly api = inject(ExpertApiService);
-  private readonly dialog = inject(MatDialog);
-  private readonly toast = inject(ToastService);
 
-  readonly displayedColumns = ['user', 'submitted', 'tags', 'status', 'actions'];
+  readonly displayedColumns = ['user', 'submitted', 'tags', 'cv', 'status', 'actions'];
   readonly statuses = EXPERT_STATUSES;
 
   readonly statusFilter = signal<ExpertRegistrationStatus | ''>('Pending');
@@ -90,23 +81,4 @@ export class ExpertRequestsListPage implements OnInit {
     void this.load();
   }
 
-  async approve(row: ExpertRequest): Promise<void> {
-    const data: ApproveExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
-    const ref = this.dialog.open(ApproveExpertDialogComponent, { data, width: '480px' });
-    const updated = await firstValueFrom(ref.afterClosed());
-    if (updated) {
-      this.toast.success('experts.approve.toast');
-      void this.load();
-    }
-  }
-
-  async reject(row: ExpertRequest): Promise<void> {
-    const data: RejectExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
-    const ref = this.dialog.open(RejectExpertDialogComponent, { data, width: '520px' });
-    const updated = await firstValueFrom(ref.afterClosed());
-    if (updated) {
-      this.toast.success('experts.reject.toast');
-      void this.load();
-    }
-  }
 }

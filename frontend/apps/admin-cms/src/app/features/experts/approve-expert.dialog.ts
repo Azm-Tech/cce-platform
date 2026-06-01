@@ -8,6 +8,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -17,6 +18,10 @@ import type { ExpertRequest } from './expert.types';
 export interface ApproveExpertDialogData {
   requestId: string;
   requesterName: string | null;
+  bioAr: string;
+  bioEn: string;
+  requestedTags: string[];
+  cvUrl: string | null;
 }
 
 interface ApproveForm {
@@ -32,11 +37,13 @@ interface ApproveForm {
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   templateUrl: './approve-expert.dialog.html',
+  styleUrl: './approve-expert.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApproveExpertDialogComponent {
