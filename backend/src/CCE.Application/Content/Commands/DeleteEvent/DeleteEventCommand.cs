@@ -1,5 +1,6 @@
+using CCE.Application.Common;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.DeleteEvent;
 
-public sealed record DeleteEventCommand(System.Guid Id) : IRequest<Unit>;
+public sealed record DeleteEventCommand(System.Guid Id) : IRequest<Response<VoidData>>;

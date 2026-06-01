@@ -77,7 +77,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
             System.Guid.NewGuid(), System.Guid.NewGuid(),
             "عنوان", "Title",
             "وصف", "Description",
-            ResourceType.Pdf, System.Guid.NewGuid(), clock);
+            ResourceType.Paper, System.Guid.NewGuid(), clock);
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)
     {

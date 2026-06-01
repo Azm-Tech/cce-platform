@@ -579,6 +579,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasColumnName("title_en");
 
+                    b.Property<Guid>("TopicId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("topic_id");
+
                     b.HasKey("Id")
                         .HasName("pk_events");
 
@@ -588,6 +592,9 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("StartsOn")
                         .HasDatabaseName("ix_event_starts_on");
+
+                    b.HasIndex("TopicId")
+                        .HasDatabaseName("ix_event_topic_id");
 
                     b.ToTable("events", (string)null);
                 });
@@ -743,6 +750,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasColumnName("title_en");
 
+                    b.Property<Guid>("TopicId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("topic_id");
+
                     b.HasKey("Id")
                         .HasName("pk_news");
 
@@ -753,6 +764,9 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ux_news_slug_active")
                         .HasFilter("[is_deleted] = 0");
+
+                    b.HasIndex("TopicId")
+                        .HasDatabaseName("ix_news_topic_id");
 
                     b.ToTable("news", (string)null);
                 });
@@ -991,14 +1005,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("TitleAr")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("title_ar");
 
                     b.Property<string>("TitleEn")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("title_en");
 
                     b.Property<Guid>("UploadedById")
@@ -1014,9 +1028,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AssetFileId")
                         .HasDatabaseName("ix_resource_asset_file_id");
-
-                    b.HasIndex("CountryId")
-                        .HasDatabaseName("ix_resource_country_id");
 
                     b.HasIndex("CategoryId", "PublishedOn")
                         .HasDatabaseName("ix_resource_category_published");
@@ -1071,6 +1082,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ux_resource_category_slug");
 
                     b.ToTable("resource_categories", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
+                {
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("resource_id");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("country_id");
+
+                    b.HasKey("ResourceId", "CountryId")
+                        .HasName("pk_resource_country");
+
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("ix_resource_country_country_id");
+
+                    b.ToTable("resource_country", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Country.Country", b =>
@@ -3479,6 +3509,16 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.Resource", null)
+                        .WithMany("Countries")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_resource_country_resources_resource_id");
+                });
+
             modelBuilder.Entity("CCE.Domain.Identity.ExpertRequestAttachment", b =>
                 {
                     b.HasOne("CCE.Domain.Identity.ExpertRegistrationRequest", null)
@@ -3521,7 +3561,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CountryCodeId");
 
-                            b1.ToTable("country_codes", (string)null);
+                            b1.ToTable("country_codes");
 
                             b1.WithOwner()
                                 .HasForeignKey("CountryCodeId")
@@ -3554,7 +3594,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("AboutSettingsId");
 
-                            b1.ToTable("about_settings", (string)null);
+                            b1.ToTable("about_settings");
 
                             b1.WithOwner()
                                 .HasForeignKey("AboutSettingsId")
@@ -3594,7 +3634,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries", (string)null);
+                            b1.ToTable("glossary_entries");
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3621,7 +3661,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("GlossaryEntryId");
 
-                            b1.ToTable("glossary_entries", (string)null);
+                            b1.ToTable("glossary_entries");
 
                             b1.WithOwner()
                                 .HasForeignKey("GlossaryEntryId")
@@ -3667,7 +3707,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("HomepageSettingsId");
 
-                            b1.ToTable("homepage_settings", (string)null);
+                            b1.ToTable("homepage_settings");
 
                             b1.WithOwner()
                                 .HasForeignKey("HomepageSettingsId")
@@ -3707,7 +3747,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners", (string)null);
+                            b1.ToTable("knowledge_partners");
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3734,7 +3774,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("KnowledgePartnerId");
 
-                            b1.ToTable("knowledge_partners", (string)null);
+                            b1.ToTable("knowledge_partners");
 
                             b1.WithOwner()
                                 .HasForeignKey("KnowledgePartnerId")
@@ -3774,7 +3814,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections", (string)null);
+                            b1.ToTable("policy_sections");
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")
@@ -3801,7 +3841,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PolicySectionId");
 
-                            b1.ToTable("policy_sections", (string)null);
+                            b1.ToTable("policy_sections");
 
                             b1.WithOwner()
                                 .HasForeignKey("PolicySectionId")
@@ -3878,6 +3918,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Content.Resource", b =>
+                {
+                    b.Navigation("Countries");
                 });
 
             modelBuilder.Entity("CCE.Domain.Identity.ExpertRegistrationRequest", b =>

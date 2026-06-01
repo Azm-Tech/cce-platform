@@ -1,65 +1,87 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Content.Commands.PublishResource;
 
-public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResourceCommand, ResourceDto?>
+public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResourceCommand, Response<ResourceDto>>
 {
-    private readonly IResourceRepository _service;
-    private readonly IAssetRepository _assetService;
+    private readonly ICceDbContext _db;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _messages;
 
     public PublishResourceCommandHandler(
-        IResourceRepository service,
-        IAssetRepository assetService,
-        ISystemClock clock)
+        ICceDbContext db,
+        ISystemClock clock,
+        MessageFactory messages)
     {
-        _service = service;
-        _assetService = assetService;
+        _db = db;
         _clock = clock;
+        _messages = messages;
     }
 
-    public async Task<ResourceDto?> Handle(PublishResourceCommand request, CancellationToken cancellationToken)
+    public async Task<Response<ResourceDto>> Handle(PublishResourceCommand request, CancellationToken cancellationToken)
     {
-        var resource = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var resources = await _db.Resources
+            .Include(r => r.Countries)
+            .Where(r => r.Id == request.Id)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var resource = resources.SingleOrDefault();
         if (resource is null)
-        {
-            return null;
-        }
+            return _messages.ResourceNotFound<ResourceDto>();
 
-        var asset = await _assetService.GetByIdAsync(resource.AssetFileId, cancellationToken).ConfigureAwait(false);
+        var assets = await _db.AssetFiles
+            .Where(a => a.Id == resource.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var asset = assets.SingleOrDefault();
         if (asset is null)
-        {
-            throw new DomainException($"Asset {resource.AssetFileId} not found for resource {resource.Id}.");
-        }
+            return _messages.AssetNotFound<ResourceDto>();
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-        {
-            throw new DomainException($"Cannot publish resource {resource.Id}: asset has not passed virus scan ({asset.VirusScanStatus}).");
-        }
+            return _messages.AssetNotClean<ResourceDto>();
 
         var expectedRowVersion = resource.RowVersion;
         resource.Publish(_clock);
-        await _service.UpdateAsync(resource, expectedRowVersion, cancellationToken).ConfigureAwait(false);
+
+        _db.SetExpectedRowVersion(resource, expectedRowVersion);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        var dto = MapToDto(resource);
+        return _messages.Ok(dto, "SUCCESS_OPERATION");
+    }
+
+    private ResourceDto MapToDto(Resource r)
+    {
+        var category = _db.ResourceCategories.FirstOrDefault(c => c.Id == r.CategoryId);
+        var asset = _db.AssetFiles.FirstOrDefault(a => a.Id == r.AssetFileId);
+        var countryIds = r.Countries.Select(c => c.CountryId).ToList();
+        var countries = _db.Countries.Where(c => countryIds.Contains(c.Id)).ToList();
 
         return new ResourceDto(
-            resource.Id,
-            resource.TitleAr,
-            resource.TitleEn,
-            resource.DescriptionAr,
-            resource.DescriptionEn,
-            resource.ResourceType,
-            resource.CategoryId,
-            resource.CountryId,
-            resource.UploadedById,
-            resource.AssetFileId,
-            resource.PublishedOn,
-            resource.ViewCount,
-            resource.IsCenterManaged,
-            resource.IsPublished,
-            System.Convert.ToBase64String(resource.RowVersion));
+            r.Id,
+            r.TitleAr,
+            r.TitleEn,
+            r.DescriptionAr,
+            r.DescriptionEn,
+            r.ResourceType,
+            r.CategoryId,
+            category?.NameAr ?? string.Empty,
+            category?.NameEn ?? string.Empty,
+            r.AssetFileId,
+            asset?.OriginalFileName ?? string.Empty,
+            countryIds,
+            countries.Select(c => c.NameAr).ToList(),
+            r.UploadedById,
+            r.PublishedOn,
+            r.ViewCount,
+            r.IsCenterManaged,
+            r.IsPublished);
     }
 }

@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Domain.Content;
@@ -8,6 +9,7 @@ namespace CCE.Application.Content.Public.Queries.ListPublicResources;
 public sealed record ListPublicResourcesQuery(
     int Page = 1,
     int PageSize = 20,
+    string? Search = null,
     System.Guid? CategoryId = null,
     System.Guid? CountryId = null,
-    ResourceType? ResourceType = null) : IRequest<PagedResult<PublicResourceDto>>;
+    ResourceType? ResourceType = null) : IRequest<Response<PagedResult<PublicResourceDto>>>;

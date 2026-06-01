@@ -16,7 +16,7 @@ public class CountryResourceRequestTests
             requestedById: System.Guid.NewGuid(),
             titleAr: "عنوان", titleEn: "Title",
             descriptionAr: "وصف", descriptionEn: "Description",
-            resourceType: ResourceType.Pdf,
+            resourceType: ResourceType.Paper,
             assetFileId: System.Guid.NewGuid(),
             clock: clock);
 

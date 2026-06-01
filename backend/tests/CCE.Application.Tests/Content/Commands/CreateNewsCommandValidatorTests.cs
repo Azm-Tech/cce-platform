@@ -5,7 +5,7 @@ namespace CCE.Application.Tests.Content.Commands;
 public class CreateNewsCommandValidatorTests
 {
     private static CreateNewsCommand ValidCmd() => new(
-        "خبر", "News", "محتوى", "Content", "first-post", null);
+        "خبر", "News", "محتوى", "Content", System.Guid.NewGuid(), null);
 
     [Fact]
     public void Valid_command_passes()
@@ -31,14 +31,14 @@ public class CreateNewsCommandValidatorTests
     }
 
     [Fact]
-    public void Empty_slug_is_rejected()
+    public void Empty_topic_id_is_rejected()
     {
         var sut = new CreateNewsCommandValidator();
-        var cmd = ValidCmd() with { Slug = "" };
+        var cmd = ValidCmd() with { TopicId = System.Guid.Empty };
 
         var result = sut.Validate(cmd);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(CreateNewsCommand.Slug));
+        result.Errors.Should().Contain(e => e.PropertyName == nameof(CreateNewsCommand.TopicId));
     }
 }

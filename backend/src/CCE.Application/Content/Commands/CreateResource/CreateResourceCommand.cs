@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using CCE.Domain.Content;
 using MediatR;
@@ -12,4 +13,5 @@ public sealed record CreateResourceCommand(
     ResourceType ResourceType,
     System.Guid CategoryId,
     System.Guid? CountryId,
-    System.Guid AssetFileId) : IRequest<ResourceDto>;
+    System.Guid AssetFileId,
+    IReadOnlyList<System.Guid> CountryIds) : IRequest<Response<System.Guid>>;

@@ -38,7 +38,7 @@ public class MeilisearchIndexerHandlerTests
             "News Title",
             "محتوى عربي",
             "English content",
-            "news-title",
+            System.Guid.NewGuid(),
             System.Guid.NewGuid(),
             null,
             clock);
@@ -76,11 +76,12 @@ public class MeilisearchIndexerHandlerTests
             "Resource Title",
             "وصف عربي",
             "English description",
-            ResourceType.Document,
+            ResourceType.ScientificPaper,
             categoryId: System.Guid.NewGuid(),
             countryId: null,
             uploadedById: System.Guid.NewGuid(),
             assetFileId: System.Guid.NewGuid(),
+            countryIds: System.Array.Empty<System.Guid>(),
             clock);
         resource.Publish(clock);
 
@@ -122,6 +123,7 @@ public class MeilisearchIndexerHandlerTests
             locationEn: null,
             onlineMeetingUrl: null,
             featuredImageUrl: null,
+            System.Guid.NewGuid(),
             clock);
 
         await using var db = BuildDb();

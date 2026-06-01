@@ -1,40 +1,93 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Content.Public.Queries.ListPublicResources;
 
-public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublicResourcesQuery, PagedResult<PublicResourceDto>>
+public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublicResourcesQuery, Response<PagedResult<PublicResourceDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public ListPublicResourcesQueryHandler(ICceDbContext db) => _db = db;
+    public ListPublicResourcesQueryHandler(ICceDbContext db, MessageFactory messages)
+    {
+        _db = db;
+        _messages = messages;
+    }
 
-    public async Task<PagedResult<PublicResourceDto>> Handle(ListPublicResourcesQuery request, CancellationToken cancellationToken)
+    public async Task<Response<PagedResult<PublicResourceDto>>> Handle(ListPublicResourcesQuery request, CancellationToken cancellationToken)
     {
         var query = _db.Resources
+            .AsNoTracking()
+            .Include(r => r.Countries)
             .Where(r => r.PublishedOn != null)
+            .WhereIf(!string.IsNullOrWhiteSpace(request.Search),
+                r => r.TitleAr.Contains(request.Search!) ||
+                     r.TitleEn.Contains(request.Search!) ||
+                     r.DescriptionAr.Contains(request.Search!) ||
+                     r.DescriptionEn.Contains(request.Search!))
             .WhereIf(request.CategoryId.HasValue,   r => r.CategoryId == request.CategoryId!.Value)
-            .WhereIf(request.CountryId.HasValue,    r => r.CountryId == request.CountryId!.Value)
+            .WhereIf(request.CountryId.HasValue,    r => r.Countries.Any(c => c.CountryId == request.CountryId!.Value))
             .WhereIf(request.ResourceType.HasValue, r => r.ResourceType == request.ResourceType!.Value)
             .OrderByDescending(r => r.PublishedOn);
 
-        var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
-        return result.Map(MapToDto);
-    }
+        var paged = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
-    internal static PublicResourceDto MapToDto(Resource r) => new(
-        r.Id,
-        r.TitleAr,
-        r.TitleEn,
-        r.DescriptionAr,
-        r.DescriptionEn,
-        r.ResourceType,
-        r.CategoryId,
-        r.CountryId,
-        r.AssetFileId,
-        r.PublishedOn!.Value,
-        r.ViewCount);
+        // Batch enrich categories / assets / country names for the page
+        var categoryIds = paged.Items.Select(r => r.CategoryId).Distinct().ToList();
+        var assetIds = paged.Items.Select(r => r.AssetFileId).Distinct().ToList();
+        var allCountryIds = paged.Items.SelectMany(r => r.Countries.Select(c => c.CountryId)).Distinct().ToList();
+
+        var categories = await _db.ResourceCategories
+            .Where(c => categoryIds.Contains(c.Id))
+            .Select(c => new { c.Id, c.NameAr, c.NameEn })
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var categoryMap = categories.ToDictionary(c => c.Id, c => new { c.NameAr, c.NameEn });
+
+        var assets = await _db.AssetFiles
+            .Where(a => assetIds.Contains(a.Id))
+            .Select(a => new { a.Id, a.OriginalFileName })
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var assetMap = assets.ToDictionary(a => a.Id, a => a.OriginalFileName);
+
+        var countries = await _db.Countries
+            .Where(c => allCountryIds.Contains(c.Id))
+            .Select(c => new { c.Id, c.NameAr })
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var countryNameMap = countries.ToDictionary(c => c.Id, c => c.NameAr);
+
+        var dtos = paged.Items.Select(r =>
+        {
+            var cat = categoryMap.GetValueOrDefault(r.CategoryId);
+            var countryIds = r.Countries.Select(c => c.CountryId).ToList();
+            var countryNames = countryIds.Select(id => countryNameMap.GetValueOrDefault(id) ?? string.Empty).ToList();
+            return new PublicResourceDto(
+                r.Id,
+                r.TitleAr,
+                r.TitleEn,
+                r.DescriptionAr,
+                r.DescriptionEn,
+                r.ResourceType,
+                r.CategoryId,
+                cat?.NameAr ?? string.Empty,
+                cat?.NameEn ?? string.Empty,
+                r.AssetFileId,
+                assetMap.GetValueOrDefault(r.AssetFileId) ?? string.Empty,
+                countryIds,
+                countryNames,
+                r.PublishedOn!.Value,
+                r.ViewCount);
+        }).ToList();
+
+        var result = new PagedResult<PublicResourceDto>(dtos, paged.Page, paged.PageSize, paged.Total);
+        return _messages.Ok(result, "ITEMS_LISTED");
+    }
 }

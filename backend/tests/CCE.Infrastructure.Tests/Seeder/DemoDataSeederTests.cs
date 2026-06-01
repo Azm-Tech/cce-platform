@@ -8,19 +8,25 @@ namespace CCE.Infrastructure.Tests.Seeder;
 
 public class DemoDataSeederTests
 {
-    private static (CceDbContext Ctx, DemoDataSeeder Seeder) Build()
+    private static async Task<(CceDbContext Ctx, DemoDataSeeder Seeder)> BuildAsync()
     {
         var ctx = new CceDbContext(new DbContextOptionsBuilder<CceDbContext>()
             .UseInMemoryDatabase(System.Guid.NewGuid().ToString())
             .Options);
-        return (ctx, new DemoDataSeeder(ctx, new FakeSystemClock(),
+        var clock = new FakeSystemClock();
+        // Seed reference data (countries, topics, categories, etc.) first, since
+        // DemoDataSeeder depends on topics for News/Event TopicId associations.
+        var referenceSeeder = new ReferenceDataSeeder(ctx, clock,
+            NullLogger<ReferenceDataSeeder>.Instance);
+        await referenceSeeder.SeedAsync(default);
+        return (ctx, new DemoDataSeeder(ctx, clock,
             NullLogger<DemoDataSeeder>.Instance));
     }
 
     [Fact]
     public async Task Seeds_news_and_event()
     {
-        var (ctx, seeder) = Build();
+        var (ctx, seeder) = await BuildAsync();
         using (ctx)
         {
             await seeder.SeedAsync();
@@ -32,7 +38,7 @@ public class DemoDataSeederTests
     [Fact]
     public async Task News_articles_are_published()
     {
-        var (ctx, seeder) = Build();
+        var (ctx, seeder) = await BuildAsync();
         using (ctx)
         {
             await seeder.SeedAsync();
@@ -44,13 +50,13 @@ public class DemoDataSeederTests
     [Fact]
     public async Task Idempotent()
     {
-        var (ctx, seeder) = Build();
+        var (ctx, seeder) = await BuildAsync();
         using (ctx)
         {
             await seeder.SeedAsync();
             var firstNews = await ctx.News.CountAsync();
             await seeder.SeedAsync();
-            var secondNews = await ctx.News.CountAsync();
+            var secondNews = ctx.News.Count();
             secondNews.Should().Be(firstNews);
         }
     }

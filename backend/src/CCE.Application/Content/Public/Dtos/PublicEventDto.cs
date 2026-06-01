@@ -12,4 +12,7 @@ public sealed record PublicEventDto(
     string? LocationEn,
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
-    string ICalUid);
+    string ICalUid,
+    System.Guid TopicId,
+    string TopicNameAr,
+    string TopicNameEn);

@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
 
@@ -6,13 +5,11 @@ namespace CCE.Domain.Content;
 
 /// <summary>
 /// News article — bilingual title + rich-text content + optional featured image.
-/// Slug is unique (enforced in Phase 08 DB unique index). Soft-deletable, audited.
+/// Slug is auto-generated from the English title. Soft-deletable, audited.
 /// </summary>
 [Audited]
 public sealed class News : AggregateRoot<System.Guid>
 {
-    private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
-
     private News(
         System.Guid id,
         string titleAr,
@@ -20,6 +17,7 @@ public sealed class News : AggregateRoot<System.Guid>
         string contentAr,
         string contentEn,
         string slug,
+        System.Guid topicId,
         System.Guid authorId,
         string? featuredImageUrl) : base(id)
     {
@@ -28,6 +26,7 @@ public sealed class News : AggregateRoot<System.Guid>
         ContentAr = contentAr;
         ContentEn = contentEn;
         Slug = slug;
+        TopicId = topicId;
         AuthorId = authorId;
         FeaturedImageUrl = featuredImageUrl;
     }
@@ -37,6 +36,7 @@ public sealed class News : AggregateRoot<System.Guid>
     public string ContentAr { get; private set; }
     public string ContentEn { get; private set; }
     public string Slug { get; private set; }
+    public System.Guid TopicId { get; private set; }
     public System.Guid AuthorId { get; private set; }
     public string? FeaturedImageUrl { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
@@ -50,7 +50,7 @@ public sealed class News : AggregateRoot<System.Guid>
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
+        System.Guid topicId,
         System.Guid authorId,
         string? featuredImageUrl,
         ISystemClock clock)
@@ -60,10 +60,7 @@ public sealed class News : AggregateRoot<System.Guid>
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(contentAr)) throw new DomainException("ContentAr is required.");
         if (string.IsNullOrWhiteSpace(contentEn)) throw new DomainException("ContentEn is required.");
-        if (string.IsNullOrWhiteSpace(slug) || !SlugPattern.IsMatch(slug))
-        {
-            throw new DomainException($"slug '{slug}' must be kebab-case.");
-        }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (authorId == System.Guid.Empty) throw new DomainException("AuthorId is required.");
         if (featuredImageUrl is not null
             && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
@@ -76,7 +73,8 @@ public sealed class News : AggregateRoot<System.Guid>
             titleEn: titleEn,
             contentAr: contentAr,
             contentEn: contentEn,
-            slug: slug,
+            slug: ToKebabSlug(titleEn),
+            topicId: topicId,
             authorId: authorId,
             featuredImageUrl: featuredImageUrl);
     }
@@ -86,17 +84,14 @@ public sealed class News : AggregateRoot<System.Guid>
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
+        System.Guid topicId,
         string? featuredImageUrl)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(contentAr)) throw new DomainException("ContentAr is required.");
         if (string.IsNullOrWhiteSpace(contentEn)) throw new DomainException("ContentEn is required.");
-        if (string.IsNullOrWhiteSpace(slug) || !SlugPattern.IsMatch(slug))
-        {
-            throw new DomainException($"slug '{slug}' must be kebab-case.");
-        }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (featuredImageUrl is not null
             && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -106,7 +101,7 @@ public sealed class News : AggregateRoot<System.Guid>
         TitleEn = titleEn;
         ContentAr = contentAr;
         ContentEn = contentEn;
-        Slug = slug;
+        TopicId = topicId;
         FeaturedImageUrl = featuredImageUrl;
     }
 
@@ -120,4 +115,28 @@ public sealed class News : AggregateRoot<System.Guid>
     public void MarkFeatured() => IsFeatured = true;
 
     public void UnmarkFeatured() => IsFeatured = false;
+
+    private static string ToKebabSlug(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "news";
+        var sb = new System.Text.StringBuilder();
+        bool lastWasHyphen = true;
+        foreach (var c in text.ToLowerInvariant())
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                sb.Append(c);
+                lastWasHyphen = false;
+            }
+            else if (!lastWasHyphen)
+            {
+                sb.Append('-');
+                lastWasHyphen = true;
+            }
+        }
+        if (lastWasHyphen && sb.Length > 0)
+            sb.Length--;
+        var result = sb.ToString();
+        return string.IsNullOrWhiteSpace(result) ? "news" : result;
+    }
 }

@@ -10,7 +10,11 @@ public sealed record PublicResourceDto(
     string DescriptionEn,
     ResourceType ResourceType,
     System.Guid CategoryId,
-    System.Guid? CountryId,
+    string CategoryNameAr,
+    string CategoryNameEn,
     System.Guid AssetFileId,
+    string AssetFileName,
+    IReadOnlyList<System.Guid> CountryIds,
+    IReadOnlyList<string> CountryNames,
     System.DateTimeOffset PublishedOn,
     long ViewCount);

@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
 using CCE.Application.Content.Commands.DeleteEvent;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
@@ -16,59 +17,83 @@ public class DeleteEventCommandHandlerTests
         new(2026, 9, 1, 17, 0, 0, System.TimeSpan.Zero);
 
     [Fact]
-    public async Task Throws_KeyNotFound_when_event_missing()
+    public async Task Returns_not_found_when_event_missing()
     {
-        var service = Substitute.For<IEventRepository>();
-        service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Event?)null);
-        var currentUser = Substitute.For<ICurrentUserAccessor>();
-        var sut = new DeleteEventCommandHandler(service, currentUser, new FakeSystemClock());
+        var (sut, _, _, _) = BuildSut();
 
-        var act = async () => await sut.Handle(new DeleteEventCommand(System.Guid.NewGuid()), CancellationToken.None);
+        var result = await sut.Handle(new DeleteEventCommand(System.Guid.NewGuid()), CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Throws_DomainException_when_actor_unknown()
+    public async Task Returns_not_authenticated_when_actor_unknown()
     {
         var clock = new FakeSystemClock();
         var ev = Event.Schedule(
             "ar", "en", "desc-ar", "desc-en",
-            StartsOn, EndsOn, null, null, null, null, clock);
+            StartsOn, EndsOn, null, null, null, null, System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IEventRepository>();
-        service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
+        var repo = Substitute.For<IRepository<Event, System.Guid>>();
+        repo.GetByIdAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
 
+        var db = Substitute.For<ICceDbContext>();
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = new DeleteEventCommandHandler(service, currentUser, clock);
+        var sut = BuildHandler(repo, db, currentUser, clock);
 
-        var act = async () => await sut.Handle(new DeleteEventCommand(ev.Id), CancellationToken.None);
+        var result = await sut.Handle(new DeleteEventCommand(ev.Id), CancellationToken.None);
 
-        await act.Should().ThrowAsync<DomainException>();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Soft_deletes_and_calls_UpdateAsync()
+    public async Task Soft_deletes_and_saves_via_db_context()
     {
         var clock = new FakeSystemClock();
         var actorId = System.Guid.NewGuid();
         var ev = Event.Schedule(
             "ar", "en", "desc-ar", "desc-en",
-            StartsOn, EndsOn, null, null, null, null, clock);
+            StartsOn, EndsOn, null, null, null, null, System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IEventRepository>();
-        service.FindAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
+        var repo = Substitute.For<IRepository<Event, System.Guid>>();
+        repo.GetByIdAsync(ev.Id, Arg.Any<CancellationToken>()).Returns(ev);
 
+        var db = Substitute.For<ICceDbContext>();
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns(actorId);
 
-        var sut = new DeleteEventCommandHandler(service, currentUser, clock);
+        var sut = BuildHandler(repo, db, currentUser, clock);
 
-        await sut.Handle(new DeleteEventCommand(ev.Id), CancellationToken.None);
+        var result = await sut.Handle(new DeleteEventCommand(ev.Id), CancellationToken.None);
 
+        result.Success.Should().BeTrue();
         ev.IsDeleted.Should().BeTrue();
-        await service.Received(1).UpdateAsync(ev, Arg.Any<byte[]>(), Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    private static (DeleteEventCommandHandler sut,
+        IRepository<Event, System.Guid> repo,
+        ICceDbContext db,
+        ICurrentUserAccessor user) BuildSut()
+    {
+        var repo = Substitute.For<IRepository<Event, System.Guid>>();
+        repo.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((Event?)null);
+        var db = Substitute.For<ICceDbContext>();
+        var user = Substitute.For<ICurrentUserAccessor>();
+        user.GetUserId().Returns(System.Guid.NewGuid());
+        return (BuildHandler(repo, db, user, new FakeSystemClock()), repo, db, user);
+    }
+
+    private static DeleteEventCommandHandler BuildHandler(
+        IRepository<Event, System.Guid> repo,
+        ICceDbContext db,
+        ICurrentUserAccessor currentUser,
+        ISystemClock clock)
+    {
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new DeleteEventCommandHandler(repo, db, currentUser, clock, new MessageFactory(localization));
     }
 }

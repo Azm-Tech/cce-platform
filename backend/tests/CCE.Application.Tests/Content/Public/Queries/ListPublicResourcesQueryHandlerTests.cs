@@ -1,7 +1,10 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Public.Queries.ListPublicResources;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
+using DomainCountry = CCE.Domain.Country;
 
 namespace CCE.Application.Tests.Content.Public.Queries;
 
@@ -12,15 +15,15 @@ public class ListPublicResourcesQueryHandlerTests
     [Fact]
     public async Task Returns_empty_paged_result_when_no_resources_exist()
     {
-        var db = BuildDb(Array.Empty<Resource>());
-        var sut = new ListPublicResourcesQueryHandler(db);
+        var sut = BuildSut(Array.Empty<Resource>());
 
         var result = await sut.Handle(new ListPublicResourcesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(20);
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
+        result.Data.Page.Should().Be(1);
+        result.Data.PageSize.Should().Be(20);
     }
 
     [Fact]
@@ -31,19 +34,18 @@ public class ListPublicResourcesQueryHandlerTests
         var asset = System.Guid.NewGuid();
 
         var published = Resource.Draft("عنوان", "Published", "وصف", "Description",
-            ResourceType.Document, cat, null, uploader, asset, Clock);
+            ResourceType.ScientificPaper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
         published.Publish(Clock);
 
         var draft = Resource.Draft("مسودة", "Draft", "وصف", "Description",
-            ResourceType.Document, cat, null, uploader, asset, Clock);
+            ResourceType.ScientificPaper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
 
-        var db = BuildDb([published, draft]);
-        var sut = new ListPublicResourcesQueryHandler(db);
+        var sut = BuildSut([published, draft]);
 
         var result = await sut.Handle(new ListPublicResourcesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().TitleEn.Should().Be("Published");
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("Published");
     }
 
     [Fact]
@@ -55,21 +57,20 @@ public class ListPublicResourcesQueryHandlerTests
         var asset = System.Guid.NewGuid();
 
         var match = Resource.Draft("فئة أ", "Category A", "وصف", "Description",
-            ResourceType.Document, catA, null, uploader, asset, Clock);
+            ResourceType.ScientificPaper, catA, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
         match.Publish(Clock);
 
         var noMatch = Resource.Draft("فئة ب", "Category B", "وصف", "Description",
-            ResourceType.Document, catB, null, uploader, asset, Clock);
+            ResourceType.ScientificPaper, catB, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
         noMatch.Publish(Clock);
 
-        var db = BuildDb([match, noMatch]);
-        var sut = new ListPublicResourcesQueryHandler(db);
+        var sut = BuildSut([match, noMatch]);
 
         var result = await sut.Handle(new ListPublicResourcesQuery(Page: 1, PageSize: 20, CategoryId: catA), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().TitleEn.Should().Be("Category A");
-        result.Items.Single().CategoryId.Should().Be(catA);
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("Category A");
+        result.Data.Items.Single().CategoryId.Should().Be(catA);
     }
 
     [Fact]
@@ -80,26 +81,30 @@ public class ListPublicResourcesQueryHandlerTests
         var asset = System.Guid.NewGuid();
 
         var doc = Resource.Draft("وثيقة", "Document", "وصف", "Description",
-            ResourceType.Document, cat, null, uploader, asset, Clock);
+            ResourceType.ScientificPaper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
         doc.Publish(Clock);
 
         var video = Resource.Draft("فيديو", "Video", "وصف", "Description",
-            ResourceType.Video, cat, null, uploader, asset, Clock);
+            ResourceType.Article, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
         video.Publish(Clock);
 
-        var db = BuildDb([doc, video]);
-        var sut = new ListPublicResourcesQueryHandler(db);
+        var sut = BuildSut([doc, video]);
 
-        var result = await sut.Handle(new ListPublicResourcesQuery(Page: 1, PageSize: 20, ResourceType: ResourceType.Video), CancellationToken.None);
+        var result = await sut.Handle(new ListPublicResourcesQuery(Page: 1, PageSize: 20, ResourceType: ResourceType.Article), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().TitleEn.Should().Be("Video");
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("Video");
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<Resource> resources)
+    private static ListPublicResourcesQueryHandler BuildSut(IEnumerable<Resource> resources)
     {
         var db = Substitute.For<ICceDbContext>();
         db.Resources.Returns(resources.AsQueryable());
-        return db;
+        db.ResourceCategories.Returns(Array.Empty<ResourceCategory>().AsQueryable());
+        db.AssetFiles.Returns(Array.Empty<AssetFile>().AsQueryable());
+        db.Countries.Returns(Array.Empty<DomainCountry.Country>().AsQueryable());
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new ListPublicResourcesQueryHandler(db, new MessageFactory(localization));
     }
 }

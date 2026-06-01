@@ -10,11 +10,14 @@ public sealed record ResourceDto(
     string DescriptionEn,
     ResourceType ResourceType,
     System.Guid CategoryId,
-    System.Guid? CountryId,
-    System.Guid UploadedById,
+    string CategoryNameAr,
+    string CategoryNameEn,
     System.Guid AssetFileId,
+    string AssetFileName,
+    IReadOnlyList<System.Guid> CountryIds,
+    IReadOnlyList<string> CountryNames,
+    System.Guid UploadedById,
     System.DateTimeOffset? PublishedOn,
     long ViewCount,
     bool IsCenterManaged,
-    bool IsPublished,
-    string RowVersion);
+    bool IsPublished);
