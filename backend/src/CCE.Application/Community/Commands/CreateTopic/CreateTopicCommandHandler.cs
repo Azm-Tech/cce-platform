@@ -1,20 +1,30 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Dtos;
 using CCE.Application.Community.Queries.ListTopics;
+using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.CreateTopic;
 
-public sealed class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, TopicDto>
+public sealed class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, Response<TopicDto>>
 {
-    private readonly ITopicService _service;
+    private readonly IRepository<Topic, System.Guid> _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public CreateTopicCommandHandler(ITopicService service)
+    public CreateTopicCommandHandler(
+        IRepository<Topic, System.Guid> repo,
+        ICceDbContext db,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _messages = messages;
     }
 
-    public async Task<TopicDto> Handle(CreateTopicCommand request, CancellationToken cancellationToken)
+    public async Task<Response<TopicDto>> Handle(CreateTopicCommand request, CancellationToken cancellationToken)
     {
         var topic = Topic.Create(
             request.NameAr,
@@ -26,8 +36,9 @@ public sealed class CreateTopicCommandHandler : IRequestHandler<CreateTopicComma
             request.IconUrl,
             request.OrderIndex);
 
-        await _service.SaveAsync(topic, cancellationToken).ConfigureAwait(false);
+        await _repo.AddAsync(topic, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListTopicsQueryHandler.MapToDto(topic);
+        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), "CONTENT_CREATED");
     }
 }

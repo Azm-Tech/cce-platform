@@ -183,7 +183,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceViewCountRepository, ResourceViewCountRepository>();
         services.AddScoped<ICountryAdminService, CountryAdminService>();
         services.AddScoped<ICountryProfileService, CountryProfileService>();
-        services.AddScoped<ITopicService, TopicService>();
+        // Topic uses IRepository<Topic, Guid> (registered below)
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
         services.AddScoped<ICommunityWriteService, CommunityWriteService>();
         services.AddScoped<IHomepageSettingsRepository, HomepageSettingsRepository>();

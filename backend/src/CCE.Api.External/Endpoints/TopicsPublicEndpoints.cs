@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Community.Public.Queries.ListPublicTopics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -14,8 +15,8 @@ public static class TopicsPublicEndpoints
 
         topics.MapGet("", async (IMediator mediator, CancellationToken ct) =>
         {
-            var result = await mediator.Send(new ListPublicTopicsQuery(), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            var response = await mediator.Send(new ListPublicTopicsQuery(), ct).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicTopics");

@@ -1,22 +1,26 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Public.Queries.ListPublicTopics;
 
 public sealed class ListPublicTopicsQueryHandler
-    : IRequestHandler<ListPublicTopicsQuery, System.Collections.Generic.IReadOnlyList<PublicTopicDto>>
+    : IRequestHandler<ListPublicTopicsQuery, Response<System.Collections.Generic.IReadOnlyList<PublicTopicDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public ListPublicTopicsQueryHandler(ICceDbContext db)
+    public ListPublicTopicsQueryHandler(ICceDbContext db, MessageFactory messages)
     {
         _db = db;
+        _messages = messages;
     }
 
-    public async Task<System.Collections.Generic.IReadOnlyList<PublicTopicDto>> Handle(
+    public async Task<Response<System.Collections.Generic.IReadOnlyList<PublicTopicDto>>> Handle(
         ListPublicTopicsQuery request,
         CancellationToken cancellationToken)
     {
@@ -26,7 +30,7 @@ public sealed class ListPublicTopicsQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        return list.Select(MapToDto).ToList();
+        return _messages.Ok((System.Collections.Generic.IReadOnlyList<PublicTopicDto>)list.Select(MapToDto).ToList(), "ITEMS_LISTED");
     }
 
     internal static PublicTopicDto MapToDto(Topic t) => new(

@@ -1,22 +1,26 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Community.Public.Queries.ListPublicTopics;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Community.Public.Queries.GetPublicTopicBySlug;
 
 public sealed class GetPublicTopicBySlugQueryHandler
-    : IRequestHandler<GetPublicTopicBySlugQuery, PublicTopicDto?>
+    : IRequestHandler<GetPublicTopicBySlugQuery, Response<PublicTopicDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public GetPublicTopicBySlugQueryHandler(ICceDbContext db)
+    public GetPublicTopicBySlugQueryHandler(ICceDbContext db, MessageFactory messages)
     {
         _db = db;
+        _messages = messages;
     }
 
-    public async Task<PublicTopicDto?> Handle(
+    public async Task<Response<PublicTopicDto>> Handle(
         GetPublicTopicBySlugQuery request,
         CancellationToken cancellationToken)
     {
@@ -26,6 +30,9 @@ public sealed class GetPublicTopicBySlugQueryHandler
             .ConfigureAwait(false))
             .FirstOrDefault();
 
-        return topic is null ? null : ListPublicTopicsQueryHandler.MapToDto(topic);
+        if (topic is null)
+            return _messages.TopicNotFound<PublicTopicDto>();
+
+        return _messages.Ok(ListPublicTopicsQueryHandler.MapToDto(topic), "SUCCESS_OPERATION");
     }
 }
