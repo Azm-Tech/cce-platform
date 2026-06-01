@@ -1,3 +1,10 @@
+export interface CountryCode {
+  id: string;
+  dialCode: string;
+  name: { ar: string; en: string };
+  isActive: boolean;
+}
+
 export interface Country {
   id: string;
   isoAlpha3: string;

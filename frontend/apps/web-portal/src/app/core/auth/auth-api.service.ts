@@ -18,6 +18,7 @@ export interface RegisterRequest {
   phoneNumber: string;
   password: string;
   confirmPassword: string;
+  countryCodeId: string;
 }
 
 interface ApiEnvelope<T> {

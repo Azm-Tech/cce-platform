@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -12,10 +12,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { toApiFieldErrors, PASSWORD_STRENGTH_VALIDATORS } from '@frontend/ui-kit';
+import { LocaleService } from '@frontend/i18n';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { CountriesApiService } from '../countries/countries-api.service';
+import type { CountryCode } from '../countries/country.types';
 
 function passwordsMatch(group: AbstractControl) {
   const p = group.get('password')?.value as string;
@@ -39,20 +43,24 @@ type SubmitState =
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatSelectModule,
     TranslocoModule,
   ],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterPage {
+export class RegisterPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly authApi = inject(AuthApiService);
+  private readonly countriesApi = inject(CountriesApiService);
   private readonly router = inject(Router);
+  readonly locale = inject(LocaleService).locale;
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
   readonly showPassword = signal(false);
+  readonly countryCodes = signal<CountryCode[]>([]);
 
   readonly form = new FormGroup(
     {
@@ -73,6 +81,7 @@ export class RegisterPage {
       ]),
       jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
       organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      countryCodeId: new FormControl('', [Validators.required]),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.maxLength(15),
@@ -83,6 +92,11 @@ export class RegisterPage {
     },
     { validators: passwordsMatch },
   );
+
+  async ngOnInit(): Promise<void> {
+    const res = await this.countriesApi.listCountryCodes({ isActive: true });
+    if (res.ok) this.countryCodes.set(res.value);
+  }
 
   get passwordMismatch(): boolean {
     return (
@@ -111,6 +125,7 @@ export class RegisterPage {
         emailAddress: v.emailAddress!,
         jobTitle: v.jobTitle!,
         organizationName: v.organizationName!,
+        countryCodeId: v.countryCodeId!,
         phoneNumber: v.phoneNumber!,
         password: v.password!,
         confirmPassword: v.confirmPassword!,

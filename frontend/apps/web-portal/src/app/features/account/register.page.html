@@ -53,6 +53,21 @@
         </mat-form-field>
 
         <mat-form-field>
+          <mat-label>{{ 'account.register.nationalityLabel' | transloco }}</mat-label>
+          <mat-select formControlName="countryCodeId">
+            @for (cc of countryCodes(); track cc.id) {
+              <mat-option [value]="cc.id">
+                <span dir="ltr">{{ cc.dialCode }}</span>
+                &nbsp;{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+              </mat-option>
+            }
+          </mat-select>
+          @if (form.get('countryCodeId')?.hasError('required') && form.get('countryCodeId')?.touched) {
+            <mat-error>{{ 'account.register.errorRequired' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
           <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
           <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" (input)="clearServerError('phoneNumber')" />
           @if (form.get('phoneNumber')?.hasError('serverError')) {

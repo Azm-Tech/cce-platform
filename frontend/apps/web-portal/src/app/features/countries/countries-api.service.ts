@@ -1,14 +1,28 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type { Country, CountryProfile } from './country.types';
+import type { Country, CountryCode, CountryProfile } from './country.types';
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
 @Injectable({ providedIn: 'root' })
 export class CountriesApiService {
   private readonly http = inject(HttpClient);
+
+  async listCountryCodes(opts: { search?: string; isActive?: boolean } = {}): Promise<Result<CountryCode[]>> {
+    let params = new HttpParams();
+    if (opts.search) params = params.set('search', opts.search);
+    if (opts.isActive !== undefined) params = params.set('isActive', String(opts.isActive));
+    return this.run(() =>
+      firstValueFrom(
+        this.http
+          .get<{ data: CountryCode[] }>('/api/country-codes', { params })
+          .pipe(map((res) => res.data)),
+      ),
+    );
+  }
 
   async listCountries(opts: { search?: string } = {}): Promise<Result<Country[]>> {
     let params = new HttpParams();

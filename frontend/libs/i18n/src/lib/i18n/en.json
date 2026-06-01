@@ -119,6 +119,8 @@
       "unauthorized": "Please sign in to continue.",
       "forbidden": "You don't have permission to access this resource."
     },
+    "search": "Search…",
+    "noResults": "No results found.",
     "actions": {
       "signIn": "Sign in",
       "signOut": "Sign out",
@@ -995,7 +997,9 @@
       "emailLabel": "Email address",
       "jobTitleLabel": "Job title",
       "organizationLabel": "Organization",
+      "nationalityLabel": "Nationality / dial code",
       "phoneLabel": "Phone number",
+      "errorRequired": "This field is required.",
       "passwordLabel": "Password",
       "confirmPasswordLabel": "Confirm password",
       "passwordHint": "12–20 characters.",

@@ -119,6 +119,8 @@
       "unauthorized": "يرجى تسجيل الدخول للمتابعة.",
       "forbidden": "ليس لديك إذن للوصول إلى هذا المورد."
     },
+    "search": "بحث…",
+    "noResults": "لا توجد نتائج.",
     "actions": {
       "signIn": "تسجيل الدخول",
       "signOut": "تسجيل الخروج",
@@ -995,7 +997,9 @@
       "emailLabel": "البريد الإلكتروني",
       "jobTitleLabel": "المسمى الوظيفي",
       "organizationLabel": "المنظمة",
+      "nationalityLabel": "الجنسية / رمز الاتصال",
       "phoneLabel": "رقم الهاتف",
+      "errorRequired": "هذا الحقل مطلوب.",
       "passwordLabel": "كلمة المرور",
       "confirmPasswordLabel": "تأكيد كلمة المرور",
       "passwordHint": "١٢-٢٠ حرفاً.",
