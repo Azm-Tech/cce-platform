@@ -106,6 +106,9 @@ public static class SystemCode
     public const string ERR057 = "ERR057"; // Knowledge partner not found
     public const string ERR058 = "ERR058"; // Policy section not found
 
+    // ─── Lookups Errors ───
+    public const string ERR130 = "ERR130"; // Country code not found
+
     // ─── Verification Errors ───
     public const string ERR120 = "ERR120"; // OTP not found
     public const string ERR121 = "ERR121"; // OTP expired
@@ -204,6 +207,10 @@ public static class SystemCode
     public const string CON045 = "CON045"; // Notifications marked read
     public const string CON046 = "CON046"; // Notification template created
     public const string CON047 = "CON047"; // Notification template updated
+
+    // ─── Lookups Success ───
+    public const string CON070 = "CON070"; // Lookup created
+    public const string CON071 = "CON071"; // Lookup updated
 
     // ─── General Success ───
     public const string CON100 = "CON100"; // Items listed successfully

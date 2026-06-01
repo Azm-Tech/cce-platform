@@ -1,194 +1,10 @@
-GENERAL_VALIDATION_ERROR:
-  ar: "عذرًا، البيانات المدخلة غير صحيحة"
-  en: "Sorry, the entered data is invalid"
-
-GENERAL_INTERNAL_ERROR:
-  ar: "حدث خطأ غير متوقع"
-  en: "An unexpected error occurred"
-
-GENERAL_UNAUTHORIZED:
-  ar: "الوصول غير مصرح به"
-  en: "Unauthorized access"
-
-GENERAL_FORBIDDEN:
-  ar: "الوصول ممنوع"
-  en: "Forbidden access"
-
-GENERAL_NOT_FOUND:
-  ar: "المورد غير موجود"
-  en: "Resource not found"
-
-GENERAL_BAD_REQUEST:
-  ar: "عذرًا، البيانات المدخلة غير صحيحة"
-  en: "Sorry, the entered data is invalid"
-
-GENERAL_SUCCESS_CREATED:
-  ar: "تم الإنشاء بنجاح"
-  en: "Created successfully"
-
-GENERAL_SUCCESS_UPDATED:
-  ar: "تم التحديث بنجاح"
-  en: "Updated successfully"
-
-GENERAL_SUCCESS_DELETED:
-  ar: "تم الحذف بنجاح"
-  en: "Deleted successfully"
-
-GENERAL_SUCCESS_OPERATION:
-  ar: "تمت العملية بنجاح"
-  en: "Operation completed successfully"
-
-IDENTITY_USER_NOT_FOUND:
-  ar: "عذرًا، لم يتم العثور على المستخدم"
-  en: "Sorry, user not found"
-
-IDENTITY_EMAIL_EXISTS:
-  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
-  en: "Sorry, a problem occurred while creating the account"
-
-IDENTITY_USERNAME_EXISTS:
-  ar: "اسم المستخدم مستخدم بالفعل"
-  en: "Username already taken"
-
-IDENTITY_INVALID_CREDENTIALS:
-  ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-  en: "Invalid email or password"
-
-IDENTITY_NOT_AUTHENTICATED:
-  ar: "المستخدم غير مصادق"
-  en: "User not authenticated"
-
-IDENTITY_EXPERT_REQUEST_NOT_FOUND:
-  ar: "طلب الخبير غير موجود"
-  en: "Expert request not found"
-
-IDENTITY_STATE_REP_ASSIGNMENT_NOT_FOUND:
-  ar: "التعيين غير موجود"
-  en: "Assignment not found"
-
-IDENTITY_STATE_REP_ASSIGNMENT_EXISTS:
-  ar: "التعيين موجود بالفعل"
-  en: "Assignment already exists"
-
-IDENTITY_INVALID_TOKEN:
-  ar: "رمز الوصول غير صالح"
-  en: "Invalid access token"
-
-IDENTITY_ACCOUNT_DEACTIVATED:
-  ar: "الحساب غير نشط"
-  en: "Account is deactivated"
-
-CONTENT_RESOURCE_NOT_FOUND:
-  ar: "المورد غير موجود"
-  en: "Resource not found"
-
-CONTENT_RESOURCE_DUPLICATE:
-  ar: "المورد موجود بالفعل"
-  en: "Resource already exists"
-
-CONTENT_CATEGORY_NOT_FOUND:
-  ar: "التصنيف غير موجود"
-  en: "Category not found"
-
-CONTENT_CATEGORY_DUPLICATE:
-  ar: "التصنيف موجود بالفعل"
-  en: "Category already exists"
-
-CONTENT_PAGE_NOT_FOUND:
-  ar: "الصفحة غير موجودة"
-  en: "Page not found"
-
-CONTENT_NEWS_NOT_FOUND:
-  ar: "الخبر غير موجود"
-  en: "News not found"
-
-CONTENT_EVENT_NOT_FOUND:
-  ar: "الفعالية غير موجودة"
-  en: "Event not found"
-
-CONTENT_ASSET_NOT_FOUND:
-  ar: "الملف غير موجود"
-  en: "Asset not found"
-
-COMMUNITY_TOPIC_NOT_FOUND:
-  ar: "الموضوع غير موجود"
-  en: "Topic not found"
-
-COMMUNITY_TOPIC_DUPLICATE:
-  ar: "الموضوع موجود بالفعل"
-  en: "Topic already exists"
-
-COMMUNITY_POST_NOT_FOUND:
-  ar: "المنشور غير موجود"
-  en: "Post not found"
-
-COMMUNITY_REPLY_NOT_FOUND:
-  ar: "الرد غير موجود"
-  en: "Reply not found"
-
-COMMUNITY_ALREADY_FOLLOWING:
-  ar: "أنت تتابع هذا بالفعل"
-  en: "You are already following this"
-
-COMMUNITY_NOT_FOLLOWING:
-  ar: "أنت لا تتابع هذا"
-  en: "You are not following this"
-
-COMMUNITY_CANNOT_MARK_ANSWERED:
-  ar: "غير مصرح لك بتحديد الإجابة"
-  en: "You are not authorized to mark the answer"
-
-COMMUNITY_EDIT_WINDOW_EXPIRED:
-  ar: "انتهت فترة التعديل"
-  en: "Edit window has expired"
-
-COUNTRY_COUNTRY_NOT_FOUND:
-  ar: "الدولة غير موجودة"
-  en: "Country not found"
-
-COUNTRY_COUNTRY_PROFILE_NOT_FOUND:
-  ar: "الملف التعريفي غير موجود"
-  en: "Country profile not found"
-
-NOTIFICATIONS_TEMPLATE_NOT_FOUND:
-  ar: "القالب غير موجود"
-  en: "Template not found"
-
-NOTIFICATIONS_NOTIFICATION_NOT_FOUND:
-  ar: "الإشعار غير موجود"
-  en: "Notification not found"
-
-VALIDATION_REQUIRED_FIELD:
-  ar: "هذا الحقل مطلوب"
-  en: "This field is required"
-
 REQUIRED_FIELD:
   ar: "هذا الحقل مطلوب"
   en: "This field is required"
 
-VALIDATION_INVALID_EMAIL:
-  ar: "البريد الإلكتروني غير صالح"
-  en: "Invalid email format"
-
-VALIDATION_MIN_LENGTH:
-  ar: "القيمة قصيرة جدًا"
-  en: "Value is too short"
-
-VALIDATION_MAX_LENGTH:
-  ar: "القيمة طويلة جدًا"
-  en: "Value is too long"
-
 MAX_LENGTH:
   ar: "القيمة طويلة جدًا"
   en: "Value is too long"
-
-VALIDATION_INVALID_FORMAT:
-  ar: "التنسيق غير صالح"
-  en: "Invalid format"
-
-VALIDATION_INVALID_ENUM:
-  ar: "القيمة المحددة غير صالحة"
-  en: "Selected value is invalid"
 
 INVALID_ENUM:
   ar: "القيمة المحددة غير صالحة"
@@ -323,34 +139,6 @@ CONCURRENCY_CONFLICT:
 DUPLICATE_VALUE:
   ar: "القيمة موجودة بالفعل"
   en: "Value already exists"
-
-CONTENT_HOMEPAGE_SECTION_NOT_FOUND:
-  ar: "القسم غير موجود"
-  en: "Section not found"
-
-CONTENT_PAGE_DUPLICATE:
-  ar: "الصفحة موجودة بالفعل"
-  en: "Page already exists"
-
-CONTENT_COUNTRY_RESOURCE_REQUEST_NOT_FOUND:
-  ar: "طلب المورد غير موجود"
-  en: "Resource request not found"
-
-IDENTITY_EXPERT_REQUEST_ALREADY_EXISTS:
-  ar: "طلب الخبير موجود بالفعل"
-  en: "Expert request already exists"
-
-KNOWLEDGE_MAP_NOT_FOUND:
-  ar: "خريطة المعرفة غير موجودة"
-  en: "Knowledge map not found"
-
-KNOWLEDGE_NODE_NOT_FOUND:
-  ar: "العقدة غير موجودة"
-  en: "Node not found"
-
-KNOWLEDGE_EDGE_NOT_FOUND:
-  ar: "الوصلة غير موجودة"
-  en: "Edge not found"
 
 SCENARIO_NOT_FOUND:
   ar: "السيناريو غير موجود"
@@ -522,3 +310,291 @@ RESOURCE_SHARE_SUCCESS:
 RESOURCE_SHARE_FAILED:
   ar: "حدث خطأ أثناء محاولة مشاركة المصدر. يرجى المحاولة مرة أخرى لاحقاً."
   en: "An error occurred while trying to share the resource. Please try again later."
+
+# ─── Identity Errors (bare keys without IDENTITY_ prefix) ───
+
+INVALID_TOKEN:
+  ar: "رمز الوصول غير صالح"
+  en: "Invalid access token"
+
+ACCOUNT_DEACTIVATED:
+  ar: "الحساب غير نشط"
+  en: "Account is deactivated"
+
+USERNAME_EXISTS:
+  ar: "اسم المستخدم مستخدم بالفعل"
+  en: "Username already taken"
+
+EXPERT_REQUEST_ALREADY_EXISTS:
+  ar: "طلب الخبير موجود بالفعل"
+  en: "Expert request already exists"
+
+STATE_REP_ASSIGNMENT_EXISTS:
+  ar: "التعيين موجود بالفعل"
+  en: "Assignment already exists"
+
+PASSWORD_RECOVERY_FAILED:
+  ar: "حدث خطأ أثناء استعادة كلمة المرور"
+  en: "An error occurred during password recovery"
+
+LOGOUT_FAILED:
+  ar: "حدث خطأ أثناء تسجيل الخروج"
+  en: "An error occurred during logout"
+
+UNAUTHORIZED_ACCESS:
+  ar: "الوصول غير مصرح به"
+  en: "Unauthorized access"
+
+FORBIDDEN_ACCESS:
+  ar: "الوصول ممنوع"
+  en: "Forbidden access"
+
+# ─── Content Errors (bare keys without CONTENT_ prefix) ───
+
+NEWS_NOT_FOUND:
+  ar: "الخبر غير موجود"
+  en: "News not found"
+
+EVENT_NOT_FOUND:
+  ar: "الفعالية غير موجودة"
+  en: "Event not found"
+
+RESOURCE_NOT_FOUND:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+PAGE_NOT_FOUND:
+  ar: "الصفحة غير موجودة"
+  en: "Page not found"
+
+CATEGORY_NOT_FOUND:
+  ar: "التصنيف غير موجود"
+  en: "Category not found"
+
+ASSET_NOT_FOUND:
+  ar: "الملف غير موجود"
+  en: "Asset not found"
+
+ASSET_NOT_CLEAN:
+  ar: "تعذّر رفع الملف، لم يجتز فحص الأمان"
+  en: "Asset upload failed, file did not pass security scan"
+
+HOMEPAGE_SECTION_NOT_FOUND:
+  ar: "القسم غير موجود"
+  en: "Section not found"
+
+COUNTRY_RESOURCE_REQUEST_NOT_FOUND:
+  ar: "طلب المورد غير موجود"
+  en: "Resource request not found"
+
+RESOURCE_DUPLICATE:
+  ar: "المورد موجود بالفعل"
+  en: "Resource already exists"
+
+CATEGORY_DUPLICATE:
+  ar: "التصنيف موجود بالفعل"
+  en: "Category already exists"
+
+PAGE_DUPLICATE:
+  ar: "الصفحة موجودة بالفعل"
+  en: "Page already exists"
+
+NEWS_DUPLICATE:
+  ar: "الخبر موجود بالفعل"
+  en: "News already exists"
+
+EVENT_DUPLICATE:
+  ar: "الفعالية موجودة بالفعل"
+  en: "Event already exists"
+
+# ─── Content Success ───
+
+CONTENT_CREATED:
+  ar: "تم إنشاء المحتوى بنجاح"
+  en: "Content created successfully"
+
+CONTENT_PUBLISHED:
+  ar: "تم نشر المحتوى بنجاح"
+  en: "Content published successfully"
+
+CONTENT_ARCHIVED:
+  ar: "تم أرشفة المحتوى بنجاح"
+  en: "Content archived successfully"
+
+ASSET_UPLOADED:
+  ar: "تم رفع الملف بنجاح"
+  en: "Asset uploaded successfully"
+
+RESOURCE_UPDATED:
+  ar: "تم تحديث المصدر بنجاح"
+  en: "Resource updated successfully"
+
+RESOURCE_PUBLISHED:
+  ar: "تم نشر المصدر بنجاح"
+  en: "Resource published successfully"
+
+# ─── Community Errors (bare keys without COMMUNITY_ prefix) ───
+
+TOPIC_NOT_FOUND:
+  ar: "الموضوع غير موجود"
+  en: "Topic not found"
+
+TOPIC_DUPLICATE:
+  ar: "الموضوع موجود بالفعل"
+  en: "Topic already exists"
+
+POST_NOT_FOUND:
+  ar: "المنشور غير موجود"
+  en: "Post not found"
+
+REPLY_NOT_FOUND:
+  ar: "الرد غير موجود"
+  en: "Reply not found"
+
+RATING_NOT_FOUND:
+  ar: "التقييم غير موجود"
+  en: "Rating not found"
+
+ALREADY_FOLLOWING:
+  ar: "أنت تتابع هذا بالفعل"
+  en: "You are already following this"
+
+NOT_FOLLOWING:
+  ar: "أنت لا تتابع هذا"
+  en: "You are not following this"
+
+CANNOT_MARK_ANSWERED:
+  ar: "غير مصرح لك بتحديد الإجابة"
+  en: "You are not authorized to mark the answer"
+
+EDIT_WINDOW_EXPIRED:
+  ar: "انتهت فترة التعديل"
+  en: "Edit window has expired"
+
+# ─── Country Errors ───
+
+COUNTRY_PROFILE_NOT_FOUND:
+  ar: "الملف التعريفي غير موجود"
+  en: "Country profile not found"
+
+# ─── Notification Errors / Success (bare keys) ───
+
+TEMPLATE_NOT_FOUND:
+  ar: "القالب غير موجود"
+  en: "Template not found"
+
+TEMPLATE_DUPLICATE:
+  ar: "القالب موجود بالفعل"
+  en: "Template already exists"
+
+NOTIFICATION_NOT_FOUND:
+  ar: "الإشعار غير موجود"
+  en: "Notification not found"
+
+NOTIFICATION_CREATED:
+  ar: "تم إنشاء الإشعار بنجاح"
+  en: "Notification created successfully"
+
+NOTIFICATION_MARKED_READ:
+  ar: "تم تحديد الإشعار كمقروء"
+  en: "Notification marked as read"
+
+NOTIFICATION_DELETED:
+  ar: "تم حذف الإشعار بنجاح"
+  en: "Notification deleted successfully"
+
+# ─── KnowledgeMap Errors (bare keys matching SystemCodeMap) ───
+
+MAP_NOT_FOUND:
+  ar: "خريطة المعرفة غير موجودة"
+  en: "Knowledge map not found"
+
+NODE_NOT_FOUND:
+  ar: "العقدة غير موجودة"
+  en: "Node not found"
+
+EDGE_NOT_FOUND:
+  ar: "الوصلة غير موجودة"
+  en: "Edge not found"
+
+# ─── Verification Success ───
+
+EMAIL_UPDATED:
+  ar: "تم تحديث البريد الإلكتروني بنجاح"
+  en: "Email updated successfully"
+
+PHONE_UPDATED:
+  ar: "تم تحديث رقم الهاتف بنجاح"
+  en: "Phone number updated successfully"
+
+CONTACT_ALREADY_TAKEN:
+  ar: "البيانات التواصلية مستخدمة بالفعل"
+  en: "Contact information is already taken"
+
+# ─── General Success ───
+
+SUCCESS_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+SUCCESS_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"
+
+SUCCESS_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Deleted successfully"
+
+# ─── Validation (bare keys matching SystemCodeMap) ───
+
+INVALID_EMAIL:
+  ar: "البريد الإلكتروني غير صالح"
+  en: "Invalid email format"
+
+INVALID_PHONE:
+  ar: "رقم الهاتف غير صالح"
+  en: "Invalid phone number"
+
+MIN_LENGTH:
+  ar: "القيمة قصيرة جدًا"
+  en: "Value is too short"
+
+INVALID_FORMAT:
+  ar: "التنسيق غير صالح"
+  en: "Invalid format"
+
+PASSWORD_UPPERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف كبير على الأقل"
+  en: "Password must contain at least one uppercase letter"
+
+PASSWORD_LOWERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف صغير على الأقل"
+  en: "Password must contain at least one lowercase letter"
+
+PASSWORD_NUMBER:
+  ar: "يجب أن تحتوي كلمة المرور على رقم على الأقل"
+  en: "Password must contain at least one number"
+
+# ─── General Errors ───
+
+EXTERNAL_API_ERROR:
+  ar: "حدث خطأ في الاتصال بالخدمة الخارجية"
+  en: "An error occurred connecting to the external service"
+
+EXTERNAL_API_NOT_CONFIGURED:
+  ar: "الخدمة الخارجية غير مهيأة"
+  en: "External service is not configured"
+
+# ─── Lookups ───
+
+COUNTRY_CODE_NOT_FOUND:
+  ar: "رمز الدولة غير موجود"
+  en: "Country code not found"
+
+LOOKUP_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+LOOKUP_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"

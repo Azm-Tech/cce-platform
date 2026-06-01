@@ -68,6 +68,6 @@ public class ListPublicNewsQueryHandlerTests
         db.News.Returns(news.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new ListPublicNewsQueryHandler(db, new MessageFactory(localization));
+        return new ListPublicNewsQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

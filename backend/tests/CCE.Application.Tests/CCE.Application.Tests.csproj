@@ -30,4 +30,11 @@
     <ProjectReference Include="..\CCE.TestInfrastructure\CCE.TestInfrastructure.csproj" />
   </ItemGroup>
 
+  <!-- Link Resources.yaml so YamlLocalizationStore can find it in the test output directory -->
+  <ItemGroup>
+    <Content Include="..\..\src\CCE.Api.Common\Localization\Resources.yaml" Link="Localization\Resources.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

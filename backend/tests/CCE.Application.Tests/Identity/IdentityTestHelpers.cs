@@ -12,6 +12,6 @@ public static class IdentityTestHelpers
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>())
             .Returns(call => call.ArgAt<string>(0));
 
-        return new MessageFactory(localization);
+        return new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance);
     }
 }

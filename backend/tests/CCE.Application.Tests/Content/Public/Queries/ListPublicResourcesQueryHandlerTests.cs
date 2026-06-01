@@ -105,6 +105,6 @@ public class ListPublicResourcesQueryHandlerTests
         db.Countries.Returns(Array.Empty<DomainCountry.Country>().AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new ListPublicResourcesQueryHandler(db, new MessageFactory(localization));
+        return new ListPublicResourcesQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }
