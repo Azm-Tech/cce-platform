@@ -96,7 +96,7 @@ public class UploadAssetCommandHandlerTests
         currentUser.GetUserId().Returns(currentUserId);
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        var msg = new MessageFactory(localization);
+        var msg = new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance);
         return new UploadAssetCommandHandler(
             storage, scanner, service, db, currentUser, new FakeSystemClock(),
             msg, NullLogger<UploadAssetCommandHandler>.Instance);

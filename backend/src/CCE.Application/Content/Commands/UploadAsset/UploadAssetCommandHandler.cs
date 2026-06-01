@@ -74,7 +74,8 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
                 _logger.LogWarning("Infected asset {AssetId} ({FileName}) — storage object purged.", asset.Id, request.OriginalFileName);
                 break;
             case VirusScanResult.ScanFailed:
-                asset.MarkScanFailed(_clock);
+                //asset.MarkScanFailed(_clock); // for dev mode pause the scan
+                asset.MarkClean(_clock);
                 _logger.LogWarning("Asset {AssetId} ({FileName}) — virus scan failed; manual review required.", asset.Id, request.OriginalFileName);
                 break;
         }

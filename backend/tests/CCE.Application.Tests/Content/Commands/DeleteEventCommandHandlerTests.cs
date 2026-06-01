@@ -94,6 +94,6 @@ public class DeleteEventCommandHandlerTests
     {
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new DeleteEventCommandHandler(repo, db, currentUser, clock, new MessageFactory(localization));
+        return new DeleteEventCommandHandler(repo, db, currentUser, clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

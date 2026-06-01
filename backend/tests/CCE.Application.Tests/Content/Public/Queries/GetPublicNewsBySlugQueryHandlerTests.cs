@@ -57,6 +57,6 @@ public class GetPublicNewsBySlugQueryHandlerTests
         db.News.Returns(news.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new GetPublicNewsBySlugQueryHandler(db, new MessageFactory(localization));
+        return new GetPublicNewsBySlugQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

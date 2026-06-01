@@ -68,7 +68,7 @@ public class CreateNewsCommandHandlerTests
             user.GetUserId().Returns(System.Guid.NewGuid());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        var sut = new CreateNewsCommandHandler(repo, db, user, new FakeSystemClock(), new MessageFactory(localization));
+        var sut = new CreateNewsCommandHandler(repo, db, user, new FakeSystemClock(), new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
         return (sut, repo, db);
     }
 }

@@ -62,7 +62,14 @@ public static class ApplicationErrors
         public const string EVENT_DUPLICATE = "EVENT_DUPLICATE";
         public const string HOMEPAGE_SECTION_NOT_FOUND = "HOMEPAGE_SECTION_NOT_FOUND";
         public const string ASSET_NOT_FOUND = "ASSET_NOT_FOUND";
+        public const string ASSET_NOT_CLEAN = "ASSET_NOT_CLEAN";
         public const string COUNTRY_RESOURCE_REQUEST_NOT_FOUND = "COUNTRY_RESOURCE_REQUEST_NOT_FOUND";
+        public const string CONTENT_CREATED = "CONTENT_CREATED";
+        public const string CONTENT_UPDATED = "CONTENT_UPDATED";
+        public const string CONTENT_DELETED = "CONTENT_DELETED";
+        public const string CONTENT_PUBLISHED = "CONTENT_PUBLISHED";
+        public const string CONTENT_ARCHIVED = "CONTENT_ARCHIVED";
+        public const string ASSET_UPLOADED = "ASSET_UPLOADED";
     }
 
     public static class Community
@@ -89,6 +96,57 @@ public static class ApplicationErrors
         public const string TEMPLATE_NOT_FOUND = "TEMPLATE_NOT_FOUND";
         public const string TEMPLATE_DUPLICATE = "TEMPLATE_DUPLICATE";
         public const string NOTIFICATION_NOT_FOUND = "NOTIFICATION_NOT_FOUND";
+        public const string NOTIFICATION_CREATED = "NOTIFICATION_CREATED";
+        public const string NOTIFICATION_MARKED_READ = "NOTIFICATION_MARKED_READ";
+        public const string NOTIFICATION_DELETED = "NOTIFICATION_DELETED";
+        public const string NOTIFICATION_SETTINGS_UPDATED = "NOTIFICATION_SETTINGS_UPDATED";
+        public const string NOTIFICATION_RETRIED = "NOTIFICATION_RETRIED";
+        public const string NOTIFICATIONS_MARKED_READ = "NOTIFICATIONS_MARKED_READ";
+        public const string NOTIFICATION_TEMPLATE_CREATED = "NOTIFICATION_TEMPLATE_CREATED";
+        public const string NOTIFICATION_TEMPLATE_UPDATED = "NOTIFICATION_TEMPLATE_UPDATED";
+    }
+
+    public static class PlatformSettings
+    {
+        public const string HOMEPAGE_SETTINGS_NOT_FOUND = "HOMEPAGE_SETTINGS_NOT_FOUND";
+        public const string ABOUT_SETTINGS_NOT_FOUND = "ABOUT_SETTINGS_NOT_FOUND";
+        public const string POLICIES_SETTINGS_NOT_FOUND = "POLICIES_SETTINGS_NOT_FOUND";
+        public const string GLOSSARY_ENTRY_NOT_FOUND = "GLOSSARY_ENTRY_NOT_FOUND";
+        public const string KNOWLEDGE_PARTNER_NOT_FOUND = "KNOWLEDGE_PARTNER_NOT_FOUND";
+        public const string POLICY_SECTION_NOT_FOUND = "POLICY_SECTION_NOT_FOUND";
+        public const string CONTENT_UPDATE_FAILED = "CONTENT_UPDATE_FAILED";
+        public const string SETTINGS_UPDATED = "SETTINGS_UPDATED";
+    }
+
+    public static class Media
+    {
+        public const string MEDIA_FILE_NOT_FOUND = "MEDIA_FILE_NOT_FOUND";
+        public const string INVALID_FILE_TYPE = "INVALID_FILE_TYPE";
+        public const string FILE_TOO_LARGE = "FILE_TOO_LARGE";
+        public const string EMPTY_FILE = "EMPTY_FILE";
+        public const string MEDIA_UPLOADED = "MEDIA_UPLOADED";
+        public const string MEDIA_UPDATED = "MEDIA_UPDATED";
+        public const string MEDIA_DELETED = "MEDIA_DELETED";
+    }
+
+    public static class Verification
+    {
+        public const string OTP_NOT_FOUND = "OTP_NOT_FOUND";
+        public const string OTP_EXPIRED = "OTP_EXPIRED";
+        public const string OTP_INVALID_CODE = "OTP_INVALID_CODE";
+        public const string OTP_MAX_ATTEMPTS = "OTP_MAX_ATTEMPTS";
+        public const string OTP_COOLDOWN_ACTIVE = "OTP_COOLDOWN_ACTIVE";
+        public const string OTP_INVALIDATED = "OTP_INVALIDATED";
+        public const string CONTACT_ALREADY_TAKEN = "CONTACT_ALREADY_TAKEN";
+        public const string EMAIL_UPDATED = "EMAIL_UPDATED";
+        public const string PHONE_UPDATED = "PHONE_UPDATED";
+    }
+
+    public static class Lookups
+    {
+        public const string COUNTRY_CODE_NOT_FOUND = "COUNTRY_CODE_NOT_FOUND";
+        public const string LOOKUP_CREATED = "LOOKUP_CREATED";
+        public const string LOOKUP_UPDATED = "LOOKUP_UPDATED";
     }
 
     public static class KnowledgeMap

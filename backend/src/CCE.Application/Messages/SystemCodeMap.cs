@@ -89,6 +89,9 @@ public static class SystemCodeMap
         ["KNOWLEDGE_PARTNER_NOT_FOUND"] = SystemCode.ERR057,
         ["POLICY_SECTION_NOT_FOUND"] = SystemCode.ERR058,
 
+        // ─── Lookups Errors ───
+        ["COUNTRY_CODE_NOT_FOUND"] = SystemCode.ERR130,
+
         // ─── Verification Errors ───
         ["OTP_NOT_FOUND"] = SystemCode.ERR120,
         ["OTP_EXPIRED"] = SystemCode.ERR121,
@@ -155,6 +158,10 @@ public static class SystemCodeMap
         ["RESOURCE_DOWNLOAD_SUCCESS"] = SystemCode.CON001,
         ["RESOURCE_SHARE_SUCCESS"] = SystemCode.CON002,
         ["RESOURCE_SHARE_FAILED"] = SystemCode.ERR003,
+
+        // ─── Lookups Success ───
+        ["LOOKUP_CREATED"] = SystemCode.CON070,
+        ["LOOKUP_UPDATED"] = SystemCode.CON071,
 
         // ─── Notification Success ───
         ["NOTIFICATION_CREATED"] = SystemCode.CON040,

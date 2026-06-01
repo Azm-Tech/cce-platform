@@ -60,7 +60,7 @@ public class CreateEventCommandHandlerTests
         db.Topics.Returns(new[] { topic }.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        var sut = new CreateEventCommandHandler(repo, db, new FakeSystemClock(), new MessageFactory(localization));
+        var sut = new CreateEventCommandHandler(repo, db, new FakeSystemClock(), new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
         return (sut, repo, db);
     }
 }

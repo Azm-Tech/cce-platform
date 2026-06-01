@@ -9,6 +9,6 @@ internal static class NotificationTestMessages
     {
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call[0]!.ToString()!);
-        return new MessageFactory(localization);
+        return new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance);
     }
 }

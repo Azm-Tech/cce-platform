@@ -67,6 +67,6 @@ public class UpdateEventCommandHandlerTests
         db.Topics.Returns(new[] { topic }.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return (new UpdateEventCommandHandler(repo, db, new MessageFactory(localization)), db, repo);
+        return (new UpdateEventCommandHandler(repo, db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db, repo);
     }
 }
