@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -8,4 +9,4 @@ public sealed record UpdateResourceCategoryCommand(
     string NameAr,
     string NameEn,
     int OrderIndex,
-    bool IsActive) : IRequest<ResourceCategoryDto?>;
+    bool IsActive) : IRequest<Response<ResourceCategoryDto>>;

@@ -173,7 +173,7 @@ public static class DependencyInjection
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddSingleton<IHtmlSanitizer, HtmlSanitizerWrapper>();
         services.AddScoped<IAssetRepository, AssetRepository>();
-        services.AddScoped<IResourceCategoryRepository, ResourceCategoryRepository>();
+        // ResourceCategory uses IRepository<ResourceCategory, Guid> (registered below)
         services.AddScoped<IResourceRepository, ResourceRepository>();
         services.AddScoped<INewsRepository, NewsRepository>();
         services.AddScoped<IEventRepository, EventRepository>();

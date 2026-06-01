@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Commands.CreateResourceCategory;
 using CCE.Application.Content.Commands.DeleteResourceCategory;
 using CCE.Application.Content.Commands.UpdateResourceCategory;
@@ -26,8 +27,8 @@ public static class ResourceCategoryEndpoints
                 PageSize: pageSize ?? 20,
                 ParentId: parentId,
                 IsActive: isActive);
-            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("ListResourceCategories");
@@ -36,8 +37,8 @@ public static class ResourceCategoryEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetResourceCategoryByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(new GetResourceCategoryByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("GetResourceCategoryById");
@@ -48,8 +49,8 @@ public static class ResourceCategoryEndpoints
         {
             var cmd = new CreateResourceCategoryCommand(
                 body.NameAr, body.NameEn, body.Slug, body.ParentId, body.OrderIndex);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/resource-categories/{dto.Id}", dto);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("CreateResourceCategory");
@@ -61,8 +62,8 @@ public static class ResourceCategoryEndpoints
         {
             var cmd = new UpdateResourceCategoryCommand(
                 id, body.NameAr, body.NameEn, body.OrderIndex, body.IsActive);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("UpdateResourceCategory");
@@ -71,8 +72,8 @@ public static class ResourceCategoryEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new DeleteResourceCategoryCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var response = await mediator.Send(new DeleteResourceCategoryCommand(id), cancellationToken).ConfigureAwait(false);
+            return response.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("DeleteResourceCategory");

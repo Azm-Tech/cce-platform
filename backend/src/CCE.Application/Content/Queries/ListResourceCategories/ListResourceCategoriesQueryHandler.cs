@@ -1,19 +1,26 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Queries.ListResourceCategories;
 
 public sealed class ListResourceCategoriesQueryHandler
-    : IRequestHandler<ListResourceCategoriesQuery, PagedResult<ResourceCategoryDto>>
+    : IRequestHandler<ListResourceCategoriesQuery, Response<PagedResult<ResourceCategoryDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public ListResourceCategoriesQueryHandler(ICceDbContext db) => _db = db;
+    public ListResourceCategoriesQueryHandler(ICceDbContext db, MessageFactory messages)
+    {
+        _db = db;
+        _messages = messages;
+    }
 
-    public async Task<PagedResult<ResourceCategoryDto>> Handle(
+    public async Task<Response<PagedResult<ResourceCategoryDto>>> Handle(
         ListResourceCategoriesQuery request,
         CancellationToken cancellationToken)
     {
@@ -23,7 +30,7 @@ public sealed class ListResourceCategoriesQueryHandler
             .OrderBy(c => c.OrderIndex);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
-        return result.Map(MapToDto);
+        return _messages.Ok(result.Map(MapToDto), "ITEMS_LISTED");
     }
 
     internal static ResourceCategoryDto MapToDto(ResourceCategory c) => new(
