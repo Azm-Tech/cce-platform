@@ -23,7 +23,8 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? locationEn,
         string? onlineMeetingUrl,
         string? featuredImageUrl,
-        string iCalUid) : base(id)
+        string iCalUid,
+        System.Guid topicId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -36,6 +37,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         OnlineMeetingUrl = onlineMeetingUrl;
         FeaturedImageUrl = featuredImageUrl;
         ICalUid = iCalUid;
+        TopicId = topicId;
     }
 
     public string TitleAr { get; private set; }
@@ -52,6 +54,8 @@ public sealed class Event : AggregateRoot<System.Guid>
     /// <summary>Stable iCalendar UID (set at creation). Never changes.</summary>
     public string ICalUid { get; private set; }
 
+    public System.Guid TopicId { get; private set; }
+
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
 
     public static Event Schedule(
@@ -65,6 +69,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? locationEn,
         string? onlineMeetingUrl,
         string? featuredImageUrl,
+        System.Guid topicId,
         ISystemClock clock)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
@@ -75,6 +80,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         {
             throw new DomainException("EndsOn must be strictly after StartsOn.");
         }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (onlineMeetingUrl is not null
             && !onlineMeetingUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -88,7 +94,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         var id = System.Guid.NewGuid();
         var iCalUid = $"{id:N}@cce.moenergy.gov.sa";
         var ev = new Event(id, titleAr, titleEn, descriptionAr, descriptionEn,
-            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid);
+            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid, topicId);
         ev.RaiseDomainEvent(new EventScheduledEvent(id, startsOn, endsOn, clock.UtcNow));
         return ev;
     }
@@ -101,12 +107,14 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? locationAr,
         string? locationEn,
         string? onlineMeetingUrl,
-        string? featuredImageUrl)
+        string? featuredImageUrl,
+        System.Guid topicId)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(descriptionAr)) throw new DomainException("DescriptionAr is required.");
         if (string.IsNullOrWhiteSpace(descriptionEn)) throw new DomainException("DescriptionEn is required.");
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (onlineMeetingUrl is not null
             && !onlineMeetingUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -125,6 +133,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         LocationEn = locationEn;
         OnlineMeetingUrl = onlineMeetingUrl;
         FeaturedImageUrl = featuredImageUrl;
+        TopicId = topicId;
     }
 
     public void Reschedule(System.DateTimeOffset startsOn, System.DateTimeOffset endsOn)

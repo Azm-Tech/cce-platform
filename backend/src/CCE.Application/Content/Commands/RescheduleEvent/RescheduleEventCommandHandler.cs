@@ -1,30 +1,42 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
-using CCE.Application.Content.Queries.ListEvents;
+using CCE.Application.Content.Queries.GetEventById;
+using CCE.Application.Messages;
+using CCE.Domain.Common;
+using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.RescheduleEvent;
 
-public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEventCommand, EventDto?>
+public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEventCommand, Response<EventDto>>
 {
-    private readonly IEventRepository _service;
+    private readonly IRepository<Event, System.Guid> _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public RescheduleEventCommandHandler(IEventRepository service)
+    public RescheduleEventCommandHandler(
+        IRepository<Event, System.Guid> repo,
+        ICceDbContext db,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _messages = messages;
     }
 
-    public async Task<EventDto?> Handle(RescheduleEventCommand request, CancellationToken cancellationToken)
+    public async Task<Response<EventDto>> Handle(RescheduleEventCommand request, CancellationToken cancellationToken)
     {
-        var ev = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var ev = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (ev is null)
-        {
-            return null;
-        }
+            return _messages.EventNotFound<EventDto>();
 
+        var expectedRowVersion = ev.RowVersion;
         ev.Reschedule(request.StartsOn, request.EndsOn);
 
-        await _service.UpdateAsync(ev, request.RowVersion, cancellationToken).ConfigureAwait(false);
+        _db.SetExpectedRowVersion(ev, expectedRowVersion);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListEventsQueryHandler.MapToDto(ev);
+        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev), "SUCCESS_OPERATION");
     }
 }

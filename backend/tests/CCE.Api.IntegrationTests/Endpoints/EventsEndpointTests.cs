@@ -42,10 +42,11 @@ public class EventsEndpointTests :
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await resp.Content.ReadAsStringAsync();
         var doc = JsonDocument.Parse(body).RootElement;
-        doc.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
-        doc.GetProperty("page").GetInt32().Should().Be(1);
-        doc.GetProperty("pageSize").GetInt32().Should().Be(20);
-        doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
+        var data = doc.GetProperty("data");
+        data.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
+        data.GetProperty("page").GetInt32().Should().Be(1);
+        data.GetProperty("pageSize").GetInt32().Should().Be(20);
+        data.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -83,6 +84,7 @@ public class EventsEndpointTests :
             locationEn = (string?)null,
             onlineMeetingUrl = (string?)null,
             featuredImageUrl = (string?)null,
+            topicId = System.Guid.NewGuid(),
         });
 
         var resp = await client.PostAsync(new Uri("/api/admin/events", UriKind.Relative), body);
@@ -102,7 +104,7 @@ public class EventsEndpointTests :
             locationEn = (string?)null,
             onlineMeetingUrl = (string?)null,
             featuredImageUrl = (string?)null,
-            rowVersion = System.Convert.ToBase64String(new byte[8]),
+            topicId = System.Guid.NewGuid(),
         });
 
         var resp = await client.PutAsync(new Uri($"/api/admin/events/{System.Guid.NewGuid()}", UriKind.Relative), body);
@@ -123,7 +125,7 @@ public class EventsEndpointTests :
             locationEn = (string?)null,
             onlineMeetingUrl = (string?)null,
             featuredImageUrl = (string?)null,
-            rowVersion = System.Convert.ToBase64String(new byte[8]),
+            topicId = System.Guid.NewGuid(),
         });
 
         var resp = await client.PutAsync(new Uri($"/api/admin/events/{System.Guid.NewGuid()}", UriKind.Relative), body);

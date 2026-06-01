@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -11,4 +12,4 @@ public sealed record UpdateEventCommand(
     string? LocationEn,
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
-    byte[] RowVersion) : IRequest<EventDto?>;
+    System.Guid TopicId) : IRequest<Response<EventDto>>;

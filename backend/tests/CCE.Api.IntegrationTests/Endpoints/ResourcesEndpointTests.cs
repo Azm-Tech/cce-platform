@@ -44,10 +44,11 @@ public class ResourcesEndpointTests :
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await resp.Content.ReadAsStringAsync();
         var doc = JsonDocument.Parse(body).RootElement;
-        doc.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
-        doc.GetProperty("page").GetInt32().Should().Be(1);
-        doc.GetProperty("pageSize").GetInt32().Should().Be(20);
-        doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
+        var data = doc.GetProperty("data");
+        data.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
+        data.GetProperty("page").GetInt32().Should().Be(1);
+        data.GetProperty("pageSize").GetInt32().Should().Be(20);
+        data.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -98,6 +99,7 @@ public class ResourcesEndpointTests :
             descriptionAr = "desc-ar", descriptionEn = "desc-en",
             resourceType = 0,
             categoryId = System.Guid.NewGuid(),
+            countryIds = new[] { System.Guid.NewGuid() },
             rowVersion = System.Convert.ToBase64String(new byte[8]),
         });
 

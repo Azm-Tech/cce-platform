@@ -1,24 +1,40 @@
+using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.ListEvents;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.CreateEvent;
 
-public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, EventDto>
+public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Response<EventDto>>
 {
-    private readonly IEventRepository _service;
+    private readonly IRepository<Event, System.Guid> _repo;
+    private readonly ICceDbContext _db;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _messages;
 
-    public CreateEventCommandHandler(IEventRepository service, ISystemClock clock)
+    public CreateEventCommandHandler(
+        IRepository<Event, System.Guid> repo,
+        ICceDbContext db,
+        ISystemClock clock,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
         _clock = clock;
+        _messages = messages;
     }
 
-    public async Task<EventDto> Handle(CreateEventCommand request, CancellationToken cancellationToken)
+    public async Task<Response<EventDto>> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {
+        var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
+        if (!topicExists)
+            return _messages.NotFound<EventDto>("TOPIC_NOT_FOUND");
+
         var ev = Event.Schedule(
             request.TitleAr,
             request.TitleEn,
@@ -30,10 +46,17 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
             request.LocationEn,
             request.OnlineMeetingUrl,
             request.FeaturedImageUrl,
+            request.TopicId,
             _clock);
 
-        await _service.SaveAsync(ev, cancellationToken).ConfigureAwait(false);
+        await _repo.AddAsync(ev, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListEventsQueryHandler.MapToDto(ev);
+        var topic = await _db.Topics.Where(t => t.Id == request.TopicId)
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
+        var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
+
+        return _messages.Ok(ListEventsQueryHandler.MapToDto(ev, topicNameAr, topicNameEn), "CONTENT_CREATED");
     }
 }

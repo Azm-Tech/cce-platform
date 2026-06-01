@@ -6,11 +6,12 @@ public sealed class CreateResourceCommandValidator : AbstractValidator<CreateRes
 {
     public CreateResourceCommandValidator()
     {
-        RuleFor(x => x.TitleAr).NotEmpty().MaximumLength(500);
-        RuleFor(x => x.TitleEn).NotEmpty().MaximumLength(500);
-        RuleFor(x => x.DescriptionAr).NotEmpty().MaximumLength(4000);
-        RuleFor(x => x.DescriptionEn).NotEmpty().MaximumLength(4000);
+        RuleFor(x => x.TitleAr).NotEmpty().MaximumLength(255);
+        RuleFor(x => x.TitleEn).NotEmpty().MaximumLength(255);
+        RuleFor(x => x.DescriptionAr).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.DescriptionEn).NotEmpty().MaximumLength(500);
         RuleFor(x => x.CategoryId).NotEmpty();
         RuleFor(x => x.AssetFileId).NotEmpty();
+        RuleFor(x => x.CountryIds).NotEmpty().ForEach(x => x.NotEmpty());
     }
 }

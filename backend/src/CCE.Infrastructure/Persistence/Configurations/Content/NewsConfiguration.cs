@@ -22,6 +22,7 @@ internal sealed class NewsConfiguration : IEntityTypeConfiguration<News>
                .HasFilter("[is_deleted] = 0")
                .HasDatabaseName("ux_news_slug_active");
         builder.HasIndex(n => n.PublishedOn).HasDatabaseName("ix_news_published_on");
+        builder.HasIndex(n => n.TopicId).HasDatabaseName("ix_news_topic_id");
         builder.Ignore(n => n.DomainEvents);
     }
 }

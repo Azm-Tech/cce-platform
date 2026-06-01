@@ -160,16 +160,17 @@ public static class SystemCode
     public const string CON053 = "CON053"; // State rep assignment revoked
     public const string CON054 = "CON054"; // Roles assigned
     public const string CON055 = "CON055"; // User status changed
+    public const string CON056 = "CON056"; // Login success
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created
-    public const string CON021 = "CON021"; // Content updated
-    public const string CON022 = "CON022"; // Content deleted
+    public const string CON021 = "CON021"; // Resource created (BRD appendix)
+    public const string CON022 = "CON022"; // Resource deleted (BRD appendix)
     public const string CON023 = "CON023"; // Content published
     public const string CON024 = "CON024"; // Content archived
-    public const string CON025 = "CON025"; // Resource created
+    public const string CON025 = "CON025"; // Content updated
     public const string CON026 = "CON026"; // Resource updated
-    public const string CON027 = "CON027"; // Resource deleted
+    public const string CON027 = "CON027"; // Content deleted
     public const string CON028 = "CON028"; // Resource published
 
     // ─── Media Success ───

@@ -6,7 +6,9 @@ public sealed record PublicNewsDto(
     string TitleEn,
     string ContentAr,
     string ContentEn,
-    string Slug,
+    System.Guid TopicId,
+    string TopicNameAr,
+    string TopicNameEn,
     string? FeaturedImageUrl,
     System.DateTimeOffset PublishedOn,
     bool IsFeatured);

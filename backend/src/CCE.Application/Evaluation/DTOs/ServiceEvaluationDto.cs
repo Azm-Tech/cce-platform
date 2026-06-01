@@ -10,4 +10,4 @@ public sealed record ServiceEvaluationDto(
     string Feedback,
     System.Guid? UserId,
     System.DateTimeOffset CreatedOn,
-    System.Guid? CreatedById);
+    System.Guid CreatedById);

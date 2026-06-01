@@ -1,5 +1,7 @@
-using CCE.Application.Content;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Commands.PublishResource;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
@@ -8,90 +10,88 @@ namespace CCE.Application.Tests.Content.Commands;
 
 public class PublishResourceCommandHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
-    public async Task Returns_null_when_resource_not_found()
+    public async Task Returns_not_found_when_resource_missing()
     {
-        var (sut, _, _) = BuildSut();
+        var (sut, _) = BuildSut(null, Array.Empty<AssetFile>());
+
         var result = await sut.Handle(new PublishResourceCommand(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Throws_DomainException_when_asset_not_clean()
+    public async Task Returns_asset_not_clean_when_asset_pending()
     {
-        var clock = new FakeSystemClock();
-        var (sut, resourceService, assetService) = BuildSut();
-        var assetId = System.Guid.NewGuid();
-        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), assetId, clock);
-        resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
-        var pendingAsset = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
-        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(pendingAsset);
+        var pendingAsset = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), Clock);
+        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Paper, System.Guid.NewGuid(), null, System.Guid.NewGuid(), pendingAsset.Id, System.Array.Empty<System.Guid>(), Clock);
 
-        var act = async () => await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+        var (sut, _) = BuildSut(resource, [pendingAsset]);
 
-        await act.Should().ThrowAsync<DomainException>().WithMessage("*virus scan*");
+        var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Throws_DomainException_when_asset_not_found()
+    public async Task Returns_asset_not_found_when_asset_missing()
     {
-        var clock = new FakeSystemClock();
-        var (sut, resourceService, assetService) = BuildSut();
-        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
-        resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
-        assetService.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
+        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Paper, System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(), System.Array.Empty<System.Guid>(), Clock);
 
-        var act = async () => await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+        var (sut, _) = BuildSut(resource, Array.Empty<AssetFile>());
 
-        await act.Should().ThrowAsync<DomainException>().WithMessage("*not found*");
+        var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
     public async Task Publishes_resource_when_asset_clean()
     {
-        var clock = new FakeSystemClock();
-        var (sut, resourceService, assetService) = BuildSut();
-        var assetId = System.Guid.NewGuid();
-        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), assetId, clock);
-        resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
-        var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
-        clean.MarkClean(clock);
-        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
+        var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), Clock);
+        clean.MarkClean(Clock);
+        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Paper, System.Guid.NewGuid(), null, System.Guid.NewGuid(), clean.Id, System.Array.Empty<System.Guid>(), Clock);
 
-        var dto = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+        var (sut, db) = BuildSut(resource, [clean]);
 
-        dto.Should().NotBeNull();
-        dto!.IsPublished.Should().BeTrue();
-        dto.PublishedOn.Should().NotBeNull();
-        await resourceService.Received(1).UpdateAsync(resource, Arg.Any<byte[]>(), Arg.Any<CancellationToken>());
+        var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+
+        result.Success.Should().BeTrue();
+        result.Data!.IsPublished.Should().BeTrue();
+        result.Data.PublishedOn.Should().NotBeNull();
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Returns_dto_unchanged_when_already_published()
     {
-        var clock = new FakeSystemClock();
-        var (sut, resourceService, assetService) = BuildSut();
-        var assetId = System.Guid.NewGuid();
-        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid(), null, System.Guid.NewGuid(), assetId, clock);
-        resource.Publish(clock); // already published
-        resourceService.FindAsync(resource.Id, Arg.Any<CancellationToken>()).Returns(resource);
-        var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), clock);
-        clean.MarkClean(clock);
-        assetService.GetByIdAsync(assetId, Arg.Any<CancellationToken>()).Returns(clean);
-
+        var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), Clock);
+        clean.MarkClean(Clock);
+        var resource = Resource.Draft("ar", "en", "desc-ar", "desc-en", ResourceType.Paper, System.Guid.NewGuid(), null, System.Guid.NewGuid(), clean.Id, System.Array.Empty<System.Guid>(), Clock);
+        resource.Publish(Clock);
         var firstPublishedOn = resource.PublishedOn;
-        var dto = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
-        dto!.IsPublished.Should().BeTrue();
-        dto.PublishedOn.Should().Be(firstPublishedOn);
+        var (sut, _) = BuildSut(resource, [clean]);
+
+        var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
+
+        result.Data!.IsPublished.Should().BeTrue();
+        result.Data.PublishedOn.Should().Be(firstPublishedOn);
     }
 
-    private static (PublishResourceCommandHandler sut, IResourceRepository rs, IAssetRepository asset) BuildSut()
+    private static (PublishResourceCommandHandler sut, ICceDbContext db) BuildSut(
+        Resource? resourceToReturn,
+        IEnumerable<AssetFile> assets)
     {
-        var rs = Substitute.For<IResourceRepository>();
-        var asset = Substitute.For<IAssetRepository>();
-        var sut = new PublishResourceCommandHandler(rs, asset, new FakeSystemClock());
-        return (sut, rs, asset);
+        var db = Substitute.For<ICceDbContext>();
+        db.Resources.Returns(resourceToReturn is null ? Array.Empty<Resource>().AsQueryable() : new[] { resourceToReturn }.AsQueryable());
+        db.AssetFiles.Returns(assets.AsQueryable());
+
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+
+        return (new PublishResourceCommandHandler(db, Clock, new MessageFactory(localization)), db);
     }
 }

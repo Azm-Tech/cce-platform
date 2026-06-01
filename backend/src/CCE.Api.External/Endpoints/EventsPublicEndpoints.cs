@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Public;
 using CCE.Application.Content.Public.Queries.GetPublicEventById;
 using CCE.Application.Content.Public.Queries.ListPublicEvents;
@@ -17,15 +18,17 @@ public static class EventsPublicEndpoints
         events.MapGet("", async (
             int? page, int? pageSize,
             System.DateTimeOffset? from, System.DateTimeOffset? to,
+            string? topicSlug,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicEventsQuery(
                 Page: page ?? 1,
                 PageSize: pageSize ?? 20,
                 From: from,
-                To: to);
-            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+                To: to,
+                TopicSlug: topicSlug);
+            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicEvents");
@@ -34,8 +37,8 @@ public static class EventsPublicEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetPublicEventByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(new GetPublicEventByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("GetPublicEventById");
@@ -44,10 +47,10 @@ public static class EventsPublicEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetPublicEventByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            if (dto is null)
-                return Results.NotFound();
-            var ics = IcsBuilder.ToIcs(dto);
+            var response = await mediator.Send(new GetPublicEventByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            if (!response.Success)
+                return response.ToHttpResult();
+            var ics = IcsBuilder.ToIcs(response.Data!);
             return Results.Text(ics, "text/calendar; charset=utf-8");
         })
         .AllowAnonymous()

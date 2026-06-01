@@ -2,7 +2,6 @@ using CCE.Domain.Common;
 
 namespace CCE.Domain.Evaluation;
 
-[Audited]
 public sealed class ServiceEvaluation : AuditableEntity<System.Guid>
 {
 
@@ -53,7 +52,7 @@ public sealed class ServiceEvaluation : AuditableEntity<System.Guid>
             userId);
 
         entity.CreatedOn = clock.UtcNow;
-        entity.CreatedById = userId;
+        entity.CreatedById = userId ?? SystemConstants.AnonymousUserId;
 
         return entity;
     }

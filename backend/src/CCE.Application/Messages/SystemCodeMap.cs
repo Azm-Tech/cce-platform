@@ -42,6 +42,9 @@ public static class SystemCodeMap
         ["PAGE_DUPLICATE"] = SystemCode.ERR050,
         ["NEWS_DUPLICATE"] = SystemCode.ERR051,
         ["EVENT_DUPLICATE"] = SystemCode.ERR052,
+        ["RESOURCE_DOWNLOAD_FAILED"] = SystemCode.ERR002,
+        ["RESOURCE_UPLOAD_FAILED"] = SystemCode.ERR029,
+        ["RESOURCE_DELETE_FAILED"] = SystemCode.ERR030,
 
         // ─── Community Errors ───
         ["TOPIC_NOT_FOUND"] = SystemCode.ERR060,
@@ -110,7 +113,7 @@ public static class SystemCodeMap
         ["DUPLICATE_VALUE"] = SystemCode.ERR908,
 
         // ─── Identity Success (appendix-aligned) ───
-        ["LOGIN_SUCCESS"] = SystemCode.CON001,
+        ["LOGIN_SUCCESS"] = SystemCode.CON056,
         ["TOKEN_REFRESHED"] = SystemCode.CON004,
         ["PROFILE_UPDATED"] = SystemCode.CON005,
         ["EXPERT_REQUEST_SUBMITTED"] = SystemCode.CON006,
@@ -133,8 +136,8 @@ public static class SystemCodeMap
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,
-        ["CONTENT_UPDATED"] = SystemCode.CON021,
-        ["CONTENT_DELETED"] = SystemCode.CON022,
+        ["CONTENT_UPDATED"] = SystemCode.CON025,
+        ["CONTENT_DELETED"] = SystemCode.CON027,
 
         // ─── Asset Success ───
         ["ASSET_UPLOADED"] = SystemCode.CON038,
@@ -145,10 +148,13 @@ public static class SystemCodeMap
         ["MEDIA_DELETED"] = SystemCode.CON037,
         ["CONTENT_PUBLISHED"] = SystemCode.CON023,
         ["CONTENT_ARCHIVED"] = SystemCode.CON024,
-        ["RESOURCE_CREATED"] = SystemCode.CON025,
+        ["RESOURCE_CREATED"] = SystemCode.CON021,
         ["RESOURCE_UPDATED"] = SystemCode.CON026,
-        ["RESOURCE_DELETED"] = SystemCode.CON027,
+        ["RESOURCE_DELETED"] = SystemCode.CON022,
         ["RESOURCE_PUBLISHED"] = SystemCode.CON028,
+        ["RESOURCE_DOWNLOAD_SUCCESS"] = SystemCode.CON001,
+        ["RESOURCE_SHARE_SUCCESS"] = SystemCode.CON002,
+        ["RESOURCE_SHARE_FAILED"] = SystemCode.ERR003,
 
         // ─── Notification Success ───
         ["NOTIFICATION_CREATED"] = SystemCode.CON040,
@@ -195,7 +201,7 @@ public static class SystemCodeMap
 
     /// <summary>Get the ERR/CON/VAL code for a domain key. Returns ERR900 if unmapped.</summary>
     public static string ToSystemCode(string domainKey)
-        => DomainToCode.TryGetValue(domainKey, out var code) ? code : SystemCode.ERR900;
+        => domainKey is not null && DomainToCode.TryGetValue(domainKey, out var code) ? code : SystemCode.ERR900;
 
     /// <summary>Get the domain key from a system code. Returns null if unmapped.</summary>
     public static string? ToDomainKey(string systemCode)

@@ -15,7 +15,7 @@ public abstract class AuditableEntity<TId> : Entity<TId>, IAuditable
     public DateTimeOffset CreatedOn { get; protected set; }
 
     /// <inheritdoc />
-    public Guid? CreatedById { get; protected set; }
+    public Guid CreatedById { get; protected set; }
 
     /// <inheritdoc />
     public DateTimeOffset? LastModifiedOn { get; protected set; }

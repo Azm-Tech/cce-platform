@@ -9,18 +9,22 @@ public class ResourceTests
 {
     private static FakeSystemClock NewClock() => new();
 
-    private static Resource NewDraft(FakeSystemClock clock, System.Guid? countryId = null) =>
-        Resource.Draft(
+    private static Resource NewDraft(FakeSystemClock clock, System.Guid? countryId = null)
+    {
+        var countryIds = countryId.HasValue ? new[] { countryId.Value } : System.Array.Empty<System.Guid>();
+        return Resource.Draft(
             titleAr: "مورد",
             titleEn: "Resource",
             descriptionAr: "وصف",
             descriptionEn: "Description",
-            resourceType: ResourceType.Pdf,
+            resourceType: ResourceType.Paper,
             categoryId: System.Guid.NewGuid(),
             countryId: countryId,
             uploadedById: System.Guid.NewGuid(),
             assetFileId: System.Guid.NewGuid(),
+            countryIds: countryIds,
             clock: clock);
+    }
 
     [Fact]
     public void Draft_factory_creates_unpublished_resource()
@@ -57,8 +61,9 @@ public class ResourceTests
     public void Draft_with_empty_titleAr_throws()
     {
         var clock = NewClock();
-        var act = () => Resource.Draft("", "x", "x", "x", ResourceType.Pdf,
-            System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
+        var act = () => Resource.Draft("", "x", "x", "x", ResourceType.Paper,
+            System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(),
+            System.Array.Empty<System.Guid>(), clock);
         act.Should().Throw<DomainException>().WithMessage("*TitleAr*");
     }
 
@@ -122,13 +127,13 @@ public class ResourceTests
         var r = NewDraft(clock);
         var newCategoryId = System.Guid.NewGuid();
 
-        r.UpdateContent("new-ar", "new-en", "new-desc-ar", "new-desc-en", ResourceType.Video, newCategoryId);
+        r.UpdateContent("new-ar", "new-en", "new-desc-ar", "new-desc-en", ResourceType.Article, newCategoryId, System.Array.Empty<System.Guid>());
 
         r.TitleAr.Should().Be("new-ar");
         r.TitleEn.Should().Be("new-en");
         r.DescriptionAr.Should().Be("new-desc-ar");
         r.DescriptionEn.Should().Be("new-desc-en");
-        r.ResourceType.Should().Be(ResourceType.Video);
+        r.ResourceType.Should().Be(ResourceType.Article);
         r.CategoryId.Should().Be(newCategoryId);
     }
 
@@ -138,7 +143,7 @@ public class ResourceTests
         var clock = NewClock();
         var r = NewDraft(clock);
 
-        var act = () => r.UpdateContent("", "en", "desc-ar", "desc-en", ResourceType.Pdf, System.Guid.NewGuid());
+        var act = () => r.UpdateContent("", "en", "desc-ar", "desc-en", ResourceType.Paper, System.Guid.NewGuid(), System.Array.Empty<System.Guid>());
 
         act.Should().Throw<DomainException>().WithMessage("*TitleAr*");
     }

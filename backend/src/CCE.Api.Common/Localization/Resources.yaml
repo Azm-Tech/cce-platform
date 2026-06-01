@@ -476,3 +476,49 @@ EVALUATION_NOT_FOUND:
 EVALUATION_SUBMITTED:
   ar: "تم تقديم التقييم بنجاح"
   en: "Evaluation submitted successfully"
+
+# ─── Resource-specific messages (BRD Sprint 04) ───
+
+RESOURCE_CREATED:
+  ar: "تم رفع المصدر بنجاح!"
+  en: "Resource uploaded successfully!"
+
+RESOURCE_DELETED:
+  ar: "تم حذف المصدر بنجاح!"
+  en: "Resource deleted successfully!"
+
+CONTENT_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Content updated successfully"
+
+CONTENT_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Content deleted successfully"
+
+RESOURCE_DOWNLOAD_FAILED:
+  ar: "حدث خطأ أثناء محاولة تحميل المصدر. يرجى المحاولة مرة أخرى."
+  en: "An error occurred while downloading the resource. Please try again."
+
+RESOURCE_UPLOAD_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء رفع المصدر."
+  en: "Sorry, a problem occurred while uploading the resource."
+
+RESOURCE_DELETE_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء حذف المصدر."
+  en: "Sorry, a problem occurred while deleting the resource."
+
+RESOURCE_NOT_FOUND_ALT:
+  ar: "عذراً، لا توجد مصادر حالياً."
+  en: "Sorry, there are no resources currently."
+
+RESOURCE_DOWNLOAD_SUCCESS:
+  ar: "تم تحميل المصدر بنجاح! يمكنك الآن الوصول إلى المرفق من جهازك."
+  en: "Resource downloaded successfully! You can now access the attachment from your device."
+
+RESOURCE_SHARE_SUCCESS:
+  ar: "تمت مشاركة المصدر بنجاح!"
+  en: "Resource shared successfully!"
+
+RESOURCE_SHARE_FAILED:
+  ar: "حدث خطأ أثناء محاولة مشاركة المصدر. يرجى المحاولة مرة أخرى لاحقاً."
+  en: "An error occurred while trying to share the resource. Please try again later."
