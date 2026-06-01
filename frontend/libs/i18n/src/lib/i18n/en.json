@@ -320,7 +320,9 @@
         "submitted": "Submitted",
         "tags": "Expertise tags",
         "status": "Status",
-        "actions": "Actions"
+        "actions": "Actions",
+        "cv": "CV",
+        "cvDownload": "Download CV"
       },
       "filter": {
         "status": "Status",
@@ -344,6 +346,12 @@
       "reasonEn": "Rejection reason (English)",
       "save": "Reject",
       "toast": "Expert request rejected."
+    },
+    "review": {
+      "bioAr": "Bio (Arabic)",
+      "bioEn": "Bio (English)",
+      "tags": "Expertise tags",
+      "downloadCv": "Download CV"
     },
     "profiles": {
       "title": "Expert profiles",
@@ -1098,11 +1106,13 @@
       "expertCta": {
         "title": "Become an Expert",
         "body": "Share your knowledge with the CCE community by applying for expert status.",
-        "button": "Apply now"
+        "button": "Apply now",
+        "reapplyButton": "Reapply"
       },
       "expertStatus": {
         "Pending": "Application under review",
-        "Approved": "Verified Expert"
+        "Approved": "Verified Expert",
+        "Rejected": "Application rejected"
       }
     },
     "logout": {

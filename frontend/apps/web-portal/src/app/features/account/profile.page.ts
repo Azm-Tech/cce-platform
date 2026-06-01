@@ -82,8 +82,7 @@ export class ProfilePage implements OnInit {
 
   readonly expertBadgeStatus = computed<ExpertRegistrationStatus | null>(() => {
     const s = this.expertStatus();
-    if (!s || s.status === 'Rejected') return null;
-    return s.status;
+    return s ? s.status : null;
   });
 
   readonly countryCodeLabel = computed(() => {

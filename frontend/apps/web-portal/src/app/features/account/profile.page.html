@@ -96,10 +96,16 @@
           </div>
         </dl>
 
-        @if (expertBadgeStatus()) {
-          <div class="cce-profile__expert-badge cce-profile__expert-badge--{{ expertBadgeStatus()!.toLowerCase() }}">
-            <mat-icon aria-hidden="true">verified</mat-icon>
-            {{ ('account.profile.expertStatus.' + expertBadgeStatus()) | transloco }}
+        @if (expertBadgeStatus(); as badge) {
+          <div class="cce-profile__expert-badge cce-profile__expert-badge--{{ badge.toLowerCase() }}">
+            <mat-icon aria-hidden="true">
+              @switch (badge) {
+                @case ('Approved') { verified }
+                @case ('Pending') { schedule }
+                @case ('Rejected') { cancel }
+              }
+            </mat-icon>
+            {{ ('account.profile.expertStatus.' + badge) | transloco }}
           </div>
         }
 
@@ -110,7 +116,11 @@
               <span>{{ 'account.profile.expertCta.body' | transloco }}</span>
             </div>
             <a mat-flat-button color="primary" routerLink="/me/expert-request">
-              {{ 'account.profile.expertCta.button' | transloco }}
+              @if (expertBadgeStatus() === 'Rejected') {
+                {{ 'account.profile.expertCta.reapplyButton' | transloco }}
+              } @else {
+                {{ 'account.profile.expertCta.button' | transloco }}
+              }
             </a>
           </div>
         }

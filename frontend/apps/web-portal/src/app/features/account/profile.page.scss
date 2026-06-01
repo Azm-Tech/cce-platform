@@ -101,8 +101,9 @@
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 
-  &--approved { background: #d4edda; color: #155724; }
-  &--pending  { background: #fff3cd; color: #856404; }
+  &--approved  { background: #d4edda; color: #155724; }
+  &--pending   { background: #fff3cd; color: #856404; }
+  &--rejected  { background: #fdecea; color: #b00020; }
 }
 
 .cce-profile__expert-cta {
