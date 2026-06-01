@@ -55,6 +55,6 @@ public class GetNewsByIdQueryHandlerTests
         db.News.Returns(news.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new GetNewsByIdQueryHandler(db, new MessageFactory(localization));
+        return new GetNewsByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

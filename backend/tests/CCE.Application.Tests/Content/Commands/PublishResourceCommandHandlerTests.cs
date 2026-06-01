@@ -92,6 +92,6 @@ public class PublishResourceCommandHandlerTests
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
 
-        return (new PublishResourceCommandHandler(db, Clock, new MessageFactory(localization)), db);
+        return (new PublishResourceCommandHandler(db, Clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db);
     }
 }

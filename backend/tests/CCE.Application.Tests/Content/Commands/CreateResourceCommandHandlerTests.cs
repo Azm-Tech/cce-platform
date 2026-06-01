@@ -122,7 +122,7 @@ public class CreateResourceCommandHandlerTests
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
 
-        var sut = new CreateResourceCommandHandler(repo, db, user, Clock, new MessageFactory(localization));
+        var sut = new CreateResourceCommandHandler(repo, db, user, Clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
         return (sut, repo, db);
     }
 }

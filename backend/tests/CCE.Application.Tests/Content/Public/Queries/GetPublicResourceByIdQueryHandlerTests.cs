@@ -64,6 +64,6 @@ public class GetPublicResourceByIdQueryHandlerTests
         db.Resources.Returns(resources.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new GetPublicResourceByIdQueryHandler(db, new MessageFactory(localization));
+        return new GetPublicResourceByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

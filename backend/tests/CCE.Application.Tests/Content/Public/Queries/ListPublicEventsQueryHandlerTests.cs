@@ -74,6 +74,6 @@ public class ListPublicEventsQueryHandlerTests
         db.Events.Returns(events.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new ListPublicEventsQueryHandler(db, new MessageFactory(localization));
+        return new ListPublicEventsQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

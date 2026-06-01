@@ -62,6 +62,6 @@ public class PublishNewsCommandHandlerTests
         var db = Substitute.For<ICceDbContext>();
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return (new PublishNewsCommandHandler(repo, db, clock, new MessageFactory(localization)), repo, db);
+        return (new PublishNewsCommandHandler(repo, db, clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), repo, db);
     }
 }

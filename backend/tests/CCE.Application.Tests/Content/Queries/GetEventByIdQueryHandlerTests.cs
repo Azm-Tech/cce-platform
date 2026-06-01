@@ -56,6 +56,6 @@ public class GetEventByIdQueryHandlerTests
         db.Events.Returns(events.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new GetEventByIdQueryHandler(db, new MessageFactory(localization));
+        return new GetEventByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }
