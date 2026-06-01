@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Dtos;
 using MediatR;
@@ -9,4 +10,4 @@ public sealed record ListTopicsQuery(
     int PageSize = 20,
     System.Guid? ParentId = null,
     bool? IsActive = null,
-    string? Search = null) : IRequest<PagedResult<TopicDto>>;
+    string? Search = null) : IRequest<Response<PagedResult<TopicDto>>>;

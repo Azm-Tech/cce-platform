@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Community.Dtos;
 using MediatR;
 
@@ -11,4 +12,4 @@ public sealed record CreateTopicCommand(
     string Slug,
     System.Guid? ParentId,
     string? IconUrl,
-    int OrderIndex) : IRequest<TopicDto>;
+    int OrderIndex) : IRequest<Response<TopicDto>>;

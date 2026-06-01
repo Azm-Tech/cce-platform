@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Community.Dtos;
 using MediatR;
 
@@ -10,4 +11,4 @@ public sealed record UpdateTopicCommand(
     string DescriptionAr,
     string DescriptionEn,
     int OrderIndex,
-    bool IsActive) : IRequest<TopicDto?>;
+    bool IsActive) : IRequest<Response<TopicDto>>;

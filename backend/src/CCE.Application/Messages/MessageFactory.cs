@@ -81,13 +81,14 @@ public sealed class MessageFactory
 
     // ─── Convenience shortcuts (Content domain) ───
 
-    public Response<T> NewsNotFound<T>()      => NotFound<T>(ApplicationErrors.Content.NEWS_NOT_FOUND);
-    public Response<T> EventNotFound<T>()     => NotFound<T>(ApplicationErrors.Content.EVENT_NOT_FOUND);
-    public Response<T> ResourceNotFound<T>()  => NotFound<T>(ApplicationErrors.Content.RESOURCE_NOT_FOUND);
-    public Response<T> PageNotFound<T>()      => NotFound<T>(ApplicationErrors.Content.PAGE_NOT_FOUND);
-    public Response<T> CategoryNotFound<T>()  => NotFound<T>(ApplicationErrors.Content.CATEGORY_NOT_FOUND);
-    public Response<T> AssetNotFound<T>()     => NotFound<T>(ApplicationErrors.Content.ASSET_NOT_FOUND);
-    public Response<T> AssetNotClean<T>()     => BusinessRule<T>(ApplicationErrors.Content.ASSET_NOT_CLEAN);
+    public Response<T> NewsNotFound<T>()      => NotFound<T>("NEWS_NOT_FOUND");
+    public Response<T> EventNotFound<T>()     => NotFound<T>("EVENT_NOT_FOUND");
+    public Response<T> ResourceNotFound<T>()  => NotFound<T>("RESOURCE_NOT_FOUND");
+    public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
+    public Response<T> TopicNotFound<T>()     => NotFound<T>("TOPIC_NOT_FOUND");
+    public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
+    public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
+    public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");
 
     // ─── Convenience shortcuts (Identity / Expert domain) ───
 

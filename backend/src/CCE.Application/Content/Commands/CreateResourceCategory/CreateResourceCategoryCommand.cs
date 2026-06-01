@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -8,4 +9,4 @@ public sealed record CreateResourceCategoryCommand(
     string NameEn,
     string Slug,
     System.Guid? ParentId,
-    int OrderIndex) : IRequest<ResourceCategoryDto>;
+    int OrderIndex) : IRequest<Response<ResourceCategoryDto>>;
