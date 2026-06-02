@@ -1,6 +1,7 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
 using CCE.Application.Content.Public.Queries.ListPublicNews;
+using CCE.Application.Content.Public.Queries.GetPublicNewsById;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -37,6 +38,16 @@ public static class NewsPublicEndpoints
         })
         .AllowAnonymous()
         .WithName("GetPublicNewsBySlug");
+
+        news.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var response = await mediator.Send(new GetPublicNewsByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
+        })
+        .AllowAnonymous()
+        .WithName("GetPublicNewsById");
 
         return app;
     }
