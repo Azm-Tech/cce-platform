@@ -64,6 +64,186 @@
         "title": "Expert Community",
         "body": "Connect with researchers, policymakers, and practitioners shaping the carbon transition. Ask questions, share findings, learn together."
       }
+    },
+    "v2": {
+      "hero": {
+        "eyebrow": "CCE KNOWLEDGE HUB",
+        "title": "CCE Knowledge Center for Carbon Economy",
+        "subtitle": "The global platform for knowledge exchange, policy dialogue, and collaborative action on carbon management — connecting governments, institutions, and industry leaders.",
+        "cta": "Explore the Platform",
+        "learnMore": "Learn More"
+      },
+      "stats": {
+        "resources": "Resources",
+        "experts": "Experts",
+        "countries": "Countries"
+      },
+      "search": {
+        "widgetTitle": "An Integrated Global Platform for Knowledge Exchange",
+        "placeholder": "Search for research, reports, or experts...",
+        "submit": "Search",
+        "cat": {
+          "carbonCapture": "Carbon Capture",
+          "renewableEnergy": "Renewable Energy",
+          "recycling": "Recycling",
+          "policy": "Policy & Regulation",
+          "technology": "Technology",
+          "finance": "Finance & Investment"
+        }
+      },
+      "map": {
+        "eyebrow": "EXPLORE THE WORLD",
+        "title": "Interactive Global Carbon Map",
+        "sub": "Discover carbon economy initiatives across 63+ countries. Explore real-time data, city profiles, and sustainability projects on our interactive globe.",
+        "cta": "Open the Map"
+      },
+      "features": {
+        "title": "What Does the Platform Offer?",
+        "map": {
+          "title": "Reports & Case Studies",
+          "body": "Access peer-reviewed research, annual reports, and global carbon initiative case studies curated by experts."
+        },
+        "knowledge": {
+          "title": "Global Experts Network",
+          "body": "Connect local engineers with international scientists and certified CCE specialists worldwide."
+        },
+        "community": {
+          "title": "Innovative Solutions & Tech",
+          "body": "Discover emerging carbon removal frameworks, breakthrough technologies, and industry best practices."
+        },
+        "city": {
+          "title": "Training & Continuous Programs",
+          "body": "Enroll in certified courses on circular economy practices, sustainability, and carbon management."
+        }
+      },
+      "framework": {
+        "eyebrow": "THE CCE FRAMEWORK",
+        "title": "What is the Circular Carbon Economy?",
+        "subtitle": "A comprehensive framework built on four core pillars for sustainable carbon emissions management",
+        "objectiveTitle": "Our Objective",
+        "conceptsTitle": "Core Concepts",
+        "cta": "Explore Resources",
+        "tab": {
+          "reduce": "Reduce",
+          "reuse": "Reuse",
+          "recycle": "Recycle",
+          "remove": "Remove"
+        },
+        "reduce": {
+          "sub": "Reducing emissions at the source through energy efficiency optimization and clean industrial transformation",
+          "body": "The foundation of the CCE model focuses on minimizing carbon output through energy-efficient infrastructure, cleaner industrial processes, and smarter resource management across all sectors of the economy."
+        },
+        "reuse": {
+          "sub": "Repurposing carbon compounds as raw materials for new industrial and biological production cycles",
+          "body": "Rather than treating carbon as a waste product, the reuse pillar transforms captured carbon into valuable feedstocks for manufacturing, chemical production, and the creation of sustainable synthetic fuels."
+        },
+        "recycle": {
+          "sub": "Recycling carbon back into organic systems through biological and geological carbon cycling processes",
+          "body": "This pillar leverages natural carbon cycles and biotech innovations to reintegrate carbon into ecosystems, supporting soil carbon sequestration, biochar production, and bio-based material manufacturing."
+        },
+        "remove": {
+          "sub": "Permanently removing atmospheric CO₂ through direct air capture and geological storage technologies",
+          "body": "The removal tier addresses legacy carbon through cutting-edge technologies including enhanced weathering, direct air capture (DAC), and deep geological storage — targeting net-negative emissions pathways by 2050."
+        }
+      },
+      "app": {
+        "eyebrow": "MOBILE APP",
+        "title": "Knowledge in your hands, anytime",
+        "subtitle": "Download the app to access knowledge content and engage with the community from anywhere.",
+        "feature1": "Personalized experience",
+        "feature2": "Instant notifications",
+        "feature3": "Engage with the knowledge community",
+        "feature4": "Seamless resource browsing",
+        "appStore": "Download on App Store",
+        "googlePlay": "Download on Google Play"
+      },
+      "resources": {
+        "eyebrow": "KNOWLEDGE HUB",
+        "title": "Featured Resources",
+        "viewAll": "Browse All",
+        "read": "Read more",
+        "r1": {
+          "label": "Annual Report",
+          "title": "Framework for Implementing CCE in the Middle East Region",
+          "meta": "2024 · 145 pages"
+        },
+        "r2": {
+          "label": "Case Study",
+          "title": "Successful Model for Carbon Reuse and Management in Large Industrial Facilities",
+          "meta": "2023 · 68 pages"
+        },
+        "r3": {
+          "label": "Research Paper",
+          "title": "Carbon Capture and Future Storage Technologies: A Vision to 2030",
+          "meta": "2024 · 32 pages"
+        }
+      },
+      "networkMap": {
+        "eyebrow": "GLOBAL NETWORK",
+        "title": "Participating Countries",
+        "sub": "More than 50 countries actively contributing to enriching the scientific and knowledge content on our platform",
+        "countriesCount": "50+",
+        "countriesLabel": "Contributing Countries"
+      },
+      "discussions": {
+        "eyebrow": "COMMUNITY INSIGHTS",
+        "title": "Latest Insights & Comments",
+        "updated": "Constantly Updated",
+        "videoTitle": "Public Webinar: The Future of Climate Research and Digital Transformation",
+        "d1": "Discussion on using AI techniques in monitoring greenhouse gas emissions and tracking decarbonization progress...",
+        "d2": "The importance of activating the 'Recycle' pillar in local petrochemical plants and industrial zones...",
+        "d3": "Excellent research review on the efficiency of modern bio-filters for carbon sequestration applications..."
+      },
+      "metrics": {
+        "m1": { "value": "+15,000", "label": "Active Monthly Users" },
+        "m2": { "value": "+3,200", "label": "Published Research Papers" },
+        "m3": { "value": "+1,800", "label": "Certified Expert Consultants" },
+        "m4": { "value": "+2,500 tons", "label": "Managed Emissions Rate" }
+      },
+      "objective": {
+        "eyebrow": "OUR MISSION",
+        "title": "What is the Circular Carbon Economy?",
+        "cta": "Discover More"
+      },
+      "concepts": {
+        "eyebrow": "THE FOUR PILLARS",
+        "title": "Reducing emissions at source through energy efficiency and clean industrial transition",
+        "reduce": "Reduce",
+        "reuse": "Reuse",
+        "recycle": "Recycle",
+        "remove": "Remove"
+      },
+      "community": {
+        "title": "Join the Platform Community",
+        "sub": "Share insights, collaborate on active environmental models, and engage with top-tier industrial researchers.",
+        "cardText": "Connect with certified specialists in the field of Circular Carbon Economy from around the world",
+        "joinCta": "Join the Community",
+        "registerCta": "Create Account",
+        "badge": "500+ certified experts"
+      },
+      "countries": {
+        "eyebrow": "FEATURED REGIONS",
+        "title": "Participating Countries"
+      },
+      "news": {
+        "eyebrow": "LATEST NEWS",
+        "title": "News & Updates",
+        "viewAll": "View all news"
+      },
+      "events": {
+        "eyebrow": "UPCOMING EVENTS",
+        "title": "Events & Conferences",
+        "viewAll": "View all events"
+      },
+      "cta": {
+        "title": "Explore. Learn. Contribute.",
+        "sub": "Join thousands of peers advancing global research and shaping a sustainable carbon future.",
+        "explore": "Explore",
+        "learn": "Learn",
+        "contribute": "Contribute",
+        "joinMember": "Join as a Specialized Member",
+        "contact": "Contact Us"
+      }
     }
   },
   "explore": {
@@ -192,7 +372,10 @@
       "knowledgeCenter": "Curated long-reads, briefs & references",
       "worldMap": "Interactive map of cities & regions",
       "countries": "Country profiles & KAPSARC indices"
-    }
+    },
+    "homepageSettings": "Homepage Settings",
+    "aboutSettings": "About Settings",
+    "policiesSettings": "Policies & Terms"
   },
   "header": {
     "signIn": "Sign in",
@@ -204,6 +387,7 @@
   },
   "footer": {
     "about": "About",
+    "policies": "Policies & Terms",
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact",
@@ -782,6 +966,11 @@
     },
     "reorder": {
       "toast": "Section order updated."
+    },
+    "pageTitle": "Homepage",
+    "tab": {
+      "sections": "Sections",
+      "settings": "Settings"
     }
   },
   "taxonomies": {
@@ -1632,5 +1821,138 @@
     "lastPage": "Last page",
     "range": "{{ start }} – {{ end }} of {{ length }}",
     "rangeEmpty": "0 of {{ length }}"
+  },
+  "homepageSettings": {
+    "title": "Homepage Settings",
+    "section": {
+      "general": "General",
+      "objective": "Objective",
+      "cceConcepts": "CCE Concepts",
+      "countries": "Participating Countries"
+    },
+    "field": {
+      "videoUrl": "Video URL",
+      "objectiveAr": "Objective (Arabic)",
+      "objectiveEn": "Objective (English)",
+      "cceConceptsAr": "CCE Concepts (Arabic)",
+      "cceConceptsEn": "CCE Concepts (English)",
+      "participatingCountries": "Participating countries",
+      "participatingCountriesHint": "Countries shown in the CCE member nations section on the homepage"
+    },
+    "save": {
+      "button": "Save settings",
+      "toast": "Homepage settings saved."
+    }
+  },
+  "aboutSettings": {
+    "title": "About Platform Settings",
+    "section": {
+      "description": "Description & Video",
+      "glossary": "Terms",
+      "partners": "Knowledge Partners"
+    },
+    "field": {
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "howToUseVideoUrl": "How-to-use video URL",
+      "howToUseVideoUrlHint": "YouTube or Vimeo embed URL"
+    },
+    "save": {
+      "button": "Save description",
+      "toast": "About settings saved."
+    },
+    "glossary": {
+      "add": "Add term",
+      "addTitle": "Add New Term",
+      "editTitle": "Edit Term",
+      "empty": "No glossary terms yet.",
+      "col": {
+        "term": "Term",
+        "definition": "Definition"
+      },
+      "field": {
+        "termAr": "Term (Arabic)",
+        "termEn": "Term (English)",
+        "definitionAr": "Definition (Arabic)",
+        "definitionEn": "Definition (English)"
+      },
+      "save": {
+        "toast": "Glossary term saved."
+      },
+      "delete": {
+        "title": "Delete term",
+        "message": "Delete this glossary term?",
+        "confirm": "Delete",
+        "toast": "Glossary term deleted."
+      }
+    },
+    "partners": {
+      "add": "Add partner",
+      "addTitle": "Add New Partner",
+      "editTitle": "Edit Partner",
+      "empty": "No knowledge partners yet.",
+      "col": {
+        "name": "Partner",
+        "website": "Website"
+      },
+      "field": {
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "logoUrl": "Logo URL",
+        "websiteUrl": "Website URL",
+        "descriptionAr": "Description (Arabic)",
+        "descriptionEn": "Description (English)"
+      },
+      "save": {
+        "toast": "Knowledge partner saved."
+      },
+      "delete": {
+        "title": "Delete partner",
+        "message": "Delete this knowledge partner?",
+        "confirm": "Delete",
+        "toast": "Knowledge partner deleted."
+      }
+    }
+  },
+  "policies": {
+    "title": "Policies & Terms",
+    "empty": "No policy sections available."
+  },
+  "about": {
+    "eyebrow": "About the Platform",
+    "title": "Circular Carbon Economy Knowledge Center",
+    "tagline": "A unified hub for circular carbon economy knowledge, partnerships, and learning.",
+    "description": "About",
+    "howToUse": "How to Use the Platform",
+    "knowledgePartners": "Knowledge Partners",
+    "glossary": "Glossary of Terms",
+    "visitWebsite": "Visit website",
+    "empty": "Content not available yet."
+  },
+  "policiesSettings": {
+    "title": "Policies & Terms Settings",
+    "section": {
+      "sections": "Policy Sections"
+    },
+    "add": "Add section",
+    "empty": "No policy sections yet.",
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)"
+    },
+    "save": {
+      "toast": "Policy section saved."
+    },
+    "delete": {
+      "title": "Delete section",
+      "message": "Delete this policy section?",
+      "confirm": "Delete",
+      "toast": "Policy section deleted."
+    },
+    "reorder": {
+      "toast": "Section order updated."
+    }
   }
 }

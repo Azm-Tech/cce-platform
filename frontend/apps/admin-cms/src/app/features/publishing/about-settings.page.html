@@ -1,0 +1,228 @@
+<h1 class="cce-about__title">{{ 'aboutSettings.title' | transloco }}</h1>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (loadError()) {
+  <div class="cce-about__error" role="alert">{{ 'errors.ERR001' | transloco }}</div>
+}
+
+<!-- Description & Video -->
+  <section class="cce-about__card">
+    <header class="cce-about__hd">
+      <h2 class="cce-about__hd-title">{{ 'aboutSettings.section.description' | transloco }}</h2>
+    </header>
+    <form [formGroup]="descForm" (ngSubmit)="saveDescription()" class="cce-about__form">
+      <div class="cce-about__row">
+        <label class="cce-about__group">
+          <span class="cce-about__label">{{ 'aboutSettings.field.descriptionAr' | transloco }}</span>
+          <textarea class="cce-about__input" formControlName="descriptionAr" rows="6" dir="rtl" maxlength="1000"></textarea>
+          <span class="cce-about__hint">{{ descForm.controls.descriptionAr.value.length }}/1000</span>
+        </label>
+        <label class="cce-about__group">
+          <span class="cce-about__label">{{ 'aboutSettings.field.descriptionEn' | transloco }}</span>
+          <textarea class="cce-about__input" formControlName="descriptionEn" rows="6" dir="ltr" maxlength="1000"></textarea>
+          <span class="cce-about__hint">{{ descForm.controls.descriptionEn.value.length }}/1000</span>
+        </label>
+      </div>
+      <label class="cce-about__group">
+        <span class="cce-about__label">{{ 'aboutSettings.field.howToUseVideoUrl' | transloco }}</span>
+        <input class="cce-about__input" type="url" formControlName="howToUseVideoUrl" placeholder="https://..." dir="ltr" />
+        <span class="cce-about__hint">{{ 'aboutSettings.field.howToUseVideoUrlHint' | transloco }}</span>
+      </label>
+      <div class="cce-about__actions">
+        <button type="submit" class="cce-about__btn cce-about__btn--primary" [disabled]="saving()">
+          {{ 'aboutSettings.save.button' | transloco }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Glossary -->
+  <section class="cce-about__card">
+    <header class="cce-about__hd">
+      <h2 class="cce-about__hd-title">
+        {{ 'aboutSettings.section.glossary' | transloco }}
+        @if (glossaryTerms().length > 0) {
+          <span class="cce-about__count">{{ glossaryTerms().length }}</span>
+        }
+      </h2>
+      <button type="button" class="cce-about__btn cce-about__btn--ghost"
+        [disabled]="editingTermId() !== null || saving()"
+        (click)="startAddTerm()">
+        + {{ 'aboutSettings.glossary.add' | transloco }}
+      </button>
+    </header>
+
+    @if (editingTermId() !== null) {
+      <div class="cce-about__edit-box">
+        <p class="cce-about__edit-title">
+          {{ (editingTermId() === 'new' ? 'aboutSettings.glossary.addTitle' : 'aboutSettings.glossary.editTitle') | transloco }}
+        </p>
+        <form [formGroup]="glossaryForm" (ngSubmit)="saveTerm()">
+          <div class="cce-about__row">
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.termAr' | transloco }}</span>
+              <input class="cce-about__input" formControlName="termAr" dir="rtl" maxlength="100" />
+            </label>
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.termEn' | transloco }}</span>
+              <input class="cce-about__input" formControlName="termEn" dir="ltr" maxlength="100" />
+            </label>
+          </div>
+          <div class="cce-about__row">
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.definitionAr' | transloco }}</span>
+              <textarea class="cce-about__input" formControlName="definitionAr" rows="3" dir="rtl" maxlength="1000"></textarea>
+            </label>
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.definitionEn' | transloco }}</span>
+              <textarea class="cce-about__input" formControlName="definitionEn" rows="3" dir="ltr" maxlength="1000"></textarea>
+            </label>
+          </div>
+          <div class="cce-about__actions">
+            <button type="button" class="cce-about__btn cce-about__btn--text" (click)="cancelTerm()" [disabled]="saving()">
+              {{ 'common.actions.cancel' | transloco }}
+            </button>
+            <button type="submit" class="cce-about__btn cce-about__btn--primary" [disabled]="saving()">
+              {{ 'common.actions.save' | transloco }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (glossaryTerms().length > 0) {
+      <ul class="cce-about__list">
+        @for (term of glossaryTerms(); track term.id) {
+          <li class="cce-about__list-row">
+            <div class="cce-about__list-main">
+              <div class="cce-about__cell-primary" dir="rtl">{{ term.termAr }}</div>
+              <div class="cce-about__cell-secondary">{{ term.termEn }}</div>
+              <div class="cce-about__cell-detail" dir="rtl">{{ term.definitionAr }}</div>
+              <div class="cce-about__cell-detail cce-about__cell-detail--en">{{ term.definitionEn }}</div>
+            </div>
+            <div class="cce-about__list-actions">
+              <button type="button" class="cce-about__icon-btn"
+                [disabled]="editingTermId() !== null || saving()"
+                (click)="startEditTerm(term)" aria-label="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" class="cce-about__icon-btn cce-about__icon-btn--danger"
+                [disabled]="editingTermId() !== null || saving()"
+                (click)="deleteTerm(term)" aria-label="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (editingTermId() === null) {
+      <p class="cce-about__empty">{{ 'aboutSettings.glossary.empty' | transloco }}</p>
+    }
+  </section>
+
+  <!-- Knowledge Partners -->
+  <section class="cce-about__card">
+    <header class="cce-about__hd">
+      <h2 class="cce-about__hd-title">
+        {{ 'aboutSettings.section.partners' | transloco }}
+        @if (partners().length > 0) {
+          <span class="cce-about__count">{{ partners().length }}</span>
+        }
+      </h2>
+      <button type="button" class="cce-about__btn cce-about__btn--ghost"
+        [disabled]="editingPartnerId() !== null || saving()"
+        (click)="startAddPartner()">
+        + {{ 'aboutSettings.partners.add' | transloco }}
+      </button>
+    </header>
+
+    @if (editingPartnerId() !== null) {
+      <div class="cce-about__edit-box">
+        <p class="cce-about__edit-title">
+          {{ (editingPartnerId() === 'new' ? 'aboutSettings.partners.addTitle' : 'aboutSettings.partners.editTitle') | transloco }}
+        </p>
+        <form [formGroup]="partnerForm" (ngSubmit)="savePartner()">
+          <div class="cce-about__row">
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.nameAr' | transloco }}</span>
+              <input class="cce-about__input" formControlName="nameAr" dir="rtl" />
+            </label>
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.nameEn' | transloco }}</span>
+              <input class="cce-about__input" formControlName="nameEn" dir="ltr" />
+            </label>
+          </div>
+          <div class="cce-about__row">
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.descriptionAr' | transloco }}</span>
+              <textarea class="cce-about__input" formControlName="descriptionAr" rows="2" dir="rtl"></textarea>
+            </label>
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.descriptionEn' | transloco }}</span>
+              <textarea class="cce-about__input" formControlName="descriptionEn" rows="2" dir="ltr"></textarea>
+            </label>
+          </div>
+          <div class="cce-about__row">
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.logoUrl' | transloco }}</span>
+              <input class="cce-about__input" type="url" formControlName="logoUrl" placeholder="https://..." dir="ltr" />
+            </label>
+            <label class="cce-about__group">
+              <span class="cce-about__label">{{ 'aboutSettings.partners.field.websiteUrl' | transloco }}</span>
+              <input class="cce-about__input" type="url" formControlName="websiteUrl" placeholder="https://..." dir="ltr" />
+            </label>
+          </div>
+          <div class="cce-about__actions">
+            <button type="button" class="cce-about__btn cce-about__btn--text" (click)="cancelPartner()" [disabled]="saving()">
+              {{ 'common.actions.cancel' | transloco }}
+            </button>
+            <button type="submit" class="cce-about__btn cce-about__btn--primary" [disabled]="saving()">
+              {{ 'common.actions.save' | transloco }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (partners().length > 0) {
+      <ul class="cce-about__list">
+        @for (p of partners(); track p.id) {
+          <li class="cce-about__list-row">
+            <div class="cce-about__partner-main">
+              @if (p.logoUrl) {
+                <img [src]="p.logoUrl" [alt]="p.nameEn" class="cce-about__logo" />
+              } @else {
+                <span class="cce-about__logo cce-about__logo--placeholder">
+                  <mat-icon>business</mat-icon>
+                </span>
+              }
+              <div class="cce-about__partner-info">
+                <div class="cce-about__cell-primary" dir="rtl">{{ p.nameAr }}</div>
+                <div class="cce-about__cell-secondary">{{ p.nameEn }}</div>
+                @if (p.websiteUrl) {
+                  <a [href]="p.websiteUrl" target="_blank" rel="noopener" class="cce-about__link" dir="ltr">{{ p.websiteUrl }}</a>
+                }
+              </div>
+            </div>
+            <div class="cce-about__list-actions">
+              <button type="button" class="cce-about__icon-btn"
+                [disabled]="editingPartnerId() !== null || saving()"
+                (click)="startEditPartner(p)" aria-label="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" class="cce-about__icon-btn cce-about__icon-btn--danger"
+                [disabled]="editingPartnerId() !== null || saving()"
+                (click)="deletePartner(p)" aria-label="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (editingPartnerId() === null) {
+      <p class="cce-about__empty">{{ 'aboutSettings.partners.empty' | transloco }}</p>
+    }
+  </section>

@@ -86,6 +86,22 @@ export const appRoutes: Route[] = [
         title: 'CCE — Homepage',
       },
       {
+        path: 'about-settings',
+        canMatch: [permissionGuard],
+        data: { permission: CcePermission.PageEdit },
+        loadChildren: () =>
+          import('./features/publishing/routes').then((m) => m.ABOUT_SETTINGS_ROUTES),
+        title: 'CCE — About Settings',
+      },
+      {
+        path: 'policies-settings',
+        canMatch: [permissionGuard],
+        data: { permission: CcePermission.SettingsManage },
+        loadChildren: () =>
+          import('./features/publishing/routes').then((m) => m.POLICIES_SETTINGS_ROUTES),
+        title: 'CCE — Policies Settings',
+      },
+      {
         path: 'taxonomies',
         canMatch: [permissionGuard],
         data: { permission: CcePermission.ResourceCenterUpload },

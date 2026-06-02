@@ -142,4 +142,102 @@ export interface ReorderHomepageSectionsBody {
   assignments: { id: string; orderIndex: number }[];
 }
 
+// ---- Platform Settings ----
+
+export interface HomepageSettings {
+  videoUrl: string | null;
+  objectiveAr: string | null;
+  objectiveEn: string | null;
+  cceConceptsAr: string | null;
+  cceConceptsEn: string | null;
+  participatingCountryIds: string[];
+}
+
+export interface UpdateHomepageSettingsBody {
+  videoUrl?: string | null;
+  objectiveAr?: string | null;
+  objectiveEn?: string | null;
+  cceConceptsAr?: string | null;
+  cceConceptsEn?: string | null;
+  participatingCountryIds?: string[];
+}
+
+export interface GlossaryTerm {
+  id: string;
+  termAr: string;
+  termEn: string;
+  definitionAr: string;
+  definitionEn: string;
+}
+
+export interface GlossaryTermBody {
+  termAr: string;
+  termEn: string;
+  definitionAr: string;
+  definitionEn: string;
+}
+
+export interface KnowledgePartner {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  logoUrl: string | null;
+  websiteUrl: string | null;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+}
+
+export interface KnowledgePartnerBody {
+  nameAr: string;
+  nameEn: string;
+  logoUrl?: string | null;
+  websiteUrl?: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
+}
+
+export interface AboutSettings {
+  descriptionAr: string;
+  descriptionEn: string;
+  howToUseVideoUrl: string | null;
+  glossaryTerms: GlossaryTerm[];
+  knowledgePartners: KnowledgePartner[];
+}
+
+export interface UpdateAboutSettingsBody {
+  descriptionAr?: string;
+  descriptionEn?: string;
+  howToUseVideoUrl?: string | null;
+}
+
+export interface ApiPolicySection {
+  id: string;
+  type: number;
+  title: { ar: string; en: string };
+  content: { ar: string; en: string };
+  orderIndex: number;
+}
+
+export interface PolicySection {
+  id: string;
+  type: number;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
+  orderIndex: number;
+}
+
+export interface PolicySectionBody {
+  type?: number;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
+}
+
+export interface PoliciesSettings {
+  sections: PolicySection[];
+}
+
 export type { PagedResult };

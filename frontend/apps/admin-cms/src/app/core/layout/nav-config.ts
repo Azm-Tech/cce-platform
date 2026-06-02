@@ -50,6 +50,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { labelKey: 'nav.pages', route: '/pages', permission: CcePermission.PageEdit, icon: 'web' },
       { labelKey: 'nav.homepage', route: '/homepage', permission: CcePermission.PageEdit, icon: 'home' },
+      { labelKey: 'nav.aboutSettings', route: '/about-settings', permission: CcePermission.PageEdit, icon: 'info' },
+      { labelKey: 'nav.policiesSettings', route: '/policies-settings', permission: CcePermission.SettingsManage, icon: 'policy' },
       { labelKey: 'nav.news', route: '/news', permission: CcePermission.NewsUpdate, icon: 'feed' },
       { labelKey: 'nav.events', route: '/events', permission: CcePermission.EventManage, icon: 'event' },
     ],
