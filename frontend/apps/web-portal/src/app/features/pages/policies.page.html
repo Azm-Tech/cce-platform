@@ -1,0 +1,26 @@
+<article class="cce-policies">
+  @if (loading()) {
+    <p class="cce-policies__loading">{{ 'common.loading' | transloco }}</p>
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-policies__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
+  }
+
+  @if (policies()) {
+    <header class="cce-policies__header">
+      <h1 class="cce-policies__title">{{ 'policies.title' | transloco }}</h1>
+    </header>
+
+    @if (sections().length) {
+      @for (section of sections(); track section.id) {
+        <section class="cce-policies__section">
+          <h2 class="cce-policies__section-title">{{ title(section) }}</h2>
+          <div class="cce-policies__section-content" [innerHTML]="content(section)"></div>
+        </section>
+      }
+    } @else {
+      <p class="cce-policies__empty">{{ 'policies.empty' | transloco }}</p>
+    }
+  }
+</article>

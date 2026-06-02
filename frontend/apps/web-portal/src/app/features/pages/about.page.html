@@ -1,0 +1,111 @@
+<article class="cce-about">
+  <!-- Hero -->
+  <header class="cce-about__hero">
+    <div class="cce-about__hero-inner">
+      <span class="cce-about__eyebrow">{{ 'about.eyebrow' | transloco }}</span>
+      <h1 class="cce-about__title">{{ 'about.title' | transloco }}</h1>
+      <p class="cce-about__tagline">{{ 'about.tagline' | transloco }}</p>
+    </div>
+  </header>
+
+  <div class="cce-about__body">
+
+    @if (loading()) {
+      <p class="cce-about__loading">{{ 'common.loading' | transloco }}</p>
+    }
+
+    @if (errorKind(); as kind) {
+      <div class="cce-about__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
+    }
+
+    @if (about(); as a) {
+
+      <!-- Description -->
+      @if (description()) {
+        <section class="cce-about__section cce-about__section--card">
+          <div class="cce-about__section-head">
+            <span class="cce-about__section-icon" aria-hidden="true">ℹ︎</span>
+            <h2 class="cce-about__section-title">{{ 'about.description' | transloco }}</h2>
+          </div>
+          <p class="cce-about__description">{{ description() }}</p>
+        </section>
+      }
+
+      <!-- How-to-use video -->
+      @if (safeVideoUrl()) {
+        <section class="cce-about__section">
+          <div class="cce-about__section-head">
+            <span class="cce-about__section-icon" aria-hidden="true">▶</span>
+            <h2 class="cce-about__section-title">{{ 'about.howToUse' | transloco }}</h2>
+          </div>
+          <div class="cce-about__video-wrapper">
+            <iframe
+              [src]="safeVideoUrl()"
+              class="cce-about__video"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              [title]="'about.howToUse' | transloco">
+            </iframe>
+          </div>
+        </section>
+      }
+
+      <!-- Knowledge Partners -->
+      @if (a.knowledgePartners.length) {
+        <section class="cce-about__section">
+          <div class="cce-about__section-head">
+            <span class="cce-about__section-icon" aria-hidden="true">⌬</span>
+            <h2 class="cce-about__section-title">{{ 'about.knowledgePartners' | transloco }}</h2>
+            <span class="cce-about__count">{{ a.knowledgePartners.length }}</span>
+          </div>
+          <div class="cce-about__partners">
+            @for (partner of a.knowledgePartners; track partner.id) {
+              <article class="cce-about__partner">
+                @if (partner.logoUrl) {
+                  <img class="cce-about__partner-logo" [src]="partner.logoUrl"
+                       [alt]="locale() === 'ar' ? partner.nameAr : partner.nameEn" />
+                } @else {
+                  <div class="cce-about__partner-logo cce-about__partner-logo--placeholder" aria-hidden="true">
+                    {{ (locale() === 'ar' ? partner.nameAr : partner.nameEn).charAt(0) }}
+                  </div>
+                }
+                <div class="cce-about__partner-body">
+                  <h3 class="cce-about__partner-name">{{ locale() === 'ar' ? partner.nameAr : partner.nameEn }}</h3>
+                  @if (locale() === 'ar' ? partner.descriptionAr : partner.descriptionEn) {
+                    <p class="cce-about__partner-desc">{{ locale() === 'ar' ? partner.descriptionAr : partner.descriptionEn }}</p>
+                  }
+                  @if (partner.websiteUrl) {
+                    <a class="cce-about__partner-link" [href]="partner.websiteUrl" target="_blank" rel="noopener">
+                      {{ 'about.visitWebsite' | transloco }} →
+                    </a>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Glossary -->
+      @if (a.glossaryTerms.length) {
+        <section class="cce-about__section">
+          <div class="cce-about__section-head">
+            <span class="cce-about__section-icon" aria-hidden="true">📖</span>
+            <h2 class="cce-about__section-title">{{ 'about.glossary' | transloco }}</h2>
+            <span class="cce-about__count">{{ a.glossaryTerms.length }}</span>
+          </div>
+          <dl class="cce-about__glossary">
+            @for (term of a.glossaryTerms; track term.id) {
+              <div class="cce-about__term">
+                <dt class="cce-about__term-name">{{ locale() === 'ar' ? term.termAr : term.termEn }}</dt>
+                <dd class="cce-about__term-def">{{ locale() === 'ar' ? term.definitionAr : term.definitionEn }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+      }
+
+    }
+  </div>
+</article>

@@ -14,6 +14,14 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('./features/pages/routes').then((m) => m.STATIC_PAGES_ROUTES),
   },
   {
+    path: 'about',
+    loadChildren: () => import('./features/pages/routes').then((m) => m.ABOUT_ROUTES),
+  },
+  {
+    path: 'policies',
+    loadChildren: () => import('./features/pages/routes').then((m) => m.POLICIES_ROUTES),
+  },
+  {
     path: 'knowledge-center',
     loadChildren: () =>
       import('./features/knowledge-center/routes').then((m) => m.KNOWLEDGE_CENTER_ROUTES),

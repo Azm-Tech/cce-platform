@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  core: {
+    preflight: false,
+  },
   content: [
     "./apps/*/src/**/*.{html,ts}",
     "./libs/*/src/**/*.{html,ts}"
