@@ -63,7 +63,9 @@ public sealed class SubmitExpertRequestCommandHandler
             entity.RequestedBioAr,
             entity.RequestedBioEn,
             entity.RequestedTags.ToList(),
-            entity.Attachments.Select(a => new ExpertRequestAttachmentDto(a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt)).ToList(),
+            entity.Attachments.Select(a => new ExpertRequestAttachmentDto(
+                a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt,
+                a.AssetFileId == asset.Id ? asset.Url : string.Empty)).ToList(),
             entity.SubmittedOn,
             entity.Status,
             entity.ProcessedOn,

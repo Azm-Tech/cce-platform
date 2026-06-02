@@ -51,6 +51,7 @@ public sealed class ListExpertRequestsQueryHandler
             r.RequestedBioAr,
             r.RequestedBioEn,
             r.RequestedTags.ToList(),
+            [],
             r.SubmittedOn,
             r.Status,
             r.ProcessedById,

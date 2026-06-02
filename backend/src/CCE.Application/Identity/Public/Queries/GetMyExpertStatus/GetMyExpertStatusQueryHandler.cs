@@ -36,13 +36,22 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
+        var assetIds = attachments.Select(a => a.AssetFileId).ToList();
+        var assetUrlMap = (await _db.AssetFiles
+            .Where(a => assetIds.Contains(a.Id))
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false))
+            .ToDictionary(a => a.Id, a => a.Url);
+
         return _msg.Ok(new ExpertRequestStatusDto(
             entity.Id,
             entity.RequestedById,
             entity.RequestedBioAr,
             entity.RequestedBioEn,
             entity.RequestedTags.ToList(),
-            attachments.Select(a => new ExpertRequestAttachmentDto(a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt)).ToList(),
+            attachments.Select(a => new ExpertRequestAttachmentDto(
+                a.Id, a.AssetFileId, a.AttachmentType, a.UploadedAt,
+                assetUrlMap.GetValueOrDefault(a.AssetFileId) ?? string.Empty)).ToList(),
             entity.SubmittedOn,
             entity.Status,
             entity.ProcessedOn,

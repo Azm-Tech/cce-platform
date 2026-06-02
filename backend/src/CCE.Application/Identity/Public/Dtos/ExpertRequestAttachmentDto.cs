@@ -6,4 +6,5 @@ public sealed record ExpertRequestAttachmentDto(
     System.Guid Id,
     System.Guid AssetFileId,
     ExpertRequestAttachmentType AttachmentType,
-    System.DateTimeOffset UploadedAt);
+    System.DateTimeOffset UploadedAt,
+    string Url);

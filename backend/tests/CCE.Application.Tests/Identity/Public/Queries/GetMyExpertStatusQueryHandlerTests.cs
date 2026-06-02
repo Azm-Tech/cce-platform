@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Queries.GetMyExpertStatus;
 using CCE.Application.Messages;
+using CCE.Domain.Content;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using static CCE.Application.Tests.Identity.IdentityTestHelpers;
@@ -59,12 +60,15 @@ public class GetMyExpertStatusQueryHandlerTests
         result.Data!.RequestedBioEn.Should().Be("Newer bio");
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<ExpertRegistrationRequest> requests)
+    private static ICceDbContext BuildDb(
+        IEnumerable<ExpertRegistrationRequest> requests,
+        IEnumerable<AssetFile>? assets = null)
     {
         var all = requests.ToList();
         var db = Substitute.For<ICceDbContext>();
         db.ExpertRegistrationRequests.Returns(all.AsQueryable());
         db.ExpertRequestAttachments.Returns(all.SelectMany(r => r.Attachments).AsQueryable());
+        db.AssetFiles.Returns((assets ?? System.Array.Empty<AssetFile>()).AsQueryable());
         return db;
     }
 }

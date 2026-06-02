@@ -58,6 +58,7 @@ public sealed class RejectExpertRequestCommandHandler
             registration.RequestedBioAr,
             registration.RequestedBioEn,
             registration.RequestedTags.ToList(),
+            [],
             registration.SubmittedOn,
             registration.Status,
             registration.ProcessedById,

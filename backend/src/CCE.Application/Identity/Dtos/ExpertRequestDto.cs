@@ -1,3 +1,4 @@
+using CCE.Application.Identity.Public.Dtos;
 using CCE.Domain.Identity;
 
 namespace CCE.Application.Identity.Dtos;
@@ -9,6 +10,7 @@ public sealed record ExpertRequestDto(
     string RequestedBioAr,
     string RequestedBioEn,
     IReadOnlyList<string> RequestedTags,
+    IReadOnlyList<ExpertRequestAttachmentDto> Attachments,
     System.DateTimeOffset SubmittedOn,
     ExpertRegistrationStatus Status,
     System.Guid? ProcessedById,
