@@ -43,7 +43,7 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
         }
 
         query = query.WhereIf(topicId.HasValue, e => e.TopicId == topicId!.Value);
-        query = query.OrderBy(e => e.StartsOn);
+        query = ApplySort(query, request.SortBy, request.SortOrder);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
@@ -53,6 +53,17 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
         var topicById = topicsList.ToDictionary(t => t.Id);
 
         return _messages.Ok(result.Map(e => MapToDto(e, topicById)), "ITEMS_LISTED");
+    }
+
+    private static IQueryable<Event> ApplySort(IQueryable<Event> query, EventSortBy sortBy, SortOrder sortOrder)
+    {
+        return sortBy switch
+        {
+            EventSortBy.Date => sortOrder == SortOrder.Ascending
+                ? query.OrderBy(e => e.StartsOn)
+                : query.OrderByDescending(e => e.StartsOn),
+            _ => query.OrderByDescending(e => e.StartsOn),
+        };
     }
 
     internal static PublicEventDto MapToDto(Event e, Dictionary<System.Guid, Topic> topicById) => new(

@@ -1,7 +1,9 @@
 using CCE.Api.Common.Extensions;
+using CCE.Application.Common;
 using CCE.Application.Content.Public;
 using CCE.Application.Content.Public.Queries.GetPublicEventById;
 using CCE.Application.Content.Public.Queries.ListPublicEvents;
+using CCE.Domain.Content;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +21,7 @@ public static class EventsPublicEndpoints
             int? page, int? pageSize,
             System.DateTimeOffset? from, System.DateTimeOffset? to,
             string? topicSlug,
+            EventSortBy? sortBy, SortOrder? sortOrder,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicEventsQuery(
@@ -26,7 +29,9 @@ public static class EventsPublicEndpoints
                 PageSize: pageSize ?? 20,
                 From: from,
                 To: to,
-                TopicSlug: topicSlug);
+                TopicSlug: topicSlug,
+                SortBy: sortBy ?? EventSortBy.Date,
+                SortOrder: sortOrder ?? SortOrder.Descending);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

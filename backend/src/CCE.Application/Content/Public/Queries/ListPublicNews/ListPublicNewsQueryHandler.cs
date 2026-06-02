@@ -30,11 +30,13 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
             topicId = topics.FirstOrDefault()?.Id;
         }
 
-        var query = _db.News
-            .Where(n => n.PublishedOn != null)
-            .WhereIf(request.IsFeatured.HasValue, n => n.IsFeatured == request.IsFeatured!.Value)
-            .WhereIf(topicId.HasValue, n => n.TopicId == topicId!.Value)
-            .OrderByDescending(n => n.PublishedOn);
+        var query = ApplySort(
+            _db.News
+                .Where(n => n.PublishedOn != null)
+                .WhereIf(request.IsFeatured.HasValue, n => n.IsFeatured == request.IsFeatured!.Value)
+                .WhereIf(topicId.HasValue, n => n.TopicId == topicId!.Value),
+            request.SortBy,
+            request.SortOrder);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
@@ -44,6 +46,17 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
         var topicById = topicsList.ToDictionary(t => t.Id);
 
         return _messages.Ok(result.Map(n => MapToDto(n, topicById)), "ITEMS_LISTED");
+    }
+
+    private static IQueryable<News> ApplySort(IQueryable<News> query, NewsSortBy sortBy, SortOrder sortOrder)
+    {
+        return sortBy switch
+        {
+            NewsSortBy.Date => sortOrder == SortOrder.Ascending
+                ? query.OrderBy(n => n.PublishedOn)
+                : query.OrderByDescending(n => n.PublishedOn),
+            _ => query.OrderByDescending(n => n.PublishedOn),
+        };
     }
 
     internal static PublicNewsDto MapToDto(News n, Dictionary<System.Guid, Topic> topicById) => new(

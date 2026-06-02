@@ -1,6 +1,8 @@
 using CCE.Api.Common.Extensions;
+using CCE.Application.Common;
 using CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
 using CCE.Application.Content.Public.Queries.ListPublicNews;
+using CCE.Domain.Content;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -15,13 +17,16 @@ public static class NewsPublicEndpoints
 
         news.MapGet("", async (
             int? page, int? pageSize, bool? isFeatured, string? topicSlug,
+            NewsSortBy? sortBy, SortOrder? sortOrder,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicNewsQuery(
                 Page: page ?? 1,
                 PageSize: pageSize ?? 20,
                 IsFeatured: isFeatured,
-                TopicSlug: topicSlug);
+                TopicSlug: topicSlug,
+                SortBy: sortBy ?? NewsSortBy.Date,
+                SortOrder: sortOrder ?? SortOrder.Descending);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
