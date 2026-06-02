@@ -6,6 +6,7 @@ using CCE.Application.Content.Queries.GetNewsById;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.UpdateNews;
@@ -53,6 +54,10 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news, topicNameAr, topicNameEn), "SUCCESS_OPERATION");
+        var users = await _db.Users.Where(u => u.Id == news.AuthorId)
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var authorName = users.FirstOrDefault() is { } u ? $"{u.FirstName} {u.LastName}".Trim() : string.Empty;
+
+        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news, topicNameAr, topicNameEn, authorName), "SUCCESS_OPERATION");
     }
 }

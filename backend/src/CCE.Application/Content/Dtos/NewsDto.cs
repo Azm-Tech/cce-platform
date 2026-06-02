@@ -10,6 +10,7 @@ public sealed record NewsDto(
     string TopicNameAr,
     string TopicNameEn,
     System.Guid AuthorId,
+    string AuthorName,
     string? FeaturedImageUrl,
     System.DateTimeOffset? PublishedOn,
     bool IsFeatured,

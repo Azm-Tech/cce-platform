@@ -1,10 +1,12 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.GetNewsById;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.PublishNews;
@@ -40,6 +42,10 @@ public sealed class PublishNewsCommandHandler : IRequestHandler<PublishNewsComma
         _db.SetExpectedRowVersion(news, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news), "SUCCESS_OPERATION");
+        var users = await _db.Users.Where(u => u.Id == news.AuthorId)
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var authorName = users.FirstOrDefault() is { } u ? $"{u.FirstName} {u.LastName}".Trim() : string.Empty;
+
+        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news, authorName: authorName), "SUCCESS_OPERATION");
     }
 }

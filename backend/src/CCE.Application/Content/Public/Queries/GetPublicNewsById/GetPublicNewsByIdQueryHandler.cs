@@ -5,6 +5,7 @@ using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Content.Public.Queries.GetPublicNewsById;
@@ -31,12 +32,17 @@ public sealed class GetPublicNewsByIdQueryHandler : IRequestHandler<GetPublicNew
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topic = topics.FirstOrDefault();
 
-        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty), "SUCCESS_OPERATION");
+        var users = await _db.Users.Where(u => u.Id == news.AuthorId)
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var author = users.FirstOrDefault();
+        var authorName = author is not null ? $"{author.FirstName} {author.LastName}".Trim() : string.Empty;
+
+        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, authorName), "SUCCESS_OPERATION");
     }
 
-    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "") => new(
+    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "", string authorName = "") => new(
         n.Id, n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn,
         n.TopicId, topicNameAr, topicNameEn,
-        n.AuthorId, n.FeaturedImageUrl,
+        n.AuthorId, authorName, n.FeaturedImageUrl,
         n.PublishedOn, n.IsFeatured, n.IsPublished);
 }

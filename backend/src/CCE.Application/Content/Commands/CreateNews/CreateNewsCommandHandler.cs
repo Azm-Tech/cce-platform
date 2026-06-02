@@ -60,6 +60,10 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn), "CONTENT_CREATED");
+        var users = await _db.Users.Where(u => u.Id == authorId.Value)
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var authorName = users.FirstOrDefault() is { } u ? $"{u.FirstName} {u.LastName}".Trim() : string.Empty;
+
+        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn, authorName), "CONTENT_CREATED");
     }
 }

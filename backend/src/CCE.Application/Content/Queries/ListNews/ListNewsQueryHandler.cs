@@ -5,6 +5,7 @@ using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Content.Queries.ListNews;
@@ -41,20 +42,27 @@ public sealed class ListNewsQueryHandler : IRequestHandler<ListNewsQuery, Respon
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topicById = topics.ToDictionary(t => t.Id);
 
-        return _messages.Ok(result.Map(n => MapToDto(n, topicById)), "ITEMS_LISTED");
+        var authorIds = result.Items.Select(n => n.AuthorId).Distinct().ToList();
+        var authors = await _db.Users.Where(u => authorIds.Contains(u.Id))
+            .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var authorNameById = authors.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}".Trim());
+
+        return _messages.Ok(result.Map(n => MapToDto(n, topicById, authorNameById)), "ITEMS_LISTED");
     }
 
-    internal static NewsDto MapToDto(News n, Dictionary<System.Guid, Topic> topicById) => new(
+    internal static NewsDto MapToDto(News n, Dictionary<System.Guid, Topic> topicById, Dictionary<System.Guid, string> authorNameById) => new(
         n.Id, n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn,
         n.TopicId,
         topicById.TryGetValue(n.TopicId, out var t) ? t.NameAr : string.Empty,
         topicById.TryGetValue(n.TopicId, out t) ? t.NameEn : string.Empty,
-        n.AuthorId, n.FeaturedImageUrl,
+        n.AuthorId,
+        authorNameById.TryGetValue(n.AuthorId, out var an) ? an : string.Empty,
+        n.FeaturedImageUrl,
         n.PublishedOn, n.IsFeatured, n.IsPublished);
 
-    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "") => new(
+    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "", string authorName = "") => new(
         n.Id, n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn,
         n.TopicId, topicNameAr, topicNameEn,
-        n.AuthorId, n.FeaturedImageUrl,
+        n.AuthorId, authorName, n.FeaturedImageUrl,
         n.PublishedOn, n.IsFeatured, n.IsPublished);
 }
