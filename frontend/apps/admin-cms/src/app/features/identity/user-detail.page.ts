@@ -111,4 +111,24 @@ export class UserDetailPage implements OnInit {
     }
   }
 
+  async toggleStatus(): Promise<void> {
+    const u = this.user();
+    if (!u) return;
+    const willActivate = !u.isActive;
+    const confirmed = await this.confirm.confirm({
+      titleKey: willActivate ? 'users.activate.confirmTitle' : 'users.deactivate.confirmTitle',
+      messageKey: willActivate ? 'users.activate.confirmMessage' : 'users.deactivate.confirmMessage',
+      confirmKey: willActivate ? 'users.activate.confirmButton' : 'users.deactivate.confirmButton',
+      cancelKey: 'common.actions.cancel',
+    });
+    if (!confirmed) return;
+    const res = await this.api.setUserStatus(u.id, willActivate);
+    if (res.ok) {
+      this.user.set(res.value);
+      this.toast.success(willActivate ? 'users.activate.successToast' : 'users.deactivate.successToast');
+    } else {
+      this.toast.error(willActivate ? 'users.activate.errorGeneric' : 'users.deactivate.errorGeneric');
+    }
+  }
+
 }

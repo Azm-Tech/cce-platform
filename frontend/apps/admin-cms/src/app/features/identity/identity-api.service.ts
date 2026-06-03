@@ -61,6 +61,14 @@ export class IdentityApiService {
     );
   }
 
+  async setUserStatus(id: string, isActive: boolean): Promise<Result<UserDetail>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http.put<UserDetail>(`/api/admin/users/${id}/status`, { isActive }),
+      ),
+    );
+  }
+
   async listStateRepAssignments(opts: {
     page?: number;
     pageSize?: number;

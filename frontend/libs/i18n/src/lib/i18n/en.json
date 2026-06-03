@@ -464,6 +464,22 @@
       "successToast": "User deleted successfully.",
       "errorGeneric": "Failed to delete user. Please try again."
     },
+    "deactivate": {
+      "button": "Deactivate",
+      "confirmTitle": "Deactivate User",
+      "confirmMessage": "The user will be signed out and will not be able to access the platform until you reactivate them.",
+      "confirmButton": "Deactivate",
+      "successToast": "User deactivated.",
+      "errorGeneric": "Failed to deactivate user. Please try again."
+    },
+    "activate": {
+      "button": "Activate",
+      "confirmTitle": "Activate User",
+      "confirmMessage": "The user will regain access to the platform.",
+      "confirmButton": "Activate",
+      "successToast": "User activated.",
+      "errorGeneric": "Failed to activate user. Please try again."
+    },
     "detail": {
       "back": "Back to users",
       "status": {

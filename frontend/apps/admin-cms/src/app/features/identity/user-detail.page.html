@@ -80,6 +80,16 @@
     <mat-card-actions align="end">
       <button
         type="button"
+        mat-stroked-button
+        *ccePermission="Permission.UserDelete"
+        [color]="u.isActive ? 'warn' : 'primary'"
+        (click)="toggleStatus()"
+      >
+        <mat-icon>{{ u.isActive ? 'block' : 'check_circle' }}</mat-icon>
+        {{ (u.isActive ? 'users.deactivate.button' : 'users.activate.button') | transloco }}
+      </button>
+      <button
+        type="button"
         mat-button
         color="warn"
         *ccePermission="Permission.UserDelete"
