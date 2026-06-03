@@ -60,6 +60,8 @@ export class HomepageSettingsPage implements OnInit {
     participatingCountryIds: new FormControl<string[]>([], { nonNullable: true }),
   });
 
+  readonly compareCountryId = (a: string | null, b: string | null): boolean => a === b;
+
   ngOnInit(): void { void this.load(); }
 
   async load(): Promise<void> {
@@ -81,8 +83,12 @@ export class HomepageSettingsPage implements OnInit {
         objectiveEn: s.objectiveEn ?? '',
         cceConceptsAr: s.cceConceptsAr ?? '',
         cceConceptsEn: s.cceConceptsEn ?? '',
-        participatingCountryIds: s.participatingCountryIds,
       });
+      // Defer multi-select patch until after the @for has projected mat-options
+      // into the DOM, otherwise mat-select can't mark them as selected.
+      setTimeout(() => {
+        this.form.controls.participatingCountryIds.setValue(s.participatingCountryIds ?? []);
+      }, 0);
     } else {
       this.loadError.set(settingsRes.error.kind);
     }

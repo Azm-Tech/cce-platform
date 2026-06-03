@@ -139,7 +139,7 @@ export class PublishingApiService {
           cceConceptsAr?: string | null;
           cceConceptsEn?: string | null;
           participatingCountryIds?: string[];
-          participatingCountries?: Array<{ id: string }>;
+          participatingCountries?: Array<{ id?: string; countryId?: string }>;
         }>('/api/admin/settings/homepage'),
       );
       return {
@@ -149,7 +149,10 @@ export class PublishingApiService {
         cceConceptsAr: d.cceConceptsAr ?? null,
         cceConceptsEn: d.cceConceptsEn ?? null,
         participatingCountryIds:
-          d.participatingCountryIds ?? (d.participatingCountries ?? []).map((c) => c.id),
+          d.participatingCountryIds
+          ?? (d.participatingCountries ?? [])
+            .map((c) => c.countryId ?? c.id)
+            .filter((id): id is string => !!id),
       };
     });
   }
@@ -263,15 +266,19 @@ export class PublishingApiService {
   async createPolicySection(body: PolicySectionBody): Promise<Result<PolicySection>> {
     return this.run(() => firstValueFrom(this.http.post<PolicySection>('/api/admin/settings/policies/sections', {
       type: body.type,
-      title: { ar: body.titleAr, en: body.titleEn },
-      content: { ar: body.contentAr, en: body.contentEn },
+      titleAr: body.titleAr,
+      titleEn: body.titleEn,
+      contentAr: body.contentAr,
+      contentEn: body.contentEn,
     })));
   }
   async updatePolicySection(id: string, body: PolicySectionBody): Promise<Result<PolicySection>> {
     return this.run(() => firstValueFrom(this.http.put<PolicySection>(`/api/admin/settings/policies/sections/${id}`, {
       type: body.type,
-      title: { ar: body.titleAr, en: body.titleEn },
-      content: { ar: body.contentAr, en: body.contentEn },
+      titleAr: body.titleAr,
+      titleEn: body.titleEn,
+      contentAr: body.contentAr,
+      contentEn: body.contentEn,
     })));
   }
   async deletePolicySection(id: string): Promise<Result<void>> {
