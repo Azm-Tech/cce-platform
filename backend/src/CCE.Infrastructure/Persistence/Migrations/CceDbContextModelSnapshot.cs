@@ -1201,6 +1201,144 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("countries", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Country.CountryContentRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AdminNotesAr")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("admin_notes_ar");
+
+                    b.Property<string>("AdminNotesEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("admin_notes_en");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("country_id");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<DateTimeOffset?>("DeletedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int")
+                        .HasColumnName("kind");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<Guid?>("ProcessedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("processed_by_id");
+
+                    b.Property<DateTimeOffset?>("ProcessedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("processed_on");
+
+                    b.Property<Guid?>("ProposedAssetFileId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("proposed_asset_file_id");
+
+                    b.Property<string>("ProposedDescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("proposed_description_ar");
+
+                    b.Property<string>("ProposedDescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("proposed_description_en");
+
+                    b.Property<DateTimeOffset?>("ProposedEndsOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("proposed_ends_on");
+
+                    b.Property<string>("ProposedLocationAr")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_location_ar");
+
+                    b.Property<string>("ProposedLocationEn")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_location_en");
+
+                    b.Property<string>("ProposedOnlineMeetingUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)")
+                        .HasColumnName("proposed_online_meeting_url");
+
+                    b.Property<int?>("ProposedResourceType")
+                        .HasColumnType("int")
+                        .HasColumnName("proposed_resource_type");
+
+                    b.Property<DateTimeOffset?>("ProposedStartsOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("proposed_starts_on");
+
+                    b.Property<string>("ProposedTitleAr")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_title_ar");
+
+                    b.Property<string>("ProposedTitleEn")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_title_en");
+
+                    b.Property<Guid?>("ProposedTopicId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("proposed_topic_id");
+
+                    b.Property<Guid>("RequestedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("requested_by_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("SubmittedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("submitted_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_country_content_requests");
+
+                    b.HasIndex("CountryId", "Status", "Kind")
+                        .HasDatabaseName("ix_country_content_request_country_status_kind");
+
+                    b.ToTable("country_content_requests", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Country.CountryKapsarcSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1251,6 +1389,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<decimal?>("AreaSqKm")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("area_sq_km");
+
                     b.Property<string>("ContactInfoAr")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)")
@@ -1283,6 +1425,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description_en");
 
+                    b.Property<decimal?>("GdpPerCapita")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("gdp_per_capita");
+
                     b.Property<string>("KeyInitiativesAr")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -1301,6 +1447,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("last_modified_on");
 
+                    b.Property<Guid?>("NationallyDeterminedContributionAssetId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("nationally_determined_contribution_asset_id");
+
+                    b.Property<int?>("Population")
+                        .HasColumnType("int")
+                        .HasColumnName("population");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -1316,113 +1470,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ux_country_profile_country_id");
 
                     b.ToTable("country_profiles", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Country.CountryResourceRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AdminNotesAr")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
-                        .HasColumnName("admin_notes_ar");
-
-                    b.Property<string>("AdminNotesEn")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
-                        .HasColumnName("admin_notes_en");
-
-                    b.Property<Guid>("CountryId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("country_id");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("created_on");
-
-                    b.Property<Guid?>("DeletedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<DateTimeOffset?>("DeletedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<Guid?>("LastModifiedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by_id");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("last_modified_on");
-
-                    b.Property<Guid?>("ProcessedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("processed_by_id");
-
-                    b.Property<DateTimeOffset?>("ProcessedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("processed_on");
-
-                    b.Property<Guid>("ProposedAssetFileId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("proposed_asset_file_id");
-
-                    b.Property<string>("ProposedDescriptionAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("proposed_description_ar");
-
-                    b.Property<string>("ProposedDescriptionEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("proposed_description_en");
-
-                    b.Property<int>("ProposedResourceType")
-                        .HasColumnType("int")
-                        .HasColumnName("proposed_resource_type");
-
-                    b.Property<string>("ProposedTitleAr")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasColumnName("proposed_title_ar");
-
-                    b.Property<string>("ProposedTitleEn")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasColumnName("proposed_title_en");
-
-                    b.Property<Guid>("RequestedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("requested_by_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("status");
-
-                    b.Property<DateTimeOffset>("SubmittedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("submitted_on");
-
-                    b.HasKey("Id")
-                        .HasName("pk_country_resource_requests");
-
-                    b.HasIndex("CountryId", "Status")
-                        .HasDatabaseName("ix_country_request_country_status");
-
-                    b.ToTable("country_resource_requests", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Evaluation.ServiceEvaluation", b =>

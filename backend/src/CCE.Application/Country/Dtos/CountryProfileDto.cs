@@ -9,6 +9,13 @@ public sealed record CountryProfileDto(
     string KeyInitiativesEn,
     string? ContactInfoAr,
     string? ContactInfoEn,
+    int? Population,
+    decimal? AreaSqKm,
+    decimal? GdpPerCapita,
+    System.Guid? NdcAssetId,
+    string? CceClassification,
+    decimal? CcePerformanceScore,
+    decimal? CceTotalIndex,
+    System.DateTimeOffset? CceSnapshotTakenOn,
     System.Guid LastUpdatedById,
-    System.DateTimeOffset LastUpdatedOn,
-    string RowVersion);
+    System.DateTimeOffset LastUpdatedOn);

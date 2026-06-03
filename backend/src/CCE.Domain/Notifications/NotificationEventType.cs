@@ -10,5 +10,6 @@ public enum NotificationEventType
     ResourcePublished = 5,
     EventScheduled = 6,
     CommunityPostCreated = 7,
-    AdminAccountCreated = 8
+    AdminAccountCreated = 8,
+    CountryContentSubmitted = 9,
 }

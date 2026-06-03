@@ -1,3 +1,5 @@
+using CCE.Api.Common.Extensions;
+using CCE.Application.Common;
 using CCE.Application.Country.Commands.UpsertCountryProfile;
 using CCE.Application.Country.Queries.GetCountryProfile;
 using CCE.Domain;
@@ -28,16 +30,14 @@ public static class CountryProfileEndpoints
             UpsertCountryProfileRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpsertCountryProfileCommand(
-                countryId, body.DescriptionAr, body.DescriptionEn,
+                countryId,
+                body.DescriptionAr, body.DescriptionEn,
                 body.KeyInitiativesAr, body.KeyInitiativesEn,
                 body.ContactInfoAr, body.ContactInfoEn,
-                rowVersion);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+                body.Population, body.AreaSqKm, body.GdpPerCapita, body.NdcAssetId);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("UpsertCountryProfile");
@@ -45,12 +45,3 @@ public static class CountryProfileEndpoints
         return app;
     }
 }
-
-public sealed record UpsertCountryProfileRequest(
-    string DescriptionAr,
-    string DescriptionEn,
-    string KeyInitiativesAr,
-    string KeyInitiativesEn,
-    string? ContactInfoAr,
-    string? ContactInfoEn,
-    string RowVersion);

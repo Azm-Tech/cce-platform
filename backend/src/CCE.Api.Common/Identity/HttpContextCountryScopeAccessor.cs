@@ -38,7 +38,7 @@ public sealed class HttpContextCountryScopeAccessor : ICountryScopeAccessor
         {
             return null;
         }
-        if (!groups.Contains("StateRepresentative"))
+        if (!groups.Contains("Country.Profile.Update"))
         {
             return System.Array.Empty<System.Guid>();
         }

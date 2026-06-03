@@ -116,6 +116,8 @@ app.MapKapsarcEndpoints();
 app.MapSurveysEndpoints();
 app.MapEvaluationEndpoints();
 app.MapHomepageSettingsPublicEndpoints();
+app.MapHomepageFeedPublicEndpoints();
+app.MapFeaturedPostsFeedEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();

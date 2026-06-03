@@ -123,6 +123,18 @@ public sealed class MessageFactory
     public Response<VoidData> EmailUpdated()     => Ok(ApplicationErrors.Verification.EMAIL_UPDATED);
     public Response<VoidData> PhoneUpdated()     => Ok(ApplicationErrors.Verification.PHONE_UPDATED);
 
+    // ─── Convenience shortcuts (Country domain) ───
+
+    public Response<T> CountryNotFound<T>()               => NotFound<T>(ApplicationErrors.Country.COUNTRY_NOT_FOUND);
+    public Response<T> CountryProfileNotFound<T>()        => NotFound<T>(ApplicationErrors.Country.COUNTRY_PROFILE_NOT_FOUND);
+    public Response<T> NoCountryAssigned<T>()             => NotFound<T>(ApplicationErrors.Country.NO_COUNTRY_ASSIGNED);
+    public Response<T> CountryScopeForbidden<T>()         => Forbidden<T>(ApplicationErrors.Country.COUNTRY_SCOPE_FORBIDDEN);
+    public Response<T> CountryContentRequestNotFound<T>()    => NotFound<T>(ApplicationErrors.Content.COUNTRY_RESOURCE_REQUEST_NOT_FOUND);
+    public Response<T> CountryRequestProcessed<T>(T data)    => Ok(data, ApplicationErrors.Content.COUNTRY_REQUEST_PROCESSED);
+    public Response<T> CountryRequestProcessingFailed<T>()   => BusinessRule<T>(ApplicationErrors.Content.COUNTRY_REQUEST_PROCESSING_FAILED);
+    public Response<T> KapsarcDataUnavailable<T>()           => BusinessRule<T>(ApplicationErrors.Country.KAPSARC_DATA_UNAVAILABLE);
+    public Response<T> KapsarcSnapshotRefreshed<T>(T data)   => Ok(data, ApplicationErrors.Country.KAPSARC_SNAPSHOT_REFRESHED);
+
     // ─── Convenience shortcuts (Evaluation domain) ───
 
     public Response<VoidData> EvaluationSubmitted() => Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);

@@ -1,6 +1,6 @@
 namespace CCE.Domain.Country;
 
-public enum CountryResourceRequestStatus
+public enum CountryContentRequestStatus
 {
     Pending = 0,
     Approved = 1,

@@ -57,9 +57,19 @@ public static class SystemCodeMap
         ["CANNOT_MARK_ANSWERED"] = SystemCode.ERR067,
         ["EDIT_WINDOW_EXPIRED"] = SystemCode.ERR068,
 
-        // ─── Country Errors ───
+        // ─── Country / State-Rep Errors ───
         ["COUNTRY_NOT_FOUND"] = SystemCode.ERR070,
         ["COUNTRY_PROFILE_NOT_FOUND"] = SystemCode.ERR071,
+        ["COUNTRY_REQUEST_PROCESSING_FAILED"] = SystemCode.ERR072,
+        ["COUNTRY_SCOPE_FORBIDDEN"] = SystemCode.ERR073,
+        ["NO_COUNTRY_ASSIGNED"] = SystemCode.ERR074,
+        ["KAPSARC_DATA_UNAVAILABLE"] = SystemCode.ERR075,
+
+        // ─── Country / State-Rep Success ───
+        ["COUNTRY_PROFILE_UPDATED"] = SystemCode.CON057,
+        ["COUNTRY_CONTENT_REQUEST_SUBMITTED"] = SystemCode.CON058,
+        ["COUNTRY_REQUEST_PROCESSED"] = SystemCode.CON059,
+        ["KAPSARC_SNAPSHOT_REFRESHED"] = SystemCode.CON064,
 
         // ─── Notification Errors ───
         ["TEMPLATE_NOT_FOUND"] = SystemCode.ERR080,

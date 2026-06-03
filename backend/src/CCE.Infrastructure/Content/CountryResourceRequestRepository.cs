@@ -5,24 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Infrastructure.Content;
 
-public sealed class CountryResourceRequestRepository : ICountryResourceRequestRepository
+public sealed class CountryContentRequestRepository : ICountryContentRequestRepository
 {
     private readonly CceDbContext _db;
 
-    public CountryResourceRequestRepository(CceDbContext db)
+    public CountryContentRequestRepository(CceDbContext db)
     {
         _db = db;
     }
 
-    public async Task<CountryResourceRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct)
+    public async Task<CountryContentRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct)
     {
-        return await _db.CountryResourceRequests
+        return await _db.CountryContentRequests
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.Id == id, ct)
             .ConfigureAwait(false);
     }
 
-    public async Task UpdateAsync(CountryResourceRequest request, CancellationToken ct)
+    public async Task AddAsync(CountryContentRequest request, CancellationToken ct)
+    {
+        await _db.CountryContentRequests.AddAsync(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task UpdateAsync(CountryContentRequest request, CancellationToken ct)
     {
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }

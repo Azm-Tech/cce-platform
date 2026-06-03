@@ -39,7 +39,7 @@ public interface ICceDbContext
     IQueryable<AssetFile> AssetFiles { get; }
     IQueryable<ResourceCategory> ResourceCategories { get; }
     IQueryable<Resource> Resources { get; }
-    IQueryable<DomainCountry.CountryResourceRequest> CountryResourceRequests { get; }
+    IQueryable<DomainCountry.CountryContentRequest> CountryContentRequests { get; }
     IQueryable<DomainCountry.CountryProfile> CountryProfiles { get; }
     IQueryable<DomainCountry.CountryKapsarcSnapshot> CountryKapsarcSnapshots { get; }
     IQueryable<News> News { get; }

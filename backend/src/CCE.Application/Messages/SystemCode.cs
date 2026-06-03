@@ -74,9 +74,13 @@ public static class SystemCode
     public const string ERR067 = "ERR067"; // Cannot mark answered
     public const string ERR068 = "ERR068"; // Edit window expired
 
-    // ─── Country Errors ───
+    // ─── Country / State-Rep Errors ───
     public const string ERR070 = "ERR070"; // Country not found
     public const string ERR071 = "ERR071"; // Country profile not found
+    public const string ERR072 = "ERR072"; // Country request processing failure (appendix ERR031)
+    public const string ERR073 = "ERR073"; // Country scope forbidden (state rep editing another country)
+    public const string ERR074 = "ERR074"; // No country assigned to the current state rep
+    public const string ERR075 = "ERR075"; // KAPSARC data unavailable (appendix US014 ER001)
 
     // ─── Notification Errors ───
     public const string ERR080 = "ERR080"; // Template not found
@@ -164,6 +168,12 @@ public static class SystemCode
     public const string CON054 = "CON054"; // Roles assigned
     public const string CON055 = "CON055"; // User status changed
     public const string CON056 = "CON056"; // Login success
+
+    // ─── Country / State-Rep Success (appendix numbers CON023/024/026 already taken) ───
+    public const string CON057 = "CON057"; // State profile updated (appendix CON026)
+    public const string CON058 = "CON058"; // Country content request submitted (appendix CON024)
+    public const string CON059 = "CON059"; // Country request processed (appendix CON023)
+    public const string CON064 = "CON064"; // KAPSARC snapshot refreshed
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

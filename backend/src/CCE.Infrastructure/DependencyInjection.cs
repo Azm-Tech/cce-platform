@@ -160,6 +160,11 @@ public static class DependencyInjection
         services.AddScoped<IExpertWorkflowRepository, ExpertWorkflowRepository>();
         services.AddScoped<IExpertRequestSubmissionRepository, ExpertRequestSubmissionRepository>();
 
+        // US014 — KAPSARC Circular Carbon Economy classification-verification service.
+        // Refit client + domain-friendly adapter (mirrors the email/SMS gateway pattern).
+        services.AddExternalApiClient<CCE.Integration.Kapsarc.IKapsarcGatewayClient>("KapsarcGateway");
+        services.AddScoped<CCE.Application.Kapsarc.IKapsarcClient, CCE.Infrastructure.Kapsarc.GatewayKapsarcClient>();
+
         // File storage + virus scanning
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddKeyedSingleton<IFileStorage>("media", (sp, _) =>
@@ -179,7 +184,7 @@ public static class DependencyInjection
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
         services.AddScoped<IHomepageSectionRepository, HomepageSectionRepository>();
-        services.AddScoped<ICountryResourceRequestRepository, CountryResourceRequestRepository>();
+        services.AddScoped<ICountryContentRequestRepository, CountryContentRequestRepository>();
         services.AddScoped<IResourceViewCountRepository, ResourceViewCountRepository>();
         services.AddScoped<ICountryAdminService, CountryAdminService>();
         services.AddScoped<ICountryProfileService, CountryProfileService>();

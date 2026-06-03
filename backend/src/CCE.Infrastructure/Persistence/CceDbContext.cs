@@ -56,7 +56,7 @@ public sealed class CceDbContext
     // ─── Country ───
     public DbSet<CCE.Domain.Country.Country> Countries => Set<CCE.Domain.Country.Country>();
     public DbSet<CountryProfile> CountryProfiles => Set<CountryProfile>();
-    public DbSet<CountryResourceRequest> CountryResourceRequests => Set<CountryResourceRequest>();
+    public DbSet<CountryContentRequest> CountryContentRequests => Set<CountryContentRequest>();
     public DbSet<CountryKapsarcSnapshot> CountryKapsarcSnapshots => Set<CountryKapsarcSnapshot>();
 
     // ─── Community ───
@@ -124,7 +124,7 @@ public sealed class CceDbContext
     IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles.AsNoTracking();
     IQueryable<ResourceCategory> ICceDbContext.ResourceCategories => ResourceCategories.AsNoTracking();
     IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources.AsNoTracking();
-    IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests.AsNoTracking();
+    IQueryable<CountryContentRequest> ICceDbContext.CountryContentRequests => CountryContentRequests.AsNoTracking();
     IQueryable<CountryProfile> ICceDbContext.CountryProfiles => CountryProfiles.AsNoTracking();
     IQueryable<CountryKapsarcSnapshot> ICceDbContext.CountryKapsarcSnapshots => CountryKapsarcSnapshots.AsNoTracking();
     IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News.AsNoTracking();
