@@ -103,6 +103,18 @@ groups:
       Update:
         description: Edit country profile content
         roles: [cce-super-admin, cce-admin, cce-state-representative]
+    Kapsarc:
+      Refresh:
+        description: Refresh a country's KAPSARC Circular Carbon Economy snapshot
+        roles: [cce-super-admin, cce-admin]
+  Content:
+    Country:
+      Submit:
+        description: Submit a country-scoped resource/news/event for approval
+        roles: [cce-state-representative, cce-admin, cce-super-admin]
+      View:
+        description: View own country content requests
+        roles: [cce-state-representative, cce-admin, cce-super-admin]
   Community:
     Post:
       Create:

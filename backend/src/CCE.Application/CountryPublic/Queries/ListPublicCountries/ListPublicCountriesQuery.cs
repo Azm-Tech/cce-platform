@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.CountryPublic.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.Country;
 using MediatR;
 

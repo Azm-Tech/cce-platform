@@ -60,6 +60,10 @@ public sealed class AuthService : IAuthService
         if (!await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false))
             return null;
 
+        // Deactivated accounts cannot sign in (returns generic invalid-credentials).
+        if (user.Status != UserStatus.Active)
+            return null;
+
         if (api == LocalAuthApi.Internal)
         {
             var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
@@ -88,6 +92,15 @@ public sealed class AuthService : IAuthService
 
         var user = await _userManager.FindByIdAsync(existing.UserId.ToString()).ConfigureAwait(false);
         if (user is null) return null;
+
+        // A deactivated account cannot refresh — revoke the whole family so existing
+        // tokens stop working the moment the admin deactivates the user.
+        if (user.Status != UserStatus.Active)
+        {
+            await _refreshTokens.RevokeFamilyAsync(existing.TokenFamilyId, _clock.UtcNow, ip, ct).ConfigureAwait(false);
+            await _db.SaveChangesAsync(ct).ConfigureAwait(false);
+            return null;
+        }
 
         var issued = await _tokenService.IssueAsync(user, api, ct).ConfigureAwait(false);
         existing.Revoke(_clock.UtcNow, ip, issued.RefreshTokenHash);
@@ -257,6 +270,10 @@ public sealed class AuthService : IAuthService
                 return null;
             }
         }
+
+        // Deactivated accounts cannot sign in via the admin/AD path either.
+        if (user.Status != UserStatus.Active)
+            return null;
 
         await SyncAdRolesAsync(user, gatewayResponse.Groups).ConfigureAwait(false);
 
