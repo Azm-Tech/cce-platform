@@ -75,7 +75,7 @@ export class NewsListPage implements OnInit {
   onPublishedFilter(v: string): void { this.publishedFilter.set(v); this.page.set(1); void this.load(); }
 
   async openCreate(): Promise<void> {
-    const data: NewsFormDialogData = {};
+    const data: NewsFormDialogData = { mode: 'create' };
     const ref = this.dialog.open(NewsFormDialogComponent, { data, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('news.create.toast');
@@ -83,11 +83,14 @@ export class NewsListPage implements OnInit {
     }
   }
   async openEdit(row: News): Promise<void> {
-    const ref = this.dialog.open(NewsFormDialogComponent, { data: { news: row }, width: '720px' });
+    const ref = this.dialog.open(NewsFormDialogComponent, { data: { news: row, mode: 'edit' }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('news.edit.toast');
       void this.load();
     }
+  }
+  openView(row: News): void {
+    this.dialog.open(NewsFormDialogComponent, { data: { news: row, mode: 'view' }, width: '720px' });
   }
   async publish(row: News): Promise<void> {
     if (!(await this.confirm.confirm({
@@ -105,6 +108,6 @@ export class NewsListPage implements OnInit {
     }))) return;
     const res = await this.api.deleteNews(row.id);
     if (res.ok) { this.toast.success('news.delete.toast'); void this.load(); }
-    else this.toast.error(`errors.${res.error.kind}`);
+    else this.toast.error('errors.ERR028');
   }
 }

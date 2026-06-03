@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>
-  {{ (isEdit ? 'events.edit.title' : 'events.create.title') | transloco }}
+  {{ (isView ? 'events.view.title' : isEdit ? 'events.edit.title' : 'events.create.title') | transloco }}
 </h2>
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-event-form">
@@ -23,7 +23,7 @@
         <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
       </mat-form-field>
     </div>
-    @if (!isEdit) {
+    @if (!isEdit || isView) {
       <div class="cce-event-form__row">
         <mat-form-field appearance="outline">
           <mat-label>{{ 'events.field.startsOn' | transloco }}</mat-label>
@@ -60,10 +60,12 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | transloco }}
+    {{ (isView ? 'common.actions.close' : 'common.actions.cancel') | transloco }}
   </button>
-  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
-    @if (saving()) { <mat-spinner diameter="20" /> }
-    @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | transloco }} }
-  </button>
+  @if (!isView) {
+    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+      @if (saving()) { <mat-spinner diameter="20" /> }
+      @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | transloco }} }
+    </button>
+  }
 </mat-dialog-actions>

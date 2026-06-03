@@ -12,6 +12,8 @@ import type { News } from './publishing.types';
 
 export interface NewsFormDialogData {
   news?: News;
+  /** When 'view', the form is rendered read-only and the Save action is hidden. */
+  mode?: 'create' | 'edit' | 'view';
 }
 
 interface NewsForm {
@@ -44,12 +46,14 @@ export class NewsFormDialogComponent {
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly isEdit: boolean;
+  readonly isView: boolean;
 
   constructor(
     private readonly ref: MatDialogRef<NewsFormDialogComponent, News | null>,
     @Inject(MAT_DIALOG_DATA) readonly data: NewsFormDialogData,
   ) {
-    this.isEdit = data.news !== undefined;
+    this.isView = data.mode === 'view';
+    this.isEdit = !this.isView && data.news !== undefined;
     const n = data.news;
     this.form = new FormGroup<NewsForm>({
       titleAr: new FormControl(n?.titleAr ?? '', { nonNullable: true, validators: [Validators.required] }),
@@ -59,6 +63,7 @@ export class NewsFormDialogComponent {
       slug: new FormControl(n?.slug ?? '', { nonNullable: true, validators: [Validators.required] }),
       featuredImageUrl: new FormControl(n?.featuredImageUrl ?? '', { nonNullable: true }),
     });
+    if (this.isView) this.form.disable();
   }
 
   async save(): Promise<void> {

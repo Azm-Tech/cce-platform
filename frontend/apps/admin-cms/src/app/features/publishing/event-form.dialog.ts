@@ -12,6 +12,8 @@ import type { Event } from './publishing.types';
 
 export interface EventFormDialogData {
   event?: Event;
+  /** When 'view', the form is rendered read-only and the Save action is hidden. */
+  mode?: 'create' | 'edit' | 'view';
 }
 
 interface EventForm {
@@ -48,12 +50,14 @@ export class EventFormDialogComponent {
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly isEdit: boolean;
+  readonly isView: boolean;
 
   constructor(
     private readonly ref: MatDialogRef<EventFormDialogComponent, Event | null>,
     @Inject(MAT_DIALOG_DATA) readonly data: EventFormDialogData,
   ) {
-    this.isEdit = data.event !== undefined;
+    this.isView = data.mode === 'view';
+    this.isEdit = !this.isView && data.event !== undefined;
     const e = data.event;
     this.form = new FormGroup<EventForm>({
       titleAr: new FormControl(e?.titleAr ?? '', { nonNullable: true, validators: [Validators.required] }),
@@ -67,6 +71,7 @@ export class EventFormDialogComponent {
       onlineMeetingUrl: new FormControl(e?.onlineMeetingUrl ?? '', { nonNullable: true }),
       featuredImageUrl: new FormControl(e?.featuredImageUrl ?? '', { nonNullable: true }),
     });
+    if (this.isView) this.form.disable();
   }
 
   async save(): Promise<void> {

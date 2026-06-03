@@ -39,6 +39,9 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>{{ 'events.col.actions' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
+      <button type="button" mat-button (click)="openView(r)">
+        {{ 'events.view.openButton' | transloco }}
+      </button>
       <button type="button" mat-button *ccePermission="'Event.Manage'" (click)="openEdit(r)">
         {{ 'events.edit.openButton' | transloco }}
       </button>
@@ -53,6 +56,10 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
+
+@if (!loading() && !errorKind() && rows().length === 0) {
+  <p class="cce-events-list__empty" role="status">{{ 'info.INF003' | transloco }}</p>
+}
 
 <mat-paginator [length]="total()" [pageIndex]="page() - 1" [pageSize]="pageSize()"
   [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />

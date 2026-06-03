@@ -306,6 +306,7 @@
       "signOut": "Sign out",
       "save": "Save",
       "cancel": "Cancel",
+      "close": "Close",
       "retry": "Retry"
     },
     "locale": {
@@ -330,7 +331,11 @@
     "validation": "Please correct the highlighted fields.",
     "not-found": "Item not found.",
     "unknown": "Unexpected error. Try again.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "ERR028": "Could not delete the news/event. Please try again."
+  },
+  "info": {
+    "INF003": "No news or events available yet."
   },
   "nav": {
     "sidebarLabel": "Admin navigation",
@@ -742,6 +747,10 @@
       "save": "Save",
       "toast": "News article updated."
     },
+    "view": {
+      "openButton": "View",
+      "title": "View news article"
+    },
     "publish": {
       "openButton": "Publish",
       "title": "Publish article",
@@ -825,6 +834,10 @@
       "title": "Edit event",
       "save": "Save",
       "toast": "Event updated."
+    },
+    "view": {
+      "openButton": "View",
+      "title": "View event"
     },
     "reschedule": {
       "openButton": "Reschedule",

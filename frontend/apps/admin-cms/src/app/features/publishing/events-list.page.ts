@@ -71,18 +71,21 @@ export class EventsListPage implements OnInit {
   onSearch(): void { this.page.set(1); void this.load(); }
 
   async openCreate(): Promise<void> {
-    const ref = this.dialog.open(EventFormDialogComponent, { data: {}, width: '720px' });
+    const ref = this.dialog.open(EventFormDialogComponent, { data: { mode: 'create' }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.create.toast');
       void this.load();
     }
   }
   async openEdit(row: CceEvent): Promise<void> {
-    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: row }, width: '720px' });
+    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: row, mode: 'edit' }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.edit.toast');
       void this.load();
     }
+  }
+  openView(row: CceEvent): void {
+    this.dialog.open(EventFormDialogComponent, { data: { event: row, mode: 'view' }, width: '720px' });
   }
   async reschedule(row: CceEvent): Promise<void> {
     const ref = this.dialog.open(RescheduleEventDialogComponent, { data: { event: row }, width: '480px' });
@@ -98,6 +101,6 @@ export class EventsListPage implements OnInit {
     }))) return;
     const res = await this.api.deleteEvent(row.id);
     if (res.ok) { this.toast.success('events.delete.toast'); void this.load(); }
-    else this.toast.error(`errors.${res.error.kind}`);
+    else this.toast.error('errors.ERR028');
   }
 }
