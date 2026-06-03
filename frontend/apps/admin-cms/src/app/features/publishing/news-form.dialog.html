@@ -26,18 +26,16 @@
         <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
       }
     </mat-form-field>
-    <div class="cce-news-form__row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.contentAr' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentAr" rows="5" [maxlength]="contentMax"></textarea>
-        <mat-hint align="end">{{ form.controls.contentAr.value.length }}/{{ contentMax }}</mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'news.field.contentEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentEn" rows="5" [maxlength]="contentMax"></textarea>
-        <mat-hint align="end">{{ form.controls.contentEn.value.length }}/{{ contentMax }}</mat-hint>
-      </mat-form-field>
-    </div>
+    <mat-form-field appearance="outline" class="cce-news-form__field--full">
+      <mat-label>{{ 'news.field.contentAr' | transloco }}</mat-label>
+      <textarea matInput formControlName="contentAr" rows="5" [maxlength]="contentMax"></textarea>
+      <mat-hint align="end">{{ form.controls.contentAr.value.length }}/{{ contentMax }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="cce-news-form__field--full">
+      <mat-label>{{ 'news.field.contentEn' | transloco }}</mat-label>
+      <textarea matInput formControlName="contentEn" rows="5" [maxlength]="contentMax"></textarea>
+      <mat-hint align="end">{{ form.controls.contentEn.value.length }}/{{ contentMax }}</mat-hint>
+    </mat-form-field>
 
     @if (!isView) {
       <div class="cce-news-form__image">

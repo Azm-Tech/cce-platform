@@ -1,7 +1,9 @@
 
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +24,47 @@ const DESC_MAX = 2000;
 const LOCATION_MAX = 255;
 const URL_PATTERN = /^https?:\/\/.+/i;
 
+/** Split an ISO datetime string into a Date (date-only) and HH / MM
+ *  parts for the form. Minutes snap to the nearest 15-minute bucket so
+ *  they always match an available <mat-select> option. */
+function splitDateTime(iso: string | null | undefined): { date: Date | null; hour: string; minute: string } {
+  if (!iso) return { date: null, hour: '', minute: '' };
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: null, hour: '', minute: '' };
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const snappedMinute = Math.round(d.getMinutes() / 15) * 15 % 60;
+  return {
+    date: dateOnly,
+    hour: pad(d.getHours()),
+    minute: pad(snappedMinute),
+  };
+}
+
+/** Combine a Date (date-only) plus HH and MM strings into an ISO 8601
+ *  UTC string. */
+function combineDateTime(date: Date | null, hour: string, minute: string): string {
+  if (!date) return '';
+  const local = new Date(date);
+  local.setHours(Number(hour || 0), Number(minute || 0), 0, 0);
+  if (Number.isNaN(local.getTime())) return '';
+  return local.toISOString();
+}
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+
+/** Cross-field validator: at least one of locationAr / locationEn /
+ *  onlineMeetingUrl must be non-empty. */
+function venueRequiredValidator(group: AbstractControl): ValidationErrors | null {
+  const v = group.value as { locationAr?: string; locationEn?: string; onlineMeetingUrl?: string };
+  const hasVenue =
+    (v?.locationAr ?? '').trim().length > 0 ||
+    (v?.locationEn ?? '').trim().length > 0 ||
+    (v?.onlineMeetingUrl ?? '').trim().length > 0;
+  return hasVenue ? null : { venueRequired: true };
+}
+
 export interface EventFormDialogData {
   event?: Event;
   /** When 'view', the form is rendered read-only and the Save action is hidden. */
@@ -33,8 +76,12 @@ interface EventForm {
   titleEn: FormControl<string>;
   descriptionAr: FormControl<string>;
   descriptionEn: FormControl<string>;
-  startsOn: FormControl<string>;
-  endsOn: FormControl<string>;
+  startDate: FormControl<Date | null>;
+  startHour: FormControl<string>;
+  startMinute: FormControl<string>;
+  endDate: FormControl<Date | null>;
+  endHour: FormControl<string>;
+  endMinute: FormControl<string>;
   locationAr: FormControl<string>;
   locationEn: FormControl<string>;
   onlineMeetingUrl: FormControl<string>;
@@ -48,6 +95,7 @@ interface EventForm {
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
@@ -56,10 +104,21 @@ interface EventForm {
     MatSelectModule,
     TranslocoModule
 ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './event-form.dialog.html',
   styles: [`
     .cce-event-form { display: flex; flex-direction: column; gap: 0.5rem; }
     .cce-event-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .cce-event-form__field--full { width: 100%; }
+    .cce-event-form__datetime-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 540px) {
+      .cce-event-form__datetime-row { grid-template-columns: 1fr 1fr; }
+      .cce-event-form__date { grid-column: 1 / -1; }
+    }
     .cce-event-form__image { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .cce-event-form__image-hint { font-size: 0.78rem; color: rgba(0,0,0,0.55); }
     .cce-event-form__preview { margin: 0 0 0.5rem; }
@@ -94,6 +153,8 @@ export class EventFormDialogComponent {
   readonly titleMax = TITLE_MAX;
   readonly descMax = DESC_MAX;
   readonly locationMax = LOCATION_MAX;
+  readonly hourOptions = HOUR_OPTIONS;
+  readonly minuteOptions = MINUTE_OPTIONS;
 
   constructor(
     private readonly ref: MatDialogRef<EventFormDialogComponent, Event | null>,
@@ -119,8 +180,28 @@ export class EventFormDialogComponent {
         nonNullable: true,
         validators: [Validators.required, Validators.maxLength(DESC_MAX)],
       }),
-      startsOn: new FormControl(e?.startsOn ?? '', { nonNullable: true, validators: [Validators.required] }),
-      endsOn: new FormControl(e?.endsOn ?? '', { nonNullable: true, validators: [Validators.required] }),
+      startDate: new FormControl<Date | null>(splitDateTime(e?.startsOn).date, {
+        validators: [Validators.required],
+      }),
+      startHour: new FormControl(splitDateTime(e?.startsOn).hour, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      startMinute: new FormControl(splitDateTime(e?.startsOn).minute, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      endDate: new FormControl<Date | null>(splitDateTime(e?.endsOn).date, {
+        validators: [Validators.required],
+      }),
+      endHour: new FormControl(splitDateTime(e?.endsOn).hour, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      endMinute: new FormControl(splitDateTime(e?.endsOn).minute, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
       locationAr: new FormControl(e?.locationAr ?? '', {
         nonNullable: true,
         validators: [Validators.maxLength(LOCATION_MAX)],
@@ -138,7 +219,7 @@ export class EventFormDialogComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-    });
+    }, { validators: venueRequiredValidator });
     if (this.isView) this.form.disable();
     void this.loadTopics();
   }
@@ -178,6 +259,8 @@ export class EventFormDialogComponent {
     this.errorKind.set(null);
     const v = this.form.getRawValue();
     const nullify = (s: string) => s || null;
+    const startsOn = combineDateTime(v.startDate, v.startHour, v.startMinute);
+    const endsOn = combineDateTime(v.endDate, v.endHour, v.endMinute);
 
     if (this.isEdit && this.data.event) {
       const res = await this.api.updateEvent(this.data.event.id, {
@@ -201,8 +284,8 @@ export class EventFormDialogComponent {
         titleEn: v.titleEn,
         descriptionAr: v.descriptionAr,
         descriptionEn: v.descriptionEn,
-        startsOn: v.startsOn,
-        endsOn: v.endsOn,
+        startsOn,
+        endsOn,
         locationAr: nullify(v.locationAr),
         locationEn: nullify(v.locationEn),
         onlineMeetingUrl: nullify(v.onlineMeetingUrl),

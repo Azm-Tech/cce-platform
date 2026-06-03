@@ -857,7 +857,16 @@
       "locationEn": "المكان (إنجليزي)",
       "onlineMeetingUrl": "رابط الاجتماع الإلكتروني",
       "featuredImageUrl": "رابط الصورة المميزة",
-      "topic": "الموضوع"
+      "topic": "الموضوع",
+      "startDate": "تاريخ البداية",
+      "startHour": "ساعة البداية",
+      "startMinute": "دقيقة البداية",
+      "endDate": "تاريخ النهاية",
+      "endHour": "ساعة النهاية",
+      "endMinute": "دقيقة النهاية"
+    },
+    "validation": {
+      "venueRequired": "أدخل مكاناً للفعالية (عربي أو إنجليزي) أو رابطاً للحضور عن بُعد."
     },
     "create": {
       "openButton": "فعالية جديدة",

@@ -1,14 +1,54 @@
 <h2 mat-dialog-title>{{ 'events.reschedule.title' | transloco }}</h2>
 <mat-dialog-content>
-  <form [formGroup]="form">
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'events.field.startsOn' | transloco }}</mat-label>
-      <input matInput type="datetime-local" formControlName="startsOn" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'events.field.endsOn' | transloco }}</mat-label>
-      <input matInput type="datetime-local" formControlName="endsOn" />
-    </mat-form-field>
+  <form [formGroup]="form" class="cce-reschedule">
+    <div class="cce-reschedule__datetime-row">
+      <mat-form-field appearance="outline" class="cce-reschedule__date">
+        <mat-label>{{ 'events.field.startDate' | transloco }}</mat-label>
+        <input matInput [matDatepicker]="startDp" formControlName="startDate" readonly />
+        <mat-datepicker-toggle matIconSuffix [for]="startDp" />
+        <mat-datepicker #startDp />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.startHour' | transloco }}</mat-label>
+        <mat-select formControlName="startHour">
+          @for (h of hourOptions; track h) {
+            <mat-option [value]="h">{{ h }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.startMinute' | transloco }}</mat-label>
+        <mat-select formControlName="startMinute">
+          @for (m of minuteOptions; track m) {
+            <mat-option [value]="m">{{ m }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="cce-reschedule__datetime-row">
+      <mat-form-field appearance="outline" class="cce-reschedule__date">
+        <mat-label>{{ 'events.field.endDate' | transloco }}</mat-label>
+        <input matInput [matDatepicker]="endDp" formControlName="endDate" readonly />
+        <mat-datepicker-toggle matIconSuffix [for]="endDp" />
+        <mat-datepicker #endDp />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.endHour' | transloco }}</mat-label>
+        <mat-select formControlName="endHour">
+          @for (h of hourOptions; track h) {
+            <mat-option [value]="h">{{ h }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.endMinute' | transloco }}</mat-label>
+        <mat-select formControlName="endMinute">
+          @for (m of minuteOptions; track m) {
+            <mat-option [value]="m">{{ m }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
     @if (errorKind(); as kind) {
       <div class="cce-reschedule__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }

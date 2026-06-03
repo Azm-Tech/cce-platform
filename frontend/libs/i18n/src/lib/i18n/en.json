@@ -857,7 +857,16 @@
       "locationEn": "Location (English)",
       "onlineMeetingUrl": "Online meeting URL",
       "featuredImageUrl": "Featured image URL",
-      "topic": "Topic"
+      "topic": "Topic",
+      "startDate": "Start date",
+      "startHour": "Start hour",
+      "startMinute": "Start minute",
+      "endDate": "End date",
+      "endHour": "End hour",
+      "endMinute": "End minute"
+    },
+    "validation": {
+      "venueRequired": "Provide a venue (Arabic or English) or an online meeting URL."
     },
     "create": {
       "openButton": "New event",

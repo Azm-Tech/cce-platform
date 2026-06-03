@@ -79,17 +79,34 @@ export class ContentApiService {
     });
   }
 
-  /** Media upload — same multipart shape as assets but posts to the media
-   *  endpoint. The returned URL is normalised to an absolute URL so it can
-   *  be stored in form fields and rendered cross-origin. */
+  /** Media upload — multipart POST to /api/media. The endpoint sits
+   *  outside `/api/admin/*` so the envelope interceptor does NOT auto-
+   *  unwrap; we read `res.data` manually. The returned URL is normalised
+   *  to absolute (it usually arrives absolute already, e.g.
+   *  `https://cce-internal-api.runasp.net/media/uploads/.../foo.jpg`). */
   async uploadMedia(file: File): Promise<Result<AssetFile>> {
     const form = new FormData();
     form.append('file', file, file.name);
     return this.run(async () => {
       const res = await firstValueFrom(
-        this.http.post<AssetFile>('/api/admin/media', form),
+        this.http.post<{ data: { id: string; storageKey: string; url: string } }>(
+          '/api/media',
+          form,
+        ),
       );
-      return { ...res, url: this.toAbsoluteUrl(res.url) };
+      const d = res.data;
+      const out: AssetFile = {
+        id: d.id,
+        url: this.toAbsoluteUrl(d.url),
+        originalFileName: file.name,
+        sizeBytes: file.size,
+        mimeType: file.type,
+        uploadedById: '',
+        uploadedOn: new Date().toISOString(),
+        virusScanStatus: 'Clean',
+        scannedOn: null,
+      };
+      return out;
     });
   }
 

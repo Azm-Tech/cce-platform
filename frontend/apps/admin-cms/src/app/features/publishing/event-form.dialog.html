@@ -15,27 +15,63 @@
         <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
-    <div class="cce-event-form__row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.descriptionAr' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionAr" rows="3" [maxlength]="descMax"></textarea>
-        <mat-hint align="end">{{ form.controls.descriptionAr.value.length }}/{{ descMax }}</mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.descriptionEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3" [maxlength]="descMax"></textarea>
-        <mat-hint align="end">{{ form.controls.descriptionEn.value.length }}/{{ descMax }}</mat-hint>
-      </mat-form-field>
-    </div>
+    <mat-form-field appearance="outline" class="cce-event-form__field--full">
+      <mat-label>{{ 'events.field.descriptionAr' | transloco }}</mat-label>
+      <textarea matInput formControlName="descriptionAr" rows="4" [maxlength]="descMax"></textarea>
+      <mat-hint align="end">{{ form.controls.descriptionAr.value.length }}/{{ descMax }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="cce-event-form__field--full">
+      <mat-label>{{ 'events.field.descriptionEn' | transloco }}</mat-label>
+      <textarea matInput formControlName="descriptionEn" rows="4" [maxlength]="descMax"></textarea>
+      <mat-hint align="end">{{ form.controls.descriptionEn.value.length }}/{{ descMax }}</mat-hint>
+    </mat-form-field>
     @if (!isEdit || isView) {
-      <div class="cce-event-form__row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'events.field.startsOn' | transloco }}</mat-label>
-          <input matInput type="datetime-local" formControlName="startsOn" />
+      <div class="cce-event-form__datetime-row">
+        <mat-form-field appearance="outline" class="cce-event-form__date">
+          <mat-label>{{ 'events.field.startDate' | transloco }}</mat-label>
+          <input matInput [matDatepicker]="startDp" formControlName="startDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="startDp" />
+          <mat-datepicker #startDp />
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'events.field.endsOn' | transloco }}</mat-label>
-          <input matInput type="datetime-local" formControlName="endsOn" />
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.startHour' | transloco }}</mat-label>
+          <mat-select formControlName="startHour">
+            @for (h of hourOptions; track h) {
+              <mat-option [value]="h">{{ h }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.startMinute' | transloco }}</mat-label>
+          <mat-select formControlName="startMinute">
+            @for (m of minuteOptions; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="cce-event-form__datetime-row">
+        <mat-form-field appearance="outline" class="cce-event-form__date">
+          <mat-label>{{ 'events.field.endDate' | transloco }}</mat-label>
+          <input matInput [matDatepicker]="endDp" formControlName="endDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="endDp" />
+          <mat-datepicker #endDp />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.endHour' | transloco }}</mat-label>
+          <mat-select formControlName="endHour">
+            @for (h of hourOptions; track h) {
+              <mat-option [value]="h">{{ h }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.endMinute' | transloco }}</mat-label>
+          <mat-select formControlName="endMinute">
+            @for (m of minuteOptions; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
       </div>
     }
@@ -69,6 +105,11 @@
         }
       </mat-form-field>
     </div>
+    @if (form.hasError('venueRequired') && (form.controls.locationAr.touched || form.controls.locationEn.touched || form.controls.onlineMeetingUrl.touched)) {
+      <div class="cce-event-form__error" role="alert">
+        {{ 'events.validation.venueRequired' | transloco }}
+      </div>
+    }
 
     @if (!isView) {
       <div class="cce-event-form__image">

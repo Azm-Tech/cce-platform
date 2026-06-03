@@ -53,6 +53,7 @@ interface NewsForm {
   styles: [`
     .cce-news-form { display: flex; flex-direction: column; gap: 0.5rem; }
     .cce-news-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .cce-news-form__field--full { width: 100%; }
     .cce-news-form__image { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .cce-news-form__image-hint { font-size: 0.78rem; color: rgba(0,0,0,0.55); }
     .cce-news-form__preview { margin: 0 0 0.5rem; }
