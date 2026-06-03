@@ -78,6 +78,7 @@ public sealed class MessageFactory
     public Response<T> EmailExists<T>()        => Conflict<T>(ApplicationErrors.Identity.EMAIL_EXISTS);
     public Response<T> InvalidCredentials<T>() => Unauthorized<T>(ApplicationErrors.Identity.INVALID_CREDENTIALS);
     public Response<T> NotAuthenticated<T>()   => Unauthorized<T>(ApplicationErrors.Identity.NOT_AUTHENTICATED);
+    public Response<T> AccountDeactivated<T>() => Forbidden<T>(ApplicationErrors.Identity.ACCOUNT_DEACTIVATED);
 
     // ─── Convenience shortcuts (Content domain) ───
 

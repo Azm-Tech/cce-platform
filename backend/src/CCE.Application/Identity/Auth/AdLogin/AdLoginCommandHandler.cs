@@ -19,18 +19,18 @@ internal sealed class AdLoginCommandHandler
 
     public async Task<Response<AuthTokenDto>> Handle(AdLoginCommand request, CancellationToken ct)
     {
-        var dto = await _auth.AdLoginAsync(
+        var result = await _auth.AdLoginAsync(
             request.Username,
             request.Password,
             request.Ip,
             request.UserAgent,
             ct).ConfigureAwait(false);
 
-        if (dto is null)
+        return result.Failure switch
         {
-            return _msg.InvalidCredentials<AuthTokenDto>();
-        }
-
-        return _msg.Ok(dto, "AD_LOGIN_SUCCESS");
+            LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
+            LoginFailureReason.None => _msg.Ok(result.Token!, "AD_LOGIN_SUCCESS"),
+            _ => _msg.InvalidCredentials<AuthTokenDto>(),
+        };
     }
 }

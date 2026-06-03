@@ -19,9 +19,13 @@ internal sealed class LoginCommandHandler
 
     public async Task<Response<AuthTokenDto>> Handle(LoginCommand request, CancellationToken ct)
     {
-        var dto = await _auth.LoginAsync(request.EmailAddress, request.Password, request.Api,
+        var result = await _auth.LoginAsync(request.EmailAddress, request.Password, request.Api,
             request.IpAddress, request.UserAgent, ct).ConfigureAwait(false);
-        if (dto is null) return _msg.InvalidCredentials<AuthTokenDto>();
-        return _msg.Ok(dto, "LOGIN_SUCCESS");
+        return result.Failure switch
+        {
+            LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
+            LoginFailureReason.None => _msg.Ok(result.Token!, "LOGIN_SUCCESS"),
+            _ => _msg.InvalidCredentials<AuthTokenDto>(),
+        };
     }
 }
