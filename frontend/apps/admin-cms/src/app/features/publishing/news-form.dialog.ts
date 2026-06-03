@@ -7,11 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
-import type { News } from './publishing.types';
+import type { News, Topic } from './publishing.types';
 
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -29,8 +31,8 @@ interface NewsForm {
   titleEn: FormControl<string>;
   contentAr: FormControl<string>;
   contentEn: FormControl<string>;
-  slug: FormControl<string>;
   featuredImageUrl: FormControl<string>;
+  topicId: FormControl<string>;
 }
 
 @Component({
@@ -44,6 +46,7 @@ interface NewsForm {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     TranslocoModule
 ],
   templateUrl: './news-form.dialog.html',
@@ -71,11 +74,14 @@ export class NewsFormDialogComponent {
   private readonly api = inject(PublishingApiService);
   private readonly assets = inject(ContentApiService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
   readonly form: FormGroup<NewsForm>;
   readonly saving = signal(false);
   readonly uploadingImage = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly missingRequired = signal(false);
+  readonly topics = signal<Topic[]>([]);
+  readonly locale = this.localeService.locale;
   readonly isEdit: boolean;
   readonly isView: boolean;
   readonly titleMax = TITLE_MAX;
@@ -105,10 +111,19 @@ export class NewsFormDialogComponent {
         nonNullable: true,
         validators: [Validators.required, Validators.maxLength(CONTENT_MAX)],
       }),
-      slug: new FormControl(n?.slug ?? '', { nonNullable: true, validators: [Validators.required] }),
       featuredImageUrl: new FormControl(n?.featuredImageUrl ?? '', { nonNullable: true }),
+      topicId: new FormControl(n?.topicId ?? '', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     });
     if (this.isView) this.form.disable();
+    void this.loadTopics();
+  }
+
+  private async loadTopics(): Promise<void> {
+    const res = await this.api.listTopics({ onlyActive: true });
+    if (res.ok) this.topics.set(res.value);
   }
 
   async onImagePicked(event: globalThis.Event): Promise<void> {
@@ -125,7 +140,7 @@ export class NewsFormDialogComponent {
       return;
     }
     this.uploadingImage.set(true);
-    const res = await this.assets.uploadAsset(file);
+    const res = await this.assets.uploadMedia(file);
     this.uploadingImage.set(false);
     if (res.ok) {
       this.form.controls.featuredImageUrl.setValue(res.value.url);
@@ -144,7 +159,11 @@ export class NewsFormDialogComponent {
     this.saving.set(true);
     this.errorKind.set(null);
     const v = this.form.getRawValue();
-    const body = { ...v, featuredImageUrl: v.featuredImageUrl || null };
+    const body = {
+      ...v,
+      featuredImageUrl: v.featuredImageUrl || null,
+      topicId: v.topicId || null,
+    };
     const res = this.isEdit && this.data.news
       ? await this.api.updateNews(this.data.news.id, { ...body, rowVersion: this.data.news.rowVersion })
       : await this.api.createNews(body);

@@ -101,7 +101,7 @@ export class NewsListPage implements OnInit {
       if (q) {
         const title = this.locale() === 'ar' ? a.titleAr : a.titleEn;
         const content = this.locale() === 'ar' ? a.contentAr : a.contentEn;
-        const hay = [title, content.replace(/<[^>]*>/g, ''), a.slug].join(' ').toLowerCase();
+        const hay = [title, content.replace(/<[^>]*>/g, '')].join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;

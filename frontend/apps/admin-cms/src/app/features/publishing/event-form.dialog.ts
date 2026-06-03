@@ -7,11 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
-import type { Event } from './publishing.types';
+import type { Event, Topic } from './publishing.types';
 
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -37,6 +39,7 @@ interface EventForm {
   locationEn: FormControl<string>;
   onlineMeetingUrl: FormControl<string>;
   featuredImageUrl: FormControl<string>;
+  topicId: FormControl<string>;
 }
 
 @Component({
@@ -50,6 +53,7 @@ interface EventForm {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     TranslocoModule
 ],
   templateUrl: './event-form.dialog.html',
@@ -77,11 +81,14 @@ export class EventFormDialogComponent {
   private readonly api = inject(PublishingApiService);
   private readonly assets = inject(ContentApiService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
   readonly form: FormGroup<EventForm>;
   readonly saving = signal(false);
   readonly uploadingImage = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly missingRequired = signal(false);
+  readonly topics = signal<Topic[]>([]);
+  readonly locale = this.localeService.locale;
   readonly isEdit: boolean;
   readonly isView: boolean;
   readonly titleMax = TITLE_MAX;
@@ -127,8 +134,18 @@ export class EventFormDialogComponent {
         validators: [Validators.maxLength(LOCATION_MAX), Validators.pattern(URL_PATTERN)],
       }),
       featuredImageUrl: new FormControl(e?.featuredImageUrl ?? '', { nonNullable: true }),
+      topicId: new FormControl(e?.topicId ?? '', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     });
     if (this.isView) this.form.disable();
+    void this.loadTopics();
+  }
+
+  private async loadTopics(): Promise<void> {
+    const res = await this.api.listTopics({ onlyActive: true });
+    if (res.ok) this.topics.set(res.value);
   }
 
   async onImagePicked(event: globalThis.Event): Promise<void> {
@@ -141,7 +158,7 @@ export class EventFormDialogComponent {
       return;
     }
     this.uploadingImage.set(true);
-    const res = await this.assets.uploadAsset(file);
+    const res = await this.assets.uploadMedia(file);
     this.uploadingImage.set(false);
     if (res.ok) {
       this.form.controls.featuredImageUrl.setValue(res.value.url);
@@ -172,6 +189,7 @@ export class EventFormDialogComponent {
         locationEn: nullify(v.locationEn),
         onlineMeetingUrl: nullify(v.onlineMeetingUrl),
         featuredImageUrl: nullify(v.featuredImageUrl),
+        topicId: nullify(v.topicId),
         rowVersion: this.data.event.rowVersion,
       });
       this.saving.set(false);
@@ -189,6 +207,7 @@ export class EventFormDialogComponent {
         locationEn: nullify(v.locationEn),
         onlineMeetingUrl: nullify(v.onlineMeetingUrl),
         featuredImageUrl: nullify(v.featuredImageUrl),
+        topicId: nullify(v.topicId),
       });
       this.saving.set(false);
       if (res.ok) this.ref.close(res.value);

@@ -24,6 +24,7 @@ import type {
   PolicySectionBody,
   RescheduleEventBody,
   ReorderHomepageSectionsBody,
+  Topic,
   UpdateAboutSettingsBody,
   UpdateEventBody,
   UpdateHomepageSectionBody,
@@ -38,6 +39,19 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 @Injectable({ providedIn: 'root' })
 export class PublishingApiService {
   private readonly http = inject(HttpClient);
+
+  // ---- Topics (used by News + Events forms) ----
+  async listTopics(opts: { onlyActive?: boolean } = {}): Promise<Result<Topic[]>> {
+    return this.run(async () => {
+      let params = new HttpParams().set('pageSize', 200);
+      if (opts.onlyActive !== undefined) params = params.set('isActive', String(opts.onlyActive));
+      const res = await firstValueFrom(
+        this.http.get<PagedResult<Topic> | Topic[]>('/api/admin/topics', { params }),
+      );
+      const items = Array.isArray(res) ? res : (res.items ?? []);
+      return [...items].sort((a, b) => a.orderIndex - b.orderIndex);
+    });
+  }
 
   // ---- News ----
   async listNews(opts: { page?: number; pageSize?: number; search?: string; isPublished?: boolean } = {}): Promise<Result<PagedResult<News>>> {

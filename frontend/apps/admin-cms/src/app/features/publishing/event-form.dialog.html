@@ -49,13 +49,26 @@
         <input matInput formControlName="locationEn" [maxlength]="locationMax" />
       </mat-form-field>
     </div>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'events.field.onlineMeetingUrl' | transloco }}</mat-label>
-      <input matInput formControlName="onlineMeetingUrl" type="url" placeholder="https://…" [maxlength]="locationMax" />
-      @if (form.controls.onlineMeetingUrl.hasError('pattern') && form.controls.onlineMeetingUrl.touched) {
-        <mat-error>{{ 'common.validation.url' | transloco }}</mat-error>
-      }
-    </mat-form-field>
+    <div class="cce-event-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.onlineMeetingUrl' | transloco }}</mat-label>
+        <input matInput formControlName="onlineMeetingUrl" type="url" placeholder="https://…" [maxlength]="locationMax" />
+        @if (form.controls.onlineMeetingUrl.hasError('pattern') && form.controls.onlineMeetingUrl.touched) {
+          <mat-error>{{ 'common.validation.url' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.topic' | transloco }}</mat-label>
+        <mat-select formControlName="topicId">
+          @for (t of topics(); track t.id) {
+            <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
     @if (!isView) {
       <div class="cce-event-form__image">

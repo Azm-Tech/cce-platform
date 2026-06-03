@@ -37,7 +37,7 @@ export class NewsListPage implements OnInit {
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
 
-  readonly displayedColumns = ['titleEn', 'slug', 'isPublished', 'publishedOn', 'actions'];
+  readonly displayedColumns = ['titleEn', 'isPublished', 'publishedOn', 'actions'];
   readonly searchInput = signal('');
   readonly publishedFilter = signal<string>('');
   readonly page = signal(1);

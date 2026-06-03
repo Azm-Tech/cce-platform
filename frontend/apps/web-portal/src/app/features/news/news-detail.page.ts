@@ -45,14 +45,14 @@ export class NewsDetailPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const slug = this.route.snapshot.paramMap.get('slug');
-    if (!slug) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
       this.errorKind.set('not-found');
       return;
     }
     this.loading.set(true);
     this.errorKind.set(null);
-    const res = await this.api.getBySlug(slug);
+    const res = await this.api.getById(id);
     this.loading.set(false);
     if (res.ok) this.article.set(res.value);
     else this.errorKind.set(res.error.kind);

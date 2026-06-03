@@ -6,7 +6,7 @@ export const NEWS_ROUTES: Routes = [
     loadComponent: () => import('./news-list.page').then((m) => m.NewsListPage),
   },
   {
-    path: ':slug',
+    path: ':id',
     loadComponent: () => import('./news-detail.page').then((m) => m.NewsDetailPage),
   },
 ];

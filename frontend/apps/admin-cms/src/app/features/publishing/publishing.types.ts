@@ -19,12 +19,14 @@ export interface News {
   titleEn: string;
   contentAr: string;
   contentEn: string;
-  slug: string;
   authorId: string;
   featuredImageUrl: string | null;
   publishedOn: string | null;
   isFeatured: boolean;
   isPublished: boolean;
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
   rowVersion: string;
 }
 
@@ -33,12 +35,25 @@ export interface CreateNewsBody {
   titleEn: string;
   contentAr: string;
   contentEn: string;
-  slug: string;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
 }
 
 export interface UpdateNewsBody extends CreateNewsBody {
   rowVersion: string;
+}
+
+export interface Topic {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+  slug: string;
+  parentId: string | null;
+  iconUrl: string | null;
+  orderIndex: number;
+  isActive: boolean;
 }
 
 export interface Event {
@@ -53,6 +68,9 @@ export interface Event {
   locationEn: string | null;
   onlineMeetingUrl: string | null;
   featuredImageUrl: string | null;
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
   iCalUid: string;
   rowVersion: string;
 }
@@ -68,6 +86,7 @@ export interface CreateEventBody {
   locationEn?: string | null;
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
 }
 
 export interface UpdateEventBody {
@@ -79,6 +98,7 @@ export interface UpdateEventBody {
   locationEn?: string | null;
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
   rowVersion: string;
 }
 

@@ -71,15 +71,43 @@ export class ContentApiService {
   async uploadAsset(file: File): Promise<Result<AssetFile>> {
     const form = new FormData();
     form.append('file', file, file.name);
-    return this.run(() =>
-      firstValueFrom(this.http.post<AssetFile>('/api/admin/assets', form)),
-    );
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AssetFile>('/api/admin/assets', form),
+      );
+      return { ...res, url: this.toAbsoluteUrl(res.url) };
+    });
+  }
+
+  /** Media upload — same multipart shape as assets but posts to the media
+   *  endpoint. The returned URL is normalised to an absolute URL so it can
+   *  be stored in form fields and rendered cross-origin. */
+  async uploadMedia(file: File): Promise<Result<AssetFile>> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AssetFile>('/api/admin/media', form),
+      );
+      return { ...res, url: this.toAbsoluteUrl(res.url) };
+    });
   }
 
   async getAsset(id: string): Promise<Result<AssetFile>> {
     return this.run(() =>
       firstValueFrom(this.http.get<AssetFile>(`/api/admin/assets/${id}`)),
     );
+  }
+
+  /** Resolve a relative or protocol-relative URL into a full absolute URL,
+   *  using the current window origin (which routes via the dev proxy in
+   *  development and the same-origin admin host in production). */
+  private toAbsoluteUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+    if (typeof window === 'undefined') return url;
+    if (url.startsWith('//')) return `${window.location.protocol}${url}`;
+    return new URL(url, window.location.origin).toString();
   }
 
   // --- Country resource requests (approve/reject only — list endpoint not exposed) ---

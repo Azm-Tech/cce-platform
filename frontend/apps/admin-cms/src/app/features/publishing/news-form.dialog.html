@@ -16,8 +16,15 @@
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'news.field.slug' | transloco }}</mat-label>
-      <input matInput formControlName="slug" />
+      <mat-label>{{ 'news.field.topic' | transloco }}</mat-label>
+      <mat-select formControlName="topicId">
+        @for (t of topics(); track t.id) {
+          <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
     </mat-form-field>
     <div class="cce-news-form__row">
       <mat-form-field appearance="outline">

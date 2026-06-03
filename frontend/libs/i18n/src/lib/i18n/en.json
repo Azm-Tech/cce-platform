@@ -310,6 +310,7 @@
       "retry": "Retry"
     },
     "validation": {
+      "required": "This field is required.",
       "url": "Enter a valid URL starting with http:// or https://"
     },
     "locale": {
@@ -756,7 +757,8 @@
       "uploadImage": "Upload image",
       "uploadingImage": "Uploading…",
       "imageHint": "PNG, JPG, or WebP. Max 5 MB.",
-      "imageInvalidType": "Please choose a PNG, JPG, or WebP image."
+      "imageInvalidType": "Please choose a PNG, JPG, or WebP image.",
+      "topic": "Topic"
     },
     "create": {
       "openButton": "New article",
@@ -796,7 +798,8 @@
       "toggle": "Featured only",
       "tag": "FEATURED"
     },
-    "tag": "ARTICLE",
+    "tag": "News",
+    "publishedBy": "Published by",
     "searchPlaceholder": "Search articles by title or excerpt…",
     "filteredEmpty": "No articles match your search.",
     "clearSearch": "Clear",
@@ -853,7 +856,8 @@
       "locationAr": "Location (Arabic)",
       "locationEn": "Location (English)",
       "onlineMeetingUrl": "Online meeting URL",
-      "featuredImageUrl": "Featured image URL"
+      "featuredImageUrl": "Featured image URL",
+      "topic": "Topic"
     },
     "create": {
       "openButton": "New event",
@@ -929,9 +933,9 @@
     "tagOnline": "ONLINE",
     "tagInPerson": "IN PERSON",
     "tagWebinar": "WEBINAR",
-    "tagUpcoming": "UPCOMING",
-    "tagPast": "PAST",
-    "tagToday": "TODAY",
+    "tagUpcoming": "Upcoming event",
+    "tagPast": "Past event",
+    "tagToday": "Today",
     "searchPlaceholder": "Search events by title or location…",
     "filteredEmpty": "No events match your filters.",
     "clearSearch": "Clear",

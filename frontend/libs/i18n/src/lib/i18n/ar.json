@@ -310,6 +310,7 @@
       "retry": "إعادة المحاولة"
     },
     "validation": {
+      "required": "هذا الحقل مطلوب.",
       "url": "أدخل رابطاً صحيحاً يبدأ بـ http:// أو https://"
     },
     "locale": {
@@ -756,7 +757,8 @@
       "uploadImage": "رفع صورة",
       "uploadingImage": "جارٍ الرفع…",
       "imageHint": "PNG أو JPG أو WebP. الحد الأقصى 5 ميجابايت.",
-      "imageInvalidType": "يرجى اختيار صورة بصيغة PNG أو JPG أو WebP."
+      "imageInvalidType": "يرجى اختيار صورة بصيغة PNG أو JPG أو WebP.",
+      "topic": "الموضوع"
     },
     "create": {
       "openButton": "خبر جديد",
@@ -796,7 +798,8 @@
       "toggle": "المميزة فقط",
       "tag": "مميّز"
     },
-    "tag": "مقال",
+    "tag": "خبر",
+    "publishedBy": "نُشر بواسطة",
     "searchPlaceholder": "ابحث في المقالات بالعنوان أو المقتطف…",
     "filteredEmpty": "لا توجد مقالات مطابقة لبحثك.",
     "clearSearch": "مسح",
@@ -853,7 +856,8 @@
       "locationAr": "المكان (عربي)",
       "locationEn": "المكان (إنجليزي)",
       "onlineMeetingUrl": "رابط الاجتماع الإلكتروني",
-      "featuredImageUrl": "رابط الصورة المميزة"
+      "featuredImageUrl": "رابط الصورة المميزة",
+      "topic": "الموضوع"
     },
     "create": {
       "openButton": "فعالية جديدة",
@@ -929,9 +933,9 @@
     "tagOnline": "عبر الإنترنت",
     "tagInPerson": "حضوري",
     "tagWebinar": "ندوة",
-    "tagUpcoming": "قادمة",
-    "tagPast": "منتهية",
-    "tagToday": "اليوم",
+    "tagUpcoming": "فعالية قادمة",
+    "tagPast": "فعالية منتهية",
+    "tagToday": "فعالية اليوم",
     "searchPlaceholder": "ابحث في الفعاليات بالعنوان أو المكان…",
     "filteredEmpty": "لا توجد فعاليات مطابقة للفلاتر.",
     "clearSearch": "مسح",
