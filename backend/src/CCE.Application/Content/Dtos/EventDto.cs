@@ -12,4 +12,5 @@ public sealed record EventDto(
     string ICalUid,
     System.Guid TopicId,
     string TopicNameAr,
-    string TopicNameEn);
+    string TopicNameEn,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

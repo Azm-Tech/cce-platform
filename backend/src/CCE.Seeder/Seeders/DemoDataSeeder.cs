@@ -33,7 +33,7 @@ public sealed class DemoDataSeeder : ISeeder
     private static readonly System.Guid SystemAuthorId =
         DeterministicGuid.From("user:system_demo_author");
 
-    private static readonly (string Slug, string TitleAr, string TitleEn,
+    private static readonly (string Key, string TitleAr, string TitleEn,
         string ContentAr, string ContentEn, bool Featured, string TopicSlug)[] DemoNews =
     {
         ("welcome",
@@ -83,12 +83,12 @@ public sealed class DemoDataSeeder : ISeeder
             if (!topicMap.TryGetValue(n.TopicSlug, out var topicId))
             {
                 _logger.LogWarning(
-                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping news '{NewsSlug}'.",
-                    n.TopicSlug, n.Slug);
+                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping news '{NewsKey}'.",
+                    n.TopicSlug, n.Key);
                 continue;
             }
 
-            var id = DeterministicGuid.From($"news:{n.Slug}");
+            var id = DeterministicGuid.From($"news:{n.Key}");
             var exists = await _ctx.News.IgnoreQueryFilters()
                 .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
             if (exists) { dayOffset -= 7; continue; }
@@ -107,7 +107,7 @@ public sealed class DemoDataSeeder : ISeeder
         }
     }
 
-    private static readonly (string Slug, string TitleAr, string TitleEn,
+    private static readonly (string Key, string TitleAr, string TitleEn,
         string DescAr, string DescEn, int DaysFromNow, int LengthHours,
         string LocationAr, string LocationEn, string? OnlineUrl, string TopicSlug)[] DemoEvents =
     {
@@ -142,12 +142,12 @@ public sealed class DemoDataSeeder : ISeeder
             if (!topicMap.TryGetValue(e.TopicSlug, out var topicId))
             {
                 _logger.LogWarning(
-                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping event '{EventSlug}'.",
-                    e.TopicSlug, e.Slug);
+                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping event '{EventKey}'.",
+                    e.TopicSlug, e.Key);
                 continue;
             }
 
-            var id = DeterministicGuid.From($"event:demo:{e.Slug}");
+            var id = DeterministicGuid.From($"event:demo:{e.Key}");
             var exists = await _ctx.Events.IgnoreQueryFilters()
                 .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
             if (exists) continue;

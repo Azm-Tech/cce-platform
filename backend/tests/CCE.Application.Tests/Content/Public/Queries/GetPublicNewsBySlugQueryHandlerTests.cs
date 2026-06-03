@@ -1,5 +1,5 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
+using CCE.Application.Content.Public.Queries.GetPublicNewsById;
 using CCE.Application.Localization;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
@@ -7,12 +7,12 @@ using CCE.TestInfrastructure.Time;
 
 namespace CCE.Application.Tests.Content.Public.Queries;
 
-public class GetPublicNewsBySlugQueryHandlerTests
+public class GetPublicNewsByIdQueryHandlerTests
 {
     private static readonly FakeSystemClock Clock = new();
 
     [Fact]
-    public async Task Returns_dto_when_news_is_published_and_slug_matches()
+    public async Task Returns_dto_when_news_is_published()
     {
         var topicId = System.Guid.NewGuid();
         var authorId = System.Guid.NewGuid();
@@ -21,7 +21,7 @@ public class GetPublicNewsBySlugQueryHandlerTests
 
         var sut = BuildSut([news]);
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("published-news"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(news.Id), CancellationToken.None);
 
         result.Success.Should().BeTrue();
         result.Data!.Id.Should().Be(news.Id);
@@ -30,11 +30,11 @@ public class GetPublicNewsBySlugQueryHandlerTests
     }
 
     [Fact]
-    public async Task Returns_not_found_when_slug_missing()
+    public async Task Returns_not_found_when_id_missing()
     {
         var sut = BuildSut(Array.Empty<News>());
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("no-such-slug"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
         result.Success.Should().BeFalse();
     }
@@ -46,17 +46,17 @@ public class GetPublicNewsBySlugQueryHandlerTests
 
         var sut = BuildSut([news]);
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("draft-news"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(news.Id), CancellationToken.None);
 
         result.Success.Should().BeFalse();
     }
 
-    private static GetPublicNewsBySlugQueryHandler BuildSut(IEnumerable<News> news)
+    private static GetPublicNewsByIdQueryHandler BuildSut(IEnumerable<News> news)
     {
         var db = Substitute.For<ICceDbContext>();
         db.News.Returns(news.AsQueryable());
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return new GetPublicNewsBySlugQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
+        return new GetPublicNewsByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

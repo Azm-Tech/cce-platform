@@ -52,6 +52,13 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
             request.FeaturedImageUrl,
             _clock);
 
+        if (request.TagIds?.Count > 0)
+        {
+            var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
+                .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+            news.SetTags(tags);
+        }
+
         await _repo.AddAsync(news, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -60,6 +67,6 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn), "CONTENT_CREATED");
+        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn, news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), "CONTENT_CREATED");
     }
 }

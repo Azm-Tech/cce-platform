@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
@@ -22,18 +23,11 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
 
     public async Task<Response<PagedResult<PublicNewsDto>>> Handle(ListPublicNewsQuery request, CancellationToken cancellationToken)
     {
-        System.Guid? topicId = request.TopicId;
-        if (!string.IsNullOrWhiteSpace(request.TopicSlug) && !topicId.HasValue)
-        {
-            var topics = await _db.Topics.Where(t => t.Slug == request.TopicSlug!)
-                .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
-            topicId = topics.FirstOrDefault()?.Id;
-        }
-
         var query = _db.News
             .Where(n => n.PublishedOn != null)
             .WhereIf(request.IsFeatured.HasValue, n => n.IsFeatured == request.IsFeatured!.Value)
-            .WhereIf(topicId.HasValue, n => n.TopicId == topicId!.Value)
+            .WhereIf(request.TopicId.HasValue, n => n.TopicId == request.TopicId!.Value)
+            .WhereIf(request.TagIds?.Count > 0, n => n.Tags.Any(t => request.TagIds!.Contains(t.Id)))
             .OrderByDescending(n => n.PublishedOn);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
@@ -43,10 +37,27 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topicById = topicsList.ToDictionary(t => t.Id);
 
-        return _messages.Ok(result.Map(n => MapToDto(n, topicById)), "ITEMS_LISTED");
+        var newsIds = result.Items.Select(n => n.Id).ToList();
+        var tagByNewsId = await GetTagDtosByNewsIdsAsync(newsIds, cancellationToken).ConfigureAwait(false);
+
+        return _messages.Ok(result.Map(n => MapToDto(n, topicById, tagByNewsId)), "ITEMS_LISTED");
     }
 
-    internal static PublicNewsDto MapToDto(News n, Dictionary<System.Guid, Topic> topicById) => new(
+    private async Task<Dictionary<System.Guid, List<TagDto>>> GetTagDtosByNewsIdsAsync(
+        System.Collections.Generic.List<System.Guid> newsIds, CancellationToken ct)
+    {
+        if (newsIds.Count == 0)
+            return new Dictionary<System.Guid, List<TagDto>>();
+
+        var entries = await _db.News
+            .Where(n => newsIds.Contains(n.Id))
+            .Select(n => new { n.Id, Tags = n.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList() })
+            .ToListAsyncEither(ct).ConfigureAwait(false);
+
+        return entries.ToDictionary(x => x.Id, x => x.Tags);
+    }
+
+    internal static PublicNewsDto MapToDto(News n, Dictionary<System.Guid, Topic> topicById, Dictionary<System.Guid, List<TagDto>> tagByNewsId) => new(
         n.Id,
         n.TitleAr,
         n.TitleEn,
@@ -57,5 +68,6 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
         topicById.TryGetValue(n.TopicId, out t) ? t.NameEn : string.Empty,
         n.FeaturedImageUrl,
         n.PublishedOn!.Value,
-        n.IsFeatured);
+        n.IsFeatured,
+        tagByNewsId.TryGetValue(n.Id, out var tags) ? tags : new List<TagDto>());
 }

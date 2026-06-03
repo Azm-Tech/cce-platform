@@ -1,3 +1,5 @@
+using CCE.Application.Content.Dtos;
+
 namespace CCE.Application.Content.Public.Dtos;
 
 public sealed record PublicNewsDto(
@@ -11,4 +13,5 @@ public sealed record PublicNewsDto(
     string TopicNameEn,
     string? FeaturedImageUrl,
     System.DateTimeOffset PublishedOn,
-    bool IsFeatured);
+    bool IsFeatured,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

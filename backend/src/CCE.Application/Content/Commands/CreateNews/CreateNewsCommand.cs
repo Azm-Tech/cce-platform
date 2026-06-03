@@ -8,4 +8,5 @@ public sealed record CreateNewsCommand(
     string TitleAr, string TitleEn,
     string ContentAr, string ContentEn,
     System.Guid TopicId,
-    string? FeaturedImageUrl) : IRequest<Response<NewsDto>>;
+    string? FeaturedImageUrl,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<NewsDto>>;

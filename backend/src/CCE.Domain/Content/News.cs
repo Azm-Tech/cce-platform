@@ -5,18 +5,19 @@ namespace CCE.Domain.Content;
 
 /// <summary>
 /// News article — bilingual title + rich-text content + optional featured image.
-/// Slug is auto-generated from the English title. Soft-deletable, audited.
+/// Soft-deletable, audited.
 /// </summary>
 [Audited]
 public sealed class News : AggregateRoot<System.Guid>
 {
+    private readonly List<Tag> _tags = new();
+
     private News(
         System.Guid id,
         string titleAr,
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
         System.Guid topicId,
         System.Guid authorId,
         string? featuredImageUrl) : base(id)
@@ -25,7 +26,6 @@ public sealed class News : AggregateRoot<System.Guid>
         TitleEn = titleEn;
         ContentAr = contentAr;
         ContentEn = contentEn;
-        Slug = slug;
         TopicId = topicId;
         AuthorId = authorId;
         FeaturedImageUrl = featuredImageUrl;
@@ -35,13 +35,13 @@ public sealed class News : AggregateRoot<System.Guid>
     public string TitleEn { get; private set; }
     public string ContentAr { get; private set; }
     public string ContentEn { get; private set; }
-    public string Slug { get; private set; }
     public System.Guid TopicId { get; private set; }
     public System.Guid AuthorId { get; private set; }
     public string? FeaturedImageUrl { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
     public bool IsFeatured { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
+    public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
 
     public bool IsPublished => PublishedOn is not null;
 
@@ -73,7 +73,6 @@ public sealed class News : AggregateRoot<System.Guid>
             titleEn: titleEn,
             contentAr: contentAr,
             contentEn: contentEn,
-            slug: ToKebabSlug(titleEn),
             topicId: topicId,
             authorId: authorId,
             featuredImageUrl: featuredImageUrl);
@@ -109,34 +108,16 @@ public sealed class News : AggregateRoot<System.Guid>
     {
         if (IsPublished) return;
         PublishedOn = clock.UtcNow;
-        RaiseDomainEvent(new NewsPublishedEvent(Id, Slug, PublishedOn.Value));
+        RaiseDomainEvent(new NewsPublishedEvent(Id, PublishedOn.Value));
+    }
+
+    public void SetTags(IEnumerable<Tag> tags)
+    {
+        _tags.Clear();
+        _tags.AddRange(tags);
     }
 
     public void MarkFeatured() => IsFeatured = true;
 
     public void UnmarkFeatured() => IsFeatured = false;
-
-    private static string ToKebabSlug(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return "news";
-        var sb = new System.Text.StringBuilder();
-        bool lastWasHyphen = true;
-        foreach (var c in text.ToLowerInvariant())
-        {
-            if (char.IsLetterOrDigit(c))
-            {
-                sb.Append(c);
-                lastWasHyphen = false;
-            }
-            else if (!lastWasHyphen)
-            {
-                sb.Append('-');
-                lastWasHyphen = true;
-            }
-        }
-        if (lastWasHyphen && sb.Length > 0)
-            sb.Length--;
-        var result = sb.ToString();
-        return string.IsNullOrWhiteSpace(result) ? "news" : result;
-    }
 }

@@ -74,6 +74,7 @@ app.MapStateRepresentativeEndpoints();
 app.MapCountryEndpoints();
 app.MapCountryProfileEndpoints();
 app.MapKapsarcAdminEndpoints();
+app.MapTagEndpoints();
 app.MapNewsEndpoints();
 app.MapEventEndpoints();
 app.MapPageEndpoints();

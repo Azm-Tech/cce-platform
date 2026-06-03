@@ -49,6 +49,13 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
             request.TopicId,
             _clock);
 
+        if (request.TagIds?.Count > 0)
+        {
+            var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
+                .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+            ev.SetTags(tags);
+        }
+
         await _repo.AddAsync(ev, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -57,6 +64,6 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(ListEventsQueryHandler.MapToDto(ev, topicNameAr, topicNameEn), "CONTENT_CREATED");
+        return _messages.Ok(ListEventsQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), "CONTENT_CREATED");
     }
 }

@@ -11,4 +11,5 @@ public sealed record ListEventsQuery(
     string? Search = null,
     System.DateTimeOffset? FromDate = null,
     System.DateTimeOffset? ToDate = null,
-    System.Guid? TopicId = null) : IRequest<Response<PagedResult<EventDto>>>;
+    System.Guid? TopicId = null,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<EventDto>>>;

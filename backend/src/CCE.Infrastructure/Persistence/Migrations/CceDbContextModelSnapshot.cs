@@ -732,12 +732,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("rowversion")
                         .HasColumnName("row_version");
 
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("slug");
-
                     b.Property<string>("TitleAr")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -759,11 +753,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PublishedOn")
                         .HasDatabaseName("ix_news_published_on");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ux_news_slug_active")
-                        .HasFilter("[is_deleted] = 0");
 
                     b.HasIndex("TopicId")
                         .HasDatabaseName("ix_news_topic_id");
@@ -1101,6 +1090,39 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_resource_country_country_id");
 
                     b.ToTable("resource_country", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Content.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
+                        .HasColumnName("color");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("name_en");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tags");
+
+                    b.HasIndex("NameEn")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tag_name_en");
+
+                    b.ToTable("tags", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Country.Country", b =>
@@ -3426,6 +3448,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("user_verifications", (string)null);
                 });
 
+            modelBuilder.Entity("EventTag", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("event_id");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tags_id");
+
+                    b.HasKey("EventId", "TagsId")
+                        .HasName("pk_event_tag");
+
+                    b.HasIndex("TagsId")
+                        .HasDatabaseName("ix_event_tag_tags_id");
+
+                    b.ToTable("event_tag", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -3554,6 +3595,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasName("pk_asp_net_user_tokens");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.Property<Guid>("NewsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("news_id");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tags_id");
+
+                    b.HasKey("NewsId", "TagsId")
+                        .HasName("pk_news_tag");
+
+                    b.HasIndex("TagsId")
+                        .HasDatabaseName("ix_news_tag_tags_id");
+
+                    b.ToTable("news_tag", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
@@ -3910,6 +3970,23 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_user_verifications_asp_net_users_user_id");
                 });
 
+            modelBuilder.Entity("EventTag", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.Event", null)
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_event_tag_events_event_id");
+
+                    b.HasOne("CCE.Domain.Content.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_event_tag_tags_tags_id");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("CCE.Domain.Identity.Role", null)
@@ -3965,6 +4042,23 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.News", null)
+                        .WithMany()
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_news_tag_news_news_id");
+
+                    b.HasOne("CCE.Domain.Content.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_news_tag_tags_tags_id");
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.Resource", b =>

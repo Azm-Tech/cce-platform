@@ -29,6 +29,7 @@ public sealed class ListEventsQueryHandler : IRequestHandler<ListEventsQuery, Re
             .WhereIf(request.FromDate.HasValue, e => e.StartsOn >= request.FromDate!.Value)
             .WhereIf(request.ToDate.HasValue,   e => e.EndsOn <= request.ToDate!.Value)
             .WhereIf(request.TopicId.HasValue, e => e.TopicId == request.TopicId!.Value)
+            .WhereIf(request.TagIds?.Count > 0, e => e.Tags.Any(t => request.TagIds!.Contains(t.Id)))
             .OrderByDescending(e => e.StartsOn);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
@@ -38,20 +39,39 @@ public sealed class ListEventsQueryHandler : IRequestHandler<ListEventsQuery, Re
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topicById = topics.ToDictionary(t => t.Id);
 
-        return _messages.Ok(result.Map(e => MapToDto(e, topicById)), "ITEMS_LISTED");
+        var eventIds = result.Items.Select(e => e.Id).ToList();
+        var tagByEventId = await GetTagDtosByEventIdsAsync(eventIds, cancellationToken).ConfigureAwait(false);
+
+        return _messages.Ok(result.Map(e => MapToDto(e, topicById, tagByEventId)), "ITEMS_LISTED");
     }
 
-    internal static EventDto MapToDto(Event e, Dictionary<System.Guid, Topic> topicById) => new(
+    private async Task<Dictionary<System.Guid, List<TagDto>>> GetTagDtosByEventIdsAsync(
+        System.Collections.Generic.List<System.Guid> eventIds, CancellationToken ct)
+    {
+        if (eventIds.Count == 0)
+            return new Dictionary<System.Guid, List<TagDto>>();
+
+        var entries = await _db.Events
+            .Where(e => eventIds.Contains(e.Id))
+            .Select(e => new { e.Id, Tags = e.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList() })
+            .ToListAsyncEither(ct).ConfigureAwait(false);
+
+        return entries.ToDictionary(x => x.Id, x => x.Tags);
+    }
+
+    internal static EventDto MapToDto(Event e, Dictionary<System.Guid, Topic> topicById, Dictionary<System.Guid, List<TagDto>> tagByEventId) => new(
         e.Id, e.TitleAr, e.TitleEn, e.DescriptionAr, e.DescriptionEn,
         e.StartsOn, e.EndsOn, e.LocationAr, e.LocationEn,
         e.OnlineMeetingUrl, e.FeaturedImageUrl, e.ICalUid,
         e.TopicId,
         topicById.TryGetValue(e.TopicId, out var t) ? t.NameAr : string.Empty,
-        topicById.TryGetValue(e.TopicId, out t) ? t.NameEn : string.Empty);
+        topicById.TryGetValue(e.TopicId, out t) ? t.NameEn : string.Empty,
+        tagByEventId.TryGetValue(e.Id, out var tags) ? tags : new List<TagDto>());
 
-    internal static EventDto MapToDto(Event e, string topicNameAr = "", string topicNameEn = "") => new(
+    internal static EventDto MapToDto(Event e, string topicNameAr = "", string topicNameEn = "", System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(
         e.Id, e.TitleAr, e.TitleEn, e.DescriptionAr, e.DescriptionEn,
         e.StartsOn, e.EndsOn, e.LocationAr, e.LocationEn,
         e.OnlineMeetingUrl, e.FeaturedImageUrl, e.ICalUid,
-        e.TopicId, topicNameAr, topicNameEn);
+        e.TopicId, topicNameAr, topicNameEn,
+        tags ?? new List<TagDto>());
 }

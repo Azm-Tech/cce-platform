@@ -8,6 +8,7 @@ using CCE.Application.Content.Queries.ListEvents;
 using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace CCE.Api.Internal.Endpoints;
@@ -21,9 +22,10 @@ public static class EventEndpoints
         events.MapGet("", async (
             int? page, int? pageSize, string? search,
             System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Guid? topicId,
+            [FromQuery] System.Guid[]? tagIds,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var query = new ListEventsQuery(page ?? 1, pageSize ?? 20, search, fromDate, toDate, topicId);
+            var query = new ListEventsQuery(page ?? 1, pageSize ?? 20, search, fromDate, toDate, topicId, tagIds);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -49,7 +51,7 @@ public static class EventEndpoints
                 body.StartsOn, body.EndsOn,
                 body.LocationAr, body.LocationEn,
                 body.OnlineMeetingUrl, body.FeaturedImageUrl,
-                body.TopicId);
+                body.TopicId, body.TagIds);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -67,7 +69,7 @@ public static class EventEndpoints
                 body.DescriptionAr, body.DescriptionEn,
                 body.LocationAr, body.LocationEn,
                 body.OnlineMeetingUrl, body.FeaturedImageUrl,
-                body.TopicId);
+                body.TopicId, body.TagIds);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
@@ -33,10 +34,12 @@ public sealed class GetPublicEventByIdQueryHandler : IRequestHandler<GetPublicEv
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topic = topics.FirstOrDefault();
 
-        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty), "SUCCESS_OPERATION");
+        var tagDtos = ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
+
+        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), "SUCCESS_OPERATION");
     }
 
-    internal static PublicEventDto MapToDto(Event e, string topicNameAr, string topicNameEn) => new(
+    internal static PublicEventDto MapToDto(Event e, string topicNameAr, string topicNameEn, System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(
         e.Id,
         e.TitleAr,
         e.TitleEn,
@@ -51,5 +54,6 @@ public sealed class GetPublicEventByIdQueryHandler : IRequestHandler<GetPublicEv
         e.ICalUid,
         e.TopicId,
         topicNameAr,
-        topicNameEn);
+        topicNameEn,
+        tags ?? new List<TagDto>());
 }

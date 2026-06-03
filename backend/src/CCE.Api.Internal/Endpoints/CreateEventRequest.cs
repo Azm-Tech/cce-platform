@@ -9,4 +9,5 @@ public sealed record CreateEventRequest(
     string? LocationEn,
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
-    System.Guid TopicId);
+    System.Guid TopicId,
+    System.Collections.Generic.List<System.Guid>? TagIds = null);

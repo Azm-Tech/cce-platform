@@ -58,6 +58,15 @@ public sealed class Event : AggregateRoot<System.Guid>
 
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
 
+    private readonly List<Tag> _tags = new();
+    public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
+
+    public void SetTags(IEnumerable<Tag> tags)
+    {
+        _tags.Clear();
+        _tags.AddRange(tags);
+    }
+
     public static Event Schedule(
         string titleAr,
         string titleEn,

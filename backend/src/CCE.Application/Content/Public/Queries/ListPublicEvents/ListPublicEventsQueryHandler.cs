@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
@@ -22,14 +23,6 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
 
     public async Task<Response<PagedResult<PublicEventDto>>> Handle(ListPublicEventsQuery request, CancellationToken cancellationToken)
     {
-        System.Guid? topicId = request.TopicId;
-        if (!string.IsNullOrWhiteSpace(request.TopicSlug) && !topicId.HasValue)
-        {
-            var topics = await _db.Topics.Where(t => t.Slug == request.TopicSlug!)
-                .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
-            topicId = topics.FirstOrDefault()?.Id;
-        }
-
         var query = _db.Events.AsQueryable();
 
         if (request.From.HasValue && request.To.HasValue)
@@ -42,7 +35,8 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
             query = query.Where(e => e.StartsOn >= now);
         }
 
-        query = query.WhereIf(topicId.HasValue, e => e.TopicId == topicId!.Value);
+        query = query.WhereIf(request.TopicId.HasValue, e => e.TopicId == request.TopicId!.Value);
+        query = query.WhereIf(request.TagIds?.Count > 0, e => e.Tags.Any(t => request.TagIds!.Contains(t.Id)));
         query = query.OrderBy(e => e.StartsOn);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
@@ -52,10 +46,27 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topicById = topicsList.ToDictionary(t => t.Id);
 
-        return _messages.Ok(result.Map(e => MapToDto(e, topicById)), "ITEMS_LISTED");
+        var eventIds = result.Items.Select(e => e.Id).ToList();
+        var tagByEventId = await GetTagDtosByEventIdsAsync(eventIds, cancellationToken).ConfigureAwait(false);
+
+        return _messages.Ok(result.Map(e => MapToDto(e, topicById, tagByEventId)), "ITEMS_LISTED");
     }
 
-    internal static PublicEventDto MapToDto(Event e, Dictionary<System.Guid, Topic> topicById) => new(
+    private async Task<Dictionary<System.Guid, List<TagDto>>> GetTagDtosByEventIdsAsync(
+        System.Collections.Generic.List<System.Guid> eventIds, CancellationToken ct)
+    {
+        if (eventIds.Count == 0)
+            return new Dictionary<System.Guid, List<TagDto>>();
+
+        var entries = await _db.Events
+            .Where(e => eventIds.Contains(e.Id))
+            .Select(e => new { e.Id, Tags = e.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList() })
+            .ToListAsyncEither(ct).ConfigureAwait(false);
+
+        return entries.ToDictionary(x => x.Id, x => x.Tags);
+    }
+
+    internal static PublicEventDto MapToDto(Event e, Dictionary<System.Guid, Topic> topicById, Dictionary<System.Guid, List<TagDto>> tagByEventId) => new(
         e.Id,
         e.TitleAr,
         e.TitleEn,
@@ -70,5 +81,6 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
         e.ICalUid,
         e.TopicId,
         topicById.TryGetValue(e.TopicId, out var t) ? t.NameAr : string.Empty,
-        topicById.TryGetValue(e.TopicId, out t) ? t.NameEn : string.Empty);
+        topicById.TryGetValue(e.TopicId, out t) ? t.NameEn : string.Empty,
+        tagByEventId.TryGetValue(e.Id, out var tags) ? tags : new List<TagDto>());
 }

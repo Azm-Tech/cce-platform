@@ -8,6 +8,7 @@ using CCE.Application.Content.Queries.ListNews;
 using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace CCE.Api.Internal.Endpoints;
@@ -20,6 +21,7 @@ public static class NewsEndpoints
 
         news.MapGet("", async (
             int? page, int? pageSize, string? search, bool? isPublished, bool? isFeatured, System.Guid? topicId,
+            [FromQuery] System.Guid[]? tagIds,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListNewsQuery(
@@ -28,7 +30,8 @@ public static class NewsEndpoints
                 Search: search,
                 IsPublished: isPublished,
                 IsFeatured: isFeatured,
-                TopicId: topicId);
+                TopicId: topicId,
+                TagIds: tagIds);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -49,7 +52,7 @@ public static class NewsEndpoints
             CreateNewsRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var cmd = new CreateNewsCommand(body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl);
+            var cmd = new CreateNewsCommand(body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -61,7 +64,7 @@ public static class NewsEndpoints
             UpdateNewsRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var cmd = new UpdateNewsCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl);
+            var cmd = new UpdateNewsCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

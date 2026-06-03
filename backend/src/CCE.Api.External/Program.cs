@@ -98,6 +98,7 @@ app.MapProfileEndpoints();
 app.MapAssetEndpoints();
 app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.External);
 app.MapNotificationsEndpoints();
+app.MapTagsPublicEndpoints();
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();
 app.MapResourcesPublicEndpoints();
