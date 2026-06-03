@@ -335,12 +335,25 @@
     "not-found": "Item not found.",
     "unknown": "Unexpected error. Try again.",
     "retry": "Retry",
+    "ERR004": "Sharing failed. Please try again.",
     "ERR013": "Required fields are missing.",
     "ERR027": "Could not upload the news/event. Please try again.",
     "ERR028": "Could not delete the news/event. Please try again."
   },
   "info": {
     "INF003": "No news or events available yet."
+  },
+  "share": {
+    "button": "Share",
+    "copyLink": "Copy link",
+    "email": "Email",
+    "native": "Share via…"
+  },
+  "confirmations": {
+    "CON003": "Shared successfully!",
+    "CON004": "Event added to your calendar.",
+    "CON020": "News/event deleted successfully.",
+    "CON021": "Uploaded successfully!"
   },
   "nav": {
     "sidebarLabel": "Admin navigation",

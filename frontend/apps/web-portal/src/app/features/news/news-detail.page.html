@@ -20,5 +20,8 @@
       <img [src]="a.featuredImageUrl" [alt]="title()" class="cce-news-detail__image" />
     }
     <div class="cce-news-detail__content" [innerHTML]="content()"></div>
+    <div class="cce-news-detail__actions">
+      <cce-share-menu [title]="title()" />
+    </div>
   }
 </article>

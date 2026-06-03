@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import { EventsApiService } from './events-api.service';
 import type { Event } from './event.types';
 
@@ -29,6 +30,7 @@ type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule,
     TranslocoModule,
+    ShareMenuComponent,
   ],
   templateUrl: './event-detail.page.html',
   styleUrl: './event-detail.page.scss',

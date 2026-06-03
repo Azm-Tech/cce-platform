@@ -202,15 +202,8 @@
           }
         </button>
 
-        <button
-          type="button"
-          mat-stroked-button
-          class="cce-event-detail__action"
-          (click)="copyLink()"
-        >
-          <mat-icon>share</mat-icon>
-          <span>{{ 'events.detail.share' | transloco }}</span>
-        </button>
+        <cce-share-menu [title]="title()" />
+
       </div>
     </article>
   }

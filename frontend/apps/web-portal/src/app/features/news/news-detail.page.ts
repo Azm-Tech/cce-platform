@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import { NewsApiService } from './news-api.service';
 import type { NewsArticle } from './news.types';
 
@@ -14,6 +15,7 @@ import type { NewsArticle } from './news.types';
   imports: [
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatIconModule, TranslocoModule,
+    ShareMenuComponent,
   ],
   templateUrl: './news-detail.page.html',
   styleUrl: './news-detail.page.scss',
