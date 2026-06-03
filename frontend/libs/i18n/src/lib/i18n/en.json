@@ -336,6 +336,7 @@
     "unknown": "Unexpected error. Try again.",
     "retry": "Retry",
     "ERR004": "Sharing failed. Please try again.",
+    "ERR006": "Could not add the event to your calendar. Please try again later.",
     "ERR013": "Required fields are missing.",
     "ERR027": "Could not upload the news/event. Please try again.",
     "ERR028": "Could not delete the news/event. Please try again."
@@ -821,6 +822,15 @@
     "title": "Events",
     "subtitle": "Conferences, webinars, workshops, and gatherings shaping the future of low-carbon cities.",
     "eyebrow": "EVENTS · UPCOMING & PAST",
+    "calendar": {
+      "moreOptions": "More calendar options",
+      "addTo": {
+        "google": "Add to Google Calendar",
+        "outlook": "Add to Outlook",
+        "apple": "Add to Apple Calendar",
+        "yahoo": "Add to Yahoo Calendar"
+      }
+    },
     "col": {
       "title": "Title",
       "startsOn": "Starts",

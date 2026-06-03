@@ -184,23 +184,7 @@
           </button>
         }
 
-        <button
-          type="button"
-          mat-stroked-button
-          class="cce-event-detail__action"
-          (click)="exportToCalendar()"
-          [disabled]="downloading()"
-        >
-          @if (downloading()) {
-            <mat-spinner diameter="18" />
-            <span>{{ 'events.detail.downloadingCalendar' | transloco }}</span>
-          } @else {
-            <ng-container>
-              <mat-icon>event_available</mat-icon>
-              <span>{{ 'events.detail.addToCalendar' | transloco }}</span>
-            </ng-container>
-          }
-        </button>
+        <cce-calendar-menu [event]="calendarPayload()" />
 
         <cce-share-menu [title]="title()" />
 

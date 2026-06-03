@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CalendarMenuComponent, type CalendarEventInput } from '../../shared/calendar-menu/calendar-menu.component';
 import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import { EventsApiService } from './events-api.service';
 import type { Event } from './event.types';
@@ -30,6 +31,7 @@ type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
     CommonModule, DatePipe, RouterLink,
     MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule,
     TranslocoModule,
+    CalendarMenuComponent,
     ShareMenuComponent,
   ],
   templateUrl: './event-detail.page.html',
@@ -75,6 +77,20 @@ export class EventDetailPage implements OnInit {
   });
 
   readonly isOnline = computed(() => !!this.event()?.onlineMeetingUrl);
+
+  /** Payload handed to <cce-calendar-menu>. Returns a stub when the event
+   *  isn't loaded yet so the menu can render without flicker. */
+  readonly calendarPayload = computed<CalendarEventInput>(() => {
+    const e = this.event();
+    return {
+      id: e?.id ?? '',
+      title: this.title(),
+      description: this.description(),
+      location: this.venue(),
+      startsOn: e?.startsOn ?? '',
+      endsOn: e?.endsOn ?? '',
+    };
+  });
 
   /** Has-image guard that also flips false when the image URL fails to
    *  load (the template binds an `(error)` handler to set imageFailed). */
