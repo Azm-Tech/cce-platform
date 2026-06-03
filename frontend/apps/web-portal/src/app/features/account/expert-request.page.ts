@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
@@ -38,6 +39,7 @@ export class ExpertRequestPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   readonly status = signal<ExpertRequestStatus | null>(null);
   readonly loading = signal(false);
@@ -121,6 +123,7 @@ export class ExpertRequestPage implements OnInit {
       this.status.set(res.value);
       this.showForm.set(false);
       this.toast.success('account.expert.toast.submitted');
+      void this.router.navigate(['/me/profile']);
     } else {
       this.submitErrorKind.set(res.error.kind);
     }
