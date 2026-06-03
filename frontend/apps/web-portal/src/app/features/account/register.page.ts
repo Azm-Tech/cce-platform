@@ -120,9 +120,9 @@ export class RegisterPage implements OnInit {
     this.state.set({ kind: 'submitting' });
     const v = this.form.value;
     const phoneCode = this.countryCodes().find((cc) => cc.id === v.phoneCountryCodeId);
-    const fullPhone = phoneCode
-      ? `${phoneCode.dialCode}${v.phoneNumber!.replace(/\s/g, '')}`
-      : v.phoneNumber!;
+    const dial = phoneCode?.dialCode?.replace(/^\+/, '') ?? '';
+    const localPhone = (v.phoneNumber ?? '').replace(/\s/g, '');
+    const fullPhone = phoneCode ? `${dial}${localPhone}` : localPhone;
     this.authApi
       .register({
         firstName: v.firstName!,

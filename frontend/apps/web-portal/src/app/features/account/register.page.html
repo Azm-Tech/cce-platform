@@ -57,8 +57,7 @@
           <mat-select formControlName="countryCodeId">
             @for (cc of countryCodes(); track cc.id) {
               <mat-option [value]="cc.id">
-                <span dir="ltr">{{ cc.dialCode }}</span>
-                &nbsp;{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
               </mat-option>
             }
           </mat-select>
@@ -72,7 +71,9 @@
             <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
             <mat-select formControlName="phoneCountryCodeId" dir="ltr">
               @for (cc of countryCodes(); track cc.id) {
-                <mat-option [value]="cc.id" dir="ltr">{{ cc.dialCode }}</mat-option>
+                <mat-option [value]="cc.id" dir="ltr">
+                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }} ({{ cc.dialCode }})
+                </mat-option>
               }
             </mat-select>
           </mat-form-field>
