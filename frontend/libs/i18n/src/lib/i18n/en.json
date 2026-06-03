@@ -309,6 +309,9 @@
       "close": "Close",
       "retry": "Retry"
     },
+    "validation": {
+      "url": "Enter a valid URL starting with http:// or https://"
+    },
     "locale": {
       "switchTo": "Switch to",
       "ar": "العربية",
@@ -332,6 +335,8 @@
     "not-found": "Item not found.",
     "unknown": "Unexpected error. Try again.",
     "retry": "Retry",
+    "ERR013": "Required fields are missing.",
+    "ERR027": "Could not upload the news/event. Please try again.",
     "ERR028": "Could not delete the news/event. Please try again."
   },
   "info": {
@@ -733,7 +738,11 @@
       "contentAr": "Content (Arabic)",
       "contentEn": "Content (English)",
       "slug": "Slug",
-      "featuredImageUrl": "Featured image URL"
+      "featuredImageUrl": "Featured image URL",
+      "uploadImage": "Upload image",
+      "uploadingImage": "Uploading…",
+      "imageHint": "PNG, JPG, or WebP. Max 5 MB.",
+      "imageInvalidType": "Please choose a PNG, JPG, or WebP image."
     },
     "create": {
       "openButton": "New article",

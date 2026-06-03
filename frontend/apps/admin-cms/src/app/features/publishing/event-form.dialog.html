@@ -6,21 +6,25 @@
     <div class="cce-event-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.titleAr' | transloco }}</mat-label>
-        <input matInput formControlName="titleAr" />
+        <input matInput formControlName="titleAr" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" />
+        <input matInput formControlName="titleEn" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
     <div class="cce-event-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.descriptionAr' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
+        <textarea matInput formControlName="descriptionAr" rows="3" [maxlength]="descMax"></textarea>
+        <mat-hint align="end">{{ form.controls.descriptionAr.value.length }}/{{ descMax }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.descriptionEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+        <textarea matInput formControlName="descriptionEn" rows="3" [maxlength]="descMax"></textarea>
+        <mat-hint align="end">{{ form.controls.descriptionEn.value.length }}/{{ descMax }}</mat-hint>
       </mat-form-field>
     </div>
     @if (!isEdit || isView) {
@@ -38,21 +42,54 @@
     <div class="cce-event-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.locationAr' | transloco }}</mat-label>
-        <input matInput formControlName="locationAr" />
+        <input matInput formControlName="locationAr" [maxlength]="locationMax" />
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'events.field.locationEn' | transloco }}</mat-label>
-        <input matInput formControlName="locationEn" />
+        <input matInput formControlName="locationEn" [maxlength]="locationMax" />
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
       <mat-label>{{ 'events.field.onlineMeetingUrl' | transloco }}</mat-label>
-      <input matInput formControlName="onlineMeetingUrl" />
+      <input matInput formControlName="onlineMeetingUrl" type="url" placeholder="https://…" [maxlength]="locationMax" />
+      @if (form.controls.onlineMeetingUrl.hasError('pattern') && form.controls.onlineMeetingUrl.touched) {
+        <mat-error>{{ 'common.validation.url' | transloco }}</mat-error>
+      }
     </mat-form-field>
+
+    @if (!isView) {
+      <div class="cce-event-form__image">
+        <input
+          #imgInput
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          (change)="onImagePicked($event)"
+        />
+        <button type="button" mat-stroked-button (click)="imgInput.click()" [disabled]="uploadingImage()">
+          <mat-icon>image</mat-icon>
+          @if (uploadingImage()) {
+            {{ 'news.field.uploadingImage' | transloco }}
+          } @else {
+            {{ 'news.field.uploadImage' | transloco }}
+          }
+        </button>
+        <span class="cce-event-form__image-hint">{{ 'news.field.imageHint' | transloco }}</span>
+      </div>
+    }
     <mat-form-field appearance="outline">
       <mat-label>{{ 'events.field.featuredImageUrl' | transloco }}</mat-label>
       <input matInput formControlName="featuredImageUrl" />
     </mat-form-field>
+    @if (form.controls.featuredImageUrl.value) {
+      <div class="cce-event-form__preview">
+        <img [src]="form.controls.featuredImageUrl.value" alt="" />
+      </div>
+    }
+
+    @if (missingRequired() && form.invalid) {
+      <div class="cce-event-form__error" role="alert">{{ 'errors.ERR013' | transloco }}</div>
+    }
     @if (errorKind(); as kind) {
       <div class="cce-event-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
@@ -63,7 +100,7 @@
     {{ (isView ? 'common.actions.close' : 'common.actions.cancel') | transloco }}
   </button>
   @if (!isView) {
-    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || uploadingImage()">
       @if (saving()) { <mat-spinner diameter="20" /> }
       @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | transloco }} }
     </button>

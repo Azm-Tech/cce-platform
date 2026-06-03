@@ -6,11 +6,13 @@
     <div class="cce-news-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'news.field.titleAr' | transloco }}</mat-label>
-        <input matInput formControlName="titleAr" />
+        <input matInput formControlName="titleAr" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'news.field.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" />
+        <input matInput formControlName="titleEn" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
@@ -20,17 +22,49 @@
     <div class="cce-news-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'news.field.contentAr' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentAr" rows="5"></textarea>
+        <textarea matInput formControlName="contentAr" rows="5" [maxlength]="contentMax"></textarea>
+        <mat-hint align="end">{{ form.controls.contentAr.value.length }}/{{ contentMax }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'news.field.contentEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentEn" rows="5"></textarea>
+        <textarea matInput formControlName="contentEn" rows="5" [maxlength]="contentMax"></textarea>
+        <mat-hint align="end">{{ form.controls.contentEn.value.length }}/{{ contentMax }}</mat-hint>
       </mat-form-field>
     </div>
+
+    @if (!isView) {
+      <div class="cce-news-form__image">
+        <input
+          #imgInput
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          (change)="onImagePicked($event)"
+        />
+        <button type="button" mat-stroked-button (click)="imgInput.click()" [disabled]="uploadingImage()">
+          <mat-icon>image</mat-icon>
+          @if (uploadingImage()) {
+            {{ 'news.field.uploadingImage' | transloco }}
+          } @else {
+            {{ 'news.field.uploadImage' | transloco }}
+          }
+        </button>
+        <span class="cce-news-form__image-hint">{{ 'news.field.imageHint' | transloco }}</span>
+      </div>
+    }
     <mat-form-field appearance="outline">
       <mat-label>{{ 'news.field.featuredImageUrl' | transloco }}</mat-label>
       <input matInput formControlName="featuredImageUrl" />
     </mat-form-field>
+    @if (form.controls.featuredImageUrl.value) {
+      <div class="cce-news-form__preview">
+        <img [src]="form.controls.featuredImageUrl.value" alt="" />
+      </div>
+    }
+
+    @if (missingRequired() && form.invalid) {
+      <div class="cce-news-form__error" role="alert">{{ 'errors.ERR013' | transloco }}</div>
+    }
     @if (errorKind(); as kind) {
       <div class="cce-news-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
@@ -41,7 +75,7 @@
     {{ (isView ? 'common.actions.close' : 'common.actions.cancel') | transloco }}
   </button>
   @if (!isView) {
-    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
+    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || uploadingImage()">
       @if (saving()) { <mat-spinner diameter="20" /> }
       @else { {{ (isEdit ? 'news.edit.save' : 'news.create.save') | transloco }} }
     </button>
