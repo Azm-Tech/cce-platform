@@ -6,7 +6,7 @@ namespace CCE.Domain.Country;
 
 /// <summary>
 /// State-rep submission asking the center to publish country-scoped content.
-/// Supports Resources, News articles, and Events via <see cref="ContentKind"/>.
+    /// Supports Resources, News articles, and Events via <see cref="ContentType"/>.
 /// State machine: <c>Pending → Approved</c> or <c>Pending → Rejected</c> (terminal).
 /// Approving raises <see cref="CountryContentRequestApprovedEvent"/> which a future
 /// handler (Sprint-07 / US050) routes to create the actual content aggregate.
@@ -18,7 +18,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         System.Guid id,
         System.Guid countryId,
         System.Guid requestedById,
-        ContentKind kind,
+        ContentType type,
         string proposedTitleAr,
         string proposedTitleEn,
         string proposedDescriptionAr,
@@ -35,7 +35,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
     {
         CountryId = countryId;
         RequestedById = requestedById;
-        Kind = kind;
+        Type = type;
         ProposedTitleAr = proposedTitleAr;
         ProposedTitleEn = proposedTitleEn;
         ProposedDescriptionAr = proposedDescriptionAr;
@@ -54,7 +54,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
 
     public System.Guid CountryId { get; private set; }
     public System.Guid RequestedById { get; private set; }
-    public ContentKind Kind { get; private set; }
+    public ContentType Type { get; private set; }
     public CountryContentRequestStatus Status { get; private set; }
     public string ProposedTitleAr { get; private set; } = string.Empty;
     public string ProposedTitleEn { get; private set; } = string.Empty;
@@ -101,7 +101,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         if (assetFileId == System.Guid.Empty) throw new DomainException("AssetFileId is required.");
         return new CountryContentRequest(
             System.Guid.NewGuid(), countryId, requestedById,
-            ContentKind.Resource,
+            ContentType.Resource,
             titleAr, titleEn, descriptionAr, descriptionEn,
             resourceType, assetFileId,
             null, null, null, null, null, null,
@@ -126,7 +126,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         return new CountryContentRequest(
             System.Guid.NewGuid(), countryId, requestedById,
-            ContentKind.News,
+            ContentType.News,
             titleAr, titleEn, contentAr, contentEn,
             null, featuredImageAssetId,
             topicId, null, null, null, null, null,
@@ -156,7 +156,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         if (startsOn >= endsOn) throw new DomainException("StartsOn must be before EndsOn.");
         return new CountryContentRequest(
             System.Guid.NewGuid(), countryId, requestedById,
-            ContentKind.Event,
+            ContentType.Event,
             titleAr, titleEn, descriptionAr, descriptionEn,
             null, null,
             topicId, startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl,
@@ -177,7 +177,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         AdminNotesAr = notesAr;
         AdminNotesEn = notesEn;
         RaiseDomainEvent(new CountryContentRequestApprovedEvent(
-            Id, CountryId, RequestedById, Kind, approvedById, now));
+            Id, CountryId, RequestedById, Type, approvedById, now));
     }
 
     public void Reject(System.Guid rejectedById, string notesAr, string notesEn, ISystemClock clock)
@@ -194,6 +194,6 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         AdminNotesAr = notesAr;
         AdminNotesEn = notesEn;
         RaiseDomainEvent(new CountryContentRequestRejectedEvent(
-            Id, CountryId, RequestedById, Kind, rejectedById, notesAr, notesEn, now));
+            Id, CountryId, RequestedById, Type, rejectedById, notesAr, notesEn, now));
     }
 }

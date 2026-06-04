@@ -1,6 +1,6 @@
 namespace CCE.Domain.Country;
 
-public enum ContentKind
+public enum ContentType
 {
     Resource = 0,
     News = 1,

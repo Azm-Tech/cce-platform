@@ -27,7 +27,7 @@ public sealed class CountryContentRequestApprovedNotificationHandler
             MetaData: new Dictionary<string, string>
             {
                 ["RequestId"] = notification.RequestId.ToString(),
-                ["Kind"] = notification.Kind.ToString(),
+                ["Type"] = notification.Type.ToString(),
             }),
             cancellationToken).ConfigureAwait(false);
     }

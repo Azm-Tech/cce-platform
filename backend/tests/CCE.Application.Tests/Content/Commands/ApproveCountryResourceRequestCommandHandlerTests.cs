@@ -67,7 +67,7 @@ public class ApproveCountryResourceRequestCommandHandlerTests
 
         response.Success.Should().BeTrue();
         response.Data!.Status.Should().Be(CountryContentRequestStatus.Approved);
-        response.Data.Kind.Should().Be(ContentKind.Resource);
+        response.Data.Type.Should().Be(ContentType.Resource);
         response.Data.AdminNotesAr.Should().Be("ملاحظات");
         await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }

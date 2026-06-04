@@ -67,7 +67,7 @@ public class RejectCountryResourceRequestCommandHandlerTests
 
         response.Success.Should().BeTrue();
         response.Data!.Status.Should().Be(CountryContentRequestStatus.Rejected);
-        response.Data.Kind.Should().Be(ContentKind.Resource);
+        response.Data.Type.Should().Be(ContentType.Resource);
         response.Data.AdminNotesAr.Should().Be("غير مؤهل");
         await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }

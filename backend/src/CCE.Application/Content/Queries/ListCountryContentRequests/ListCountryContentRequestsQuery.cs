@@ -10,5 +10,5 @@ public sealed record ListCountryContentRequestsQuery(
     int Page = 1,
     int PageSize = 20,
     CountryContentRequestStatus? Status = null,
-    ContentKind? Kind = null,
+    ContentType? Type = null,
     System.Guid? CountryId = null) : IRequest<Response<PagedResult<CountryContentRequestDto>>>;

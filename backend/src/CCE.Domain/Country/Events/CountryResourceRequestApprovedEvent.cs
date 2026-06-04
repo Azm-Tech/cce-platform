@@ -6,6 +6,6 @@ public sealed record CountryContentRequestApprovedEvent(
     System.Guid RequestId,
     System.Guid CountryId,
     System.Guid RequestedById,
-    ContentKind Kind,
+    ContentType Type,
     System.Guid ApprovedById,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

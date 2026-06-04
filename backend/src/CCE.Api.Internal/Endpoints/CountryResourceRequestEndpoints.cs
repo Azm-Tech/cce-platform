@@ -4,6 +4,7 @@ using CCE.Application.Content.Commands.RejectCountryResourceRequest;
 using CCE.Application.Content.Queries.GetCountryContentRequest;
 using CCE.Application.Content.Queries.ListCountryContentRequests;
 using CCE.Domain;
+using CCE.Domain.Content;
 using CCE.Domain.Country;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -21,10 +22,10 @@ public static class CountryResourceRequestEndpoints
         // US049 — list all country content requests (admin sees all; no scope filter)
         requests.MapGet("", async (
             int? page, int? pageSize,
-            CountryContentRequestStatus? status, ContentKind? kind, System.Guid? countryId,
+            CountryContentRequestStatus? status, ContentType? type, System.Guid? countryId,
             IMediator mediator, CancellationToken cancellationToken) =>
             (await mediator.Send(
-                new ListCountryContentRequestsQuery(page ?? 1, pageSize ?? 20, status, kind),
+                new ListCountryContentRequestsQuery(page ?? 1, pageSize ?? 20, status, type, countryId),
                 cancellationToken).ConfigureAwait(false)).ToHttpResult())
         .RequireAuthorization(Permissions.Resource_Country_Approve)
         .WithName("ListAdminCountryContentRequests");

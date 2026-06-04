@@ -7,7 +7,7 @@ public sealed record CountryContentRequestDto(
     System.Guid Id,
     System.Guid CountryId,
     System.Guid RequestedById,
-    ContentKind Kind,
+    ContentType Type,
     CountryContentRequestStatus Status,
     string ProposedTitleAr,
     string ProposedTitleEn,

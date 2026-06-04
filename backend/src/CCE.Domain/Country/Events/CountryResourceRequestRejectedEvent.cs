@@ -6,7 +6,7 @@ public sealed record CountryContentRequestRejectedEvent(
     System.Guid RequestId,
     System.Guid CountryId,
     System.Guid RequestedById,
-    ContentKind Kind,
+    ContentType Type,
     System.Guid RejectedById,
     string AdminNotesAr,
     string AdminNotesEn,

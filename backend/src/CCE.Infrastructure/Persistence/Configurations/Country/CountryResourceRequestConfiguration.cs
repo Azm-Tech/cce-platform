@@ -10,7 +10,7 @@ internal sealed class CountryContentRequestConfiguration : IEntityTypeConfigurat
     {
         builder.HasKey(r => r.Id);
         builder.Property(r => r.Id).ValueGeneratedNever();
-        builder.Property(r => r.Kind).HasConversion<int>();
+        builder.Property(r => r.Type).HasConversion<int>().HasColumnName("type");
         builder.Property(r => r.Status).HasConversion<int>().HasColumnName("status");
         builder.Property(r => r.ProposedTitleAr).HasMaxLength(512).IsRequired();
         builder.Property(r => r.ProposedTitleEn).HasMaxLength(512).IsRequired();
@@ -33,8 +33,8 @@ internal sealed class CountryContentRequestConfiguration : IEntityTypeConfigurat
         builder.Property(r => r.ProposedLocationEn).HasMaxLength(512).IsRequired(false);
         builder.Property(r => r.ProposedOnlineMeetingUrl).HasMaxLength(2048).IsRequired(false);
 
-        builder.HasIndex(r => new { r.CountryId, r.Status, r.Kind })
-            .HasDatabaseName("ix_country_content_request_country_status_kind");
+        builder.HasIndex(r => new { r.CountryId, r.Status, r.Type })
+            .HasDatabaseName("ix_country_content_request_country_status_type");
         builder.Ignore(r => r.DomainEvents);
     }
 }

@@ -44,13 +44,13 @@ public sealed class ListCountryContentRequestsQueryHandler
             // Optional filters usable by both admin (US049) and state rep (US051)
             .WhereIf(request.CountryId.HasValue, r => r.CountryId == request.CountryId!.Value)
             .WhereIf(request.Status.HasValue, r => r.Status == request.Status!.Value)
-            .WhereIf(request.Kind.HasValue, r => r.Kind == request.Kind!.Value)
+            .WhereIf(request.Type.HasValue, r => r.Type == request.Type!.Value)
             .OrderByDescending(r => r.SubmittedOn);
 
         var page = await query
             .ToPagedResultAsync(
                 r => new CountryContentRequestDto(
-                    r.Id, r.CountryId, r.RequestedById, r.Kind, r.Status,
+                    r.Id, r.CountryId, r.RequestedById, r.Type, r.Status,
                     r.ProposedTitleAr, r.ProposedTitleEn,
                     r.ProposedDescriptionAr, r.ProposedDescriptionEn,
                     r.ProposedResourceType, r.ProposedAssetFileId,

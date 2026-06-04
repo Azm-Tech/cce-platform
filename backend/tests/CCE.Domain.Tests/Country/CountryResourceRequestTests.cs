@@ -28,7 +28,7 @@ public class CountryContentRequestTests
         var clock = NewClock();
         var r = NewPendingResource(clock);
 
-        r.Kind.Should().Be(ContentKind.Resource);
+        r.Type.Should().Be(ContentType.Resource);
         r.Status.Should().Be(CountryContentRequestStatus.Pending);
         r.SubmittedOn.Should().Be(clock.UtcNow);
         r.AdminNotesAr.Should().BeNull();
@@ -76,7 +76,7 @@ public class CountryContentRequestTests
             "عنوان", "Title", "محتوى", "Content",
             topicId, null, clock);
 
-        r.Kind.Should().Be(ContentKind.News);
+        r.Type.Should().Be(ContentType.News);
         r.Status.Should().Be(CountryContentRequestStatus.Pending);
         r.ProposedTopicId.Should().Be(topicId);
         r.ProposedResourceType.Should().BeNull();
@@ -109,7 +109,7 @@ public class CountryContentRequestTests
             "عنوان", "Title", "وصف", "Description",
             topicId, start, end, "الرياض", "Riyadh", null, clock);
 
-        r.Kind.Should().Be(ContentKind.Event);
+        r.Type.Should().Be(ContentType.Event);
         r.ProposedStartsOn.Should().Be(start);
         r.ProposedEndsOn.Should().Be(end);
         r.ProposedLocationAr.Should().Be("الرياض");
@@ -146,7 +146,7 @@ public class CountryContentRequestTests
         r.ProcessedOn.Should().Be(clock.UtcNow);
         r.AdminNotesAr.Should().Be("ملاحظة");
         r.DomainEvents.OfType<CountryContentRequestApprovedEvent>().Should().HaveCount(1);
-        r.DomainEvents.OfType<CountryContentRequestApprovedEvent>().Single().Kind.Should().Be(ContentKind.Resource);
+        r.DomainEvents.OfType<CountryContentRequestApprovedEvent>().Single().Type.Should().Be(ContentType.Resource);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class CountryContentRequestTests
         r.Status.Should().Be(CountryContentRequestStatus.Rejected);
         r.AdminNotesAr.Should().Be("سبب");
         r.DomainEvents.OfType<CountryContentRequestRejectedEvent>().Should().HaveCount(1);
-        r.DomainEvents.OfType<CountryContentRequestRejectedEvent>().Single().Kind.Should().Be(ContentKind.Resource);
+        r.DomainEvents.OfType<CountryContentRequestRejectedEvent>().Single().Type.Should().Be(ContentType.Resource);
     }
 
     [Fact]

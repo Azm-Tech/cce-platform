@@ -27,7 +27,7 @@ public sealed class CountryContentRequestRejectedNotificationHandler
             MetaData: new Dictionary<string, string>
             {
                 ["RequestId"] = notification.RequestId.ToString(),
-                ["Kind"] = notification.Kind.ToString(),
+                ["Type"] = notification.Type.ToString(),
                 ["AdminNotesAr"] = notification.AdminNotesAr,
                 ["AdminNotesEn"] = notification.AdminNotesEn,
             }),

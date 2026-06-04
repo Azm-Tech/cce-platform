@@ -42,7 +42,7 @@ public sealed class GetCountryContentRequestQueryHandler
             return _messages.CountryContentRequestNotFound<CountryContentRequestDto>();
 
         var dto = new CountryContentRequestDto(
-            entity.Id, entity.CountryId, entity.RequestedById, entity.Kind, entity.Status,
+            entity.Id, entity.CountryId, entity.RequestedById, entity.Type, entity.Status,
             entity.ProposedTitleAr, entity.ProposedTitleEn,
             entity.ProposedDescriptionAr, entity.ProposedDescriptionEn,
             entity.ProposedResourceType, entity.ProposedAssetFileId,

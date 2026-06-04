@@ -59,7 +59,7 @@ public sealed class ApproveCountryResourceRequestCommandHandler
     }
 
     internal static CountryContentRequestDto MapToDto(CountryContentRequest e) => new(
-        e.Id, e.CountryId, e.RequestedById, e.Kind, e.Status,
+        e.Id, e.CountryId, e.RequestedById, e.Type, e.Status,
         e.ProposedTitleAr, e.ProposedTitleEn,
         e.ProposedDescriptionAr, e.ProposedDescriptionEn,
         e.ProposedResourceType, e.ProposedAssetFileId,
