@@ -9,20 +9,20 @@ import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { CalendarMenuComponent, type CalendarEventInput } from '../../shared/calendar-menu/calendar-menu.component';
-import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import { EventsApiService } from './events-api.service';
 import type { Event } from './event.types';
 
 type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
+type DetailTab = 'about' | 'outcomes';
 
 /**
- * Public event detail page — modern + simple, brand greens.
+ * Public event detail page — two-column layout.
  *
- * Hero banner with the event image (or brand-gradient fallback) + a
- * floating day-pill, type/status chips, big title, and a meta strip
- * (date · time · duration · venue). Action bar surfaces the primary
- * CTAs: Add to calendar (.ics download), Join online / Open in maps,
- * Share (copy link).
+ * Main column: status chip, title, tab bar (About / Outcomes when
+ * available), hero media, overview text, and a speakers grid (rendered
+ * only when the backend sends `speakers`). Sticky sidebar: logistics
+ * card (date · time · venue · link + calendar/maps CTAs), social share
+ * row, and an "other events" list.
  */
 @Component({
   selector: 'cce-event-detail',
@@ -32,7 +32,6 @@ type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
     MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule,
     TranslocoModule,
     CalendarMenuComponent,
-    ShareMenuComponent,
   ],
   templateUrl: './event-detail.page.html',
   styleUrl: './event-detail.page.scss',
@@ -50,6 +49,8 @@ export class EventDetailPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
   readonly downloading = signal(false);
   readonly imageFailed = signal(false);
+  readonly activeTab = signal<DetailTab>('about');
+  readonly otherEvents = signal<Event[]>([]);
 
   readonly locale = this.localeService.locale;
 
@@ -77,6 +78,55 @@ export class EventDetailPage implements OnInit {
   });
 
   readonly isOnline = computed(() => !!this.event()?.onlineMeetingUrl);
+
+  /** Locale-aware speakers list. Empty until the backend sends `speakers` —
+   *  the template hides the whole section when empty. */
+  readonly speakers = computed(() => {
+    const e = this.event();
+    if (!e?.speakers?.length) return [];
+    const ar = this.locale() === 'ar';
+    return e.speakers.map((s) => ({
+      name: ar ? s.nameAr : s.nameEn,
+      role: ar ? s.roleAr : s.roleEn,
+      imageUrl: s.imageUrl,
+    }));
+  });
+
+  /** Locale-aware outcomes text. Null hides the Outcomes tab. */
+  readonly outcomes = computed<string | null>(() => {
+    const e = this.event();
+    if (!e) return null;
+    const v = this.locale() === 'ar' ? e.outcomesAr : e.outcomesEn;
+    return v?.trim() ? v : null;
+  });
+
+  /** True when the event starts and ends on the same calendar day —
+   *  drives whether the sidebar shows one date row or two. */
+  readonly sameDay = computed(() => {
+    const e = this.event();
+    if (!e) return true;
+    const s = new Date(e.startsOn);
+    const x = new Date(e.endsOn);
+    return (
+      s.getFullYear() === x.getFullYear() &&
+      s.getMonth() === x.getMonth() &&
+      s.getDate() === x.getDate()
+    );
+  });
+
+  /** Social share targets for the sidebar row. Brand names are proper
+   *  nouns — not translated. */
+  readonly shareLinks = computed(() => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    const u = encodeURIComponent(url);
+    const t = encodeURIComponent(this.title());
+    return [
+      { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${t}%20${u}` },
+      { id: 'x', label: 'X', href: `https://twitter.com/intent/tweet?text=${t}&url=${u}` },
+      { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+      { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
+    ];
+  });
 
   /** Payload handed to <cce-calendar-menu>. Returns a stub when the event
    *  isn't loaded yet so the menu can render without flicker. */
@@ -180,8 +230,29 @@ export class EventDetailPage implements OnInit {
     this.errorKind.set(null);
     const res = await this.api.getEvent(id);
     this.loading.set(false);
-    if (res.ok) this.event.set(res.value);
-    else this.errorKind.set(res.error.kind);
+    if (res.ok) {
+      this.event.set(res.value);
+      void this.loadOtherEvents(id);
+    } else {
+      this.errorKind.set(res.error.kind);
+    }
+  }
+
+  /** Sidebar "other events" — next few upcoming events, excluding the
+   *  current one. Failures are silent: the card simply doesn't render. */
+  private async loadOtherEvents(currentId: string): Promise<void> {
+    const res = await this.api.listEvents({ page: 1, pageSize: 6, from: new Date().toISOString() });
+    if (!res.ok) return;
+    this.otherEvents.set(res.value.items.filter((ev) => ev.id !== currentId).slice(0, 3));
+  }
+
+  /** Locale-aware title for a list item (sidebar "other events"). */
+  eventTitle(ev: Event): string {
+    return this.locale() === 'ar' ? ev.titleAr : ev.titleEn;
+  }
+
+  selectTab(tab: DetailTab): void {
+    this.activeTab.set(tab);
   }
 
   retry(): void {

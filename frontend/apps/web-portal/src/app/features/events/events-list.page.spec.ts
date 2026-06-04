@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { EventsApiService, type Result } from './events-api.service';
 import type { Event, PagedResult } from './event.types';
 import { EventsListPage } from './events-list.page';
@@ -35,7 +35,7 @@ describe('EventsListPage', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [EventsListPage, TranslocoModule.forRoot()],
+      imports: [EventsListPage, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
@@ -68,12 +68,12 @@ describe('EventsListPage', () => {
     expect(listEvents).toHaveBeenCalledWith({ page: 1, pageSize: 12, from: '2026-01-01', to: '2026-12-31' });
   });
 
-  it('onFromChange resets page + reloads', async () => {
+  it('setDateFrom resets page + reloads', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
     page.page.set(3);
     listEvents.mockClear();
-    page.onFromChange('2026-06-01');
+    page.setDateFrom('2026-06-01');
     await Promise.resolve();
     expect(page.page()).toBe(1);
     expect(listEvents).toHaveBeenCalledWith(expect.objectContaining({ from: '2026-06-01' }));
@@ -103,8 +103,14 @@ describe('EventsListPage', () => {
     expect(page.empty()).toBe(true);
   });
 
-  it('locationOf prefers onlineMeetingUrl, falls back to locale-specific location', () => {
-    expect(page.locationOf({ ...SAMPLE, onlineMeetingUrl: 'https://meet.example/x' })).toBe('https://meet.example/x');
-    expect(page.locationOf({ ...SAMPLE, onlineMeetingUrl: null, locationEn: 'HQ' })).toBe('HQ');
+  it('typeFilter narrows filtered() to online events', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    page.rows.set([
+      SAMPLE,
+      { ...SAMPLE, id: 'e2', onlineMeetingUrl: 'https://meet.example/x' },
+    ]);
+    page.typeFilter.set('online');
+    expect(page.filtered().map((e) => e.id)).toEqual(['e2']);
   });
 });

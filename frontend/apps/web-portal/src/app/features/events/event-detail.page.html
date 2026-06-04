@@ -41,154 +41,281 @@
     </div>
   }
 
-  <!-- ─── Hero card ───────────────────────────────────────── -->
+  <!-- ─── Two-column layout ───────────────────────────────── -->
   @if (event(); as e) {
-    <article class="cce-event-detail__card">
-      <div
-        class="cce-event-detail__banner"
-        [class.cce-event-detail__banner--placeholder]="!hasImage()"
-      >
-        @if (hasImage()) {
-          <img
-            class="cce-event-detail__banner-img"
-            [src]="e.featuredImageUrl"
-            [alt]="title()"
-            referrerpolicy="no-referrer"
-            (error)="onImageError()"
-          />
-          <span class="cce-event-detail__banner-overlay" aria-hidden="true"></span>
-        } @else {
-          <span class="cce-event-detail__banner-glow" aria-hidden="true"></span>
-          <span class="cce-event-detail__banner-icon" aria-hidden="true">
-            <mat-icon>{{ isOnline() ? 'videocam' : 'event' }}</mat-icon>
-          </span>
-        }
+    <div class="cce-event-detail__layout">
 
-        <span class="cce-event-detail__day-pill" aria-hidden="true">
-          <span class="cce-event-detail__day-pill-day">{{ e.startsOn | date:'d' }}</span>
-          <span class="cce-event-detail__day-pill-mon">{{ e.startsOn | date:'MMM' }}</span>
-        </span>
+      <!-- ════ Main column ════════════════════════════════── -->
+      <article class="cce-event-detail__main">
 
-        <span class="cce-event-detail__chips" aria-hidden="true">
-          <span
-            class="cce-event-detail__chip cce-event-detail__chip--type"
-            [class.cce-event-detail__chip--online]="isOnline()"
-          >
-            <mat-icon>{{ isOnline() ? 'videocam' : 'place' }}</mat-icon>
-            {{ typeTagKey() | transloco }}
-          </span>
-          @switch (timeBucket()) {
-            @case ('live') {
-              <span class="cce-event-detail__chip cce-event-detail__chip--live">
-                <mat-icon>radio_button_checked</mat-icon>
-                {{ 'events.detail.countdownLive' | transloco }}
-              </span>
+        <header class="cce-event-detail__head">
+          <div class="cce-event-detail__chips">
+            @switch (timeBucket()) {
+              @case ('live') {
+                <span class="cce-event-detail__chip cce-event-detail__chip--live">
+                  <mat-icon aria-hidden="true">radio_button_checked</mat-icon>
+                  {{ 'events.detail.countdownLive' | transloco }}
+                </span>
+              }
+              @case ('today') {
+                <span class="cce-event-detail__chip cce-event-detail__chip--today">
+                  <mat-icon aria-hidden="true">today</mat-icon>
+                  {{ 'events.tagToday' | transloco }}
+                </span>
+              }
+              @case ('past') {
+                <span class="cce-event-detail__chip cce-event-detail__chip--past">
+                  <mat-icon aria-hidden="true">history</mat-icon>
+                  {{ 'events.tagPast' | transloco }}
+                </span>
+              }
+              @default {
+                <span class="cce-event-detail__chip cce-event-detail__chip--upcoming">
+                  <mat-icon aria-hidden="true">schedule</mat-icon>
+                  {{ 'events.tagUpcoming' | transloco }}
+                </span>
+              }
             }
-            @case ('today') {
-              <span class="cce-event-detail__chip cce-event-detail__chip--today">
-                <mat-icon>today</mat-icon>
-                {{ 'events.tagToday' | transloco }}
-              </span>
-            }
-            @case ('past') {
-              <span class="cce-event-detail__chip cce-event-detail__chip--past">
-                <mat-icon>history</mat-icon>
-                {{ 'events.tagPast' | transloco }}
-              </span>
-            }
-            @default {
-              <span class="cce-event-detail__chip cce-event-detail__chip--upcoming">
-                <mat-icon>schedule</mat-icon>
-                {{ 'events.tagUpcoming' | transloco }}
-              </span>
-            }
+            <span
+              class="cce-event-detail__chip cce-event-detail__chip--type"
+              [class.cce-event-detail__chip--online]="isOnline()"
+            >
+              <mat-icon aria-hidden="true">{{ isOnline() ? 'videocam' : 'place' }}</mat-icon>
+              {{ typeTagKey() | transloco }}
+            </span>
+          </div>
+
+          <h1 class="cce-event-detail__title">{{ title() }}</h1>
+
+          @if (countdown()) {
+            <p class="cce-event-detail__countdown" aria-live="polite">
+              <mat-icon aria-hidden="true">timer</mat-icon>
+              {{ countdown() }}
+            </p>
           }
-        </span>
-      </div>
+        </header>
 
-      <header class="cce-event-detail__head">
-        <h1 class="cce-event-detail__title">{{ title() }}</h1>
-        @if (countdown()) {
-          <p class="cce-event-detail__countdown" aria-live="polite">
-            <mat-icon aria-hidden="true">timer</mat-icon>
-            {{ countdown() }}
-          </p>
-        }
-      </header>
+        <!-- ─── Tabs ──────────────────────────────────────── -->
+        <nav class="cce-event-detail__tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            class="cce-event-detail__tab"
+            [class.cce-event-detail__tab--active]="activeTab() === 'about'"
+            [attr.aria-selected]="activeTab() === 'about'"
+            (click)="selectTab('about')"
+          >
+            {{ 'events.detail.aboutTab' | transloco }}
+          </button>
+          @if (outcomes()) {
+            <button
+              type="button"
+              role="tab"
+              class="cce-event-detail__tab"
+              [class.cce-event-detail__tab--active]="activeTab() === 'outcomes'"
+              [attr.aria-selected]="activeTab() === 'outcomes'"
+              (click)="selectTab('outcomes')"
+            >
+              {{ 'events.detail.outcomesTab' | transloco }}
+            </button>
+          }
+        </nav>
 
-      <!-- ─── Meta strip (date · time · venue) ──────────────── -->
-      <ul class="cce-event-detail__meta" role="list">
-        <li>
-          <mat-icon aria-hidden="true">event</mat-icon>
-          <span>
-            <strong>{{ 'events.detail.starts' | transloco }}</strong>
-            {{ e.startsOn | date:'fullDate' }}
-            · {{ e.startsOn | date:'shortTime' }}
-          </span>
-        </li>
-        <li>
-          <mat-icon aria-hidden="true">event_available</mat-icon>
-          <span>
-            <strong>{{ 'events.detail.ends' | transloco }}</strong>
-            {{ e.endsOn | date:'fullDate' }}
-            · {{ e.endsOn | date:'shortTime' }}
-          </span>
-        </li>
-        <li class="cce-event-detail__meta-loc">
-          <mat-icon aria-hidden="true">{{ isOnline() ? 'link' : 'place' }}</mat-icon>
-          <span>
-            <strong>
-              {{ (isOnline() ? 'events.detail.online' : 'events.detail.venue') | transloco }}
-            </strong>
-            @if (venue(); as v) {
-              {{ v }}
+        @if (activeTab() === 'about') {
+          <!-- ─── Hero media ──────────────────────────────── -->
+          <div
+            class="cce-event-detail__banner"
+            [class.cce-event-detail__banner--placeholder]="!hasImage()"
+          >
+            @if (hasImage()) {
+              <img
+                class="cce-event-detail__banner-img"
+                [src]="e.featuredImageUrl"
+                [alt]="title()"
+                referrerpolicy="no-referrer"
+                (error)="onImageError()"
+              />
             } @else {
-              {{ 'events.detail.tba' | transloco }}
+              <span class="cce-event-detail__banner-glow" aria-hidden="true"></span>
+              <span class="cce-event-detail__banner-icon" aria-hidden="true">
+                <mat-icon>{{ isOnline() ? 'videocam' : 'event' }}</mat-icon>
+              </span>
             }
-          </span>
-        </li>
-      </ul>
+          </div>
 
-      <!-- ─── Description ────────────────────────────────── -->
-      <section class="cce-event-detail__notes">
-        <h2 class="cce-event-detail__section-title">
-          <mat-icon aria-hidden="true">notes</mat-icon>
-          {{ 'events.detail.notesTitle' | transloco }}
-        </h2>
-        <p class="cce-event-detail__description">{{ description() }}</p>
-      </section>
+          <!-- ─── Overview ────────────────────────────────── -->
+          <section class="cce-event-detail__section">
+            <h2 class="cce-event-detail__section-title">
+              {{ 'events.detail.overviewTitle' | transloco }}
+            </h2>
+            <p class="cce-event-detail__description">{{ description() }}</p>
+          </section>
 
-      <!-- ─── Action bar ─────────────────────────────────── -->
-      <div class="cce-event-detail__actions">
-        @if (isOnline()) {
-          <button
-            type="button"
-            mat-flat-button
-            color="primary"
-            class="cce-event-detail__action cce-event-detail__action--primary"
-            (click)="openMeeting()"
-          >
-            <mat-icon>open_in_new</mat-icon>
-            <span>{{ 'events.detail.joinOnline' | transloco }}</span>
-          </button>
-        } @else if (venue()) {
-          <button
-            type="button"
-            mat-flat-button
-            color="primary"
-            class="cce-event-detail__action cce-event-detail__action--primary"
-            (click)="openInMaps()"
-          >
-            <mat-icon>map</mat-icon>
-            <span>{{ 'events.detail.openInMaps' | transloco }}</span>
-          </button>
+          <!-- ─── Speakers (hidden until backend sends data) ─ -->
+          @if (speakers().length) {
+            <section class="cce-event-detail__section cce-event-detail__section--speakers">
+              <h2 class="cce-event-detail__section-title">
+                {{ 'events.detail.speakersTitle' | transloco }}
+              </h2>
+              <ul class="cce-event-detail__speakers" role="list">
+                @for (s of speakers(); track s.name) {
+                  <li class="cce-event-detail__speaker">
+                    <span class="cce-event-detail__speaker-photo" [class.cce-event-detail__speaker-photo--empty]="!s.imageUrl">
+                      @if (s.imageUrl) {
+                        <img [src]="s.imageUrl" [alt]="s.name" referrerpolicy="no-referrer" />
+                      } @else {
+                        <mat-icon aria-hidden="true">person</mat-icon>
+                      }
+                    </span>
+                    <span class="cce-event-detail__speaker-name">{{ s.name }}</span>
+                    @if (s.role) {
+                      <span class="cce-event-detail__speaker-role">{{ s.role }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+        } @else {
+          <!-- ─── Outcomes tab ────────────────────────────── -->
+          <section class="cce-event-detail__section">
+            <h2 class="cce-event-detail__section-title">
+              {{ 'events.detail.outcomesTab' | transloco }}
+            </h2>
+            <p class="cce-event-detail__description">{{ outcomes() }}</p>
+          </section>
         }
+      </article>
 
-        <cce-calendar-menu [event]="calendarPayload()" />
+      <!-- ════ Sidebar ════════════════════════════════════── -->
+      <aside class="cce-event-detail__side">
 
-        <cce-share-menu [title]="title()" />
+        <!-- ─── Logistics card ──────────────────────────────── -->
+        <div class="cce-event-detail__card">
+          <h2 class="cce-event-detail__card-title">{{ 'events.detail.detailsTitle' | transloco }}</h2>
 
-      </div>
-    </article>
+          <ul class="cce-event-detail__facts" role="list">
+            <li>
+              <mat-icon aria-hidden="true">calendar_today</mat-icon>
+              <span>
+                <strong>{{ 'events.detail.date' | transloco }}:</strong>
+                {{ e.startsOn | date:'longDate' }}
+                @if (!sameDay()) {
+                  – {{ e.endsOn | date:'longDate' }}
+                }
+              </span>
+            </li>
+            <li>
+              <mat-icon aria-hidden="true">schedule</mat-icon>
+              <span>
+                <strong>{{ 'events.detail.time' | transloco }}:</strong>
+                {{ e.startsOn | date:'shortTime' }} – {{ e.endsOn | date:'shortTime' }}
+              </span>
+            </li>
+            @if (!isOnline()) {
+              <li>
+                <mat-icon aria-hidden="true">place</mat-icon>
+                <span>
+                  <strong>{{ 'events.detail.venue' | transloco }}:</strong>
+                  @if (venue(); as v) { {{ v }} } @else { {{ 'events.detail.tba' | transloco }} }
+                </span>
+              </li>
+            } @else {
+              <li>
+                <mat-icon aria-hidden="true">link</mat-icon>
+                <button type="button" class="cce-event-detail__fact-link" (click)="openMeeting()">
+                  {{ 'events.detail.eventLink' | transloco }}
+                  <mat-icon aria-hidden="true">open_in_new</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+
+          <div class="cce-event-detail__cta">
+            @if (isOnline()) {
+              <button type="button" mat-flat-button color="primary" class="cce-event-detail__cta-btn" (click)="openMeeting()">
+                <mat-icon>open_in_new</mat-icon>
+                <span>{{ 'events.detail.joinOnline' | transloco }}</span>
+              </button>
+            } @else if (venue()) {
+              <button type="button" mat-flat-button color="primary" class="cce-event-detail__cta-btn" (click)="openInMaps()">
+                <mat-icon>map</mat-icon>
+                <span>{{ 'events.detail.openInMaps' | transloco }}</span>
+              </button>
+            }
+            <cce-calendar-menu [event]="calendarPayload()" />
+          </div>
+        </div>
+
+        <!-- ─── Share card ──────────────────────────────────── -->
+        <div class="cce-event-detail__card">
+          <h2 class="cce-event-detail__card-title">{{ 'events.detail.shareTitle' | transloco }}</h2>
+          <div class="cce-event-detail__share" role="list">
+            @for (s of shareLinks(); track s.id) {
+              <a
+                class="cce-event-detail__share-btn"
+                [href]="s.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                [attr.aria-label]="s.label"
+                role="listitem"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+                  @switch (s.id) {
+                    @case ('whatsapp') {
+                      <path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.81 9.81 0 0 1 6.99 2.9 9.82 9.82 0 0 1 2.9 7c0 5.44-4.45 9.87-9.9 9.87m8.42-18.3A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.9c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.18-1.24-6.16-3.48-8.4" />
+                    }
+                    @case ('x') {
+                      <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z" />
+                    }
+                    @case ('facebook') {
+                      <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.49h-2.8V24C19.62 23.1 24 18.1 24 12.07" />
+                    }
+                    @case ('linkedin') {
+                      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05a3.75 3.75 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13M7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0" />
+                    }
+                  }
+                </svg>
+              </a>
+            }
+            <button
+              type="button"
+              class="cce-event-detail__share-btn"
+              (click)="copyLink()"
+              [attr.aria-label]="'share.copyLink' | transloco"
+              role="listitem"
+            >
+              <mat-icon aria-hidden="true">link</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- ─── Other events card ───────────────────────────── -->
+        @if (otherEvents().length) {
+          <div class="cce-event-detail__card">
+            <h2 class="cce-event-detail__card-title">{{ 'events.detail.otherEvents' | transloco }}</h2>
+            <ul class="cce-event-detail__others" role="list">
+              @for (ev of otherEvents(); track ev.id) {
+                <li>
+                  <a class="cce-event-detail__other" [routerLink]="['/events', ev.id]">
+                    <span class="cce-event-detail__other-thumb" [class.cce-event-detail__other-thumb--empty]="!ev.featuredImageUrl">
+                      @if (ev.featuredImageUrl) {
+                        <img [src]="ev.featuredImageUrl" alt="" referrerpolicy="no-referrer" />
+                      } @else {
+                        <mat-icon aria-hidden="true">image</mat-icon>
+                      }
+                    </span>
+                    <span class="cce-event-detail__other-text">
+                      <span class="cce-event-detail__other-title">{{ eventTitle(ev) }}</span>
+                      <span class="cce-event-detail__other-date">{{ ev.startsOn | date:'mediumDate' }}</span>
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </aside>
+    </div>
   }
 </section>

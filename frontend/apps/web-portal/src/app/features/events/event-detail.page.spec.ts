@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { EventsApiService, type Result } from './events-api.service';
 import type { Event } from './event.types';
 import { EventDetailPage } from './event-detail.page';
@@ -20,10 +20,13 @@ const SAMPLE: Event = {
   iCalUid: 'uid',
 };
 
+const OTHER: Event = { ...SAMPLE, id: 'e2', titleEn: 'Other', titleAr: 'أخرى' };
+
 describe('EventDetailPage', () => {
   let fixture: ComponentFixture<EventDetailPage>;
   let page: EventDetailPage;
   let getEvent: jest.Mock;
+  let listEvents: jest.Mock;
   let downloadIcs: jest.Mock;
   let toast: { success: jest.Mock; error: jest.Mock };
   let localeSig: ReturnType<typeof signal<'ar' | 'en'>>;
@@ -32,16 +35,20 @@ describe('EventDetailPage', () => {
 
   beforeEach(async () => {
     getEvent = jest.fn().mockResolvedValue(ok(SAMPLE));
+    listEvents = jest.fn().mockResolvedValue(ok({ items: [SAMPLE, OTHER], total: 2, page: 1, pageSize: 6 }));
     downloadIcs = jest.fn();
     toast = { success: jest.fn(), error: jest.fn() };
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [EventDetailPage, TranslocoModule.forRoot()],
+      imports: [
+        EventDetailPage,
+        TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } }),
+      ],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
-        { provide: EventsApiService, useValue: { getEvent, downloadIcs } },
+        { provide: EventsApiService, useValue: { getEvent, listEvents, downloadIcs } },
         { provide: ToastService, useValue: toast },
         { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'e1' } } } },
@@ -65,16 +72,47 @@ describe('EventDetailPage', () => {
     expect(page.errorKind()).toBe('not-found');
   });
 
-  it('locale toggles title/description/location computed', async () => {
+  it('locale toggles title/description/venue computed', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(page.title()).toBe('Event');
     expect(page.description()).toBe('description');
-    expect(page.location()).toBe('HQ');
+    expect(page.venue()).toBe('HQ');
     localeSig.set('ar');
     expect(page.title()).toBe('فعالية');
     expect(page.description()).toBe('وصف');
-    expect(page.location()).toBeNull();
+    expect(page.venue()).toBeNull();
+  });
+
+  it('loads other events excluding the current one', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    // loadOtherEvents is fire-and-forget — flush its promise chain.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(listEvents).toHaveBeenCalled();
+    expect(page.otherEvents().map((e) => e.id)).toEqual(['e2']);
+  });
+
+  it('hides speakers and outcomes when the API does not send them', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.speakers()).toEqual([]);
+    expect(page.outcomes()).toBeNull();
+  });
+
+  it('exposes locale-aware speakers and outcomes when present', async () => {
+    getEvent.mockResolvedValueOnce(ok({
+      ...SAMPLE,
+      speakers: [{ nameAr: 'أحمد', nameEn: 'Ahmed', roleAr: 'خبير', roleEn: 'Expert', imageUrl: null }],
+      outcomesAr: 'مخرجات', outcomesEn: 'Outcomes',
+    }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.speakers()).toEqual([{ name: 'Ahmed', role: 'Expert', imageUrl: null }]);
+    expect(page.outcomes()).toBe('Outcomes');
+    localeSig.set('ar');
+    expect(page.speakers()[0].name).toBe('أحمد');
+    expect(page.outcomes()).toBe('مخرجات');
   });
 
   it('exportToCalendar materializes blob and toasts success', async () => {
