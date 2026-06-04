@@ -1,28 +1,29 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
 using MediatR;
 
-namespace CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
+namespace CCE.Application.Content.Public.Queries.GetPublicNewsById;
 
-public sealed class GetPublicNewsBySlugQueryHandler : IRequestHandler<GetPublicNewsBySlugQuery, Response<PublicNewsDto>>
+public sealed class GetPublicNewsByIdQueryHandler : IRequestHandler<GetPublicNewsByIdQuery, Response<PublicNewsDto>>
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _messages;
 
-    public GetPublicNewsBySlugQueryHandler(ICceDbContext db, MessageFactory messages)
+    public GetPublicNewsByIdQueryHandler(ICceDbContext db, MessageFactory messages)
     {
         _db = db;
         _messages = messages;
     }
 
-    public async Task<Response<PublicNewsDto>> Handle(GetPublicNewsBySlugQuery request, CancellationToken cancellationToken)
+    public async Task<Response<PublicNewsDto>> Handle(GetPublicNewsByIdQuery request, CancellationToken cancellationToken)
     {
         var list = await _db.News
-            .Where(n => n.Slug == request.Slug && n.PublishedOn != null)
+            .Where(n => n.Id == request.Id && n.PublishedOn != null)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
         var news = list.SingleOrDefault();
@@ -33,10 +34,12 @@ public sealed class GetPublicNewsBySlugQueryHandler : IRequestHandler<GetPublicN
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topic = topics.FirstOrDefault();
 
-        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty), "SUCCESS_OPERATION");
+        var tagDtos = news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
+
+        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), "SUCCESS_OPERATION");
     }
 
-    internal static PublicNewsDto MapToDto(News n, string topicNameAr, string topicNameEn) => new(
+    internal static PublicNewsDto MapToDto(News n, string topicNameAr, string topicNameEn, System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(
         n.Id,
         n.TitleAr,
         n.TitleEn,
@@ -47,5 +50,6 @@ public sealed class GetPublicNewsBySlugQueryHandler : IRequestHandler<GetPublicN
         topicNameEn,
         n.FeaturedImageUrl,
         n.PublishedOn!.Value,
-        n.IsFeatured);
+        n.IsFeatured,
+        tags ?? new List<TagDto>());
 }

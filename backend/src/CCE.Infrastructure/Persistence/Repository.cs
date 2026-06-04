@@ -15,6 +15,12 @@ public class Repository<T, TId> : IRepository<T, TId>
     public virtual async Task<T?> GetByIdAsync(TId id, CancellationToken ct)
         => await Db.Set<T>().FindAsync(new object[] { id }, ct).ConfigureAwait(false);
 
+    public virtual async Task<T?> GetByIdAsync(TId id, Func<IQueryable<T>, IQueryable<T>> include, CancellationToken ct)
+    {
+        var query = include(Db.Set<T>());
+        return await query.FirstOrDefaultAsync(x => x.Id!.Equals(id), ct).ConfigureAwait(false);
+    }
+
     public virtual async Task AddAsync(T entity, CancellationToken ct)
         => await Db.Set<T>().AddAsync(entity, ct).ConfigureAwait(false);
 

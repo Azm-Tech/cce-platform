@@ -49,25 +49,30 @@ public sealed class AuthService : IAuthService
         _adGateway = adGateway;
     }
 
-    public async Task<AuthTokenDto?> LoginAsync(string email, string password, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct)
+    public async Task<LoginResult> LoginAsync(string email, string password, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct)
     {
         var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
-        if (user is null) return null;
+        if (user is null) return LoginResult.InvalidCredentials;
 
         if (_options.Value.RequireConfirmedEmail && !await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false))
-            return null;
+            return LoginResult.InvalidCredentials;
 
         if (!await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false))
-            return null;
+            return LoginResult.InvalidCredentials;
+
+        // Credentials are valid — but a deactivated account may not sign in.
+        if (user.Status != UserStatus.Active)
+            return LoginResult.Deactivated;
 
         if (api == LocalAuthApi.Internal)
         {
             var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
             if (roles.Count == 0 || roles.All(r => r == "cce-user" || r == "Anonymous"))
-                return null;
+                return LoginResult.InvalidCredentials;
         }
 
-        return await IssueAndBuildDtoAsync(user, api, ip, userAgent, null, ct).ConfigureAwait(false);
+        var token = await IssueAndBuildDtoAsync(user, api, ip, userAgent, null, ct).ConfigureAwait(false);
+        return LoginResult.Success(token);
     }
 
     public async Task<AuthTokenDto?> RefreshTokenAsync(string rawRefreshToken, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct)
@@ -88,6 +93,15 @@ public sealed class AuthService : IAuthService
 
         var user = await _userManager.FindByIdAsync(existing.UserId.ToString()).ConfigureAwait(false);
         if (user is null) return null;
+
+        // A deactivated account cannot refresh — revoke the whole family so existing
+        // tokens stop working the moment the admin deactivates the user.
+        if (user.Status != UserStatus.Active)
+        {
+            await _refreshTokens.RevokeFamilyAsync(existing.TokenFamilyId, _clock.UtcNow, ip, ct).ConfigureAwait(false);
+            await _db.SaveChangesAsync(ct).ConfigureAwait(false);
+            return null;
+        }
 
         var issued = await _tokenService.IssueAsync(user, api, ct).ConfigureAwait(false);
         existing.Revoke(_clock.UtcNow, ip, issued.RefreshTokenHash);
@@ -230,14 +244,14 @@ public sealed class AuthService : IAuthService
         return null;
     }
 
-    public async Task<AuthTokenDto?> AdLoginAsync(string username, string password, string? ip, string? userAgent, CancellationToken ct)
+    public async Task<LoginResult> AdLoginAsync(string username, string password, string? ip, string? userAgent, CancellationToken ct)
     {
         var gatewayResponse = await _adGateway.LoginAsync(
             new AdAuthRequest(username, password), ct).ConfigureAwait(false);
 
         if (!"success".Equals(gatewayResponse.Status, StringComparison.OrdinalIgnoreCase))
         {
-            return null;
+            return LoginResult.InvalidCredentials;
         }
 
         var email = gatewayResponse.Email!;
@@ -254,13 +268,18 @@ public sealed class AuthService : IAuthService
             var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
             if (!createResult.Succeeded)
             {
-                return null;
+                return LoginResult.InvalidCredentials;
             }
         }
 
+        // Deactivated accounts cannot sign in via the admin/AD path either.
+        if (user.Status != UserStatus.Active)
+            return LoginResult.Deactivated;
+
         await SyncAdRolesAsync(user, gatewayResponse.Groups).ConfigureAwait(false);
 
-        return await IssueAndBuildDtoAsync(user, LocalAuthApi.Internal, ip, userAgent, null, ct).ConfigureAwait(false);
+        var token = await IssueAndBuildDtoAsync(user, LocalAuthApi.Internal, ip, userAgent, null, ct).ConfigureAwait(false);
+        return LoginResult.Success(token);
     }
 
     private async Task SyncAdRolesAsync(User user, IReadOnlyList<string>? adGroups)

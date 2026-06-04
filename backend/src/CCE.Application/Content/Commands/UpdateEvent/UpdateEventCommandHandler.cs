@@ -7,6 +7,7 @@ using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Content.Commands.UpdateEvent;
 
@@ -28,7 +29,10 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
 
     public async Task<Response<EventDto>> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
-        var ev = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var ev = await _repo.GetByIdAsync(
+            request.Id,
+            q => q.Include(e => e.Tags),
+            cancellationToken).ConfigureAwait(false);
         if (ev is null)
             return _messages.EventNotFound<EventDto>();
 
@@ -48,6 +52,13 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
             request.FeaturedImageUrl,
             request.TopicId);
 
+        if (request.TagIds is not null)
+        {
+            var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
+                .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+            ev.SetTags(tags);
+        }
+
         _db.SetExpectedRowVersion(ev, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -56,6 +67,7 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev, topicNameAr, topicNameEn), "SUCCESS_OPERATION");
+        var tagDtos = ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
+        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, tagDtos), "SUCCESS_OPERATION");
     }
 }

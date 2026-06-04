@@ -133,7 +133,6 @@ public class ReportsEndpointTests :
         resp.Content.Headers.ContentType!.MediaType.Should().Be("text/csv");
         var body = await resp.Content.ReadAsStringAsync();
         body.Split('\n')[0].Should().Contain("Id");
-        body.Split('\n')[0].Should().Contain("Slug");
     }
 
     [Fact]

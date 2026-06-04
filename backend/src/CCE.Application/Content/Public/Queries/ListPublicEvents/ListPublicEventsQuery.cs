@@ -11,4 +11,4 @@ public sealed record ListPublicEventsQuery(
     System.DateTimeOffset? From = null,
     System.DateTimeOffset? To = null,
     System.Guid? TopicId = null,
-    string? TopicSlug = null) : IRequest<Response<PagedResult<PublicEventDto>>>;
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<PublicEventDto>>>;

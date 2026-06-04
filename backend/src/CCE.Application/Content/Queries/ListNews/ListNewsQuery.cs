@@ -11,4 +11,5 @@ public sealed record ListNewsQuery(
     string? Search = null,
     bool? IsPublished = null,
     bool? IsFeatured = null,
-    System.Guid? TopicId = null) : IRequest<Response<PagedResult<NewsDto>>>;
+    System.Guid? TopicId = null,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<NewsDto>>>;

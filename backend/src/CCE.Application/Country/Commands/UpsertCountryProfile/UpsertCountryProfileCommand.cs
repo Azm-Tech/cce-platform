@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Country.Dtos;
 using MediatR;
 
@@ -11,4 +12,7 @@ public sealed record UpsertCountryProfileCommand(
     string KeyInitiativesEn,
     string? ContactInfoAr,
     string? ContactInfoEn,
-    byte[] RowVersion) : IRequest<CountryProfileDto>;
+    int? Population,
+    decimal? AreaSqKm,
+    decimal? GdpPerCapita,
+    System.Guid? NdcAssetId) : IRequest<Response<CountryProfileDto>>;

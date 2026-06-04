@@ -4,6 +4,7 @@ using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Country;
 using CCE.Domain.Identity;
 using MediatR;
 
@@ -14,6 +15,7 @@ public sealed class CreateStateRepAssignmentCommandHandler
 {
     private readonly ICceDbContext _db;
     private readonly IStateRepAssignmentRepository _service;
+    private readonly IRepository<CountryProfile, System.Guid> _profiles;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _msg;
@@ -21,12 +23,14 @@ public sealed class CreateStateRepAssignmentCommandHandler
     public CreateStateRepAssignmentCommandHandler(
         ICceDbContext db,
         IStateRepAssignmentRepository service,
+        IRepository<CountryProfile, System.Guid> profiles,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
         MessageFactory msg)
     {
         _db = db;
         _service = service;
+        _profiles = profiles;
         _currentUser = currentUser;
         _clock = clock;
         _msg = msg;
@@ -56,6 +60,18 @@ public sealed class CreateStateRepAssignmentCommandHandler
 
         var assignment = StateRepresentativeAssignment.Assign(request.UserId, request.CountryId, assignedById.Value, _clock);
         await _service.AddAsync(assignment, cancellationToken).ConfigureAwait(false);
+
+        // Ensure the assigned country has a profile to edit (US060/US061). If none exists yet,
+        // seed an empty draft so the State Rep lands on a real record. Committed together with
+        // the assignment in a single unit of work.
+        var hasProfile = await ExistsAsync(
+            _db.CountryProfiles.Where(p => p.CountryId == request.CountryId), cancellationToken).ConfigureAwait(false);
+        if (!hasProfile)
+        {
+            var draft = CountryProfile.CreateDraft(request.CountryId, assignedById.Value, _clock);
+            await _profiles.AddAsync(draft, cancellationToken).ConfigureAwait(false);
+        }
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var userNames = await _db.Users

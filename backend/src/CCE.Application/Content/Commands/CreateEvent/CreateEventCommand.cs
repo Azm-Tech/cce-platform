@@ -13,4 +13,5 @@ public sealed record CreateEventCommand(
     string? LocationEn,
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
-    System.Guid TopicId) : IRequest<Response<EventDto>>;
+    System.Guid TopicId,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<EventDto>>;

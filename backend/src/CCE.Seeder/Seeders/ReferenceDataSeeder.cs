@@ -38,6 +38,7 @@ public sealed class ReferenceDataSeeder : ISeeder
         await SeedNotificationTemplatesAsync(cancellationToken).ConfigureAwait(false);
         await SeedStaticPagesAsync(cancellationToken).ConfigureAwait(false);
         await SeedHomepageSectionsAsync(cancellationToken).ConfigureAwait(false);
+        await SeedTagsAsync(cancellationToken).ConfigureAwait(false);
         await SeedPlatformSettingsAsync(cancellationToken).ConfigureAwait(false);
         await _ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -361,6 +362,28 @@ public sealed class ReferenceDataSeeder : ISeeder
             typeof(CCE.Domain.Content.HomepageSection)
                 .GetProperty(nameof(section.Id))!.SetValue(section, id);
             _ctx.HomepageSections.Add(section);
+        }
+    }
+
+    private static readonly (string NameAr, string NameEn, string? Color)[] InitialTags =
+    {
+        ("المناخ", "Climate", "#2E8B57"),
+        ("الطاقة", "Energy", "#FF8C00"),
+        ("السياسات", "Policy", "#4169E1"),
+        ("التكنولوجيا", "Technology", "#8A2BE2"),
+        ("الاستدامة", "Sustainability", "#228B22"),
+    };
+
+    private async Task SeedTagsAsync(CancellationToken ct)
+    {
+        foreach (var t in InitialTags)
+        {
+            var id = DeterministicGuid.From($"tag:{t.NameEn}");
+            var exists = await _ctx.Tags.AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
+            if (exists) continue;
+            var tag = Tag.Create(t.NameAr, t.NameEn, t.Color);
+            typeof(Tag).GetProperty(nameof(tag.Id))!.SetValue(tag, id);
+            _ctx.Tags.Add(tag);
         }
     }
 

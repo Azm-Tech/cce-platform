@@ -6,7 +6,6 @@ public sealed class NewsReportRow
     public System.Guid Id { get; set; }
     public string TitleEn { get; set; } = string.Empty;
     public string TitleAr { get; set; } = string.Empty;
-    public string Slug { get; set; } = string.Empty;
     public System.Guid AuthorId { get; set; }
     public string? AuthorName { get; set; }
     public bool IsPublished { get; set; }

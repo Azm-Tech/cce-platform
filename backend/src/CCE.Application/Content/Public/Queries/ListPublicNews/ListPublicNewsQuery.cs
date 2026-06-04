@@ -10,4 +10,4 @@ public sealed record ListPublicNewsQuery(
     int PageSize = 20,
     bool? IsFeatured = null,
     System.Guid? TopicId = null,
-    string? TopicSlug = null) : IRequest<Response<PagedResult<PublicNewsDto>>>;
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<PublicNewsDto>>>;

@@ -64,6 +64,9 @@ public static class ApplicationErrors
         public const string ASSET_NOT_FOUND = "ASSET_NOT_FOUND";
         public const string ASSET_NOT_CLEAN = "ASSET_NOT_CLEAN";
         public const string COUNTRY_RESOURCE_REQUEST_NOT_FOUND = "COUNTRY_RESOURCE_REQUEST_NOT_FOUND";
+        public const string COUNTRY_CONTENT_REQUEST_SUBMITTED = "COUNTRY_CONTENT_REQUEST_SUBMITTED";
+        public const string COUNTRY_REQUEST_PROCESSED = "COUNTRY_REQUEST_PROCESSED";
+        public const string COUNTRY_REQUEST_PROCESSING_FAILED = "COUNTRY_REQUEST_PROCESSING_FAILED";
         public const string CONTENT_CREATED = "CONTENT_CREATED";
         public const string CONTENT_UPDATED = "CONTENT_UPDATED";
         public const string CONTENT_DELETED = "CONTENT_DELETED";
@@ -89,6 +92,11 @@ public static class ApplicationErrors
     {
         public const string COUNTRY_NOT_FOUND = "COUNTRY_NOT_FOUND";
         public const string COUNTRY_PROFILE_NOT_FOUND = "COUNTRY_PROFILE_NOT_FOUND";
+        public const string COUNTRY_PROFILE_UPDATED = "COUNTRY_PROFILE_UPDATED";
+        public const string COUNTRY_SCOPE_FORBIDDEN = "COUNTRY_SCOPE_FORBIDDEN";
+        public const string NO_COUNTRY_ASSIGNED = "NO_COUNTRY_ASSIGNED";
+        public const string KAPSARC_DATA_UNAVAILABLE = "KAPSARC_DATA_UNAVAILABLE";
+        public const string KAPSARC_SNAPSHOT_REFRESHED = "KAPSARC_SNAPSHOT_REFRESHED";
     }
 
     public static class Notifications

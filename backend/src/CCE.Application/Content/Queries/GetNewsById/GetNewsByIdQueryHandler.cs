@@ -31,12 +31,15 @@ public sealed class GetNewsByIdQueryHandler : IRequestHandler<GetNewsByIdQuery, 
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topic = topics.FirstOrDefault();
 
-        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty), "SUCCESS_OPERATION");
+        var tagDtos = news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
+
+        return _messages.Ok(MapToDto(news, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), "SUCCESS_OPERATION");
     }
 
-    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "") => new(
+    internal static NewsDto MapToDto(News n, string topicNameAr = "", string topicNameEn = "", System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(
         n.Id, n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn,
         n.TopicId, topicNameAr, topicNameEn,
         n.AuthorId, n.FeaturedImageUrl,
-        n.PublishedOn, n.IsFeatured, n.IsPublished);
+        n.PublishedOn, n.IsFeatured, n.IsPublished,
+        tags ?? new List<TagDto>());
 }

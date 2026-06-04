@@ -13,4 +13,5 @@ public sealed record NewsDto(
     string? FeaturedImageUrl,
     System.DateTimeOffset? PublishedOn,
     bool IsFeatured,
-    bool IsPublished);
+    bool IsPublished,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

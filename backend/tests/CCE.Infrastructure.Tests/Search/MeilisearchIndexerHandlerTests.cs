@@ -51,7 +51,7 @@ public class MeilisearchIndexerHandlerTests
         var search = Substitute.For<ISearchClient>();
         var sut = new NewsPublishedIndexHandler(db, search, NullLogger<NewsPublishedIndexHandler>.Instance);
 
-        var evt = new NewsPublishedEvent(news.Id, news.Slug, clock.UtcNow);
+        var evt = new NewsPublishedEvent(news.Id, clock.UtcNow);
         await sut.Handle(evt, CancellationToken.None);
 
         await search.Received(1).UpsertAsync(

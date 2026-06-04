@@ -1,8 +1,9 @@
 using CCE.Api.Common.Extensions;
-using CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
+using CCE.Application.Content.Public.Queries.GetPublicNewsById;
 using CCE.Application.Content.Public.Queries.ListPublicNews;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace CCE.Api.External.Endpoints;
@@ -14,29 +15,31 @@ public static class NewsPublicEndpoints
         var news = app.MapGroup("/api/news").WithTags("News");
 
         news.MapGet("", async (
-            int? page, int? pageSize, bool? isFeatured, string? topicSlug,
+            int? page, int? pageSize, bool? isFeatured, System.Guid? topicId,
+            [FromQuery] System.Guid[]? tagIds,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicNewsQuery(
                 Page: page ?? 1,
                 PageSize: pageSize ?? 20,
                 IsFeatured: isFeatured,
-                TopicSlug: topicSlug);
+                TopicId: topicId,
+                TagIds: tagIds);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicNews");
 
-        news.MapGet("/{slug}", async (
-            string slug,
+        news.MapGet("/{id:guid}", async (
+            System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var response = await mediator.Send(new GetPublicNewsBySlugQuery(slug), cancellationToken).ConfigureAwait(false);
+            var response = await mediator.Send(new GetPublicNewsByIdQuery(id), cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
         .AllowAnonymous()
-        .WithName("GetPublicNewsBySlug");
+        .WithName("GetPublicNewsById");
 
         return app;
     }

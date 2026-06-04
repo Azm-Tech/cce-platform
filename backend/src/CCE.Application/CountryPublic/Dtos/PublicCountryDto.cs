@@ -8,4 +8,7 @@ public sealed record PublicCountryDto(
     string NameEn,
     string RegionAr,
     string RegionEn,
-    string FlagUrl);
+    string FlagUrl,
+    string? CceClassification,
+    decimal? CcePerformanceScore,
+    decimal? CceTotalIndex);

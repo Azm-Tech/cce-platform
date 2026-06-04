@@ -31,12 +31,15 @@ public sealed class GetEventByIdQueryHandler : IRequestHandler<GetEventByIdQuery
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var topic = topics.FirstOrDefault();
 
-        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty), "SUCCESS_OPERATION");
+        var tagDtos = ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
+
+        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), "SUCCESS_OPERATION");
     }
 
-    internal static EventDto MapToDto(Event e, string topicNameAr = "", string topicNameEn = "") => new(
+    internal static EventDto MapToDto(Event e, string topicNameAr = "", string topicNameEn = "", System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(
         e.Id, e.TitleAr, e.TitleEn, e.DescriptionAr, e.DescriptionEn,
         e.StartsOn, e.EndsOn, e.LocationAr, e.LocationEn,
         e.OnlineMeetingUrl, e.FeaturedImageUrl, e.ICalUid,
-        e.TopicId, topicNameAr, topicNameEn);
+        e.TopicId, topicNameAr, topicNameEn,
+        tags ?? new List<TagDto>());
 }

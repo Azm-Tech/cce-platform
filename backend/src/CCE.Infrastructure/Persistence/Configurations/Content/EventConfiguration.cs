@@ -23,6 +23,11 @@ internal sealed class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.HasIndex(e => e.ICalUid).IsUnique().HasDatabaseName("ux_event_ical_uid");
         builder.HasIndex(e => e.StartsOn).HasDatabaseName("ix_event_starts_on");
         builder.HasIndex(e => e.TopicId).HasDatabaseName("ix_event_topic_id");
+
+        builder.HasMany(e => e.Tags)
+               .WithMany()
+               .UsingEntity(j => j.ToTable("event_tag"));
+
         builder.Ignore(e => e.DomainEvents);
     }
 }

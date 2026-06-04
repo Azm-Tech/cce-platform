@@ -732,12 +732,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("rowversion")
                         .HasColumnName("row_version");
 
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("slug");
-
                     b.Property<string>("TitleAr")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -759,11 +753,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PublishedOn")
                         .HasDatabaseName("ix_news_published_on");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ux_news_slug_active")
-                        .HasFilter("[is_deleted] = 0");
 
                     b.HasIndex("TopicId")
                         .HasDatabaseName("ix_news_topic_id");
@@ -1103,6 +1092,39 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("resource_country", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Content.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
+                        .HasColumnName("color");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("name_en");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tags");
+
+                    b.HasIndex("NameEn")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tag_name_en");
+
+                    b.ToTable("tags", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Country.Country", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1201,124 +1223,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("countries", (string)null);
                 });
 
-            modelBuilder.Entity("CCE.Domain.Country.CountryKapsarcSnapshot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Classification")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasColumnName("classification");
-
-                    b.Property<Guid>("CountryId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("country_id");
-
-                    b.Property<decimal>("PerformanceScore")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)")
-                        .HasColumnName("performance_score");
-
-                    b.Property<DateTimeOffset>("SnapshotTakenOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("snapshot_taken_on");
-
-                    b.Property<string>("SourceVersion")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnName("source_version");
-
-                    b.Property<decimal>("TotalIndex")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)")
-                        .HasColumnName("total_index");
-
-                    b.HasKey("Id")
-                        .HasName("pk_country_kapsarc_snapshots");
-
-                    b.HasIndex("CountryId", "SnapshotTakenOn")
-                        .HasDatabaseName("ix_kapsarc_snapshot_country_taken");
-
-                    b.ToTable("country_kapsarc_snapshots", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Country.CountryProfile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ContactInfoAr")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
-                        .HasColumnName("contact_info_ar");
-
-                    b.Property<string>("ContactInfoEn")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
-                        .HasColumnName("contact_info_en");
-
-                    b.Property<Guid>("CountryId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("country_id");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("created_on");
-
-                    b.Property<string>("DescriptionAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description_ar");
-
-                    b.Property<string>("DescriptionEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description_en");
-
-                    b.Property<string>("KeyInitiativesAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("key_initiatives_ar");
-
-                    b.Property<string>("KeyInitiativesEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("key_initiatives_en");
-
-                    b.Property<Guid?>("LastModifiedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by_id");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("last_modified_on");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
-                        .HasColumnName("row_version");
-
-                    b.HasKey("Id")
-                        .HasName("pk_country_profiles");
-
-                    b.HasIndex("CountryId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_country_profile_country_id");
-
-                    b.ToTable("country_profiles", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Country.CountryResourceRequest", b =>
+            modelBuilder.Entity("CCE.Domain.Country.CountryContentRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
@@ -1374,7 +1279,7 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("processed_on");
 
-                    b.Property<Guid>("ProposedAssetFileId")
+                    b.Property<Guid?>("ProposedAssetFileId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("proposed_asset_file_id");
 
@@ -1388,9 +1293,32 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("proposed_description_en");
 
-                    b.Property<int>("ProposedResourceType")
+                    b.Property<DateTimeOffset?>("ProposedEndsOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("proposed_ends_on");
+
+                    b.Property<string>("ProposedLocationAr")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_location_ar");
+
+                    b.Property<string>("ProposedLocationEn")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("proposed_location_en");
+
+                    b.Property<string>("ProposedOnlineMeetingUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)")
+                        .HasColumnName("proposed_online_meeting_url");
+
+                    b.Property<int?>("ProposedResourceType")
                         .HasColumnType("int")
                         .HasColumnName("proposed_resource_type");
+
+                    b.Property<DateTimeOffset?>("ProposedStartsOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("proposed_starts_on");
 
                     b.Property<string>("ProposedTitleAr")
                         .IsRequired()
@@ -1404,6 +1332,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasColumnName("proposed_title_en");
 
+                    b.Property<Guid?>("ProposedTopicId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("proposed_topic_id");
+
                     b.Property<Guid>("RequestedById")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("requested_by_id");
@@ -1416,13 +1348,150 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("submitted_on");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasColumnName("type");
+
                     b.HasKey("Id")
-                        .HasName("pk_country_resource_requests");
+                        .HasName("pk_country_content_requests");
 
-                    b.HasIndex("CountryId", "Status")
-                        .HasDatabaseName("ix_country_request_country_status");
+                    b.HasIndex("CountryId", "Status", "Type")
+                        .HasDatabaseName("ix_country_content_request_country_status_type");
 
-                    b.ToTable("country_resource_requests", (string)null);
+                    b.ToTable("country_content_requests", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Country.CountryKapsarcSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Classification")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("classification");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("country_id");
+
+                    b.Property<decimal>("PerformanceScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("performance_score");
+
+                    b.Property<DateTimeOffset>("SnapshotTakenOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("snapshot_taken_on");
+
+                    b.Property<string>("SourceVersion")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnName("source_version");
+
+                    b.Property<decimal>("TotalIndex")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("total_index");
+
+                    b.HasKey("Id")
+                        .HasName("pk_country_kapsarc_snapshots");
+
+                    b.HasIndex("CountryId", "SnapshotTakenOn")
+                        .HasDatabaseName("ix_kapsarc_snapshot_country_taken");
+
+                    b.ToTable("country_kapsarc_snapshots", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Country.CountryProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<decimal?>("AreaSqKm")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("area_sq_km");
+
+                    b.Property<string>("ContactInfoAr")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("contact_info_ar");
+
+                    b.Property<string>("ContactInfoEn")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("contact_info_en");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("country_id");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<string>("DescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description_ar");
+
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description_en");
+
+                    b.Property<decimal?>("GdpPerCapita")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("gdp_per_capita");
+
+                    b.Property<string>("KeyInitiativesAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("key_initiatives_ar");
+
+                    b.Property<string>("KeyInitiativesEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("key_initiatives_en");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<Guid?>("NationallyDeterminedContributionAssetId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("nationally_determined_contribution_asset_id");
+
+                    b.Property<int?>("Population")
+                        .HasColumnType("int")
+                        .HasColumnName("population");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
+
+                    b.HasKey("Id")
+                        .HasName("pk_country_profiles");
+
+                    b.HasIndex("CountryId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_country_profile_country_id");
+
+                    b.ToTable("country_profiles", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Evaluation.ServiceEvaluation", b =>
@@ -3379,6 +3448,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("user_verifications", (string)null);
                 });
 
+            modelBuilder.Entity("EventTag", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("event_id");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tags_id");
+
+                    b.HasKey("EventId", "TagsId")
+                        .HasName("pk_event_tag");
+
+                    b.HasIndex("TagsId")
+                        .HasDatabaseName("ix_event_tag_tags_id");
+
+                    b.ToTable("event_tag", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -3507,6 +3595,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasName("pk_asp_net_user_tokens");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.Property<Guid>("NewsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("news_id");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tags_id");
+
+                    b.HasKey("NewsId", "TagsId")
+                        .HasName("pk_news_tag");
+
+                    b.HasIndex("TagsId")
+                        .HasDatabaseName("ix_news_tag_tags_id");
+
+                    b.ToTable("news_tag", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
@@ -3863,6 +3970,23 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_user_verifications_asp_net_users_user_id");
                 });
 
+            modelBuilder.Entity("EventTag", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.Event", null)
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_event_tag_events_event_id");
+
+                    b.HasOne("CCE.Domain.Content.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_event_tag_tags_tags_id");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("CCE.Domain.Identity.Role", null)
@@ -3918,6 +4042,23 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.News", null)
+                        .WithMany()
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_news_tag_news_news_id");
+
+                    b.HasOne("CCE.Domain.Content.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_news_tag_tags_tags_id");
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.Resource", b =>

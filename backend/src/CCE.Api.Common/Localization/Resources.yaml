@@ -477,6 +477,41 @@ COUNTRY_PROFILE_NOT_FOUND:
   ar: "الملف التعريفي غير موجود"
   en: "Country profile not found"
 
+# State Representative profile update (appendix CON026 / ERR033)
+COUNTRY_PROFILE_UPDATED:
+  ar: "تم تحديث الملف التعريفي للدولة بنجاح!"
+  en: "Country profile updated successfully!"
+
+COUNTRY_SCOPE_FORBIDDEN:
+  ar: "لا يمكنك تعديل بيانات دولة غير المخصصة لك."
+  en: "You cannot modify data for a country not assigned to you."
+
+NO_COUNTRY_ASSIGNED:
+  ar: "لا توجد دولة مخصصة لك حالياً."
+  en: "No country is currently assigned to you."
+
+# State Representative content requests (appendix CON024 / CON023 / ERR031)
+COUNTRY_CONTENT_REQUEST_SUBMITTED:
+  ar: "تم إرسال طلبك بنجاح. سيتم مراجعته من قبل المشرف قريباً. شكراً لمساهمتك!"
+  en: "Your request has been submitted successfully. It will be reviewed by the admin shortly. Thank you for your contribution!"
+
+COUNTRY_REQUEST_PROCESSED:
+  ar: "تمت معالجة الطلب بنجاح!"
+  en: "The request has been processed successfully!"
+
+COUNTRY_REQUEST_PROCESSING_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء معالجة الطلب."
+  en: "Sorry, a problem occurred while processing the request."
+
+# KAPSARC integration (US014 / appendix §6.5.1)
+KAPSARC_DATA_UNAVAILABLE:
+  ar: "عذراً، تعذّر استرجاع بيانات كابسارك حالياً. يرجى المحاولة مرة أخرى لاحقاً."
+  en: "Sorry, KAPSARC data could not be retrieved at this time. Please try again later."
+
+KAPSARC_SNAPSHOT_REFRESHED:
+  ar: "تم تحديث بيانات كابسارك للدولة بنجاح."
+  en: "Country KAPSARC data refreshed successfully."
+
 # ─── Notification Errors / Success (bare keys) ───
 
 TEMPLATE_NOT_FOUND:

@@ -2,8 +2,9 @@ using CCE.Domain.Country;
 
 namespace CCE.Application.Content;
 
-public interface ICountryResourceRequestRepository
+public interface ICountryContentRequestRepository
 {
-    Task<CountryResourceRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct);
-    Task UpdateAsync(CountryResourceRequest request, CancellationToken ct);
+    Task<CountryContentRequest?> FindIncludingDeletedAsync(System.Guid id, CancellationToken ct);
+    Task AddAsync(CountryContentRequest request, CancellationToken ct);
+    Task UpdateAsync(CountryContentRequest request, CancellationToken ct);
 }

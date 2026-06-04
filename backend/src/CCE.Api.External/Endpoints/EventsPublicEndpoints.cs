@@ -4,7 +4,7 @@ using CCE.Application.Content.Public.Queries.GetPublicEventById;
 using CCE.Application.Content.Public.Queries.ListPublicEvents;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace CCE.Api.External.Endpoints;
@@ -18,7 +18,8 @@ public static class EventsPublicEndpoints
         events.MapGet("", async (
             int? page, int? pageSize,
             System.DateTimeOffset? from, System.DateTimeOffset? to,
-            string? topicSlug,
+            System.Guid? topicId,
+            [FromQuery] System.Guid[]? tagIds,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicEventsQuery(
@@ -26,7 +27,8 @@ public static class EventsPublicEndpoints
                 PageSize: pageSize ?? 20,
                 From: from,
                 To: to,
-                TopicSlug: topicSlug);
+                TopicId: topicId,
+                TagIds: tagIds);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

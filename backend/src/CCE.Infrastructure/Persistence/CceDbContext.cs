@@ -49,6 +49,7 @@ public sealed class CceDbContext
     public DbSet<Resource> Resources => Set<Resource>();
     public DbSet<News> News => Set<News>();
     public DbSet<Event> Events => Set<Event>();
+    public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<Page> Pages => Set<Page>();
     public DbSet<HomepageSection> HomepageSections => Set<HomepageSection>();
     public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
@@ -56,7 +57,7 @@ public sealed class CceDbContext
     // ─── Country ───
     public DbSet<CCE.Domain.Country.Country> Countries => Set<CCE.Domain.Country.Country>();
     public DbSet<CountryProfile> CountryProfiles => Set<CountryProfile>();
-    public DbSet<CountryResourceRequest> CountryResourceRequests => Set<CountryResourceRequest>();
+    public DbSet<CountryContentRequest> CountryContentRequests => Set<CountryContentRequest>();
     public DbSet<CountryKapsarcSnapshot> CountryKapsarcSnapshots => Set<CountryKapsarcSnapshot>();
 
     // ─── Community ───
@@ -124,11 +125,12 @@ public sealed class CceDbContext
     IQueryable<AssetFile> ICceDbContext.AssetFiles => AssetFiles.AsNoTracking();
     IQueryable<ResourceCategory> ICceDbContext.ResourceCategories => ResourceCategories.AsNoTracking();
     IQueryable<CCE.Domain.Content.Resource> ICceDbContext.Resources => Resources.AsNoTracking();
-    IQueryable<CountryResourceRequest> ICceDbContext.CountryResourceRequests => CountryResourceRequests.AsNoTracking();
+    IQueryable<CountryContentRequest> ICceDbContext.CountryContentRequests => CountryContentRequests.AsNoTracking();
     IQueryable<CountryProfile> ICceDbContext.CountryProfiles => CountryProfiles.AsNoTracking();
     IQueryable<CountryKapsarcSnapshot> ICceDbContext.CountryKapsarcSnapshots => CountryKapsarcSnapshots.AsNoTracking();
     IQueryable<CCE.Domain.Content.News> ICceDbContext.News => News.AsNoTracking();
     IQueryable<CCE.Domain.Content.Event> ICceDbContext.Events => Events.AsNoTracking();
+    IQueryable<CCE.Domain.Content.Tag> ICceDbContext.Tags => Tags.AsNoTracking();
     IQueryable<CCE.Domain.Content.Page> ICceDbContext.Pages => Pages.AsNoTracking();
     IQueryable<HomepageSection> ICceDbContext.HomepageSections => HomepageSections.AsNoTracking();
     IQueryable<Topic> ICceDbContext.Topics => Topics.AsNoTracking();
