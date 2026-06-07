@@ -16,12 +16,19 @@ public static class DownloadEndpointExtensions
 
         group.MapGet("{id:guid}", async (
             Guid id,
-            DownloadType type,
+            int? type,
             DownloadServiceFactory factory,
             HttpContext httpContext,
             CancellationToken ct) =>
         {
-            var service = factory.Create(type);
+            DownloadType downloadType = type switch
+            {
+                1 => DownloadType.Asset,
+                2 => DownloadType.Image,
+                _ => DownloadType.Asset
+            };
+
+            var service = factory.Create(downloadType);
             var result = await service.DownloadAsync(id, ct).ConfigureAwait(false);
             if (result is null)
                 return Results.NotFound();
