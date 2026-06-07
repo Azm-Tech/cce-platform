@@ -14,6 +14,7 @@ export interface NewsArticle {
   topicId?: string | null;
   topicNameAr?: string | null;
   topicNameEn?: string | null;
+  tags?: string[];
 }
 
 export type { PagedResult };

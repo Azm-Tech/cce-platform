@@ -63,6 +63,10 @@ import type { Event as EventModel } from './event.types';
           }
         </div>
 
+        @if (topicLabel(); as topic) {
+          <span class="cce-event-card__topic">{{ topic }}</span>
+        }
+
         <a class="cce-event-card__title-link"
            [routerLink]="['/events', event().id]"
            [attr.aria-label]="title()">
@@ -94,6 +98,12 @@ export class EventCardComponent {
   readonly title = computed(() => {
     const e = this.event();
     return this.locale() === 'ar' ? e.titleAr : e.titleEn;
+  });
+
+  /** Localized topic chip (US010 AC3 — list shows Title, Date, Topic). */
+  readonly topicLabel = computed<string | null>(() => {
+    const e = this.event();
+    return (this.locale() === 'ar' ? e.topicNameAr : e.topicNameEn) || null;
   });
 
   readonly excerpt = computed(() => {

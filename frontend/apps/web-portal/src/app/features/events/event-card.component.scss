@@ -225,3 +225,16 @@
   .cce-event-card__media img { transition: none; }
   .cce-event-card:hover { transform: none; }
 }
+
+/* Topic chip (US010 AC3 — list shows Title, Date, Topic) */
+.cce-event-card__topic {
+  display: inline-block;
+  align-self: flex-start;
+  margin-block: 0.15rem 0.1rem;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #006c4f;
+  background: rgba(0, 108, 79, 0.08);
+  border-radius: 20px;
+}

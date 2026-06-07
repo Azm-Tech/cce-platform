@@ -23,6 +23,11 @@ export interface Event {
   onlineMeetingUrl: string | null;
   featuredImageUrl: string | null;
   iCalUid: string;
+  /** Topic categorization — returned by the API; shown as a chip (US010 AC3). */
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
+  tags?: string[];
   /** Optional — not in the API yet; UI hides the section when absent. */
   speakers?: EventSpeaker[] | null;
   /** Optional — not in the API yet; UI hides the Outcomes tab when absent. */
