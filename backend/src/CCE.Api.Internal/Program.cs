@@ -1,5 +1,6 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.Authorization;
+using CCE.Api.Common.Extensions;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
@@ -91,6 +92,7 @@ app.MapPoliciesSettingsEndpoints();
         app.MapMediaEndpoints();
         app.MapCountryCodeEndpoints();
         app.MapEvaluationEndpoints();
+        app.MapDownloadEndpoints("/api/admin");
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

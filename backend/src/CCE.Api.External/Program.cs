@@ -1,6 +1,7 @@
 using CCE.Api.Common.Auth;
 using CCE.Api.Common.Authorization;
 using CCE.Api.Common.Caching;
+using CCE.Api.Common.Extensions;
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Identity;
 using CCE.Api.Common.Middleware;
@@ -125,6 +126,7 @@ app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();
 app.MapVerificationEndpoints();
 app.MapCountryCodesPublicEndpoints();
+app.MapDownloadEndpoints("/api");
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

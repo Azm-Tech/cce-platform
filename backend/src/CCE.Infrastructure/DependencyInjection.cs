@@ -4,6 +4,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Community;
 using CCE.Application.Content;
+using CCE.Application.Content.Download;
 using CCE.Application.Content.Public;
 using CCE.Application.Evaluation;
 using CCE.Application.Media;
@@ -177,6 +178,11 @@ public static class DependencyInjection
         services.Configure<MediaUploadOptions>(configuration.GetSection(MediaUploadOptions.SectionName));
         services.AddTransient<IClamAvScanner, ClamAvScanner>();
         services.AddSingleton<IHtmlSanitizer, HtmlSanitizerWrapper>();
+
+        // Download services (factory pattern — asset / image)
+        services.AddScoped<AssetDownloadService>();
+        services.AddScoped<MediaDownloadService>();
+        services.AddScoped<DownloadServiceFactory>();
         services.AddScoped<IAssetRepository, AssetRepository>();
         // ResourceCategory uses IRepository<ResourceCategory, Guid> (registered below)
         services.AddScoped<IResourceRepository, ResourceRepository>();
