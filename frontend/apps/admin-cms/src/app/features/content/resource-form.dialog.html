@@ -7,11 +7,19 @@
     <div class="cce-resource-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'resources.field.titleAr' | transloco }}</mat-label>
-        <input matInput formControlName="titleAr" autocomplete="off" />
+        <input matInput formControlName="titleAr" autocomplete="off" [maxlength]="titleMax + 20" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }} / {{ titleMax }}</mat-hint>
+        @if (form.controls.titleAr.hasError('maxlength')) {
+          <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'resources.field.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" autocomplete="off" />
+        <input matInput formControlName="titleEn" autocomplete="off" [maxlength]="titleMax + 20" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }} / {{ titleMax }}</mat-hint>
+        @if (form.controls.titleEn.hasError('maxlength')) {
+          <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -19,10 +27,12 @@
       <cce-rich-text-editor
         formControlName="descriptionAr"
         [label]="'resources.field.descriptionAr' | transloco"
+        [maxLength]="descriptionMax"
       />
       <cce-rich-text-editor
         formControlName="descriptionEn"
         [label]="'resources.field.descriptionEn' | transloco"
+        [maxLength]="descriptionMax"
       />
     </div>
 
@@ -34,6 +44,9 @@
             <mat-option [value]="t">{{ ('resources.type.' + t) | transloco }}</mat-option>
           }
         </mat-select>
+        @if (form.controls.resourceType.hasError('required') && form.controls.resourceType.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -76,7 +89,7 @@
     @if (!isEdit) {
       <div class="cce-resource-form__asset">
         <span class="cce-resource-form__asset-label">{{ 'resources.field.asset' | transloco }}</span>
-        <cce-asset-upload (uploaded)="onAssetUploaded($event)" />
+        <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
       </div>
     }
 
@@ -90,12 +103,13 @@
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
     {{ 'common.actions.cancel' | transloco }}
   </button>
+  <!-- Stays enabled while invalid so clicking surfaces ERR013 (BRD AC6) -->
   <button
     type="button"
     mat-flat-button
     color="primary"
     (click)="save()"
-    [disabled]="saving() || form.invalid"
+    [disabled]="saving()"
   >
     @if (saving()) {
       <mat-spinner diameter="20" />

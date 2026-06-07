@@ -37,11 +37,17 @@ interface ResourceForm {
   titleEn: FormControl<string>;
   descriptionAr: FormControl<string>;
   descriptionEn: FormControl<string>;
-  resourceType: FormControl<ResourceType>;
+  /** Null until the admin explicitly picks a type (US047 — no silent default). */
+  resourceType: FormControl<ResourceType | null>;
   categoryId: FormControl<string>;
   topicId: FormControl<string>;
   countryIds: FormControl<string[]>;
 }
+
+/** Server-enforced limits (verified against the live API 2026-06-07 —
+ *  VAL001 with per-field errors). Client mirrors them exactly. */
+const TITLE_MAX = 255;
+const DESCRIPTION_MAX = 500;
 
 @Component({
   selector: 'cce-resource-form-dialog',
@@ -120,6 +126,8 @@ export class ResourceFormDialogComponent {
   private readonly localeService = inject(LocaleService);
 
   readonly resourceTypes = RESOURCE_TYPES;
+  readonly titleMax = TITLE_MAX;
+  readonly descriptionMax = DESCRIPTION_MAX;
   readonly form: FormGroup<ResourceForm>;
   readonly assetFile = signal<AssetFile | null>(null);
   readonly saving = signal(false);
@@ -136,11 +144,11 @@ export class ResourceFormDialogComponent {
   ) {
     this.isEdit = data.resource !== undefined;
     this.form = new FormGroup<ResourceForm>({
-      titleAr: new FormControl(data.resource?.titleAr ?? '', { nonNullable: true, validators: [Validators.required] }),
-      titleEn: new FormControl(data.resource?.titleEn ?? '', { nonNullable: true, validators: [Validators.required] }),
-      descriptionAr: new FormControl(data.resource?.descriptionAr ?? '', { nonNullable: true, validators: [Validators.required] }),
-      descriptionEn: new FormControl(data.resource?.descriptionEn ?? '', { nonNullable: true, validators: [Validators.required] }),
-      resourceType: new FormControl<ResourceType>(data.resource?.resourceType ?? 'Report', { nonNullable: true, validators: [Validators.required] }),
+      titleAr: new FormControl(data.resource?.titleAr ?? '', { nonNullable: true, validators: [Validators.required, Validators.maxLength(TITLE_MAX)] }),
+      titleEn: new FormControl(data.resource?.titleEn ?? '', { nonNullable: true, validators: [Validators.required, Validators.maxLength(TITLE_MAX)] }),
+      descriptionAr: new FormControl(data.resource?.descriptionAr ?? '', { nonNullable: true, validators: [Validators.required, Validators.maxLength(DESCRIPTION_MAX)] }),
+      descriptionEn: new FormControl(data.resource?.descriptionEn ?? '', { nonNullable: true, validators: [Validators.required, Validators.maxLength(DESCRIPTION_MAX)] }),
+      resourceType: new FormControl<ResourceType | null>(data.resource?.resourceType ?? null, { validators: [Validators.required] }),
       categoryId: new FormControl(data.resource?.categoryId ?? '', { nonNullable: true, validators: [Validators.required] }),
       topicId: new FormControl(data.resource?.topicId ?? '', { nonNullable: true, validators: [Validators.required] }),
       countryIds: new FormControl<string[]>(data.resource?.countryIds ?? [], { nonNullable: true, validators: [Validators.required] }),
@@ -164,17 +172,21 @@ export class ResourceFormDialogComponent {
   }
 
   async save(): Promise<void> {
+    // ERR013 (BRD): missing/invalid required fields — shown as a banner,
+    // so the submit button stays clickable and AC6 is actually reachable.
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.errorKind.set('ERR013');
       return;
     }
     if (!this.isEdit && !this.assetFile()) {
-      this.errorKind.set('validation');
+      this.errorKind.set('ERR013');
       return;
     }
     this.saving.set(true);
     this.errorKind.set(null);
     const v = this.form.getRawValue();
+    if (!v.resourceType) return; // unreachable when form is valid — narrows the type
 
     if (this.isEdit && this.data.resource) {
       const res = await this.api.updateResource(this.data.resource.id, {

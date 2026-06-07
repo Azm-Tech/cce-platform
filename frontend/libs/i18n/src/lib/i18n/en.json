@@ -323,7 +323,8 @@
     },
     "validation": {
       "required": "This field is required.",
-      "url": "Enter a valid URL starting with http:// or https://"
+      "url": "Enter a valid URL starting with http:// or https://",
+      "maxLength": "Maximum length is {{max}} characters."
     },
     "locale": {
       "switchTo": "Switch to",
@@ -357,7 +358,8 @@
     "ERR027": "Could not upload the news/event. Please try again.",
     "ERR028": "Could not delete the news/event. Please try again.",
     "ERR029": "Could not upload the resource. Please try again.",
-    "ERR030": "Could not delete the resource. Please try again."
+    "ERR030": "Could not delete the resource. Please try again.",
+    "fileType": "Unsupported file format. Allowed formats: PDF or Word."
   },
   "info": {
     "INF003": "No news or events available yet."

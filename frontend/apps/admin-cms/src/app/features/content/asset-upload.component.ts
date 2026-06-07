@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  Input,
   Output,
   inject,
   signal,
@@ -34,12 +35,23 @@ export class AssetUploadComponent {
   readonly errorKind = signal<string | null>(null);
   readonly asset = signal<AssetFile | null>(null);
 
+  /** Comma-separated extension allow-list, e.g. ".pdf,.doc,.docx".
+   *  Empty = accept anything (default, backwards compatible). */
+  @Input() accept = '';
+
   @Output() readonly uploaded = new EventEmitter<AssetFile>();
 
   async onFile(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
+    // The accept attr is only a picker hint — drag-drop and "All files"
+    // bypass it, so enforce the allow-list here too.
+    if (this.accept && !this.isAllowed(file.name)) {
+      input.value = '';
+      this.errorKind.set('fileType');
+      return;
+    }
     this.uploading.set(true);
     this.errorKind.set(null);
     const res = await this.api.uploadAsset(file);
@@ -57,5 +69,13 @@ export class AssetUploadComponent {
   clear(): void {
     this.asset.set(null);
     this.errorKind.set(null);
+  }
+
+  private isAllowed(filename: string): boolean {
+    const ext = `.${filename.split('.').pop()?.toLowerCase() ?? ''}`;
+    return this.accept
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .includes(ext);
   }
 }

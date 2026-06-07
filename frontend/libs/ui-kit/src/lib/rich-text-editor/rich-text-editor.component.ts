@@ -38,6 +38,11 @@ const BASIC_TOOLBAR: QuillModules = {
         (onBlur)="onTouched()"
         format="html"
       />
+      @if (maxLength) {
+        <span class="cce-rte__counter" [class.cce-rte__counter--over]="value.length > maxLength">
+          {{ value.length }} / {{ maxLength }}
+        </span>
+      }
     </div>
   `,
   styles: [`
@@ -54,6 +59,20 @@ const BASIC_TOOLBAR: QuillModules = {
       color: rgba(0, 0, 0, 0.6);
       padding: 0 2px;
       font-family: inherit;
+    }
+
+    /* Char counter — counts the HTML payload length, matching the
+       server-side limit which validates the raw string. */
+    .cce-rte__counter {
+      align-self: flex-end;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.55);
+      padding: 0 2px;
+    }
+
+    .cce-rte__counter--over {
+      color: #b00020;
+      font-weight: 600;
     }
 
     /* Match Material outline field border colour and radius */
@@ -113,6 +132,10 @@ const BASIC_TOOLBAR: QuillModules = {
 export class RichTextEditorComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() placeholder = '';
+  /** When set, shows a live character counter (counts the HTML string,
+   *  which is what the backend validates against). Pair with a
+   *  Validators.maxLength on the form control to actually block submit. */
+  @Input() maxLength?: number;
 
   private readonly cdr = inject(ChangeDetectorRef);
 
