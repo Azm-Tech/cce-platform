@@ -45,6 +45,7 @@ public static class CountryCodeEndpoints
                 body.NameAr,
                 body.NameEn,
                 body.DialCode,
+                body.FlagUrl,
                 body.IsActive);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.Success
@@ -63,4 +64,5 @@ public sealed record UpsertCountryCodeRequest(
     string NameAr,
     string NameEn,
     string DialCode,
+    string? FlagUrl,
     bool IsActive);

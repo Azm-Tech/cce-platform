@@ -8,4 +8,5 @@ public sealed record UpsertCountryCodeCommand(
     string NameAr,
     string NameEn,
     string DialCode,
+    string? FlagUrl,
     bool IsActive) : IRequest<Response<CountryCodeDto>>;

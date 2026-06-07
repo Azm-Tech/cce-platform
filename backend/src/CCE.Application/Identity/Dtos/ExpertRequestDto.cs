@@ -14,4 +14,5 @@ public sealed record ExpertRequestDto(
     System.Guid? ProcessedById,
     System.DateTimeOffset? ProcessedOn,
     string? RejectionReasonAr,
-    string? RejectionReasonEn);
+    string? RejectionReasonEn,
+    System.Guid? CvAssetFileId);
