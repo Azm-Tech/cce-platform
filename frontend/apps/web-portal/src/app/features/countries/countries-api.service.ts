@@ -3,7 +3,20 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
+import type { PublicCountryDto } from '@frontend/api-client';
 import type { Country, CountryCode, CountryProfile } from './country.types';
+
+/**
+ * Compile-time contract tripwire: every field this feature reads must
+ * exist on the generated OpenAPI DTO. If the backend renames/removes a
+ * field, regenerating types (pnpm nx run api-client:generate-types)
+ * turns the drift into a build error here instead of a runtime blank page.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time assertion only
+type _CountryContractCheck = keyof Pick<
+  PublicCountryDto,
+  'id' | 'nameAr' | 'nameEn' | 'regionAr' | 'regionEn' | 'flagUrl' | 'isoAlpha2' | 'isoAlpha3'
+>;
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
@@ -37,9 +50,16 @@ export class CountriesApiService {
   async listCountries(opts: { search?: string } = {}): Promise<Result<Country[]>> {
     let params = new HttpParams();
     if (opts.search) params = params.set('search', opts.search);
-    return this.run(() =>
-      firstValueFrom(this.http.get<Country[]>('/api/countries', { params })),
-    );
+    return this.run(async () => {
+      // Live API wraps the list in an envelope: { data: { items: Country[] } }.
+      const res = await firstValueFrom(
+        this.http.get<Country[] | { data: Country[] | { items: Country[] } }>('/api/countries', { params }),
+      );
+      if (Array.isArray(res)) return res;
+      const data = res.data;
+      if (Array.isArray(data)) return data;
+      return data?.items ?? [];
+    });
   }
 
   async getProfile(countryId: string): Promise<Result<CountryProfile>> {

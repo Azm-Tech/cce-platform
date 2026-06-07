@@ -26,25 +26,7 @@
 
 /* Header rendered by <cce-page-hero> — see libs/ui-kit. */
 
-/* Subline — plain muted paragraph beneath the H1. No bar, no
-   border, no decoration. Just calm typography. */
-.cce-resources-list::before {
-  content: 'Curated long-reads, briefs, and references on the carbon circular economy.';
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: rgba(28, 39, 36, 0.55);
-  line-height: 1.55;
-  max-width: 580px;
-  margin: 0.4rem 0 1.75rem;
-}
-
 /* ─── Layout ───────────────────────────────────────────── */
-/* `align-items: start` makes each grid track size to its content
-   instead of stretching. This is the key change that lets the filter
-   rail's height be driven by the items inside it (categories tree +
-   country/type fields), rather than stretching to match the card
-   grid's height. */
 .cce-resources-list__layout {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -53,16 +35,32 @@
   align-items: start;
 }
 
-/* ─── Filter rail ──────────────────────────────────────── */
-/* Height = whatever the contents need, no more. `block-size: max-content`
-   is the explicit modern way to say "size to content"; the parent's
-   `align-items: start` already covers this in most browsers but the
-   explicit declaration also helps when the rail is detached from the
-   grid layout (e.g. on mobile). */
-::ng-deep cce-filter-rail {
-  display: block;
+/* RTL: sidebar stays on the physical LEFT regardless of reading direction.
+   grid-row: 1 is required on both — without it auto-placement drops the
+   content column to a second row below the sidebar. */
+:host-context([dir="rtl"]) .cce-resources-list__layout {
+  grid-template-columns: 1fr 240px; /* col1=right(1fr), col2=left(240px) */
+}
+:host-context([dir="rtl"]) .cce-resources-list__sidebar {
+  grid-row: 1;
+  grid-column: 2; /* left column in RTL */
+}
+:host-context([dir="rtl"]) .cce-resources-list__content {
+  grid-row: 1;
+  grid-column: 1; /* right column in RTL */
+}
+
+/* ─── Sidebar wrapper ──────────────────────────────────── */
+.cce-resources-list__sidebar {
   position: sticky;
   top: 88px;
+  block-size: max-content;
+  align-self: start;
+}
+
+/* ─── Filter rail ──────────────────────────────────────── */
+::ng-deep cce-filter-rail {
+  display: block;
   block-size: max-content;
   background: #ffffff;
   backdrop-filter: none;
@@ -72,29 +70,131 @@
   padding: 1rem;
   box-shadow: none;
   overflow: visible;
-  align-self: start; /* ensure no vertical stretching */
 }
 
-::ng-deep cce-filter-rail::before {
-  content: 'Filters';
-  display: block;
+/* ─── Checkbox filter sections ─────────────────────────── */
+.cce-filter-section {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cce-filter-section--first {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.cce-filter-section__label {
+  margin: 0 0 0.5rem;
   font-size: 0.78rem;
   font-weight: 600;
   color: rgba(28, 39, 36, 0.60);
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.cce-resources-list__filter {
+.cce-filter-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cce-filter-section__list--scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* breathing room so checkbox ripples aren't flush against the clip edge;
+     gutter keeps rows the same width whether or not a scrollbar shows */
+  padding-inline-start: 2px;
+  scrollbar-gutter: stable;
+}
+
+/* Categories get a taller viewport than countries */
+.cce-filter-section--first .cce-filter-section__list--scroll {
+  max-height: 400px;
+}
+
+/* Client-side search box (countries) */
+.cce-filter-section__search {
+  display: block;
   width: 100%;
-  margin-top: 0.75rem;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  font-family: inherit;
+  direction: inherit;  /* follow page direction (rtl in Arabic) */
+  text-align: start;   /* placeholder + text start at the right margin in RTL */
+  color: rgba(28, 39, 36, 0.85);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 6px;
+  outline: none;
+
+  &:focus {
+    border-color: #006c4f;
+    background: #fff;
+  }
+
+  &::placeholder {
+    color: rgba(28, 39, 36, 0.40);
+  }
 }
 
-::ng-deep .cce-resources-list__filter mat-label {
-  font-size: 0.85rem !important;
+.cce-filter-section__no-match {
+  margin: 0;
+  padding: 0.4rem 0.25rem;
+  font-size: 0.8rem;
+  color: rgba(28, 39, 36, 0.45);
+}
+
+::ng-deep .cce-filter-check {
+  /* Shrink via the M3 density token — NOT raw padding. Overriding
+     .mdc-checkbox padding misaligns the absolutely-positioned square,
+     making it overhang and get clipped inside scroll containers. */
+  --mdc-checkbox-state-layer-size: 28px;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start; /* checkbox + label hug the start edge (right in RTL) */
+  width: 100%;
+
+  /* Keep checkbox and label adjacent — do NOT stretch the form field,
+     otherwise the label drifts to the far edge leaving a huge gap. */
+  .mdc-form-field {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    font-size: 0.82rem !important;
+    color: rgba(28, 39, 36, 0.75) !important;
+  }
+
+  .mdc-form-field > label {
+    text-align: start;          /* right in RTL, left in LTR */
+    padding-inline-start: 6px;  /* clean intentional gap next to the square */
+    padding-inline-end: 0;
+    cursor: pointer;
+  }
+}
+
+/* Child categories indent under their parent */
+::ng-deep .cce-filter-check--child {
+  padding-inline-start: 1.1rem;
+}
+
+::ng-deep .cce-filter-check.mat-mdc-checkbox-checked .mdc-form-field {
+  color: #006c4f !important;
   font-weight: 500 !important;
-  color: rgba(28, 39, 36, 0.70) !important;
+}
+
+::ng-deep .cce-filter-check .mdc-checkbox__background {
+  border-color: rgba(28, 39, 36, 0.30) !important;
+}
+
+::ng-deep .cce-filter-check.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #006c4f !important;
+  border-color: #006c4f !important;
 }
 
 /* ─── Content column ───────────────────────────────────── */
@@ -103,6 +203,51 @@
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
+}
+
+/* ─── Toolbar (search + sort + view toggle) ─────────────── */
+.cce-resources-list__toolbar {
+  display: flex;
+  align-items: center; /* toggle + fields share one visual centre line */
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  /* Form fields reserve ~22px below the input for hints/errors — none are
+     used here, and that space breaks vertical alignment with the toggle. */
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.cce-resources-list__search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.cce-resources-list__sort {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.cce-resources-list__view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  padding: 2px;
+
+  button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+.cce-resources-list__view-btn--active {
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+  color: #006c4f !important;
 }
 
 ::ng-deep .cce-resources-list__content mat-progress-bar {
@@ -140,7 +285,75 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
+
+  &--list {
+    grid-template-columns: 1fr;
+
+    cce-resource-card,
+    .cce-resource-skeleton {
+      ::ng-deep .cce-resource-card {
+        flex-direction: row;
+        min-height: 110px;
+      }
+      ::ng-deep .cce-resource-card__media {
+        width: 110px;
+        height: auto;
+        flex-shrink: 0;
+      }
+    }
+  }
 }
+
+/* ─── Skeleton cards ───────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+$shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+
+.cce-resource-skeleton {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.cce-resource-skeleton__media {
+  height: 120px;
+  flex-shrink: 0;
+  background: $shimmer;
+  background-size: 1200px 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.cce-resource-skeleton__body {
+  flex: 1;
+  padding: 0.85rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cce-resource-skeleton__footer {
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cce-resource-skeleton__line {
+  border-radius: 4px;
+  background: $shimmer;
+  background-size: 1200px 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.cce-resource-skeleton__line--title { height: 14px; width: 80%; }
+.cce-resource-skeleton__line--short { width: 60%; }
+.cce-resource-skeleton__line--sub   { height: 11px; width: 45%; margin-top: 0.2rem; }
+.cce-resource-skeleton__line--btn   { height: 32px; width: 55%; border-radius: 6px; }
 
 /* ─── Paginator ────────────────────────────────────────── */
 ::ng-deep .cce-resources-list__content mat-paginator {
