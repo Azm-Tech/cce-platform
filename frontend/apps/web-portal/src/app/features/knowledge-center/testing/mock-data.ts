@@ -3,10 +3,6 @@
  * the backend `/api/resources` endpoint is unavailable or empty). Real
  * API responses always win — this only fills the page when the page
  * would otherwise be blank.
- *
- * 25 hand-curated entries spanning all 5 resource types so the type-color
- * card design (Pdf=red, Video=purple, Image=cyan, Link=amber, Document=indigo)
- * shows clearly on first paint.
  */
 
 import type { Resource, ResourceCategory, ResourceListItem } from '../knowledge.types';
@@ -207,8 +203,37 @@ export function getMockResource(id: string): Resource | null {
     uploadedById: 'demo-author',
     assetFileId: `asset-${id}`,
     isCenterManaged: true,
+    highlights: MOCK_HIGHLIGHTS,
   };
 }
+
+/** Demo "key results" cards shown on the detail page for mock resources. */
+export const MOCK_HIGHLIGHTS = [
+  {
+    titleEn: 'Efficiency achievements',
+    titleAr: 'إنجازات الكفاءة',
+    textEn: 'Tandem perovskite-silicon cells reached an average conversion efficiency of 30% in field conditions.',
+    textAr: 'وصلت الخلايا الترادفية (بيروفسكايت-سيليكون) إلى متوسط كفاءة تحويل 30% في الظروف الميدانية.',
+  },
+  {
+    titleEn: 'Market growth',
+    titleAr: 'نمو السوق',
+    textEn: 'Developing regions are projected to grow at a 24% CAGR through the end of the decade.',
+    textAr: 'من المتوقع أن تنمو الأسواق الناشئة بمعدل نمو سنوي مركّب 24% حتى نهاية العقد.',
+  },
+  {
+    titleEn: 'Grid integration',
+    titleAr: 'التكامل مع الشبكة',
+    textEn: 'AI-driven demand response reduced curtailment waste by 15% across pilot deployments.',
+    textAr: 'قللت الاستجابة الذكية للطلب المدعومة بالذكاء الاصطناعي الهدر بنسبة 15% في النشرات التجريبية.',
+  },
+  {
+    titleEn: 'Storage integration',
+    titleAr: 'تكامل التخزين',
+    textEn: 'Solid-state batteries achieved cost parity with discharge durations of up to 4 hours.',
+    textAr: 'حققت بطاريات الحالة الصلبة تكافؤ التكلفة مع مدد تفريغ تصل إلى 4 ساعات.',
+  },
+];
 
 export const MOCK_CATEGORIES: ResourceCategory[] = [
   { id: 'c1', nameEn: 'Climate Policy', nameAr: 'سياسة المناخ', slug: 'climate-policy', parentId: null, orderIndex: 1 },
@@ -225,38 +250,38 @@ export const MOCK_CATEGORIES: ResourceCategory[] = [
 ];
 
 export const MOCK_RESOURCES: ResourceListItem[] = [
-  // ── Pdf (red) ──
-  { id: 'r1', titleEn: 'Saudi Vision 2030 — Carbon Reduction Roadmap', titleAr: 'رؤية المملكة 2030 — خارطة طريق خفض الكربون', resourceType: 'Pdf', categoryId: 'c1', countryId: 'sa', publishedOn: '2024-09-15', viewCount: 12482 },
-  { id: 'r2', titleEn: 'IPCC Sixth Assessment Report — Mitigation Strategies', titleAr: 'تقرير IPCC السادس — استراتيجيات التخفيف', resourceType: 'Pdf', categoryId: 'c1-2', countryId: null, publishedOn: '2024-04-08', viewCount: 8763 },
-  { id: 'r3', titleEn: 'Circular Economy Policy Brief — MENA Region', titleAr: 'موجز سياسة الاقتصاد الدائري — منطقة الشرق الأوسط', resourceType: 'Pdf', categoryId: 'c3', countryId: null, publishedOn: '2025-02-12', viewCount: 5621 },
-  { id: 'r4', titleEn: 'Green Hydrogen Production — Technical Feasibility Study', titleAr: 'إنتاج الهيدروجين الأخضر — دراسة جدوى فنية', resourceType: 'Pdf', categoryId: 'c2', countryId: 'sa', publishedOn: '2024-11-30', viewCount: 9402 },
-  { id: 'r5', titleEn: 'NEOM Sustainability Master Plan', titleAr: 'الخطة الرئيسية للاستدامة في نيوم', resourceType: 'Pdf', categoryId: 'c4', countryId: 'sa', publishedOn: '2025-01-22', viewCount: 15734 },
+  // ── Report ──
+  { id: 'r1', titleEn: 'Saudi Vision 2030 — Carbon Reduction Roadmap', titleAr: 'رؤية المملكة 2030 — خارطة طريق خفض الكربون', resourceType: 'Report', categoryId: 'c1', countryId: 'sa', publishedOn: '2024-09-15', viewCount: 12482 },
+  { id: 'r2', titleEn: 'IPCC Sixth Assessment Report — Mitigation Strategies', titleAr: 'تقرير IPCC السادس — استراتيجيات التخفيف', resourceType: 'Report', categoryId: 'c1-2', countryId: null, publishedOn: '2024-04-08', viewCount: 8763 },
+  { id: 'r3', titleEn: 'Circular Economy Policy Brief — MENA Region', titleAr: 'موجز سياسة الاقتصاد الدائري — منطقة الشرق الأوسط', resourceType: 'Paper', categoryId: 'c3', countryId: null, publishedOn: '2025-02-12', viewCount: 5621 },
+  { id: 'r4', titleEn: 'Green Hydrogen Production — Technical Feasibility Study', titleAr: 'إنتاج الهيدروجين الأخضر — دراسة جدوى فنية', resourceType: 'Study', categoryId: 'c2', countryId: 'sa', publishedOn: '2024-11-30', viewCount: 9402 },
+  { id: 'r5', titleEn: 'NEOM Sustainability Master Plan', titleAr: 'الخطة الرئيسية للاستدامة في نيوم', resourceType: 'Report', categoryId: 'c4', countryId: 'sa', publishedOn: '2025-01-22', viewCount: 15734 },
 
-  // ── Video (purple) ──
-  { id: 'r6', titleEn: 'Solar Megaprojects in the Arabian Peninsula', titleAr: 'المشاريع الشمسية الكبرى في شبه الجزيرة العربية', resourceType: 'Video', categoryId: 'c2-1', countryId: 'sa', publishedOn: '2024-08-04', viewCount: 24891 },
-  { id: 'r7', titleEn: 'COP28 Highlights — Pathways to 1.5°C', titleAr: 'أبرز ما جاء في COP28 — مسارات نحو 1.5 درجة مئوية', resourceType: 'Video', categoryId: 'c1', countryId: null, publishedOn: '2024-12-13', viewCount: 31204 },
-  { id: 'r8', titleEn: 'Industrial Symbiosis at Yanbu Industrial City', titleAr: 'التكامل الصناعي في مدينة ينبع الصناعية', resourceType: 'Video', categoryId: 'c3-2', countryId: 'sa', publishedOn: '2024-10-19', viewCount: 8147 },
-  { id: 'r9', titleEn: 'Wind Farm Construction — Time-Lapse Documentary', titleAr: 'بناء مزرعة رياح — فيلم وثائقي مكثف', resourceType: 'Video', categoryId: 'c2-2', countryId: 'sa', publishedOn: '2024-06-21', viewCount: 18539 },
-  { id: 'r10', titleEn: 'How Carbon Markets Work — Animated Explainer', titleAr: 'كيف تعمل أسواق الكربون — شرح متحرك', resourceType: 'Video', categoryId: 'c1-1', countryId: null, publishedOn: '2025-03-05', viewCount: 11023 },
+  // ── Media ──
+  { id: 'r6', titleEn: 'Solar Megaprojects in the Arabian Peninsula', titleAr: 'المشاريع الشمسية الكبرى في شبه الجزيرة العربية', resourceType: 'Media', categoryId: 'c2-1', countryId: 'sa', publishedOn: '2024-08-04', viewCount: 24891 },
+  { id: 'r7', titleEn: 'COP28 Highlights — Pathways to 1.5°C', titleAr: 'أبرز ما جاء في COP28 — مسارات نحو 1.5 درجة مئوية', resourceType: 'Media', categoryId: 'c1', countryId: null, publishedOn: '2024-12-13', viewCount: 31204 },
+  { id: 'r8', titleEn: 'Industrial Symbiosis at Yanbu Industrial City', titleAr: 'التكامل الصناعي في مدينة ينبع الصناعية', resourceType: 'Media', categoryId: 'c3-2', countryId: 'sa', publishedOn: '2024-10-19', viewCount: 8147 },
+  { id: 'r9', titleEn: 'Wind Farm Construction — Time-Lapse Documentary', titleAr: 'بناء مزرعة رياح — فيلم وثائقي مكثف', resourceType: 'Media', categoryId: 'c2-2', countryId: 'sa', publishedOn: '2024-06-21', viewCount: 18539 },
+  { id: 'r10', titleEn: 'How Carbon Markets Work — Animated Explainer', titleAr: 'كيف تعمل أسواق الكربون — شرح متحرك', resourceType: 'Media', categoryId: 'c1-1', countryId: null, publishedOn: '2025-03-05', viewCount: 11023 },
 
-  // ── Image (cyan) ──
-  { id: 'r11', titleEn: 'Global Carbon Emissions Heatmap 2024', titleAr: 'خريطة حرارية لانبعاثات الكربون 2024', resourceType: 'Image', categoryId: 'c1', countryId: null, publishedOn: '2024-07-11', viewCount: 6712 },
-  { id: 'r12', titleEn: 'Sakaka Solar Plant — Aerial Photography', titleAr: 'محطة سكاكا الشمسية — صور جوية', resourceType: 'Image', categoryId: 'c2-1', countryId: 'sa', publishedOn: '2024-05-28', viewCount: 9286 },
-  { id: 'r13', titleEn: 'Renewable Energy Capacity Infographic — GCC', titleAr: 'إنفوغرافيك لطاقة المصادر المتجددة — دول الخليج', resourceType: 'Image', categoryId: 'c2', countryId: null, publishedOn: '2025-01-09', viewCount: 4502 },
-  { id: 'r14', titleEn: 'Recycling Process Flow Diagram', titleAr: 'مخطط تدفق عملية إعادة التدوير', resourceType: 'Image', categoryId: 'c3-1', countryId: null, publishedOn: '2024-09-02', viewCount: 3814 },
+  // ── Presentation / Research ──
+  { id: 'r11', titleEn: 'Global Carbon Emissions Heatmap 2024', titleAr: 'خريطة حرارية لانبعاثات الكربون 2024', resourceType: 'Research', categoryId: 'c1', countryId: null, publishedOn: '2024-07-11', viewCount: 6712 },
+  { id: 'r12', titleEn: 'Sakaka Solar Plant — Aerial Photography', titleAr: 'محطة سكاكا الشمسية — صور جوية', resourceType: 'Media', categoryId: 'c2-1', countryId: 'sa', publishedOn: '2024-05-28', viewCount: 9286 },
+  { id: 'r13', titleEn: 'Renewable Energy Capacity Infographic — GCC', titleAr: 'إنفوغرافيك لطاقة المصادر المتجددة — دول الخليج', resourceType: 'Presentation', categoryId: 'c2', countryId: null, publishedOn: '2025-01-09', viewCount: 4502 },
+  { id: 'r14', titleEn: 'Recycling Process Flow Diagram', titleAr: 'مخطط تدفق عملية إعادة التدوير', resourceType: 'Presentation', categoryId: 'c3-1', countryId: null, publishedOn: '2024-09-02', viewCount: 3814 },
 
-  // ── Link (amber) ──
-  { id: 'r15', titleEn: 'IRENA Renewable Capacity Statistics — Live Dashboard', titleAr: 'إحصائيات الطاقة المتجددة من إيرينا — لوحة بيانات حية', resourceType: 'Link', categoryId: 'c2', countryId: null, publishedOn: '2025-04-01', viewCount: 7451 },
-  { id: 'r16', titleEn: 'Saudi Green Initiative — Official Portal', titleAr: 'المبادرة السعودية الخضراء — البوابة الرسمية', resourceType: 'Link', categoryId: 'c1', countryId: 'sa', publishedOn: '2024-03-15', viewCount: 19438 },
-  { id: 'r17', titleEn: 'World Bank Climate Action Tracker', titleAr: 'متعقب العمل المناخي للبنك الدولي', resourceType: 'Link', categoryId: 'c1', countryId: null, publishedOn: '2024-11-08', viewCount: 5604 },
-  { id: 'r18', titleEn: 'Green Climate Fund — Project Database', titleAr: 'صندوق المناخ الأخضر — قاعدة بيانات المشاريع', resourceType: 'Link', categoryId: 'c5', countryId: null, publishedOn: '2024-12-01', viewCount: 6879 },
+  // ── Article ──
+  { id: 'r15', titleEn: 'IRENA Renewable Capacity Statistics — Live Dashboard', titleAr: 'إحصائيات الطاقة المتجددة من إيرينا — لوحة بيانات حية', resourceType: 'Article', categoryId: 'c2', countryId: null, publishedOn: '2025-04-01', viewCount: 7451 },
+  { id: 'r16', titleEn: 'Saudi Green Initiative — Official Portal', titleAr: 'المبادرة السعودية الخضراء — البوابة الرسمية', resourceType: 'Article', categoryId: 'c1', countryId: 'sa', publishedOn: '2024-03-15', viewCount: 19438 },
+  { id: 'r17', titleEn: 'World Bank Climate Action Tracker', titleAr: 'متعقب العمل المناخي للبنك الدولي', resourceType: 'Article', categoryId: 'c1', countryId: null, publishedOn: '2024-11-08', viewCount: 5604 },
+  { id: 'r18', titleEn: 'Green Climate Fund — Project Database', titleAr: 'صندوق المناخ الأخضر — قاعدة بيانات المشاريع', resourceType: 'Article', categoryId: 'c5', countryId: null, publishedOn: '2024-12-01', viewCount: 6879 },
 
-  // ── Document (indigo) ──
-  { id: 'r19', titleEn: 'Net-Zero by 2060 — Technical White Paper', titleAr: 'الحياد الكربوني بحلول 2060 — ورقة تقنية', resourceType: 'Document', categoryId: 'c1-2', countryId: 'sa', publishedOn: '2024-10-04', viewCount: 13927 },
-  { id: 'r20', titleEn: 'ESG Reporting Standards — Practitioner Guide', titleAr: 'معايير تقارير ESG — دليل الممارس', resourceType: 'Document', categoryId: 'c5', countryId: null, publishedOn: '2025-02-18', viewCount: 7245 },
-  { id: 'r21', titleEn: 'Smart Cities Indicators Framework', titleAr: 'إطار مؤشرات المدن الذكية', resourceType: 'Document', categoryId: 'c4', countryId: null, publishedOn: '2024-06-30', viewCount: 4108 },
-  { id: 'r22', titleEn: 'Industrial Decarbonization — Sector Roadmap', titleAr: 'إزالة الكربون الصناعي — خارطة طريق القطاع', resourceType: 'Document', categoryId: 'c3', countryId: 'sa', publishedOn: '2024-08-22', viewCount: 8963 },
-  { id: 'r23', titleEn: 'Carbon Pricing Mechanisms — Comparative Analysis', titleAr: 'آليات تسعير الكربون — تحليل مقارن', resourceType: 'Document', categoryId: 'c1-1', countryId: null, publishedOn: '2025-03-21', viewCount: 5536 },
-  { id: 'r24', titleEn: 'Hydrogen Strategy 2025 — Implementation Plan', titleAr: 'استراتيجية الهيدروجين 2025 — خطة التنفيذ', resourceType: 'Document', categoryId: 'c2', countryId: 'sa', publishedOn: '2025-04-12', viewCount: 11247 },
-  { id: 'r25', titleEn: 'Riyadh Urban Sustainability Index — Methodology', titleAr: 'مؤشر استدامة الرياض الحضري — المنهجية', resourceType: 'Document', categoryId: 'c4', countryId: 'sa', publishedOn: '2024-09-09', viewCount: 6418 },
+  // ── Study / CceGuide / Research / Report ──
+  { id: 'r19', titleEn: 'Net-Zero by 2060 — Technical White Paper', titleAr: 'الحياد الكربوني بحلول 2060 — ورقة تقنية', resourceType: 'Study', categoryId: 'c1-2', countryId: 'sa', publishedOn: '2024-10-04', viewCount: 13927 },
+  { id: 'r20', titleEn: 'ESG Reporting Standards — Practitioner Guide', titleAr: 'معايير تقارير ESG — دليل الممارس', resourceType: 'CceGuide', categoryId: 'c5', countryId: null, publishedOn: '2025-02-18', viewCount: 7245 },
+  { id: 'r21', titleEn: 'Smart Cities Indicators Framework', titleAr: 'إطار مؤشرات المدن الذكية', resourceType: 'Report', categoryId: 'c4', countryId: null, publishedOn: '2024-06-30', viewCount: 4108 },
+  { id: 'r22', titleEn: 'Industrial Decarbonization — Sector Roadmap', titleAr: 'إزالة الكربون الصناعي — خارطة طريق القطاع', resourceType: 'Report', categoryId: 'c3', countryId: 'sa', publishedOn: '2024-08-22', viewCount: 8963 },
+  { id: 'r23', titleEn: 'Carbon Pricing Mechanisms — Comparative Analysis', titleAr: 'آليات تسعير الكربون — تحليل مقارن', resourceType: 'Research', categoryId: 'c1-1', countryId: null, publishedOn: '2025-03-21', viewCount: 5536 },
+  { id: 'r24', titleEn: 'Hydrogen Strategy 2025 — Implementation Plan', titleAr: 'استراتيجية الهيدروجين 2025 — خطة التنفيذ', resourceType: 'Report', categoryId: 'c2', countryId: 'sa', publishedOn: '2025-04-12', viewCount: 11247 },
+  { id: 'r25', titleEn: 'Riyadh Urban Sustainability Index — Methodology', titleAr: 'مؤشر استدامة الرياض الحضري — المنهجية', resourceType: 'Study', categoryId: 'c4', countryId: 'sa', publishedOn: '2024-09-09', viewCount: 6418 },
 ];

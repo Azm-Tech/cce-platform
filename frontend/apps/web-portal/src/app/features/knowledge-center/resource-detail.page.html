@@ -1,13 +1,42 @@
 <article class="cce-resource-detail" [attr.data-type]="typeKey()">
+  <!-- ── Back to library ── -->
   <a class="cce-resource-detail__back" routerLink="/knowledge-center">
     <mat-icon>arrow_back</mat-icon>
     <span>{{ 'resources.back' | transloco }}</span>
   </a>
 
   @if (loading()) {
-    <div class="cce-resource-detail__loading">
-      <mat-spinner diameter="24" />
-      <span>{{ 'common.loading' | transloco }}</span>
+    <div class="cce-detail-skeleton" aria-hidden="true">
+      <!-- header -->
+      <div class="cce-detail-skeleton__line cce-detail-skeleton__line--pill"></div>
+      <div class="cce-detail-skeleton__line cce-detail-skeleton__line--title"></div>
+      <div class="cce-detail-skeleton__line cce-detail-skeleton__line--title cce-detail-skeleton__line--short"></div>
+      <div class="cce-detail-skeleton__line cce-detail-skeleton__line--meta"></div>
+
+      <!-- sidebar + feed -->
+      <div class="cce-detail-skeleton__layout">
+        <div class="cce-detail-skeleton__side">
+          @for (s of [1, 2, 3]; track s) {
+            <div class="cce-detail-skeleton__side-block">
+              <div class="cce-detail-skeleton__line cce-detail-skeleton__line--label"></div>
+              <div class="cce-detail-skeleton__line"></div>
+              <div class="cce-detail-skeleton__line"></div>
+              <div class="cce-detail-skeleton__line cce-detail-skeleton__line--short"></div>
+            </div>
+          }
+          <div class="cce-detail-skeleton__line cce-detail-skeleton__line--btn"></div>
+          <div class="cce-detail-skeleton__line cce-detail-skeleton__line--btn"></div>
+        </div>
+
+        <div class="cce-detail-skeleton__main">
+          <div class="cce-detail-skeleton__media"></div>
+          <div class="cce-detail-skeleton__line cce-detail-skeleton__line--label"></div>
+          @for (l of [1, 2, 3, 4, 5]; track l) {
+            <div class="cce-detail-skeleton__line"></div>
+          }
+          <div class="cce-detail-skeleton__line cce-detail-skeleton__line--short"></div>
+        </div>
+      </div>
     </div>
   }
 
@@ -18,101 +47,113 @@
   }
 
   @if (resource(); as r) {
-    <!-- ─── Type-colored hero ─────────────────────────────── -->
-    <header class="cce-resource-detail__hero">
-      <div class="cce-resource-detail__hero-inner">
-        <div class="cce-resource-detail__type-row">
-          <span class="cce-resource-detail__type-icon">
-            <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
-          </span>
-          <span class="cce-resource-detail__type-label">
-            {{ ('resources.type.' + r.resourceType) | transloco }}
-          </span>
-        </div>
+    <!-- ── Header: type pill, title, meta ── -->
+    <header class="cce-resource-detail__header">
+      <span class="cce-resource-detail__type-pill">
+        <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
+        {{ ('resources.type.' + r.resourceType) | transloco }}
+      </span>
 
-        <h1 class="cce-resource-detail__title">{{ title() }}</h1>
+      <h1 class="cce-resource-detail__title">{{ title() }}</h1>
 
-        <ul class="cce-resource-detail__meta">
-          @if (r.publishedOn) {
-            <li>
-              <mat-icon>event</mat-icon>
-              <span>{{ r.publishedOn | date: 'mediumDate' }}</span>
-            </li>
-          }
+      <ul class="cce-resource-detail__meta">
+        @if (locale() === 'ar' ? r.categoryNameAr : r.categoryNameEn; as cat) {
           <li>
-            <mat-icon>schedule</mat-icon>
-            <span>{{ readingTime() }} min read</span>
+            <mat-icon>folder_open</mat-icon>
+            <span>{{ cat }}</span>
           </li>
+        }
+        @if (r.publishedOn) {
           <li>
-            <mat-icon>visibility</mat-icon>
-            <span>{{ r.viewCount | number }} views</span>
+            <mat-icon>event</mat-icon>
+            <span>{{ r.publishedOn | date: 'mediumDate' }}</span>
           </li>
-        </ul>
-      </div>
+        }
+        <li>
+          <mat-icon>schedule</mat-icon>
+          <span>{{ readingTime() }} {{ 'resources.detail.metaMinRead' | transloco }}</span>
+        </li>
+        <li>
+          <mat-icon>visibility</mat-icon>
+          <span>{{ r.viewCount | number }} {{ 'resources.detail.metaViews' | transloco }}</span>
+        </li>
+      </ul>
     </header>
 
-    <!-- ─── Inline video player (only for Video resources) ─── -->
-    @if (video(); as v) {
-      <figure class="cce-resource-detail__video-wrap">
-        @if (v.provider === 'youtube' && videoIframeUrl(); as iframeSrc) {
-          <iframe
-            class="cce-resource-detail__video cce-resource-detail__video--iframe"
-            [src]="iframeSrc"
-            title="Video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
-        } @else {
-          <video
-            class="cce-resource-detail__video"
-            [src]="v.url"
-            [attr.poster]="v.poster || null"
-            controls
-            preload="metadata"
-            playsinline
-          >
-            Your browser does not support the video tag.
-          </video>
-        }
-        <figcaption class="cce-resource-detail__video-caption">
-          <span class="cce-resource-detail__video-icon">
-            <mat-icon>play_circle</mat-icon>
-          </span>
-          <span class="cce-resource-detail__video-label">{{ title() }}</span>
-          <span class="cce-resource-detail__video-duration">{{ v.durationLabel }}</span>
-        </figcaption>
-      </figure>
-    }
-
-    <!-- ─── 2-col layout: article body + sticky side panel ─── -->
+    <!-- ── Sidebar (physical left) + document feed ── -->
     <div class="cce-resource-detail__layout">
-      <div class="cce-resource-detail__body-col">
-        <div class="cce-resource-detail__body" [innerHTML]="description()"></div>
-      </div>
-
       <aside class="cce-resource-detail__side">
-        <div class="cce-resource-detail__action-card">
-          <h3 class="cce-resource-detail__action-eyebrow">GET THIS RESOURCE</h3>
-          <p class="cce-resource-detail__action-hint">
-            Download a copy or open the original source.
-          </p>
+        <!-- Table of contents -->
+        <nav class="cce-resource-detail__side-block" [attr.aria-label]="'resources.detail.toc' | transloco">
+          <h3 class="cce-resource-detail__side-title">{{ 'resources.detail.toc' | transloco }}</h3>
+          <ul class="cce-resource-detail__toc" role="list">
+            @for (s of tocSections(); track s.id) {
+              <li>
+                <button
+                  type="button"
+                  class="cce-resource-detail__toc-link"
+                  [class.cce-resource-detail__toc-link--active]="activeSection() === s.id"
+                  (click)="scrollToSection(s.id)">
+                  {{ s.labelKey | transloco }}
+                </button>
+              </li>
+            }
+          </ul>
+        </nav>
+
+        <!-- Document data -->
+        <section class="cce-resource-detail__side-block">
+          <h3 class="cce-resource-detail__side-title">{{ 'resources.detail.docData' | transloco }}</h3>
+          <dl class="cce-resource-detail__facts">
+            <div class="cce-resource-detail__fact">
+              <dt>{{ 'resources.detail.factType' | transloco }}</dt>
+              <dd>{{ ('resources.type.' + r.resourceType) | transloco }}</dd>
+            </div>
+            <div class="cce-resource-detail__fact">
+              <dt>{{ 'resources.detail.factFormat' | transloco }}</dt>
+              <dd>{{ fileFormat() }}</dd>
+            </div>
+            @if (languages()) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factLanguage' | transloco }}</dt>
+                <dd>{{ languages() }}</dd>
+              </div>
+            }
+            @if (r.publishedOn) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factPublished' | transloco }}</dt>
+                <dd>{{ r.publishedOn | date: 'mediumDate' }}</dd>
+              </div>
+            }
+            @if (r.assetFileName) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factFile' | transloco }}</dt>
+                <dd class="cce-resource-detail__fact-file">{{ r.assetFileName }}</dd>
+              </div>
+            }
+            <div class="cce-resource-detail__fact">
+              <dt>{{ 'resources.detail.factViews' | transloco }}</dt>
+              <dd>{{ r.viewCount | number }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- CTAs -->
+        <div class="cce-resource-detail__side-actions">
           <button
             type="button"
             mat-flat-button
             color="primary"
             class="cce-resource-detail__download-btn"
             (click)="download()"
-            [disabled]="downloading()"
-          >
+            [disabled]="downloading()">
             @if (downloading()) {
               <mat-spinner diameter="18" />
               <span>{{ 'common.loading' | transloco }}</span>
             } @else {
               <ng-container>
                 <mat-icon>download</mat-icon>
-                <span>{{ 'resources.download.openButton' | transloco }}</span>
+                <span>{{ 'resources.detail.downloadCta' | transloco }}</span>
               </ng-container>
             }
           </button>
@@ -120,68 +161,118 @@
             type="button"
             mat-stroked-button
             class="cce-resource-detail__share-btn"
-            (click)="share()"
-          >
+            (click)="share()">
             <mat-icon>share</mat-icon>
-            <span>Share</span>
+            <span>{{ 'resources.detail.shareCta' | transloco }}</span>
           </button>
         </div>
+      </aside>
 
-        <dl class="cce-resource-detail__facts">
-          <div class="cce-resource-detail__fact">
-            <dt>Type</dt>
-            <dd>{{ ('resources.type.' + r.resourceType) | transloco }}</dd>
-          </div>
-          @if (r.publishedOn) {
-            <div class="cce-resource-detail__fact">
-              <dt>Published</dt>
-              <dd>{{ r.publishedOn | date: 'mediumDate' }}</dd>
+      <!-- ── Document feed ── -->
+      <div class="cce-resource-detail__main">
+        <!-- Hero media container -->
+        <figure class="cce-resource-detail__media" id="section-overview">
+          @if (video(); as v) {
+            @if (v.provider === 'youtube' && videoIframeUrl(); as iframeSrc) {
+              <iframe
+                class="cce-resource-detail__video cce-resource-detail__video--iframe"
+                [src]="iframeSrc"
+                title="Video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            } @else {
+              <video
+                class="cce-resource-detail__video"
+                [src]="v.url"
+                [attr.poster]="v.poster || null"
+                controls
+                preload="metadata"
+                playsinline>
+                Your browser does not support the video tag.
+              </video>
+            }
+          } @else {
+            <div class="cce-resource-detail__media-placeholder">
+              <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
             </div>
           }
-          <div class="cce-resource-detail__fact">
-            <dt>Reading time</dt>
-            <dd>{{ readingTime() }} min</dd>
-          </div>
-          <div class="cce-resource-detail__fact">
-            <dt>Views</dt>
-            <dd>{{ r.viewCount | number }}</dd>
-          </div>
-        </dl>
-      </aside>
+        </figure>
+
+        <!-- Executive summary -->
+        <section class="cce-resource-detail__section" id="section-summary">
+          <h2 class="cce-resource-detail__section-title">{{ 'resources.detail.summaryTitle' | transloco }}</h2>
+          <div class="cce-resource-detail__body" [innerHTML]="description()"></div>
+        </section>
+
+        <!-- Key results -->
+        @if (highlights().length > 0) {
+          <section class="cce-resource-detail__section" id="section-results">
+            <h2 class="cce-resource-detail__section-title">{{ 'resources.detail.resultsTitle' | transloco }}</h2>
+            <div class="cce-resource-detail__results">
+              @for (h of highlights(); track h.title) {
+                <div class="cce-resource-detail__result-card">
+                  <span class="cce-resource-detail__result-check">
+                    <mat-icon>check_circle</mat-icon>
+                  </span>
+                  <div class="cce-resource-detail__result-text">
+                    <h4>{{ h.title }}</h4>
+                    <p>{{ h.text }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
     </div>
 
-    <!-- ─── Related resources ────────────────────────────── -->
+    <!-- ── Related carousel ── -->
     @if (related().length > 0) {
       <section class="cce-resource-detail__related">
-        <h2 class="cce-resource-detail__related-title">
-          <span class="cce-resource-detail__related-eyebrow">RELATED</span>
-          <span>You might also be interested in</span>
-        </h2>
-        <ul class="cce-resource-detail__related-list" role="list">
+        <div class="cce-resource-detail__related-head">
+          <h2 class="cce-resource-detail__related-title">{{ 'resources.detail.relatedEyebrow' | transloco }}</h2>
+          <div class="cce-resource-detail__related-nav">
+            <button
+              type="button"
+              mat-icon-button
+              class="cce-resource-detail__related-arrow"
+              [attr.aria-label]="'common.previous' | transloco"
+              (click)="scrollRelated(-1)">
+              <mat-icon>{{ locale() === 'ar' ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+            </button>
+            <button
+              type="button"
+              mat-icon-button
+              class="cce-resource-detail__related-arrow"
+              [attr.aria-label]="'common.next' | transloco"
+              (click)="scrollRelated(1)">
+              <mat-icon>{{ locale() === 'ar' ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <ul class="cce-resource-detail__related-track" role="list" #relatedTrack>
           @for (rel of related(); track rel.id) {
-            <li>
+            <li class="cce-resource-detail__related-item">
               <a
                 class="cce-resource-detail__related-card"
                 [attr.data-type]="rel.resourceType"
-                [routerLink]="['/knowledge-center', rel.id]"
-              >
+                [routerLink]="['/knowledge-center', rel.id]">
                 <span class="cce-resource-detail__related-icon">
                   <mat-icon>{{ iconFor(rel.resourceType) }}</mat-icon>
                 </span>
-                <span class="cce-resource-detail__related-text">
-                  <span class="cce-resource-detail__related-type">
-                    {{ ('resources.type.' + rel.resourceType) | transloco }}
-                  </span>
-                  <span class="cce-resource-detail__related-name">
-                    {{ relatedTitle(rel) }}
-                  </span>
-                  @if (rel.publishedOn) {
-                    <span class="cce-resource-detail__related-date">
-                      {{ rel.publishedOn | date: 'mediumDate' }}
-                    </span>
-                  }
+                <span class="cce-resource-detail__related-type">
+                  {{ ('resources.type.' + rel.resourceType) | transloco }}
                 </span>
-                <mat-icon class="cce-resource-detail__related-arrow">arrow_forward</mat-icon>
+                <span class="cce-resource-detail__related-name">{{ relatedTitle(rel) }}</span>
+                @if (rel.publishedOn) {
+                  <span class="cce-resource-detail__related-date">
+                    {{ rel.publishedOn | date: 'mediumDate' }}
+                  </span>
+                }
               </a>
             </li>
           }
