@@ -23,7 +23,7 @@ import {
   type ResourceType,
 } from './content.types';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
-import type { ResourceCategory, Topic } from '../taxonomies/taxonomy.types';
+import type { ResourceCategory } from '../taxonomies/taxonomy.types';
 import { CountryApiService } from '../countries/country-api.service';
 import type { Country } from '../countries/country.types';
 
@@ -40,7 +40,6 @@ interface ResourceForm {
   /** Null until the admin explicitly picks a type (US047 — no silent default). */
   resourceType: FormControl<ResourceType | null>;
   categoryId: FormControl<string>;
-  topicId: FormControl<string>;
   countryIds: FormControl<string[]>;
 }
 
@@ -134,7 +133,6 @@ export class ResourceFormDialogComponent {
   readonly errorKind = signal<string | null>(null);
   readonly isEdit: boolean;
   readonly categories = signal<ResourceCategory[]>([]);
-  readonly topics = signal<Topic[]>([]);
   readonly countries = signal<Country[]>([]);
   readonly locale = this.localeService.locale;
 
@@ -150,20 +148,17 @@ export class ResourceFormDialogComponent {
       descriptionEn: new FormControl(data.resource?.descriptionEn ?? '', { nonNullable: true, validators: [Validators.required, Validators.maxLength(DESCRIPTION_MAX)] }),
       resourceType: new FormControl<ResourceType | null>(data.resource?.resourceType ?? null, { validators: [Validators.required] }),
       categoryId: new FormControl(data.resource?.categoryId ?? '', { nonNullable: true, validators: [Validators.required] }),
-      topicId: new FormControl(data.resource?.topicId ?? '', { nonNullable: true, validators: [Validators.required] }),
       countryIds: new FormControl<string[]>(data.resource?.countryIds ?? [], { nonNullable: true, validators: [Validators.required] }),
     });
     void this.loadDropdowns();
   }
 
   private async loadDropdowns(): Promise<void> {
-    const [catRes, topicRes, countryRes] = await Promise.all([
+    const [catRes, countryRes] = await Promise.all([
       this.taxonomy.listCategories({ isActive: true, pageSize: 200 }),
-      this.taxonomy.listTopics({ isActive: true, pageSize: 200 }),
       this.countryApi.listCountries({ pageSize: 500 }),
     ]);
     if (catRes.ok) this.categories.set(catRes.value.items);
-    if (topicRes.ok) this.topics.set(topicRes.value.items);
     if (countryRes.ok) this.countries.set(countryRes.value.items);
   }
 
@@ -196,7 +191,6 @@ export class ResourceFormDialogComponent {
         descriptionEn: v.descriptionEn,
         resourceType: v.resourceType,
         categoryId: v.categoryId,
-        topicId: v.topicId || null,
         countryIds: v.countryIds,
         rowVersion: this.data.resource.rowVersion,
       });
@@ -217,7 +211,6 @@ export class ResourceFormDialogComponent {
         descriptionEn: v.descriptionEn,
         resourceType: v.resourceType,
         categoryId: v.categoryId,
-        topicId: v.topicId || null,
         countryIds: v.countryIds,
         assetFileId: asset.id,
       });

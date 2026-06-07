@@ -109,10 +109,12 @@
               <dt>{{ 'resources.detail.factType' | transloco }}</dt>
               <dd>{{ ('resources.type.' + r.resourceType) | transloco }}</dd>
             </div>
-            <div class="cce-resource-detail__fact">
-              <dt>{{ 'resources.detail.factFormat' | transloco }}</dt>
-              <dd>{{ fileFormat() }}</dd>
-            </div>
+            @if (fileFormat()) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factFormat' | transloco }}</dt>
+                <dd>{{ fileFormat() }}</dd>
+              </div>
+            }
             @if (languages()) {
               <div class="cce-resource-detail__fact">
                 <dt>{{ 'resources.detail.factLanguage' | transloco }}</dt>
@@ -170,40 +172,16 @@
 
       <!-- ── Document feed ── -->
       <div class="cce-resource-detail__main">
-        <!-- Hero media container -->
+        <!-- Hero media container — type-tinted placeholder. The inline
+             player returns once the API provides a real videoUrl. -->
         <figure class="cce-resource-detail__media" id="section-overview">
-          @if (video(); as v) {
-            @if (v.provider === 'youtube' && videoIframeUrl(); as iframeSrc) {
-              <iframe
-                class="cce-resource-detail__video cce-resource-detail__video--iframe"
-                [src]="iframeSrc"
-                title="Video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
-            } @else {
-              <video
-                class="cce-resource-detail__video"
-                [src]="v.url"
-                [attr.poster]="v.poster || null"
-                controls
-                preload="metadata"
-                playsinline>
-                Your browser does not support the video tag.
-              </video>
-            }
-          } @else {
-            <div class="cce-resource-detail__media-placeholder">
-              <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
-            </div>
-          }
+          <div class="cce-resource-detail__media-placeholder">
+            <mat-icon>{{ iconFor(r.resourceType) }}</mat-icon>
+          </div>
         </figure>
 
-        <!-- Executive summary -->
+        <!-- Description — rendered as-is, no invented heading -->
         <section class="cce-resource-detail__section" id="section-summary">
-          <h2 class="cce-resource-detail__section-title">{{ 'resources.detail.summaryTitle' | transloco }}</h2>
           <div class="cce-resource-detail__body" [innerHTML]="description()"></div>
         </section>
 

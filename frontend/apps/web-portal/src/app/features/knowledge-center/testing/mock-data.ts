@@ -203,37 +203,8 @@ export function getMockResource(id: string): Resource | null {
     uploadedById: 'demo-author',
     assetFileId: `asset-${id}`,
     isCenterManaged: true,
-    highlights: MOCK_HIGHLIGHTS,
   };
 }
-
-/** Demo "key results" cards shown on the detail page for mock resources. */
-export const MOCK_HIGHLIGHTS = [
-  {
-    titleEn: 'Efficiency achievements',
-    titleAr: 'إنجازات الكفاءة',
-    textEn: 'Tandem perovskite-silicon cells reached an average conversion efficiency of 30% in field conditions.',
-    textAr: 'وصلت الخلايا الترادفية (بيروفسكايت-سيليكون) إلى متوسط كفاءة تحويل 30% في الظروف الميدانية.',
-  },
-  {
-    titleEn: 'Market growth',
-    titleAr: 'نمو السوق',
-    textEn: 'Developing regions are projected to grow at a 24% CAGR through the end of the decade.',
-    textAr: 'من المتوقع أن تنمو الأسواق الناشئة بمعدل نمو سنوي مركّب 24% حتى نهاية العقد.',
-  },
-  {
-    titleEn: 'Grid integration',
-    titleAr: 'التكامل مع الشبكة',
-    textEn: 'AI-driven demand response reduced curtailment waste by 15% across pilot deployments.',
-    textAr: 'قللت الاستجابة الذكية للطلب المدعومة بالذكاء الاصطناعي الهدر بنسبة 15% في النشرات التجريبية.',
-  },
-  {
-    titleEn: 'Storage integration',
-    titleAr: 'تكامل التخزين',
-    textEn: 'Solid-state batteries achieved cost parity with discharge durations of up to 4 hours.',
-    textAr: 'حققت بطاريات الحالة الصلبة تكافؤ التكلفة مع مدد تفريغ تصل إلى 4 ساعات.',
-  },
-];
 
 export const MOCK_CATEGORIES: ResourceCategory[] = [
   { id: 'c1', nameEn: 'Climate Policy', nameAr: 'سياسة المناخ', slug: 'climate-policy', parentId: null, orderIndex: 1 },

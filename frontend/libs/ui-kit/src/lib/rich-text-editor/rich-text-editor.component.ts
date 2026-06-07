@@ -25,7 +25,12 @@ const BASIC_TOOLBAR: QuillModules = {
   standalone: true,
   imports: [QuillModule, FormsModule],
   template: `
-    <div class="cce-rte__wrapper" [class.cce-rte--disabled]="isDisabled">
+    <div
+      class="cce-rte__wrapper"
+      [class.cce-rte--disabled]="isDisabled"
+      [class.cce-rte--rtl]="dir === 'rtl'"
+      [class.cce-rte--ltr]="dir === 'ltr'"
+    >
       @if (label) {
         <label class="cce-rte__label">{{ label }}</label>
       }
@@ -108,6 +113,18 @@ const BASIC_TOOLBAR: QuillModules = {
       border-color: rgba(0, 0, 0, 0.87);
     }
 
+    /* Forced content direction — overrides the document direction so an
+       Arabic-content field is RTL even in an LTR UI and vice versa. */
+    .cce-rte--rtl ::ng-deep .ql-editor {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .cce-rte--ltr ::ng-deep .ql-editor {
+      direction: ltr;
+      text-align: left;
+    }
+
     /* Disabled state */
     .cce-rte--disabled ::ng-deep .ql-toolbar.ql-snow,
     .cce-rte--disabled ::ng-deep .ql-container.ql-snow {
@@ -136,6 +153,12 @@ export class RichTextEditorComponent implements ControlValueAccessor {
    *  which is what the backend validates against). Pair with a
    *  Validators.maxLength on the form control to actually block submit. */
   @Input() maxLength?: number;
+
+  /** Force the editor CONTENT direction regardless of the page locale —
+   *  e.g. dir="rtl" for an Arabic-content field inside an English UI,
+   *  or dir="ltr" for an English-content field inside an Arabic UI.
+   *  Unset = inherit from the document. */
+  @Input() dir?: 'rtl' | 'ltr';
 
   private readonly cdr = inject(ChangeDetectorRef);
 

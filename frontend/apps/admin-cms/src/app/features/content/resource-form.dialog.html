@@ -23,18 +23,20 @@
       </mat-form-field>
     </div>
 
-    <div class="cce-resource-form__row">
-      <cce-rich-text-editor
-        formControlName="descriptionAr"
-        [label]="'resources.field.descriptionAr' | transloco"
-        [maxLength]="descriptionMax"
-      />
-      <cce-rich-text-editor
-        formControlName="descriptionEn"
-        [label]="'resources.field.descriptionEn' | transloco"
-        [maxLength]="descriptionMax"
-      />
-    </div>
+    <cce-rich-text-editor
+      class="cce-resource-form__full"
+      formControlName="descriptionAr"
+      [label]="'resources.field.descriptionAr' | transloco"
+      [maxLength]="descriptionMax"
+      dir="rtl"
+    />
+    <cce-rich-text-editor
+      class="cce-resource-form__full"
+      formControlName="descriptionEn"
+      [label]="'resources.field.descriptionEn' | transloco"
+      [maxLength]="descriptionMax"
+      dir="ltr"
+    />
 
     <div class="cce-resource-form__row">
       <mat-form-field appearance="outline">
@@ -61,18 +63,6 @@
         }
       </mat-form-field>
     </div>
-
-    <mat-form-field appearance="outline" class="cce-resource-form__full">
-      <mat-label>{{ 'resources.field.topicId' | transloco }}</mat-label>
-      <mat-select formControlName="topicId">
-        @for (t of topics(); track t.id) {
-          <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
-        }
-      </mat-select>
-      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
-        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
-      }
-    </mat-form-field>
 
     <mat-form-field appearance="outline" class="cce-resource-form__full">
       <mat-label>{{ 'resources.field.countryIds' | transloco }}</mat-label>

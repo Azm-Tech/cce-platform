@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,10 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { KnowledgeApiService } from './knowledge-api.service';
-import { getMockResource, getMockVideo } from './testing/mock-data';
-import { MOCK_RESOURCES } from './testing/mock-data';
 import type { Resource, ResourceListItem } from './knowledge.types';
 
 @Component({
@@ -32,7 +29,7 @@ export class ResourceDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
-  private readonly sanitizer = inject(DomSanitizer);
+  private readonly transloco = inject(TranslocoService);
 
   @ViewChild('relatedTrack') relatedTrack?: ElementRef<HTMLElement>;
 
@@ -74,37 +71,8 @@ export class ResourceDetailPage implements OnInit {
   /** Type-color theming token used by the SCSS via [data-type]. */
   readonly typeKey = computed<string>(() => this.resource()?.resourceType ?? 'Report');
 
-  /**
-   * Demo video metadata when the resource is Media type. Real backend
-   * payloads can include a videoUrl on the Resource type in the
-   * future; for now we look it up from the mock helper which serves
-   * a public sample MP4 so the inline player always plays something.
-   */
-  readonly video = computed<{ url: string; poster: string; durationLabel: string; provider: 'mp4' | 'youtube' } | null>(() => {
-    const r = this.resource();
-    if (!r || r.resourceType !== 'Media') return null;
-    return getMockVideo(r.id);
-  });
-
-  /** Angular requires iframe[src] to be a SafeResourceUrl — sanitize
-   *  the YouTube embed URL once per video change. */
-  readonly videoIframeUrl = computed<SafeResourceUrl | null>(() => {
-    const v = this.video();
-    if (!v || v.provider !== 'youtube') return null;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(v.url);
-  });
-
-  /** Related resources: API results (same category) first, mock fallback, max 6. */
-  readonly related = computed<ResourceListItem[]>(() => {
-    const r = this.resource();
-    if (!r) return [];
-    const fromApi = this.apiRelated();
-    if (fromApi.length > 0) return fromApi.slice(0, 6);
-    const sameType = MOCK_RESOURCES.filter((x) =>
-      x.id !== r.id && (x.resourceType === r.resourceType || x.categoryId === r.categoryId),
-    );
-    return sameType.slice(0, 6);
-  });
+  /** Related resources — API only (same category, excluding self), max 6. */
+  readonly related = computed<ResourceListItem[]>(() => this.apiRelated().slice(0, 6));
 
   /** Localized "key results" cards — section hidden when the API has none. */
   readonly highlights = computed<{ title: string; text: string }[]>(() => {
@@ -129,26 +97,22 @@ export class ResourceDetailPage implements OnInit {
     return out;
   });
 
-  /** File format derived from the asset file extension, falling back to type. */
+  /** File format — real data only: the asset file's extension, or empty
+   *  (the row is hidden) when there's no file name to derive it from. */
   readonly fileFormat = computed<string>(() => {
-    const r = this.resource();
-    if (!r) return '';
-    const ext = r.assetFileName?.split('.').pop()?.toUpperCase();
-    if (ext && ext.length <= 5) return ext;
-    return r.resourceType === 'Media' ? 'MP4'
-      : r.resourceType === 'Presentation' ? 'PPTX'
-      : 'PDF';
+    const ext = this.resource()?.assetFileName?.split('.').pop()?.toUpperCase();
+    return ext && ext.length <= 5 ? ext : '';
   });
 
-  /** "Arabic, English" depending on which localized titles exist. */
+  /** "العربية، الإنجليزية" — localized via the common.locale.* i18n keys,
+   *  listing only the languages the resource actually has titles for. */
   readonly languages = computed<string>(() => {
     const r = this.resource();
     if (!r) return '';
-    const ar = this.locale() === 'ar';
     const langs: string[] = [];
-    if (r.titleAr) langs.push(ar ? 'العربية' : 'Arabic');
-    if (r.titleEn) langs.push(ar ? 'الإنجليزية' : 'English');
-    return langs.join(ar ? '، ' : ', ');
+    if (r.titleAr) langs.push(this.transloco.translate('common.locale.ar'));
+    if (r.titleEn) langs.push(this.transloco.translate('common.locale.en'));
+    return langs.join(this.locale() === 'ar' ? '، ' : ', ');
   });
 
   /** Smooth-scroll to an in-page section and mark it active in the TOC. */
@@ -226,13 +190,7 @@ export class ResourceDetailPage implements OnInit {
         void this.loadRelated(res.value);
         return;
       }
-      // Backend unavailable / not-found — fall back to the mock dataset
-      // so the demo page always shows content when navigating to a card.
-      const mock = getMockResource(id);
-      if (mock) {
-        this.resource.set(mock);
-        return;
-      }
+      // API-only: no mock fallback — surface the real error state.
       this.errorKind.set(res.error.kind);
     } finally {
       this.loading.set(false);
@@ -258,68 +216,19 @@ export class ResourceDetailPage implements OnInit {
     this.downloading.set(true);
     try {
       const res = await this.api.download(r.id);
-      this.downloading.set(false);
       if (res.ok) {
         this.saveBlob(res.value, this.filenameFor(r));
+        this.toast.success('confirmations.CON001');
       } else {
-        // Backend has no real file for this resource (mock dataset).
-        // Generate a demo artifact so the button always produces something.
-        const demo = this.buildDemoBlob(r);
-        this.saveBlob(demo.blob, demo.filename);
+        // No demo fallback — report the real failure (BRD ERR002).
+        this.toast.error('errors.ERR002');
       }
-      this.toast.success('confirmations.CON001');
     } catch {
-      this.downloading.set(false);
       this.toast.error('errors.ERR002');
+    } finally {
+      this.downloading.set(false);
+      this.cdr.markForCheck();
     }
-  }
-
-  /**
-   * Build a placeholder download artifact when the backend has no file.
-   * For Link resources we open the original URL in a new tab; for any
-   * other type we create a small text file with the title + description
-   * + meta — useful for demo, never errors.
-   */
-  private buildDemoBlob(r: Resource): { blob: Blob; filename: string } {
-    const titleEn = r.titleEn || 'CCE Resource';
-    const titleAr = r.titleAr || '';
-    const descPlainEn = (r.descriptionEn || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    const descPlainAr = (r.descriptionAr || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    const published = r.publishedOn ? new Date(r.publishedOn).toISOString().slice(0, 10) : 'n/a';
-
-    const body = [
-      'CCE — Carbon Circular Economy',
-      '======================================',
-      '',
-      `Title (EN): ${titleEn}`,
-      titleAr ? `Title (AR): ${titleAr}` : '',
-      `Type: ${r.resourceType}`,
-      `Published: ${published}`,
-      `Views: ${r.viewCount}`,
-      `Resource ID: ${r.id}`,
-      '',
-      '── Description (EN) ──',
-      descPlainEn || '(no description)',
-      '',
-      titleAr ? '── الوصف (AR) ──' : '',
-      titleAr ? (descPlainAr || '(لا يوجد وصف)') : '',
-      '',
-      '──────────────────────────────────────',
-      'Demo download — generated by the CCE web portal.',
-      'In production, this download would deliver the underlying',
-      'asset file (PDF, MP4, JPG, DOCX, etc.) referenced by the',
-      'resource record.',
-      '',
-    ].filter((line) => line !== '').join('\n');
-
-    return {
-      blob: new Blob([body], { type: 'text/plain;charset=utf-8' }),
-      filename: `${this.safeTitleSlug(r)}.txt`,
-    };
-  }
-
-  private safeTitleSlug(r: Resource): string {
-    return r.titleEn.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'cce-resource';
   }
 
   iconFor(type: Resource['resourceType']): string {
@@ -338,11 +247,10 @@ export class ResourceDetailPage implements OnInit {
   }
 
   private filenameFor(r: Resource): string {
+    // Prefer the real uploaded file name; fall back to a title-based slug.
+    if (r.assetFileName) return r.assetFileName;
     const safeTitle = r.titleEn.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'resource';
-    const ext = r.resourceType === 'Media' ? '.mp4'
-      : r.resourceType === 'Presentation' ? '.pptx'
-      : '.pdf';
-    return `${safeTitle}${ext}`;
+    return safeTitle;
   }
 
   private saveBlob(blob: Blob, filename: string): void {
