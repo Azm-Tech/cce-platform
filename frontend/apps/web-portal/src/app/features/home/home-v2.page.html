@@ -1,5 +1,9 @@
 <div class="cce-home2">
 
+  @if (errorKind(); as kind) {
+    <div class="cce-home2__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
+  }
+
   <!-- ══════════════════════════════════════════════════ VIDEO BANNER -->
   <section class="cce-home2__video-banner">
     @if (videoFileUrl(); as url) {

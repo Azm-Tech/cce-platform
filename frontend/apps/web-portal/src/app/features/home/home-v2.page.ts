@@ -38,6 +38,8 @@ export class HomeV2Page implements OnInit {
   private readonly router = inject(Router);
 
   readonly loading = signal(true);
+  /** Set when the core homepage settings call fails (US001 AC4/AC5 — ERR001). */
+  readonly errorKind = signal<string | null>(null);
   readonly sections = signal<HomepageSection[]>([]);
   readonly settings = signal<HomepageSettings | null>(null);
   readonly news = signal<NewsArticle[]>([]);
@@ -174,6 +176,9 @@ export class HomeV2Page implements OnInit {
           .filter((s) => s.isActive)
           .sort((a, b) => a.orderIndex - b.orderIndex),
       );
+    } else {
+      // Core homepage content failed to load — surface ERR001 (US001 AC4/AC5).
+      this.errorKind.set(settingsRes.error.kind);
     }
     if (newsRes.ok) this.news.set(this.extractItems(newsRes.value));
     if (eventsRes.ok) this.events.set(this.extractItems(eventsRes.value));
