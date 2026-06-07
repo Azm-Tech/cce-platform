@@ -64,7 +64,7 @@ export class ResourcesListPage implements OnInit {
   readonly displayedColumns = ['title', 'category', 'resourceType', 'isPublished', 'publishedOn', 'views', 'actions', 'delete'];
   readonly publishedFilters = [
     { value: '', labelKey: 'resources.filter.all' },
-    { value: 'true', labelKey: 'resources.filter.published' },
+    { value: 'true', labelKey: 'resources.filter.publishedOnly' },
     { value: 'false', labelKey: 'resources.filter.draft' },
   ];
 

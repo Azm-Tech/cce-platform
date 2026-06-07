@@ -690,7 +690,8 @@
       "allCountries": "All countries",
       "category": "Category",
       "searchCountries": "Search countries...",
-      "noMatch": "No matching results"
+      "noMatch": "No matching results",
+      "publishedOnly": "Published"
     },
     "search": {
       "placeholder": "Search resources…"

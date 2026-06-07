@@ -690,7 +690,8 @@
       "allCountries": "جميع الدول",
       "category": "التصنيف",
       "searchCountries": "ابحث عن دولة...",
-      "noMatch": "لا توجد نتائج مطابقة"
+      "noMatch": "لا توجد نتائج مطابقة",
+      "publishedOnly": "منشور"
     },
     "search": {
       "placeholder": "ابحث في الموارد…"
