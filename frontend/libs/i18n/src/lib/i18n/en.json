@@ -195,10 +195,22 @@
         "d3": "Excellent research review on the efficiency of modern bio-filters for carbon sequestration applications..."
       },
       "metrics": {
-        "m1": { "value": "+15,000", "label": "Active Monthly Users" },
-        "m2": { "value": "+3,200", "label": "Published Research Papers" },
-        "m3": { "value": "+1,800", "label": "Certified Expert Consultants" },
-        "m4": { "value": "+2,500 tons", "label": "Managed Emissions Rate" }
+        "m1": {
+          "value": "+15,000",
+          "label": "Active Monthly Users"
+        },
+        "m2": {
+          "value": "+3,200",
+          "label": "Published Research Papers"
+        },
+        "m3": {
+          "value": "+1,800",
+          "label": "Certified Expert Consultants"
+        },
+        "m4": {
+          "value": "+2,500 tons",
+          "label": "Managed Emissions Rate"
+        }
       },
       "objective": {
         "eyebrow": "OUR MISSION",
@@ -317,7 +329,9 @@
       "switchTo": "Switch to",
       "ar": "العربية",
       "en": "English"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   },
   "health": {
     "title": "System Health",
@@ -336,11 +350,14 @@
     "not-found": "Item not found.",
     "unknown": "Unexpected error. Try again.",
     "retry": "Retry",
+    "ERR002": "Could not download the resource. Please try again.",
     "ERR004": "Sharing failed. Please try again.",
     "ERR006": "Could not add the event to your calendar. Please try again later.",
     "ERR013": "Required fields are missing.",
     "ERR027": "Could not upload the news/event. Please try again.",
-    "ERR028": "Could not delete the news/event. Please try again."
+    "ERR028": "Could not delete the news/event. Please try again.",
+    "ERR029": "Could not upload the resource. Please try again.",
+    "ERR030": "Could not delete the resource. Please try again."
   },
   "info": {
     "INF003": "No news or events available yet."
@@ -352,6 +369,8 @@
     "native": "Share via…"
   },
   "confirmations": {
+    "CON001": "Resource downloaded! You can now access the file from your device.",
+    "CON002": "Resource shared successfully!",
     "CON003": "Shared successfully!",
     "CON004": "Event added to your calendar.",
     "CON020": "News/event deleted successfully.",
@@ -664,7 +683,14 @@
       "country": "Country",
       "resourceType": "Type",
       "allTypes": "All types",
-      "allCategories": "All categories"
+      "allCategories": "All categories",
+      "allCountries": "All countries",
+      "category": "Category",
+      "searchCountries": "Search countries...",
+      "noMatch": "No matching results"
+    },
+    "search": {
+      "placeholder": "Search resources…"
     },
     "field": {
       "titleAr": "Title (Arabic)",
@@ -672,9 +698,10 @@
       "descriptionAr": "Description (Arabic)",
       "descriptionEn": "Description (English)",
       "resourceType": "Type",
-      "categoryId": "Category ID",
-      "countryId": "Country ID (optional)",
-      "asset": "File"
+      "categoryId": "Category",
+      "asset": "File",
+      "topicId": "Topic",
+      "countryIds": "Covered Countries"
     },
     "create": {
       "openButton": "New resource",
@@ -698,17 +725,63 @@
     "empty": "No resources match your filters.",
     "publishedOn": "Published on",
     "viewCount": "{{count}} views",
-    "back": "Back to all resources",
+    "back": "Back to the resource library",
     "type": {
-      "Pdf": "PDF",
-      "Video": "Video",
-      "Image": "Image",
-      "Link": "Link",
-      "Document": "Document"
+      "Paper": "Paper",
+      "Article": "Article",
+      "Study": "Study",
+      "Presentation": "Presentation",
+      "ScientificPaper": "Scientific Paper",
+      "Report": "Report",
+      "Book": "Book",
+      "Research": "Research",
+      "CceGuide": "CCE Guide",
+      "Media": "Media"
     },
     "download": {
       "openButton": "Download",
       "toast": "Download started."
+    },
+    "sort": {
+      "label": "Sort by",
+      "date": "Date",
+      "views": "Most viewed",
+      "title": "Title"
+    },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
+    },
+    "detail": {
+      "getResourceTitle": "GET THIS RESOURCE",
+      "getResourceHint": "Download a copy or open the original source.",
+      "metaMinRead": "min read",
+      "metaViews": "views",
+      "factType": "Type",
+      "factPublished": "Published",
+      "factReadingTime": "Reading time",
+      "factViews": "Views",
+      "relatedEyebrow": "Related",
+      "relatedTitle": "You might also be interested in",
+      "toc": "Contents",
+      "tocOverview": "Overview",
+      "tocSummary": "Executive summary",
+      "tocResults": "Key results",
+      "docData": "Document details",
+      "summaryTitle": "Executive Summary",
+      "resultsTitle": "Key Results",
+      "factFormat": "Format",
+      "factLanguage": "Language",
+      "factFile": "File",
+      "downloadCta": "Download report",
+      "shareCta": "Share report"
+    },
+    "delete": {
+      "openButton": "Delete",
+      "title": "Delete resource",
+      "message": "Delete this resource? This action cannot be undone.",
+      "confirm": "Delete",
+      "toast": "Resource deleted successfully!"
     }
   },
   "countryResourceRequest": {
@@ -793,6 +866,19 @@
     "empty": "No news articles published yet.",
     "emptyDesc": "Stories published by the editorial team will appear here.",
     "back": "Back to news",
+    "detail": {
+      "overview": "Overview",
+      "publisher": "Publisher",
+      "publisherDesc": "A leading research center providing analysis and research on energy economics and sustainability.",
+      "contents": "Contents",
+      "shareTitle": "Share this article",
+      "newsletterTitle": "Stay informed",
+      "newsletterSub": "Get our latest analysis and news straight to your inbox.",
+      "newsletterEmail": "Email address",
+      "newsletterJoin": "Join now",
+      "relatedTitle": "Read more similar news",
+      "minRead": "min read"
+    },
     "publishedOn": "Published",
     "featured": {
       "toggle": "Featured only",
@@ -955,6 +1041,12 @@
     "tagUpcoming": "Upcoming event",
     "tagPast": "Past event",
     "tagToday": "Today",
+    "venue": {
+      "zoom": "Online — Zoom",
+      "teams": "Online — Microsoft Teams",
+      "meet": "Online — Google Meet",
+      "online": "Online"
+    },
     "searchPlaceholder": "Search events by title or location…",
     "filteredEmpty": "No events match your filters.",
     "clearSearch": "Clear",
