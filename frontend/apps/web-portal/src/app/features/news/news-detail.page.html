@@ -108,7 +108,7 @@
       </div>
 
       <section id="overview" class="cce-news-detail__section">
-        <h2 class="cce-news-detail__section-title">{{ isAr() ? 'نظرة عامة' : 'Overview' }}</h2>
+        <h2 class="cce-news-detail__section-title">{{ 'news.detail.overview' | transloco }}</h2>
         <div class="cce-news-detail__body" [innerHTML]="contentHtml()"></div>
       </section>
 
@@ -125,14 +125,8 @@
           <mat-icon>account_balance</mat-icon>
         </div>
         <div class="cce-news-detail__publisher-body">
-          <h3 class="cce-news-detail__publisher-name">
-            {{ isAr() ? 'الناشر' : 'Publisher' }}
-          </h3>
-          <p class="cce-news-detail__publisher-desc">
-            {{ isAr()
-              ? 'مركز بحثي رائد يُقدّم تحليلات وأبحاث في اقتصاديات الطاقة والاستدامة.'
-              : 'A leading research center providing analysis and research on energy economics and sustainability.' }}
-          </p>
+          <h3 class="cce-news-detail__publisher-name">{{ 'news.detail.publisher' | transloco }}</h3>
+          <p class="cce-news-detail__publisher-desc">{{ 'news.detail.publisherDesc' | transloco }}</p>
         </div>
       </section>
     </article>
@@ -140,7 +134,7 @@
     <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
     <aside class="cce-news-detail__sidebar">
       <div class="cce-news-detail__widget cce-news-detail__widget--toc">
-        <h3 class="cce-news-detail__widget-title">{{ isAr() ? 'المحتويات' : 'Contents' }}</h3>
+        <h3 class="cce-news-detail__widget-title">{{ 'news.detail.contents' | transloco }}</h3>
         <nav>
           <ul role="list">
             @for (item of toc(); track item.id) {
@@ -160,7 +154,7 @@
       </div>
 
       <div class="cce-news-detail__widget">
-        <h3 class="cce-news-detail__widget-title">{{ isAr() ? 'شارك هذا الخبر' : 'Share this article' }}</h3>
+        <h3 class="cce-news-detail__widget-title">{{ 'news.detail.shareTitle' | transloco }}</h3>
         <div class="cce-news-detail__share">
           <button type="button" class="cce-news-detail__share-btn" aria-label="WhatsApp" (click)="openShare(shareUrls().whatsapp)">
             <mat-icon>chat</mat-icon>
@@ -184,23 +178,17 @@
         <span class="cce-news-detail__newsletter-icon" aria-hidden="true">
           <mat-icon>mail</mat-icon>
         </span>
-        <h3 class="cce-news-detail__newsletter-title">
-          {{ isAr() ? 'ابقَ على اطلاع دائم' : 'Stay informed' }}
-        </h3>
-        <p class="cce-news-detail__newsletter-sub">
-          {{ isAr()
-            ? 'احصل على أحدث تحليلاتنا وأخبارنا مباشرة في صندوق الوارد الخاص بك.'
-            : 'Get our latest analysis and news straight to your inbox.' }}
-        </p>
+        <h3 class="cce-news-detail__newsletter-title">{{ 'news.detail.newsletterTitle' | transloco }}</h3>
+        <p class="cce-news-detail__newsletter-sub">{{ 'news.detail.newsletterSub' | transloco }}</p>
         <div class="cce-news-detail__newsletter-form">
           <input
             type="email"
             class="cce-news-detail__newsletter-input"
-            [placeholder]="(isAr() ? 'البريد الإلكتروني' : 'Email address')"
+            [placeholder]="'news.detail.newsletterEmail' | transloco"
             [formControl]="newsletterEmail"
           />
           <button type="button" class="cce-news-detail__newsletter-btn" (click)="submitNewsletter()">
-            {{ isAr() ? 'انضم الآن' : 'Join now' }}
+            {{ 'news.detail.newsletterJoin' | transloco }}
           </button>
         </div>
       </div>
@@ -211,7 +199,7 @@
   @if (related().length > 0) {
     <section id="related" class="cce-news-detail__related">
       <header class="cce-news-detail__related-head">
-        <h2>{{ isAr() ? 'قراءة المزيد من الأخبار المشابهة' : 'Read more similar news' }}</h2>
+        <h2>{{ 'news.detail.relatedTitle' | transloco }}</h2>
       </header>
       <div class="cce-news-detail__related-grid">
         @for (r of related(); track r.id) {

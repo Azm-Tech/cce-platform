@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { LocaleService } from '@frontend/i18n';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { NewsApiService } from './news-api.service';
 import type { NewsArticle } from './news.types';
@@ -35,6 +35,7 @@ export class NewsDetailPage implements OnInit {
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly article = signal<NewsArticle | null>(null);
   readonly loading = signal(false);
@@ -67,12 +68,11 @@ export class NewsDetailPage implements OnInit {
 
   /** Approximate read time, ~200 wpm, min 1 min. */
   readonly readingTime = computed(() => {
+    this.locale(); // reactive dependency — re-run on language switch
     const html = this.contentHtml();
     const words = html.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
     const minutes = Math.max(1, Math.round(words / 200));
-    return this.isAr()
-      ? `${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'} قراءة`
-      : `${minutes} min read`;
+    return `${minutes} ${this.transloco.translate('news.detail.minRead')}`;
   });
 
   /** Tags derived from the topic name. Backend currently exposes a single
@@ -86,9 +86,9 @@ export class NewsDetailPage implements OnInit {
   /** Table of contents. Includes both the static section anchors we render
    *  on the page and any `<h2>`s detected in the article body. */
   readonly toc = computed<TocItem[]>(() => {
-    const items: TocItem[] = [{ id: 'overview', label: this.isAr() ? 'نظرة عامة' : 'Overview', kind: 'static' }];
+    this.locale(); // reactive dependency — re-run on language switch
+    const items: TocItem[] = [{ id: 'overview', label: this.transloco.translate('news.detail.overview'), kind: 'static' }];
     const html = this.contentHtml();
-    // Parse h2 elements from the body for additional anchors.
     if (typeof window !== 'undefined' && html) {
       const tmp = document.createElement('div');
       tmp.innerHTML = html;
@@ -100,10 +100,10 @@ export class NewsDetailPage implements OnInit {
       });
     }
     if (this.article()) {
-      items.push({ id: 'publisher', label: this.isAr() ? 'الناشر' : 'Publisher', kind: 'static' });
+      items.push({ id: 'publisher', label: this.transloco.translate('news.detail.publisher'), kind: 'static' });
     }
     if (this.related().length > 0) {
-      items.push({ id: 'related', label: this.isAr() ? 'الأخبار المشابهة' : 'Similar news', kind: 'static' });
+      items.push({ id: 'related', label: this.transloco.translate('news.detail.relatedTitle'), kind: 'static' });
     }
     return items;
   });

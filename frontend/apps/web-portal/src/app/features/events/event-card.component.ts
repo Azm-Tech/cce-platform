@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { CalendarMenuComponent, type CalendarEventInput } from '../../shared/calendar-menu/calendar-menu.component';
 import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import type { Event as EventModel } from './event.types';
@@ -87,6 +87,7 @@ import type { Event as EventModel } from './event.types';
 })
 export class EventCardComponent {
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   readonly event = input.required<EventModel>();
   readonly locale = input<'ar' | 'en'>('en');
 
@@ -104,14 +105,14 @@ export class EventCardComponent {
 
   /** Show the online URL label when online; otherwise locale-aware location. */
   readonly venueLabel = computed<string | null>(() => {
+    this.locale(); // reactive dependency for language switch
     const e = this.event();
     if (e.onlineMeetingUrl) {
-      // Friendly label: detect Zoom / Teams / Meet, fall back to the URL.
       const url = e.onlineMeetingUrl.toLowerCase();
-      if (url.includes('zoom')) return this.locale() === 'ar' ? 'حضور عن بُعد - عبر منصة Zoom' : 'Online — Zoom';
-      if (url.includes('teams.microsoft')) return this.locale() === 'ar' ? 'حضور عن بُعد - Microsoft Teams' : 'Online — Microsoft Teams';
-      if (url.includes('meet.google')) return this.locale() === 'ar' ? 'حضور عن بُعد - Google Meet' : 'Online — Google Meet';
-      return this.locale() === 'ar' ? 'حضور عن بُعد' : 'Online';
+      if (url.includes('zoom')) return this.transloco.translate('events.venue.zoom');
+      if (url.includes('teams.microsoft')) return this.transloco.translate('events.venue.teams');
+      if (url.includes('meet.google')) return this.transloco.translate('events.venue.meet');
+      return this.transloco.translate('events.venue.online');
     }
     return this.locale() === 'ar' ? e.locationAr : e.locationEn;
   });
