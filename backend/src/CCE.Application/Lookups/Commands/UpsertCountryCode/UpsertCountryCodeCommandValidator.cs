@@ -9,5 +9,6 @@ public sealed class UpsertCountryCodeCommandValidator : AbstractValidator<Upsert
         RuleFor(x => x.NameAr).NotEmpty().MaximumLength(256);
         RuleFor(x => x.NameEn).NotEmpty().MaximumLength(256);
         RuleFor(x => x.DialCode).NotEmpty().MaximumLength(16);
+        RuleFor(x => x.FlagUrl).MaximumLength(2048);
     }
 }

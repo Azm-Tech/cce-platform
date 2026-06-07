@@ -4,6 +4,7 @@ using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Commands.RejectExpertRequest;
@@ -51,6 +52,12 @@ public sealed class RejectExpertRequestCommandHandler
         var userName = (await _db.Users.Where(u => u.Id == registration.RequestedById).Select(u => u.UserName)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
+        var cvIds = await _db.ExpertRequestAttachments
+            .Where(a => a.ExpertRequestId == registration.Id && a.AttachmentType == ExpertRequestAttachmentType.Cv)
+            .Select(a => (System.Guid?)a.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+
         return _msg.Ok(new ExpertRequestDto(
             registration.Id,
             registration.RequestedById,
@@ -63,6 +70,7 @@ public sealed class RejectExpertRequestCommandHandler
             registration.ProcessedById,
             registration.ProcessedOn,
             registration.RejectionReasonAr,
-            registration.RejectionReasonEn), "EXPERT_REQUEST_REJECTED");
+            registration.RejectionReasonEn,
+            cvIds.FirstOrDefault()), "EXPERT_REQUEST_REJECTED");
     }
 }

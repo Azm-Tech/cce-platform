@@ -44,6 +44,14 @@ public sealed class ListExpertRequestsQueryHandler
         var userNameRows = await userNamesQuery.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var nameByUserId = userNameRows.ToDictionary(r => r.UserId, r => r.UserName);
 
+        var requestIds = paged.Items.Select(r => r.Id).ToList();
+        var cvAttachmentsQuery =
+            from att in _db.ExpertRequestAttachments
+            where requestIds.Contains(att.ExpertRequestId) && att.AttachmentType == ExpertRequestAttachmentType.Cv
+            select new { att.ExpertRequestId, att.AssetFileId };
+        var cvAssetRows = await cvAttachmentsQuery.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+        var cvByRequestId = cvAssetRows.ToDictionary(r => r.ExpertRequestId, r => r.AssetFileId);
+
         var items = paged.Items.Select(r => new ExpertRequestDto(
             r.Id,
             r.RequestedById,
@@ -56,7 +64,8 @@ public sealed class ListExpertRequestsQueryHandler
             r.ProcessedById,
             r.ProcessedOn,
             r.RejectionReasonAr,
-            r.RejectionReasonEn)).ToList();
+            r.RejectionReasonEn,
+            cvByRequestId.TryGetValue(r.Id, out var cvAssetFileId) ? cvAssetFileId : null)).ToList();
 
         return new PagedResult<ExpertRequestDto>(items, paged.Page, paged.PageSize, paged.Total);
     }

@@ -48,5 +48,5 @@ public sealed class ListCountryCodesQueryHandler
     }
 
     internal static CountryCodeDto MapToDto(CountryCode c) =>
-        new(c.Id, new LocalizedTextDto(c.Name.Ar, c.Name.En), c.DialCode, c.IsActive);
+        new(c.Id, new LocalizedTextDto(c.Name.Ar, c.Name.En), c.DialCode, c.FlagUrl, c.IsActive);
 }

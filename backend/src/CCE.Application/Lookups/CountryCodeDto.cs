@@ -6,4 +6,5 @@ public sealed record CountryCodeDto(
     System.Guid Id,
     LocalizedTextDto Name,
     string DialCode,
+    string? FlagUrl,
     bool IsActive);

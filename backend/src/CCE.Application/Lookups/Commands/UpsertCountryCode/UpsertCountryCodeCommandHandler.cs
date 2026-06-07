@@ -42,7 +42,7 @@ public sealed class UpsertCountryCodeCommandHandler
 
         if (request.Id == System.Guid.Empty)
         {
-            var entity = CountryCode.Create(name, request.DialCode, by, _clock);
+            var entity = CountryCode.Create(name, request.DialCode, request.FlagUrl, by, _clock);
             await _repo.AddAsync(entity, cancellationToken).ConfigureAwait(false);
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
@@ -55,7 +55,7 @@ public sealed class UpsertCountryCodeCommandHandler
             if (entity is null)
                 return _msg.CountryCodeNotFound<CountryCodeDto>();
 
-            entity.Update(name, request.DialCode, request.IsActive, by, _clock);
+            entity.Update(name, request.DialCode, request.FlagUrl, request.IsActive, by, _clock);
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
                 CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity),

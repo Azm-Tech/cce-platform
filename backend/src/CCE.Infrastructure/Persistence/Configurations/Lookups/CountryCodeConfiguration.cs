@@ -16,6 +16,7 @@ internal sealed class CountryCodeConfiguration : IEntityTypeConfiguration<Countr
             name.Property(n => n.En).HasMaxLength(256).IsRequired();
         });
         builder.Property(c => c.DialCode).HasMaxLength(16).IsRequired();
+        builder.Property(c => c.FlagUrl).HasMaxLength(2048);
         builder.HasIndex(c => c.DialCode)
                .HasDatabaseName("ix_country_code_dial_code");
         builder.Ignore(c => c.DomainEvents);
