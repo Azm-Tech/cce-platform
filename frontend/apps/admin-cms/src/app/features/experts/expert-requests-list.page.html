@@ -72,6 +72,10 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
+@if (!loading() && !errorKind() && rows().length === 0) {
+  <p class="cce-expert-requests__empty" role="status">{{ 'info.INF005' | transloco }}</p>
+}
+
 <mat-paginator
   [length]="total()"
   [pageIndex]="page() - 1"

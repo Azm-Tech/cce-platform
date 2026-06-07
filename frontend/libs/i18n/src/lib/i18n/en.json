@@ -364,7 +364,8 @@
     "ERR025": "Sorry, a problem occurred while updating the content."
   },
   "info": {
-    "INF003": "No news or events available yet."
+    "INF003": "No news or events available yet.",
+    "INF005": "There are no expert requests at the moment."
   },
   "share": {
     "button": "Share",
