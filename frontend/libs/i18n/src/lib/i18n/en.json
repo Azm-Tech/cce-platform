@@ -359,7 +359,9 @@
     "ERR028": "Could not delete the news/event. Please try again.",
     "ERR029": "Could not upload the resource. Please try again.",
     "ERR030": "Could not delete the resource. Please try again.",
-    "fileType": "Unsupported file format. Allowed formats: PDF or Word."
+    "fileType": "Unsupported file format. Allowed formats: PDF or Word.",
+    "ERR001": "An error occurred while loading the page.",
+    "ERR025": "Sorry, a problem occurred while updating the content."
   },
   "info": {
     "INF003": "No news or events available yet."
@@ -376,7 +378,8 @@
     "CON003": "Shared successfully!",
     "CON004": "Event added to your calendar.",
     "CON020": "News/event deleted successfully.",
-    "CON021": "Uploaded successfully!"
+    "CON021": "Uploaded successfully!",
+    "CON016": "Update completed successfully."
   },
   "nav": {
     "sidebarLabel": "Admin navigation",
