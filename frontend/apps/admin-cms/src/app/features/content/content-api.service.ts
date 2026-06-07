@@ -2,15 +2,18 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type {
-  ApproveCountryResourceRequestBody,
-  AssetFile,
-  CountryResourceRequest,
-  CreateResourceBody,
-  PagedResult,
-  RejectCountryResourceRequestBody,
-  Resource,
-  UpdateResourceBody,
+import {
+  RESOURCE_TYPE_VALUE,
+  normalizeResourceType,
+  type ApproveCountryResourceRequestBody,
+  type AssetFile,
+  type CountryResourceRequest,
+  type CreateResourceBody,
+  type PagedResult,
+  type RejectCountryResourceRequestBody,
+  type Resource,
+  type ResourceType,
+  type UpdateResourceBody,
 } from './content.types';
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
@@ -43,26 +46,32 @@ export class ContentApiService {
     if (opts.countryId) params = params.set('countryId', opts.countryId);
     if (opts.isPublished !== undefined)
       params = params.set('isPublished', String(opts.isPublished));
-    return this.run(() =>
+    return this.runNormalized(() =>
       firstValueFrom(this.http.get<PagedResult<Resource>>('/api/admin/resources', { params })),
     );
   }
 
   async createResource(body: CreateResourceBody): Promise<Result<Resource>> {
-    return this.run(() =>
-      firstValueFrom(this.http.post<Resource>('/api/admin/resources', body)),
+    return this.runNormalized(() =>
+      firstValueFrom(this.http.post<Resource>('/api/admin/resources', this.serializeBody(body))),
     );
   }
 
   async updateResource(id: string, body: UpdateResourceBody): Promise<Result<Resource>> {
-    return this.run(() =>
-      firstValueFrom(this.http.put<Resource>(`/api/admin/resources/${id}`, body)),
+    return this.runNormalized(() =>
+      firstValueFrom(this.http.put<Resource>(`/api/admin/resources/${id}`, this.serializeBody(body))),
     );
   }
 
   async publishResource(id: string): Promise<Result<Resource>> {
-    return this.run(() =>
+    return this.runNormalized(() =>
       firstValueFrom(this.http.post<Resource>(`/api/admin/resources/${id}/publish`, {})),
+    );
+  }
+
+  async deleteResource(id: string): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.delete<void>(`/api/admin/resources/${id}`)),
     );
   }
 
@@ -155,6 +164,37 @@ export class ContentApiService {
         ),
       ),
     );
+  }
+
+  /** Converts resourceType string → integer before sending to the API. */
+  private serializeBody<T extends { resourceType?: ResourceType }>(body: T): object {
+    if (!body.resourceType) return body;
+    return { ...body, resourceType: RESOURCE_TYPE_VALUE[body.resourceType] };
+  }
+
+  /** Like run(), but normalizes integer resourceType fields in the response. */
+  private async runNormalized<T extends object>(fn: () => Promise<T>): Promise<Result<T>> {
+    try {
+      const value = await fn();
+      return { ok: true, value: this.normalizeTypes(value) as T };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
+  private normalizeTypes<T>(obj: T): T {
+    if (Array.isArray(obj)) return obj.map((item) => this.normalizeTypes(item)) as unknown as T;
+    if (obj !== null && typeof obj === 'object') {
+      const result = { ...obj } as Record<string, unknown>;
+      if ('resourceType' in result) {
+        result['resourceType'] = normalizeResourceType(result['resourceType'] as ResourceType | number);
+      }
+      if ('items' in result && Array.isArray(result['items'])) {
+        result['items'] = result['items'].map((item: unknown) => this.normalizeTypes(item as object));
+      }
+      return result as T;
+    }
+    return obj;
   }
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {

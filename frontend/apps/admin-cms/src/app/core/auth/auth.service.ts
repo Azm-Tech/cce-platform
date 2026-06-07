@@ -16,6 +16,7 @@ const ALL_PERMISSIONS: readonly CcePermission[] = [
   CcePermission.CommunityPostModerate,
   CcePermission.ResourceCenterUpload,
   CcePermission.ResourceCenterUpdate,
+  CcePermission.ResourceCenterDelete,
   CcePermission.ResourceCountryApprove,
   CcePermission.NewsUpdate,
   CcePermission.NewsPublish,
@@ -48,6 +49,7 @@ const PERMISSIONS_BY_ROLE: Record<CceAdminRole, readonly CcePermission[]> = {
   [CceAdminRole.ContentManager]: [
     CcePermission.ResourceCenterUpload,
     CcePermission.ResourceCenterUpdate,
+    CcePermission.ResourceCenterDelete,
     CcePermission.NewsUpdate,
     CcePermission.NewsPublish,
     CcePermission.NewsDelete,

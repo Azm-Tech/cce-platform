@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
+import { RichTextEditorComponent } from '@frontend/ui-kit';
 import { AssetUploadComponent } from './asset-upload.component';
 import { ContentApiService } from './content-api.service';
 import {
@@ -20,8 +22,10 @@ import {
   type Resource,
   type ResourceType,
 } from './content.types';
-
-const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
+import type { ResourceCategory, Topic } from '../taxonomies/taxonomy.types';
+import { CountryApiService } from '../countries/country-api.service';
+import type { Country } from '../countries/country.types';
 
 export interface ResourceFormDialogData {
   /** When set, the dialog is in edit-mode for this resource. Otherwise it's create-mode. */
@@ -35,34 +39,85 @@ interface ResourceForm {
   descriptionEn: FormControl<string>;
   resourceType: FormControl<ResourceType>;
   categoryId: FormControl<string>;
-  countryId: FormControl<string>;
+  topicId: FormControl<string>;
+  countryIds: FormControl<string[]>;
 }
 
-/**
- * Single dialog for both Create and Edit. The shape of the form is the same
- * either way; on edit, asset replacement is intentionally NOT supported in
- * v0.1.0 (would require a separate domain operation; backend doesn't expose
- * one). Edit only lets the admin update text + resourceType + category.
- */
 @Component({
   selector: 'cce-resource-form-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,
     AssetUploadComponent,
+    RichTextEditorComponent,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   templateUrl: './resource-form.dialog.html',
+  styles: [`
+    .cce-resource-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    .cce-resource-form__row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .cce-resource-form__row mat-form-field,
+    .cce-resource-form__row cce-rich-text-editor {
+      width: 100%;
+    }
+
+    .cce-resource-form__full {
+      width: 100%;
+    }
+
+    .cce-resource-form__asset {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .cce-resource-form__asset-label {
+      font-size: 0.85rem;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 500;
+    }
+
+    .cce-resource-form__error {
+      background: #fdecea;
+      color: #b00020;
+      padding: 0.6rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      .cce-resource-form__row { grid-template-columns: 1fr; }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourceFormDialogComponent {
   private readonly api = inject(ContentApiService);
+  private readonly taxonomy = inject(TaxonomyApiService);
+  private readonly countryApi = inject(CountryApiService);
+  private readonly localeService = inject(LocaleService);
 
   readonly resourceTypes = RESOURCE_TYPES;
   readonly form: FormGroup<ResourceForm>;
@@ -70,6 +125,10 @@ export class ResourceFormDialogComponent {
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly isEdit: boolean;
+  readonly categories = signal<ResourceCategory[]>([]);
+  readonly topics = signal<Topic[]>([]);
+  readonly countries = signal<Country[]>([]);
+  readonly locale = this.localeService.locale;
 
   constructor(
     private readonly ref: MatDialogRef<ResourceFormDialogComponent, Resource | null>,
@@ -81,10 +140,23 @@ export class ResourceFormDialogComponent {
       titleEn: new FormControl(data.resource?.titleEn ?? '', { nonNullable: true, validators: [Validators.required] }),
       descriptionAr: new FormControl(data.resource?.descriptionAr ?? '', { nonNullable: true, validators: [Validators.required] }),
       descriptionEn: new FormControl(data.resource?.descriptionEn ?? '', { nonNullable: true, validators: [Validators.required] }),
-      resourceType: new FormControl<ResourceType>(data.resource?.resourceType ?? 'Pdf', { nonNullable: true, validators: [Validators.required] }),
-      categoryId: new FormControl(data.resource?.categoryId ?? '', { nonNullable: true, validators: [Validators.required, Validators.pattern(GUID_RE)] }),
-      countryId: new FormControl(data.resource?.countryId ?? '', { nonNullable: true }),
+      resourceType: new FormControl<ResourceType>(data.resource?.resourceType ?? 'Report', { nonNullable: true, validators: [Validators.required] }),
+      categoryId: new FormControl(data.resource?.categoryId ?? '', { nonNullable: true, validators: [Validators.required] }),
+      topicId: new FormControl(data.resource?.topicId ?? '', { nonNullable: true, validators: [Validators.required] }),
+      countryIds: new FormControl<string[]>(data.resource?.countryIds ?? [], { nonNullable: true, validators: [Validators.required] }),
     });
+    void this.loadDropdowns();
+  }
+
+  private async loadDropdowns(): Promise<void> {
+    const [catRes, topicRes, countryRes] = await Promise.all([
+      this.taxonomy.listCategories({ isActive: true, pageSize: 200 }),
+      this.taxonomy.listTopics({ isActive: true, pageSize: 200 }),
+      this.countryApi.listCountries({ pageSize: 500 }),
+    ]);
+    if (catRes.ok) this.categories.set(catRes.value.items);
+    if (topicRes.ok) this.topics.set(topicRes.value.items);
+    if (countryRes.ok) this.countries.set(countryRes.value.items);
   }
 
   onAssetUploaded(asset: AssetFile): void {
@@ -112,6 +184,8 @@ export class ResourceFormDialogComponent {
         descriptionEn: v.descriptionEn,
         resourceType: v.resourceType,
         categoryId: v.categoryId,
+        topicId: v.topicId || null,
+        countryIds: v.countryIds,
         rowVersion: this.data.resource.rowVersion,
       });
       this.saving.set(false);
@@ -131,7 +205,8 @@ export class ResourceFormDialogComponent {
         descriptionEn: v.descriptionEn,
         resourceType: v.resourceType,
         categoryId: v.categoryId,
-        countryId: v.countryId || null,
+        topicId: v.topicId || null,
+        countryIds: v.countryIds,
         assetFileId: asset.id,
       });
       this.saving.set(false);

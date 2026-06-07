@@ -10,6 +10,7 @@ export * from './lib/workbench-hero/workbench-hero.component';
 export * from './lib/http/server-error.interceptor';
 export * from './lib/http/api-envelope.interceptor';
 export * from './lib/validators/password.validators';
+export * from './lib/rich-text-editor/rich-text-editor.component';
 
 // SCSS theme entry-point: import via @use "@cce/ui-kit/styles/dga-theme" with mixin `cce-theme`.
 

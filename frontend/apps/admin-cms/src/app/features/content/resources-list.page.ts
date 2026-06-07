@@ -53,7 +53,7 @@ export class ResourcesListPage implements OnInit {
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
 
-  readonly displayedColumns = ['titleEn', 'resourceType', 'isPublished', 'publishedOn', 'views', 'actions'];
+  readonly displayedColumns = ['titleEn', 'resourceType', 'isPublished', 'publishedOn', 'views', 'actions', 'delete'];
   readonly publishedFilters = [
     { value: '', labelKey: 'resources.filter.all' },
     { value: 'true', labelKey: 'resources.filter.published' },
@@ -111,7 +111,7 @@ export class ResourcesListPage implements OnInit {
 
   async openCreate(): Promise<void> {
     const data: ResourceFormDialogData = {};
-    const ref = this.dialog.open(ResourceFormDialogComponent, { data, width: '720px' });
+    const ref = this.dialog.open(ResourceFormDialogComponent, { data, width: '860px', maxWidth: '95vw' });
     const created = await firstValueFrom(ref.afterClosed());
     if (created) {
       this.toast.success('resources.create.toast');
@@ -121,11 +121,28 @@ export class ResourcesListPage implements OnInit {
 
   async openEdit(row: Resource): Promise<void> {
     const data: ResourceFormDialogData = { resource: row };
-    const ref = this.dialog.open(ResourceFormDialogComponent, { data, width: '720px' });
+    const ref = this.dialog.open(ResourceFormDialogComponent, { data, width: '860px', maxWidth: '95vw' });
     const updated = await firstValueFrom(ref.afterClosed());
     if (updated) {
       this.toast.success('resources.edit.toast');
       void this.load();
+    }
+  }
+
+  async delete(row: Resource): Promise<void> {
+    const confirmed = await this.confirm.confirm({
+      titleKey: 'resources.delete.title',
+      messageKey: 'resources.delete.message',
+      confirmKey: 'resources.delete.confirm',
+      cancelKey: 'common.actions.cancel',
+    });
+    if (!confirmed) return;
+    const res = await this.api.deleteResource(row.id);
+    if (res.ok) {
+      this.toast.success('resources.delete.toast');
+      void this.load();
+    } else {
+      this.toast.error(`errors.${res.error.kind}`);
     }
   }
 

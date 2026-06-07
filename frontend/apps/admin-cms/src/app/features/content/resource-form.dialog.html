@@ -16,14 +16,14 @@
     </div>
 
     <div class="cce-resource-form__row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.descriptionAr' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.descriptionEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
-      </mat-form-field>
+      <cce-rich-text-editor
+        formControlName="descriptionAr"
+        [label]="'resources.field.descriptionAr' | transloco"
+      />
+      <cce-rich-text-editor
+        formControlName="descriptionEn"
+        [label]="'resources.field.descriptionEn' | transloco"
+      />
     </div>
 
     <div class="cce-resource-form__row">
@@ -31,21 +31,49 @@
         <mat-label>{{ 'resources.field.resourceType' | transloco }}</mat-label>
         <mat-select formControlName="resourceType">
           @for (t of resourceTypes; track t) {
-            <mat-option [value]="t">{{ t }}</mat-option>
+            <mat-option [value]="t">{{ ('resources.type.' + t) | transloco }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>{{ 'resources.field.categoryId' | transloco }}</mat-label>
-        <input matInput formControlName="categoryId" autocomplete="off" />
+        <mat-select formControlName="categoryId">
+          @for (c of categories(); track c.id) {
+            <mat-option [value]="c.id">{{ locale() === 'ar' ? c.nameAr : c.nameEn }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.categoryId.hasError('required') && form.controls.categoryId.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
     </div>
 
+    <mat-form-field appearance="outline" class="cce-resource-form__full">
+      <mat-label>{{ 'resources.field.topicId' | transloco }}</mat-label>
+      <mat-select formControlName="topicId">
+        @for (t of topics(); track t.id) {
+          <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cce-resource-form__full">
+      <mat-label>{{ 'resources.field.countryIds' | transloco }}</mat-label>
+      <mat-select formControlName="countryIds" multiple>
+        @for (c of countries(); track c.id) {
+          <mat-option [value]="c.id">{{ locale() === 'ar' ? c.nameAr : c.nameEn }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.countryIds.hasError('required') && form.controls.countryIds.touched) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
     @if (!isEdit) {
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.countryId' | transloco }}</mat-label>
-        <input matInput formControlName="countryId" autocomplete="off" />
-      </mat-form-field>
       <div class="cce-resource-form__asset">
         <span class="cce-resource-form__asset-label">{{ 'resources.field.asset' | transloco }}</span>
         <cce-asset-upload (uploaded)="onAssetUploaded($event)" />

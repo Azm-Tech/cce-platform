@@ -13,6 +13,7 @@ export const CcePermission = {
   // Resource center
   ResourceCenterUpload:       'Resource.Center.Upload',
   ResourceCenterUpdate:       'Resource.Center.Update',
+  ResourceCenterDelete:       'Resource.Center.Delete',
   ResourceCountryApprove:     'Resource.Country.Approve',
   // News
   NewsUpdate:                 'News.Update',
