@@ -42,6 +42,9 @@ export interface Resource {
   descriptionEn: string;
   resourceType: ResourceType;
   categoryId: string;
+  /** Localized category names — returned by the list/detail API. */
+  categoryNameAr?: string;
+  categoryNameEn?: string;
   topicId: string | null;
   countryIds: string[];
   uploadedById: string;

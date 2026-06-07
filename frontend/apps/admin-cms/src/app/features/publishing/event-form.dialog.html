@@ -15,16 +15,20 @@
         <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
-    <mat-form-field appearance="outline" class="cce-event-form__field--full">
-      <mat-label>{{ 'events.field.descriptionAr' | transloco }}</mat-label>
-      <textarea matInput formControlName="descriptionAr" rows="4" [maxlength]="descMax"></textarea>
-      <mat-hint align="end">{{ form.controls.descriptionAr.value.length }}/{{ descMax }}</mat-hint>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="cce-event-form__field--full">
-      <mat-label>{{ 'events.field.descriptionEn' | transloco }}</mat-label>
-      <textarea matInput formControlName="descriptionEn" rows="4" [maxlength]="descMax"></textarea>
-      <mat-hint align="end">{{ form.controls.descriptionEn.value.length }}/{{ descMax }}</mat-hint>
-    </mat-form-field>
+    <cce-rich-text-editor
+      class="cce-event-form__field--full"
+      formControlName="descriptionAr"
+      dir="rtl"
+      [label]="'events.field.descriptionAr' | transloco"
+      [maxLength]="descMax"
+    />
+    <cce-rich-text-editor
+      class="cce-event-form__field--full"
+      formControlName="descriptionEn"
+      dir="ltr"
+      [label]="'events.field.descriptionEn' | transloco"
+      [maxLength]="descMax"
+    />
     @if (!isEdit || isView) {
       <div class="cce-event-form__datetime-row">
         <mat-form-field appearance="outline" class="cce-event-form__date">

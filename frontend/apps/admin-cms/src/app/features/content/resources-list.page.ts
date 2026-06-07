@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,12 +13,16 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
+import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { formatLocaleDate } from '../../core/util/format-locale-date';
 import { ContentApiService } from './content-api.service';
 import {
   ResourceFormDialogComponent,
   type ResourceFormDialogData,
 } from './resource-form.dialog';
+import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
+import type { ResourceCategory } from '../taxonomies/taxonomy.types';
 import type { Resource } from './content.types';
 
 /**
@@ -30,7 +34,6 @@ import type { Resource } from './content.types';
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -52,8 +55,13 @@ export class ResourcesListPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
+  private readonly taxonomy = inject(TaxonomyApiService);
 
-  readonly displayedColumns = ['titleEn', 'resourceType', 'isPublished', 'publishedOn', 'views', 'actions', 'delete'];
+  readonly locale = this.localeService.locale;
+  readonly categories = signal<ResourceCategory[]>([]);
+  readonly categoryFilter = signal<string>('');
+  readonly displayedColumns = ['title', 'category', 'resourceType', 'isPublished', 'publishedOn', 'views', 'actions', 'delete'];
   readonly publishedFilters = [
     { value: '', labelKey: 'resources.filter.all' },
     { value: 'true', labelKey: 'resources.filter.published' },
@@ -70,7 +78,38 @@ export class ResourcesListPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
 
   ngOnInit(): void {
+    void this.loadCategories();
     void this.load();
+  }
+
+  private async loadCategories(): Promise<void> {
+    const res = await this.taxonomy.listCategories({ isActive: true, pageSize: 200 });
+    if (res.ok) this.categories.set(res.value.items);
+  }
+
+  categoryLabel(c: ResourceCategory): string {
+    return this.locale() === 'ar' ? c.nameAr : c.nameEn;
+  }
+
+  onCategoryFilter(value: string): void {
+    this.categoryFilter.set(value);
+    this.page.set(1);
+    void this.load();
+  }
+
+  /** Title in the active language, falling back to the other if missing. */
+  title(row: Resource): string {
+    return this.locale() === 'ar' ? row.titleAr || row.titleEn : row.titleEn || row.titleAr;
+  }
+
+  /** Localized category name from the API payload (empty when absent). */
+  categoryName(row: Resource): string {
+    return (this.locale() === 'ar' ? row.categoryNameAr : row.categoryNameEn) ?? '';
+  }
+
+  /** Locale-aware date in "4 ديسمبر 2022" form (shared helper). */
+  formatDate(iso: string | null): string {
+    return formatLocaleDate(iso, this.locale());
   }
 
   async load(): Promise<void> {
@@ -82,6 +121,7 @@ export class ResourcesListPage implements OnInit {
       pageSize: this.pageSize(),
       search: this.searchInput() || undefined,
       isPublished: isPublished === '' ? undefined : isPublished === 'true',
+      categoryId: this.categoryFilter() || undefined,
     });
     this.loading.set(false);
     if (res.ok) {

@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,8 +13,10 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
+import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { NewsFormDialogComponent, type NewsFormDialogData } from './news-form.dialog';
+import { formatLocaleDate } from '../../core/util/format-locale-date';
 import { PublishingApiService } from './publishing-api.service';
 import type { News } from './publishing.types';
 
@@ -22,7 +24,7 @@ import type { News } from './publishing.types';
   selector: 'cce-news-list',
   standalone: true,
   imports: [
-    CommonModule, DatePipe, FormsModule,
+    CommonModule, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatPaginatorModule, MatProgressBarModule, MatSelectModule, MatTableModule,
     TranslocoModule, PermissionDirective,
@@ -36,8 +38,10 @@ export class NewsListPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
 
-  readonly displayedColumns = ['titleEn', 'isPublished', 'publishedOn', 'actions'];
+  readonly locale = this.localeService.locale;
+  readonly displayedColumns = ['title', 'topic', 'isPublished', 'publishedOn', 'actions'];
   readonly searchInput = signal('');
   readonly publishedFilter = signal<string>('');
   readonly page = signal(1);
@@ -48,6 +52,20 @@ export class NewsListPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
 
   ngOnInit(): void { void this.load(); }
+
+  /** Title in the active language, falling back to the other if missing. */
+  title(r: News): string {
+    return this.locale() === 'ar' ? r.titleAr || r.titleEn : r.titleEn || r.titleAr;
+  }
+
+  /** Localized topic name from the API payload (empty when absent). */
+  topicName(r: News): string {
+    return (this.locale() === 'ar' ? r.topicNameAr : r.topicNameEn) ?? '';
+  }
+
+  formatDate(iso: string | null): string {
+    return formatLocaleDate(iso, this.locale());
+  }
 
   async load(): Promise<void> {
     this.loading.set(true);

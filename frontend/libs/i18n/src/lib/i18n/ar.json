@@ -675,7 +675,8 @@
       "published": "منشور",
       "publishedOn": "تاريخ النشر",
       "views": "المشاهدات",
-      "actions": "الإجراءات"
+      "actions": "الإجراءات",
+      "category": "التصنيف"
     },
     "filter": {
       "search": "بحث",
@@ -812,7 +813,8 @@
       "slug": "الرابط",
       "published": "منشور",
       "publishedOn": "تاريخ النشر",
-      "actions": "الإجراءات"
+      "actions": "الإجراءات",
+      "topic": "الموضوع"
     },
     "filter": {
       "search": "بحث",

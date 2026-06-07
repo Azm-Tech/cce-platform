@@ -68,7 +68,7 @@ const DESCRIPTION_MAX = 500;
     .cce-resource-form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
       padding-top: 0.25rem;
     }
 
@@ -86,6 +86,20 @@ const DESCRIPTION_MAX = 500;
 
     .cce-resource-form__full {
       width: 100%;
+    }
+
+    /* Compact the rich-text editors so two stacked ones don't blow past
+       the dialog's max-height and trigger an outer scroll. */
+    .cce-resource-form cce-rich-text-editor ::ng-deep .ql-editor {
+      min-height: 80px;
+    }
+
+    /* Let the content region itself scroll (not the whole panel), and
+       drop MDC's default bottom padding that left dead space under the
+       form before the action bar. */
+    :host ::ng-deep .mat-mdc-dialog-content {
+      max-height: 72vh;
+      padding-bottom: 0.5rem;
     }
 
     .cce-resource-form__asset {

@@ -675,7 +675,8 @@
       "published": "Published",
       "publishedOn": "Published on",
       "views": "Views",
-      "actions": "Actions"
+      "actions": "Actions",
+      "category": "Category"
     },
     "filter": {
       "search": "Search",
@@ -812,7 +813,8 @@
       "slug": "Slug",
       "published": "Published",
       "publishedOn": "Published on",
-      "actions": "Actions"
+      "actions": "Actions",
+      "topic": "Topic"
     },
     "filter": {
       "search": "Search",

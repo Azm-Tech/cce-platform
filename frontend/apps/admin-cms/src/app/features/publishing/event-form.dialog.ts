@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
 import type { Event, Topic } from './publishing.types';
@@ -102,6 +102,7 @@ interface EventForm {
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    RichTextEditorComponent,
     TranslocoModule
 ],
   providers: [provideNativeDateAdapter()],
