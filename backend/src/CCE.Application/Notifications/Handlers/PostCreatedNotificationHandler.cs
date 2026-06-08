@@ -26,22 +26,24 @@ public sealed class PostCreatedNotificationHandler
 
     public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var followerIds = await _communityRead.GetTopicFollowerIdsAsync(
-            notification.TopicId,
-            notification.AuthorId,
-            cancellationToken)
-            .ConfigureAwait(false);
+        var topicFollowers = await _communityRead.GetTopicFollowerIdsAsync(
+            notification.TopicId, notification.AuthorId, cancellationToken).ConfigureAwait(false);
+        var communityFollowers = await _communityRead.GetCommunityFollowerIdsAsync(
+            notification.CommunityId, notification.AuthorId, cancellationToken).ConfigureAwait(false);
 
-        if (followerIds.Count == 0)
+        // Union the two audiences so a user following both the topic and the community is notified once.
+        var recipients = new HashSet<System.Guid>(topicFollowers);
+        foreach (var id in communityFollowers) recipients.Add(id);
+
+        if (recipients.Count == 0)
         {
             _logger.LogInformation(
-                "No followers to notify for post {PostId} in topic {TopicId}",
-                notification.PostId,
-                notification.TopicId);
+                "No followers to notify for post {PostId} (topic {TopicId}, community {CommunityId})",
+                notification.PostId, notification.TopicId, notification.CommunityId);
             return;
         }
 
-        foreach (var userId in followerIds)
+        foreach (var userId in recipients)
         {
             await _dispatcher.DispatchAsync(new NotificationMessage(
                 TemplateCode: "COMMUNITY_POST_CREATED",

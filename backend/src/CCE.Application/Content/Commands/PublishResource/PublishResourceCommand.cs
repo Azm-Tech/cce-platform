@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CCE.Application.Content.Commands.PublishResource;
 
-public sealed record PublishResourceCommand(System.Guid Id) : IRequest<Response<ResourceDto>>;
+public sealed record PublishResourceCommand(System.Guid Id) : IRequest<Response<System.Guid>>;

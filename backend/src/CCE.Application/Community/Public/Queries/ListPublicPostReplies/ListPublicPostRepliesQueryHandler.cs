@@ -20,9 +20,10 @@ public sealed class ListPublicPostRepliesQueryHandler
         ListPublicPostRepliesQuery request,
         CancellationToken cancellationToken)
     {
+        // Top-level comments first, ranked by score; nested replies fetched via the thread query.
         var query = _db.PostReplies
-            .Where(r => r.PostId == request.PostId)
-            .OrderBy(r => r.CreatedOn)
+            .Where(r => r.PostId == request.PostId && r.ParentReplyId == null)
+            .OrderByDescending(r => r.Score)
             .Select(r => MapToDto(r));
 
         return await query
@@ -38,5 +39,8 @@ public sealed class ListPublicPostRepliesQueryHandler
         r.Locale,
         r.ParentReplyId,
         r.IsByExpert,
+        r.Depth,
+        r.ChildCount,
+        r.UpvoteCount,
         r.CreatedOn);
 }

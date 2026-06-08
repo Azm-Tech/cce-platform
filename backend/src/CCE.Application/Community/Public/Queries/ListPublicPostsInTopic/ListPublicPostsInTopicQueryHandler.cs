@@ -21,8 +21,8 @@ public sealed class ListPublicPostsInTopicQueryHandler
         CancellationToken cancellationToken)
     {
         var query = _db.Posts
-            .Where(p => p.TopicId == request.TopicId)
-            .OrderByDescending(p => p.CreatedOn)
+            .Where(p => p.TopicId == request.TopicId && p.Status == PostStatus.Published)
+            .OrderByDescending(p => p.Score)
             .Select(p => MapToDto(p));
 
         return await query
@@ -32,11 +32,15 @@ public sealed class ListPublicPostsInTopicQueryHandler
 
     internal static PublicPostDto MapToDto(Post p) => new(
         p.Id,
+        p.CommunityId,
         p.TopicId,
         p.AuthorId,
+        p.Type,
+        p.Title,
         p.Content,
         p.Locale,
         p.IsAnswerable,
         p.AnsweredReplyId,
+        p.UpvoteCount,
         p.CreatedOn);
 }

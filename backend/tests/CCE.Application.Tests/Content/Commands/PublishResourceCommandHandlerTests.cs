@@ -59,13 +59,14 @@ public class PublishResourceCommandHandlerTests
         var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
         result.Success.Should().BeTrue();
-        result.Data!.IsPublished.Should().BeTrue();
-        result.Data.PublishedOn.Should().NotBeNull();
+        result.Data.Should().Be(resource.Id);
+        resource.IsPublished.Should().BeTrue();
+        resource.PublishedOn.Should().NotBeNull();
         await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Returns_dto_unchanged_when_already_published()
+    public async Task Returns_id_when_already_published()
     {
         var clean = AssetFile.Register("k", "x.pdf", 1, "application/pdf", System.Guid.NewGuid(), Clock);
         clean.MarkClean(Clock);
@@ -77,21 +78,24 @@ public class PublishResourceCommandHandlerTests
 
         var result = await sut.Handle(new PublishResourceCommand(resource.Id), CancellationToken.None);
 
-        result.Data!.IsPublished.Should().BeTrue();
-        result.Data.PublishedOn.Should().Be(firstPublishedOn);
+        result.Data.Should().Be(resource.Id);
+        resource.PublishedOn.Should().Be(firstPublishedOn);
     }
 
     private static (PublishResourceCommandHandler sut, ICceDbContext db) BuildSut(
         Resource? resourceToReturn,
         IEnumerable<AssetFile> assets)
     {
+        var repo = Substitute.For<IRepository<Resource, System.Guid>>();
+        repo.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
+            .Returns(resourceToReturn);
+
         var db = Substitute.For<ICceDbContext>();
-        db.Resources.Returns(resourceToReturn is null ? Array.Empty<Resource>().AsQueryable() : new[] { resourceToReturn }.AsQueryable());
         db.AssetFiles.Returns(assets.AsQueryable());
 
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
 
-        return (new PublishResourceCommandHandler(db, Clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db);
+        return (new PublishResourceCommandHandler(repo, db, Clock, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db);
     }
 }

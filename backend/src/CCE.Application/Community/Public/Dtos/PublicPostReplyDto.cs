@@ -8,4 +8,7 @@ public sealed record PublicPostReplyDto(
     string Locale,
     System.Guid? ParentReplyId,
     bool IsByExpert,
+    int Depth,
+    int ChildCount,
+    int UpvoteCount,
     System.DateTimeOffset CreatedOn);

@@ -27,7 +27,7 @@ public static class EvaluationEndpoints
                 (EvaluationRating)body.ContentSuitability,
                 body.Feedback);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return result.ToHttpResult(StatusCodes.Status201Created);
+            return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()
         .WithName("SubmitEvaluation");

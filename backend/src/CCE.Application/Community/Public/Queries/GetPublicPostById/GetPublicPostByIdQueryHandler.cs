@@ -21,7 +21,7 @@ public sealed class GetPublicPostByIdQueryHandler
         CancellationToken cancellationToken)
     {
         var post = (await _db.Posts
-            .Where(p => p.Id == request.Id)
+            .Where(p => p.Id == request.Id && p.Status == CCE.Domain.Community.PostStatus.Published)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false))
             .FirstOrDefault();

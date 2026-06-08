@@ -15,6 +15,14 @@ public sealed class NotificationsHub : Hub
         await base.OnConnectedAsync().ConfigureAwait(false);
     }
 
+    /// <summary>Join a post's live group to receive VoteChanged / NewReply / PollResultsChanged events.</summary>
+    public Task Subscribe(System.Guid postId)
+        => Groups.AddToGroupAsync(Context.ConnectionId, $"post:{postId}");
+
+    /// <summary>Leave a post's live group.</summary>
+    public Task Unsubscribe(System.Guid postId)
+        => Groups.RemoveFromGroupAsync(Context.ConnectionId, $"post:{postId}");
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = Context.UserIdentifier;

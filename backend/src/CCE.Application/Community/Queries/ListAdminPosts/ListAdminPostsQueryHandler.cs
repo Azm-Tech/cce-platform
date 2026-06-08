@@ -117,7 +117,7 @@ public sealed class ListAdminPostsQueryHandler
                 TopicNameEn: topic?.NameEn ?? string.Empty,
                 TopicNameAr: topic?.NameAr ?? string.Empty,
                 AuthorId: p.AuthorId,
-                Content: p.Content,
+                Content: p.Content ?? string.Empty,
                 Locale: p.Locale,
                 IsAnswerable: p.IsAnswerable,
                 IsAnswered: p.AnsweredReplyId != null,

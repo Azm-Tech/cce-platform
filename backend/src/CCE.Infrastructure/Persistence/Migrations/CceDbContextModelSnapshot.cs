@@ -75,6 +75,342 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Community.Community", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<DateTimeOffset?>("DeletedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("deleted_on");
+
+                    b.Property<string>("DescriptionAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description_ar");
+
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description_en");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<int>("MemberCount")
+                        .HasColumnType("int")
+                        .HasColumnName("member_count");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("name_en");
+
+                    b.Property<string>("PresentationJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("presentation_json");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("Visibility")
+                        .HasColumnType("int")
+                        .HasColumnName("visibility");
+
+                    b.HasKey("Id")
+                        .HasName("pk_communities");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ux_community_slug_active")
+                        .HasFilter("[is_deleted] = 0");
+
+                    b.ToTable("communities", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.CommunityFollow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("community_id");
+
+                    b.Property<DateTimeOffset>("FollowedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("followed_on");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_community_follows");
+
+                    b.HasIndex("CommunityId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_community_follow_community_user");
+
+                    b.ToTable("community_follows", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.CommunityJoinRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("community_id");
+
+                    b.Property<Guid?>("DecidedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("decided_by_id");
+
+                    b.Property<DateTimeOffset?>("DecidedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("decided_on");
+
+                    b.Property<DateTimeOffset>("RequestedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("requested_on");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_community_join_requests");
+
+                    b.HasIndex("CommunityId", "Status")
+                        .HasDatabaseName("ix_community_join_request_community_status");
+
+                    b.HasIndex("CommunityId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_community_join_request_pending")
+                        .HasFilter("[status] = 0");
+
+                    b.ToTable("community_join_requests", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.CommunityMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("community_id");
+
+                    b.Property<DateTimeOffset>("JoinedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("joined_on");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int")
+                        .HasColumnName("role");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_community_memberships");
+
+                    b.HasIndex("CommunityId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_community_membership_community_user");
+
+                    b.ToTable("community_memberships", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.Mention", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<Guid>("MentionedByUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("mentioned_by_user_id");
+
+                    b.Property<Guid>("MentionedUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("mentioned_user_id");
+
+                    b.Property<Guid>("SourceId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("source_id");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int")
+                        .HasColumnName("source_type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_mentions");
+
+                    b.HasIndex("MentionedUserId", "CreatedOn")
+                        .HasDatabaseName("ix_mention_user_created");
+
+                    b.HasIndex("SourceType", "SourceId", "MentionedUserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_mention_source_user");
+
+                    b.ToTable("mentions", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.Poll", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("AllowMultiple")
+                        .HasColumnType("bit")
+                        .HasColumnName("allow_multiple");
+
+                    b.Property<DateTimeOffset>("Deadline")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("deadline");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_anonymous");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("post_id");
+
+                    b.Property<bool>("ShowResultsBeforeClose")
+                        .HasColumnType("bit")
+                        .HasColumnName("show_results_before_close");
+
+                    b.HasKey("Id")
+                        .HasName("pk_polls");
+
+                    b.HasIndex("PostId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_poll_post");
+
+                    b.ToTable("polls", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PollOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("label");
+
+                    b.Property<Guid>("PollId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("poll_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.Property<int>("VoteCount")
+                        .HasColumnType("int")
+                        .HasColumnName("vote_count");
+
+                    b.HasKey("Id")
+                        .HasName("pk_poll_options");
+
+                    b.HasIndex("PollId", "SortOrder")
+                        .HasDatabaseName("ix_poll_option_poll_sort");
+
+                    b.ToTable("poll_options", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PollVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("PollId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("poll_id");
+
+                    b.Property<Guid>("PollOptionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("poll_option_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTimeOffset>("VotedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("voted_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_poll_votes");
+
+                    b.HasIndex("PollId", "UserId")
+                        .HasDatabaseName("ix_poll_vote_poll_user");
+
+                    b.HasIndex("PollOptionId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_poll_vote_option_user");
+
+                    b.ToTable("poll_votes", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Community.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -89,8 +425,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("author_id");
 
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("community_id");
+
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasMaxLength(8000)
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
@@ -110,6 +449,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DeletedOn")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("deleted_on");
+
+                    b.Property<int>("DownvoteCount")
+                        .HasColumnType("int")
+                        .HasColumnName("downvote_count");
 
                     b.Property<bool>("IsAnswerable")
                         .HasColumnType("bit")
@@ -133,12 +476,41 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(2)")
                         .HasColumnName("locale");
 
+                    b.Property<DateTimeOffset?>("PublishedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("published_on");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float")
+                        .HasColumnName("score");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("title");
+
                     b.Property<Guid>("TopicId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("topic_id");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasColumnName("type");
+
+                    b.Property<int>("UpvoteCount")
+                        .HasColumnType("int")
+                        .HasColumnName("upvote_count");
+
                     b.HasKey("Id")
                         .HasName("pk_posts");
+
+                    b.HasIndex("Score")
+                        .IsDescending()
+                        .HasDatabaseName("ix_post_score");
 
                     b.HasIndex("TopicId")
                         .HasDatabaseName("ix_post_topic_id");
@@ -146,7 +518,52 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasIndex("AuthorId", "CreatedOn")
                         .HasDatabaseName("ix_post_author_created");
 
+                    b.HasIndex("AuthorId", "Status")
+                        .HasDatabaseName("ix_post_author_status");
+
+                    b.HasIndex("CommunityId", "Score")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_post_community_score");
+
                     b.ToTable("posts", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PostAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AssetFileId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("asset_file_id");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("MetadataJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("metadata_json");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("post_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id")
+                        .HasName("pk_post_attachments");
+
+                    b.HasIndex("AssetFileId")
+                        .HasDatabaseName("ix_post_attachments_asset_file_id");
+
+                    b.HasIndex("PostId", "SortOrder")
+                        .HasDatabaseName("ix_post_attachment_post_sort");
+
+                    b.ToTable("post_attachments", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Community.PostFollow", b =>
@@ -177,38 +594,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("post_follows", (string)null);
                 });
 
-            modelBuilder.Entity("CCE.Domain.Community.PostRating", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("post_id");
-
-                    b.Property<DateTimeOffset>("RatedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("rated_on");
-
-                    b.Property<int>("Stars")
-                        .HasColumnType("int")
-                        .HasColumnName("stars");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_post_ratings");
-
-                    b.HasIndex("PostId", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_post_rating_post_user");
-
-                    b.ToTable("post_ratings", (string)null);
-                });
-
             modelBuilder.Entity("CCE.Domain.Community.PostReply", b =>
                 {
                     b.Property<Guid>("Id")
@@ -218,6 +603,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("author_id");
+
+                    b.Property<int>("ChildCount")
+                        .HasColumnType("int")
+                        .HasColumnName("child_count");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -240,6 +629,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DeletedOn")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("deleted_on");
+
+                    b.Property<int>("Depth")
+                        .HasColumnType("int")
+                        .HasColumnName("depth");
+
+                    b.Property<int>("DownvoteCount")
+                        .HasColumnType("int")
+                        .HasColumnName("downvote_count");
 
                     b.Property<bool>("IsByExpert")
                         .HasColumnType("bit")
@@ -271,16 +668,97 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("post_id");
 
+                    b.Property<double>("Score")
+                        .HasColumnType("float")
+                        .HasColumnName("score");
+
+                    b.Property<string>("ThreadPath")
+                        .IsRequired()
+                        .HasMaxLength(900)
+                        .HasColumnType("nvarchar(900)")
+                        .HasColumnName("thread_path");
+
+                    b.Property<int>("UpvoteCount")
+                        .HasColumnType("int")
+                        .HasColumnName("upvote_count");
+
                     b.HasKey("Id")
                         .HasName("pk_post_replies");
 
                     b.HasIndex("ParentReplyId")
                         .HasDatabaseName("ix_post_reply_parent_id");
 
-                    b.HasIndex("PostId")
-                        .HasDatabaseName("ix_post_reply_post_id");
+                    b.HasIndex("ThreadPath")
+                        .HasDatabaseName("ix_post_reply_thread_path");
+
+                    b.HasIndex("PostId", "Score")
+                        .HasDatabaseName("ix_post_reply_post_score");
 
                     b.ToTable("post_replies", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PostVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("post_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int")
+                        .HasColumnName("value");
+
+                    b.Property<DateTimeOffset>("VotedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("voted_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_post_votes");
+
+                    b.HasIndex("PostId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_post_vote_post_user");
+
+                    b.ToTable("post_votes", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.ReplyVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ReplyId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("reply_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int")
+                        .HasColumnName("value");
+
+                    b.Property<DateTimeOffset>("VotedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("voted_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reply_votes");
+
+                    b.HasIndex("ReplyId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_reply_vote_reply_user");
+
+                    b.ToTable("reply_votes", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Community.Topic", b =>
@@ -3616,6 +4094,62 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("news_tag", (string)null);
                 });
 
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("post_id");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tags_id");
+
+                    b.HasKey("PostId", "TagsId")
+                        .HasName("pk_post_tag");
+
+                    b.HasIndex("TagsId")
+                        .HasDatabaseName("ix_post_tag_tags_id");
+
+                    b.ToTable("post_tag", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PollOption", b =>
+                {
+                    b.HasOne("CCE.Domain.Community.Poll", null)
+                        .WithMany("Options")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_poll_options_polls_poll_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.Post", b =>
+                {
+                    b.HasOne("CCE.Domain.Community.Community", null)
+                        .WithMany()
+                        .HasForeignKey("CommunityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_posts_communities_community_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.PostAttachment", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.AssetFile", null)
+                        .WithMany()
+                        .HasForeignKey("AssetFileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_post_attachments_asset_files_asset_file_id");
+
+                    b.HasOne("CCE.Domain.Community.Post", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_post_attachments_posts_post_id");
+                });
+
             modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
                 {
                     b.HasOne("CCE.Domain.Content.Resource", null)
@@ -4059,6 +4593,33 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_news_tag_tags_tags_id");
+                });
+
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.HasOne("CCE.Domain.Community.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_post_tag_posts_post_id");
+
+                    b.HasOne("CCE.Domain.Content.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_post_tag_tags_tags_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.Poll", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Community.Post", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.Resource", b =>

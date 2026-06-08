@@ -471,6 +471,46 @@ EDIT_WINDOW_EXPIRED:
   ar: "انتهت فترة التعديل"
   en: "Edit window has expired"
 
+POST_VOTED:
+  ar: "تم تسجيل تقييمك."
+  en: "Your vote has been recorded."
+
+POST_ALREADY_PUBLISHED:
+  ar: "تم نشر المنشور بالفعل."
+  en: "The post is already published."
+
+POST_CREATED:
+  ar: "تم إنشاء المنشور بنجاح!"
+  en: "Post created successfully!"
+
+POST_DRAFT_SAVED:
+  ar: "تم حفظ المسودة."
+  en: "Draft saved."
+
+POST_PUBLISHED:
+  ar: "تم نشر المنشور بنجاح!"
+  en: "Post published successfully!"
+
+DRAFT_DELETED:
+  ar: "تم حذف المسودة."
+  en: "Draft deleted."
+
+COMMUNITY_NOT_FOUND:
+  ar: "المجتمع غير موجود."
+  en: "Community not found."
+
+POLL_NOT_FOUND:
+  ar: "التصويت غير موجود."
+  en: "Poll not found."
+
+POLL_CLOSED:
+  ar: "انتهت مدة التصويت."
+  en: "This poll is closed."
+
+JOIN_REQUEST_NOT_FOUND:
+  ar: "طلب الانضمام غير موجود."
+  en: "Join request not found."
+
 # ─── Country Errors ───
 
 COUNTRY_PROFILE_NOT_FOUND:

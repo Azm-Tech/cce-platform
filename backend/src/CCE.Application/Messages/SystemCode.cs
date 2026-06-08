@@ -73,6 +73,11 @@ public static class SystemCode
     public const string ERR066 = "ERR066"; // Not following
     public const string ERR067 = "ERR067"; // Cannot mark answered
     public const string ERR068 = "ERR068"; // Edit window expired
+    public const string ERR069 = "ERR069"; // Post already published (draft edit rejected)
+    public const string ERR140 = "ERR140"; // Community not found
+    public const string ERR141 = "ERR141"; // Community join request not found
+    public const string ERR142 = "ERR142"; // Poll not found
+    public const string ERR143 = "ERR143"; // Poll is closed
 
     // ─── Country / State-Rep Errors ───
     public const string ERR070 = "ERR070"; // Country not found
@@ -174,6 +179,11 @@ public static class SystemCode
     public const string CON058 = "CON058"; // Country content request submitted (appendix CON024)
     public const string CON059 = "CON059"; // Country request processed (appendix CON023)
     public const string CON064 = "CON064"; // KAPSARC snapshot refreshed
+    public const string CON065 = "CON065"; // Community post/reply vote recorded
+    public const string CON066 = "CON066"; // Community post created/published
+    public const string CON067 = "CON067"; // Community post draft saved
+    public const string CON068 = "CON068"; // Community post published
+    public const string CON069 = "CON069"; // Community post draft deleted
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

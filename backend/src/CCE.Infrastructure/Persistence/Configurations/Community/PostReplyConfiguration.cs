@@ -12,7 +12,9 @@ internal sealed class PostReplyConfiguration : IEntityTypeConfiguration<PostRepl
         builder.Property(r => r.Id).ValueGeneratedNever();
         builder.Property(r => r.Content).HasMaxLength(8000).IsRequired();
         builder.Property(r => r.Locale).HasMaxLength(2).IsRequired();
-        builder.HasIndex(r => r.PostId).HasDatabaseName("ix_post_reply_post_id");
+        builder.Property(r => r.ThreadPath).HasMaxLength(900).IsRequired();
+        builder.HasIndex(r => new { r.PostId, r.Score }).HasDatabaseName("ix_post_reply_post_score");
         builder.HasIndex(r => r.ParentReplyId).HasDatabaseName("ix_post_reply_parent_id");
+        builder.HasIndex(r => r.ThreadPath).HasDatabaseName("ix_post_reply_thread_path");
     }
 }

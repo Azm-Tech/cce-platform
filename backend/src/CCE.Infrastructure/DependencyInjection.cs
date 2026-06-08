@@ -191,6 +191,12 @@ public static class DependencyInjection
         // Topic uses IRepository<Topic, Guid> (registered below)
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
         services.AddScoped<ICommunityWriteService, CommunityWriteService>();
+        services.AddScoped<ICommunityVoteRepository, CommunityVoteRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ICommunityRepository, CommunityRepository>();
+        services.AddScoped<ICommunityAccessGuard, CommunityAccessGuard>();
+        services.AddScoped<IReplyRepository, ReplyRepository>();
+        services.AddScoped<IPollRepository, PollRepository>();
         services.AddScoped<IHomepageSettingsRepository, HomepageSettingsRepository>();
         services.AddScoped<IAboutSettingsRepository, AboutSettingsRepository>();
         services.AddScoped<IPoliciesSettingsRepository, PoliciesSettingsRepository>();
@@ -216,6 +222,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationChannelHandler, SmsNotificationChannelSender>();
         services.AddScoped<INotificationChannelHandler, InAppNotificationChannelSender>();
         services.AddScoped<ISignalRNotificationPublisher, SignalRNotificationPublisher>();
+        services.AddScoped<ICommunityRealtimePublisher, CommunityRealtimePublisher>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();

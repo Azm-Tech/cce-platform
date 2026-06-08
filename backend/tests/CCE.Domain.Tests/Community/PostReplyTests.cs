@@ -8,10 +8,10 @@ public class PostReplyTests
 {
     private static FakeSystemClock NewClock() => new();
 
-    private static PostReply NewReply(FakeSystemClock clock, System.Guid? parent = null, bool expert = false) =>
-        PostReply.Create(
+    private static PostReply NewReply(FakeSystemClock clock, bool expert = false) =>
+        PostReply.CreateRoot(
             System.Guid.NewGuid(), System.Guid.NewGuid(),
-            "إجابة", "ar", parent, expert, clock);
+            "إجابة", "ar", expert, clock);
 
     [Fact]
     public void Create_top_level_reply()
@@ -19,20 +19,23 @@ public class PostReplyTests
         var r = NewReply(NewClock());
         r.ParentReplyId.Should().BeNull();
         r.IsByExpert.Should().BeFalse();
+        r.Depth.Should().Be(0);
     }
 
     [Fact]
     public void Create_threaded_reply_has_parent()
     {
-        var parent = System.Guid.NewGuid();
-        var r = NewReply(NewClock(), parent);
-        r.ParentReplyId.Should().Be(parent);
+        var clock = NewClock();
+        var parent = NewReply(clock);
+        var child = PostReply.CreateChild(parent, System.Guid.NewGuid(), "x", "ar", false, clock);
+        child.ParentReplyId.Should().Be(parent.Id);
+        parent.ChildCount.Should().Be(1);
     }
 
     [Fact]
     public void Expert_flag_persisted_at_creation()
     {
-        var r = NewReply(NewClock(), null, expert: true);
+        var r = NewReply(NewClock(), expert: true);
         r.IsByExpert.Should().BeTrue();
     }
 
@@ -41,8 +44,8 @@ public class PostReplyTests
     {
         var clock = NewClock();
         var huge = new string('x', PostReply.MaxContentLength + 1);
-        var act = () => PostReply.Create(System.Guid.NewGuid(), System.Guid.NewGuid(),
-            huge, "ar", null, false, clock);
+        var act = () => PostReply.CreateRoot(System.Guid.NewGuid(), System.Guid.NewGuid(),
+            huge, "ar", false, clock);
         act.Should().Throw<DomainException>();
     }
 
@@ -50,8 +53,8 @@ public class PostReplyTests
     public void Invalid_locale_throws()
     {
         var clock = NewClock();
-        var act = () => PostReply.Create(System.Guid.NewGuid(), System.Guid.NewGuid(),
-            "x", "fr", null, false, clock);
+        var act = () => PostReply.CreateRoot(System.Guid.NewGuid(), System.Guid.NewGuid(),
+            "x", "fr", false, clock);
         act.Should().Throw<DomainException>();
     }
 

@@ -12,25 +12,26 @@ namespace CCE.Application.Content.Commands.UpdateResource;
 
 public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourceCommand, Response<ResourceDto>>
 {
+    private readonly IRepository<Resource, System.Guid> _repo;
     private readonly ICceDbContext _db;
     private readonly MessageFactory _messages;
 
     public UpdateResourceCommandHandler(
+        IRepository<Resource, System.Guid> repo,
         ICceDbContext db,
         MessageFactory messages)
     {
+        _repo = repo;
         _db = db;
         _messages = messages;
     }
 
     public async Task<Response<ResourceDto>> Handle(UpdateResourceCommand request, CancellationToken cancellationToken)
     {
-        var resources = await _db.Resources
-            .Include(r => r.Countries)
-            .Where(r => r.Id == request.Id)
-            .ToListAsyncEither(cancellationToken)
-            .ConfigureAwait(false);
-        var resource = resources.SingleOrDefault();
+        var resource = await _repo.GetByIdAsync(
+            request.Id,
+            q => q.Include(r => r.Countries),
+            cancellationToken).ConfigureAwait(false);
         if (resource is null)
             return _messages.ResourceNotFound<ResourceDto>();
 
