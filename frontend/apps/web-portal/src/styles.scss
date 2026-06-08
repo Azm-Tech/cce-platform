@@ -145,8 +145,22 @@ body { min-height: 100vh; }
   padding: 0.65rem 1rem;
   margin-bottom: 1rem;
 
+  /* Unified design tokens for all mat-form-fields inside the toolbar */
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.2);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 0, 0, 0.32);
+  --mdc-outlined-text-field-focus-outline-color: #006c4f;
+  --mat-select-arrow-foreground-color: rgba(28, 39, 36, 0.55);
+
   /* Suppress hint/error space under mat-form-fields in the toolbar */
   .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+  /* Reduce infix padding so field height matches the chip buttons (~40px) */
+  .mat-mdc-form-field-infix {
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    min-height: 0;
+  }
 }
 
 /* Search field stretches; sort stays compact */
@@ -240,14 +254,14 @@ body { min-height: 100vh; }
   font-weight: 600;
   color: rgba(28, 39, 36, 0.7);
   background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.18);
-  padding: 0.55rem 0.95rem;
-  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
-.cce-list-toolbar__chip:hover { color: #006c4f; border-color: rgba(0, 108, 79, 0.36); }
+.cce-list-toolbar__chip:hover { color: #006c4f; border-color: rgba(0, 0, 0, 0.32); }
 .cce-list-toolbar__chip mat-icon {
   font-size: 16px !important;
   width: 16px !important;
@@ -339,12 +353,12 @@ body { min-height: 100vh; }
 @media (max-width: 1000px) { .cce-list-grid--list { grid-template-columns: 1fr; } }
 @media (max-width: 640px)  { .cce-list-grid--list { grid-template-columns: 1fr; } }
 
-/* View-mode toggle pill (Grid ↔ List) used in list-page toolbars. */
+/* View-mode toggle (Grid ↔ List) — geometric 8px to match toolbar rhythm */
 .cce-list-toolbar__view {
   display: inline-flex;
-  background: rgba(0, 108, 79, 0.06);
-  border: 1px solid rgba(0, 108, 79, 0.14);
-  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
   padding: 3px;
 }
 .cce-list-toolbar__view-btn {
@@ -357,7 +371,7 @@ body { min-height: 100vh; }
   width: 34px;
   height: 30px;
   padding: 0;
-  border-radius: 999px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
 }
