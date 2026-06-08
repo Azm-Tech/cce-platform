@@ -164,6 +164,12 @@ body { min-height: 100vh; }
     box-sizing: border-box;
   }
 
+  /* The inner flex container must fill the wrapper so align-items:center works */
+  .mat-mdc-form-field-flex {
+    height: 100%;
+    align-items: center;
+  }
+
   /* Vertically center the input content inside the fixed-height wrapper */
   .mat-mdc-form-field-infix {
     display: flex;
@@ -171,7 +177,6 @@ body { min-height: 100vh; }
     padding-top: 0;
     padding-bottom: 0;
     min-height: 0;
-    height: 100%;
   }
 }
 

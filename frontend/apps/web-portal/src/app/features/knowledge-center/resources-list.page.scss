@@ -234,6 +234,12 @@
     box-sizing: border-box;
   }
 
+  /* The inner flex container must fill the wrapper so align-items:center works */
+  ::ng-deep .mat-mdc-form-field-flex {
+    height: 100%;
+    align-items: center;
+  }
+
   /* Vertically center input content inside the fixed-height wrapper */
   ::ng-deep .mat-mdc-form-field-infix {
     display: flex;
@@ -241,7 +247,6 @@
     padding-top: 0;
     padding-bottom: 0;
     min-height: 0;
-    height: 100%;
   }
 }
 
