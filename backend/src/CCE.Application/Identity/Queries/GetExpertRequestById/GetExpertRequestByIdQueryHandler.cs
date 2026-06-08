@@ -3,6 +3,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Messages;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.GetExpertRequestById;
@@ -38,6 +39,12 @@ public sealed class GetExpertRequestByIdQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
+        var cvAssetFileIds = await _db.ExpertRequestAttachments
+            .Where(a => a.ExpertRequestId == row.Id && a.AttachmentType == ExpertRequestAttachmentType.Cv)
+            .Select(a => (System.Guid?)a.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+
         return _msg.Ok(new ExpertRequestDto(
             row.Id,
             row.RequestedById,
@@ -50,6 +57,7 @@ public sealed class GetExpertRequestByIdQueryHandler
             row.ProcessedById,
             row.ProcessedOn,
             row.RejectionReasonAr,
-            row.RejectionReasonEn), "SUCCESS_OPERATION");
+            row.RejectionReasonEn,
+            cvAssetFileIds.FirstOrDefault()), "SUCCESS_OPERATION");
     }
 }
