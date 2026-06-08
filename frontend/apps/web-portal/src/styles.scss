@@ -153,6 +153,10 @@ body { min-height: 100vh; }
 .cce-list-toolbar__search-field {
   flex: 1 1 220px;
   min-width: 180px;
+
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(0, 108, 79, 0.05);
+  }
 }
 .cce-list-toolbar__sort {
   width: 150px;
