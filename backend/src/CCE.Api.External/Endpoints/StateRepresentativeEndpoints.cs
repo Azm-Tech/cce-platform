@@ -1,4 +1,5 @@
 using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Requests;
 using CCE.Application.Content.Commands.SubmitCountryContentRequest;
 using CCE.Application.Content.Queries.GetCountryContentRequest;
 using CCE.Application.Content.Queries.ListCountryContentRequests;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace CCE.Api.Internal.Endpoints;
+namespace CCE.Api.External.Endpoints;
 
 public static class StateRepresentativeEndpoints
 {

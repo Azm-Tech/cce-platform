@@ -1,4 +1,4 @@
-namespace CCE.Api.Internal.Endpoints;
+namespace CCE.Api.Common.Requests;
 
 public sealed record UpsertCountryProfileRequest(
     string DescriptionAr,

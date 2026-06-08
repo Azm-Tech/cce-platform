@@ -70,7 +70,6 @@ app.MapAssetEndpoints();
 app.MapResourceEndpoints();
 app.MapResourceCategoryEndpoints();
 app.MapCountryResourceRequestEndpoints();
-app.MapStateRepresentativeEndpoints();
 app.MapCountryEndpoints();
 app.MapCountryProfileEndpoints();
 app.MapKapsarcAdminEndpoints();

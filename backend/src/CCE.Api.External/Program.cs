@@ -124,6 +124,7 @@ app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();
 app.MapVerificationEndpoints();
+app.MapStateRepresentativeEndpoints();
 app.MapCountryCodesPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>

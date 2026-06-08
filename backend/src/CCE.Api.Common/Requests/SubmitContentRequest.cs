@@ -1,7 +1,7 @@
 using CCE.Domain.Content;
 using CCE.Domain.Country;
 
-namespace CCE.Api.Internal.Endpoints;
+namespace CCE.Api.Common.Requests;
 
 public sealed record SubmitContentRequest(
     ContentType Type,
