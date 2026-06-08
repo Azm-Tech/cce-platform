@@ -2,7 +2,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
@@ -33,13 +37,17 @@ interface ActiveChip {
   standalone: true,
   imports: [
     FormsModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
     MatPaginatorModule,
     MatProgressBarModule,
     TranslocoModule,
     EventCardComponent,
-    WorkbenchHeroComponent
-],
+    WorkbenchHeroComponent,
+  ],
   templateUrl: './events-list.page.html',
   styleUrl: './events-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

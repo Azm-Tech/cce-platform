@@ -7,30 +7,24 @@
 
   <!-- ─── Toolbar ─────────────────────────────────────────── -->
   <div class="cce-list-toolbar">
-    <div class="cce-list-toolbar__search">
-      <div class="cce-list-toolbar__search-inner">
-        <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
-        <input
-          type="search"
-          class="cce-list-toolbar__search-input"
-          [placeholder]="'events.searchPlaceholder' | transloco"
-          [ngModel]="query()"
-          (ngModelChange)="onQueryChange($event)"
-          [attr.aria-label]="'events.searchPlaceholder' | transloco"
-        />
-        @if (query()) {
-          <button
-            type="button"
-            class="cce-list-toolbar__search-clear"
-            [attr.aria-label]="'events.clearSearch' | transloco"
-            (click)="clearQuery()"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </div>
-    </div>
+    <!-- Search — stretches to fill available space (right side in RTL) -->
+    <mat-form-field appearance="outline" class="cce-list-toolbar__search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput
+        [ngModel]="query()"
+        (ngModelChange)="onQueryChange($event)"
+        [placeholder]="'events.searchPlaceholder' | transloco"
+      />
+      @if (query()) {
+        <button matSuffix mat-icon-button
+          [attr.aria-label]="'events.clearSearch' | transloco"
+          (click)="clearQuery()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
 
+    <!-- Filters toggle -->
     <button
       type="button"
       class="cce-list-toolbar__chip"
@@ -47,13 +41,23 @@
       }
     </button>
 
-    <div class="cce-list-toolbar__view" role="group" aria-label="View density">
+    <!-- Sort -->
+    <mat-form-field appearance="outline" class="cce-list-toolbar__sort">
+      <mat-label>{{ 'events.filters.sort' | transloco }}</mat-label>
+      <mat-select [ngModel]="sortOrder()" (ngModelChange)="setSort($event)">
+        <mat-option value="soonest">{{ 'events.filters.sortSoonest' | transloco }}</mat-option>
+        <mat-option value="latest">{{ 'events.filters.sortLatest' | transloco }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- View toggle (far left in RTL) -->
+    <div class="cce-list-toolbar__view" role="group" [attr.aria-label]="'resources.view.grid' | transloco">
       <button
         type="button"
         class="cce-list-toolbar__view-btn"
         [class.cce-list-toolbar__view-btn--active]="viewMode() === 'grid'"
         [attr.aria-pressed]="viewMode() === 'grid'"
-        aria-label="Grid view"
+        [attr.aria-label]="'resources.view.grid' | transloco"
         (click)="setViewMode('grid')"
       >
         <mat-icon>grid_view</mat-icon>
@@ -63,18 +67,12 @@
         class="cce-list-toolbar__view-btn"
         [class.cce-list-toolbar__view-btn--active]="viewMode() === 'list'"
         [attr.aria-pressed]="viewMode() === 'list'"
-        aria-label="List view"
+        [attr.aria-label]="'resources.view.list' | transloco"
         (click)="setViewMode('list')"
       >
         <mat-icon>view_agenda</mat-icon>
       </button>
     </div>
-
-    @if (!loading() && rows().length > 0) {
-      <span class="cce-list-toolbar__count">
-        {{ filtered().length }} / {{ rows().length }}
-      </span>
-    }
   </div>
 
   <!-- ─── Filter panel (collapsible) ──────────────────────── -->
@@ -149,24 +147,6 @@
       </div>
     </fieldset>
 
-    <fieldset class="cce-list-filters__group">
-      <legend class="cce-list-filters__legend">
-        <mat-icon aria-hidden="true">sort</mat-icon>
-        {{ 'events.filters.sort' | transloco }}
-      </legend>
-      <div class="cce-list-filters__seg">
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'soonest'"
-                (click)="setSort('soonest')">
-          {{ 'events.filters.sortSoonest' | transloco }}
-        </button>
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'latest'"
-                (click)="setSort('latest')">
-          {{ 'events.filters.sortLatest' | transloco }}
-        </button>
-      </div>
-    </fieldset>
   </div>
 
   <!-- ─── Active filter chips ─────────────────────────────── -->
@@ -210,12 +190,15 @@
     <div class="cce-list-grid" aria-busy="true">
       @for (s of skeletons; track $index) {
         <div class="cce-list-skeleton">
-          <div class="cce-list-skeleton__band"></div>
-          <div class="cce-list-skeleton__lines">
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--sm"></div>
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--lg"></div>
+          <div class="cce-list-skeleton__media"></div>
+          <div class="cce-list-skeleton__body">
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--meta"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--title"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--title cce-list-skeleton__line--short"></div>
             <div class="cce-list-skeleton__line"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--shorter"></div>
           </div>
+          <div class="cce-list-skeleton__foot"></div>
         </div>
       }
     </div>

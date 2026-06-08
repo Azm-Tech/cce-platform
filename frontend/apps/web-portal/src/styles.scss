@@ -138,8 +138,25 @@ body { min-height: 100vh; }
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 1.25rem;
   flex-wrap: wrap;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1rem;
+
+  /* Suppress hint/error space under mat-form-fields in the toolbar */
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+}
+
+/* Search field stretches; sort stays compact */
+.cce-list-toolbar__search-field {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.cce-list-toolbar__sort {
+  width: 150px;
+  flex-shrink: 0;
 }
 
 /* Outer pill — block (not flex) so overflow:hidden clips to border-radius in all browsers */
@@ -353,37 +370,51 @@ body { min-height: 100vh; }
 }
 
 /* ─── Skeleton (matches horizontal 75/25 card shape) ──────── */
+/* Skeleton matches the vertical card shape:
+   [ 16:9 image shimmer ]
+   [ body: meta + title×2 + excerpt×2 ]
+   [ footer bar ] */
 .cce-list-skeleton {
   background: #ffffff;
   border: 1px solid rgba(0, 60, 44, 0.06);
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
-  display: grid;
-  /* Match the cards: 25/75, image (band) leading. */
-  grid-template-columns: 1fr 3fr;
-  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-.cce-list-skeleton__lines {
+.cce-list-skeleton__media {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(90deg, #eef5f1 0%, #ddeee5 50%, #eef5f1 100%);
+  background-size: 200% 100%;
+  animation: cceListShimmer 1.6s linear infinite;
+  flex-shrink: 0;
+}
+.cce-list-skeleton__body {
+  flex: 1;
   padding: 1rem 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  justify-content: center;
+  gap: 0.55rem;
 }
-.cce-list-skeleton__band {
-  background: linear-gradient(90deg, #eef5f1 0%, #e2efe9 50%, #eef5f1 100%);
-  background-size: 200% 100%;
-  animation: cceListShimmer 1.6s linear infinite;
+.cce-list-skeleton__foot {
+  height: 42px;
+  border-top: 1px solid rgba(0, 60, 44, 0.06);
+  background: #f9fcfa;
+  flex-shrink: 0;
 }
 .cce-list-skeleton__line {
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
   background: linear-gradient(90deg, #eef0ee 0%, #e2e7e4 50%, #eef0ee 100%);
   background-size: 200% 100%;
   animation: cceListShimmer 1.6s linear infinite;
+  width: 100%;
 }
-.cce-list-skeleton__line--lg { height: 16px; width: 80%; }
-.cce-list-skeleton__line--sm { height: 10px; width: 35%; }
+.cce-list-skeleton__line--meta  { width: 48%; height: 9px; margin-bottom: 0.15rem; }
+.cce-list-skeleton__line--title { height: 15px; }
+.cce-list-skeleton__line--short   { width: 62%; }
+.cce-list-skeleton__line--shorter { width: 78%; }
 
 @keyframes cceListShimmer {
   0%   { background-position: 100% 0; }
