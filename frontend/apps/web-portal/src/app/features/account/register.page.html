@@ -54,11 +54,23 @@
 
         <mat-form-field>
           <mat-label>{{ 'account.register.nationalityLabel' | transloco }}</mat-label>
-          <mat-select formControlName="countryCodeId">
-            @for (cc of countryCodes(); track cc.id) {
+          <mat-select formControlName="countryCodeId" (openedChange)="onNationalityPanelChange($event)">
+            <div class="cce-register__select-search" (click)="$event.stopPropagation()">
+              <input
+                #nationalitySearchInput
+                type="text"
+                class="cce-register__select-search-input"
+                [placeholder]="'common.search' | transloco"
+                (keydown)="$event.stopPropagation()"
+                (input)="nationalitySearchText.set($any($event.target).value)"
+              />
+            </div>
+            @for (cc of filteredNationalities(); track cc.id) {
               <mat-option [value]="cc.id">
                 {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
               </mat-option>
+            } @empty {
+              <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
             }
           </mat-select>
           @if (form.get('countryCodeId')?.hasError('required') && form.get('countryCodeId')?.touched) {
@@ -69,11 +81,23 @@
         <div class="cce-register__phone-row">
           <mat-form-field class="cce-register__phone-code">
             <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
-            <mat-select formControlName="phoneCountryCodeId" dir="ltr">
-              @for (cc of countryCodes(); track cc.id) {
+            <mat-select formControlName="phoneCountryCodeId" dir="ltr" (openedChange)="onPhoneCodePanelChange($event)">
+              <div class="cce-register__select-search" (click)="$event.stopPropagation()">
+                <input
+                  #phoneCodeSearchInput
+                  type="text"
+                  class="cce-register__select-search-input"
+                  [placeholder]="'common.search' | transloco"
+                  (keydown)="$event.stopPropagation()"
+                  (input)="phoneCodeSearchText.set($any($event.target).value)"
+                />
+              </div>
+              @for (cc of filteredPhoneCodes(); track cc.id) {
                 <mat-option [value]="cc.id" dir="ltr">
                   {{ locale() === 'ar' ? cc.name.ar : cc.name.en }} ({{ cc.dialCode }})
                 </mat-option>
+              } @empty {
+                <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
               }
             </mat-select>
           </mat-form-field>

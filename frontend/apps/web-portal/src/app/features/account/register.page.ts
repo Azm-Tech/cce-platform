@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -55,12 +56,38 @@ export class RegisterPage implements OnInit {
   private readonly authApi = inject(AuthApiService);
   private readonly countriesApi = inject(CountriesApiService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   readonly locale = inject(LocaleService).locale;
+
+  @ViewChild('nationalitySearchInput') private nationalitySearchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('phoneCodeSearchInput') private phoneCodeSearchInput?: ElementRef<HTMLInputElement>;
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
   readonly showPassword = signal(false);
   readonly countryCodes = signal<CountryCode[]>([]);
+  readonly nationalitySearchText = signal('');
+  readonly phoneCodeSearchText = signal('');
+
+  readonly filteredNationalities = computed(() => {
+    const q = this.nationalitySearchText().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(cc =>
+      cc.name.ar.toLowerCase().includes(q) || cc.name.en.toLowerCase().includes(q),
+    );
+  });
+
+  readonly filteredPhoneCodes = computed(() => {
+    const q = this.phoneCodeSearchText().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(cc =>
+      cc.name.ar.toLowerCase().includes(q) ||
+      cc.name.en.toLowerCase().includes(q) ||
+      cc.dialCode.includes(q),
+    );
+  });
 
   readonly form = new FormGroup(
     {
@@ -97,6 +124,22 @@ export class RegisterPage implements OnInit {
   async ngOnInit(): Promise<void> {
     const res = await this.countriesApi.listCountryCodes({ isActive: true });
     if (res.ok) this.countryCodes.set(res.value);
+
+    this.form.get('countryCodeId')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(id => {
+        if (id) this.form.get('phoneCountryCodeId')!.setValue(id, { emitEvent: false });
+      });
+  }
+
+  onNationalityPanelChange(opened: boolean): void {
+    this.nationalitySearchText.set('');
+    if (opened) setTimeout(() => this.nationalitySearchInput?.nativeElement.focus(), 30);
+  }
+
+  onPhoneCodePanelChange(opened: boolean): void {
+    this.phoneCodeSearchText.set('');
+    if (opened) setTimeout(() => this.phoneCodeSearchInput?.nativeElement.focus(), 30);
   }
 
   get passwordMismatch(): boolean {

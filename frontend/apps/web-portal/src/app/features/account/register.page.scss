@@ -204,6 +204,30 @@
   color: #fff !important;
 }
 
+/* ─── Searchable select panel ────────────────────────── */
+/* The div is content-projected into the CDK overlay — use ng-deep to reach it */
+:host ::ng-deep .cce-register__select-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:host ::ng-deep .cce-register__select-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #1c2724;
+  background: transparent;
+  caret-color: #006c4f;
+
+  &::placeholder { color: rgba(28, 39, 36, 0.40); }
+}
+
 /* Mobile */
 @media (max-width: 480px) {
   .cce-register { padding: 1.5rem 1.25rem; }
