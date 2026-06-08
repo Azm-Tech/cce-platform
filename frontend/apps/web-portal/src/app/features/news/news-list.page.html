@@ -8,25 +8,27 @@
   <!-- ─── Toolbar ─────────────────────────────────────────── -->
   <div class="cce-list-toolbar">
     <div class="cce-list-toolbar__search">
-      <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
-      <input
-        type="search"
-        class="cce-list-toolbar__search-input"
-        [placeholder]="'news.searchPlaceholder' | transloco"
-        [ngModel]="query()"
-        (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'news.searchPlaceholder' | transloco"
-      />
-      @if (query()) {
-        <button
-          type="button"
-          class="cce-list-toolbar__search-clear"
-          [attr.aria-label]="'news.clearSearch' | transloco"
-          (click)="clearQuery()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
+      <div class="cce-list-toolbar__search-inner">
+        <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
+        <input
+          type="search"
+          class="cce-list-toolbar__search-input"
+          [placeholder]="'news.searchPlaceholder' | transloco"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event)"
+          [attr.aria-label]="'news.searchPlaceholder' | transloco"
+        />
+        @if (query()) {
+          <button
+            type="button"
+            class="cce-list-toolbar__search-clear"
+            [attr.aria-label]="'news.clearSearch' | transloco"
+            (click)="clearQuery()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
     </div>
 
     <button

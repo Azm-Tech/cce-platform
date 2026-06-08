@@ -208,9 +208,14 @@
 /* ─── Toolbar (search + sort + view toggle) ─────────────── */
 .cce-resources-list__toolbar {
   display: flex;
-  align-items: center; /* toggle + fields share one visual centre line */
+  align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
 
   /* Form fields reserve ~22px below the input for hints/errors — none are
      used here, and that space breaks vertical alignment with the toggle. */

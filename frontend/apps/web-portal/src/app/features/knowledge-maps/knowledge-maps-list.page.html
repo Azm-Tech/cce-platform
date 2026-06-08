@@ -9,25 +9,27 @@
   <!-- Toolbar -->
   <div class="cce-km-list__toolbar">
     <div class="cce-km-list__search">
-      <mat-icon class="cce-km-list__search-icon" aria-hidden="true">search</mat-icon>
-      <input
-        type="search"
-        class="cce-km-list__search-input"
-        [placeholder]="'knowledgeMaps.searchPlaceholder' | transloco"
-        [ngModel]="query()"
-        (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'knowledgeMaps.searchPlaceholder' | transloco"
-      />
-      @if (query()) {
-        <button
-          type="button"
-          class="cce-km-list__search-clear"
-          [attr.aria-label]="'knowledgeMaps.clearSearch' | transloco"
-          (click)="clearQuery()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
+      <div class="cce-km-list__search-inner">
+        <mat-icon class="cce-km-list__search-icon" aria-hidden="true">search</mat-icon>
+        <input
+          type="search"
+          class="cce-km-list__search-input"
+          [placeholder]="'knowledgeMaps.searchPlaceholder' | transloco"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event)"
+          [attr.aria-label]="'knowledgeMaps.searchPlaceholder' | transloco"
+        />
+        @if (query()) {
+          <button
+            type="button"
+            class="cce-km-list__search-clear"
+            [attr.aria-label]="'knowledgeMaps.clearSearch' | transloco"
+            (click)="clearQuery()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
     </div>
 
     @if (!loading() && rows().length > 0) {
