@@ -43,7 +43,7 @@
 
     <!-- Sort -->
     <mat-form-field appearance="outline" class="cce-list-toolbar__sort">
-      <mat-label>{{ 'events.filters.sort' | transloco }}</mat-label>
+      <mat-icon matPrefix>sort</mat-icon>
       <mat-select [ngModel]="sortOrder()" (ngModelChange)="setSort($event)">
         <mat-option value="soonest">{{ 'events.filters.sortSoonest' | transloco }}</mat-option>
         <mat-option value="latest">{{ 'events.filters.sortLatest' | transloco }}</mat-option>

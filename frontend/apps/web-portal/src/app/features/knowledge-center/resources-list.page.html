@@ -87,7 +87,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="cce-resources-list__sort">
-          <mat-label>{{ 'resources.sort.label' | transloco }}</mat-label>
+          <mat-icon matPrefix>sort</mat-icon>
           <mat-select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
             <mat-option value="date">{{ 'resources.sort.date' | transloco }}</mat-option>
             <mat-option value="views">{{ 'resources.sort.views' | transloco }}</mat-option>

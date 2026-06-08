@@ -255,7 +255,8 @@ body { min-height: 100vh; }
   color: rgba(28, 39, 36, 0.7);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 0.45rem 0.95rem;
+  padding: 0 0.95rem;
+  min-height: 40px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -369,7 +370,7 @@ body { min-height: 100vh; }
   background: transparent;
   color: rgba(28, 39, 36, 0.65);
   width: 34px;
-  height: 30px;
+  height: 34px;
   padding: 0;
   border-radius: 6px;
   cursor: pointer;
