@@ -1292,17 +1292,33 @@
     }
   },
   "countries": {
-    "title": "Countries",
-    "subtitle": "Country profiles, KAPSARC indices, and decarbonization snapshots across the GCC and beyond.",
+    "title": "Participating Countries",
+    "subtitle": "Explore country contributions and experiences in applying circular carbon economy concepts.",
     "eyebrow": "COUNTRIES · PROFILES & INDICES",
     "search": {
-      "placeholder": "Search countries…"
+      "placeholder": "Search"
     },
     "empty": "No countries available.",
-    "back": "Back to countries",
+    "back": "Back to Participating Countries",
     "notFound": "Country not found.",
+    "view": {
+      "grid": "Grid view",
+      "map": "Map view"
+    },
     "filter": {
-      "search": "Search"
+      "search": "Search",
+      "all": "All Regions",
+      "topPerformers": "Top Performers",
+      "region": "Region"
+    },
+    "card": {
+      "emissionReduction": "Emission Reduction",
+      "globalRanking": "Global Ranking",
+      "of": "of",
+      "viewReport": "View Country Report"
+    },
+    "map": {
+      "empty": "Select a country from the map to view its profile and circular carbon economy experiences."
     },
     "col": {
       "flag": "Flag",
@@ -1331,12 +1347,40 @@
     },
     "detail": {
       "openButton": "Edit",
-      "back": "Back to countries",
+      "back": "Back to Participating Countries",
       "subtitle": "Edit metadata + profile",
       "description": "Description",
       "keyInitiatives": "Key initiatives",
       "contactInfo": "Contact information",
-      "lastUpdated": "Last updated"
+      "lastUpdated": "Last updated",
+      "cceIndex": "CCE Index Score",
+      "population": "Total Population",
+      "area": "Total Country Area",
+      "emissionReduction": "Total Emission Reduction",
+      "gdpPerCapita": "GDP Per Capita",
+      "energyDensity": "Energy Density",
+      "classification": "CCE Classification",
+      "foundingPartner": "CCE Centre Founding Strategic Partner",
+      "share": "Share Report",
+      "download": "Download Report",
+      "tab": {
+        "analytics": "Analytics View",
+        "resources": "Resources",
+        "initiatives": "Initiatives & Innovation",
+        "experts": "Experts"
+      },
+      "chart": {
+        "radial": "Circular Carbon Economy Performance (4Rs)",
+        "radialSub": "Comprehensive analysis of the four core axes for 2026",
+        "trend": "Annual Change in CCE Scores",
+        "trendSub": "Evolution of the country's CCE index performance over past years",
+        "years": "Last 5 years"
+      },
+      "achievements": "Key Strategic Achievements",
+      "reduce": "Reduce",
+      "reuse": "Reuse",
+      "recycle": "Recycle",
+      "remove": "Remove"
     },
     "profile": {
       "title": "Country profile",

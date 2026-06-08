@@ -1,3 +1,30 @@
+export interface CountryMeta {
+  populationMillions: number;
+  populationTrend: number;
+  areaMillionKm2: number;
+  administrativeDivisions: number;
+  gdpPerCapita: number;
+  gdpTrend: number;
+  energyDensityPerMJ: number;
+  isFoundingPartner: boolean;
+}
+
+export interface CountryCardStats {
+  emissionReductionPct: number;
+  emissionTrend: 'up' | 'down' | 'flat';
+  globalRank: number;
+  totalCountries: number;
+  cceClassification: string;
+}
+
+export interface CountryAchievement {
+  titleAr: string;
+  titleEn: string;
+  descAr: string;
+  descEn: string;
+  date: string;
+}
+
 export interface CountryCode {
   id: string;
   dialCode: string;
@@ -17,15 +44,26 @@ export interface Country {
 }
 
 export interface CountryProfile {
-  id: string;
   countryId: string;
+  isoAlpha3: string;
+  nameAr: string;
+  nameEn: string;
+  flagUrl: string | null;
   descriptionAr: string;
   descriptionEn: string;
-  keyInitiativesAr: string;
-  keyInitiativesEn: string;
+  keyInitiativesAr: string | null;
+  keyInitiativesEn: string | null;
   contactInfoAr: string | null;
   contactInfoEn: string | null;
-  lastUpdatedOn: string;
+  population: number | null;
+  areaSqKm: number | null;
+  gdpPerCapita: number | null;
+  ndcDocument: string | null;
+  cceClassification: string | null;
+  ccePerformanceScore: number | null;
+  cceTotalIndex: number | null;
+  cceSnapshotTakenOn: string | null;
+  lastUpdatedOn: string | null;
 }
 
 export interface KapsarcSnapshot {

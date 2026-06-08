@@ -62,12 +62,27 @@ export class CountriesApiService {
     });
   }
 
+  async getById(id: string): Promise<Result<Country>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<Country | { data: Country }>(`/api/countries/${encodeURIComponent(id)}`),
+      );
+      if (res && typeof res === 'object' && 'data' in res && res.data) return res.data as Country;
+      return res as Country;
+    });
+  }
+
   async getProfile(countryId: string): Promise<Result<CountryProfile>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<CountryProfile>(`/api/countries/${encodeURIComponent(countryId)}/profile`),
-      ),
-    );
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<CountryProfile | { data: CountryProfile }>(
+          `/api/countries/${encodeURIComponent(countryId)}/profile`,
+        ),
+      );
+      // Unwrap standard envelope { success, code, data: CountryProfile }
+      if (res && typeof res === 'object' && 'data' in res && res.data) return res.data as CountryProfile;
+      return res as CountryProfile;
+    });
   }
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {

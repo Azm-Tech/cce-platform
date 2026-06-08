@@ -9,7 +9,7 @@
  * Real API data wins — this only fires on 404 / network failure.
  */
 
-import type { CountryProfile, KapsarcSnapshot } from '../country.types';
+import type { CountryAchievement, CountryCardStats, CountryMeta, CountryProfile, KapsarcSnapshot } from '../country.types';
 
 interface MockProfile {
   isoAlpha2: string;
@@ -149,14 +149,25 @@ export function getMockProfile(country: {
   // metadata (name + region + ISO) so every country gets meaningful data.
   const data = MOCK_PROFILES_BY_ISO[country.isoAlpha2] ?? synthesizeProfile(country);
   return {
-    id: `mock-profile-${country.id}`,
     countryId: country.id,
-    descriptionEn: data.descriptionEn,
+    isoAlpha3: country.isoAlpha3,
+    nameAr: country.nameAr,
+    nameEn: country.nameEn,
+    flagUrl: null,
     descriptionAr: data.descriptionAr,
-    keyInitiativesEn: data.keyInitiativesEn,
+    descriptionEn: data.descriptionEn,
     keyInitiativesAr: data.keyInitiativesAr,
-    contactInfoEn: data.contactInfoEn,
+    keyInitiativesEn: data.keyInitiativesEn,
     contactInfoAr: data.contactInfoAr,
+    contactInfoEn: data.contactInfoEn,
+    population: null,
+    areaSqKm: null,
+    gdpPerCapita: null,
+    ndcDocument: null,
+    cceClassification: null,
+    ccePerformanceScore: null,
+    cceTotalIndex: null,
+    cceSnapshotTakenOn: null,
     lastUpdatedOn: '2026-04-30',
   };
 }
@@ -168,6 +179,7 @@ interface MockKapsarc {
   trendYoY: number;
   regionalRank: number;
   regionalCohortSize: number;
+  globalRank: number;
   renewableSharePct: number;
   energyIntensity: number;   // TJ per million USD GDP
   carbonIntensity: number;   // tCO₂e per million USD GDP
@@ -183,59 +195,59 @@ interface MockKapsarc {
  */
 const MOCK_KAPSARC_BY_ISO: Record<string, MockKapsarc> = {
   SA: {
-    classification: 'High Performer', performanceScore: 78.4, totalIndex: 82.1,
-    trendYoY: +3.2, regionalRank: 2, regionalCohortSize: 8,
+    classification: 'رائد', performanceScore: 78.4, totalIndex: 82.1,
+    trendYoY: +3.2, regionalRank: 2, regionalCohortSize: 8, globalRank: 12,
     renewableSharePct: 8.5, energyIntensity: 5.42, carbonIntensity: 312,
     subScores: { power: 76, industry: 81, transport: 70, buildings: 79, landUse: 86 },
   },
   AE: {
-    classification: 'High Performer', performanceScore: 82.6, totalIndex: 85.3,
-    trendYoY: +4.1, regionalRank: 1, regionalCohortSize: 8,
+    classification: 'رائد', performanceScore: 82.6, totalIndex: 85.3,
+    trendYoY: +4.1, regionalRank: 1, regionalCohortSize: 8, globalRank: 8,
     renewableSharePct: 14.0, energyIntensity: 4.95, carbonIntensity: 287,
     subScores: { power: 84, industry: 80, transport: 78, buildings: 86, landUse: 85 },
   },
   EG: {
-    classification: 'Improving',      performanceScore: 56.2, totalIndex: 60.4,
-    trendYoY: +2.8, regionalRank: 4, regionalCohortSize: 6,
+    classification: 'متقدم', performanceScore: 56.2, totalIndex: 60.4,
+    trendYoY: +2.8, regionalRank: 4, regionalCohortSize: 6, globalRank: 34,
     renewableSharePct: 11.7, energyIntensity: 3.11, carbonIntensity: 198,
     subScores: { power: 58, industry: 52, transport: 49, buildings: 60, landUse: 62 },
   },
   JO: {
-    classification: 'Improving',      performanceScore: 53.8, totalIndex: 58.7,
-    trendYoY: +1.9, regionalRank: 6, regionalCohortSize: 8,
+    classification: 'متقدم', performanceScore: 53.8, totalIndex: 58.7,
+    trendYoY: +1.9, regionalRank: 6, regionalCohortSize: 8, globalRank: 41,
     renewableSharePct: 21.3, energyIntensity: 2.85, carbonIntensity: 175,
     subScores: { power: 62, industry: 48, transport: 50, buildings: 54, landUse: 55 },
   },
   BH: {
-    classification: 'Improving',      performanceScore: 61.5, totalIndex: 64.0,
-    trendYoY: +1.4, regionalRank: 5, regionalCohortSize: 8,
+    classification: 'متقدم', performanceScore: 61.5, totalIndex: 64.0,
+    trendYoY: +1.4, regionalRank: 5, regionalCohortSize: 8, globalRank: 28,
     renewableSharePct: 1.2, energyIntensity: 6.81, carbonIntensity: 398,
     subScores: { power: 55, industry: 67, transport: 60, buildings: 64, landUse: 62 },
   },
   KW: {
-    classification: 'Improving',      performanceScore: 58.0, totalIndex: 62.3,
-    trendYoY: +0.9, regionalRank: 7, regionalCohortSize: 8,
+    classification: 'متقدم', performanceScore: 58.0, totalIndex: 62.3,
+    trendYoY: +0.9, regionalRank: 7, regionalCohortSize: 8, globalRank: 37,
     renewableSharePct: 1.8, energyIntensity: 6.55, carbonIntensity: 372,
     subScores: { power: 52, industry: 64, transport: 58, buildings: 58, landUse: 60 },
   },
   OM: {
-    classification: 'Improving',      performanceScore: 55.3, totalIndex: 59.6,
-    trendYoY: +5.6, regionalRank: 8, regionalCohortSize: 8,
+    classification: 'متقدم', performanceScore: 55.3, totalIndex: 59.6,
+    trendYoY: +5.6, regionalRank: 8, regionalCohortSize: 8, globalRank: 44,
     renewableSharePct: 5.4, energyIntensity: 5.20, carbonIntensity: 286,
     subScores: { power: 56, industry: 52, transport: 54, buildings: 57, landUse: 58 },
   },
   QA: {
-    classification: 'High Performer', performanceScore: 75.1, totalIndex: 78.4,
-    trendYoY: +2.5, regionalRank: 3, regionalCohortSize: 8,
+    classification: 'رائد', performanceScore: 75.1, totalIndex: 78.4,
+    trendYoY: +2.5, regionalRank: 3, regionalCohortSize: 8, globalRank: 18,
     renewableSharePct: 3.6, energyIntensity: 5.78, carbonIntensity: 325,
     subScores: { power: 72, industry: 78, transport: 70, buildings: 76, landUse: 80 },
   },
 };
 
 const DEFAULT_KAPSARC: MockKapsarc = {
-  classification: 'Data Pending',
+  classification: 'قيد المراجعة',
   performanceScore: 50, totalIndex: 50,
-  trendYoY: 0, regionalRank: 0, regionalCohortSize: 0,
+  trendYoY: 0, regionalRank: 0, regionalCohortSize: 0, globalRank: 0,
   renewableSharePct: 0, energyIntensity: 0, carbonIntensity: 0,
   subScores: { power: 50, industry: 50, transport: 50, buildings: 50, landUse: 50 },
 };
@@ -258,4 +270,92 @@ export function getMockKapsarc(country: { id: string; isoAlpha2: string }): Kaps
     energyIntensity: m.energyIntensity,
     carbonIntensity: m.carbonIntensity,
   };
+}
+
+export function getMockCardStats(country: { isoAlpha2: string }): CountryCardStats {
+  const m = MOCK_KAPSARC_BY_ISO[country.isoAlpha2] ?? DEFAULT_KAPSARC;
+  return {
+    emissionReductionPct: Math.round(m.performanceScore * 0.32),
+    emissionTrend: m.trendYoY > 0 ? 'up' : m.trendYoY < 0 ? 'down' : 'flat',
+    globalRank: m.globalRank,
+    totalCountries: 125,
+    cceClassification: m.classification,
+  };
+}
+
+const MOCK_ACHIEVEMENTS_BY_ISO: Record<string, CountryAchievement[]> = {
+  SA: [
+    {
+      titleEn: 'Largest Carbon Capture Plant', titleAr: 'إنشاء أكبر محطة لاستخلاص الكربون واستخدامه',
+      descEn: 'Largest plant in the world in Jubail city with capacity of 500,000 tons/yr converting CO₂ to chemicals.', descAr: 'بناء أكبر منشأة في العالم في مدينة الجبيل بقدرة تصل إلى 500,000 طن سنوياً لتحويل ثاني أكسيد الكربون إلى مواد كيميائية قيمة.',
+      date: '2025-12-01',
+    },
+    {
+      titleEn: 'Noom Green Hydrogen Plant', titleAr: 'مصنع نيوم للهيدروجين الأخضر',
+      descEn: 'Launching the world\'s largest green hydrogen project with capacity of 600 tons/day as clean fuel alternative.', descAr: 'إطلاق أضخم مشروع عالمي للهيدروجين الأخضر بطاقة إنتاجية 600 طن يومياً كبديل للوقود الأحفوري.',
+      date: '2026-06-10',
+    },
+    {
+      titleEn: 'Saudi Green Initiative — 10 Billion Trees', titleAr: 'المبادرة السعودية الخضراء — زراعة 10 مليارات شجرة',
+      descEn: 'Achieving milestones in planting hundreds of millions of Mangrove trees to increase biodiversity and carbon sequestration.', descAr: 'تحقيق مراحل ملموسة في زراعة الملايين من أشجار المانجروف لزيادة الكفاءة الطبيعية وحماية التنوع البيولوجي.',
+      date: '2026-03-15',
+    },
+  ],
+  AE: [
+    { titleEn: 'Mohammed bin Rashid Solar Park — 5 GW', titleAr: 'مجمع محمد بن راشد آل مكتوم للطاقة الشمسية', descEn: 'World\'s largest single-site solar park reaching 5 GW capacity.', descAr: 'أكبر مجمع طاقة شمسية في موقع واحد حول العالم بقدرة 5 غيغاواط.', date: '2026-01-20' },
+    { titleEn: 'UAE Net-Zero 2050 Strategy', titleAr: 'استراتيجية الإمارات للحياد المناخي 2050', descEn: 'First Middle East country to set a net-zero target, backed by $163B investment pledge.', descAr: 'أول دولة في الشرق الأوسط تضع هدفاً للحياد الكربوني مدعوماً بتعهد استثماري بقيمة 163 مليار دولار.', date: '2025-11-05' },
+    { titleEn: 'Masdar City Carbon-Neutral District', titleAr: 'مدينة مصدر — الحي محايد الكربون', descEn: 'World\'s first planned carbon-neutral city district, fully operational.', descAr: 'أول حي مخطط محايد الكربون في العالم ويعمل بالكامل.', date: '2026-02-28' },
+  ],
+};
+
+function getMockAchievementsForCountry(country: { isoAlpha2: string; nameEn: string; nameAr: string }): CountryAchievement[] {
+  const curated = MOCK_ACHIEVEMENTS_BY_ISO[country.isoAlpha2];
+  if (curated) return curated;
+  return [
+    {
+      titleEn: `${country.nameEn} National NDC Commitment`,
+      titleAr: `التزام ${country.nameAr} بالمساهمة المحددة وطنياً`,
+      descEn: 'Formal submission of updated NDC to UNFCCC with ambitious 2030 emission reduction targets.',
+      descAr: 'تقديم رسمي للمساهمة المحددة وطنياً المحدّثة إلى UNFCCC مع أهداف طموحة لخفض الانبعاثات بحلول 2030.',
+      date: '2026-01-01',
+    },
+    {
+      titleEn: 'Renewable Energy Scale-Up',
+      titleAr: 'توسع الطاقة المتجددة',
+      descEn: 'Major utility-scale renewable energy projects commissioned, driving decarbonization of the national grid.',
+      descAr: 'تشغيل مشاريع طاقة متجددة ضخمة تدفع نحو إزالة الكربون من الشبكة الوطنية.',
+      date: '2025-09-15',
+    },
+    {
+      titleEn: 'Carbon Market Participation',
+      titleAr: 'المشاركة في سوق الكربون',
+      descEn: 'Active participation in regional and international voluntary carbon markets, trading verified offsets.',
+      descAr: 'مشاركة فاعلة في أسواق الكربون الإقليمية والدولية الطوعية وتداول ائتمانات موثقة.',
+      date: '2025-06-20',
+    },
+  ];
+}
+
+export function getMockAchievements(country: { isoAlpha2: string; nameEn: string; nameAr: string }): CountryAchievement[] {
+  return getMockAchievementsForCountry(country);
+}
+
+const MOCK_META_BY_ISO: Record<string, CountryMeta> = {
+  SA: { populationMillions: 36.95, populationTrend: 1.2, areaMillionKm2: 2.15, administrativeDivisions: 13, gdpPerCapita: 23585.9, gdpTrend: 4.5, energyDensityPerMJ: 4.2, isFoundingPartner: true },
+  AE: { populationMillions: 9.89, populationTrend: 0.9, areaMillionKm2: 0.084, administrativeDivisions: 7, gdpPerCapita: 44316.0, gdpTrend: 3.8, energyDensityPerMJ: 3.9, isFoundingPartner: true },
+  EG: { populationMillions: 104.2, populationTrend: 1.7, areaMillionKm2: 1.01, administrativeDivisions: 27, gdpPerCapita: 3737.0, gdpTrend: 3.1, energyDensityPerMJ: 2.8, isFoundingPartner: false },
+  JO: { populationMillions: 10.5, populationTrend: 1.0, areaMillionKm2: 0.089, administrativeDivisions: 12, gdpPerCapita: 4328.0, gdpTrend: 2.5, energyDensityPerMJ: 2.5, isFoundingPartner: false },
+  BH: { populationMillions: 1.50, populationTrend: 0.6, areaMillionKm2: 0.00076, administrativeDivisions: 4, gdpPerCapita: 26555.0, gdpTrend: 2.9, energyDensityPerMJ: 6.1, isFoundingPartner: false },
+  KW: { populationMillions: 4.72, populationTrend: 0.7, areaMillionKm2: 0.018, administrativeDivisions: 6, gdpPerCapita: 32216.0, gdpTrend: 2.3, energyDensityPerMJ: 5.8, isFoundingPartner: false },
+  OM: { populationMillions: 4.67, populationTrend: 1.1, areaMillionKm2: 0.31, administrativeDivisions: 11, gdpPerCapita: 19944.0, gdpTrend: 4.8, energyDensityPerMJ: 4.5, isFoundingPartner: false },
+  QA: { populationMillions: 3.01, populationTrend: 0.5, areaMillionKm2: 0.012, administrativeDivisions: 8, gdpPerCapita: 61790.0, gdpTrend: 2.1, energyDensityPerMJ: 5.1, isFoundingPartner: true },
+};
+
+const DEFAULT_META: CountryMeta = {
+  populationMillions: 10.0, populationTrend: 1.0, areaMillionKm2: 0.5, administrativeDivisions: 10,
+  gdpPerCapita: 8000.0, gdpTrend: 2.5, energyDensityPerMJ: 3.5, isFoundingPartner: false,
+};
+
+export function getMockCountryMeta(country: { isoAlpha2: string }): CountryMeta {
+  return MOCK_META_BY_ISO[country.isoAlpha2] ?? DEFAULT_META;
 }

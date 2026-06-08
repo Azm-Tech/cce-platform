@@ -1,42 +1,103 @@
-<section class="cce-countries-grid" [class.cce-countries-grid--panel-open]="selectedCountry() !== null">
-  <cce-workbench-hero
-    [eyebrow]="'countries.eyebrow' | transloco"
-    [title]="'countries.title' | transloco"
-    [subtitle]="'countries.subtitle' | transloco"
-  />
+<section class="cce-countries-grid">
 
-  <!-- Search lives in its own row beneath the hero — workbench-hero
-       has no aside slot. -->
-  <form
-    class="cce-countries-grid__search"
-    (ngSubmit)="onSearchSubmit()"
-    role="search"
-  >
-    <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
-      <mat-label>{{ 'countries.search.placeholder' | transloco }}</mat-label>
-      <input
-        matInput
-        type="search"
-        name="q"
-        [ngModel]="searchTerm()"
-        (ngModelChange)="searchTerm.set($event)"
-      />
-    </mat-form-field>
-    <button mat-flat-button color="primary" type="submit">
-      {{ 'search.submit' | transloco }}
-    </button>
-  </form>
+  <!-- Page header -->
+  <div class="cce-countries-grid__header">
+    <h1 class="cce-countries-grid__title">{{ 'countries.title' | transloco }}</h1>
+    <p class="cce-countries-grid__subtitle">{{ 'countries.subtitle' | transloco }}</p>
+  </div>
 
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
-  }
+  <!-- Unified toolbar: search · filters · view toggle -->
+  <div class="cce-countries-grid__toolbar">
+
+    <!-- Search (rightmost in RTL) -->
+    <form class="cce-countries-grid__search" (ngSubmit)="onSearchSubmit()" role="search">
+      <mat-form-field appearance="outline" class="cce-countries-grid__search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="search"
+          name="q"
+          [placeholder]="'countries.search.placeholder' | transloco"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </mat-form-field>
+    </form>
+
+    <!-- Quick-filter buttons -->
+    <div class="cce-countries-grid__filters" role="group">
+      <button
+        type="button"
+        class="cce-countries-grid__filter-btn"
+        [class.cce-countries-grid__filter-btn--active]="!topPerformersOnly() && !regionFilter()"
+        (click)="resetFilters()"
+      >
+        {{ 'countries.filter.all' | transloco }}
+      </button>
+
+      <button
+        type="button"
+        class="cce-countries-grid__filter-btn"
+        [class.cce-countries-grid__filter-btn--active]="topPerformersOnly()"
+        (click)="toggleTopPerformers()"
+      >
+        {{ 'countries.filter.topPerformers' | transloco }}
+      </button>
+
+      <button
+        type="button"
+        class="cce-countries-grid__filter-btn cce-countries-grid__filter-btn--dropdown"
+        [class.cce-countries-grid__filter-btn--active]="!!regionFilter()"
+        [matMenuTriggerFor]="regionMenu"
+      >
+        {{ regionFilter() ?? ('countries.filter.region' | transloco) }}
+        <mat-icon class="cce-countries-grid__filter-chevron">expand_more</mat-icon>
+      </button>
+
+      <mat-menu #regionMenu="matMenu" xPosition="before">
+        @if (regionFilter()) {
+          <button mat-menu-item (click)="setRegion(null)">
+            <mat-icon>close</mat-icon>
+            {{ 'countries.filter.all' | transloco }}
+          </button>
+        }
+        @for (region of regions(); track region) {
+          <button
+            mat-menu-item
+            [class.cce-region-item--active]="regionFilter() === region"
+            (click)="setRegion(region)"
+          >{{ region }}</button>
+        }
+      </mat-menu>
+    </div>
+
+    <!-- View toggle (leftmost in RTL) -->
+    <div class="cce-countries-grid__view-toggle">
+      <button
+        type="button"
+        class="cce-countries-grid__view-btn"
+        [class.cce-countries-grid__view-btn--active]="viewMode() === 'grid'"
+        (click)="setView('grid')"
+        [attr.aria-label]="'countries.view.grid' | transloco"
+      >
+        <mat-icon>format_list_bulleted</mat-icon>
+      </button>
+      <button
+        type="button"
+        class="cce-countries-grid__view-btn"
+        [class.cce-countries-grid__view-btn--active]="viewMode() === 'map'"
+        (click)="setView('map')"
+        [attr.aria-label]="'countries.view.map' | transloco"
+      >
+        <mat-icon>language</mat-icon>
+      </button>
+    </div>
+  </div>
 
   @if (errorKind(); as kind) {
     <div class="cce-countries-grid__error" role="alert">
       <span>{{ ('errors.' + kind) | transloco }}</span>
-      <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | transloco }}
-      </button>
+      <button mat-button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
@@ -44,117 +105,132 @@
     <p class="cce-countries-grid__empty">{{ 'countries.empty' | transloco }}</p>
   }
 
-  <div class="cce-countries-grid__stage">
-    <div class="cce-countries-grid__regions">
-      @for (group of groups(); track group.region) {
-        <section class="cce-countries-grid__region">
-          <h2 class="cce-countries-grid__region-title">{{ group.region }}</h2>
-          <div class="cce-countries-grid__cards">
-            @for (country of group.countries; track country.id) {
-              <cce-country-card
-                [country]="country"
-                [locale]="locale()"
-                [isSelected]="selectedCountry()?.id === country.id"
-                (cardClick)="openPanel($event)"
-              />
-            }
+  <!-- ── Grid view ─────────────────────────────────────── -->
+  @if (viewMode() === 'grid') {
+    <div class="cce-countries-grid__cards">
+      @if (loading()) {
+        @for (s of skeletons; track $index) {
+          <div class="cce-country-skeleton" aria-hidden="true">
+            <div class="cce-country-skeleton__flag"></div>
+            <div class="cce-country-skeleton__name"></div>
+            <div class="cce-country-skeleton__stat-label"></div>
+            <div class="cce-country-skeleton__stat-value"></div>
+            <div class="cce-country-skeleton__divider"></div>
+            <div class="cce-country-skeleton__stat-label cce-country-skeleton__stat-label--short"></div>
+            <div class="cce-country-skeleton__stat-value cce-country-skeleton__stat-value--narrow"></div>
+            <div class="cce-country-skeleton__btn"></div>
           </div>
-        </section>
+        }
+      } @else {
+        @for (country of pagedRows(); track country.id) {
+          <cce-country-card
+            [country]="country"
+            [locale]="locale()"
+            [stats]="statsMap().get(country.id) ?? null"
+          />
+        }
       }
     </div>
 
-    <!-- ─── Inline detail panel ─────────────────────────────── -->
-    @if (selectedCountry(); as sel) {
-      <aside class="cce-country-panel" role="complementary" [attr.aria-label]="selectedName()">
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <nav class="cce-countries-grid__pagination" aria-label="pagination">
         <button
           type="button"
-          class="cce-country-panel__close"
-          (click)="closePanel()"
-          [attr.aria-label]="'countries.close' | transloco">
-          ✕
+          class="cce-countries-grid__page-btn"
+          [disabled]="currentPage() <= 1"
+          (click)="setPage(currentPage() - 1)"
+          aria-label="previous"
+        >
+          <mat-icon>chevron_right</mat-icon>
         </button>
+        @for (n of pageNumbers(); track n) {
+          <button
+            type="button"
+            class="cce-countries-grid__page-btn"
+            [class.cce-countries-grid__page-btn--active]="n === currentPage()"
+            (click)="setPage(n)"
+          >{{ n }}</button>
+        }
+        <button
+          type="button"
+          class="cce-countries-grid__page-btn"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="setPage(currentPage() + 1)"
+          aria-label="next"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+      </nav>
+    }
+  }
 
-        <header class="cce-country-panel__header">
-          <span class="cce-country-panel__flag-wrap" aria-hidden="true">
-            @if (!flagFailed()) {
+  <!-- ── Map view ──────────────────────────────────────── -->
+  @if (viewMode() === 'map') {
+    <div class="cce-countries-grid__map-stage">
+
+      <div class="cce-countries-grid__map-wrap">
+        <cce-countries-world-map
+          [countries]="filteredRows()"
+          [selectedId]="selectedCountry()?.id ?? null"
+          (countrySelected)="onMapCountrySelected($event)"
+        />
+      </div>
+
+      <!-- Floating country panel -->
+      @if (selectedCountry(); as sel) {
+        <aside class="cce-map-panel">
+          <button type="button" class="cce-map-panel__close" (click)="closeMapPanel()" aria-label="close">
+            <mat-icon>close</mat-icon>
+          </button>
+
+          <div class="cce-map-panel__flag-wrap" aria-hidden="true">
+            @if (!mapFlagFailed()) {
               <img
-                class="cce-country-panel__flag"
+                class="cce-map-panel__flag"
                 [src]="selectedFlagSrc()"
                 [alt]="selectedName()"
-                width="64"
-                height="44"
+                width="56" height="40"
                 referrerpolicy="no-referrer"
-                (error)="onSelectedFlagError()" />
+                (error)="onMapFlagError()"
+              />
             } @else {
-              <span class="cce-country-panel__flag-fallback">{{ selectedFlagEmoji() }}</span>
-            }
-          </span>
-          <div>
-            <span class="cce-country-panel__iso">{{ sel.isoAlpha3 }}</span>
-            <h2 class="cce-country-panel__name">{{ selectedName() }}</h2>
-            @if (profile(); as p) {
-              <p class="cce-country-panel__updated">
-                {{ 'countries.detail.lastUpdated' | transloco }}:
-                {{ p.lastUpdatedOn | date:'mediumDate' }}
-              </p>
+              <span class="cce-map-panel__flag-emoji">{{ selectedFlagEmoji() }}</span>
             }
           </div>
-        </header>
 
-        <div class="cce-country-panel__body">
-          @if (profileLoading()) {
-            <mat-progress-bar mode="indeterminate" />
+          <h3 class="cce-map-panel__name">{{ selectedName() }}</h3>
+
+          @if (selectedStats(); as s) {
+            <div class="cce-map-panel__stat">
+              <span class="cce-map-panel__stat-label">{{ 'countries.card.emissionReduction' | transloco }}</span>
+              <span class="cce-map-panel__stat-value">
+                <span class="cce-map-panel__trend" [class.up]="s.emissionTrend === 'up'">
+                  {{ s.emissionTrend === 'up' ? '↗' : '→' }}
+                </span>
+                {{ s.emissionReductionPct }}%
+              </span>
+            </div>
+            <hr class="cce-map-panel__divider" />
+            <div class="cce-map-panel__stat">
+              <span class="cce-map-panel__stat-label">{{ 'countries.card.globalRanking' | transloco }}</span>
+              <span class="cce-map-panel__stat-value">
+                {{ s.globalRank }} <span class="cce-map-panel__stat-of">{{ 'countries.card.of' | transloco }} {{ s.totalCountries }}</span>
+              </span>
+            </div>
           }
 
-          @if (profile(); as p) {
-            <article class="cce-country-panel__section">
-              <h3>{{ 'countries.detail.description' | transloco }}</h3>
-              <div class="cce-country-panel__rich" [innerHTML]="description()"></div>
-            </article>
+          <a
+            mat-flat-button
+            class="cce-map-panel__btn"
+            [routerLink]="['/countries', sel.id]"
+          >
+            {{ 'countries.card.viewReport' | transloco }}
+          </a>
+        </aside>
+      }
 
-            <article class="cce-country-panel__section">
-              <h3>{{ 'countries.detail.keyInitiatives' | transloco }}</h3>
-              <div class="cce-country-panel__rich" [innerHTML]="keyInitiatives()"></div>
-            </article>
+    </div>
+  }
 
-            @if (contactInfo(); as contact) {
-              <article class="cce-country-panel__section">
-                <h3>{{ 'countries.detail.contactInfo' | transloco }}</h3>
-                <div class="cce-country-panel__rich" [innerHTML]="contact"></div>
-              </article>
-            }
-
-            <article class="cce-country-panel__section">
-              <h3>{{ 'kapsarc.title' | transloco }}</h3>
-              @if (snapshot(); as snap) {
-                <cce-kapsarc-snapshot [snapshot]="snap" [locale]="locale()" />
-              } @else {
-                <p class="cce-country-panel__empty">{{ 'kapsarc.unavailable' | transloco }}</p>
-              }
-            </article>
-
-            <!-- Cross-link to the world map, pre-filtered to this country's cities -->
-            <a
-              class="cce-country-panel__map-link"
-              [routerLink]="['/explore']"
-              [queryParams]="{ country: sel.isoAlpha2 }">
-              <span class="cce-country-panel__map-link-glyph" aria-hidden="true">
-                <span class="cce-country-panel__map-link-pin"></span>
-              </span>
-              <span class="cce-country-panel__map-link-text">
-                <span class="cce-country-panel__map-link-eyebrow">VIEW ON MAP</span>
-                <span class="cce-country-panel__map-link-title">
-                  See {{ selectedName() }}'s pin on the World Map
-                </span>
-                <span class="cce-country-panel__map-link-desc">
-                  Filters the map to cities in {{ selectedName() }} ({{ sel.isoAlpha3 }})
-                </span>
-              </span>
-              <span class="cce-country-panel__map-link-arrow" aria-hidden="true">→</span>
-            </a>
-          }
-        </div>
-      </aside>
-    }
-  </div>
 </section>

@@ -1,48 +1,63 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, computed, input, output, signal } from '@angular/core';
-
-import { MatCardModule } from '@angular/material/card';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { TranslocoModule } from '@jsverse/transloco';
-import type { Country } from './country.types';
+import type { Country, CountryCardStats } from './country.types';
 import { flagUrlFor, flagEmojiFor } from './flag-helpers';
 
 @Component({
   selector: 'cce-country-card',
   standalone: true,
-  imports: [MatCardModule, TranslocoModule],
+  imports: [RouterLink, MatButtonModule, TranslocoModule],
   template: `
-    <button
-      type="button"
-      class="cce-country-card"
-      [class.cce-country-card--selected]="isSelected()"
-      [attr.aria-pressed]="isSelected()"
-      (click)="cardClick.emit(country())"
-    >
-      <mat-card>
-        <div class="cce-country-card__body">
-          <span class="cce-country-card__flag-wrap" [attr.aria-hidden]="true">
-            @if (!imgFailed()) {
-              <img
-                class="cce-country-card__flag"
-                [src]="flagSrc()"
-                [alt]="name()"
-                width="48"
-                height="32"
-                loading="lazy"
-                referrerpolicy="no-referrer"
-                (error)="onImgError()"
-              />
-            } @else {
-              <!-- Fallback: emoji flag from ISO alpha-2 -->
-              <span class="cce-country-card__flag-fallback">{{ flagEmoji() }}</span>
-            }
+    <div class="cce-country-card">
+      <div class="cce-country-card__flag-wrap" aria-hidden="true">
+        @if (!imgFailed()) {
+          <img
+            class="cce-country-card__flag"
+            [src]="flagSrc()"
+            [alt]="name()"
+            width="40"
+            height="28"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            (error)="onImgError()"
+          />
+        } @else {
+          <span class="cce-country-card__flag-emoji">{{ flagEmoji() }}</span>
+        }
+      </div>
+
+      <div class="cce-country-card__name">{{ name() }}</div>
+
+      @if (stats(); as s) {
+        <div class="cce-country-card__stat">
+          <span class="cce-country-card__stat-label">{{ 'countries.card.emissionReduction' | transloco }}</span>
+          <span class="cce-country-card__stat-value">
+            <span class="cce-country-card__trend" [class.cce-country-card__trend--up]="s.emissionTrend === 'up'" [class.cce-country-card__trend--down]="s.emissionTrend === 'down'">
+              {{ s.emissionTrend === 'up' ? '↗' : s.emissionTrend === 'down' ? '↘' : '→' }}
+            </span>
+            {{ s.emissionReductionPct }}%
           </span>
-          <div class="cce-country-card__text">
-            <div class="cce-country-card__name">{{ name() }}</div>
-            <div class="cce-country-card__iso">{{ country().isoAlpha3 }}</div>
-          </div>
         </div>
-      </mat-card>
-    </button>
+        <hr class="cce-country-card__divider" />
+        <div class="cce-country-card__stat">
+          <span class="cce-country-card__stat-label">{{ 'countries.detail.classification' | transloco }}</span>
+          <span class="cce-country-card__stat-value cce-country-card__stat-value--rank">
+            {{ s.globalRank }} {{ 'countries.card.of' | transloco }} {{ s.totalCountries }}
+          </span>
+        </div>
+      }
+
+      <a
+        class="cce-country-card__btn"
+        mat-stroked-button
+        [routerLink]="['/countries', country().id]"
+        (click)="$event.stopPropagation()"
+      >
+        {{ 'countries.card.viewReport' | transloco }}
+      </a>
+    </div>
   `,
   styleUrl: './country-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,11 +65,7 @@ import { flagUrlFor, flagEmojiFor } from './flag-helpers';
 export class CountryCardComponent {
   readonly country = input.required<Country>();
   readonly locale = input<'ar' | 'en'>('en');
-  readonly isSelected = input<boolean>(false);
-
-  /** Emits when the card is clicked — parent shows the detail panel
-   *  inline rather than routing the user to a new page. */
-  readonly cardClick = output<Country>();
+  readonly stats = input<CountryCardStats | null>(null);
 
   readonly imgFailed = signal(false);
 
