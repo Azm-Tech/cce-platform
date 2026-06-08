@@ -103,6 +103,7 @@ app.MapSharePublicEndpoints();
 app.MapNewsPublicEndpoints();
 app.MapEventsPublicEndpoints();
 app.MapResourcesPublicEndpoints();
+app.MapResourceTypesPublicEndpoints();
 app.MapPagesPublicEndpoints();
 app.MapHomepageSectionsPublicEndpoints();
 app.MapTopicsPublicEndpoints();
