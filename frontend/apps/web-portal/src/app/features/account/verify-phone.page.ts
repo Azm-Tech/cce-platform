@@ -9,7 +9,7 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,7 +22,6 @@ type PageState = 'sending' | 'idle' | 'verifying' | 'error';
   selector: 'cce-verify-phone',
   standalone: true,
   imports: [
-    RouterLink,
     MatButtonModule,
     MatProgressSpinnerModule,
     TranslocoModule,

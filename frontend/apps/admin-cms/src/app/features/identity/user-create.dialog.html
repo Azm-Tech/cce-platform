@@ -3,6 +3,7 @@
 <mat-dialog-content>
   <form [formGroup]="form" id="user-create-form" (ngSubmit)="submit()">
 
+    <!-- First / Last name -->
     <div class="cce-user-create__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'users.create.firstNameLabel' | transloco }}</mat-label>
@@ -25,6 +26,7 @@
       </mat-form-field>
     </div>
 
+    <!-- Email -->
     <mat-form-field appearance="outline" class="cce-user-create__full">
       <mat-label>{{ 'users.create.emailLabel' | transloco }}</mat-label>
       <input matInput type="email" formControlName="email" autocomplete="email" />
@@ -38,8 +40,67 @@
       <mat-hint>{{ 'users.create.emailHint' | transloco }}</mat-hint>
     </mat-form-field>
 
-    <div class="cce-user-create__row">
-      <mat-form-field appearance="outline">
+    <!-- Country — autocomplete (search inside the field itself) -->
+    <mat-form-field appearance="outline" class="cce-user-create__full">
+      <mat-label>{{ 'users.create.countryLabel' | transloco }}</mat-label>
+      <mat-icon matPrefix>public</mat-icon>
+      <input
+        matInput
+        formControlName="country"
+        [matAutocomplete]="countryAuto"
+        autocomplete="off"
+      />
+      <mat-autocomplete
+        #countryAuto
+        [displayWith]="displayCountry"
+        autoActiveFirstOption
+      >
+        @for (country of filteredCountries(); track country.id) {
+          <mat-option [value]="country">
+            {{ locale() === 'ar' ? country.nameAr : country.nameEn }}
+          </mat-option>
+        } @empty {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
+      @if (form.get('country')?.hasError('required') && form.get('country')?.touched) {
+        <mat-error>{{ 'users.create.errorRequired' | transloco }}</mat-error>
+      } @else if (fieldError('country')) {
+        <mat-error>{{ fieldError('country') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Phone: dial code autocomplete + number -->
+    <div class="cce-user-create__phone-row">
+
+      <mat-form-field appearance="outline" class="cce-user-create__phone-code">
+        <mat-label>{{ 'users.create.phoneCodeLabel' | transloco }}</mat-label>
+        <input
+          matInput
+          formControlName="phoneCode"
+          [matAutocomplete]="phoneCodeAuto"
+          autocomplete="off"
+        />
+        <mat-autocomplete
+          #phoneCodeAuto
+          [displayWith]="displayPhoneCode"
+          autoActiveFirstOption
+        >
+          @for (cc of filteredPhoneCodes(); track cc.id) {
+            <mat-option [value]="cc">
+              <span>{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}</span>
+              <span class="cce-user-create__dial-badge">{{ cc.dialCode }}</span>
+            </mat-option>
+          } @empty {
+            <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+          }
+        </mat-autocomplete>
+        @if (form.get('phoneCode')?.hasError('required') && form.get('phoneCode')?.touched) {
+          <mat-error>{{ 'users.create.errorRequired' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="cce-user-create__phone-number">
         <mat-label>{{ 'users.create.phoneLabel' | transloco }}</mat-label>
         <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
         @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
@@ -49,32 +110,20 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'users.create.roleLabel' | transloco }}</mat-label>
-        <mat-select formControlName="role">
-          @for (r of assignableRoles; track r.value) {
-            <mat-option [value]="r.value">{{ r.labelKey | transloco }}</mat-option>
-          }
-        </mat-select>
-        @if (form.get('role')?.hasError('required') && form.get('role')?.touched) {
-          <mat-error>{{ 'users.create.errorRequired' | transloco }}</mat-error>
-        } @else if (fieldError('role')) {
-          <mat-error>{{ fieldError('role') }}</mat-error>
-        }
-      </mat-form-field>
     </div>
 
+    <!-- Role -->
     <mat-form-field appearance="outline" class="cce-user-create__full">
-      <mat-label>{{ 'users.create.countryLabel' | transloco }}</mat-label>
-      <mat-select formControlName="countryId">
-        @for (country of countries(); track country.id) {
-          <mat-option [value]="country.id">{{ country.nameEn }}</mat-option>
+      <mat-label>{{ 'users.create.roleLabel' | transloco }}</mat-label>
+      <mat-select formControlName="role">
+        @for (r of assignableRoles; track r.value) {
+          <mat-option [value]="r.value">{{ r.labelKey | transloco }}</mat-option>
         }
       </mat-select>
-      @if (form.get('countryId')?.hasError('required') && form.get('countryId')?.touched) {
+      @if (form.get('role')?.hasError('required') && form.get('role')?.touched) {
         <mat-error>{{ 'users.create.errorRequired' | transloco }}</mat-error>
-      } @else if (fieldError('countryId')) {
-        <mat-error>{{ fieldError('countryId') }}</mat-error>
+      } @else if (fieldError('role')) {
+        <mat-error>{{ fieldError('role') }}</mat-error>
       }
     </mat-form-field>
 

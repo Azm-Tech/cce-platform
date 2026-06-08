@@ -79,6 +79,7 @@ export interface CreateUserBody {
   firstName: string;
   lastName: string;
   email: string;
+  phoneCountryCodeId: string;
   phoneNumber: string;
   countryId: string;
   role: string;

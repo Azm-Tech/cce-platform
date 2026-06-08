@@ -10,7 +10,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
-import { EventCardComponent } from '../events/event-card.component';
 import { EventsApiService } from '../events/events-api.service';
 import type { Event as EventModel } from '../events/event.types';
 import { NewsApiService } from '../news/news-api.service';
@@ -24,7 +23,7 @@ type FrameworkTab = 'reduce' | 'reuse' | 'recycle' | 'remove';
 @Component({
   selector: 'cce-home-v2',
   standalone: true,
-  imports: [RouterLink, TranslocoModule, NewsCardComponent, EventCardComponent],
+  imports: [RouterLink, TranslocoModule, NewsCardComponent],
   templateUrl: './home-v2.page.html',
   styleUrl: './home-v2.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

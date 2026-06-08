@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -9,11 +9,12 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { toApiFieldErrors, PASSWORD_STRENGTH_VALIDATORS } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
@@ -40,11 +41,11 @@ type SubmitState =
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    MatAutocompleteModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatSelectModule,
     TranslocoModule,
   ],
   templateUrl: './register.page.html',
@@ -59,35 +60,10 @@ export class RegisterPage implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly locale = inject(LocaleService).locale;
 
-  @ViewChild('nationalitySearchInput') private nationalitySearchInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('phoneCodeSearchInput') private phoneCodeSearchInput?: ElementRef<HTMLInputElement>;
-
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
   readonly showPassword = signal(false);
   readonly countryCodes = signal<CountryCode[]>([]);
-  readonly nationalitySearchText = signal('');
-  readonly phoneCodeSearchText = signal('');
-
-  readonly filteredNationalities = computed(() => {
-    const q = this.nationalitySearchText().toLowerCase();
-    const all = this.countryCodes();
-    if (!q) return all;
-    return all.filter(cc =>
-      cc.name.ar.toLowerCase().includes(q) || cc.name.en.toLowerCase().includes(q),
-    );
-  });
-
-  readonly filteredPhoneCodes = computed(() => {
-    const q = this.phoneCodeSearchText().toLowerCase();
-    const all = this.countryCodes();
-    if (!q) return all;
-    return all.filter(cc =>
-      cc.name.ar.toLowerCase().includes(q) ||
-      cc.name.en.toLowerCase().includes(q) ||
-      cc.dialCode.includes(q),
-    );
-  });
 
   readonly form = new FormGroup(
     {
@@ -108,8 +84,8 @@ export class RegisterPage implements OnInit {
       ]),
       jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
       organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
-      countryCodeId: new FormControl('', [Validators.required]),
-      phoneCountryCodeId: new FormControl('', [Validators.required]),
+      countryCodeId: new FormControl<CountryCode | null>(null, [Validators.required]),
+      phoneCountryCodeId: new FormControl<CountryCode | null>(null, [Validators.required]),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.maxLength(15),
@@ -121,25 +97,63 @@ export class RegisterPage implements OnInit {
     { validators: passwordsMatch },
   );
 
+  // Track typed text to drive filtering (string while typing, CountryCode once selected)
+  private readonly nationalityInput = toSignal(
+    this.form.get('countryCodeId')!.valueChanges.pipe(
+      map((v) => (typeof v === 'string' ? v : '')),
+    ),
+    { initialValue: '' },
+  );
+  private readonly phoneCodeInput = toSignal(
+    this.form.get('phoneCountryCodeId')!.valueChanges.pipe(
+      map((v) => (typeof v === 'string' ? v : '')),
+    ),
+    { initialValue: '' },
+  );
+
+  readonly filteredNationalities = computed(() => {
+    const q = this.nationalityInput().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(
+      (cc) => cc.name.ar.toLowerCase().includes(q) || cc.name.en.toLowerCase().includes(q),
+    );
+  });
+
+  readonly filteredPhoneCodes = computed(() => {
+    const q = this.phoneCodeInput().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(
+      (cc) =>
+        cc.name.ar.toLowerCase().includes(q) ||
+        cc.name.en.toLowerCase().includes(q) ||
+        cc.dialCode.includes(q),
+    );
+  });
+
+  readonly displayNationality = (cc: CountryCode | null): string => {
+    if (!cc) return '';
+    return this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+  };
+
+  readonly displayPhoneCode = (cc: CountryCode | null): string => {
+    if (!cc) return '';
+    const name = this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    return `${name} (${cc.dialCode})`;
+  };
+
   async ngOnInit(): Promise<void> {
     const res = await this.countriesApi.listCountryCodes({ isActive: true });
     if (res.ok) this.countryCodes.set(res.value);
 
+    // Auto-set phone code to the same country when nationality is selected
     this.form.get('countryCodeId')!.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(id => {
-        if (id) this.form.get('phoneCountryCodeId')!.setValue(id, { emitEvent: false });
+      .subscribe((val) => {
+        if (!val || typeof val === 'string') return;
+        this.form.get('phoneCountryCodeId')!.setValue(val, { emitEvent: false });
       });
-  }
-
-  onNationalityPanelChange(opened: boolean): void {
-    this.nationalitySearchText.set('');
-    if (opened) setTimeout(() => this.nationalitySearchInput?.nativeElement.focus(), 30);
-  }
-
-  onPhoneCodePanelChange(opened: boolean): void {
-    this.phoneCodeSearchText.set('');
-    if (opened) setTimeout(() => this.phoneCodeSearchInput?.nativeElement.focus(), 30);
   }
 
   get passwordMismatch(): boolean {
@@ -162,7 +176,7 @@ export class RegisterPage implements OnInit {
     if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
     const v = this.form.value;
-    const phoneCode = this.countryCodes().find((cc) => cc.id === v.phoneCountryCodeId);
+    const phoneCode = v.phoneCountryCodeId as CountryCode | null;
     const dial = phoneCode?.dialCode?.replace(/^\+/, '') ?? '';
     const localPhone = (v.phoneNumber ?? '').replace(/\s/g, '');
     const fullPhone = phoneCode ? `${dial}${localPhone}` : localPhone;
@@ -173,7 +187,7 @@ export class RegisterPage implements OnInit {
         emailAddress: v.emailAddress!,
         jobTitle: v.jobTitle!,
         organizationName: v.organizationName!,
-        countryCodeId: v.countryCodeId!,
+        countryCodeId: (v.countryCodeId as CountryCode).id,
         phoneNumber: fullPhone,
         password: v.password!,
         confirmPassword: v.confirmPassword!,
@@ -210,7 +224,7 @@ export class RegisterPage implements OnInit {
     ctrl.setErrors(Object.keys(remaining).length ? remaining : null);
   }
 
-errorMessageKey(): string {
+  errorMessageKey(): string {
     const s = this.state();
     return s.kind === 'error' ? s.messageKey : '';
   }

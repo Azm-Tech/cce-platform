@@ -52,54 +52,49 @@
           }
         </mat-form-field>
 
+        <!-- Nationality — autocomplete -->
         <mat-form-field>
           <mat-label>{{ 'account.register.nationalityLabel' | transloco }}</mat-label>
-          <mat-select formControlName="countryCodeId" (openedChange)="onNationalityPanelChange($event)">
-            <div class="cce-register__select-search" (click)="$event.stopPropagation()">
-              <input
-                #nationalitySearchInput
-                type="text"
-                class="cce-register__select-search-input"
-                [placeholder]="'common.search' | transloco"
-                (keydown)="$event.stopPropagation()"
-                (input)="nationalitySearchText.set($any($event.target).value)"
-              />
-            </div>
+          <input
+            matInput
+            formControlName="countryCodeId"
+            [matAutocomplete]="nationalityAuto"
+            autocomplete="off"
+          />
+          <mat-autocomplete #nationalityAuto [displayWith]="displayNationality" autoActiveFirstOption>
             @for (cc of filteredNationalities(); track cc.id) {
-              <mat-option [value]="cc.id">
+              <mat-option [value]="cc">
                 {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
               </mat-option>
             } @empty {
               <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
           @if (form.get('countryCodeId')?.hasError('required') && form.get('countryCodeId')?.touched) {
             <mat-error>{{ 'account.register.errorRequired' | transloco }}</mat-error>
           }
         </mat-form-field>
 
+        <!-- Phone row: dial code autocomplete + number -->
         <div class="cce-register__phone-row">
           <mat-form-field class="cce-register__phone-code">
             <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
-            <mat-select formControlName="phoneCountryCodeId" dir="ltr" (openedChange)="onPhoneCodePanelChange($event)">
-              <div class="cce-register__select-search" (click)="$event.stopPropagation()">
-                <input
-                  #phoneCodeSearchInput
-                  type="text"
-                  class="cce-register__select-search-input"
-                  [placeholder]="'common.search' | transloco"
-                  (keydown)="$event.stopPropagation()"
-                  (input)="phoneCodeSearchText.set($any($event.target).value)"
-                />
-              </div>
+            <input
+              matInput
+              formControlName="phoneCountryCodeId"
+              [matAutocomplete]="phoneCodeAuto"
+              autocomplete="off"
+            />
+            <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
               @for (cc of filteredPhoneCodes(); track cc.id) {
-                <mat-option [value]="cc.id" dir="ltr">
-                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }} ({{ cc.dialCode }})
+                <mat-option [value]="cc">
+                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                  <span class="cce-register__dial-badge">{{ cc.dialCode }}</span>
                 </mat-option>
               } @empty {
                 <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
               }
-            </mat-select>
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field class="cce-register__phone-number">
             <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>

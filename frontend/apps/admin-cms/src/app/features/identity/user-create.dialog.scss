@@ -16,8 +16,34 @@ form {
   width: 100%;
 }
 
+/* Phone row: narrow code picker + wider number input */
+.cce-user-create__phone-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1rem;
+}
+
+.cce-user-create__phone-code,
+.cce-user-create__phone-number {
+  width: 100%;
+}
+
 mat-form-field {
   width: 100%;
+}
+
+/* Dial code badge inside autocomplete option — right-aligned */
+:host ::ng-deep .cce-user-create__dial-badge {
+  margin-inline-start: auto;
+  padding-inline-start: 0.5rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+:host ::ng-deep mat-option {
+  display: flex !important;
+  align-items: center;
 }
 
 .cce-user-create__error {
