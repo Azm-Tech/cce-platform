@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "CCE.Worker": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:64708;http://localhost:64709"
+    }
+  }
+}

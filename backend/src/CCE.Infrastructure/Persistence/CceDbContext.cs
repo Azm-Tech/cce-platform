@@ -211,6 +211,12 @@ public sealed class CceDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(CceDbContext).Assembly);
+
+        // MassTransit EF Core transactional outbox tables (inbox_state / outbox_state / outbox_message).
+        // Isolated in a helper file so MassTransit's `using` doesn't collide with domain type names
+        // (Event, ConcurrencyException). Snake-case naming convention names the columns.
+        builder.AddMassTransitOutboxEntities();
+
         ApplySoftDeleteFilter(builder);
     }
 

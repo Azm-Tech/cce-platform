@@ -23,6 +23,7 @@ volumes:
   keycloak-data:
   clamav-data:
   meilisearch-data:
+  rabbitmq-data:
 
 services:
 
@@ -175,6 +176,30 @@ services:
       - meilisearch-data:/meili_data
     networks:
       - cce-net
+
+  rabbitmq:
+    # MassTransit message broker. The `-management` tag adds the web UI on :15672.
+    # Devs flip Messaging__Transport=RabbitMQ to route through this instead of the InMemory transport.
+    image: rabbitmq:3-management
+    container_name: cce-rabbitmq
+    environment:
+      # Default dev credentials — overridden in prod via env_file. Match Messaging__RabbitMqUsername/Password.
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-cce}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:-cce}"
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI (http://localhost:15672 — cce/cce)
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - cce-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
 
   k6:
     image: grafana/k6:0.55.0

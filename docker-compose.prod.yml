@@ -19,6 +19,41 @@ services:
     command: ["--migrate", "--seed-reference"]
     restart: "no"
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    env_file: ${CCE_ENV_FILE}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-cce}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-cce}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  worker:
+    image: ghcr.io/${CCE_REGISTRY_OWNER:-moenergy-cce}/cce-worker:${CCE_IMAGE_TAG:-latest}
+    env_file: ${CCE_ENV_FILE}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      LOG_LEVEL: ${LOG_LEVEL:-Information}
+      Infrastructure__SqlConnectionString: ${INFRA_SQL:-Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;}
+      Infrastructure__RedisConnectionString: ${INFRA_REDIS:-host.docker.internal:6379}
+      Messaging__Transport: ${MESSAGING_TRANSPORT:-RabbitMQ}
+      Messaging__RabbitMqHost: ${MESSAGING_RABBITMQ_HOST:-rabbitmq}
+      Messaging__RabbitMqVirtualHost: ${MESSAGING_RABBITMQ_VHOST:-/cce-prod}
+      Messaging__RabbitMqUsername: ${RABBITMQ_USER:-cce}
+      Messaging__RabbitMqPassword: ${RABBITMQ_PASSWORD:-cce}
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
   api-external:
     image: ghcr.io/${CCE_REGISTRY_OWNER:-moenergy-cce}/cce-api-external:${CCE_IMAGE_TAG:-latest}
     env_file: ${CCE_ENV_FILE}
@@ -33,9 +68,13 @@ services:
       Keycloak__RequireHttpsMetadata: ${KEYCLOAK_REQUIRE_HTTPS:-false}
       Infrastructure__SqlConnectionString: ${INFRA_SQL:-Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;}
       Infrastructure__RedisConnectionString: ${INFRA_REDIS:-host.docker.internal:6379}
+      Messaging__RabbitMqUsername: ${RABBITMQ_USER:-cce}
+      Messaging__RabbitMqPassword: ${RABBITMQ_PASSWORD:-cce}
     depends_on:
       migrator:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "5001:8080"
 
@@ -51,9 +90,13 @@ services:
       Keycloak__RequireHttpsMetadata: ${KEYCLOAK_REQUIRE_HTTPS:-false}
       Infrastructure__SqlConnectionString: ${INFRA_SQL:-Server=host.docker.internal,1433;Database=CCE;User Id=sa;Password=Strong!Passw0rd;TrustServerCertificate=True;}
       Infrastructure__RedisConnectionString: ${INFRA_REDIS:-host.docker.internal:6379}
+      Messaging__RabbitMqUsername: ${RABBITMQ_USER:-cce}
+      Messaging__RabbitMqPassword: ${RABBITMQ_PASSWORD:-cce}
     depends_on:
       migrator:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "5002:8080"
 

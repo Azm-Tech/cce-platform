@@ -114,6 +114,8 @@
     <!-- MassTransit core + RabbitMQ transport. All MIT-licensed, no commercial licence required. -->
     <PackageVersion Include="MassTransit" Version="8.3.7" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.7" />
+    <!-- EF Core transactional outbox (inbox/outbox tables + bus-outbox delivery service). -->
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.3.7" />
     <!-- In-memory transport used in tests and when Messaging:Transport=InMemory -->
     <PackageVersion Include="MassTransit.Testing.Helpers" Version="8.3.7" />
   </ItemGroup>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CCE.Api.Common\CCE.Api.Common.csproj" />
+    <ProjectReference Include="..\CCE.Application\CCE.Application.csproj" />
+    <ProjectReference Include="..\CCE.Domain\CCE.Domain.csproj" />
+    <ProjectReference Include="..\CCE.Infrastructure\CCE.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

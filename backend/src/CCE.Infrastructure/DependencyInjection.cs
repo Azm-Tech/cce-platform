@@ -64,7 +64,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool registerConsumers = false)
     {
         services.AddOptions<CceInfrastructureOptions>()
             .Bind(configuration.GetSection(CceInfrastructureOptions.SectionName))
@@ -249,9 +250,10 @@ public static class DependencyInjection
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
 
-        // Messaging (MassTransit) — transport selected by Messaging:Transport in appsettings.
-        // InMemory by default (no broker); set to RabbitMQ in production.
-        services.AddCceMessaging(configuration);
+        // Messaging (MassTransit + EF outbox) — transport selected by Messaging:Transport in appsettings.
+        // InMemory by default (no broker); set to RabbitMQ in production. Consumers run only where
+        // registerConsumers=true (CCE.Worker); APIs/Seeder publish-only via the outbox.
+        services.AddCceMessaging(configuration, registerConsumers);
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();

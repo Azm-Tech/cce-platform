@@ -24,6 +24,12 @@ services:
       dockerfile: src/CCE.Api.Internal/Dockerfile
     image: cce-api-internal:dev
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: src/CCE.Worker/Dockerfile
+    image: cce-worker:dev
+
   web-portal:
     build:
       context: .

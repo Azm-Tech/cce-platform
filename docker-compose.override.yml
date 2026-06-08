@@ -38,3 +38,7 @@ services:
     # Note: unprefixed env vars are NOT interpreted by this image's entrypoint (only
     # CLAMD_CONF_* and FRESHCLAM_CONF_* are), so setting FRESHCLAM_CHECKS here is a no-op.
     # If you want to tune freshclam in dev, mount a patched freshclam.conf instead.
+
+  rabbitmq:
+    # No dev-time override needed — the base service already uses dev credentials (cce/cce) and the
+    # management UI. Add per-developer tweaks here (e.g. RABBITMQ_DEFAULT_VHOST, memory watermark).
