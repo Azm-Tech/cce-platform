@@ -335,3 +335,27 @@ SCENARIO_NOT_FOUND:
 TECHNOLOGY_NOT_FOUND:
   ar: "التقنية غير موجودة"
   en: "Technology not found"
+
+INTEREST_NOT_FOUND:
+  ar: "الاهتمام غير موجود"
+  en: "Interest not found"
+
+INTEREST_UPSERTED:
+  ar: "تم تحديث الاهتمامات بنجاح"
+  en: "Interests updated successfully"
+
+INTEREST_TOPIC_NOT_FOUND:
+  ar: "موضوع الاهتمام غير موجود"
+  en: "Interest topic not found"
+
+INTEREST_TOPIC_CREATED:
+  ar: "تم إنشاء موضوع الاهتمام بنجاح"
+  en: "Interest topic created successfully"
+
+INTEREST_TOPIC_UPDATED:
+  ar: "تم تحديث موضوع الاهتمام بنجاح"
+  en: "Interest topic updated successfully"
+
+INTEREST_TOPIC_DELETED:
+  ar: "تم حذف موضوع الاهتمام بنجاح"
+  en: "Interest topic deleted successfully"

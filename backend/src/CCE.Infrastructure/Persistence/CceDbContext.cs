@@ -36,6 +36,8 @@ public sealed class CceDbContext
     public DbSet<ExpertProfile> ExpertProfiles => Set<ExpertProfile>();
     public DbSet<ExpertRegistrationRequest> ExpertRegistrationRequests => Set<ExpertRegistrationRequest>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<InterestTopic> InterestTopics => Set<InterestTopic>();
+    public DbSet<UserInterestTopic> UserInterestTopics => Set<UserInterestTopic>();
 
     // ─── Content ───
     public DbSet<AssetFile> AssetFiles => Set<AssetFile>();
@@ -116,6 +118,7 @@ public sealed class CceDbContext
     IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges.AsNoTracking();
     IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations.AsNoTracking();
     IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios.AsNoTracking();
+    IQueryable<InterestTopic> ICceDbContext.InterestTopics => InterestTopics.AsNoTracking();
     IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies.AsNoTracking();
     IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults.AsNoTracking();
 

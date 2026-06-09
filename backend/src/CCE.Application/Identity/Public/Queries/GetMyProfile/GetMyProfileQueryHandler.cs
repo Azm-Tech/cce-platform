@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Identity.Public.Dtos;
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Messages;
 using MediatR;
 
@@ -24,13 +25,21 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
             return _msg.UserNotFound<UserProfileDto>();
         }
 
+        var interestTopics = user.UserInterestTopics
+            .Select(uit => new InterestTopicDto(
+                uit.InterestTopic.Id,
+                uit.InterestTopic.NameAr,
+                uit.InterestTopic.NameEn,
+                uit.InterestTopic.IsActive))
+            .ToList();
+
         return _msg.Ok(new UserProfileDto(
             user.Id,
             user.Email,
             user.UserName,
             user.LocalePreference,
             user.KnowledgeLevel,
-            user.Interests,
+            interestTopics,
             user.CountryId,
             user.AvatarUrl), "SUCCESS_OPERATION");
     }
