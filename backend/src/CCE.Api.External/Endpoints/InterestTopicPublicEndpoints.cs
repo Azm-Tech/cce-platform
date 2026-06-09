@@ -1,4 +1,5 @@
 using CCE.Api.Common.Extensions;
+using CCE.Application.InterestManagement.Queries.GetInterestQuestions;
 using CCE.Application.InterestManagement.Queries.ListInterestTopics;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,14 @@ public static class InterestTopicPublicEndpoints
             return result.ToHttpResult();
         })
         .WithName("ListInterestTopicsPublic");
+
+        app.MapGet("/api/interest-topics/questions", async (
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetInterestQuestionsQuery(), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .WithName("GetInterestQuestions");
 
         return app;
     }

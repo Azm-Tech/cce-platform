@@ -49,6 +49,7 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
                 uit.InterestTopic.Id,
                 uit.InterestTopic.NameAr,
                 uit.InterestTopic.NameEn,
+                uit.InterestTopic.Category,
                 uit.InterestTopic.IsActive))
             .ToList();
 

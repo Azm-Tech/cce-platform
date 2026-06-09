@@ -78,7 +78,6 @@ public static class ProfileEndpoints
             if (userId == System.Guid.Empty) return Results.Unauthorized();
             var cmd = new UpdateMyProfileCommand(
                 userId, body.LocalePreference, body.KnowledgeLevel,
-                body.Interests ?? System.Array.Empty<string>(),
                 body.AvatarUrl, body.CountryId);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();

@@ -1,8 +1,8 @@
 using CCE.Application.InterestManagement.Dtos;
 
-namespace CCE.Application.Identity.Public.Commands.UserInterest;
+namespace CCE.Application.Identity.Public.Dtos;
 
-public sealed record UpsertUserInterestResult(
+public sealed record UserInterestsDto(
     IReadOnlyList<InterestTopicDto> CarbonAreaTopics,
     InterestTopicDto? KnowledgeAssessmentTopic,
     InterestTopicDto? JobSectorTopic,

@@ -75,7 +75,6 @@ app.MapHomepageSectionEndpoints();
 app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
 app.MapNotificationTemplateEndpoints();
-app.MapInterestTopicEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
 

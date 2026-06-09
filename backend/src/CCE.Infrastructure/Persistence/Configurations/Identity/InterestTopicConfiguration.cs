@@ -12,5 +12,6 @@ internal sealed class InterestTopicConfiguration : IEntityTypeConfiguration<Inte
         builder.Property(t => t.Id).ValueGeneratedNever();
         builder.Property(t => t.NameAr).HasMaxLength(256).IsRequired();
         builder.Property(t => t.NameEn).HasMaxLength(256).IsRequired();
+        builder.Property(t => t.Category).HasMaxLength(50).IsRequired();
     }
 }
