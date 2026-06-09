@@ -50,6 +50,7 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
                 uit.InterestTopic.Id,
                 uit.InterestTopic.NameAr,
                 uit.InterestTopic.NameEn,
+                uit.InterestTopic.Category,
                 uit.InterestTopic.IsActive))
             .ToList();
 

@@ -24,7 +24,7 @@ public sealed class ListInterestTopicsQueryHandler
     {
         var topics = await _db.InterestTopics
             .OrderBy(t => t.NameEn)
-            .Select(t => new InterestTopicDto(t.Id, t.NameAr, t.NameEn, t.IsActive))
+            .Select(t => new InterestTopicDto(t.Id, t.NameAr, t.NameEn, t.Category, t.IsActive))
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 

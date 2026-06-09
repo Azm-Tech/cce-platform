@@ -1,6 +1,7 @@
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,37 @@ public sealed class ReferenceDataSeeder : ISeeder
 
     public int Order => 20;
 
+    private static readonly (string Slug, string NameAr, string NameEn, string Category)[] InitialInterestTopics =
+    {
+        // Carbon area (Q1)
+        ("renewable_energy", "الطاقة المتجددة", "Renewable Energy", "carbon_area"),
+        ("reduction", "التخفيض", "Reduction", "carbon_area"),
+        ("recycling", "إعادة التدوير", "Recycling", "carbon_area"),
+        ("carbon_points", "نقاط الكربون", "Carbon Points", "carbon_area"),
+        // Knowledge assessment (Q2)
+        ("high", "مرتفع", "High", "knowledge_assessment"),
+        ("medium", "متوسط", "Medium", "knowledge_assessment"),
+        ("low", "منخفض", "Low", "knowledge_assessment"),
+        // Job sector (Q3)
+        ("private_sector", "خاص", "Private", "job_sector"),
+        ("academic", "أكاديمي", "Academic", "job_sector"),
+        ("government", "حكومي", "Government", "job_sector"),
+    };
+
+    private async Task SeedInterestTopicsAsync(CancellationToken ct)
+    {
+        foreach (var t in InitialInterestTopics)
+        {
+            var id = DeterministicGuid.From($"interest_topic:{t.Slug}");
+            var exists = await _ctx.InterestTopics
+                .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
+            if (exists) continue;
+            var topic = InterestTopic.Create(t.NameAr, t.NameEn, t.Category);
+            typeof(InterestTopic).GetProperty(nameof(topic.Id))!.SetValue(topic, id);
+            _ctx.InterestTopics.Add(topic);
+        }
+    }
+
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         await SeedCountriesAsync(cancellationToken).ConfigureAwait(false);
@@ -36,6 +68,7 @@ public sealed class ReferenceDataSeeder : ISeeder
         await SeedNotificationTemplatesAsync(cancellationToken).ConfigureAwait(false);
         await SeedStaticPagesAsync(cancellationToken).ConfigureAwait(false);
         await SeedHomepageSectionsAsync(cancellationToken).ConfigureAwait(false);
+        await SeedInterestTopicsAsync(cancellationToken).ConfigureAwait(false);
         await _ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
