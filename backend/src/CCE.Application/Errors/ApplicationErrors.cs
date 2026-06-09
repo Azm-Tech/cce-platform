@@ -14,6 +14,7 @@ public static class ApplicationErrors
         public const string SUCCESS_UPDATED = "SUCCESS_UPDATED";
         public const string SUCCESS_DELETED = "SUCCESS_DELETED";
         public const string SUCCESS_OPERATION = "SUCCESS_OPERATION";
+        public const string DUPLICATE_VALUE = "DUPLICATE_VALUE";
     }
 
     public static class Identity
@@ -86,6 +87,16 @@ public static class ApplicationErrors
         public const string NOT_FOLLOWING = "NOT_FOLLOWING";
         public const string CANNOT_MARK_ANSWERED = "CANNOT_MARK_ANSWERED";
         public const string EDIT_WINDOW_EXPIRED = "EDIT_WINDOW_EXPIRED";
+        public const string POST_VOTED = "POST_VOTED";
+        public const string POST_CREATED = "POST_CREATED";
+        public const string POST_DRAFT_SAVED = "POST_DRAFT_SAVED";
+        public const string POST_PUBLISHED = "POST_PUBLISHED";
+        public const string DRAFT_DELETED = "DRAFT_DELETED";
+        public const string POST_ALREADY_PUBLISHED = "POST_ALREADY_PUBLISHED";
+        public const string COMMUNITY_NOT_FOUND = "COMMUNITY_NOT_FOUND";
+        public const string JOIN_REQUEST_NOT_FOUND = "JOIN_REQUEST_NOT_FOUND";
+        public const string POLL_NOT_FOUND = "POLL_NOT_FOUND";
+        public const string POLL_CLOSED = "POLL_CLOSED";
     }
 
     public static class Country

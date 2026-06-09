@@ -2,21 +2,25 @@ using CCE.Application.Common.Interfaces;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Community.Commands.FollowUser;
 
 public sealed class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Unit>
 {
     private readonly ICommunityWriteService _service;
+    private readonly ICceDbContext _db;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
 
     public FollowUserCommandHandler(
         ICommunityWriteService service,
+        ICceDbContext db,
         ICurrentUserAccessor currentUser,
         ISystemClock clock)
     {
         _service = service;
+        _db = db;
         _currentUser = currentUser;
         _clock = clock;
     }
@@ -32,6 +36,14 @@ public sealed class FollowUserCommandHandler : IRequestHandler<FollowUserCommand
 
         var follow = UserFollow.Follow(followerId, request.UserId, _clock);
         await _service.SaveFollowAsync(follow, cancellationToken).ConfigureAwait(false);
+
+        // Update denormalized counts on both users
+        var follower = await _db.Users.FirstOrDefaultAsync(u => u.Id == followerId, cancellationToken).ConfigureAwait(false);
+        var followed = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken).ConfigureAwait(false);
+        follower?.IncrementFollowing();
+        followed?.IncrementFollowers();
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
         return Unit.Value;
     }
 }

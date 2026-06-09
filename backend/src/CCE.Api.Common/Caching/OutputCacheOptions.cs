@@ -15,5 +15,7 @@ public sealed class OutputCacheOptions
         "/api/topics",
         "/api/categories",
         "/api/countries",
+        "/api/feed",        // homepage news-events + featured-posts feeds
+        "/api/community",   // public community reads (authenticated/me requests bypass via HasAuth)
     };
 }

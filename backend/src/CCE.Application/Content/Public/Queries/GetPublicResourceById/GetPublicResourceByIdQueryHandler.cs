@@ -31,15 +31,40 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
         var resource = list.SingleOrDefault();
         if (resource is null || resource.PublishedOn is null)
             return _messages.ResourceNotFound<PublicResourceDto>();
-        return _messages.Ok(MapToDto(resource), "SUCCESS_OPERATION");
+        return _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), "SUCCESS_OPERATION");
     }
 
-    private PublicResourceDto MapToDto(Resource r)
+    private async Task<PublicResourceDto> MapToDtoAsync(Resource r, CancellationToken ct)
     {
-        var category = _db.ResourceCategories.FirstOrDefault(c => c.Id == r.CategoryId);
-        var asset = _db.AssetFiles.FirstOrDefault(a => a.Id == r.AssetFileId);
         var countryIds = r.Countries.Select(c => c.CountryId).ToList();
-        var countries = _db.Countries.Where(c => countryIds.Contains(c.Id)).ToList();
+
+        var categories = await _db.ResourceCategories
+            .Where(c => c.Id == r.CategoryId)
+            .Select(c => new { c.NameAr, c.NameEn })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+        var category = categories.FirstOrDefault();
+
+        var assets = await _db.AssetFiles
+            .Where(a => a.Id == r.AssetFileId)
+            .Select(a => new { a.OriginalFileName })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+        var asset = assets.FirstOrDefault();
+
+        var countries = await _db.Countries
+            .Where(c => countryIds.Contains(c.Id))
+            .Select(c => new { c.NameAr })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+
+        var users = await _db.Users
+            .Where(u => u.Id == r.UploadedById)
+            .Select(u => new { u.FirstName, u.LastName, u.UserName })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+        var user = users.FirstOrDefault();
+        var publishedBy = GetPublishedByName(user?.FirstName, user?.LastName, user?.UserName);
 
         return new PublicResourceDto(
             r.Id,
@@ -48,6 +73,7 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
             r.DescriptionAr,
             r.DescriptionEn,
             r.ResourceType,
+            ResourceTypeAr.Get(r.ResourceType),
             r.CategoryId,
             category?.NameAr ?? string.Empty,
             category?.NameEn ?? string.Empty,
@@ -55,7 +81,14 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
             asset?.OriginalFileName ?? string.Empty,
             countryIds,
             countries.Select(c => c.NameAr).ToList(),
+            publishedBy,
             r.PublishedOn!.Value,
             r.ViewCount);
+    }
+
+    private static string GetPublishedByName(string? firstName, string? lastName, string? userName)
+    {
+        var fullName = $"{firstName} {lastName}".Trim();
+        return string.IsNullOrEmpty(fullName) ? userName ?? string.Empty : fullName;
     }
 }

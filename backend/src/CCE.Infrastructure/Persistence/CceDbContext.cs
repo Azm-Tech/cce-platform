@@ -64,10 +64,20 @@ public sealed class CceDbContext
     public DbSet<Topic> Topics => Set<Topic>();
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<PostReply> PostReplies => Set<PostReply>();
-    public DbSet<PostRating> PostRatings => Set<PostRating>();
+    public DbSet<PostVote> PostVotes => Set<PostVote>();
+    public DbSet<ReplyVote> ReplyVotes => Set<ReplyVote>();
+    public DbSet<PostAttachment> PostAttachments => Set<PostAttachment>();
+    public DbSet<Mention> Mentions => Set<Mention>();
+    public DbSet<Poll> Polls => Set<Poll>();
+    public DbSet<PollOption> PollOptions => Set<PollOption>();
+    public DbSet<PollVote> PollVotes => Set<PollVote>();
     public DbSet<TopicFollow> TopicFollows => Set<TopicFollow>();
     public DbSet<UserFollow> UserFollows => Set<UserFollow>();
     public DbSet<PostFollow> PostFollows => Set<PostFollow>();
+    public DbSet<CCE.Domain.Community.Community> Communities => Set<CCE.Domain.Community.Community>();
+    public DbSet<CommunityMembership> CommunityMemberships => Set<CommunityMembership>();
+    public DbSet<CommunityJoinRequest> CommunityJoinRequests => Set<CommunityJoinRequest>();
+    public DbSet<CommunityFollow> CommunityFollows => Set<CommunityFollow>();
 
     // ─── Knowledge Maps ───
     public DbSet<KnowledgeMap> KnowledgeMaps => Set<KnowledgeMap>();
@@ -136,10 +146,20 @@ public sealed class CceDbContext
     IQueryable<Topic> ICceDbContext.Topics => Topics.AsNoTracking();
     IQueryable<Post> ICceDbContext.Posts => Posts.AsNoTracking();
     IQueryable<PostReply> ICceDbContext.PostReplies => PostReplies.AsNoTracking();
-    IQueryable<PostRating> ICceDbContext.PostRatings => PostRatings.AsNoTracking();
+    IQueryable<PostVote> ICceDbContext.PostVotes => PostVotes.AsNoTracking();
+    IQueryable<ReplyVote> ICceDbContext.ReplyVotes => ReplyVotes.AsNoTracking();
+    IQueryable<PostAttachment> ICceDbContext.PostAttachments => PostAttachments.AsNoTracking();
+    IQueryable<Mention> ICceDbContext.Mentions => Mentions.AsNoTracking();
+    IQueryable<Poll> ICceDbContext.Polls => Polls.AsNoTracking();
+    IQueryable<PollOption> ICceDbContext.PollOptions => PollOptions.AsNoTracking();
+    IQueryable<PollVote> ICceDbContext.PollVotes => PollVotes.AsNoTracking();
     IQueryable<TopicFollow> ICceDbContext.TopicFollows => TopicFollows.AsNoTracking();
     IQueryable<UserFollow> ICceDbContext.UserFollows => UserFollows.AsNoTracking();
     IQueryable<PostFollow> ICceDbContext.PostFollows => PostFollows.AsNoTracking();
+    IQueryable<CCE.Domain.Community.Community> ICceDbContext.Communities => Communities.AsNoTracking();
+    IQueryable<CommunityMembership> ICceDbContext.CommunityMemberships => CommunityMemberships.AsNoTracking();
+    IQueryable<CommunityJoinRequest> ICceDbContext.CommunityJoinRequests => CommunityJoinRequests.AsNoTracking();
+    IQueryable<CommunityFollow> ICceDbContext.CommunityFollows => CommunityFollows.AsNoTracking();
     IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates.AsNoTracking();
     IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications.AsNoTracking();
     IQueryable<NotificationLog> ICceDbContext.NotificationLogs => NotificationLogs.AsNoTracking();
@@ -191,6 +211,12 @@ public sealed class CceDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(CceDbContext).Assembly);
+
+        // MassTransit EF Core transactional outbox tables (inbox_state / outbox_state / outbox_message).
+        // Isolated in a helper file so MassTransit's `using` doesn't collide with domain type names
+        // (Event, ConcurrencyException). Snake-case naming convention names the columns.
+        builder.AddMassTransitOutboxEntities();
+
         ApplySoftDeleteFilter(builder);
     }
 

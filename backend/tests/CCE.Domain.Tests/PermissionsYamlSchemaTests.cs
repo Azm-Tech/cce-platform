@@ -72,7 +72,8 @@ public class PermissionsYamlSchemaTests
     [Fact]
     public void Permissions_All_count_matches_BRD_matrix()
     {
-        Permissions.All.Count.Should().Be(49);
+        // 49 BRD baseline + 6 Community.Post.* (Vote added) + 5 Community.Community.* + 2 Community.Poll.* (Sprint-09).
+        Permissions.All.Count.Should().Be(57);
     }
 
     [Fact]

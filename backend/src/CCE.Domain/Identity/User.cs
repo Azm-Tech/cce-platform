@@ -40,6 +40,12 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Admin-managed account status. Default <see cref="UserStatus.Active"/>.</summary>
     public UserStatus Status { get; private set; } = UserStatus.Active;
 
+    /// <summary>Denormalized follower count (source of truth = UserFollow rows). Updated on follow/unfollow.</summary>
+    public int FollowerCount { get; private set; }
+
+    /// <summary>Denormalized following count (source of truth = UserFollow rows). Updated on follow/unfollow.</summary>
+    public int FollowingCount { get; private set; }
+
     /// <summary>
     /// Sub-11: stable Entra ID Object ID (<c>oid</c> claim) for this user. Populated lazily on
     /// first sign-in by <c>EntraIdUserResolver</c>. Null until the user signs in via Entra ID
@@ -255,6 +261,11 @@ public class User : IdentityUser<System.Guid>
         => new string(System.Linq.Enumerable.Where(phone, char.IsDigit).ToArray());
 
     public void ChangeStatus(UserStatus newStatus) => Status = newStatus;
+
+    public void IncrementFollowers() => FollowerCount++;
+    public void DecrementFollowers() { if (FollowerCount > 0) FollowerCount--; }
+    public void IncrementFollowing() => FollowingCount++;
+    public void DecrementFollowing() { if (FollowingCount > 0) FollowingCount--; }
 
     public void Activate() => Status = UserStatus.Active;
 

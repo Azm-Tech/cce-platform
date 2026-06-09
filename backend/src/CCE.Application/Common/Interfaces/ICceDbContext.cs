@@ -50,10 +50,20 @@ public interface ICceDbContext
     IQueryable<Topic> Topics { get; }
     IQueryable<Post> Posts { get; }
     IQueryable<PostReply> PostReplies { get; }
-    IQueryable<PostRating> PostRatings { get; }
+    IQueryable<PostVote> PostVotes { get; }
+    IQueryable<ReplyVote> ReplyVotes { get; }
+    IQueryable<PostAttachment> PostAttachments { get; }
+    IQueryable<Mention> Mentions { get; }
+    IQueryable<Poll> Polls { get; }
+    IQueryable<PollOption> PollOptions { get; }
+    IQueryable<PollVote> PollVotes { get; }
     IQueryable<TopicFollow> TopicFollows { get; }
     IQueryable<UserFollow> UserFollows { get; }
     IQueryable<PostFollow> PostFollows { get; }
+    IQueryable<CCE.Domain.Community.Community> Communities { get; }
+    IQueryable<CommunityMembership> CommunityMemberships { get; }
+    IQueryable<CommunityJoinRequest> CommunityJoinRequests { get; }
+    IQueryable<CommunityFollow> CommunityFollows { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
     IQueryable<UserNotification> UserNotifications { get; }
     IQueryable<NotificationLog> NotificationLogs { get; }

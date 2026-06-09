@@ -63,6 +63,21 @@ public static class CceJwtAuthRegistration
                     NameClaimType = "preferred_username",
                     RoleClaimType = "roles",
                 };
+                // SignalR browser WebSocket clients can't set the Authorization header — they pass the JWT
+                // via ?access_token=. Accept it for hub requests so the hub authenticates over WebSockets.
+                jwt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"].ToString();
+                        if (!string.IsNullOrEmpty(accessToken)
+            && context.HttpContext.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         services.AddAuthorization();

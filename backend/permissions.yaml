@@ -36,6 +36,10 @@ groups:
       Read:
         description: Read system health probe
         roles: [cce-super-admin, cce-admin]
+  Cache:
+    Manage:
+      description: View and invalidate server-side output caches
+      roles: [cce-super-admin, cce-admin]
   User:
     Read:
       description: Read user profiles
@@ -123,14 +127,37 @@ groups:
       Reply:
         description: Reply to a community post
         roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
-      Rate:
-        description: Rate a community post
+      Vote:
+        description: Up/down vote a community post or reply
         roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
       Moderate:
         description: Soft-delete or restore a community post (moderation)
         roles: [cce-super-admin, cce-admin, cce-content-manager]
       Follow:
         description: Follow posts/topics/users
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
+    Community:
+      Create:
+        description: Create a community
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
+      Update:
+        description: Update community settings
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
+      Delete:
+        description: Deactivate a community
+        roles: [cce-super-admin, cce-admin]
+      Moderate:
+        description: Moderate community members and join requests
+        roles: [cce-super-admin, cce-admin, cce-content-manager]
+      Join:
+        description: Join, leave, or follow a community
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
+    Poll:
+      Create:
+        description: Create a poll post
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
+      Vote:
+        description: Vote on a poll
         roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-admin, cce-super-admin]
     Expert:
       RegisterRequest:

@@ -21,11 +21,28 @@ public sealed class GetPublicPostByIdQueryHandler
         CancellationToken cancellationToken)
     {
         var post = (await _db.Posts
-            .Where(p => p.Id == request.Id)
+            .Where(p => p.Id == request.Id && p.Status == CCE.Domain.Community.PostStatus.Published)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false))
             .FirstOrDefault();
 
-        return post is null ? null : ListPublicPostsInTopicQueryHandler.MapToDto(post);
+        if (post is null)
+            return null;
+
+        var authorName = (await _db.Users
+            .Where(u => u.Id == post.AuthorId)
+            .Select(u => u.FirstName + " " + u.LastName)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false))
+            .FirstOrDefault();
+
+        var attachments = (await _db.PostAttachments
+            .Where(a => a.PostId == post.Id)
+            .Select(a => a.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false))
+            .ToList();
+
+        return ListPublicPostsInTopicQueryHandler.MapToDto(post, authorName, attachments);
     }
 }

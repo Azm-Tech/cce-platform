@@ -34,6 +34,7 @@ public static class OpenTelemetryExtensions
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddSource("CCE")
+                    .AddSource("MassTransit") // MassTransit publish/consume spans (its own ActivitySource)
                     .AddOtlpExporter(opts =>
                     {
                         opts.Endpoint = new Uri(otlpEndpoint);

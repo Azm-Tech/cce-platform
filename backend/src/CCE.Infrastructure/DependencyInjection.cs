@@ -64,7 +64,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool registerConsumers = false)
     {
         services.AddOptions<CceInfrastructureOptions>()
             .Bind(configuration.GetSection(CceInfrastructureOptions.SectionName))
@@ -91,9 +92,18 @@ public static class DependencyInjection
         // Default country-scope accessor — API hosts override with HttpContext-based impl.
         services.TryAddScoped<ICountryScopeAccessor, SystemCountryScopeAccessor>();
 
-        // Interceptors
+        // Interceptors. Registered BOTH as their concrete type (so they can be resolved directly in
+        // tests) AND as IInterceptor, because the DbContext below attaches every IInterceptor via
+        // sp.GetServices<IInterceptor>(). Without the IInterceptor registration these would silently
+        // NOT attach — domain-event dispatch + auditing would stop. The MassTransit EF bus-outbox
+        // interceptor is also registered as IInterceptor by AddEntityFrameworkOutbox, so it is picked
+        // up by the same call.
         services.AddScoped<AuditingInterceptor>();
         services.AddScoped<DomainEventDispatcher>();
+        services.AddScoped<Microsoft.EntityFrameworkCore.Diagnostics.IInterceptor>(
+            sp => sp.GetRequiredService<AuditingInterceptor>());
+        services.AddScoped<Microsoft.EntityFrameworkCore.Diagnostics.IInterceptor>(
+            sp => sp.GetRequiredService<DomainEventDispatcher>());
 
         // EF Core — SQL Server with snake_case naming + audit + domain-event interceptors
         services.AddDbContext<CceDbContext>((sp, opts) =>
@@ -101,9 +111,7 @@ public static class DependencyInjection
             var infraOpts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
             opts.UseSqlServer(infraOpts.SqlConnectionString);
             opts.UseSnakeCaseNamingConvention();
-            opts.AddInterceptors(
-                sp.GetRequiredService<AuditingInterceptor>(),
-                sp.GetRequiredService<DomainEventDispatcher>());
+            opts.AddInterceptors(sp.GetServices<Microsoft.EntityFrameworkCore.Diagnostics.IInterceptor>());
         });
         services.AddScoped<ICceDbContext>(sp => sp.GetRequiredService<CceDbContext>());
 
@@ -191,6 +199,12 @@ public static class DependencyInjection
         // Topic uses IRepository<Topic, Guid> (registered below)
         services.AddScoped<ICommunityModerationService, CommunityModerationService>();
         services.AddScoped<ICommunityWriteService, CommunityWriteService>();
+        services.AddScoped<ICommunityVoteRepository, CommunityVoteRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ICommunityRepository, CommunityRepository>();
+        services.AddScoped<ICommunityAccessGuard, CommunityAccessGuard>();
+        services.AddScoped<IReplyRepository, ReplyRepository>();
+        services.AddScoped<IPollRepository, PollRepository>();
         services.AddScoped<IHomepageSettingsRepository, HomepageSettingsRepository>();
         services.AddScoped<IAboutSettingsRepository, AboutSettingsRepository>();
         services.AddScoped<IPoliciesSettingsRepository, PoliciesSettingsRepository>();
@@ -216,6 +230,9 @@ public static class DependencyInjection
         services.AddScoped<INotificationChannelHandler, SmsNotificationChannelSender>();
         services.AddScoped<INotificationChannelHandler, InAppNotificationChannelSender>();
         services.AddScoped<ISignalRNotificationPublisher, SignalRNotificationPublisher>();
+        services.AddScoped<ICommunityRealtimePublisher, CommunityRealtimePublisher>();
+        services.AddSingleton<CCE.Application.Common.Realtime.IRealtimePresenceTracker,
+            CCE.Infrastructure.Notifications.RedisRealtimePresenceTracker>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();
@@ -242,9 +259,10 @@ public static class DependencyInjection
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
 
-        // Messaging (MassTransit) — transport selected by Messaging:Transport in appsettings.
-        // InMemory by default (no broker); set to RabbitMQ in production.
-        services.AddCceMessaging(configuration);
+        // Messaging (MassTransit + EF outbox) — transport selected by Messaging:Transport in appsettings.
+        // InMemory by default (no broker); set to RabbitMQ in production. Consumers run only where
+        // registerConsumers=true (CCE.Worker); APIs/Seeder publish-only via the outbox.
+        services.AddCceMessaging(configuration, registerConsumers);
 
         // Search
         services.AddScoped<ISearchClient, MeilisearchClient>();
@@ -262,6 +280,19 @@ public static class DependencyInjection
             config.AbortOnConnectFail = false;
             return ConnectionMultiplexer.Connect(config);
         });
+
+        // Output-cache region invalidator (used by the cache-management endpoints and the
+        // CacheInvalidationBehavior). Singleton — depends only on the singleton multiplexer.
+        services.AddSingleton<CCE.Application.Common.Caching.IOutputCacheInvalidator,
+            CCE.Infrastructure.Caching.RedisOutputCacheInvalidator>();
+
+        // Raw Redis key inspector (used by the admin diagnostics endpoints).
+        services.AddSingleton<CCE.Application.Common.Caching.IRedisKeyInspector,
+            CCE.Infrastructure.Caching.RedisKeyInspector>();
+
+        // Redis feed / hot-counter / leaderboard store (Spring 9).
+        services.AddScoped<CCE.Application.Community.IRedisFeedStore,
+            CCE.Infrastructure.Community.RedisFeedStore>();
 
         return services;
     }

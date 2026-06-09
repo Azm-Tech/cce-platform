@@ -43,18 +43,18 @@ public sealed class SubmitCountryContentRequestCommandHandler
         SubmitCountryContentRequestCommand request,
         CancellationToken cancellationToken)
     {
-        var authorizedIds = await _scope.GetAuthorizedCountryIdsAsync(cancellationToken).ConfigureAwait(false);
-        if (authorizedIds is not null && !authorizedIds.Contains(request.CountryId))
-            return _messages.CountryScopeForbidden<System.Guid>();
-
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot submit without a user identity.");
 
-        CountryContentRequest contentRequest = request.Type switch
+        var countryId = await ResolveCountryIdAsync(request.CountryId, cancellationToken).ConfigureAwait(false);
+        if (countryId is null)
+            return _messages.CountryScopeForbidden<System.Guid>();
+
+        CountryContentRequest contentRequest = request.Content switch
         {
-            ContentType.Resource => await SubmitResourceAsync(request, userId, cancellationToken).ConfigureAwait(false),
-            ContentType.News => await SubmitNewsAsync(request, userId, cancellationToken).ConfigureAwait(false),
-            ContentType.Event => await SubmitEventAsync(request, userId, cancellationToken).ConfigureAwait(false),
+            CreateResourceBody body => await SubmitResourceAsync(body, countryId.Value, userId, cancellationToken).ConfigureAwait(false),
+            CreateNewsBody body => await SubmitNewsAsync(body, countryId.Value, userId, cancellationToken).ConfigureAwait(false),
+            CreateEventBody body => await SubmitEventAsync(body, countryId.Value, userId, cancellationToken).ConfigureAwait(false),
             _ => throw new DomainException("Invalid content type.")
         };
 
@@ -76,18 +76,33 @@ public sealed class SubmitCountryContentRequestCommandHandler
         return _messages.Ok(contentRequest.Id, ApplicationErrors.Content.COUNTRY_CONTENT_REQUEST_SUBMITTED);
     }
 
+    private async Task<System.Guid?> ResolveCountryIdAsync(
+        System.Guid? countryId,
+        CancellationToken ct)
+    {
+        var authorizedIds = await _scope.GetAuthorizedCountryIdsAsync(ct).ConfigureAwait(false);
+
+        if (countryId is null)
+        {
+            if (authorizedIds is null || authorizedIds.Count == 0)
+                return null;
+            return authorizedIds[0];
+        }
+
+        if (authorizedIds is not null && !authorizedIds.Contains(countryId.Value))
+            return null;
+
+        return countryId;
+    }
+
     private async Task<CountryContentRequest> SubmitResourceAsync(
-        SubmitCountryContentRequestCommand request,
+        CreateResourceBody body,
+        System.Guid countryId,
         System.Guid userId,
         CancellationToken ct)
     {
-        if (!request.AssetFileId.HasValue || request.AssetFileId.Value == System.Guid.Empty)
-            throw new DomainException("AssetFileId is required for resource submissions.");
-        if (!request.ResourceType.HasValue)
-            throw new DomainException("ResourceType is required for resource submissions.");
-
         var assets = await _db.AssetFiles
-            .Where(a => a.Id == request.AssetFileId.Value)
+            .Where(a => a.Id == body.AssetFileId)
             .ToListAsyncEither(ct).ConfigureAwait(false);
         var asset = assets.FirstOrDefault();
         if (asset is null)
@@ -96,31 +111,29 @@ public sealed class SubmitCountryContentRequestCommandHandler
             throw new DomainException("Asset is not clean.");
 
         return CountryContentRequest.SubmitResource(
-            request.CountryId, userId,
-            request.TitleAr, request.TitleEn,
-            request.DescriptionAr, request.DescriptionEn,
-            request.ResourceType.Value, request.AssetFileId.Value,
+            countryId, userId,
+            body.TitleAr, body.TitleEn,
+            body.DescriptionAr, body.DescriptionEn,
+            body.ResourceType, body.AssetFileId,
             _clock);
     }
 
     private async Task<CountryContentRequest> SubmitNewsAsync(
-        SubmitCountryContentRequestCommand request,
+        CreateNewsBody body,
+        System.Guid countryId,
         System.Guid userId,
         CancellationToken ct)
     {
-        if (!request.TopicId.HasValue || request.TopicId.Value == System.Guid.Empty)
-            throw new DomainException("TopicId is required for news submissions.");
-
         var topics = await _db.Topics
-            .Where(t => t.Id == request.TopicId.Value)
+            .Where(t => t.Id == body.TopicId)
             .ToListAsyncEither(ct).ConfigureAwait(false);
         if (topics.Count == 0)
             throw new DomainException("Topic not found.");
 
-        if (request.FeaturedImageAssetId.HasValue)
+        if (body.FeaturedImageAssetId.HasValue)
         {
             var assets = await _db.AssetFiles
-                .Where(a => a.Id == request.FeaturedImageAssetId.Value)
+                .Where(a => a.Id == body.FeaturedImageAssetId.Value)
                 .ToListAsyncEither(ct).ConfigureAwait(false);
             var asset = assets.FirstOrDefault();
             if (asset is null)
@@ -130,36 +143,47 @@ public sealed class SubmitCountryContentRequestCommandHandler
         }
 
         return CountryContentRequest.SubmitNews(
-            request.CountryId, userId,
-            request.TitleAr, request.TitleEn,
-            request.DescriptionAr, request.DescriptionEn,
-            request.TopicId.Value, request.FeaturedImageAssetId,
+            countryId, userId,
+            body.TitleAr, body.TitleEn,
+            body.ContentAr, body.ContentEn,
+            body.TopicId, body.FeaturedImageAssetId,
             _clock);
     }
 
     private async Task<CountryContentRequest> SubmitEventAsync(
-        SubmitCountryContentRequestCommand request,
+        CreateEventBody body,
+        System.Guid countryId,
         System.Guid userId,
         CancellationToken ct)
     {
-        if (!request.TopicId.HasValue || request.TopicId.Value == System.Guid.Empty)
-            throw new DomainException("TopicId is required for event submissions.");
-        if (!request.StartsOn.HasValue || !request.EndsOn.HasValue)
-            throw new DomainException("StartsOn and EndsOn are required for event submissions.");
-
         var topics = await _db.Topics
-            .Where(t => t.Id == request.TopicId.Value)
+            .Where(t => t.Id == body.TopicId)
             .ToListAsyncEither(ct).ConfigureAwait(false);
         if (topics.Count == 0)
             throw new DomainException("Topic not found.");
 
+        if (body.StartsOn >= body.EndsOn)
+            throw new DomainException("StartsOn must be before EndsOn.");
+
+        if (body.FeaturedImageAssetId.HasValue)
+        {
+            var assets = await _db.AssetFiles
+                .Where(a => a.Id == body.FeaturedImageAssetId.Value)
+                .ToListAsyncEither(ct).ConfigureAwait(false);
+            var asset = assets.FirstOrDefault();
+            if (asset is null)
+                throw new DomainException("Featured image asset not found.");
+            if (asset.VirusScanStatus != VirusScanStatus.Clean)
+                throw new DomainException("Featured image asset is not clean.");
+        }
+
         return CountryContentRequest.SubmitEvent(
-            request.CountryId, userId,
-            request.TitleAr, request.TitleEn,
-            request.DescriptionAr, request.DescriptionEn,
-            request.TopicId.Value,
-            request.StartsOn.Value, request.EndsOn.Value,
-            request.LocationAr, request.LocationEn, request.OnlineMeetingUrl,
+            countryId, userId,
+            body.TitleAr, body.TitleEn,
+            body.DescriptionAr, body.DescriptionEn,
+            body.TopicId,
+            body.StartsOn, body.EndsOn,
+            body.LocationAr, body.LocationEn, body.OnlineMeetingUrl,
             _clock);
     }
 }

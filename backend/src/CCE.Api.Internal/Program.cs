@@ -6,6 +6,7 @@ using CCE.Api.Common.Middleware;
 using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
+using CCE.Api.Common.SignalR;
 using CCE.Api.Internal.Endpoints;
 using CCE.Application;
 using CCE.Application.Common.CountryScope;
@@ -43,7 +44,7 @@ builder.Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
-builder.Services.AddSignalR().AddJsonProtocol();
+builder.Services.AddCceSignalR(builder.Configuration);
 
 var app = builder.Build();
 
@@ -70,7 +71,6 @@ app.MapAssetEndpoints();
 app.MapResourceEndpoints();
 app.MapResourceCategoryEndpoints();
 app.MapCountryResourceRequestEndpoints();
-app.MapStateRepresentativeEndpoints();
 app.MapCountryEndpoints();
 app.MapCountryProfileEndpoints();
 app.MapKapsarcAdminEndpoints();
@@ -85,11 +85,14 @@ app.MapNotificationTemplateEndpoints();
 app.MapNotificationLogEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
+        app.MapCacheManagementEndpoints();
+        app.MapRedisAdminEndpoints();
 app.MapHomepageSettingsEndpoints();
 app.MapAboutSettingsEndpoints();
 app.MapPoliciesSettingsEndpoints();
         app.MapMediaEndpoints();
         app.MapCountryCodeEndpoints();
+        app.MapCountryCodesPublicEndpoints();
         app.MapEvaluationEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,

@@ -4,6 +4,7 @@ using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
+using CCE.Domain.Identity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,6 +68,20 @@ public sealed class ListResourcesQueryHandler : IRequestHandler<ListResourcesQue
             .ConfigureAwait(false);
         var countryNameMap = countries.ToDictionary(c => c.Id, c => c.NameAr);
 
+        var userIds = paged.Items.Select(r => r.UploadedById).Distinct().ToList();
+        var users = await _db.Users
+            .Where(u => userIds.Contains(u.Id))
+            .Select(u => new { u.Id, u.FirstName, u.LastName, u.UserName })
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var userNameMap = users.ToDictionary(
+            u => u.Id,
+            u =>
+            {
+                var fullName = $"{u.FirstName} {u.LastName}".Trim();
+                return string.IsNullOrEmpty(fullName) ? u.UserName : fullName;
+            });
+
         var dtos = paged.Items.Select(r =>
         {
             var cat = categoryMap.GetValueOrDefault(r.CategoryId);
@@ -79,6 +94,7 @@ public sealed class ListResourcesQueryHandler : IRequestHandler<ListResourcesQue
                 r.DescriptionAr,
                 r.DescriptionEn,
                 r.ResourceType,
+                ResourceTypeAr.Get(r.ResourceType),
                 r.CategoryId,
                 cat?.NameAr ?? string.Empty,
                 cat?.NameEn ?? string.Empty,
@@ -87,6 +103,7 @@ public sealed class ListResourcesQueryHandler : IRequestHandler<ListResourcesQue
                 countryIds,
                 countryNames,
                 r.UploadedById,
+                userNameMap.GetValueOrDefault(r.UploadedById) ?? string.Empty,
                 r.PublishedOn,
                 r.ViewCount,
                 r.IsCenterManaged,

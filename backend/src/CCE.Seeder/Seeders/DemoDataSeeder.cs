@@ -215,6 +215,20 @@ public sealed class DemoDataSeeder : ISeeder
 
     private async Task SeedCommunityPostsAsync(CancellationToken ct)
     {
+        // Ensure the default "General" community exists; demo posts are filed under it.
+        var generalId = CommunitySeedIds.GeneralCommunityId;
+        var generalExists = await _ctx.Communities.IgnoreQueryFilters()
+            .AnyAsync(c => c.Id == generalId, ct).ConfigureAwait(false);
+        if (!generalExists)
+        {
+            var general = CCE.Domain.Community.Community.Create(
+                "عام", "General", "المجتمع العام", "The general community",
+                "general", CommunityVisibility.Public);
+            typeof(CCE.Domain.Community.Community).GetProperty(nameof(general.Id))!.SetValue(general, generalId);
+            _ctx.Communities.Add(general);
+            await _ctx.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+
         // Cache topic slug → id once, since DemoPosts references topics by slug.
         var topicMap = await _ctx.Topics
             .ToDictionaryAsync(t => t.Slug, t => t.Id, ct).ConfigureAwait(false);
@@ -235,8 +249,13 @@ public sealed class DemoDataSeeder : ISeeder
 
             if (!postExists)
             {
-                var post = Post.Create(topicId, SystemAuthorId, p.Content,
-                    p.Locale, p.IsAnswerable, _clock);
+                var title = p.Content.Length > Post.MaxTitleLength
+                    ? p.Content[..Post.MaxTitleLength]
+                    : p.Content;
+                var post = Post.CreateDraft(generalId, topicId, SystemAuthorId,
+                    p.IsAnswerable ? PostType.Question : PostType.Info,
+                    title, p.Content, p.Locale, _clock);
+                post.Publish(_clock);
                 typeof(Post).GetProperty(nameof(post.Id))!.SetValue(post, postId);
                 _ctx.Posts.Add(post);
             }
@@ -249,8 +268,8 @@ public sealed class DemoDataSeeder : ISeeder
                 if (replyExists) continue;
 
                 var authorId = r.IsExpert ? DemoExpertId : SystemAuthorId;
-                var reply = PostReply.Create(postId, authorId, r.Content,
-                    p.Locale, parentReplyId: null, isByExpert: r.IsExpert, _clock);
+                var reply = PostReply.CreateRoot(postId, authorId, r.Content,
+                    p.Locale, isByExpert: r.IsExpert, _clock);
                 typeof(PostReply).GetProperty(nameof(reply.Id))!.SetValue(reply, replyId);
                 _ctx.PostReplies.Add(reply);
             }

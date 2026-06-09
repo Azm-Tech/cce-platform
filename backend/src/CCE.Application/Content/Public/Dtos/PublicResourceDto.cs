@@ -9,6 +9,7 @@ public sealed record PublicResourceDto(
     string DescriptionAr,
     string DescriptionEn,
     ResourceType ResourceType,
+    string ResourceTypeAr,
     System.Guid CategoryId,
     string CategoryNameAr,
     string CategoryNameEn,
@@ -16,5 +17,6 @@ public sealed record PublicResourceDto(
     string AssetFileName,
     IReadOnlyList<System.Guid> CountryIds,
     IReadOnlyList<string> CountryNames,
+    string PublishedBy,
     System.DateTimeOffset PublishedOn,
     long ViewCount);

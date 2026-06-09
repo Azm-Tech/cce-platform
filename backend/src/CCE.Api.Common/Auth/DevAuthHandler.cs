@@ -116,10 +116,9 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
     /// </summary>
     private AuthenticateResult? TryAuthenticateRealJwt()
     {
-        if (!Request.Headers.TryGetValue("Authorization", out var auth))
+        var raw = GetAuthorizationValue();
+        if (string.IsNullOrEmpty(raw))
             return null;
-
-        var raw = auth.ToString();
 
         // Skip dev-prefixed tokens — they are handled by the dev-mode path.
         const string devPrefix = "Bearer dev:";
@@ -203,10 +202,10 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
     /// </summary>
     private List<string>? ReadDevRoles()
     {
-        // Prefer bearer header (curl / Postman) over cookie.
-        if (Request.Headers.TryGetValue("Authorization", out var auth))
+        // Prefer bearer header / ?access_token= (curl, Postman, SignalR WebSocket) over cookie.
+        var raw = GetAuthorizationValue();
+        if (!string.IsNullOrEmpty(raw))
         {
-            var raw = auth.ToString();
             const string devPrefix = "Bearer dev:";
             if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
             {
@@ -214,12 +213,25 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
             }
         }
 
-        // Fall back to cookie (browser path).
+        // Fall back to cookie (browser path; also sent on the WebSocket handshake).
         if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
         {
             return new List<string> { cookieValue.Trim() };
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Resolves the raw <c>Authorization</c> value from the header, or — for SignalR WebSocket clients that
+    /// can't set headers — from the <c>?access_token=</c> query string (normalised to a Bearer value).
+    /// </summary>
+    private string? GetAuthorizationValue()
+    {
+        if (Request.Headers.TryGetValue("Authorization", out var auth))
+            return auth.ToString();
+
+        var queryToken = Request.Query["access_token"].ToString();
+        return string.IsNullOrEmpty(queryToken) ? null : $"Bearer {queryToken}";
     }
 }

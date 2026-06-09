@@ -54,8 +54,14 @@ public class UpdateResourceCommandHandlerTests
 
     private static (UpdateResourceCommandHandler sut, ICceDbContext db) BuildSut(Resource? resourceToReturn, System.Guid? categoryId = null)
     {
+        var repo = Substitute.For<IRepository<Resource, System.Guid>>();
+        repo.GetByIdAsync(
+                Arg.Any<System.Guid>(),
+                Arg.Any<System.Func<System.Linq.IQueryable<Resource>, System.Linq.IQueryable<Resource>>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(resourceToReturn);
+
         var db = Substitute.For<ICceDbContext>();
-        db.Resources.Returns(resourceToReturn is null ? Array.Empty<Resource>().AsQueryable() : new[] { resourceToReturn }.AsQueryable());
 
         if (categoryId.HasValue)
         {
@@ -70,6 +76,6 @@ public class UpdateResourceCommandHandlerTests
 
         var localization = Substitute.For<ILocalizationService>();
         localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
-        return (new UpdateResourceCommandHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db);
+        return (new UpdateResourceCommandHandler(repo, db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance)), db);
     }
 }

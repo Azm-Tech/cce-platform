@@ -57,6 +57,19 @@ public static class SystemCodeMap
         ["CANNOT_MARK_ANSWERED"] = SystemCode.ERR067,
         ["EDIT_WINDOW_EXPIRED"] = SystemCode.ERR068,
 
+        ["POST_ALREADY_PUBLISHED"] = SystemCode.ERR069,
+        ["COMMUNITY_NOT_FOUND"] = SystemCode.ERR140,
+        ["JOIN_REQUEST_NOT_FOUND"] = SystemCode.ERR141,
+        ["POLL_NOT_FOUND"] = SystemCode.ERR142,
+        ["POLL_CLOSED"] = SystemCode.ERR143,
+
+        // ─── Community Success ───
+        ["POST_VOTED"] = SystemCode.CON065,
+        ["POST_CREATED"] = SystemCode.CON066,
+        ["POST_DRAFT_SAVED"] = SystemCode.CON067,
+        ["POST_PUBLISHED"] = SystemCode.CON068,
+        ["DRAFT_DELETED"] = SystemCode.CON069,
+
         // ─── Country / State-Rep Errors ───
         ["COUNTRY_NOT_FOUND"] = SystemCode.ERR070,
         ["COUNTRY_PROFILE_NOT_FOUND"] = SystemCode.ERR071,

@@ -45,6 +45,9 @@ public static class CceOpenApiRegistration
                     Array.Empty<string>()
                 }
             });
+
+            opts.UseOneOfForPolymorphism();
+            opts.SelectDiscriminatorNameUsing(_ => "type");
         });
         return services;
     }

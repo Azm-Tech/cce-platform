@@ -26,20 +26,6 @@ public sealed class CommunityWriteService : ICommunityWriteService
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
-    public async Task SaveRatingAsync(PostRating rating, CancellationToken ct)
-    {
-        // Upsert: remove existing rating for same (PostId, UserId), then add the new one.
-        var existing = await _db.PostRatings
-            .FirstOrDefaultAsync(r => r.PostId == rating.PostId && r.UserId == rating.UserId, ct)
-            .ConfigureAwait(false);
-        if (existing is not null)
-        {
-            _db.PostRatings.Remove(existing);
-        }
-        _db.PostRatings.Add(rating);
-        await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-    }
-
     public async Task<Post?> FindPostAsync(Guid id, CancellationToken ct)
         => await _db.Posts.FirstOrDefaultAsync(p => p.Id == id, ct).ConfigureAwait(false);
 
