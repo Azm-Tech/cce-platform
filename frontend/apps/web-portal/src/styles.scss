@@ -7,6 +7,9 @@
 @use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
 @use "./fancy";
 
+@import "quill/dist/quill.core.css";
+@import "quill/dist/quill.snow.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -718,4 +721,11 @@ body { min-height: 100vh; }
 @media (prefers-reduced-motion: reduce) {
   .cce-list-skeleton__band,
   .cce-list-skeleton__line { animation: none; }
+}
+
+/* ── Global input height: 48px (Material default: 56px) ───── */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-height: 48px;
+  --mat-form-field-container-height: 48px;
+  --mat-form-field-container-vertical-padding: 12px;
 }
