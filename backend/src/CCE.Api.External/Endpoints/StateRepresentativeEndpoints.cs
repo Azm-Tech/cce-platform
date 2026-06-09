@@ -64,14 +64,7 @@ public static class StateRepresentativeEndpoints
         group.MapPost("/requests", async (
             SubmitContentRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var cmd = new SubmitCountryContentRequestCommand(
-                body.Type, body.CountryId,
-                body.TitleAr, body.TitleEn,
-                body.DescriptionAr, body.DescriptionEn,
-                body.ResourceType, body.AssetFileId,
-                body.TopicId, body.FeaturedImageAssetId,
-                body.StartsOn, body.EndsOn,
-                body.LocationAr, body.LocationEn, body.OnlineMeetingUrl);
+            var cmd = new SubmitCountryContentRequestCommand(body.CountryId, body.Content);
             return (await mediator.Send(cmd, ct).ConfigureAwait(false)).ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Content_Country_Submit)

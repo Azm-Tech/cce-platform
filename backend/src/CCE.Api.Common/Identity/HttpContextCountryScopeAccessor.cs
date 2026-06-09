@@ -14,7 +14,7 @@ namespace CCE.Api.Common.Identity;
 /// </summary>
 public sealed class HttpContextCountryScopeAccessor : ICountryScopeAccessor
 {
-    private static readonly string[] BypassRoles = new[] { "SuperAdmin", "ContentManager" };
+    private static readonly string[] BypassRoles = new[] { "cce-super-admin", "cce-admin", "cce-content-manager" };
 
     private readonly IHttpContextAccessor _accessor;
     private readonly ICceDbContext _db;
@@ -32,12 +32,14 @@ public sealed class HttpContextCountryScopeAccessor : ICountryScopeAccessor
         {
             return null;
         }
-        var groups = user.FindAll("groups").Select(c => c.Value)
+        var roles = user.FindAll("roles").Select(c => c.Value)
             .ToHashSet(System.StringComparer.OrdinalIgnoreCase);
-        if (BypassRoles.Any(r => groups.Contains(r)))
+        if (BypassRoles.Any(r => roles.Contains(r)))
         {
             return null;
         }
+        var groups = user.FindAll("groups").Select(c => c.Value)
+            .ToHashSet(System.StringComparer.OrdinalIgnoreCase);
         if (!groups.Contains("Country.Profile.Update"))
         {
             return System.Array.Empty<System.Guid>();
