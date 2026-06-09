@@ -290,31 +290,6 @@
           </div>
         </div>
 
-        <!-- Expertise section -->
-        <div class="cce-profile__form-section">
-          <h2 class="cce-profile__form-section-title">
-            <mat-icon>workspace_premium</mat-icon>
-            {{ 'account.profile.section.expertise' | transloco }}
-          </h2>
-          <div class="cce-profile__form-grid">
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.knowledgeLevel' | transloco }}</mat-label>
-              <mat-select formControlName="knowledgeLevel">
-                @for (level of knowledgeLevels; track level) {
-                  <mat-option [value]="level">
-                    {{ ('account.knowledgeLevel.' + level) | transloco }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="cce-profile__form-full">
-              <mat-label>{{ 'account.profile.field.interests' | transloco }}</mat-label>
-              <input matInput formControlName="interests" placeholder="waste, water, carbon" />
-              <mat-hint>{{ 'account.profile.field.interestsHint' | transloco }}</mat-hint>
-            </mat-form-field>
-          </div>
-        </div>
-
         <!-- Actions -->
         <div class="cce-profile__form-actions">
           <button mat-stroked-button type="button" [disabled]="saving()" (click)="cancelEdit()">

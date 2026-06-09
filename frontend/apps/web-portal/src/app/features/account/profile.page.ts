@@ -19,7 +19,7 @@ import { CountriesApiService } from '../countries/countries-api.service';
 import type { CountryCode } from '../countries/country.types';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
-import { KNOWLEDGE_LEVELS, type ExpertRegistrationStatus, type ExpertRequestStatus, type KnowledgeLevel, type UpdateMyProfilePayload, type UserProfile } from './account.types';
+import { type ExpertRegistrationStatus, type ExpertRequestStatus, type UpdateMyProfilePayload, type UserProfile } from './account.types';
 
 interface ProfileFormShape {
   firstName: FormControl<string>;
@@ -27,8 +27,6 @@ interface ProfileFormShape {
   jobTitle: FormControl<string>;
   organizationName: FormControl<string>;
   localePreference: FormControl<string>;
-  knowledgeLevel: FormControl<KnowledgeLevel>;
-  interests: FormControl<string>;
   countryCodeId: FormControl<string | null>;
   avatarUrl: FormControl<string | null>;
 }
@@ -40,7 +38,6 @@ interface ProfileFormShape {
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -73,7 +70,6 @@ export class ProfilePage implements OnInit {
   readonly saveErrorKind = signal<string | null>(null);
   readonly mode = signal<'view' | 'edit'>('view');
 
-  readonly knowledgeLevels = KNOWLEDGE_LEVELS;
   readonly locale = this.localeService.locale;
 
   readonly notProvisioned = computed(() => this.errorKind() === 'not-found');
@@ -114,8 +110,6 @@ export class ProfilePage implements OnInit {
     jobTitle: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
     organizationName: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(100)]),
     localePreference: this.fb.nonNullable.control('en', Validators.required),
-    knowledgeLevel: this.fb.nonNullable.control<KnowledgeLevel>('Beginner', Validators.required),
-    interests: this.fb.nonNullable.control(''),
     countryCodeId: this.fb.control<string | null>(null),
     avatarUrl: this.fb.control<string | null>(null),
   });
@@ -160,8 +154,6 @@ export class ProfilePage implements OnInit {
       jobTitle: p.jobTitle ?? '',
       organizationName: p.organizationName ?? '',
       localePreference: p.localePreference,
-      knowledgeLevel: p.knowledgeLevel || 'Beginner',
-      interests: p.interests ? p.interests.join(', ') : '',
       countryCodeId: p.countryCodeId,
       avatarUrl: p.avatarUrl,
     });
@@ -177,14 +169,15 @@ export class ProfilePage implements OnInit {
   async save(): Promise<void> {
     if (this.form.invalid) return;
     const v = this.form.getRawValue();
+    const p = this.profile()!;
     const payload: UpdateMyProfilePayload = {
       firstName: v.firstName,
       lastName: v.lastName,
       jobTitle: v.jobTitle,
       organizationName: v.organizationName,
       localePreference: v.localePreference,
-      knowledgeLevel: v.knowledgeLevel,
-      interests: this.parseInterests(v.interests),
+      knowledgeLevel: p.knowledgeLevel || 'Beginner',
+      interests: p.interests,
       avatarUrl: v.avatarUrl,
       countryCodeId: v.countryCodeId,
     };
@@ -233,11 +226,4 @@ export class ProfilePage implements OnInit {
     }
   }
 
-  private parseInterests(raw: string): string[] {
-    return Array.from(
-      new Set(
-        raw.split(',').map((s) => s.trim()).filter((s) => s.length > 0),
-      ),
-    );
-  }
 }
