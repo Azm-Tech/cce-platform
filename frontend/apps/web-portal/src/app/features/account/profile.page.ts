@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
@@ -44,6 +45,7 @@ interface ProfileFormShape {
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     TranslocoModule,
   ],
@@ -75,6 +77,17 @@ export class ProfilePage implements OnInit {
   readonly locale = this.localeService.locale;
 
   readonly notProvisioned = computed(() => this.errorKind() === 'not-found');
+
+  readonly profileInitials = computed(() => {
+    const p = this.profile();
+    return ((p?.firstName?.[0] ?? '') + (p?.lastName?.[0] ?? '')).toUpperCase() || '?';
+  });
+
+  readonly profileFullName = computed(() => {
+    const p = this.profile();
+    if (!p) return '';
+    return `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim() || p.userName || p.email || '';
+  });
 
   readonly showExpertCta = computed(() => {
     if (!this.expertStatusLoaded()) return false;

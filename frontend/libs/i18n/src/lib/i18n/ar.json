@@ -1710,12 +1710,17 @@
       "title": "ملفي الشخصي",
       "roles": "الأدوار",
       "notProvisioned": "لا نزال نُعِدّ ملفك الشخصي. يُرجى إعادة المحاولة بعد لحظات.",
+      "section": {
+        "personal": "المعلومات الشخصية",
+        "expertise": "الخبرة والاهتمامات"
+      },
       "field": {
         "email": "البريد الإلكتروني",
         "userName": "اسم المستخدم",
         "localePreference": "تفضيل اللغة",
         "knowledgeLevel": "مستوى المعرفة",
         "interests": "الاهتمامات",
+        "interestsHint": "قيم مفصولة بفواصل أو استخدم زر التخصيص أعلاه",
         "country": "الدولة",
         "avatarUrl": "رابط الصورة الشخصية",
         "firstName": "الاسم الأول",
@@ -1728,6 +1733,8 @@
         "phoneNumber": "رقم الهاتف",
         "expertStatus": "حالة الخبير"
       },
+      "editTitle": "تعديل ملفك الشخصي",
+      "editHint": "تُطبَّق التغييرات فور الحفظ.",
       "editButton": "تعديل",
       "saveButton": "حفظ",
       "cancelButton": "إلغاء",

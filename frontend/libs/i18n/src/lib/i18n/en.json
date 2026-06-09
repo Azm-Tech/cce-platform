@@ -1710,12 +1710,17 @@
       "title": "My profile",
       "roles": "Roles",
       "notProvisioned": "We're still setting up your profile. Please retry in a moment.",
+      "section": {
+        "personal": "Personal Information",
+        "expertise": "Expertise & Interests"
+      },
       "field": {
         "email": "Email",
         "userName": "User name",
         "localePreference": "Language preference",
         "knowledgeLevel": "Knowledge level",
         "interests": "Interests",
+        "interestsHint": "Comma-separated values or use the Personalize button above",
         "country": "Country",
         "avatarUrl": "Avatar URL",
         "firstName": "First name",
@@ -1728,6 +1733,8 @@
         "phoneNumber": "Phone number",
         "expertStatus": "Expert status"
       },
+      "editTitle": "Edit your profile",
+      "editHint": "Changes are applied immediately after saving.",
       "editButton": "Edit",
       "saveButton": "Save",
       "cancelButton": "Cancel",
