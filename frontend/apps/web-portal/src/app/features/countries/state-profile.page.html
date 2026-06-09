@@ -157,19 +157,19 @@
               @if (desc) {
                 <div class="cce-sp__desc-block">
                   <span class="cce-sp__desc-label">{{ 'stateProfile.description' | transloco }}</span>
-                  <p class="cce-sp__desc-text">{{ desc }}</p>
+                  <div class="cce-sp__desc-text" [innerHTML]="desc"></div>
                 </div>
               }
               @if (ki) {
                 <div class="cce-sp__desc-block">
                   <span class="cce-sp__desc-label">{{ 'stateProfile.keyInitiatives' | transloco }}</span>
-                  <p class="cce-sp__desc-text">{{ ki }}</p>
+                  <div class="cce-sp__desc-text" [innerHTML]="ki"></div>
                 </div>
               }
               @if (ci) {
                 <div class="cce-sp__desc-block">
                   <span class="cce-sp__desc-label">{{ 'stateProfile.contactInfo' | transloco }}</span>
-                  <p class="cce-sp__desc-text">{{ ci }}</p>
+                  <div class="cce-sp__desc-text" [innerHTML]="ci"></div>
                 </div>
               }
             </div>

@@ -360,7 +360,13 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   font-size: 0.9rem;
   color: $text;
   line-height: 1.65;
-  white-space: pre-line;
+
+  p   { margin: 0 0 0.6em; &:last-child { margin-bottom: 0; } }
+  ul, ol { margin: 0 0 0.6em; padding-inline-start: 1.4em; &:last-child { margin-bottom: 0; } }
+  li  { margin-bottom: 0.2em; }
+  strong, b { font-weight: 700; }
+  em, i     { font-style: italic; }
+  a         { color: $green; text-decoration: underline; }
 }
 
 .cce-sp__desc-empty {
