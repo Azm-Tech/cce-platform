@@ -1,7 +1,30 @@
 <div class="cce-profile">
 
   @if (loading()) {
-    <div class="cce-profile__progress"><mat-progress-bar mode="indeterminate" /></div>
+    <div class="cce-profile__skeleton">
+      <div class="cce-profile__skel-layout">
+        <div class="cce-profile__skel-sidebar">
+          <div class="cce-profile__skel-sidebar-card">
+            <div class="cce-profile__skel-band skel-pulse"></div>
+            <div class="cce-profile__skel-avatar skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--md skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--sm skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--xs skel-pulse"></div>
+            <div class="cce-profile__skel-rule"></div>
+            <div class="cce-profile__skel-meta">
+              <div class="cce-profile__skel-line cce-profile__skel-line--sm skel-pulse"></div>
+              <div class="cce-profile__skel-line cce-profile__skel-line--xs skel-pulse"></div>
+            </div>
+            <div class="cce-profile__skel-rule"></div>
+            <div class="cce-profile__skel-btn skel-pulse"></div>
+          </div>
+        </div>
+        <div class="cce-profile__skel-main">
+          <div class="cce-profile__skel-card skel-pulse"></div>
+          <div class="cce-profile__skel-card cce-profile__skel-card--short skel-pulse"></div>
+        </div>
+      </div>
+    </div>
   }
 
   @if (notProvisioned()) {

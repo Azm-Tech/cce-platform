@@ -1,9 +1,8 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { CountriesApiService } from './countries-api.service';
@@ -13,7 +12,7 @@ import type { StateProfile } from './country.types';
 @Component({
   selector: 'cce-state-profile',
   standalone: true,
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TranslocoModule],
+  imports: [DatePipe, DecimalPipe, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './state-profile.page.html',
   styleUrl: './state-profile.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,7 +41,7 @@ export class StateProfilePage implements OnInit {
     if (!current) return;
     const ref = this.dialog.open<StateProfileEditDialogComponent, StateProfile, StateProfile | null>(
       StateProfileEditDialogComponent,
-      { data: current, width: '680px', maxWidth: '95vw', disableClose: true },
+      { data: current, width: '680px', maxWidth: '95vw', disableClose: true, panelClass: 'cce-dialog-no-padding' },
     );
     ref.afterClosed().subscribe((updated) => {
       if (updated) this.profile.set(updated);

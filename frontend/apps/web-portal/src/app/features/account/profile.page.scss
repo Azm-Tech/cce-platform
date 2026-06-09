@@ -5,6 +5,107 @@
   padding-bottom: 3rem;
 }
 
+/* ─── Skeleton shimmer ──────────────────────────────────────────────────── */
+@keyframes skel-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skel-pulse {
+  background: linear-gradient(90deg, #ececec 25%, #f9f9f9 50%, #ececec 75%);
+  background-size: 800px 100%;
+  animation: skel-shimmer 1.5s infinite linear;
+  border-radius: 8px;
+}
+
+.cce-profile__skel-layout {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+
+  @media (max-width: 640px) { flex-direction: column; }
+}
+
+.cce-profile__skel-sidebar {
+  width: 228px;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) { width: 100%; }
+}
+
+.cce-profile__skel-sidebar-card {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 108, 79, 0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cce-profile__skel-band {
+  width: 100%;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.cce-profile__skel-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50% !important;
+  margin-top: -42px;
+  margin-bottom: 0.7rem;
+  flex-shrink: 0;
+  z-index: 1;
+  border: 3px solid #fff;
+  box-sizing: content-box;
+}
+
+.cce-profile__skel-line {
+  height: 11px;
+  border-radius: 6px !important;
+  margin-bottom: 0.45rem;
+
+  &--md { width: 58%; }
+  &--sm { width: 78%; }
+  &--xs { width: 65%; }
+}
+
+.cce-profile__skel-rule {
+  width: calc(100% - 2rem);
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 0.75rem auto;
+  flex-shrink: 0;
+}
+
+.cce-profile__skel-meta {
+  width: 100%;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cce-profile__skel-btn {
+  width: calc(100% - 2rem);
+  height: 36px;
+  border-radius: 4px !important;
+  margin: 0 1rem 1.25rem;
+}
+
+.cce-profile__skel-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cce-profile__skel-card {
+  height: 248px;
+  &--short { height: 140px; }
+}
+
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
 $green:      #006c4f;
 $green-dark: #003a2b;

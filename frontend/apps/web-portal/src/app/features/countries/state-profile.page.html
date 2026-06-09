@@ -1,101 +1,185 @@
-<div class="cce-state-profile">
+<div class="cce-sp">
 
+  <!-- ── Loading skeleton ─────────────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="cce-state-profile__center"><mat-spinner diameter="48" /></div>
-  } @else if (error()) {
-    <div class="cce-state-profile__center">
-      <mat-icon class="cce-state-profile__icon--error">error_outline</mat-icon>
-      <p>{{ 'errors.ERR001' | transloco }}</p>
+    <div class="cce-sp__skeleton">
+      <div class="cce-sp__skel-hero skel-pulse"></div>
+      <div class="cce-sp__skel-body">
+        <div class="cce-sp__skel-col">
+          <div class="cce-sp__skel-card skel-pulse"></div>
+          <div class="cce-sp__skel-card skel-pulse"></div>
+        </div>
+        <div class="cce-sp__skel-col">
+          <div class="cce-sp__skel-card cce-sp__skel-card--tall skel-pulse"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Error state ──────────────────────────────────────────────────────── -->
+  @if (error()) {
+    <div class="cce-sp__error-wrap">
+      <div class="cce-sp__error-icon" aria-hidden="true"><mat-icon>error_outline</mat-icon></div>
+      <p class="cce-sp__error-msg">{{ 'errors.ERR001' | transloco }}</p>
       <button type="button" mat-flat-button color="primary" (click)="retry()">
         {{ 'errors.retry' | transloco }}
       </button>
     </div>
-  } @else if (profile()) {
-    <div class="cce-state-profile__header">
-      <h1 class="cce-state-profile__title">{{ 'stateProfile.title' | transloco }}</h1>
-      <button type="button" mat-flat-button color="primary" (click)="openEdit()">
-        <mat-icon>edit</mat-icon>
-        {{ 'stateProfile.editButton' | transloco }}
-      </button>
+  }
+
+  <!-- ── Profile ───────────────────────────────────────────────────────────── -->
+  @if (profile(); as p) {
+
+    <!-- Hero band -->
+    <div class="cce-sp__hero">
+      <div class="cce-sp__hero-texture" aria-hidden="true"></div>
+      <div class="cce-sp__hero-inner">
+        <div class="cce-sp__hero-left">
+          <div class="cce-sp__hero-icon" aria-hidden="true">
+            <mat-icon>public</mat-icon>
+          </div>
+          <div>
+            <h1 class="cce-sp__hero-title">{{ 'stateProfile.title' | transloco }}</h1>
+            @if (p.cceClassification) {
+              <span class="cce-sp__hero-badge">{{ p.cceClassification }}</span>
+            }
+          </div>
+        </div>
+        <div class="cce-sp__hero-right">
+          @if (p.lastUpdatedOn) {
+            <span class="cce-sp__hero-updated">
+              <mat-icon aria-hidden="true">update</mat-icon>
+              {{ p.lastUpdatedOn | date:'mediumDate' }}
+            </span>
+          }
+          <button type="button" mat-stroked-button class="cce-sp__hero-edit-btn" (click)="openEdit()">
+            <mat-icon>edit</mat-icon>
+            {{ 'stateProfile.editButton' | transloco }}
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- KAPSARC read-only section -->
-    <section class="cce-state-profile__section">
-      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.kapsarcSection' | transloco }}</h2>
-      <div class="cce-state-profile__grid">
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.cceClassification' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.cceClassification ?? '—' }}</span>
-        </div>
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.ccePerformance' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.ccePerformanceScore ?? '—' }}</span>
-        </div>
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.cceTotalIndex' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.cceTotalIndex ?? '—' }}</span>
-        </div>
-        @if (profile()!.cceSnapshotTakenOn) {
-          <div class="cce-state-profile__field">
-            <span class="cce-state-profile__label">{{ 'stateProfile.snapshotDate' | transloco }}</span>
-            <span class="cce-state-profile__value">{{ profile()!.cceSnapshotTakenOn | date:'mediumDate' }}</span>
+    <!-- Two-column grid -->
+    <div class="cce-sp__grid">
+
+      <!-- Left column -->
+      <div class="cce-sp__col">
+
+        <!-- KAPSARC metrics (read-only) -->
+        <div class="cce-sp__card cce-sp__card--kapsarc">
+          <h2 class="cce-sp__card-title">
+            <span class="cce-sp__card-title-icon" aria-hidden="true"><mat-icon>analytics</mat-icon></span>
+            {{ 'stateProfile.kapsarcSection' | transloco }}
+          </h2>
+
+          <div class="cce-sp__scores-row">
+            <div class="cce-sp__score-block">
+              <span class="cce-sp__score-num">{{ p.ccePerformanceScore ?? '—' }}</span>
+              <span class="cce-sp__score-lbl">{{ 'stateProfile.ccePerformance' | transloco }}</span>
+            </div>
+            <div class="cce-sp__score-sep" aria-hidden="true"></div>
+            <div class="cce-sp__score-block">
+              <span class="cce-sp__score-num">{{ p.cceTotalIndex ?? '—' }}</span>
+              <span class="cce-sp__score-lbl">{{ 'stateProfile.cceTotalIndex' | transloco }}</span>
+            </div>
           </div>
-        }
-      </div>
-    </section>
 
-    <!-- Editable stats section -->
-    <section class="cce-state-profile__section">
-      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.statsSection' | transloco }}</h2>
-      <div class="cce-state-profile__grid">
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.population' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.population ?? '—' }}</span>
-        </div>
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.areaSqKm' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.areaSqKm ?? '—' }}</span>
-        </div>
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.gdpPerCapita' | transloco }}</span>
-          <span class="cce-state-profile__value">{{ profile()!.gdpPerCapita ?? '—' }}</span>
-        </div>
-        <div class="cce-state-profile__field">
-          <span class="cce-state-profile__label">{{ 'stateProfile.ndcDocument' | transloco }}</span>
-          <span class="cce-state-profile__value">
-            @if (profile()!.ndcAssetId) {
-              <mat-icon class="cce-state-profile__icon--ok">check_circle</mat-icon>
-              {{ 'stateProfile.ndcUploaded' | transloco }}
-            } @else {
-              {{ 'stateProfile.ndcMissing' | transloco }}
+          <dl class="cce-sp__kf-list">
+            <div class="cce-sp__kf-row">
+              <dt>{{ 'stateProfile.cceClassification' | transloco }}</dt>
+              <dd>
+                @if (p.cceClassification) {
+                  <span class="cce-sp__class-chip">{{ p.cceClassification }}</span>
+                } @else { — }
+              </dd>
+            </div>
+            @if (p.cceSnapshotTakenOn) {
+              <div class="cce-sp__kf-row">
+                <dt>{{ 'stateProfile.snapshotDate' | transloco }}</dt>
+                <dd>{{ p.cceSnapshotTakenOn | date:'mediumDate' }}</dd>
+              </div>
             }
-          </span>
+          </dl>
+        </div>
+
+        <!-- Country statistics (editable) -->
+        <div class="cce-sp__card">
+          <h2 class="cce-sp__card-title">
+            <span class="cce-sp__card-title-icon" aria-hidden="true"><mat-icon>bar_chart</mat-icon></span>
+            {{ 'stateProfile.statsSection' | transloco }}
+          </h2>
+          <dl class="cce-sp__stat-list">
+            <div class="cce-sp__stat-row">
+              <dt>{{ 'stateProfile.population' | transloco }}</dt>
+              <dd>{{ p.population != null ? (p.population | number) : '—' }}</dd>
+            </div>
+            <div class="cce-sp__stat-row">
+              <dt>{{ 'stateProfile.areaSqKm' | transloco }}</dt>
+              <dd>{{ p.areaSqKm != null ? (p.areaSqKm | number:'1.0-2') : '—' }}</dd>
+            </div>
+            <div class="cce-sp__stat-row">
+              <dt>{{ 'stateProfile.gdpPerCapita' | transloco }}</dt>
+              <dd>{{ p.gdpPerCapita != null ? (p.gdpPerCapita | number:'1.0-2') : '—' }}</dd>
+            </div>
+            <div class="cce-sp__stat-row">
+              <dt>{{ 'stateProfile.ndcDocument' | transloco }}</dt>
+              <dd>
+                @if (p.ndcAssetId) {
+                  <span class="cce-sp__ndc-ok">
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                    {{ 'stateProfile.ndcUploaded' | transloco }}
+                  </span>
+                } @else {
+                  <span class="cce-sp__ndc-missing">{{ 'stateProfile.ndcMissing' | transloco }}</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+      </div>
+
+      <!-- Right column: Descriptions -->
+      <div class="cce-sp__col cce-sp__col--right">
+        <div class="cce-sp__card cce-sp__card--desc">
+          <h2 class="cce-sp__card-title">
+            <span class="cce-sp__card-title-icon" aria-hidden="true"><mat-icon>article</mat-icon></span>
+            {{ 'stateProfile.descriptionsSection' | transloco }}
+          </h2>
+
+          @let desc = locale() === 'ar' ? p.descriptionAr    : p.descriptionEn;
+          @let ki   = locale() === 'ar' ? p.keyInitiativesAr : p.keyInitiativesEn;
+          @let ci   = locale() === 'ar' ? p.contactInfoAr    : p.contactInfoEn;
+
+          @if (desc || ki || ci) {
+            <div class="cce-sp__desc-blocks">
+              @if (desc) {
+                <div class="cce-sp__desc-block">
+                  <span class="cce-sp__desc-label">{{ 'stateProfile.description' | transloco }}</span>
+                  <p class="cce-sp__desc-text">{{ desc }}</p>
+                </div>
+              }
+              @if (ki) {
+                <div class="cce-sp__desc-block">
+                  <span class="cce-sp__desc-label">{{ 'stateProfile.keyInitiatives' | transloco }}</span>
+                  <p class="cce-sp__desc-text">{{ ki }}</p>
+                </div>
+              }
+              @if (ci) {
+                <div class="cce-sp__desc-block">
+                  <span class="cce-sp__desc-label">{{ 'stateProfile.contactInfo' | transloco }}</span>
+                  <p class="cce-sp__desc-text">{{ ci }}</p>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="cce-sp__desc-empty">—</p>
+          }
         </div>
       </div>
-    </section>
 
-    <!-- Descriptions section -->
-    <section class="cce-state-profile__section">
-      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.descriptionsSection' | transloco }}</h2>
-      @if (profile()!.descriptionAr || profile()!.descriptionEn) {
-        <div class="cce-state-profile__field cce-state-profile__field--block">
-          <span class="cce-state-profile__label">{{ 'stateProfile.description' | transloco }}</span>
-          <p>{{ locale() === 'ar' ? profile()!.descriptionAr : profile()!.descriptionEn }}</p>
-        </div>
-      }
-      @if (profile()!.keyInitiativesAr || profile()!.keyInitiativesEn) {
-        <div class="cce-state-profile__field cce-state-profile__field--block">
-          <span class="cce-state-profile__label">{{ 'stateProfile.keyInitiatives' | transloco }}</span>
-          <p>{{ locale() === 'ar' ? profile()!.keyInitiativesAr : profile()!.keyInitiativesEn }}</p>
-        </div>
-      }
-      @if (profile()!.contactInfoAr || profile()!.contactInfoEn) {
-        <div class="cce-state-profile__field cce-state-profile__field--block">
-          <span class="cce-state-profile__label">{{ 'stateProfile.contactInfo' | transloco }}</span>
-          <p>{{ locale() === 'ar' ? profile()!.contactInfoAr : profile()!.contactInfoEn }}</p>
-        </div>
-      }
-    </section>
+    </div>
   }
 
 </div>
