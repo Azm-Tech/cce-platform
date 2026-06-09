@@ -2412,16 +2412,24 @@
   },
   "preferences": {
     "title": "Personalize Your Experience",
-    "subtitle": "Help us show you the most relevant content.",
+    "subtitle": "Help us show you the most relevant content. All fields are required.",
     "interests": "Areas of Interest",
     "interestsHint": "Select all that apply",
-    "knowledgeLevel": "Your Knowledge Level",
+    "interestsRequired": "Please select at least one area of interest.",
+    "knowledgeLevel": "Circular Carbon Economy Knowledge Level",
     "knowledgeLevels": {
-      "Beginner": "Beginner",
-      "Intermediate": "Intermediate",
-      "Advanced": "Advanced"
+      "High": "High",
+      "Medium": "Medium",
+      "Low": "Low"
+    },
+    "sectorOfWork": "Sector of Work",
+    "sectors": {
+      "Government": "Government",
+      "Academic": "Academic",
+      "Private": "Private"
     },
     "country": "Country",
+    "countryPlaceholder": "Select your country",
     "save": "Save Preferences",
     "skip": "Skip for now",
     "success": "Your preferences have been saved!",

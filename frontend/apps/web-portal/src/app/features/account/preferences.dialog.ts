@@ -22,7 +22,14 @@ import type { PublicTopic } from '../community/community.types';
 import { CountriesApiService } from '../countries/countries-api.service';
 import type { Country } from '../countries/country.types';
 import { AccountApiService } from './account-api.service';
-import { KNOWLEDGE_LEVELS, type KnowledgeLevel, type UpdateMyProfilePayload, type UserProfile } from './account.types';
+import {
+  PERSONALIZED_KNOWLEDGE_LEVELS,
+  SECTORS_OF_WORK,
+  type PersonalizedKnowledgeLevel,
+  type PersonalizedSuggestionsPayload,
+  type SectorOfWork,
+  type UserProfile,
+} from './account.types';
 
 @Component({
   selector: 'cce-preferences-dialog',
@@ -48,7 +55,7 @@ export class PreferencesDialogComponent implements OnInit {
   private readonly countriesApi = inject(CountriesApiService);
   private readonly locale = inject(LocaleService);
   private readonly toast = inject(ToastService);
-  private readonly ref = inject(MatDialogRef<PreferencesDialogComponent, UserProfile | null>);
+  private readonly ref = inject(MatDialogRef<PreferencesDialogComponent, boolean>);
 
   readonly profile = inject<UserProfile>(MAT_DIALOG_DATA);
 
@@ -57,23 +64,23 @@ export class PreferencesDialogComponent implements OnInit {
   readonly topicsLoading = signal(true);
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
+  readonly interestsError = signal(false);
 
   readonly selectedTopicIds = signal<Set<string>>(new Set());
-  readonly knowledgeLevels = KNOWLEDGE_LEVELS;
+  readonly knowledgeLevels = PERSONALIZED_KNOWLEDGE_LEVELS;
+  readonly sectorsOfWork = SECTORS_OF_WORK;
 
   readonly isAr = computed(() => this.locale.locale() === 'ar');
   readonly topicName = (t: PublicTopic) => this.isAr() ? t.nameAr : t.nameEn;
 
   readonly form = new FormGroup({
-    knowledgeLevel: new FormControl<KnowledgeLevel | null>(null, Validators.required),
-    countryId: new FormControl<string | null>(null),
+    knowledgeLevel: new FormControl<PersonalizedKnowledgeLevel | null>(null, Validators.required),
+    sectorOfWork: new FormControl<SectorOfWork | null>(null, Validators.required),
+    countryId: new FormControl<string | null>(null, Validators.required),
   });
 
   async ngOnInit(): Promise<void> {
-    this.form.patchValue({
-      knowledgeLevel: this.profile.knowledgeLevel || null,
-      countryId: this.profile.countryId,
-    });
+    this.form.patchValue({ countryId: this.profile.countryId ?? null });
     if (this.profile.interests?.length) {
       this.selectedTopicIds.set(new Set(this.profile.interests));
     }
@@ -94,6 +101,7 @@ export class PreferencesDialogComponent implements OnInit {
     if (next.has(id)) next.delete(id);
     else next.add(id);
     this.selectedTopicIds.set(next);
+    if (next.size > 0) this.interestsError.set(false);
   }
 
   isSelected(id: string): boolean {
@@ -102,35 +110,30 @@ export class PreferencesDialogComponent implements OnInit {
 
   skip(): void {
     localStorage.setItem('cce_prefs_shown', '1');
-    this.ref.close(null);
+    this.ref.close(false);
   }
 
   async save(): Promise<void> {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    this.form.markAllAsTouched();
+    const noInterests = this.selectedTopicIds().size === 0;
+    this.interestsError.set(noInterests);
+    if (this.form.invalid || noInterests) return;
+
     const v = this.form.getRawValue();
-    const payload: UpdateMyProfilePayload = {
-      firstName: this.profile.firstName ?? '',
-      lastName: this.profile.lastName ?? '',
-      jobTitle: this.profile.jobTitle ?? '',
-      organizationName: this.profile.organizationName ?? '',
-      localePreference: this.profile.localePreference,
-      knowledgeLevel: v.knowledgeLevel!,
+    const payload: PersonalizedSuggestionsPayload = {
       interests: [...this.selectedTopicIds()],
-      countryId: v.countryId,
-      avatarUrl: this.profile.avatarUrl,
-      countryCodeId: this.profile.countryCodeId,
+      knowledgeLevel: v.knowledgeLevel!,
+      sectorOfWork: v.sectorOfWork!,
+      countryId: v.countryId!,
     };
     this.saving.set(true);
     this.errorKind.set(null);
-    const res = await this.api.updateProfile(payload);
+    const res = await this.api.submitPersonalizedSuggestions(payload);
     this.saving.set(false);
     if (res.ok) {
       localStorage.setItem('cce_prefs_shown', '1');
       this.toast.success('preferences.success');
-      this.ref.close(res.value);
+      this.ref.close(true);
     } else {
       this.errorKind.set(res.error.kind);
     }

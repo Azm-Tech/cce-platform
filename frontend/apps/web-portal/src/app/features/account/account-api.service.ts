@@ -6,6 +6,7 @@ import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   EvaluationPayload,
   ExpertRequestStatus,
+  PersonalizedSuggestionsPayload,
   ServiceRatingPayload,
   SubmitExpertRequestPayload,
   UpdateMyProfilePayload,
@@ -59,6 +60,13 @@ export class AccountApiService {
       firstValueFrom(
         this.http.post<{ data: ExpertRequestStatus }>('/api/users/expert-request', payload).pipe(map((res) => res.data)),
       ),
+    );
+  }
+
+  // TODO: replace placeholder path once backend deploys the US019 endpoint
+  async submitPersonalizedSuggestions(payload: PersonalizedSuggestionsPayload): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.post<void>('/api/me/preferences', payload)),
     );
   }
 

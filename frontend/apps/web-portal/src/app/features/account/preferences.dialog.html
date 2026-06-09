@@ -20,38 +20,11 @@
         <div class="cce-prefs__error" role="alert">{{ ('errors.' + errorKind()) | transloco }}</div>
       }
 
-      <!-- Knowledge Level -->
-      <div class="cce-prefs__section" [class.cce-prefs__section--err]="form.controls.knowledgeLevel.invalid && form.controls.knowledgeLevel.touched">
-        <p class="cce-prefs__section-title">{{ 'preferences.knowledgeLevel' | transloco }}</p>
-        <div class="cce-prefs__kl-group">
-          @for (kl of knowledgeLevels; track kl) {
-            <label
-              class="cce-prefs__kl-card"
-              [class.cce-prefs__kl-card--sel]="form.controls.knowledgeLevel.value === kl"
-            >
-              <input
-                type="radio"
-                formControlName="knowledgeLevel"
-                [value]="kl"
-                class="cce-prefs__kl-radio"
-              />
-              <mat-icon class="cce-prefs__kl-icon" aria-hidden="true">
-                @switch (kl) {
-                  @case ('Beginner') { school }
-                  @case ('Intermediate') { auto_stories }
-                  @case ('Advanced') { workspace_premium }
-                }
-              </mat-icon>
-              <span class="cce-prefs__kl-name">{{ ('preferences.knowledgeLevels.' + kl) | transloco }}</span>
-            </label>
-          }
-        </div>
-      </div>
-
-      <!-- Areas of Interest -->
-      <div class="cce-prefs__section">
+      <!-- ── 1. Areas of Interest ──────────────────────────────────────── -->
+      <div class="cce-prefs__section" [class.cce-prefs__section--err]="interestsError()">
         <p class="cce-prefs__section-title">
           {{ 'preferences.interests' | transloco }}
+          <span class="cce-prefs__required" aria-hidden="true">*</span>
           <span class="cce-prefs__section-hint">{{ 'preferences.interestsHint' | transloco }}</span>
         </p>
 
@@ -69,7 +42,7 @@
                 (click)="toggleTopic(topic.id)"
               >
                 @if (topic.iconUrl) {
-                  <img [src]="topic.iconUrl" alt="" class="cce-prefs__topic-icon" width="20" height="20" />
+                  <img [src]="topic.iconUrl" alt="" class="cce-prefs__topic-icon" width="18" height="18" />
                 } @else {
                   <mat-icon class="cce-prefs__topic-mat-icon" aria-hidden="true">label</mat-icon>
                 }
@@ -78,19 +51,85 @@
             }
           </div>
         }
+
+        @if (interestsError()) {
+          <p class="cce-prefs__field-error">{{ 'preferences.interestsRequired' | transloco }}</p>
+        }
       </div>
 
-      <!-- Country -->
+      <!-- ── 2. Knowledge Level ─────────────────────────────────────────── -->
+      <div class="cce-prefs__section" [class.cce-prefs__section--err]="form.controls.knowledgeLevel.invalid && form.controls.knowledgeLevel.touched">
+        <p class="cce-prefs__section-title">
+          {{ 'preferences.knowledgeLevel' | transloco }}
+          <span class="cce-prefs__required" aria-hidden="true">*</span>
+        </p>
+        <div class="cce-prefs__radio-group">
+          @for (kl of knowledgeLevels; track kl) {
+            <label
+              class="cce-prefs__radio-card"
+              [class.cce-prefs__radio-card--sel]="form.controls.knowledgeLevel.value === kl"
+            >
+              <input type="radio" formControlName="knowledgeLevel" [value]="kl" class="cce-prefs__radio-input" />
+              <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">
+                @switch (kl) {
+                  @case ('High')   { workspace_premium }
+                  @case ('Medium') { auto_stories }
+                  @case ('Low')    { school }
+                }
+              </mat-icon>
+              <span class="cce-prefs__radio-label">{{ ('preferences.knowledgeLevels.' + kl) | transloco }}</span>
+            </label>
+          }
+        </div>
+        @if (form.controls.knowledgeLevel.invalid && form.controls.knowledgeLevel.touched) {
+          <p class="cce-prefs__field-error">{{ 'common.validation.required' | transloco }}</p>
+        }
+      </div>
+
+      <!-- ── 3. Sector of Work ──────────────────────────────────────────── -->
+      <div class="cce-prefs__section" [class.cce-prefs__section--err]="form.controls.sectorOfWork.invalid && form.controls.sectorOfWork.touched">
+        <p class="cce-prefs__section-title">
+          {{ 'preferences.sectorOfWork' | transloco }}
+          <span class="cce-prefs__required" aria-hidden="true">*</span>
+        </p>
+        <div class="cce-prefs__radio-group">
+          @for (sector of sectorsOfWork; track sector) {
+            <label
+              class="cce-prefs__radio-card"
+              [class.cce-prefs__radio-card--sel]="form.controls.sectorOfWork.value === sector"
+            >
+              <input type="radio" formControlName="sectorOfWork" [value]="sector" class="cce-prefs__radio-input" />
+              <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">
+                @switch (sector) {
+                  @case ('Government') { account_balance }
+                  @case ('Academic')   { school }
+                  @case ('Private')    { business_center }
+                }
+              </mat-icon>
+              <span class="cce-prefs__radio-label">{{ ('preferences.sectors.' + sector) | transloco }}</span>
+            </label>
+          }
+        </div>
+        @if (form.controls.sectorOfWork.invalid && form.controls.sectorOfWork.touched) {
+          <p class="cce-prefs__field-error">{{ 'common.validation.required' | transloco }}</p>
+        }
+      </div>
+
+      <!-- ── 4. Country ─────────────────────────────────────────────────── -->
       <mat-form-field class="cce-prefs__country-field">
-        <mat-label>{{ 'preferences.country' | transloco }}</mat-label>
+        <mat-label>
+          {{ 'preferences.country' | transloco }}
+          <span class="cce-prefs__required" aria-hidden="true">*</span>
+        </mat-label>
         <mat-select formControlName="countryId">
-          <mat-option [value]="null">—</mat-option>
+          <mat-option [value]="null" disabled>{{ 'preferences.countryPlaceholder' | transloco }}</mat-option>
           @for (c of countries(); track c.id) {
-            <mat-option [value]="c.id">
-              {{ isAr() ? c.nameAr : c.nameEn }}
-            </mat-option>
+            <mat-option [value]="c.id">{{ isAr() ? c.nameAr : c.nameEn }}</mat-option>
           }
         </mat-select>
+        @if (form.controls.countryId.invalid && form.controls.countryId.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
 
     </form>

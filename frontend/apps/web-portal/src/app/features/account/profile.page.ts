@@ -214,8 +214,8 @@ export class ProfilePage implements OnInit {
         panelClass: 'cce-dialog-no-padding',
         autoFocus: 'first-tabbable',
       });
-      ref.afterClosed().subscribe((updated) => {
-        if (updated) this.profile.set(updated);
+      ref.afterClosed().subscribe((saved) => {
+        if (saved) void this.load();
       });
     });
   }

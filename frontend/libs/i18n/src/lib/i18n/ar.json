@@ -2412,16 +2412,24 @@
   },
   "preferences": {
     "title": "خصّص تجربتك",
-    "subtitle": "ساعدنا في عرض المحتوى الأكثر صلة لك.",
+    "subtitle": "ساعدنا في عرض المحتوى الأكثر صلة لك. جميع الحقول إلزامية.",
     "interests": "مجالات الاهتمام",
     "interestsHint": "حدد كل ما ينطبق",
-    "knowledgeLevel": "مستوى معرفتك",
+    "interestsRequired": "يرجى اختيار مجال اهتمام واحد على الأقل.",
+    "knowledgeLevel": "تقييم المعرفة في مجال الاقتصاد الدائري للكربون",
     "knowledgeLevels": {
-      "Beginner": "مبتدئ",
-      "Intermediate": "متوسط",
-      "Advanced": "متقدم"
+      "High": "مرتفع",
+      "Medium": "متوسط",
+      "Low": "منخفض"
     },
-    "country": "الدولة",
+    "sectorOfWork": "قطاع العمل",
+    "sectors": {
+      "Government": "حكومي",
+      "Academic": "أكاديمي",
+      "Private": "خاص"
+    },
+    "country": "البلد",
+    "countryPlaceholder": "اختر بلدك",
     "save": "حفظ التفضيلات",
     "skip": "تخطي الآن",
     "success": "تم حفظ تفضيلاتك!",

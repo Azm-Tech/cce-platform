@@ -79,3 +79,20 @@ export interface EvaluationPayload {
   contentSuitability?: number;
   feedback?: string | null;
 }
+
+export type PersonalizedKnowledgeLevel = 'High' | 'Medium' | 'Low';
+export type SectorOfWork = 'Government' | 'Academic' | 'Private';
+
+export const PERSONALIZED_KNOWLEDGE_LEVELS: readonly PersonalizedKnowledgeLevel[] =
+  ['High', 'Medium', 'Low'] as const;
+
+export const SECTORS_OF_WORK: readonly SectorOfWork[] =
+  ['Government', 'Academic', 'Private'] as const;
+
+/** Payload for the US019 dedicated preferences endpoint (not yet deployed). */
+export interface PersonalizedSuggestionsPayload {
+  interests: string[];
+  knowledgeLevel: PersonalizedKnowledgeLevel;
+  sectorOfWork: SectorOfWork;
+  countryId: string;
+}
