@@ -466,17 +466,19 @@
 
 .cce-header__user {
   flex-shrink: 0;
-  width: 38px !important;
-  height: 38px !important;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  background: transparent !important;
-  border: none !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px -4px rgba(0, 108, 79, 0.40) !important;
+  &:hover { transform: translateY(-1px); }
+  &:hover .cce-header__avatar {
+    box-shadow: 0 4px 14px -4px rgba(0, 108, 79, 0.55);
   }
 }
 
