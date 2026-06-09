@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using CCE.Api.Common.Auth;
+using CCE.Application.Common.Caching;
 using CCE.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ namespace CCE.Api.Common.Caching;
 
 public sealed class RedisOutputCacheMiddleware
 {
-    private const string KeyPrefix = "out:";
+    private const string KeyPrefix = CacheRegions.KeyPrefix;
 
     private readonly RequestDelegate _next;
     private readonly IConnectionMultiplexer _redis;
@@ -82,6 +83,17 @@ public sealed class RedisOutputCacheMiddleware
                     var envelope = new Envelope(ctx.Response.ContentType ?? "application/octet-stream", System.Convert.ToBase64String(captured));
                     var ttl = System.TimeSpan.FromSeconds(_infraOpts.Value.OutputCacheTtlSeconds);
                     await db.StringSetAsync(key, JsonSerializer.Serialize(envelope), ttl).ConfigureAwait(false);
+
+                    // Index the key under its region so admin endpoints / write-invalidation can clear the
+                    // whole region without scanning. The tag set outlives entries by a small buffer and
+                    // self-expires; stale members are harmless (deleting a missing key is a no-op).
+                    var region = CacheRegions.ResolveRegion(ctx.Request.Path.Value ?? string.Empty);
+                    if (region is not null)
+                    {
+                        var tagKey = CacheRegions.TagSetKey(region);
+                        await db.SetAddAsync(tagKey, key).ConfigureAwait(false);
+                        await db.KeyExpireAsync(tagKey, ttl + System.TimeSpan.FromMinutes(5)).ConfigureAwait(false);
+                    }
                 }
 
                 await originalBody.WriteAsync(captured).ConfigureAwait(false);

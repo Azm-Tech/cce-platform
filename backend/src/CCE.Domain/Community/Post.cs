@@ -65,6 +65,15 @@ public sealed class Post : AggregateRoot<System.Guid>
     /// <summary>Reddit-style hot rank; indexed for <c>ORDER BY score DESC</c>. See <see cref="VoteScore"/>.</summary>
     public double Score { get; private set; }
 
+    /// <summary>Denormalized view count (source of truth = analytics / explicit increments).</summary>
+    public int ViewCount { get; private set; }
+
+    /// <summary>Denormalized share count (updated when a post is shared).</summary>
+    public int ShareCount { get; private set; }
+
+    /// <summary>Denormalized comment count (source of truth = PostReply rows; updated when a reply is created or deleted).</summary>
+    public int CommentsCount { get; private set; }
+
     /// <summary>
     /// Creates a post in <see cref="PostStatus.Draft"/> with lenient validation (only shape/length caps);
     /// title/content may be empty while drafting. Does NOT raise <see cref="PostCreatedEvent"/>.
@@ -160,6 +169,32 @@ public sealed class Post : AggregateRoot<System.Guid>
         Score = VoteScore.Hot(UpvoteCount, DownvoteCount, CreatedOn);
     }
 
+    /// <summary>
+    /// Applies a vote change (see <see cref="ApplyVote"/>) and raises <see cref="PostVotedEvent"/> so a
+    /// bridge handler can fan it onto the bus. Use this from command handlers instead of calling
+    /// <see cref="ApplyVote"/> + publishing an integration event inline — keeps the async event atomic
+    /// with the save and out of the Application layer.
+    /// </summary>
+    public void RegisterVote(System.Guid userId, int oldValue, int newValue, ISystemClock clock)
+    {
+        ApplyVote(oldValue, newValue);
+        RaiseDomainEvent(new PostVotedEvent(
+            Id, userId, newValue, UpvoteCount, DownvoteCount, Score, clock.UtcNow));
+    }
+
+    /// <summary>
+    /// Records that a reply was created on this post by raising <see cref="ReplyCreatedEvent"/>. The
+    /// reply entity itself is persisted by its own repository; this only emits the domain event from the
+    /// aggregate so a bridge handler relays it to the Worker for notification fan-out.
+    /// </summary>
+    public void RegisterReply(
+        System.Guid replyId, System.Guid? parentReplyId, System.Guid authorId,
+        string contentSnippet, ISystemClock clock)
+    {
+        RaiseDomainEvent(new ReplyCreatedEvent(
+            replyId, Id, parentReplyId, authorId, contentSnippet, clock.UtcNow));
+    }
+
     public void MarkAnswered(System.Guid replyId)
     {
         if (!IsAnswerable)
@@ -169,6 +204,21 @@ public sealed class Post : AggregateRoot<System.Guid>
     }
 
     public void ClearAnswer() => AnsweredReplyId = null;
+
+    public void IncrementViews() => ViewCount++;
+    public void IncrementShares() => ShareCount++;
+
+    public void IncrementCommentsCount(ISystemClock clock)
+    {
+        CommentsCount++;
+        RaiseDomainEvent(new Events.CommentCountChangedEvent(Id, CommentsCount, clock.UtcNow));
+    }
+
+    public void DecrementCommentsCount(ISystemClock clock)
+    {
+        if (CommentsCount > 0) CommentsCount--;
+        RaiseDomainEvent(new Events.CommentCountChangedEvent(Id, CommentsCount, clock.UtcNow));
+    }
 
     public void EditContent(string content, Guid by, ISystemClock clock)
     {

@@ -14,6 +14,8 @@ internal sealed class CommunityConfiguration : IEntityTypeConfiguration<CCE.Doma
         builder.Property(c => c.NameEn).HasMaxLength(CCE.Domain.Community.Community.MaxNameLength).IsRequired();
         builder.Property(c => c.Slug).HasMaxLength(160).IsRequired();
         builder.Property(c => c.Visibility).HasConversion<int>();
+        builder.Property(c => c.PostCount).HasDefaultValue(0);
+        builder.Property(c => c.FollowerCount).HasDefaultValue(0);
         builder.HasIndex(c => c.Slug).IsUnique()
             .HasFilter("[is_deleted] = 0").HasDatabaseName("ux_community_slug_active");
         builder.Ignore(c => c.DomainEvents);

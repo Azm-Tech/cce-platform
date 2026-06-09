@@ -1,5 +1,6 @@
 using CCE.Application.Common.Messaging;
 using CCE.Application.Notifications.Messages;
+using CCE.Infrastructure.Notifications.Messaging.Consumers;
 using CCE.Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -82,6 +83,11 @@ public static class MessagingServiceExtensions
             if (registerConsumers)
             {
                 x.AddConsumer<NotificationMessageConsumer, NotificationMessageConsumerDefinition>();
+                x.AddConsumer<FeedConsumer, FeedConsumerDefinition>();
+                x.AddConsumer<VoteConsumer, VoteConsumerDefinition>();
+                x.AddConsumer<RankingConsumer, RankingConsumerDefinition>();
+                x.AddConsumer<NotificationConsumer, NotificationConsumerDefinition>();
+                x.AddConsumer<SignalRConsumer, SignalRConsumerDefinition>();
             }
 
             if (useRabbitMq)

@@ -23,6 +23,9 @@ internal sealed class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasIndex(p => new { p.AuthorId, p.Status }).HasDatabaseName("ix_post_author_status");
         builder.HasIndex(p => p.Score).IsDescending().HasDatabaseName("ix_post_score");
         builder.HasMany(p => p.Tags).WithMany().UsingEntity(j => j.ToTable("post_tag"));
+        builder.Property(p => p.ViewCount).HasDefaultValue(0);
+        builder.Property(p => p.ShareCount).HasDefaultValue(0);
+        builder.Property(p => p.CommentsCount).HasDefaultValue(0);
         builder.HasMany(p => p.Attachments).WithOne().HasForeignKey(a => a.PostId).OnDelete(DeleteBehavior.Cascade);
         builder.Ignore(p => p.DomainEvents);
     }

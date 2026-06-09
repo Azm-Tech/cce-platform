@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -66,10 +67,16 @@ public sealed class VotePostCommandHandler
             existing.ChangeTo(newValue, _clock);
         }
 
-        post.ApplyVote(oldValue, newValue);
+        // Applies the vote AND raises PostVotedEvent on the aggregate. The bridge handler
+        // (PostVotedBusPublisher) stages the integration event into the EF outbox during the same
+        // SaveChanges, so the async fan-out is atomic with the vote (no inline bus publish here).
+        post.RegisterVote(userId.Value, oldValue, newValue, _clock);
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await _realtime.PublishToPostAsync(request.PostId, "VoteChanged",
+        // Direct SignalR for instant user feedback (hybrid realtime — see Spring 9 architecture). The
+        // Worker's VoteConsumer no longer pushes VoteChanged, so this is the single source of the push.
+        await _realtime.PublishToPostAsync(request.PostId, RealtimeEvents.VoteChanged,
             new { postId = request.PostId, post.UpvoteCount, post.Score }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.Community.POST_VOTED);

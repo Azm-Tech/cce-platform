@@ -18,6 +18,7 @@ public sealed class CreatePostCommandHandler
     : IRequestHandler<CreatePostCommand, Response<Guid>>
 {
     private readonly IPostRepository _repo;
+    private readonly ICommunityRepository _communityRepo;
     private readonly IPollRepository _pollRepo;
     private readonly ICommunityAccessGuard _accessGuard;
     private readonly ICceDbContext _db;
@@ -28,6 +29,7 @@ public sealed class CreatePostCommandHandler
 
     public CreatePostCommandHandler(
         IPostRepository repo,
+        ICommunityRepository communityRepo,
         IPollRepository pollRepo,
         ICommunityAccessGuard accessGuard,
         ICceDbContext db,
@@ -37,6 +39,7 @@ public sealed class CreatePostCommandHandler
         MessageFactory msg)
     {
         _repo = repo;
+        _communityRepo = communityRepo;
         _pollRepo = pollRepo;
         _accessGuard = accessGuard;
         _db = db;
@@ -107,11 +110,18 @@ public sealed class CreatePostCommandHandler
         }
 
         if (!request.SaveAsDraft)
+        {
             post.Publish(_clock);
+            var community = await _communityRepo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
+            community?.IncrementPosts();
+        }
 
         _repo.Add(post);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        // Realtime fan-out for a published post (community + topic feeds) happens asynchronously in the
+        // Worker: Post.Publish raises PostCreatedEvent → PostCreatedBusPublisher → SignalRConsumer. The
+        // API stays publish-only here (no direct SignalR push).
         return _msg.Ok(post.Id, request.SaveAsDraft
             ? ApplicationErrors.Community.POST_DRAFT_SAVED
             : ApplicationErrors.Community.POST_CREATED);

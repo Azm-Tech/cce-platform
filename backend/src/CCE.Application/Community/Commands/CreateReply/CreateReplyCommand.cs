@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CCE.Application.Common;
+using CCE.Application.Common.Caching;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.CreateReply;
@@ -10,4 +11,7 @@ public sealed record CreateReplyCommand(
     string Content,
     string Locale,
     Guid? ParentReplyId,
-    IReadOnlyList<Guid> MentionedUserIds) : IRequest<Response<Guid>>;
+    IReadOnlyList<Guid> MentionedUserIds) : IRequest<Response<Guid>>, ICacheInvalidatingRequest
+{
+    public IReadOnlyCollection<string> CacheRegionsToEvict { get; } = [CacheRegions.Posts];
+}

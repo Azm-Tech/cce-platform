@@ -1,6 +1,7 @@
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -63,7 +64,7 @@ public sealed class CastPollVoteCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await _realtime.PublishToPostAsync(poll.PostId, "PollResultsChanged",
+        await _realtime.PublishToPostAsync(poll.PostId, RealtimeEvents.PollResultsChanged,
             new { pollId = poll.Id, poll.PostId }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);

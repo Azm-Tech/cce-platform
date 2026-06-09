@@ -107,6 +107,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description_en");
 
+                    b.Property<int>("FollowerCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("follower_count");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit")
                         .HasColumnName("is_active");
@@ -138,6 +144,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("name_en");
+
+                    b.Property<int>("PostCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("post_count");
 
                     b.Property<string>("PresentationJson")
                         .HasColumnType("nvarchar(max)")
@@ -425,6 +437,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("author_id");
 
+                    b.Property<int>("CommentsCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("comments_count");
+
                     b.Property<Guid>("CommunityId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("community_id");
@@ -484,6 +502,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("float")
                         .HasColumnName("score");
 
+                    b.Property<int>("ShareCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("share_count");
+
                     b.Property<int>("Status")
                         .HasColumnType("int")
                         .HasColumnName("status");
@@ -504,6 +528,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<int>("UpvoteCount")
                         .HasColumnType("int")
                         .HasColumnName("upvote_count");
+
+                    b.Property<int>("ViewCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("view_count");
 
                     b.HasKey("Id")
                         .HasName("pk_posts");
@@ -2466,6 +2496,18 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("first_name");
+
+                    b.Property<int>("FollowerCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("follower_count");
+
+                    b.Property<int>("FollowingCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("following_count");
 
                     b.PrimitiveCollection<string>("Interests")
                         .IsRequired()

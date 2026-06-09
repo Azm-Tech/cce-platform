@@ -37,6 +37,8 @@ public sealed class Community : AggregateRoot<System.Guid>
     public CommunityVisibility Visibility { get; private set; }
     public string? PresentationJson { get; private set; }
     public int MemberCount { get; private set; }
+    public int PostCount { get; private set; }
+    public int FollowerCount { get; private set; }
     public bool IsActive { get; private set; }
 
     public bool IsPublic => Visibility == CommunityVisibility.Public;
@@ -80,5 +82,22 @@ public sealed class Community : AggregateRoot<System.Guid>
     public void DecrementMembers()
     {
         if (MemberCount > 0) MemberCount--;
+    }
+
+    public void IncrementPosts() => PostCount++;
+    public void DecrementPosts() { if (PostCount > 0) PostCount--; }
+    public void IncrementFollowers() => FollowerCount++;
+    public void DecrementFollowers() { if (FollowerCount > 0) FollowerCount--; }
+
+    /// <summary>
+    /// Records that a user submitted a join request to this (private) community by raising
+    /// <see cref="Events.CommunityJoinRequestedEvent"/>. The join-request entity is persisted by its
+    /// repository; this emits the domain event so a bridge handler relays it to the Worker for
+    /// moderator notifications. Pass the real persisted <paramref name="requestId"/>.
+    /// </summary>
+    public void RegisterJoinRequest(System.Guid requestId, System.Guid userId, ISystemClock clock)
+    {
+        RaiseDomainEvent(new Events.CommunityJoinRequestedEvent(
+            requestId, Id, userId, clock.UtcNow));
     }
 }

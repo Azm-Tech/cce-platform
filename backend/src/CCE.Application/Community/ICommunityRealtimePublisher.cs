@@ -7,5 +7,15 @@ namespace CCE.Application.Community;
 /// </summary>
 public interface ICommunityRealtimePublisher
 {
+    /// <summary>Broadcast to the <c>post:{id}</c> room.</summary>
     Task PublishToPostAsync(Guid postId, string eventName, object payload, CancellationToken ct);
+
+    /// <summary>Broadcast to the <c>community:{id}</c> room.</summary>
+    Task PublishToCommunityAsync(Guid communityId, string eventName, object payload, CancellationToken ct);
+
+    /// <summary>Broadcast to the <c>topic:{id}</c> room.</summary>
+    Task PublishToTopicAsync(Guid topicId, string eventName, object payload, CancellationToken ct);
+
+    /// <summary>Broadcast to the global <c>moderation</c> room (moderators only).</summary>
+    Task PublishToModeratorsAsync(string eventName, object payload, CancellationToken ct);
 }

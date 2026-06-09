@@ -129,6 +129,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                 columns: new[] { "community_id", "user_id" },
                 unique: true);
 
+            // Seed the default "General" community so the backfilled posts FK reference is valid.
+            migrationBuilder.InsertData(
+                table: "communities",
+                columns: new[] { "id", "name_ar", "name_en", "description_ar", "description_en", "slug", "visibility", "member_count", "is_active", "is_deleted", "created_on", "created_by_id" },
+                values: new object[] { new Guid("c0ffee00-0000-0000-0000-000000000001"), "عام", "General", "مجتمع عام", "General community", "general", 0, 0, true, false, DateTimeOffset.UtcNow, Guid.Empty });
+
             migrationBuilder.AddForeignKey(
                 name: "fk_posts_communities_community_id",
                 table: "posts",

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
@@ -73,9 +74,17 @@ public sealed class CreateReplyCommandHandler
             post.CommunityId, reply.Id, authorId.Value, request.MentionedUserIds, cancellationToken)
             .ConfigureAwait(false);
 
+        // Raise the domain event on the Post aggregate; the bridge handler (ReplyCreatedBusPublisher)
+        // stages the integration event into the EF outbox during this same SaveChanges (atomic).
+        post.RegisterReply(reply.Id, reply.ParentReplyId, authorId.Value,
+            content[..System.Math.Min(content.Length, 200)], _clock);
+
+        // Increment the denormalized comment count atomically with the reply persistence.
+        post.IncrementCommentsCount(_clock);
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await _realtime.PublishToPostAsync(post.Id, "NewReply",
+        await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.NewReply,
             new { postId = post.Id, replyId = reply.Id, reply.ParentReplyId, reply.Depth }, cancellationToken)
             .ConfigureAwait(false);
 

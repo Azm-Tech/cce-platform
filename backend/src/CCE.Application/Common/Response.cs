@@ -9,7 +9,14 @@ namespace CCE.Application.Common;
 /// Code field uses ERR0xx/CON0xx/VAL0xx numbering.
 /// Message is a single string in the language requested via Accept-Language header.
 /// </summary>
-public sealed record Response<T>
+/// <summary>Non-generic view of <see cref="Response{T}"/> so pipeline behaviors can read success
+/// without knowing the payload type.</summary>
+public interface IResponse
+{
+    bool Success { get; }
+}
+
+public sealed record Response<T> : IResponse
 {
     [JsonInclude] public bool Success { get; private init; }
     [JsonInclude] public string Code { get; private init; } = string.Empty;

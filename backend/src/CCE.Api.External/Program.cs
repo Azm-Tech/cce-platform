@@ -7,6 +7,7 @@ using CCE.Api.Common.Middleware;
 using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
+using CCE.Api.Common.SignalR;
 using CCE.Api.External.Endpoints;
 using CCE.Api.External.Endpoints.Verification;
 using CCE.Api.External.Hubs;
@@ -55,7 +56,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
 builder.Services.Replace(ServiceDescriptor.Singleton<IUserIdProvider, SubClaimUserIdProvider>());
-builder.Services.AddSignalR().AddJsonProtocol();
+builder.Services.AddCceSignalR(builder.Configuration);
 
 var app = builder.Build();
 
@@ -123,9 +124,10 @@ app.MapFeaturedPostsFeedEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();
-app.MapVerificationEndpoints();
-app.MapStateRepresentativeEndpoints();
-app.MapCountryCodesPublicEndpoints();
+        app.MapVerificationEndpoints();
+        app.MapStateRepresentativeEndpoints();
+        app.MapCountryCodesPublicEndpoints();
+        app.MapRedisAdminEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

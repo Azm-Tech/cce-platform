@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CCE.Application.Common;
+using CCE.Application.Common.Caching;
 using CCE.Domain.Community;
 using MediatR;
 
@@ -19,4 +20,8 @@ public sealed record CreatePostCommand(
     IReadOnlyList<Guid> TagIds,
     IReadOnlyList<PostAttachmentInput> Attachments,
     PollInput? Poll,
-    bool SaveAsDraft) : IRequest<Response<Guid>>;
+    bool SaveAsDraft) : IRequest<Response<Guid>>, ICacheInvalidatingRequest
+{
+    public IReadOnlyCollection<string> CacheRegionsToEvict { get; } =
+        [CacheRegions.Posts, CacheRegions.Feed];
+}

@@ -1,4 +1,5 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Community;
 using CCE.Domain.Common;
 using MediatR;
@@ -10,15 +11,18 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
     private readonly ICommunityModerationService _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly ICommunityRealtimePublisher _realtime;
 
     public SoftDeletePostCommandHandler(
         ICommunityModerationService service,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        ICommunityRealtimePublisher realtime)
     {
         _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _realtime = realtime;
     }
 
     public async Task<Unit> Handle(SoftDeletePostCommand request, CancellationToken cancellationToken)
@@ -34,6 +38,15 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
 
         post.SoftDelete(moderatorId, _clock);
         await _service.UpdatePostAsync(post, cancellationToken).ConfigureAwait(false);
+
+        // Tell the post + community rooms the post was removed, and the moderation room who did it.
+        await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.PostModerated,
+            new PostModeratedRealtime(post.Id, null, "SoftDeleted"), cancellationToken).ConfigureAwait(false);
+        await _realtime.PublishToCommunityAsync(post.CommunityId, RealtimeEvents.PostModerated,
+            new PostModeratedRealtime(post.Id, null, "SoftDeleted"), cancellationToken).ConfigureAwait(false);
+        await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated,
+            new ContentModeratedRealtime("Post", post.Id, post.Id, moderatorId, "SoftDeleted"), cancellationToken).ConfigureAwait(false);
+
         return Unit.Value;
     }
 }

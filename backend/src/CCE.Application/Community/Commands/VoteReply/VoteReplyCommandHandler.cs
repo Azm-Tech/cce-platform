@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -65,7 +66,7 @@ public sealed class VoteReplyCommandHandler
         reply.ApplyVote(oldValue, newValue);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await _realtime.PublishToPostAsync(reply.PostId, "VoteChanged",
+        await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.VoteChanged,
             new { replyId = reply.Id, reply.UpvoteCount, reply.Score }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.Community.POST_VOTED);

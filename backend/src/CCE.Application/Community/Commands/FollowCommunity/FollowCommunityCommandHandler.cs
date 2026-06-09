@@ -41,6 +41,7 @@ public sealed class FollowCommunityCommandHandler
         if (existing is null)
         {
             _repo.AddFollow(CommunityFollow.Follow(community.Id, userId.Value, _clock));
+            community.IncrementFollowers();
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 

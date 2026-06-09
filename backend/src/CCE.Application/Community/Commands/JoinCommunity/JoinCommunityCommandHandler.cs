@@ -49,10 +49,17 @@ public sealed class JoinCommunityCommandHandler
         {
             if (await _repo.HasPendingRequestAsync(request.CommunityId, userId.Value, cancellationToken).ConfigureAwait(false))
                 return _msg.Conflict<VoidData>(ApplicationErrors.General.DUPLICATE_VALUE);
-            _repo.AddJoinRequest(CommunityJoinRequest.Submit(community.Id, userId.Value, _clock));
+            var joinRequest = CommunityJoinRequest.Submit(community.Id, userId.Value, _clock);
+            _repo.AddJoinRequest(joinRequest);
+
+            // Raise the domain event on the aggregate with the REAL join-request id; the bridge handler
+            // (CommunityJoinRequestedBusPublisher) stages the integration event into the EF outbox during
+            // the SaveChanges below, so the moderator notification is atomic with the request row.
+            community.RegisterJoinRequest(joinRequest.Id, userId.Value, _clock);
         }
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
         return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
     }
 }

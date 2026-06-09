@@ -5,7 +5,7 @@ namespace CCE.Infrastructure.Notifications.Messaging;
 
 /// <summary>
 /// MassTransit-backed <see cref="IIntegrationEventPublisher"/>. Publishes onto the bus via
-/// <see cref="IPublishEndpoint"/>; when the EF bus outbox is configured (see
+/// the scoped bus context provider so that when the EF bus outbox is configured (see
 /// <c>MessagingServiceExtensions.AddCceMessaging</c>) the publish is captured into the
 /// <c>outbox_message</c> table within the caller's <c>CceDbContext</c> transaction and relayed to the
 /// broker after <c>SaveChanges</c> commits.

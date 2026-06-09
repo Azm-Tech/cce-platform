@@ -30,6 +30,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         // Sub-11: filtered unique index on EntraIdObjectId. Only enforces uniqueness on
         // non-null values so existing rows pre-cutover (NULL) don't conflict, and so that
         // the lazy-resolver's idempotent linkage stays safe under concurrent first-sign-ins.
+        builder.Property(u => u.FollowerCount).HasDefaultValue(0);
+        builder.Property(u => u.FollowingCount).HasDefaultValue(0);
         builder.HasIndex(u => u.EntraIdObjectId)
             .HasDatabaseName("ix_asp_net_users_entra_id_object_id")
             .IsUnique()

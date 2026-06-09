@@ -36,6 +36,10 @@ groups:
       Read:
         description: Read system health probe
         roles: [cce-super-admin, cce-admin]
+  Cache:
+    Manage:
+      description: View and invalidate server-side output caches
+      roles: [cce-super-admin, cce-admin]
   User:
     Read:
       description: Read user profiles

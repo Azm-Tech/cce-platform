@@ -1,5 +1,6 @@
 using CCE.Api.Common.Health;
 using CCE.Api.Common.Observability;
+using CCE.Api.Common.SignalR;
 using CCE.Application;
 using CCE.Infrastructure;
 using Serilog;
@@ -20,14 +21,16 @@ builder.Services
     .AddCceHealthChecks(builder.Configuration)
     .AddCceOpenTelemetry(builder.Configuration, "CCE.Worker");
 
+// IDataProtectionProvider is required by ASP.NET Identity's token provider.
+// The Worker is a WebApplication for health-check reuse; it needs this explicitly
+// because it does not call AddAuthentication/AddMvc like the APIs do.
+builder.Services.AddDataProtection();
+
 // The notification consumer resolves INotificationGateway, which transitively needs
-// IHubContext<NotificationsHub> (the InApp realtime channel). AddSignalR registers that hub context so
-// the DI graph is satisfiable in this process.
-//
-// NOTE (follow-up): realtime delivery to clients connected to the *APIs* requires a SignalR Redis
-// backplane. Without one the worker's push is local-only; the in-app notification is still persisted to
-// the database by the gateway, so clients see it on their next fetch — only the live push is missed.
-builder.Services.AddSignalR();
+// IHubContext<NotificationsHub> (the InApp realtime channel). AddCceSignalR registers that hub context
+// AND wires the Redis backplane, so a notification pushed here fans out through Redis to the clients
+// connected to the API instances (the worker itself serves no clients).
+builder.Services.AddCceSignalR(builder.Configuration);
 
 var app = builder.Build();
 

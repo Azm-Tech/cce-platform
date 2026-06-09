@@ -7,6 +7,7 @@ public sealed record PublicPostDto(
     System.Guid CommunityId,
     System.Guid TopicId,
     System.Guid AuthorId,
+    string? AuthorName,
     PostType Type,
     string? Title,
     string? Content,
@@ -14,4 +15,7 @@ public sealed record PublicPostDto(
     bool IsAnswerable,
     System.Guid? AnsweredReplyId,
     int UpvoteCount,
+    int DownvoteCount,
+    int CommentsCount,
+    System.Collections.Generic.IReadOnlyList<System.Guid> AttachmentIds,
     System.DateTimeOffset CreatedOn);

@@ -1,3 +1,4 @@
+using CCE.Application.Common.Realtime;
 using CCE.Application.Notifications;
 using CCE.Domain.Notifications;
 using Microsoft.AspNetCore.SignalR;
@@ -29,7 +30,7 @@ public sealed class SignalRNotificationPublisher : ISignalRNotificationPublisher
             .Clients
             .User(notification.UserId.ToString())
             .SendAsync(
-                "ReceiveNotification",
+                RealtimeEvents.ReceiveNotification,
                 new
                 {
                     notification.Id,

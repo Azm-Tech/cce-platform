@@ -32,6 +32,8 @@ public sealed class UnfollowCommunityCommandHandler
         if (existing is not null)
         {
             _repo.RemoveFollow(existing);
+            var community = await _repo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
+            community?.DecrementFollowers();
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
