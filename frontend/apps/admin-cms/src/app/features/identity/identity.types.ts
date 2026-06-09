@@ -58,6 +58,16 @@ export const KNOWN_ROLES = [
 ] as const;
 export type RoleName = (typeof KNOWN_ROLES)[number];
 
+/** Enum-style const for type-safe role references. */
+export const Role = {
+  SuperAdmin: 'cce-super-admin',
+  Admin: 'cce-admin',
+  ContentManager: 'cce-content-manager',
+  StateRepresentative: 'cce-state-representative',
+  CommunityExpert: 'cce-community-expert',
+  User: 'cce-user',
+} as const satisfies Record<string, RoleName>;
+
 /** All known roles with translation keys — used in filter dropdowns. */
 export const KNOWN_ROLE_OPTIONS: readonly { value: string; labelKey: string }[] = [
   { value: 'cce-super-admin',          labelKey: 'users.role.superAdmin' },

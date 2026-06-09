@@ -43,7 +43,7 @@ const SUPER_ADMIN_PERMISSIONS: readonly CcePermission[] = [
   CcePermission.UserDelete,
 ];
 
-const PERMISSIONS_BY_ROLE: Record<CceAdminRole, readonly CcePermission[]> = {
+const PERMISSIONS_BY_ROLE: Partial<Record<CceAdminRole | CcePortalRole, readonly CcePermission[]>> = {
   [CceAdminRole.SuperAdmin]: SUPER_ADMIN_PERMISSIONS,
   [CceAdminRole.Admin]:      ALL_PERMISSIONS,
   [CceAdminRole.ContentManager]: [
@@ -61,7 +61,7 @@ const PERMISSIONS_BY_ROLE: Record<CceAdminRole, readonly CcePermission[]> = {
     CcePermission.ReportEvents,
     CcePermission.ReportResources,
   ],
-  [CceAdminRole.StateRepresentative]: [
+  [CcePortalRole.StateRepresentative]: [
     CcePermission.ResourceCountryApprove,
     CcePermission.CountryProfileUpdate,
     CcePermission.ReportCountryProfiles,

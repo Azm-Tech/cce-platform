@@ -1,0 +1,33 @@
+.cce-state-rep-create__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 360px;
+}
+
+.cce-state-rep-create__error {
+  font-size: 14px;
+  color: var(--mat-sys-error, #b00020);
+}
+
+.cce-select-filter {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 12px;
+  background: var(--mat-select-panel-background-color, #fff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+  &__input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: inherit;
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.38);
+    }
+  }
+}

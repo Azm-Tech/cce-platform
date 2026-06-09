@@ -2,19 +2,60 @@
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-state-rep-create__form">
+
+    <!-- User searchable select -->
     <mat-form-field appearance="outline">
       <mat-label>{{ 'stateRep.create.user' | transloco }}</mat-label>
-      <input matInput formControlName="userId" autocomplete="off" />
+      <mat-select
+        formControlName="userId"
+        [disabled]="loading()"
+        (closed)="userFilterCtrl.setValue('')"
+      >
+        <div class="cce-select-filter" (click)="$event.stopPropagation()">
+          <input
+            class="cce-select-filter__input"
+            [formControl]="userFilterCtrl"
+            [placeholder]="'stateRep.create.userSearch' | transloco"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        @for (user of filteredUsers(); track user.id) {
+          <mat-option [value]="user.id">{{ user.userName ?? user.email }}</mat-option>
+        }
+        @if (filteredUsers().length === 0) {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-select>
       @if (form.controls.userId.touched && form.controls.userId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | transloco }}</mat-error>
+        <mat-error>{{ 'stateRep.create.required' | transloco }}</mat-error>
       }
     </mat-form-field>
 
+    <!-- Country searchable select -->
     <mat-form-field appearance="outline">
       <mat-label>{{ 'stateRep.create.country' | transloco }}</mat-label>
-      <input matInput formControlName="countryId" autocomplete="off" />
+      <mat-select
+        formControlName="countryId"
+        [disabled]="loading()"
+        (closed)="countryFilterCtrl.setValue('')"
+      >
+        <div class="cce-select-filter" (click)="$event.stopPropagation()">
+          <input
+            class="cce-select-filter__input"
+            [formControl]="countryFilterCtrl"
+            [placeholder]="'stateRep.create.countrySearch' | transloco"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        @for (country of filteredCountries(); track country.id) {
+          <mat-option [value]="country.id">{{ country.nameAr }}</mat-option>
+        }
+        @if (filteredCountries().length === 0) {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-select>
       @if (form.controls.countryId.touched && form.controls.countryId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | transloco }}</mat-error>
+        <mat-error>{{ 'stateRep.create.required' | transloco }}</mat-error>
       }
     </mat-form-field>
 

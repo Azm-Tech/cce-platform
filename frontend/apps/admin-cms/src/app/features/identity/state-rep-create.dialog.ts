@@ -1,28 +1,33 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { CountryApiService } from '../countries/country-api.service';
+import type { Country } from '../countries/country.types';
 import { IdentityApiService } from './identity-api.service';
-import type { StateRepAssignment } from './identity.types';
-
-const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { Role } from './identity.types';
+import type { StateRepAssignment, UserListItem } from './identity.types';
 
 interface StateRepCreateForm {
   userId: FormControl<string>;
   countryId: FormControl<string>;
 }
 
-/**
- * Modal that lets a SuperAdmin create a state-rep assignment by entering
- * a user GUID + country GUID. v0.1.0 takes free-text GUIDs (admin power-
- * user flow); a future phase will replace these with searchable pickers
- * once the country/expert-profile catalogs land in the admin UI.
- */
 @Component({
   selector: 'cce-state-rep-create-dialog',
   standalone: true,
@@ -33,28 +38,69 @@ interface StateRepCreateForm {
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslocoModule
-],
+    MatSelectModule,
+    TranslocoModule,
+  ],
   templateUrl: './state-rep-create.dialog.html',
+  styleUrl: './state-rep-create.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StateRepCreateDialogComponent {
+export class StateRepCreateDialogComponent implements OnInit {
   private readonly api = inject(IdentityApiService);
+  private readonly countryApi = inject(CountryApiService);
   private readonly ref =
     inject<MatDialogRef<StateRepCreateDialogComponent, StateRepAssignment | null>>(MatDialogRef);
 
   readonly form = new FormGroup<StateRepCreateForm>({
-    userId: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.pattern(GUID_RE)],
-    }),
-    countryId: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.pattern(GUID_RE)],
-    }),
+    userId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    countryId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
+  readonly loading = signal(true);
+
+  readonly users = signal<UserListItem[]>([]);
+  readonly countries = signal<Country[]>([]);
+
+  readonly userFilterCtrl = new FormControl('');
+  readonly countryFilterCtrl = new FormControl('');
+
+  private readonly userFilter = toSignal(
+    this.userFilterCtrl.valueChanges.pipe(startWith('')),
+    { initialValue: '' },
+  );
+  private readonly countryFilter = toSignal(
+    this.countryFilterCtrl.valueChanges.pipe(startWith('')),
+    { initialValue: '' },
+  );
+
+  readonly filteredUsers = computed(() => {
+    const term = (this.userFilter() ?? '').toLowerCase();
+    if (!term) return this.users();
+    return this.users().filter(
+      (u) =>
+        (u.userName ?? '').toLowerCase().includes(term) ||
+        (u.email ?? '').toLowerCase().includes(term),
+    );
+  });
+
+  readonly filteredCountries = computed(() => {
+    const term = (this.countryFilter() ?? '').toLowerCase();
+    if (!term) return this.countries();
+    return this.countries().filter(
+      (c) => c.nameAr.includes(term) || c.nameEn.toLowerCase().includes(term),
+    );
+  });
+
+  async ngOnInit(): Promise<void> {
+    const [usersRes, countriesRes] = await Promise.all([
+      this.api.listUsers({ pageSize: 100, role: Role.StateRepresentative }),
+      this.countryApi.listCountries({ pageSize: 300, isActive: true }),
+    ]);
+    if (usersRes.ok) this.users.set(usersRes.value.items);
+    if (countriesRes.ok) this.countries.set(countriesRes.value.items);
+    this.loading.set(false);
+  }
 
   async save(): Promise<void> {
     if (this.form.invalid) {
