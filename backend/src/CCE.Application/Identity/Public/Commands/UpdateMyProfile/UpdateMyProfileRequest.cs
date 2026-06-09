@@ -7,7 +7,6 @@ public sealed record UpdateMyProfileRequest(
     string OrganizationName,
     string LocalePreference,
     Domain.Identity.KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string>? Interests,
     string? AvatarUrl,
     System.Guid? CountryId,
     System.Guid? CountryCodeId);

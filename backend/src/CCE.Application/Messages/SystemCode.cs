@@ -107,6 +107,9 @@ public static class SystemCode
     public const string ERR100 = "ERR100"; // Scenario not found
     public const string ERR101 = "ERR101"; // Technology not found
 
+    // ─── InterestTopic Errors ───
+    public const string ERR110 = "ERR110"; // Interest topic not found
+
     // ─── Platform Settings Errors ───
     public const string ERR053 = "ERR053"; // Homepage settings not found
     public const string ERR054 = "ERR054"; // About settings not found
@@ -155,6 +158,7 @@ public static class SystemCode
     public const string CON007 = "CON007"; // Admin notified of expert request (appendix)
     public const string CON008 = "CON008"; // Service evaluation submitted (appendix)
     public const string CON009 = "CON009"; // Personalized suggestions submitted (appendix)
+    public const string CON019 = "CON019"; // Interest upserted
     public const string CON010 = "CON010"; // Topic follow success (appendix)
     public const string CON011 = "CON011"; // Post created (appendix)
     public const string CON012 = "CON012"; // Post follow success (appendix)
@@ -184,6 +188,11 @@ public static class SystemCode
     public const string CON067 = "CON067"; // Community post draft saved
     public const string CON068 = "CON068"; // Community post published
     public const string CON069 = "CON069"; // Community post draft deleted
+
+    // ─── InterestTopic Success ───
+    public const string CON048 = "CON048"; // Interest topic created
+    public const string CON049 = "CON049"; // Interest topic updated
+    public const string CON072 = "CON072"; // Interest topic deleted
 
     // ─── Content Success ───
     public const string CON020 = "CON020"; // Content created

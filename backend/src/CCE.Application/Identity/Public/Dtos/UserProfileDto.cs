@@ -1,3 +1,4 @@
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Domain.Identity;
 
 namespace CCE.Application.Identity.Public.Dtos;
@@ -13,7 +14,7 @@ public sealed record UserProfileDto(
     string? PhoneNumber,
     string LocalePreference,
     KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string> Interests,
+    IReadOnlyList<InterestTopicDto> InterestTopics,
     System.Guid? CountryId,
     System.Guid? CountryCodeId,
     string? AvatarUrl);

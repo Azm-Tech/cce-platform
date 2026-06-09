@@ -23,6 +23,7 @@ using CCE.Infrastructure.Assistant;
 using CCE.Infrastructure.Community;
 using CCE.Infrastructure.Content;
 using CCE.Infrastructure.InteractiveCity;
+using CCE.Infrastructure.InterestManagement;
 using CCE.Infrastructure.Media;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;

@@ -25,8 +25,7 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Self-declared knowledge level. Default <see cref="KnowledgeLevel.Beginner"/>.</summary>
     public KnowledgeLevel KnowledgeLevel { get; private set; } = KnowledgeLevel.Beginner;
 
-    /// <summary>User-selected topic interests (free-text PascalCase tags). EF maps as JSON column.</summary>
-    public List<string> Interests { get; private set; } = new();
+    public ICollection<UserInterestTopic> UserInterestTopics { get; private set; } = new List<UserInterestTopic>();
 
     /// <summary>Optional user country (FK to <c>Country</c>); only set for state-rep / community users with a profile.</summary>
     public System.Guid? CountryId { get; set; }
@@ -183,9 +182,6 @@ public class User : IdentityUser<System.Guid>
 
     public void SetKnowledgeLevel(KnowledgeLevel level) => KnowledgeLevel = level;
 
-    /// <summary>
-    /// Replaces the interests list. Trims whitespace, deduplicates, and removes empty entries.
-    /// </summary>
     public void UpdateInterests(IEnumerable<string> interests)
     {
         if (interests is null)
@@ -212,7 +208,6 @@ public class User : IdentityUser<System.Guid>
         DeletedOn = now;
         DeletedById = by;
     }
-
     public void AssignCountry(System.Guid countryId) => CountryId = countryId;
 
     public void ClearCountry() => CountryId = null;

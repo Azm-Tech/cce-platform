@@ -14,7 +14,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.OrganizationName).HasMaxLength(100).IsRequired();
         builder.Property(u => u.LocalePreference).HasMaxLength(2).IsRequired();
         builder.Property(u => u.AvatarUrl).HasMaxLength(2048);
-        builder.Property(u => u.Interests).HasColumnType("nvarchar(max)");
         builder.Property(u => u.KnowledgeLevel).HasConversion<int>();
         builder.Property(u => u.Status).HasConversion<int>();
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");

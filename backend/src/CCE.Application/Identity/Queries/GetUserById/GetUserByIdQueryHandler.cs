@@ -1,7 +1,9 @@
+using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,29 +24,48 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
     public async Task<Response<UserDetailDto>> Handle(
     GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var dto = await _db.Users
+        var users = await _db.Users
             .Where(u => u.Id == request.Id && !u.IsDeleted)
-            .Select(u => new UserDetailDto(
-                u.Id,
-                u.Email,
-                u.UserName,
-                u.LocalePreference,
-                u.KnowledgeLevel,
-                u.Interests,
-                u.CountryId,
-                u.CountryCodeId,
-                u.AvatarUrl,
-                _db.UserRoles
-                    .Join(_db.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
-                    .Where(x => x.UserId == u.Id && x.Name != null)
-                    .Select(x => x.Name!)
-                    .ToList(),
-                u.Status == Domain.Identity.UserStatus.Active))
-            .FirstOrDefaultAsync(cancellationToken)
+            .Include(u => u.UserInterestTopics)
+            .ThenInclude(uit => uit.InterestTopic)
+            .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
+        var user = users.SingleOrDefault();
+        if (user is null)
+        {
+            return _msg.UserNotFound<UserDetailDto>();
+        }
 
-        return dto is null
-            ? _msg.UserNotFound<UserDetailDto>()
-            : _msg.Ok(dto, "SUCCESS_OPERATION");
+        var roleNames =
+            from ur in _db.UserRoles
+            join r in _db.Roles on ur.RoleId equals r.Id
+            where ur.UserId == request.Id && r.Name != null
+            select r.Name!;
+        var roles = await roleNames.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+
+        var now = DateTimeOffset.UtcNow;
+        var isActive = !user.LockoutEnabled || user.LockoutEnd is null || user.LockoutEnd < now;
+
+        var interestTopics = user.UserInterestTopics
+            .Select(uit => new InterestTopicDto(
+                uit.InterestTopic.Id,
+                uit.InterestTopic.NameAr,
+                uit.InterestTopic.NameEn,
+                uit.InterestTopic.Category,
+                uit.InterestTopic.IsActive))
+            .ToList();
+
+        return _msg.Ok(new UserDetailDto(
+            user.Id,
+            user.Email,
+            user.UserName,
+            user.LocalePreference,
+            user.KnowledgeLevel,
+            interestTopics,
+            user.CountryId,
+            user.CountryCodeId,
+            user.AvatarUrl,
+            roles,
+            isActive), "SUCCESS_OPERATION");
     }
 }
