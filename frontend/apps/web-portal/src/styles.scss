@@ -841,3 +841,19 @@ body { min-height: 100vh; }
   .mat-icon { color: #b71c1c !important; }
   &:hover { background: rgba(183, 28, 28, 0.05) !important; }
 }
+
+
+/* ─── Dialog: no padding (evaluation + preferences) ─────────────────────── */
+.cce-dialog-no-padding .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px !important;
+}
+.cce-dialog-no-padding .mat-mdc-dialog-content {
+  padding: 1.25rem 1.5rem !important;
+  max-height: 65vh;
+}
+.cce-dialog-no-padding .mat-mdc-dialog-actions {
+  padding: 0.75rem 1.5rem 1.25rem !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}

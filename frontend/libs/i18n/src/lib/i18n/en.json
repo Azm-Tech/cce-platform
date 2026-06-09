@@ -2384,5 +2384,41 @@
     "reorder": {
       "toast": "Section order updated."
     }
+  },
+  "evaluation": {
+    "title": "Rate Our Services",
+    "subtitle": "Your feedback helps us improve the platform.",
+    "q1": "Overall satisfaction with the platform",
+    "q2": "Ease of use",
+    "q3": "Suitability of content to your knowledge level",
+    "scale5": "Excellent",
+    "scale4": "Good",
+    "scale3": "Neutral",
+    "scale2": "Poor",
+    "scale1": "Very Poor",
+    "feedback": "Additional comments",
+    "feedbackHint": "Optional · max 500 characters",
+    "submit": "Submit Evaluation",
+    "success": "Thank you! Your evaluation has been submitted.",
+    "nudge": "Help us improve — share your experience with the platform.",
+    "nudgeAction": "Rate the Platform"
+  },
+  "preferences": {
+    "title": "Personalize Your Experience",
+    "subtitle": "Help us show you the most relevant content.",
+    "interests": "Areas of Interest",
+    "interestsHint": "Select all that apply",
+    "knowledgeLevel": "Your Knowledge Level",
+    "knowledgeLevels": {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced"
+    },
+    "country": "Country",
+    "save": "Save Preferences",
+    "skip": "Skip for now",
+    "success": "Your preferences have been saved!",
+    "ctaTitle": "Personalize your experience",
+    "ctaBody": "Set your interests and knowledge level to get tailored content."
   }
 }

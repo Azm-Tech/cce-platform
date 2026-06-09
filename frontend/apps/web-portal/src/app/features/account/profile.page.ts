@@ -5,6 +5,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -56,6 +57,7 @@ export class ProfilePage implements OnInit {
   private readonly mediaApi = inject(MediaApiService);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
 
   readonly profile = signal<UserProfile | null>(null);
@@ -118,8 +120,17 @@ export class ProfilePage implements OnInit {
       this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
-    if (profileRes.ok) this.profile.set(profileRes.value);
-    else this.errorKind.set(profileRes.error.kind);
+    if (profileRes.ok) {
+      this.profile.set(profileRes.value);
+      if (
+        profileRes.value.interests.length === 0 &&
+        !localStorage.getItem('cce_prefs_shown')
+      ) {
+        this.openPreferences();
+      }
+    } else {
+      this.errorKind.set(profileRes.error.kind);
+    }
     if (countryCodesRes.ok) this.countryCodes.set(countryCodesRes.value);
     if (expertRes.ok) {
       this.expertStatus.set(expertRes.value);
@@ -179,6 +190,21 @@ export class ProfilePage implements OnInit {
 
   retry(): void {
     void this.load();
+  }
+
+  openPreferences(): void {
+    const p = this.profile();
+    if (!p) return;
+    import('./preferences.dialog').then(({ PreferencesDialogComponent }) => {
+      const ref = this.dialog.open(PreferencesDialogComponent, {
+        data: p,
+        panelClass: 'cce-dialog-no-padding',
+        autoFocus: 'first-tabbable',
+      });
+      ref.afterClosed().subscribe((updated) => {
+        if (updated) this.profile.set(updated);
+      });
+    });
   }
 
   async onAvatarFileChange(event: Event): Promise<void> {

@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
+  EvaluationPayload,
   ExpertRequestStatus,
   ServiceRatingPayload,
   SubmitExpertRequestPayload,
@@ -58,6 +59,12 @@ export class AccountApiService {
       firstValueFrom(
         this.http.post<{ data: ExpertRequestStatus }>('/api/users/expert-request', payload).pipe(map((res) => res.data)),
       ),
+    );
+  }
+
+  async submitEvaluation(payload: EvaluationPayload): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.post<void>('/api/evaluations', payload)),
     );
   }
 

@@ -1,0 +1,117 @@
+<div class="cce-eval">
+
+  <div class="cce-eval__header">
+    <div class="cce-eval__header-icon" aria-hidden="true">
+      <mat-icon>star_rate</mat-icon>
+    </div>
+    <div class="cce-eval__header-text">
+      <h2 class="cce-eval__title">{{ 'evaluation.title' | transloco }}</h2>
+      <p class="cce-eval__sub">{{ 'evaluation.subtitle' | transloco }}</p>
+    </div>
+    <button type="button" mat-icon-button mat-dialog-close class="cce-eval__close" [attr.aria-label]="'common.actions.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (submitted()) {
+
+    <div class="cce-eval__success">
+      <div class="cce-eval__success-ring">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <p class="cce-eval__success-msg">{{ 'evaluation.success' | transloco }}</p>
+    </div>
+
+  } @else {
+
+    <mat-dialog-content>
+      <form [formGroup]="form" class="cce-eval__form">
+
+        @if (errorKind()) {
+          <div class="cce-eval__error" role="alert">{{ ('errors.' + errorKind()) | transloco }}</div>
+        }
+
+        <!-- Q1 -->
+        <div class="cce-eval__q" [class.cce-eval__q--err]="form.controls.overallSatisfaction.invalid && form.controls.overallSatisfaction.touched">
+          <span class="cce-eval__q-label">{{ 'evaluation.q1' | transloco }}</span>
+          <mat-button-toggle-group
+            formControlName="overallSatisfaction"
+            class="cce-eval__toggle"
+            [attr.aria-label]="'evaluation.q1' | transloco"
+          >
+            @for (r of ratings; track r) {
+              <mat-button-toggle [value]="r"><span class="cce-eval__tval">{{ r }}</span></mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+          <div class="cce-eval__scale-ends" aria-hidden="true">
+            <span>{{ 'evaluation.scale1' | transloco }}</span>
+            <span>{{ 'evaluation.scale5' | transloco }}</span>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="cce-eval__q" [class.cce-eval__q--err]="form.controls.easeOfUse.invalid && form.controls.easeOfUse.touched">
+          <span class="cce-eval__q-label">{{ 'evaluation.q2' | transloco }}</span>
+          <mat-button-toggle-group
+            formControlName="easeOfUse"
+            class="cce-eval__toggle"
+            [attr.aria-label]="'evaluation.q2' | transloco"
+          >
+            @for (r of ratings; track r) {
+              <mat-button-toggle [value]="r"><span class="cce-eval__tval">{{ r }}</span></mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+          <div class="cce-eval__scale-ends" aria-hidden="true">
+            <span>{{ 'evaluation.scale1' | transloco }}</span>
+            <span>{{ 'evaluation.scale5' | transloco }}</span>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="cce-eval__q" [class.cce-eval__q--err]="form.controls.contentSuitability.invalid && form.controls.contentSuitability.touched">
+          <span class="cce-eval__q-label">{{ 'evaluation.q3' | transloco }}</span>
+          <mat-button-toggle-group
+            formControlName="contentSuitability"
+            class="cce-eval__toggle"
+            [attr.aria-label]="'evaluation.q3' | transloco"
+          >
+            @for (r of ratings; track r) {
+              <mat-button-toggle [value]="r"><span class="cce-eval__tval">{{ r }}</span></mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+          <div class="cce-eval__scale-ends" aria-hidden="true">
+            <span>{{ 'evaluation.scale1' | transloco }}</span>
+            <span>{{ 'evaluation.scale5' | transloco }}</span>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <mat-form-field class="cce-eval__feedback-field">
+          <mat-label>{{ 'evaluation.feedback' | transloco }}</mat-label>
+          <textarea matInput formControlName="feedback" rows="3" maxlength="500"></textarea>
+          <mat-hint>{{ 'evaluation.feedbackHint' | transloco }}</mat-hint>
+        </mat-form-field>
+
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button type="button" mat-button mat-dialog-close>{{ 'common.actions.cancel' | transloco }}</button>
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        [disabled]="saving()"
+        (click)="submit()"
+      >
+        @if (saving()) {
+          <mat-progress-spinner diameter="18" mode="indeterminate" />
+        } @else {
+          {{ 'evaluation.submit' | transloco }}
+        }
+      </button>
+    </mat-dialog-actions>
+
+  }
+
+</div>

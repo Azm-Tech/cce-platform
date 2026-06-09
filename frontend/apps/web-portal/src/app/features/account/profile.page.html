@@ -136,6 +136,18 @@
             </a>
           </div>
         }
+
+        <div class="cce-profile__prefs-cta">
+          <mat-icon class="cce-profile__prefs-icon" aria-hidden="true">tune</mat-icon>
+          <div class="cce-profile__prefs-text">
+            <strong>{{ 'preferences.ctaTitle' | transloco }}</strong>
+            <span>{{ 'preferences.ctaBody' | transloco }}</span>
+          </div>
+          <button type="button" mat-stroked-button (click)="openPreferences()">
+            {{ 'preferences.save' | transloco }}
+          </button>
+        </div>
+
       </article>
     } @else {
       <form

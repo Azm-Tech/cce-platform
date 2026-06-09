@@ -490,4 +490,15 @@
     </div>
   </section>
 
+  <!-- ══════════════════════════════════════ EVALUATION NUDGE (US018) -->
+  @if (!hasEvaluated()) {
+    <div class="cce-home2__eval-strip">
+      <mat-icon class="cce-home2__eval-icon" aria-hidden="true">star_rate</mat-icon>
+      <p class="cce-home2__eval-msg">{{ 'evaluation.nudge' | transloco }}</p>
+      <button type="button" mat-stroked-button class="cce-home2__eval-btn" (click)="openEvaluation()">
+        {{ 'evaluation.nudgeAction' | transloco }}
+      </button>
+    </div>
+  }
+
 </div>

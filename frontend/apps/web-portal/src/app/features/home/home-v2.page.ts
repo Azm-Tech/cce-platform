@@ -8,6 +8,9 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
 import { EventsApiService } from '../events/events-api.service';
@@ -23,7 +26,7 @@ type FrameworkTab = 'reduce' | 'reuse' | 'recycle' | 'remove';
 @Component({
   selector: 'cce-home-v2',
   standalone: true,
-  imports: [RouterLink, TranslocoModule, NewsCardComponent],
+  imports: [RouterLink, TranslocoModule, NewsCardComponent, MatButtonModule, MatIconModule],
   templateUrl: './home-v2.page.html',
   styleUrl: './home-v2.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +38,9 @@ export class HomeV2Page implements OnInit {
   private readonly locale = inject(LocaleService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+
+  readonly hasEvaluated = signal(!!localStorage.getItem('cce_evaluated'));
 
   readonly loading = signal(true);
   /** Set when the core homepage settings call fails (US001 AC4/AC5 — ERR001). */
@@ -159,6 +165,18 @@ export class HomeV2Page implements OnInit {
 
   setTab(tab: FrameworkTab): void {
     this.activeTab.set(tab);
+  }
+
+  openEvaluation(): void {
+    import('../account/evaluation.dialog').then(({ EvaluationDialogComponent }) => {
+      const ref = this.dialog.open(
+        EvaluationDialogComponent,
+        { panelClass: 'cce-dialog-no-padding', autoFocus: 'first-tabbable' },
+      );
+      ref.afterClosed().subscribe((submitted) => {
+        if (submitted) this.hasEvaluated.set(true);
+      });
+    });
   }
 
   async ngOnInit(): Promise<void> {

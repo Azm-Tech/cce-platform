@@ -1,0 +1,116 @@
+<div class="cce-prefs">
+
+  <div class="cce-prefs__header">
+    <div class="cce-prefs__header-icon" aria-hidden="true">
+      <mat-icon>tune</mat-icon>
+    </div>
+    <div class="cce-prefs__header-text">
+      <h2 class="cce-prefs__title">{{ 'preferences.title' | transloco }}</h2>
+      <p class="cce-prefs__sub">{{ 'preferences.subtitle' | transloco }}</p>
+    </div>
+    <button type="button" mat-icon-button mat-dialog-close class="cce-prefs__close" [attr.aria-label]="'common.actions.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="cce-prefs__form">
+
+      @if (errorKind()) {
+        <div class="cce-prefs__error" role="alert">{{ ('errors.' + errorKind()) | transloco }}</div>
+      }
+
+      <!-- Knowledge Level -->
+      <div class="cce-prefs__section" [class.cce-prefs__section--err]="form.controls.knowledgeLevel.invalid && form.controls.knowledgeLevel.touched">
+        <p class="cce-prefs__section-title">{{ 'preferences.knowledgeLevel' | transloco }}</p>
+        <div class="cce-prefs__kl-group">
+          @for (kl of knowledgeLevels; track kl) {
+            <label
+              class="cce-prefs__kl-card"
+              [class.cce-prefs__kl-card--sel]="form.controls.knowledgeLevel.value === kl"
+            >
+              <input
+                type="radio"
+                formControlName="knowledgeLevel"
+                [value]="kl"
+                class="cce-prefs__kl-radio"
+              />
+              <mat-icon class="cce-prefs__kl-icon" aria-hidden="true">
+                @switch (kl) {
+                  @case ('Beginner') { school }
+                  @case ('Intermediate') { auto_stories }
+                  @case ('Advanced') { workspace_premium }
+                }
+              </mat-icon>
+              <span class="cce-prefs__kl-name">{{ ('preferences.knowledgeLevels.' + kl) | transloco }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- Areas of Interest -->
+      <div class="cce-prefs__section">
+        <p class="cce-prefs__section-title">
+          {{ 'preferences.interests' | transloco }}
+          <span class="cce-prefs__section-hint">{{ 'preferences.interestsHint' | transloco }}</span>
+        </p>
+
+        @if (topicsLoading()) {
+          <mat-progress-bar mode="indeterminate" />
+        } @else if (topics().length === 0) {
+          <p class="cce-prefs__empty">—</p>
+        } @else {
+          <div class="cce-prefs__topics">
+            @for (topic of topics(); track topic.id) {
+              <button
+                type="button"
+                class="cce-prefs__topic"
+                [class.cce-prefs__topic--sel]="isSelected(topic.id)"
+                (click)="toggleTopic(topic.id)"
+              >
+                @if (topic.iconUrl) {
+                  <img [src]="topic.iconUrl" alt="" class="cce-prefs__topic-icon" width="20" height="20" />
+                } @else {
+                  <mat-icon class="cce-prefs__topic-mat-icon" aria-hidden="true">label</mat-icon>
+                }
+                {{ topicName(topic) }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Country -->
+      <mat-form-field class="cce-prefs__country-field">
+        <mat-label>{{ 'preferences.country' | transloco }}</mat-label>
+        <mat-select formControlName="countryId">
+          <mat-option [value]="null">—</mat-option>
+          @for (c of countries(); track c.id) {
+            <mat-option [value]="c.id">
+              {{ isAr() ? c.nameAr : c.nameEn }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="skip()">{{ 'preferences.skip' | transloco }}</button>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        {{ 'preferences.save' | transloco }}
+      }
+    </button>
+  </mat-dialog-actions>
+
+</div>

@@ -72,3 +72,10 @@ export interface ServiceRatingPayload {
   page: string;
   locale: 'ar' | 'en';
 }
+
+export interface EvaluationPayload {
+  overallSatisfaction?: number;
+  easeOfUse?: number;
+  contentSuitability?: number;
+  feedback?: string | null;
+}
