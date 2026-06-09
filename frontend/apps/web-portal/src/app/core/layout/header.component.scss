@@ -468,8 +468,8 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.9rem !important;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.45rem !important;
   border-radius: 999px !important;
   background: rgba(15, 139, 108, 0.06) !important;
   font-weight: 600 !important;
@@ -477,17 +477,42 @@
   border: 1px solid rgba(0, 108, 79, 0.15) !important;
   transition: background-color 0.2s, transform 0.2s, border-color 0.2s !important;
 
-  mat-icon {
-    color: #006c4f;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(15, 139, 108, 0.16), rgba(200, 160, 69, 0.20));
-    padding: 2px;
-  }
   &:hover {
-    background: rgba(15, 139, 108, 0.14) !important;
-    border-color: rgba(0, 108, 79, 0.30) !important;
+    background: rgba(15, 139, 108, 0.12) !important;
+    border-color: rgba(0, 108, 79, 0.28) !important;
     transform: translateY(-1px);
   }
+}
+
+.cce-header__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px -2px rgba(0, 108, 79, 0.55);
+}
+
+.cce-header__user-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cce-header__user-chevron {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: rgba(28, 39, 36, 0.42) !important;
+  flex-shrink: 0;
 }
 
 .cce-header__signin {

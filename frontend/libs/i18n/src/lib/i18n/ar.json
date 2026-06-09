@@ -442,7 +442,9 @@
     "menu": "القائمة",
     "myState": "ملفي الحكومي",
     "manageProfile": "إدارة الملف التعريفي",
-    "myRequests": "طلباتي"
+    "myRequests": "طلباتي",
+    "roleStateRep": "ممثل الدولة",
+    "stateRepSection": "دولتي"
   },
   "footer": {
     "about": "حول",

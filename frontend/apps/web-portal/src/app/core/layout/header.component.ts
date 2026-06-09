@@ -130,6 +130,12 @@ export class HeaderComponent implements OnDestroy {
     const u = this.auth.currentUser();
     return u ? `${u.firstName} ${u.lastName}`.trim() : '';
   });
+  readonly userInitials = computed(() => {
+    const u = this.auth.currentUser();
+    if (!u) return '';
+    return ((u.firstName?.[0] ?? '') + (u.lastName?.[0] ?? '')).toUpperCase();
+  });
+  readonly userEmail = computed(() => this.auth.currentUser()?.emailAddress ?? '');
   readonly unreadCount = signal(0);
   readonly badgeHidden = computed(() => this.unreadCount() === 0);
 

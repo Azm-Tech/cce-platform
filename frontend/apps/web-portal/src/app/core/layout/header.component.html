@@ -96,29 +96,6 @@
         </div>
       }
     }
-    @if (isStateRep()) {
-      <a
-        routerLink="/my-state"
-        routerLinkActive="cce-header__link--active"
-        (click)="closeMobileMenu()"
-      >
-        {{ 'nav.stateProfile' | transloco }}
-      </a>
-      <a
-        routerLink="/my-profile"
-        routerLinkActive="cce-header__link--active"
-        (click)="closeMobileMenu()"
-      >
-        {{ 'nav.manageProfile' | transloco }}
-      </a>
-      <a
-        routerLink="/my-requests"
-        routerLinkActive="cce-header__link--active"
-        (click)="closeMobileMenu()"
-      >
-        {{ 'nav.myRequests' | transloco }}
-      </a>
-    }
   </nav>
 
   <cce-search-box class="cce-header__search" />
@@ -138,22 +115,66 @@
     >
       <mat-icon>notifications</mat-icon>
     </button>
+
     <button type="button" mat-button [matMenuTriggerFor]="userMenu" class="cce-header__user">
-      <mat-icon>account_circle</mat-icon>
-      <span>{{ userLabel() }}</span>
+      <div class="cce-header__avatar">{{ userInitials() }}</div>
+      <span class="cce-header__user-name">{{ userLabel() }}</span>
+      <mat-icon class="cce-header__user-chevron" aria-hidden="true">expand_more</mat-icon>
     </button>
-    <mat-menu #userMenu>
-      <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | transloco }}</a>
-      <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | transloco }}</a>
-      <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | transloco }}</a>
+
+    <mat-menu #userMenu="matMenu" panelClass="cce-user-menu" xPosition="before">
+      <!-- ── Profile card header ── -->
+      <div class="cce-user-card">
+        <div class="cce-user-card__avatar">{{ userInitials() }}</div>
+        <div class="cce-user-card__info">
+          <span class="cce-user-card__name">{{ userLabel() }}</span>
+          <span class="cce-user-card__email">{{ userEmail() }}</span>
+          @if (isStateRep()) {
+            <span class="cce-user-card__role">{{ 'header.roleStateRep' | transloco }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- ── Account links ── -->
+      <a mat-menu-item routerLink="/me/profile">
+        <mat-icon>person</mat-icon>
+        {{ 'header.profile' | transloco }}
+      </a>
+      <a mat-menu-item routerLink="/me/notifications">
+        <mat-icon>notifications</mat-icon>
+        {{ 'header.notifications' | transloco }}
+      </a>
+      <a mat-menu-item routerLink="/me/follows">
+        <mat-icon>favorite_border</mat-icon>
+        {{ 'header.follows' | transloco }}
+      </a>
+
+      <!-- ── State rep section ── -->
       @if (isStateRep()) {
         <mat-divider />
-        <a mat-menu-item routerLink="/my-state">{{ 'header.myState' | transloco }}</a>
-        <a mat-menu-item routerLink="/my-profile">{{ 'header.manageProfile' | transloco }}</a>
-        <a mat-menu-item routerLink="/my-requests">{{ 'header.myRequests' | transloco }}</a>
+        <span class="cce-user-menu__section-label">{{ 'header.stateRepSection' | transloco }}</span>
+        <a mat-menu-item routerLink="/my-state">
+          <mat-icon>location_city</mat-icon>
+          {{ 'header.myState' | transloco }}
+        </a>
+        <a mat-menu-item routerLink="/my-profile">
+          <mat-icon>manage_accounts</mat-icon>
+          {{ 'header.manageProfile' | transloco }}
+        </a>
+        <a mat-menu-item routerLink="/my-requests">
+          <mat-icon>assignment</mat-icon>
+          {{ 'header.myRequests' | transloco }}
+        </a>
       }
-      <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | transloco }}</button>
+
+      <!-- ── Sign out ── -->
+      <mat-divider />
+      <button type="button" mat-menu-item class="cce-user-menu__signout" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        {{ 'header.signOut' | transloco }}
+      </button>
     </mat-menu>
+
   } @else {
     <button type="button" mat-flat-button color="primary" (click)="signIn()" class="cce-header__signin">
       {{ 'header.signIn' | transloco }}

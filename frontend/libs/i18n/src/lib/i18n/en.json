@@ -442,7 +442,9 @@
     "menu": "Menu",
     "myState": "My State",
     "manageProfile": "Manage Profile",
-    "myRequests": "My Requests"
+    "myRequests": "My Requests",
+    "roleStateRep": "State Representative",
+    "stateRepSection": "My Country"
   },
   "footer": {
     "about": "About",
