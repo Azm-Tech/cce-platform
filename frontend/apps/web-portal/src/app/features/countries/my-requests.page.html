@@ -1,0 +1,213 @@
+<div class="cce-my-requests">
+
+  <h1 class="cce-my-requests__title">{{ 'myRequests.title' | transloco }}</h1>
+
+  <mat-tab-group [selectedIndex]="tabIndex()" (selectedIndexChange)="onTabChange($event)" animationDuration="200ms" mat-align-tabs="start">
+
+    <!-- ── Resources tab ── -->
+    <mat-tab [label]="'myRequests.tabs.resources' | transloco">
+      <div class="cce-my-requests__tab-content">
+        <div class="cce-my-requests__tab-actions">
+          <button type="button" mat-flat-button color="primary" (click)="openAddResource()">
+            <mat-icon>add</mat-icon>
+            {{ 'myRequests.addResource' | transloco }}
+          </button>
+        </div>
+
+        @if (loadingResources()) {
+          <div class="cce-my-requests__center"><mat-spinner diameter="36" /></div>
+        } @else if (resourcesError()) {
+          <div class="cce-my-requests__error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ 'errors.ERR001' | transloco }}</span>
+            <button type="button" mat-stroked-button (click)="retryResources()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        } @else if (resourceRequests().length === 0) {
+          <div class="cce-my-requests__empty">
+            <mat-icon>folder_open</mat-icon>
+            <p>{{ 'myRequests.empty' | transloco }}</p>
+          </div>
+        } @else {
+          <div class="cce-my-requests__list-wrap">
+            <ul class="cce-my-requests__list">
+              @for (req of resourceRequests(); track req.id) {
+                @let sk = statusKey(req.status);
+                <li
+                  class="cce-my-requests__card cce-my-requests__card--{{ sk }}"
+                  (click)="openDetail(req)"
+                  (keydown.enter)="openDetail(req)"
+                  tabindex="0"
+                  role="button"
+                >
+                  <div class="cce-my-requests__card-icon cce-my-requests__card-icon--{{ sk }}">
+                    <mat-icon>description</mat-icon>
+                  </div>
+                  <div class="cce-my-requests__card-body">
+                    <span class="cce-my-requests__card-title">
+                      {{ locale() === 'ar' ? req.proposedTitleAr : req.proposedTitleEn }}
+                    </span>
+                    <span class="cce-my-requests__card-subtitle">
+                      {{ locale() === 'ar' ? req.proposedTitleEn : req.proposedTitleAr }}
+                    </span>
+                    <div class="cce-my-requests__card-meta">
+                      <span>{{ ('resources.type.' + req.proposedResourceType) | transloco }}</span>
+                      <span class="cce-my-requests__card-dot"></span>
+                      <span>{{ req.submittedOn | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+                  <span class="cce-my-requests__card-badge cce-my-requests__card-badge--{{ sk }}">
+                    {{ ('myRequests.status.' + sk) | transloco }}
+                  </span>
+                </li>
+              }
+            </ul>
+            <mat-paginator
+              class="cce-my-requests__paginator"
+              [length]="resourceTotal()"
+              [pageSize]="resourcePageSize()"
+              [pageIndex]="resourcePage() - 1"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="onResourcePage($event)"
+            />
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ── News tab ── -->
+    <mat-tab [label]="'myRequests.tabs.news' | transloco">
+      <div class="cce-my-requests__tab-content">
+        <div class="cce-my-requests__tab-actions">
+          <button type="button" mat-flat-button color="primary" (click)="openAddNews()">
+            <mat-icon>add</mat-icon>
+            {{ 'myRequests.addNews' | transloco }}
+          </button>
+        </div>
+
+        @if (loadingNews()) {
+          <div class="cce-my-requests__center"><mat-spinner diameter="36" /></div>
+        } @else if (newsEventsError() && newsRequests().length === 0) {
+          <div class="cce-my-requests__error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ 'errors.ERR001' | transloco }}</span>
+            <button type="button" mat-stroked-button (click)="retryNewsEvents()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        } @else if (newsRequests().length === 0) {
+          <div class="cce-my-requests__empty">
+            <mat-icon>article</mat-icon>
+            <p>{{ 'myRequests.empty' | transloco }}</p>
+          </div>
+        } @else {
+          <div class="cce-my-requests__list-wrap">
+            <ul class="cce-my-requests__list">
+              @for (req of newsRequests(); track req.id) {
+                @let sk = statusKey(req.status);
+                <li
+                  class="cce-my-requests__card cce-my-requests__card--{{ sk }}"
+                  (click)="openDetail(req)"
+                  (keydown.enter)="openDetail(req)"
+                  tabindex="0"
+                  role="button"
+                >
+                  <div class="cce-my-requests__card-icon cce-my-requests__card-icon--{{ sk }}">
+                    <mat-icon>newspaper</mat-icon>
+                  </div>
+                  <div class="cce-my-requests__card-body">
+                    <span class="cce-my-requests__card-title">
+                      {{ locale() === 'ar' ? req.proposedTitleAr : req.proposedTitleEn }}
+                    </span>
+                    <span class="cce-my-requests__card-subtitle">
+                      {{ locale() === 'ar' ? req.proposedTitleEn : req.proposedTitleAr }}
+                    </span>
+                    <div class="cce-my-requests__card-meta">
+                      <span>{{ 'myRequests.typeNews' | transloco }}</span>
+                      <span class="cce-my-requests__card-dot"></span>
+                      <span>{{ req.submittedOn | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+                  <span class="cce-my-requests__card-badge cce-my-requests__card-badge--{{ sk }}">
+                    {{ ('myRequests.status.' + sk) | transloco }}
+                  </span>
+                </li>
+              }
+            </ul>
+            <mat-paginator
+              class="cce-my-requests__paginator"
+              [length]="newsTotal()"
+              [pageSize]="newsPageSize()"
+              [pageIndex]="newsPage() - 1"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="onNewsPage($event)"
+            />
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ── Events tab ── -->
+    <mat-tab [label]="'myRequests.tabs.events' | transloco">
+      <div class="cce-my-requests__tab-content">
+        <div class="cce-my-requests__tab-actions">
+          <button type="button" mat-flat-button color="primary" (click)="openAddEvent()">
+            <mat-icon>add</mat-icon>
+            {{ 'myRequests.addEvent' | transloco }}
+          </button>
+        </div>
+
+        @if (loadingEvents()) {
+          <div class="cce-my-requests__center"><mat-spinner diameter="36" /></div>
+        } @else if (eventRequests().length === 0) {
+          <div class="cce-my-requests__empty">
+            <mat-icon>event</mat-icon>
+            <p>{{ 'myRequests.empty' | transloco }}</p>
+          </div>
+        } @else {
+          <div class="cce-my-requests__list-wrap">
+            <ul class="cce-my-requests__list">
+              @for (req of eventRequests(); track req.id) {
+                @let sk = statusKey(req.status);
+                <li
+                  class="cce-my-requests__card cce-my-requests__card--{{ sk }}"
+                  (click)="openDetail(req)"
+                  (keydown.enter)="openDetail(req)"
+                  tabindex="0"
+                  role="button"
+                >
+                  <div class="cce-my-requests__card-icon cce-my-requests__card-icon--{{ sk }}">
+                    <mat-icon>event</mat-icon>
+                  </div>
+                  <div class="cce-my-requests__card-body">
+                    <span class="cce-my-requests__card-title">
+                      {{ locale() === 'ar' ? req.proposedTitleAr : req.proposedTitleEn }}
+                    </span>
+                    <span class="cce-my-requests__card-subtitle">
+                      {{ locale() === 'ar' ? req.proposedTitleEn : req.proposedTitleAr }}
+                    </span>
+                    <div class="cce-my-requests__card-meta">
+                      <span>{{ 'myRequests.typeEvent' | transloco }}</span>
+                      <span class="cce-my-requests__card-dot"></span>
+                      <span>{{ req.proposedStartsOn | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+                  <span class="cce-my-requests__card-badge cce-my-requests__card-badge--{{ sk }}">
+                    {{ ('myRequests.status.' + sk) | transloco }}
+                  </span>
+                </li>
+              }
+            </ul>
+            <mat-paginator
+              class="cce-my-requests__paginator"
+              [length]="eventTotal()"
+              [pageSize]="eventPageSize()"
+              [pageIndex]="eventPage() - 1"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="onEventPage($event)"
+            />
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

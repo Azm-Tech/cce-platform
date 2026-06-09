@@ -1,0 +1,174 @@
+<h2 mat-dialog-title>{{ 'newsEventRequest.event.formTitle' | transloco }}</h2>
+
+<mat-dialog-content class="cce-event-request-form">
+  <form [formGroup]="form" id="event-request-form">
+
+    <div class="cce-event-request-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" dir="rtl" autocomplete="off" [maxlength]="260" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/255</mat-hint>
+        @if (form.controls.titleAr.touched && form.controls.titleAr.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" dir="ltr" autocomplete="off" [maxlength]="260" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/255</mat-hint>
+        @if (form.controls.titleEn.touched && form.controls.titleEn.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <cce-rich-text-editor
+      formControlName="descriptionAr"
+      [label]="'newsEventRequest.form.descAr' | transloco"
+      [maxLength]="2000"
+      dir="rtl"
+    />
+
+    <cce-rich-text-editor
+      formControlName="descriptionEn"
+      [label]="'newsEventRequest.form.descEn' | transloco"
+      [maxLength]="2000"
+      dir="ltr"
+    />
+
+    <!-- Start datetime -->
+    <div class="cce-event-request-form__datetime-row">
+      <mat-form-field appearance="outline" class="cce-event-request-form__date">
+        <mat-label>{{ 'newsEventRequest.form.startsOn' | transloco }}</mat-label>
+        <input matInput [matDatepicker]="startDp" formControlName="startDate" readonly />
+        <mat-datepicker-toggle matIconSuffix [for]="startDp" />
+        <mat-datepicker #startDp />
+        @if (form.controls.startDate.touched && form.controls.startDate.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.hour' | transloco }}</mat-label>
+        <mat-select formControlName="startHour">
+          @for (h of hourOptions; track h) {
+            <mat-option [value]="h">{{ h }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.minute' | transloco }}</mat-label>
+        <mat-select formControlName="startMinute">
+          @for (m of minuteOptions; track m) {
+            <mat-option [value]="m">{{ m }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- End datetime -->
+    <div class="cce-event-request-form__datetime-row">
+      <mat-form-field appearance="outline" class="cce-event-request-form__date">
+        <mat-label>{{ 'newsEventRequest.form.endsOn' | transloco }}</mat-label>
+        <input matInput [matDatepicker]="endDp" formControlName="endDate" readonly />
+        <mat-datepicker-toggle matIconSuffix [for]="endDp" />
+        <mat-datepicker #endDp />
+        @if (form.controls.endDate.touched && form.controls.endDate.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.hour' | transloco }}</mat-label>
+        <mat-select formControlName="endHour">
+          @for (h of hourOptions; track h) {
+            <mat-option [value]="h">{{ h }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.minute' | transloco }}</mat-label>
+        <mat-select formControlName="endMinute">
+          @for (m of minuteOptions; track m) {
+            <mat-option [value]="m">{{ m }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <p class="cce-event-request-form__section-label">{{ 'newsEventRequest.form.locationHint' | transloco }}</p>
+
+    <div class="cce-event-request-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.locationAr' | transloco }}</mat-label>
+        <input matInput formControlName="locationAr" dir="rtl" autocomplete="off" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.locationEn' | transloco }}</mat-label>
+        <input matInput formControlName="locationEn" dir="ltr" autocomplete="off" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'newsEventRequest.form.onlineMeetingUrl' | transloco }}</mat-label>
+      <input matInput formControlName="onlineMeetingUrl" dir="ltr" autocomplete="off" placeholder="https://" type="url" />
+      @if (form.controls.onlineMeetingUrl.touched && form.controls.onlineMeetingUrl.hasError('pattern')) {
+        <mat-error>{{ 'common.validation.url' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
+    @if (form.touched && form.hasError('locationRequired')) {
+      <mat-error>{{ 'newsEventRequest.form.locationRequired' | transloco }}</mat-error>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'newsEventRequest.form.topic' | transloco }}</mat-label>
+      <mat-select formControlName="topicId">
+        <mat-option value="">—</mat-option>
+        @for (t of topics(); track t.id) {
+          <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="cce-event-request-form__image">
+      <input
+        #imgInput
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        hidden
+        (change)="onImagePicked($event)"
+      />
+      <button type="button" mat-stroked-button (click)="imgInput.click()" [disabled]="uploadingImage()">
+        <mat-icon>image</mat-icon>
+        @if (uploadingImage()) {
+          {{ 'newsEventRequest.form.uploadingImage' | transloco }}
+        } @else {
+          {{ 'newsEventRequest.form.uploadImage' | transloco }}
+        }
+      </button>
+      <span class="cce-event-request-form__image-hint">{{ 'newsEventRequest.form.imageHint' | transloco }}</span>
+    </div>
+
+    @if (imagePreviewUrl()) {
+      <div class="cce-event-request-form__preview">
+        <img [src]="imagePreviewUrl()!" alt="" />
+      </div>
+    }
+
+    @if (errorKey()) {
+      <div class="cce-event-request-form__error" role="alert">{{ errorKey()! | transloco }}</div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="submit()" [disabled]="saving() || uploadingImage()">
+    @if (saving()) { <mat-spinner diameter="20" /> } @else {
+      {{ 'newsEventRequest.form.submit' | transloco }}
+    }
+  </button>
+</mat-dialog-actions>

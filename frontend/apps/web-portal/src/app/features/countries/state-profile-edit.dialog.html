@@ -1,0 +1,113 @@
+<h2 mat-dialog-title>{{ 'stateProfile.edit.title' | transloco }}</h2>
+
+<mat-dialog-content class="cce-sp-edit-form">
+  <form [formGroup]="form" id="sp-edit-form">
+
+    <!-- Stats row -->
+    <div class="cce-sp-edit-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.population' | transloco }}</mat-label>
+        <input matInput type="number" step="1" min="1" formControlName="population" />
+        @if (form.controls.population.touched && form.controls.population.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+        @if (form.controls.population.touched && (form.controls.population.hasError('min') || form.controls.population.hasError('pattern'))) {
+          <mat-error>{{ 'stateProfile.edit.mustBePositiveInt' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.areaSqKm' | transloco }}</mat-label>
+        <input matInput type="number" step="any" min="0.01" formControlName="areaSqKm" />
+        @if (form.controls.areaSqKm.touched && form.controls.areaSqKm.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+        @if (form.controls.areaSqKm.touched && form.controls.areaSqKm.hasError('min')) {
+          <mat-error>{{ 'stateProfile.edit.mustBePositive' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.gdpPerCapita' | transloco }}</mat-label>
+        <input matInput type="number" step="any" min="0.01" formControlName="gdpPerCapita" />
+        @if (form.controls.gdpPerCapita.touched && form.controls.gdpPerCapita.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+        @if (form.controls.gdpPerCapita.touched && form.controls.gdpPerCapita.hasError('min')) {
+          <mat-error>{{ 'stateProfile.edit.mustBePositive' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- NDC file -->
+    <div class="cce-sp-edit-form__file">
+      <span class="cce-sp-edit-form__file-label">{{ 'stateProfile.ndcDocument' | transloco }}</span>
+      <label class="cce-sp-edit-form__file-btn" for="ndc-file-input">
+        <mat-icon>upload_file</mat-icon>
+        {{ selectedNdc()?.name ?? ('stateProfile.edit.chooseNdc' | transloco) }}
+      </label>
+      <input
+        id="ndc-file-input"
+        type="file"
+        accept=".pdf"
+        class="cce-sp-edit-form__file-input"
+        (change)="onNdcChange($event)"
+      />
+      @if (ndcError()) {
+        <mat-error>{{ ndcError()! | transloco }}</mat-error>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="cce-sp-edit-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.descriptionAr' | transloco }}</mat-label>
+        <textarea matInput formControlName="descriptionAr" dir="rtl" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.descriptionEn' | transloco }}</mat-label>
+        <textarea matInput formControlName="descriptionEn" dir="ltr" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Key Initiatives -->
+    <div class="cce-sp-edit-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.keyInitiativesAr' | transloco }}</mat-label>
+        <textarea matInput formControlName="keyInitiativesAr" dir="rtl" rows="3"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.keyInitiativesEn' | transloco }}</mat-label>
+        <textarea matInput formControlName="keyInitiativesEn" dir="ltr" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="cce-sp-edit-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.contactInfoAr' | transloco }}</mat-label>
+        <textarea matInput formControlName="contactInfoAr" dir="rtl" rows="2"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'stateProfile.edit.contactInfoEn' | transloco }}</mat-label>
+        <textarea matInput formControlName="contactInfoEn" dir="ltr" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    @if (errorKey()) {
+      <div class="cce-sp-edit-form__error" role="alert">{{ errorKey()! | transloco }}</div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+    @if (saving()) { <mat-spinner diameter="20" /> } @else {
+      {{ 'stateProfile.edit.save' | transloco }}
+    }
+  </button>
+</mat-dialog-actions>

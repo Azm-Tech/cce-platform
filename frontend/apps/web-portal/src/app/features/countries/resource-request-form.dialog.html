@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>{{ 'resourceRequest.form.title' | transloco }}</h2>
+
+<mat-dialog-content class="cce-resource-request-form">
+  <form [formGroup]="form" id="resource-request-form">
+
+    <div class="cce-resource-request-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resourceRequest.form.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" dir="rtl" autocomplete="off" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/255</mat-hint>
+        @if (form.controls.titleAr.touched && form.controls.titleAr.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'resourceRequest.form.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" dir="ltr" autocomplete="off" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/255</mat-hint>
+        @if (form.controls.titleEn.touched && form.controls.titleEn.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <cce-rich-text-editor
+      formControlName="descriptionAr"
+      [label]="'resourceRequest.form.descAr' | transloco"
+      [maxLength]="500"
+      dir="rtl"
+    />
+
+    <cce-rich-text-editor
+      formControlName="descriptionEn"
+      [label]="'resourceRequest.form.descEn' | transloco"
+      [maxLength]="500"
+      dir="ltr"
+    />
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'resourceRequest.form.type' | transloco }}</mat-label>
+      <mat-select formControlName="resourceType">
+        @for (type of resourceTypes; track type) {
+          <mat-option [value]="type">{{ ('resources.type.' + type) | transloco }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.resourceType.touched && form.controls.resourceType.hasError('required')) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- File upload -->
+    <div class="cce-resource-request-form__file">
+      <span class="cce-resource-request-form__file-label">{{ 'resourceRequest.form.file' | transloco }}</span>
+      <label class="cce-resource-request-form__file-btn" for="resource-file-input">
+        <mat-icon>upload_file</mat-icon>
+        {{ selectedFile()?.name ?? ('resourceRequest.form.chooseFile' | transloco) }}
+      </label>
+      <input
+        id="resource-file-input"
+        type="file"
+        accept=".pdf,.doc,.docx"
+        class="cce-resource-request-form__file-input"
+        (change)="onFileChange($event)"
+      />
+      @if (fileError()) {
+        <mat-error>{{ fileError()! | transloco }}</mat-error>
+      }
+    </div>
+
+    @if (errorKey()) {
+      <div class="cce-resource-request-form__error" role="alert">
+        {{ errorKey()! | transloco }}
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button
+    type="submit"
+    form="resource-request-form"
+    mat-flat-button
+    color="primary"
+    (click)="submit()"
+    [disabled]="saving()"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      {{ 'resourceRequest.form.submit' | transloco }}
+    }
+  </button>
+</mat-dialog-actions>

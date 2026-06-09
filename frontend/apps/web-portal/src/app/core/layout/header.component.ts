@@ -5,9 +5,11 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
+import { CcePortalRole } from '@frontend/contracts';
 import { AuthService } from '../auth/auth.service';
 import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { NotificationsApiService } from '../../features/notifications/notifications-api.service';
@@ -26,6 +28,7 @@ const UNREAD_POLL_MS = 60_000;
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,
+    MatDividerModule,
     MatMenuModule,
     TranslocoModule,
     LocaleSwitcherComponent,
@@ -122,6 +125,7 @@ export class HeaderComponent implements OnDestroy {
     );
   }
   readonly isAuthenticated = this.auth.isAuthenticated;
+  readonly isStateRep = computed(() => this.auth.hasRole(CcePortalRole.StateRepresentative));
   readonly userLabel = computed(() => {
     const u = this.auth.currentUser();
     return u ? `${u.firstName} ${u.lastName}`.trim() : '';

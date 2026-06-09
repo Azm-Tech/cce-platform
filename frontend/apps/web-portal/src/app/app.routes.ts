@@ -1,7 +1,9 @@
 import { Route } from '@angular/router';
+import { CcePortalRole } from '@frontend/contracts';
 import { HealthPage } from './health/health.page';
 import { authGuard } from './core/auth/auth.guard';
 import { guestGuard } from './core/auth/guest.guard';
+import { roleGuard } from './core/auth/role.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -41,6 +43,30 @@ export const appRoutes: Route[] = [
     path: 'countries',
     loadChildren: () => import('./features/countries/routes').then((m) => m.COUNTRIES_ROUTES),
     title: 'CCE — Countries',
+  },
+  {
+    path: 'my-state',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/my-state.page').then((m) => m.MyStatePage),
+    title: 'CCE — My State',
+  },
+  {
+    path: 'my-requests',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/my-requests.page').then((m) => m.MyRequestsPage),
+    title: 'CCE — My Requests',
+  },
+  {
+    path: 'my-profile',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/state-profile.page').then((m) => m.StateProfilePage),
+    title: 'CCE — My Profile',
   },
   {
     path: 'search',

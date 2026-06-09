@@ -96,6 +96,29 @@
         </div>
       }
     }
+    @if (isStateRep()) {
+      <a
+        routerLink="/my-state"
+        routerLinkActive="cce-header__link--active"
+        (click)="closeMobileMenu()"
+      >
+        {{ 'nav.stateProfile' | transloco }}
+      </a>
+      <a
+        routerLink="/my-profile"
+        routerLinkActive="cce-header__link--active"
+        (click)="closeMobileMenu()"
+      >
+        {{ 'nav.manageProfile' | transloco }}
+      </a>
+      <a
+        routerLink="/my-requests"
+        routerLinkActive="cce-header__link--active"
+        (click)="closeMobileMenu()"
+      >
+        {{ 'nav.myRequests' | transloco }}
+      </a>
+    }
   </nav>
 
   <cce-search-box class="cce-header__search" />
@@ -123,6 +146,12 @@
       <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | transloco }}</a>
       <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | transloco }}</a>
       <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | transloco }}</a>
+      @if (isStateRep()) {
+        <mat-divider />
+        <a mat-menu-item routerLink="/my-state">{{ 'header.myState' | transloco }}</a>
+        <a mat-menu-item routerLink="/my-profile">{{ 'header.manageProfile' | transloco }}</a>
+        <a mat-menu-item routerLink="/my-requests">{{ 'header.myRequests' | transloco }}</a>
+      }
       <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | transloco }}</button>
     </mat-menu>
   } @else {

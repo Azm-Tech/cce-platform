@@ -359,6 +359,7 @@
     "ERR028": "Could not delete the news/event. Please try again.",
     "ERR029": "Could not upload the resource. Please try again.",
     "ERR030": "Could not delete the resource. Please try again.",
+    "ERR033": "Sorry, there was a problem updating the profile. Please try again.",
     "fileType": "Unsupported file format. Allowed formats: PDF or Word.",
     "ERR001": "An error occurred while loading the page.",
     "ERR025": "Sorry, a problem occurred while updating the content."
@@ -380,7 +381,9 @@
     "CON004": "Event added to your calendar.",
     "CON020": "News/event deleted successfully.",
     "CON021": "Uploaded successfully!",
-    "CON016": "Update completed successfully."
+    "CON016": "Update completed successfully.",
+    "CON024": "Your request has been submitted successfully. It will be reviewed by an admin shortly. Thank you for your contribution!",
+    "CON026": "Country profile updated successfully!"
   },
   "nav": {
     "sidebarLabel": "Admin navigation",
@@ -417,6 +420,9 @@
     "interactiveCity": "Interactive city",
     "worldMap": "World Map",
     "assistant": "Assistant",
+    "stateProfile": "My State Profile",
+    "manageProfile": "Manage Profile",
+    "myRequests": "My Requests",
     "discover": "Discover",
     "discoverDesc": {
       "knowledgeCenter": "Curated long-reads, briefs & references",
@@ -433,7 +439,10 @@
     "profile": "My profile",
     "notifications": "Notifications",
     "follows": "Follows",
-    "menu": "Menu"
+    "menu": "Menu",
+    "myState": "My State",
+    "manageProfile": "Manage Profile",
+    "myRequests": "My Requests"
   },
   "footer": {
     "about": "About",
@@ -496,6 +505,7 @@
       "lastNameLabel": "Last Name",
       "emailLabel": "Email Address",
       "emailHint": "A password setup link will be sent to this address.",
+      "phoneCodeLabel": "Country code",
       "phoneLabel": "Phone Number",
       "countryLabel": "Country",
       "roleLabel": "Role",
@@ -645,10 +655,12 @@
     "create": {
       "title": "New state-rep assignment",
       "openButton": "New assignment",
-      "user": "User ID",
-      "country": "Country ID",
+      "user": "User",
+      "userSearch": "Search by name or email...",
+      "country": "Country",
+      "countrySearch": "Search for a country...",
+      "required": "This field is required.",
       "save": "Create",
-      "invalidGuid": "Enter a valid GUID.",
       "toast": "Assignment created."
     },
     "revoke": {
@@ -657,6 +669,122 @@
       "message": "Revoke this assignment? It can be re-created later, and the audit trail records the revocation.",
       "confirm": "Revoke",
       "toast": "Assignment revoked."
+    }
+  },
+  "stateProfile": {
+    "title": "Manage State Profile",
+    "editButton": "Edit Profile",
+    "kapsarcSection": "KAPSARC Indicators (read-only)",
+    "statsSection": "Country Statistics",
+    "descriptionsSection": "Descriptions & Initiatives",
+    "cceClassification": "CCE Classification",
+    "ccePerformance": "Performance Score",
+    "cceTotalIndex": "CCE Total Index",
+    "snapshotDate": "Last KAPSARC snapshot date",
+    "population": "Population",
+    "areaSqKm": "Area (km²)",
+    "gdpPerCapita": "GDP per Capita (USD)",
+    "ndcDocument": "Nationally Determined Contribution (NDC)",
+    "ndcUploaded": "Uploaded",
+    "ndcMissing": "Not yet uploaded",
+    "description": "Country description",
+    "keyInitiatives": "Key initiatives",
+    "contactInfo": "Contact information",
+    "edit": {
+      "title": "Edit State Profile",
+      "save": "Save Updates",
+      "descriptionAr": "Country description (Arabic)",
+      "descriptionEn": "Country description (English)",
+      "keyInitiativesAr": "Key initiatives (Arabic)",
+      "keyInitiativesEn": "Key initiatives (English)",
+      "contactInfoAr": "Contact information (Arabic)",
+      "contactInfoEn": "Contact information (English)",
+      "chooseNdc": "Choose NDC file (PDF)",
+      "ndcTypeError": "Only PDF files are allowed.",
+      "mustBePositiveInt": "Must be a positive integer greater than zero.",
+      "mustBePositive": "Must be greater than zero."
+    }
+  },
+  "myRequests": {
+    "title": "My Requests",
+    "addResource": "Add Resource",
+    "addNews": "Add News",
+    "addEvent": "Add Event",
+    "empty": "No requests available at the moment.",
+    "newsSection": "News Submissions",
+    "eventsSection": "Event Submissions",
+    "typeNews": "News",
+    "typeEvent": "Event",
+    "typeResource": "Resource",
+    "tabs": {
+      "resources": "Resources",
+      "newsEvents": "News & Events",
+      "news": "News",
+      "events": "Events"
+    },
+    "status": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "detail": {
+      "title": "Request Details",
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "type": "Resource type",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "submittedOn": "Submitted on:",
+      "processedOn": "Processed on:",
+      "adminNotes": "Admin notes",
+      "file": "Attached file",
+      "downloadFile": "Download"
+    }
+  },
+  "resourceRequest": {
+    "form": {
+      "title": "Submit New Resource Request",
+      "titleAr": "Resource title (Arabic)",
+      "titleEn": "Resource title (English)",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "type": "Resource type",
+      "file": "Resource file",
+      "chooseFile": "Choose a file (PDF or Word)",
+      "fileTypeError": "Only PDF and Word files are allowed.",
+      "fileRequired": "A file is required.",
+      "submit": "Submit Request"
+    }
+  },
+  "newsEventRequest": {
+    "news": {
+      "formTitle": "Submit New News Article"
+    },
+    "event": {
+      "formTitle": "Submit New Event"
+    },
+    "form": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "startsOn": "Start date & time",
+      "endsOn": "End date & time",
+      "locationHint": "Provide a physical location, an online meeting URL, or both.",
+      "locationAr": "Location (Arabic)",
+      "locationEn": "Location (English)",
+      "onlineMeetingUrl": "Online meeting URL",
+      "locationRequired": "Please enter a location or an online meeting URL.",
+      "topic": "Topic",
+      "hour": "Hour",
+      "minute": "Minute",
+      "uploadImage": "Upload featured image",
+      "uploadingImage": "Uploading…",
+      "imageHint": "PNG, JPG or WebP · max 5 MB",
+      "imageInvalidType": "Only PNG, JPG and WebP images are allowed (max 5 MB).",
+      "submit": "Submit Request"
     }
   },
   "asset": {
@@ -789,6 +917,75 @@
       "message": "Delete this resource? This action cannot be undone.",
       "confirm": "Delete",
       "toast": "Resource deleted successfully!"
+    }
+  },
+  "countryRequest": {
+    "title": "Country content requests",
+    "backToList": "Back to requests",
+    "untitled": "(Untitled)",
+    "empty": "No requests found.",
+    "submittedOn": "Submitted",
+    "notesAr": "Admin notes (Arabic)",
+    "notesEn": "Admin notes (English)",
+    "tabs": {
+      "resources": "Resources",
+      "news": "News",
+      "events": "Events"
+    },
+    "filter": {
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
+    "col": {
+      "title": "Title",
+      "submittedOn": "Submitted on",
+      "status": "Status",
+      "actions": ""
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "type": {
+      "resource": "Resource",
+      "news": "News",
+      "event": "Event"
+    },
+    "section": {
+      "content": "Content",
+      "resource": "Resource details",
+      "event": "Event details",
+      "adminNotes": "Admin notes"
+    },
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "resourceType": "Resource type",
+      "assetFileId": "Attached file",
+      "downloadFile": "Download file",
+      "startsOn": "Starts on",
+      "endsOn": "Ends on",
+      "locationAr": "Location (Arabic)",
+      "locationEn": "Location (English)",
+      "onlineMeetingUrl": "Online meeting URL",
+      "notesAr": "Notes (Arabic)",
+      "notesEn": "Notes (English)",
+      "processedOn": "Processed on"
+    },
+    "approve": {
+      "title": "Approve request",
+      "confirm": "Are you sure you want to approve this request? You may optionally leave admin notes.",
+      "action": "Approve",
+      "toast": "Request approved successfully."
+    },
+    "reject": {
+      "title": "Reject request",
+      "confirm": "Please provide a reason for rejecting this request (required in both languages).",
+      "action": "Reject",
+      "toast": "Request rejected."
     }
   },
   "countryResourceRequest": {
@@ -1301,6 +1498,9 @@
     "empty": "No countries available.",
     "back": "Back to Participating Countries",
     "notFound": "Country not found.",
+    "myState": {
+      "noCountry": "No country is assigned to your account. Please contact the platform administrator."
+    },
     "view": {
       "grid": "Grid view",
       "map": "Map view"

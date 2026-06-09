@@ -24,6 +24,20 @@ export class MediaApiService {
     return this.upload('/api/assets', file);
   }
 
+  async getAsset(id: string): Promise<Result<MediaAsset>> {
+    try {
+      const res = await firstValueFrom(
+        this.http.get<MediaAsset | { data: MediaAsset }>(`/api/assets/${encodeURIComponent(id)}`),
+      );
+      const asset = (res && typeof res === 'object' && 'data' in res && res.data)
+        ? res.data as MediaAsset
+        : res as MediaAsset;
+      return { ok: true, value: asset };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
   private async upload(endpoint: string, file: File): Promise<Result<MediaAsset>> {
     const body = new FormData();
     body.append('file', file);

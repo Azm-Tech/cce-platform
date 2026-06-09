@@ -1,0 +1,130 @@
+
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { TranslocoModule } from '@jsverse/transloco';
+import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { MediaApiService } from '../../core/media/media-api.service';
+import { RESOURCE_TYPE_VALUE, RESOURCE_TYPES } from '../knowledge-center/knowledge.types';
+import { CountriesApiService } from './countries-api.service';
+import { ContentType, type CountryContentRequest } from './country.types';
+
+const ALLOWED_TYPES = ['application/pdf', 'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+interface ResourceRequestForm {
+  titleAr: FormControl<string>;
+  titleEn: FormControl<string>;
+  descriptionAr: FormControl<string>;
+  descriptionEn: FormControl<string>;
+  resourceType: FormControl<string>;
+}
+
+@Component({
+  selector: 'cce-resource-request-form-dialog',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    RichTextEditorComponent,
+    TranslocoModule,
+  ],
+  templateUrl: './resource-request-form.dialog.html',
+  styleUrl: './resource-request-form.dialog.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ResourceRequestFormDialogComponent {
+  private readonly api = inject(CountriesApiService);
+  private readonly media = inject(MediaApiService);
+  private readonly toast = inject(ToastService);
+  private readonly ref =
+    inject<MatDialogRef<ResourceRequestFormDialogComponent, CountryContentRequest | null>>(MatDialogRef);
+  private readonly countryId = inject<string>(MAT_DIALOG_DATA);
+
+  readonly resourceTypes = RESOURCE_TYPES;
+
+  readonly form = new FormGroup<ResourceRequestForm>({
+    titleAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
+    titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
+    descriptionAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] }),
+    descriptionEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] }),
+    resourceType: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+  });
+
+  readonly selectedFile = signal<File | null>(null);
+  readonly fileError = signal<string | null>(null);
+  readonly saving = signal(false);
+  readonly errorKey = signal<string | null>(null);
+
+  onFileChange(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.fileError.set(null);
+    if (!file) { this.selectedFile.set(null); return; }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      this.fileError.set('resourceRequest.form.fileTypeError');
+      this.selectedFile.set(null);
+      return;
+    }
+    this.selectedFile.set(file);
+  }
+
+  async submit(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorKey.set('errors.ERR013');
+      return;
+    }
+    if (!this.selectedFile()) {
+      this.fileError.set('resourceRequest.form.fileRequired');
+      return;
+    }
+
+    this.saving.set(true);
+    this.errorKey.set(null);
+
+    const uploadRes = await this.media.uploadAsset(this.selectedFile()!);
+    if (!uploadRes.ok) {
+      this.saving.set(false);
+      this.errorKey.set('errors.ERR029');
+      return;
+    }
+
+    const v = this.form.getRawValue();
+    const submitRes = await this.api.submitRequest({
+      countryId: this.countryId,
+      content: {
+        type: ContentType.Resource,
+        titleAr: v.titleAr,
+        titleEn: v.titleEn,
+        descriptionAr: v.descriptionAr,
+        descriptionEn: v.descriptionEn,
+        resourceType: RESOURCE_TYPE_VALUE[v.resourceType as keyof typeof RESOURCE_TYPE_VALUE] ?? 0,
+        assetFileId: uploadRes.value.id,
+      },
+    });
+
+    this.saving.set(false);
+    if (submitRes.ok) {
+      this.toast.success('confirmations.CON024');
+      this.ref.close(submitRes.value);
+    } else {
+      this.errorKey.set('errors.ERR029');
+    }
+  }
+
+  cancel(): void {
+    this.ref.close(null);
+  }
+}

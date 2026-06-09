@@ -18,7 +18,13 @@ export class CommunityApiService {
   private readonly http = inject(HttpClient);
 
   async listTopics(): Promise<Result<PublicTopic[]>> {
-    return this.run(() => firstValueFrom(this.http.get<PublicTopic[]>('/api/topics')));
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<PublicTopic[] | { data: PublicTopic[] }>('/api/topics'),
+      );
+      if (Array.isArray(res)) return res;
+      return (res as { data: PublicTopic[] }).data ?? [];
+    });
   }
 
   async getTopicBySlug(slug: string): Promise<Result<PublicTopic>> {

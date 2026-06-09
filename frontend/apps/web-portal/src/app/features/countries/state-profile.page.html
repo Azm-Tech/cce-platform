@@ -1,0 +1,101 @@
+<div class="cce-state-profile">
+
+  @if (loading()) {
+    <div class="cce-state-profile__center"><mat-spinner diameter="48" /></div>
+  } @else if (error()) {
+    <div class="cce-state-profile__center">
+      <mat-icon class="cce-state-profile__icon--error">error_outline</mat-icon>
+      <p>{{ 'errors.ERR001' | transloco }}</p>
+      <button type="button" mat-flat-button color="primary" (click)="retry()">
+        {{ 'errors.retry' | transloco }}
+      </button>
+    </div>
+  } @else if (profile()) {
+    <div class="cce-state-profile__header">
+      <h1 class="cce-state-profile__title">{{ 'stateProfile.title' | transloco }}</h1>
+      <button type="button" mat-flat-button color="primary" (click)="openEdit()">
+        <mat-icon>edit</mat-icon>
+        {{ 'stateProfile.editButton' | transloco }}
+      </button>
+    </div>
+
+    <!-- KAPSARC read-only section -->
+    <section class="cce-state-profile__section">
+      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.kapsarcSection' | transloco }}</h2>
+      <div class="cce-state-profile__grid">
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.cceClassification' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.cceClassification ?? '—' }}</span>
+        </div>
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.ccePerformance' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.ccePerformanceScore ?? '—' }}</span>
+        </div>
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.cceTotalIndex' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.cceTotalIndex ?? '—' }}</span>
+        </div>
+        @if (profile()!.cceSnapshotTakenOn) {
+          <div class="cce-state-profile__field">
+            <span class="cce-state-profile__label">{{ 'stateProfile.snapshotDate' | transloco }}</span>
+            <span class="cce-state-profile__value">{{ profile()!.cceSnapshotTakenOn | date:'mediumDate' }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Editable stats section -->
+    <section class="cce-state-profile__section">
+      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.statsSection' | transloco }}</h2>
+      <div class="cce-state-profile__grid">
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.population' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.population ?? '—' }}</span>
+        </div>
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.areaSqKm' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.areaSqKm ?? '—' }}</span>
+        </div>
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.gdpPerCapita' | transloco }}</span>
+          <span class="cce-state-profile__value">{{ profile()!.gdpPerCapita ?? '—' }}</span>
+        </div>
+        <div class="cce-state-profile__field">
+          <span class="cce-state-profile__label">{{ 'stateProfile.ndcDocument' | transloco }}</span>
+          <span class="cce-state-profile__value">
+            @if (profile()!.ndcAssetId) {
+              <mat-icon class="cce-state-profile__icon--ok">check_circle</mat-icon>
+              {{ 'stateProfile.ndcUploaded' | transloco }}
+            } @else {
+              {{ 'stateProfile.ndcMissing' | transloco }}
+            }
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Descriptions section -->
+    <section class="cce-state-profile__section">
+      <h2 class="cce-state-profile__section-title">{{ 'stateProfile.descriptionsSection' | transloco }}</h2>
+      @if (profile()!.descriptionAr || profile()!.descriptionEn) {
+        <div class="cce-state-profile__field cce-state-profile__field--block">
+          <span class="cce-state-profile__label">{{ 'stateProfile.description' | transloco }}</span>
+          <p>{{ locale() === 'ar' ? profile()!.descriptionAr : profile()!.descriptionEn }}</p>
+        </div>
+      }
+      @if (profile()!.keyInitiativesAr || profile()!.keyInitiativesEn) {
+        <div class="cce-state-profile__field cce-state-profile__field--block">
+          <span class="cce-state-profile__label">{{ 'stateProfile.keyInitiatives' | transloco }}</span>
+          <p>{{ locale() === 'ar' ? profile()!.keyInitiativesAr : profile()!.keyInitiativesEn }}</p>
+        </div>
+      }
+      @if (profile()!.contactInfoAr || profile()!.contactInfoEn) {
+        <div class="cce-state-profile__field cce-state-profile__field--block">
+          <span class="cce-state-profile__label">{{ 'stateProfile.contactInfo' | transloco }}</span>
+          <p>{{ locale() === 'ar' ? profile()!.contactInfoAr : profile()!.contactInfoEn }}</p>
+        </div>
+      }
+    </section>
+  }
+
+</div>
