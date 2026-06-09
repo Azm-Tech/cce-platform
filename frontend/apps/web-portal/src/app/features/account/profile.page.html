@@ -1,19 +1,17 @@
 <div class="cce-profile">
 
   @if (loading()) {
-    <div class="cce-profile__loader-wrap">
-      <mat-progress-bar mode="indeterminate" />
-    </div>
+    <div class="cce-profile__progress"><mat-progress-bar mode="indeterminate" /></div>
   }
 
   @if (notProvisioned()) {
-    <div class="cce-profile__state-banner cce-profile__state-banner--warn" role="alert">
+    <div class="cce-profile__alert cce-profile__alert--warn" role="alert">
       <mat-icon>info</mat-icon>
       <span>{{ 'account.profile.notProvisioned' | transloco }}</span>
       <button mat-button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   } @else if (errorKind()) {
-    <div class="cce-profile__state-banner cce-profile__state-banner--error" role="alert">
+    <div class="cce-profile__alert cce-profile__alert--error" role="alert">
       <mat-icon>error_outline</mat-icon>
       <span>{{ ('errors.' + errorKind()) | transloco }}</span>
       <button mat-button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
@@ -24,286 +22,303 @@
 
     @if (mode() === 'view') {
 
-      <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
-      <div class="cce-profile__hero">
-        <div class="cce-profile__hero-glow" aria-hidden="true"></div>
+      <!-- ══ VIEW LAYOUT ══════════════════════════════════════════════════════ -->
+      <div class="cce-profile__layout">
 
-        <div class="cce-profile__hero-body">
-          <!-- Avatar -->
-          <div class="cce-profile__hero-avatar">
-            @if (p.avatarUrl) {
-              <img [src]="p.avatarUrl" alt="" class="cce-profile__hero-avatar-img" />
-            } @else {
-              <span class="cce-profile__hero-initials">{{ profileInitials() }}</span>
-            }
-          </div>
+        <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
+        <aside class="cce-profile__sidebar">
+          <div class="cce-profile__sidebar-card">
 
-          <!-- Identity -->
-          <div class="cce-profile__hero-identity">
-            <h1 class="cce-profile__hero-name">{{ profileFullName() }}</h1>
-            @if (p.jobTitle || p.organizationName) {
-              <p class="cce-profile__hero-role">
-                {{ p.jobTitle }}
-                @if (p.jobTitle && p.organizationName) { <span class="cce-profile__hero-sep" aria-hidden="true">·</span> }
-                {{ p.organizationName }}
-              </p>
-            }
-            @if (p.email) {
-              <p class="cce-profile__hero-email">{{ p.email }}</p>
-            }
-          </div>
+            <div class="cce-profile__sidebar-band" aria-hidden="true"></div>
 
-          <!-- Edit button -->
-          <button
-            type="button"
-            mat-stroked-button
-            class="cce-profile__hero-edit"
-            (click)="enterEditMode()"
-          >
-            <mat-icon>edit</mat-icon>
-            {{ 'account.profile.editButton' | transloco }}
-          </button>
-        </div>
-      </div>
-
-      <!-- ══ PERSONAL INFO ═════════════════════════════════════════════════ -->
-      <div class="cce-profile__card">
-        <h2 class="cce-profile__card-title">
-          <span class="cce-profile__card-title-icon" aria-hidden="true">
-            <mat-icon>person</mat-icon>
-          </span>
-          {{ 'account.profile.section.personal' | transloco }}
-        </h2>
-
-        <div class="cce-profile__info-grid">
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.firstName' | transloco }}</span>
-            <span class="cce-profile__info-value">{{ p.firstName || '—' }}</span>
-          </div>
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.lastName' | transloco }}</span>
-            <span class="cce-profile__info-value">{{ p.lastName || '—' }}</span>
-          </div>
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.phoneNumber' | transloco }}</span>
-            <span class="cce-profile__info-value">{{ p.phoneNumber || '—' }}</span>
-          </div>
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.nationality' | transloco }}</span>
-            <span class="cce-profile__info-value">{{ countryCodeLabel() }}</span>
-          </div>
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.organizationName' | transloco }}</span>
-            <span class="cce-profile__info-value">{{ p.organizationName || '—' }}</span>
-          </div>
-          <div class="cce-profile__info-item">
-            <span class="cce-profile__info-label">{{ 'account.profile.field.localePreference' | transloco }}</span>
-            <span class="cce-profile__info-value">
-              @if (p.localePreference === 'ar') { العربية } @else { English }
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ EXPERTISE ═════════════════════════════════════════════════════ -->
-      <div class="cce-profile__card">
-        <h2 class="cce-profile__card-title">
-          <span class="cce-profile__card-title-icon" aria-hidden="true">
-            <mat-icon>workspace_premium</mat-icon>
-          </span>
-          {{ 'account.profile.section.expertise' | transloco }}
-        </h2>
-
-        <div class="cce-profile__expertise-grid">
-
-          <!-- Knowledge level -->
-          <div class="cce-profile__expertise-block">
-            <span class="cce-profile__expertise-block-label">{{ 'account.profile.field.knowledgeLevel' | transloco }}</span>
-            @if (p.knowledgeLevel) {
-              <div class="cce-profile__kl-badge cce-profile__kl-badge--{{ p.knowledgeLevel.toLowerCase() }}">
-                <mat-icon aria-hidden="true">
-                  @switch (p.knowledgeLevel) {
-                    @case ('Beginner') { school }
-                    @case ('Intermediate') { auto_stories }
-                    @case ('Advanced') { workspace_premium }
-                  }
-                </mat-icon>
-                {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
-              </div>
-            } @else {
-              <span class="cce-profile__muted">—</span>
-            }
-          </div>
-
-          <!-- Interests -->
-          <div class="cce-profile__expertise-block">
-            <span class="cce-profile__expertise-block-label">{{ 'account.profile.field.interests' | transloco }}</span>
-            @if (p.interests && p.interests.length) {
-              <div class="cce-profile__interests">
-                @for (interest of p.interests; track interest) {
-                  <span class="cce-profile__interest-chip">{{ interest }}</span>
-                }
-              </div>
-            } @else {
-              <span class="cce-profile__muted">—</span>
-            }
-          </div>
-
-          <!-- Expert status -->
-          @if (expertStatusLoaded()) {
-            <div class="cce-profile__expertise-block">
-              <span class="cce-profile__expertise-block-label">{{ 'account.profile.field.expertStatus' | transloco }}</span>
-              @if (expertBadgeStatus(); as badge) {
-                <div class="cce-profile__expert-status cce-profile__expert-status--{{ badge.toLowerCase() }}">
-                  <mat-icon aria-hidden="true">
-                    @switch (badge) {
-                      @case ('Approved') { verified }
-                      @case ('Pending') { schedule }
-                      @case ('Rejected') { cancel }
-                    }
-                  </mat-icon>
-                  {{ ('account.profile.expertStatus.' + badge) | transloco }}
-                </div>
+            <div class="cce-profile__sidebar-avatar-wrap">
+              @if (p.avatarUrl) {
+                <img [src]="p.avatarUrl" class="cce-profile__sidebar-avatar-img" alt="" />
               } @else {
-                <span class="cce-profile__expert-status cce-profile__expert-status--none">
-                  {{ 'account.profile.expertStatus.None' | transloco }}
+                <span class="cce-profile__sidebar-initials">{{ profileInitials() }}</span>
+              }
+              @if (expertBadgeStatus() === 'Approved') {
+                <span class="cce-profile__sidebar-verified" aria-label="Verified Expert">
+                  <mat-icon aria-hidden="true">verified</mat-icon>
                 </span>
               }
             </div>
+
+            <h1 class="cce-profile__sidebar-name">{{ profileFullName() }}</h1>
+            @if (p.jobTitle) {
+              <p class="cce-profile__sidebar-role">{{ p.jobTitle }}</p>
+            }
+            @if (p.organizationName) {
+              <p class="cce-profile__sidebar-org">{{ p.organizationName }}</p>
+            }
+            @if (p.email) {
+              <p class="cce-profile__sidebar-email">{{ p.email }}</p>
+            }
+
+            <div class="cce-profile__sidebar-rule"></div>
+
+            <div class="cce-profile__sidebar-meta">
+              @if (countryCodeLabel() !== '—') {
+                <div class="cce-profile__meta-row">
+                  <mat-icon aria-hidden="true">flag</mat-icon>
+                  <span>{{ countryCodeLabel() }}</span>
+                </div>
+              }
+              <div class="cce-profile__meta-row">
+                <mat-icon aria-hidden="true">language</mat-icon>
+                <span>{{ p.localePreference === 'ar' ? 'العربية' : 'English' }}</span>
+              </div>
+              @if (expertStatusLoaded()) {
+                <div class="cce-profile__meta-row">
+                  <mat-icon aria-hidden="true">workspace_premium</mat-icon>
+                  @if (expertBadgeStatus(); as badge) {
+                    <span class="cce-profile__meta-badge cce-profile__meta-badge--{{ badge.toLowerCase() }}">
+                      {{ ('account.profile.expertStatus.' + badge) | transloco }}
+                    </span>
+                  } @else {
+                    <span class="cce-profile__meta-dim">{{ 'account.profile.expertStatus.None' | transloco }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="cce-profile__sidebar-rule"></div>
+
+            <button
+              type="button"
+              mat-flat-button
+              color="primary"
+              class="cce-profile__sidebar-edit-btn"
+              (click)="enterEditMode()"
+            >
+              <mat-icon>edit</mat-icon>
+              {{ 'account.profile.editButton' | transloco }}
+            </button>
+
+          </div>
+        </aside>
+
+        <!-- ── Main content ─────────────────────────────────────────────────── -->
+        <div class="cce-profile__main">
+
+          <!-- Personal information -->
+          <section class="cce-profile__section-card">
+            <h2 class="cce-profile__section-title">
+              <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>person</mat-icon></span>
+              {{ 'account.profile.section.personal' | transloco }}
+            </h2>
+            <dl class="cce-profile__field-list">
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.firstName' | transloco }}</dt>
+                <dd>{{ p.firstName || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.lastName' | transloco }}</dt>
+                <dd>{{ p.lastName || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.jobTitle' | transloco }}</dt>
+                <dd>{{ p.jobTitle || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.organizationName' | transloco }}</dt>
+                <dd>{{ p.organizationName || '—' }}</dd>
+              </div>
+              @if (p.phoneNumber) {
+                <div class="cce-profile__field-row">
+                  <dt>{{ 'account.profile.field.phoneNumber' | transloco }}</dt>
+                  <dd>{{ p.phoneNumber }}</dd>
+                </div>
+              }
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.nationality' | transloco }}</dt>
+                <dd>{{ countryCodeLabel() }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.localePreference' | transloco }}</dt>
+                <dd>{{ p.localePreference === 'ar' ? 'العربية' : 'English' }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <!-- Expertise -->
+          @if (p.knowledgeLevel || (p.interests && p.interests.length)) {
+            <section class="cce-profile__section-card">
+              <h2 class="cce-profile__section-title">
+                <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>workspace_premium</mat-icon></span>
+                {{ 'account.profile.section.expertise' | transloco }}
+              </h2>
+
+              @if (p.knowledgeLevel) {
+                <div class="cce-profile__expertise-row">
+                  <span class="cce-profile__expertise-label">{{ 'account.profile.field.knowledgeLevel' | transloco }}</span>
+                  <div class="cce-profile__kl-badge cce-profile__kl-badge--{{ p.knowledgeLevel.toLowerCase() }}">
+                    <mat-icon aria-hidden="true">
+                      @switch (p.knowledgeLevel) {
+                        @case ('Beginner')     { school }
+                        @case ('Intermediate') { auto_stories }
+                        @case ('Advanced')     { workspace_premium }
+                      }
+                    </mat-icon>
+                    {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
+                  </div>
+                </div>
+              }
+
+              @if (p.interests && p.interests.length) {
+                <div class="cce-profile__expertise-row">
+                  <span class="cce-profile__expertise-label">{{ 'account.profile.field.interests' | transloco }}</span>
+                  <div class="cce-profile__interests">
+                    @for (interest of p.interests; track interest) {
+                      <span class="cce-profile__interest-chip">{{ interest }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </section>
           }
 
-        </div>
-      </div>
+          <!-- Expert CTA -->
+          @if (showExpertCta()) {
+            <div class="cce-profile__cta-card cce-profile__cta-card--expert">
+              <div class="cce-profile__cta-icon-wrap" aria-hidden="true"><mat-icon>verified</mat-icon></div>
+              <div class="cce-profile__cta-text">
+                <strong>{{ 'account.profile.expertCta.title' | transloco }}</strong>
+                <span>{{ 'account.profile.expertCta.body' | transloco }}</span>
+              </div>
+              <a mat-flat-button color="primary" routerLink="/me/expert-request">
+                @if (expertBadgeStatus() === 'Rejected') {
+                  {{ 'account.profile.expertCta.reapplyButton' | transloco }}
+                } @else {
+                  {{ 'account.profile.expertCta.button' | transloco }}
+                }
+              </a>
+            </div>
+          }
 
-      <!-- ══ EXPERT CTA ═════════════════════════════════════════════════════ -->
-      @if (showExpertCta()) {
-        <div class="cce-profile__cta-card cce-profile__cta-card--expert">
-          <div class="cce-profile__cta-icon" aria-hidden="true">
-            <mat-icon>verified</mat-icon>
+          <!-- Preferences CTA -->
+          <div class="cce-profile__cta-card cce-profile__cta-card--prefs">
+            <div class="cce-profile__cta-icon-wrap" aria-hidden="true"><mat-icon>tune</mat-icon></div>
+            <div class="cce-profile__cta-text">
+              <strong>{{ 'preferences.ctaTitle' | transloco }}</strong>
+              <span>{{ 'preferences.ctaBody' | transloco }}</span>
+            </div>
+            <button type="button" mat-stroked-button (click)="openPreferences()">
+              {{ 'preferences.save' | transloco }}
+            </button>
           </div>
-          <div class="cce-profile__cta-body">
-            <strong>{{ 'account.profile.expertCta.title' | transloco }}</strong>
-            <span>{{ 'account.profile.expertCta.body' | transloco }}</span>
-          </div>
-          <a mat-flat-button color="primary" routerLink="/me/expert-request" class="cce-profile__cta-action">
-            @if (expertBadgeStatus() === 'Rejected') {
-              {{ 'account.profile.expertCta.reapplyButton' | transloco }}
-            } @else {
-              {{ 'account.profile.expertCta.button' | transloco }}
-            }
-          </a>
-        </div>
-      }
 
-      <!-- ══ PREFERENCES CTA ══════════════════════════════════════════════ -->
-      <div class="cce-profile__cta-card cce-profile__cta-card--prefs">
-        <div class="cce-profile__cta-icon" aria-hidden="true">
-          <mat-icon>tune</mat-icon>
         </div>
-        <div class="cce-profile__cta-body">
-          <strong>{{ 'preferences.ctaTitle' | transloco }}</strong>
-          <span>{{ 'preferences.ctaBody' | transloco }}</span>
-        </div>
-        <button type="button" mat-stroked-button class="cce-profile__cta-action" (click)="openPreferences()">
-          {{ 'preferences.save' | transloco }}
-        </button>
       </div>
 
     } @else {
 
       <!-- ══ EDIT FORM ══════════════════════════════════════════════════════ -->
-      <div class="cce-profile__edit-hero">
-        <div class="cce-profile__edit-avatar-wrap">
-          @if (form.get('avatarUrl')?.value) {
-            <img class="cce-profile__edit-avatar-img" [src]="form.get('avatarUrl')?.value" alt="" />
-          } @else {
-            <span class="cce-profile__edit-avatar-initials">{{ profileInitials() }}</span>
-          }
-          <label
-            class="cce-profile__edit-avatar-upload"
-            [class.cce-profile__edit-avatar-upload--busy]="uploading()"
-          >
-            <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
-            @if (uploading()) {
-              <mat-progress-bar mode="indeterminate" class="cce-profile__edit-avatar-progress" />
+      <div class="cce-profile__edit-wrap">
+
+        <div class="cce-profile__edit-band">
+          <div class="cce-profile__edit-avatar-zone">
+            @if (form.get('avatarUrl')?.value) {
+              <img class="cce-profile__edit-avatar-img" [src]="form.get('avatarUrl')?.value" alt="" />
             } @else {
-              <mat-icon>photo_camera</mat-icon>
+              <span class="cce-profile__edit-avatar-initials">{{ profileInitials() }}</span>
             }
-          </label>
-        </div>
-        <div class="cce-profile__edit-hero-text">
-          <span class="cce-profile__edit-hero-label">{{ 'account.profile.editTitle' | transloco }}</span>
-          <span class="cce-profile__edit-hero-hint">{{ 'account.profile.editHint' | transloco }}</span>
-        </div>
-      </div>
-
-      <form class="cce-profile__form" [formGroup]="form" (ngSubmit)="save()">
-
-        @if (saveErrorKind()) {
-          <div class="cce-profile__state-banner cce-profile__state-banner--error" role="alert">
-            <mat-icon>error_outline</mat-icon>
-            <span>{{ ('errors.' + saveErrorKind()) | transloco }}</span>
+            <label
+              class="cce-profile__edit-avatar-overlay"
+              [class.cce-profile__edit-avatar-overlay--busy]="uploading()"
+            >
+              <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
+              @if (uploading()) {
+                <mat-progress-bar mode="indeterminate" class="cce-profile__edit-avatar-bar" />
+              } @else {
+                <mat-icon>photo_camera</mat-icon>
+              }
+            </label>
           </div>
-        }
+          <div class="cce-profile__edit-band-info">
+            <span class="cce-profile__edit-band-title">{{ 'account.profile.editTitle' | transloco }}</span>
+            <span class="cce-profile__edit-band-hint">{{ 'account.profile.editHint' | transloco }}</span>
+          </div>
+        </div>
 
-        <!-- Personal section -->
-        <div class="cce-profile__form-section">
-          <h2 class="cce-profile__form-section-title">
-            <mat-icon>person</mat-icon>
-            {{ 'account.profile.section.personal' | transloco }}
-          </h2>
-          <div class="cce-profile__form-grid">
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.firstName' | transloco }}</mat-label>
-              <input matInput formControlName="firstName" autocomplete="given-name" />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.lastName' | transloco }}</mat-label>
-              <input matInput formControlName="lastName" autocomplete="family-name" />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.jobTitle' | transloco }}</mat-label>
-              <input matInput formControlName="jobTitle" autocomplete="organization-title" />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.organizationName' | transloco }}</mat-label>
-              <input matInput formControlName="organizationName" autocomplete="organization" />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.nationality' | transloco }}</mat-label>
-              <mat-select formControlName="countryCodeId">
-                <mat-option [value]="null">—</mat-option>
-                @for (cc of countryCodes(); track cc.id) {
-                  <mat-option [value]="cc.id">
-                    {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
-                  </mat-option>
+        <form class="cce-profile__form" [formGroup]="form" (ngSubmit)="save()">
+
+          @if (saveErrorKind()) {
+            <div class="cce-profile__alert cce-profile__alert--error" role="alert">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ ('errors.' + saveErrorKind()) | transloco }}</span>
+            </div>
+          }
+
+          <div class="cce-profile__form-section">
+            <p class="cce-profile__form-section-label">
+              <mat-icon aria-hidden="true">person</mat-icon>
+              {{ 'account.profile.section.personal' | transloco }}
+            </p>
+            <div class="cce-profile__form-grid">
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.firstName' | transloco }}</mat-label>
+                <input matInput formControlName="firstName" autocomplete="given-name" />
+                @if (form.controls.firstName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
                 }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
-              <mat-select formControlName="localePreference">
-                <mat-option value="en">English</mat-option>
-                <mat-option value="ar">العربية</mat-option>
-              </mat-select>
-            </mat-form-field>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.lastName' | transloco }}</mat-label>
+                <input matInput formControlName="lastName" autocomplete="family-name" />
+                @if (form.controls.lastName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.jobTitle' | transloco }}</mat-label>
+                <input matInput formControlName="jobTitle" autocomplete="organization-title" />
+                @if (form.controls.jobTitle.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.organizationName' | transloco }}</mat-label>
+                <input matInput formControlName="organizationName" autocomplete="organization" />
+                @if (form.controls.organizationName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.nationality' | transloco }}</mat-label>
+                <mat-select formControlName="countryCodeId">
+                  <mat-option [value]="null">—</mat-option>
+                  @for (cc of countryCodes(); track cc.id) {
+                    <mat-option [value]="cc.id">
+                      {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
+                <mat-select formControlName="localePreference">
+                  <mat-option value="en">English</mat-option>
+                  <mat-option value="ar">العربية</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
           </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="cce-profile__form-actions">
-          <button mat-stroked-button type="button" [disabled]="saving()" (click)="cancelEdit()">
-            {{ 'account.profile.cancelButton' | transloco }}
-          </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
-            @if (saving()) {
-              <mat-progress-spinner diameter="18" mode="indeterminate" />
-            }
-            {{ 'account.profile.saveButton' | transloco }}
-          </button>
-        </div>
+          <div class="cce-profile__form-actions">
+            <button mat-button type="button" [disabled]="saving()" (click)="cancelEdit()">
+              {{ 'account.profile.cancelButton' | transloco }}
+            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+              @if (saving()) {
+                <mat-progress-spinner diameter="18" mode="indeterminate" />
+              }
+              {{ 'account.profile.saveButton' | transloco }}
+            </button>
+          </div>
 
-      </form>
+        </form>
+      </div>
 
     }
   }
