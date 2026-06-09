@@ -102,14 +102,16 @@
           {{ 'stateProfile.description' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.descriptionAr' | transloco }}</mat-label>
-            <textarea matInput formControlName="descriptionAr" dir="rtl" rows="3"></textarea>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.descriptionEn' | transloco }}</mat-label>
-            <textarea matInput formControlName="descriptionEn" dir="ltr" rows="3"></textarea>
-          </mat-form-field>
+          <cce-rich-text-editor
+            formControlName="descriptionAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.descriptionAr' | transloco"
+          />
+          <cce-rich-text-editor
+            formControlName="descriptionEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.descriptionEn' | transloco"
+          />
         </div>
       </div>
 
@@ -120,14 +122,16 @@
           {{ 'stateProfile.keyInitiatives' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.keyInitiativesAr' | transloco }}</mat-label>
-            <textarea matInput formControlName="keyInitiativesAr" dir="rtl" rows="3"></textarea>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.keyInitiativesEn' | transloco }}</mat-label>
-            <textarea matInput formControlName="keyInitiativesEn" dir="ltr" rows="3"></textarea>
-          </mat-form-field>
+          <cce-rich-text-editor
+            formControlName="keyInitiativesAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.keyInitiativesAr' | transloco"
+          />
+          <cce-rich-text-editor
+            formControlName="keyInitiativesEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.keyInitiativesEn' | transloco"
+          />
         </div>
       </div>
 
@@ -138,14 +142,16 @@
           {{ 'stateProfile.contactInfo' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.contactInfoAr' | transloco }}</mat-label>
-            <textarea matInput formControlName="contactInfoAr" dir="rtl" rows="2"></textarea>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>{{ 'stateProfile.edit.contactInfoEn' | transloco }}</mat-label>
-            <textarea matInput formControlName="contactInfoEn" dir="ltr" rows="2"></textarea>
-          </mat-form-field>
+          <cce-rich-text-editor
+            formControlName="contactInfoAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.contactInfoAr' | transloco"
+          />
+          <cce-rich-text-editor
+            formControlName="contactInfoEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.contactInfoEn' | transloco"
+          />
         </div>
       </div>
 

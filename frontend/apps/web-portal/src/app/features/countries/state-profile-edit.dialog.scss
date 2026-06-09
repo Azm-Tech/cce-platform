@@ -167,7 +167,7 @@ $muted:      rgba(28, 39, 36, 0.50);
   &__bilingual {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.25rem 1rem;
+    gap: 1rem;
 
     mat-form-field { width: 100%; }
 
