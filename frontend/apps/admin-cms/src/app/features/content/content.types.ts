@@ -34,6 +34,61 @@ export type VirusScanStatus = 'Pending' | 'Clean' | 'Infected' | 'Failed';
 
 export type CountryResourceRequestStatus = 'Pending' | 'Approved' | 'Rejected';
 
+export enum AdminContentType {
+  Resource = 'resource',
+  News = 'news',
+  Event = 'event',
+}
+
+export const ADMIN_CONTENT_TYPE_API_VALUE: Record<AdminContentType, number> = {
+  [AdminContentType.Resource]: 0,
+  [AdminContentType.News]: 1,
+  [AdminContentType.Event]: 2,
+};
+
+export function adminContentTypeFromApiValue(n: number): AdminContentType {
+  switch (n) {
+    case 1: return AdminContentType.News;
+    case 2: return AdminContentType.Event;
+    default: return AdminContentType.Resource;
+  }
+}
+
+export const AdminContentRequestStatus = { Pending: 0, Approved: 1, Rejected: 2 } as const;
+export type AdminContentRequestStatusValue = typeof AdminContentRequestStatus[keyof typeof AdminContentRequestStatus];
+
+export function adminContentRequestStatusKey(s: AdminContentRequestStatusValue): 'pending' | 'approved' | 'rejected' {
+  if (s === AdminContentRequestStatus.Approved) return 'approved';
+  if (s === AdminContentRequestStatus.Rejected) return 'rejected';
+  return 'pending';
+}
+
+/** Unified DTO — CountryContentRequestDto from the internal API */
+export interface AdminCountryContentRequest {
+  id: string;
+  countryId: string;
+  requestedById: string;
+  type: AdminContentType;
+  status: AdminContentRequestStatusValue;
+  proposedTitleAr: string | null;
+  proposedTitleEn: string | null;
+  proposedDescriptionAr: string | null;
+  proposedDescriptionEn: string | null;
+  proposedResourceType: number | null;
+  proposedAssetFileId: string | null;
+  proposedTopicId: string | null;
+  proposedStartsOn: string | null;
+  proposedEndsOn: string | null;
+  proposedLocationAr: string | null;
+  proposedLocationEn: string | null;
+  proposedOnlineMeetingUrl: string | null;
+  submittedOn: string;
+  adminNotesAr: string | null;
+  adminNotesEn: string | null;
+  processedById: string | null;
+  processedOn: string | null;
+}
+
 export interface Resource {
   id: string;
   titleAr: string;

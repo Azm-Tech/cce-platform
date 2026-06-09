@@ -3,11 +3,16 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import {
+  ADMIN_CONTENT_TYPE_API_VALUE,
+  AdminContentRequestStatus,
+  AdminContentType,
   RESOURCE_TYPE_VALUE,
+  adminContentTypeFromApiValue,
   normalizeResourceType,
+  type AdminContentRequestStatusValue,
+  type AdminCountryContentRequest,
   type ApproveCountryResourceRequestBody,
   type AssetFile,
-  type CountryResourceRequest,
   type CreateResourceBody,
   type PagedResult,
   type RejectCountryResourceRequestBody,
@@ -125,6 +130,17 @@ export class ContentApiService {
     );
   }
 
+  async downloadAsset(id: string): Promise<Result<Blob>> {
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(`/api/admin/assets/${encodeURIComponent(id)}/download`, { responseType: 'blob' }),
+      );
+      return { ok: true, value: blob };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
   /** Resolve a relative or protocol-relative URL into a full absolute URL,
    *  using the current window origin (which routes via the dev proxy in
    *  development and the same-origin admin host in production). */
@@ -136,34 +152,98 @@ export class ContentApiService {
     return new URL(url, window.location.origin).toString();
   }
 
-  // --- Country resource requests (approve/reject only — list endpoint not exposed) ---
+  // --- Country content requests (resources / news / events) ---
+
+  async listCountryRequests(opts: {
+    type?: AdminContentType;
+    status?: number;
+    page?: number;
+    pageSize?: number;
+    countryId?: string;
+  } = {}): Promise<Result<PagedResult<AdminCountryContentRequest>>> {
+    let params = new HttpParams();
+    if (opts.type !== undefined) params = params.set('type', ADMIN_CONTENT_TYPE_API_VALUE[opts.type]);
+    if (opts.status !== undefined) params = params.set('status', opts.status);
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    if (opts.countryId) params = params.set('countryId', opts.countryId);
+    const res = await this.run(() =>
+      firstValueFrom(this.http.get<PagedResult<AdminCountryContentRequest>>(
+        '/api/admin/country-resource-requests', { params },
+      )),
+    );
+    if (!res.ok) return res;
+    return {
+      ok: true,
+      value: {
+        ...res.value,
+        items: (res.value.items ?? []).map((r) => this.normalizeCountryRequestType(r)),
+      },
+    };
+  }
+
+  async getCountryRequest(id: string): Promise<Result<AdminCountryContentRequest>> {
+    const res = await this.run(() =>
+      firstValueFrom(this.http.get<AdminCountryContentRequest>(
+        `/api/admin/country-resource-requests/${id}`,
+      )),
+    );
+    if (!res.ok) return res;
+    return { ok: true, value: this.normalizeCountryRequestType(res.value) };
+  }
 
   async approveCountryResourceRequest(
     id: string,
     body: ApproveCountryResourceRequestBody = {},
-  ): Promise<Result<CountryResourceRequest>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<CountryResourceRequest>(
+  ): Promise<Result<AdminCountryContentRequest>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AdminCountryContentRequest>(
           `/api/admin/country-resource-requests/${id}/approve`,
           body,
         ),
-      ),
-    );
+      );
+      return this.normalizeCountryRequestType(res);
+    });
   }
 
   async rejectCountryResourceRequest(
     id: string,
     body: RejectCountryResourceRequestBody,
-  ): Promise<Result<CountryResourceRequest>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<CountryResourceRequest>(
+  ): Promise<Result<AdminCountryContentRequest>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AdminCountryContentRequest>(
           `/api/admin/country-resource-requests/${id}/reject`,
           body,
         ),
-      ),
-    );
+      );
+      return this.normalizeCountryRequestType(res);
+    });
+  }
+
+  private normalizeCountryRequestType(r: AdminCountryContentRequest): AdminCountryContentRequest {
+    const typeMap: Record<string, AdminContentType> = {
+      Resource: AdminContentType.Resource,
+      News:     AdminContentType.News,
+      Event:    AdminContentType.Event,
+    };
+    const statusMap: Record<string, AdminContentRequestStatusValue> = {
+      Pending:  AdminContentRequestStatus.Pending,
+      Approved: AdminContentRequestStatus.Approved,
+      Rejected: AdminContentRequestStatus.Rejected,
+    };
+    const rawType   = r.type   as unknown as string;
+    const rawStatus = r.status as unknown as string | number;
+    const normalizedStatus: AdminContentRequestStatusValue =
+      typeof rawStatus === 'string'
+        ? (statusMap[rawStatus] ?? AdminContentRequestStatus.Pending)
+        : (rawStatus as AdminContentRequestStatusValue);
+    return {
+      ...r,
+      type:   typeMap[rawType] ?? adminContentTypeFromApiValue(r.type as unknown as number),
+      status: normalizedStatus,
+    };
   }
 
   /** Converts resourceType string → integer before sending to the API. */

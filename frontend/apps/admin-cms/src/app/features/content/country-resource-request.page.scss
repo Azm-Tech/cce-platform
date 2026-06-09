@@ -1,7 +1,209 @@
-:host { display: block; padding: 1.5rem; max-width: 720px; }
-.cce-crr__title { margin: 0 0 1rem; }
-.cce-crr__form {
+:host { display: block; padding: 1.5rem; }
+
+/* ── Page header ──────────────────────────────────────────── */
+.cce-crr__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 { margin: 0; }
+}
+
+/* ── Filter bar — admin-polish picks up the class ─────────── */
+.cce-country-resource-request__filters {
+  mat-form-field { min-width: 200px; }
+}
+
+/* ── Status chips ─────────────────────────────────────────── */
+.cce-crr__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &--pending {
+    background: #fef8ec;
+    color: #7c5a0a;
+    border: 1px solid rgba(200, 160, 69, 0.35);
+    &::before { background: #c8a045; }
+  }
+  &--approved {
+    background: #e8f4f1;
+    color: #00513b;
+    border: 1px solid rgba(0, 108, 79, 0.28);
+    &::before { background: #006c4f; }
+  }
+  &--rejected {
+    background: #fff5f4;
+    color: #8a1f0d;
+    border: 1px solid rgba(183, 28, 28, 0.22);
+    &::before { background: #b71c1c; }
+  }
+}
+
+/* ── Tabs ─────────────────────────────────────────────────── */
+:host {
+  /* Tab header background */
+  .mat-mdc-tab-header {
+    background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%);
+    border: 1px solid rgba(0, 108, 79, 0.12);
+    border-radius: 12px;
+    margin-bottom: 1.25rem;
+    padding: 0.3rem 0.5rem;
+    overflow: hidden;
+  }
+
+  /* Tabs start-aligned — override Material's stretch behaviour */
+  .mat-mdc-tab-header { --mat-tab-header-label-text-weight: 700; }
+  .mat-mdc-tab-labels { justify-content: flex-start !important; }
+  .mat-mdc-tab { flex-grow: 0 !important; min-width: unset !important; padding: 0 1.25rem !important; }
+
+  /* Individual tab labels */
+  .mat-mdc-tab .mdc-tab__text-label {
+    font-weight: 700 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: 0.02em;
+    color: rgba(0, 60, 44, 0.55) !important;
+    transition: color 0.2s;
+  }
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: #006c4f !important;
+  }
+
+  /* Active indicator — thicker green underline */
+  .mdc-tab-indicator__content--underline {
+    border-color: #006c4f !important;
+    border-top-width: 3px !important;
+    border-radius: 2px 2px 0 0;
+  }
+
+  /* Tab ripple */
+  .mat-mdc-tab .mat-ripple-element {
+    background-color: rgba(0, 108, 79, 0.08) !important;
+  }
+
+  /* Space between tab header and table content */
+  .mat-mdc-tab-body-wrapper { padding-top: 1rem; }
+}
+
+/* ── Table + paginator wrapper ────────────────────────────── */
+.cce-crr__table-wrap {
+  border: 1px solid rgba(0, 60, 44, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px -16px rgba(0, 48, 31, 0.2);
+}
+
+.cce-crr__table {
+  width: 100%;
+  /* Override admin-polish border/radius — the wrapper handles it */
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ── Paginator as table footer ────────────────────────────── */
+.cce-crr__paginator {
+  border-top: 1px solid rgba(0, 60, 44, 0.08) !important;
+  background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important;
+  border-radius: 0 0 16px 16px !important;
+
+  /* Override admin-polish transparent background */
+  &.mat-mdc-paginator { background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important; }
+}
+
+/* Left accent stripe per row status */
+.cce-crr__row {
+  position: relative;
+  cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  &--pending::after   { background: #c8a045; opacity: 1; }
+  &--approved::after  { background: #006c4f; opacity: 1; }
+  &--rejected::after  { background: #b71c1c; opacity: 1; }
+}
+
+/* Title cell — primary content */
+.cce-crr__cell-title {
+  font-weight: 600;
+  color: #1c2724;
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Date cell — muted */
+.cce-crr__cell-date {
+  font-size: 0.86rem;
+  color: rgba(28, 39, 36, 0.55);
+  white-space: nowrap;
+}
+
+/* View action button */
+.cce-crr__view-btn {
+  color: #006c4f !important;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.cce-crr__empty {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  padding: 4rem 2rem;
+  margin-top: 0.5rem;
+  background: linear-gradient(160deg, #f4faf7 0%, #ecf6f1 100%);
+  border: 1.5px dashed rgba(0, 108, 79, 0.2);
+  border-radius: 16px;
+  color: rgba(0, 60, 44, 0.5);
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  span { font-weight: 500; font-size: 0.95rem; }
+}
+
+/* ── Error state ─────────────────────────────────────────── */
+.cce-crr__error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
+  color: #8a1f0d;
+  border: 1px solid rgba(183, 28, 28, 0.18);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  font-weight: 500;
 }

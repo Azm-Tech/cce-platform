@@ -1,0 +1,225 @@
+<div class="cce-crd">
+  <a routerLink="../" class="cce-crd__back" mat-button>
+    <mat-icon class="mat-icon-rtl-mirror">arrow_back</mat-icon>
+    {{ 'countryRequest.backToList' | transloco }}
+  </a>
+
+  @if (loading()) {
+    <div class="cce-crd__skeleton">
+      <div class="cce-crd__skeleton-hero"></div>
+      <div class="cce-crd__skeleton-card">
+        <div class="cce-crd__skeleton-title"></div>
+        <div class="cce-crd__skeleton-grid">
+          <div class="cce-crd__skeleton-field">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value cce-crd__skeleton-value--short"></div>
+          </div>
+          <div class="cce-crd__skeleton-field">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value cce-crd__skeleton-value--short"></div>
+          </div>
+          <div class="cce-crd__skeleton-field cce-crd__skeleton-field--full">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value"></div>
+          </div>
+          <div class="cce-crd__skeleton-field cce-crd__skeleton-field--full">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cce-crd__skeleton-card">
+        <div class="cce-crd__skeleton-title"></div>
+        <div class="cce-crd__skeleton-grid">
+          <div class="cce-crd__skeleton-field">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value cce-crd__skeleton-value--short"></div>
+          </div>
+          <div class="cce-crd__skeleton-field">
+            <div class="cce-crd__skeleton-label"></div>
+            <div class="cce-crd__skeleton-value cce-crd__skeleton-value--short"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-crd__error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+    </div>
+  }
+
+  @if (request(); as req) {
+
+    <!-- ── Hero header ── -->
+    <div class="cce-crd__hero cce-crd__hero--{{ statusKey(req.status) }}">
+      <div class="cce-crd__hero-content">
+        <div class="cce-crd__hero-meta">
+          @if (req.type === AdminContentType.Resource) {
+            <span class="cce-crd__type-badge">
+              <mat-icon style="font-size:13px;width:13px;height:13px;line-height:13px">description</mat-icon>
+              {{ 'countryRequest.type.resource' | transloco }}
+            </span>
+          }
+          @if (req.type === AdminContentType.News) {
+            <span class="cce-crd__type-badge">
+              <mat-icon style="font-size:13px;width:13px;height:13px;line-height:13px">newspaper</mat-icon>
+              {{ 'countryRequest.type.news' | transloco }}
+            </span>
+          }
+          @if (req.type === AdminContentType.Event) {
+            <span class="cce-crd__type-badge">
+              <mat-icon style="font-size:13px;width:13px;height:13px;line-height:13px">event</mat-icon>
+              {{ 'countryRequest.type.event' | transloco }}
+            </span>
+          }
+          <span class="cce-crd__status-badge cce-crd__status-badge--{{ statusKey(req.status) }}">
+            {{ ('countryRequest.status.' + statusKey(req.status)) | transloco }}
+          </span>
+          <span class="cce-crd__hero-date">{{ req.submittedOn | date:'mediumDate' }}</span>
+        </div>
+
+        <h1>{{ req.proposedTitleEn ?? req.proposedTitleAr ?? ('countryRequest.untitled' | transloco) }}</h1>
+        @if (req.proposedTitleAr && req.proposedTitleEn) {
+          <p style="margin:0;color:rgba(255,255,255,0.6);font-size:0.9rem">{{ req.proposedTitleAr }}</p>
+        }
+      </div>
+
+      @if (req.status === AdminContentRequestStatus.Pending) {
+        <div class="cce-crd__actions">
+          <button mat-flat-button color="primary" (click)="approve()">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'countryRequest.approve.action' | transloco }}
+          </button>
+          <button mat-stroked-button color="warn" (click)="reject()">
+            <mat-icon>cancel</mat-icon>
+            {{ 'countryRequest.reject.action' | transloco }}
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- ── Body sections ── -->
+    <div class="cce-crd__body">
+
+      <!-- Content section -->
+      <div class="cce-crd__section">
+        <div class="cce-crd__section-title">{{ 'countryRequest.section.content' | transloco }}</div>
+        <div class="cce-crd__grid">
+          <div class="cce-crd__field">
+            <span class="cce-crd__label">{{ 'countryRequest.field.titleAr' | transloco }}</span>
+            <span class="cce-crd__value">{{ req.proposedTitleAr ?? '—' }}</span>
+          </div>
+          <div class="cce-crd__field">
+            <span class="cce-crd__label">{{ 'countryRequest.field.titleEn' | transloco }}</span>
+            <span class="cce-crd__value">{{ req.proposedTitleEn ?? '—' }}</span>
+          </div>
+          <div class="cce-crd__field cce-crd__field--full">
+            <span class="cce-crd__label">{{ 'countryRequest.field.descriptionAr' | transloco }}</span>
+            @if (req.proposedDescriptionAr) {
+              <div class="cce-crd__rich-content ql-editor" [innerHTML]="safe(req.proposedDescriptionAr)"></div>
+            } @else {
+              <span class="cce-crd__value">—</span>
+            }
+          </div>
+          <div class="cce-crd__field cce-crd__field--full">
+            <span class="cce-crd__label">{{ 'countryRequest.field.descriptionEn' | transloco }}</span>
+            @if (req.proposedDescriptionEn) {
+              <div class="cce-crd__rich-content ql-editor" [innerHTML]="safe(req.proposedDescriptionEn)"></div>
+            } @else {
+              <span class="cce-crd__value">—</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Resource-specific section -->
+      @if (req.type === AdminContentType.Resource) {
+        <div class="cce-crd__section">
+          <div class="cce-crd__section-title">{{ 'countryRequest.section.resource' | transloco }}</div>
+          <div class="cce-crd__grid">
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.resourceType' | transloco }}</span>
+              <span class="cce-crd__value">{{ resourceTypeLabel(req.proposedResourceType) }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.assetFileId' | transloco }}</span>
+              @if (req.proposedAssetFileId) {
+                <button
+                  mat-stroked-button
+                  class="cce-crd__download-btn"
+                  [disabled]="downloading()"
+                  (click)="downloadFile(req.proposedAssetFileId)"
+                >
+                  @if (downloading()) {
+                    <mat-spinner diameter="16" />
+                  } @else {
+                    <mat-icon>download</mat-icon>
+                  }
+                  {{ 'countryRequest.field.downloadFile' | transloco }}
+                </button>
+              } @else {
+                <span class="cce-crd__value">—</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Event-specific section -->
+      @if (req.type === AdminContentType.Event) {
+        <div class="cce-crd__section">
+          <div class="cce-crd__section-title">{{ 'countryRequest.section.event' | transloco }}</div>
+          <div class="cce-crd__grid">
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.startsOn' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.proposedStartsOn ? (req.proposedStartsOn | date:'medium') : '—' }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.endsOn' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.proposedEndsOn ? (req.proposedEndsOn | date:'medium') : '—' }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.locationAr' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.proposedLocationAr ?? '—' }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.locationEn' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.proposedLocationEn ?? '—' }}</span>
+            </div>
+            @if (req.proposedOnlineMeetingUrl) {
+              <div class="cce-crd__field cce-crd__field--full">
+                <span class="cce-crd__label">{{ 'countryRequest.field.onlineMeetingUrl' | transloco }}</span>
+                <span class="cce-crd__value">{{ req.proposedOnlineMeetingUrl }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Admin notes — only when processed -->
+      @if (req.status !== AdminContentRequestStatus.Pending) {
+        <div class="cce-crd__section cce-crd__notes-section cce-crd__notes-section--{{ statusKey(req.status) }}">
+          <div class="cce-crd__section-title">{{ 'countryRequest.section.adminNotes' | transloco }}</div>
+          <div class="cce-crd__grid">
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.notesAr' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.adminNotesAr ?? '—' }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.notesEn' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.adminNotesEn ?? '—' }}</span>
+            </div>
+            <div class="cce-crd__field">
+              <span class="cce-crd__label">{{ 'countryRequest.field.processedOn' | transloco }}</span>
+              <span class="cce-crd__value">{{ req.processedOn ? (req.processedOn | date:'medium') : '—' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>
