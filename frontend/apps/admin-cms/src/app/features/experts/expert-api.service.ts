@@ -78,6 +78,17 @@ export class ExpertApiService {
     );
   }
 
+  async downloadCvAsset(id: string): Promise<Result<Blob>> {
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(`/api/admin/assets/${encodeURIComponent(id)}/download`, { responseType: 'blob' }),
+      );
+      return { ok: true, value: blob };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {
     try {
       return { ok: true, value: await fn() };

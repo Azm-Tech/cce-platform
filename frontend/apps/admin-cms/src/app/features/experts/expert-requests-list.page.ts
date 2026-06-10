@@ -12,6 +12,8 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } from './expert.types';
+import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
+import type { Topic } from '../taxonomies/taxonomy.types';
 
 @Component({
   selector: 'cce-expert-requests-list',
@@ -36,6 +38,7 @@ import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } fr
 })
 export class ExpertRequestsListPage implements OnInit {
   private readonly api = inject(ExpertApiService);
+  private readonly taxonomy = inject(TaxonomyApiService);
 
   readonly displayedColumns = ['user', 'submitted', 'tags', 'cv', 'status', 'actions'];
   readonly statuses = EXPERT_STATUSES;
@@ -47,9 +50,27 @@ export class ExpertRequestsListPage implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
+  private readonly topicsMap = signal<Map<string, Topic>>(new Map());
 
   ngOnInit(): void {
+    void this.loadTopics();
     void this.load();
+  }
+
+  private async loadTopics(): Promise<void> {
+    const res = await this.taxonomy.listTopics({ pageSize: 200 });
+    if (res.ok) {
+      this.topicsMap.set(new Map(res.value.items.map(t => [t.id, t])));
+    }
+  }
+
+  tagLabel(id: string): string {
+    const t = this.topicsMap().get(id);
+    return t ? (t.nameAr || t.nameEn || id) : id;
+  }
+
+  resolveTagNames(ids: string[]): string {
+    return ids.map(id => this.tagLabel(id)).join('، ');
   }
 
   async load(): Promise<void> {

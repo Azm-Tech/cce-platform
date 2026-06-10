@@ -46,18 +46,25 @@
         <span class="cce-expert-detail__label">{{ 'experts.review.tags' | transloco }}</span>
         <div class="cce-expert-detail__tag-list">
           @for (tag of r.requestedTags; track tag) {
-            <span class="cce-expert-detail__tag">{{ tag }}</span>
+            <span class="cce-expert-detail__tag">{{ tagLabel(tag) }}</span>
           }
         </div>
       </div>
     }
 
-    @if (r.cvUrl) {
+    @if (r.cvUrl || r.cvAssetFileId) {
       <div class="cce-expert-detail__field">
         <span class="cce-expert-detail__label">{{ 'experts.requests.col.cv' | transloco }}</span>
-        <a class="cce-expert-detail__cv-link" [href]="r.cvUrl" target="_blank" rel="noopener">
-          <mat-icon>download</mat-icon>{{ 'experts.review.downloadCv' | transloco }}
-        </a>
+        <button
+          type="button"
+          mat-stroked-button
+          class="cce-expert-detail__cv-btn"
+          (click)="downloadCv()"
+          [disabled]="downloading()"
+        >
+          <mat-icon>download</mat-icon>
+          {{ 'experts.review.downloadCv' | transloco }}
+        </button>
       </div>
     }
   </div>

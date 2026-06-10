@@ -120,17 +120,10 @@
   font-weight: 500;
 }
 
-.cce-expert-detail__cv-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1565c0;
-  text-decoration: none;
+.cce-expert-detail__cv-btn {
+  align-self: flex-start;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { text-decoration: underline; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
 .cce-expert-detail__actions {
