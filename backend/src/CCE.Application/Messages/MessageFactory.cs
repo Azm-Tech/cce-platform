@@ -91,6 +91,10 @@ public sealed class MessageFactory
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
     public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
     public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");
+    public Response<VoidData> NewsFollowed()  => Ok("NEWS_FOLLOWED");
+    public Response<VoidData> NewsUnfollowed() => Ok("NEWS_UNFOLLOWED");
+    public Response<T> NewsFollowNotFound<T>() => NotFound<T>("NEWS_FOLLOW_NOT_FOUND");
+    public Response<T> NewsFollowFailed<T>()   => BusinessRule<T>("NEWS_FOLLOW_FAILED");
 
     // ─── Convenience shortcuts (Identity / Expert domain) ───
 

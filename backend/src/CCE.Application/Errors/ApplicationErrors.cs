@@ -74,6 +74,10 @@ public static class ApplicationErrors
         public const string CONTENT_PUBLISHED = "CONTENT_PUBLISHED";
         public const string CONTENT_ARCHIVED = "CONTENT_ARCHIVED";
         public const string ASSET_UPLOADED = "ASSET_UPLOADED";
+        public const string NEWS_FOLLOWED = "NEWS_FOLLOWED";
+        public const string NEWS_UNFOLLOWED = "NEWS_UNFOLLOWED";
+        public const string NEWS_FOLLOW_NOT_FOUND = "NEWS_FOLLOW_NOT_FOUND";
+        public const string NEWS_FOLLOW_FAILED = "NEWS_FOLLOW_FAILED";
     }
 
     public static class Community

@@ -355,6 +355,14 @@ NEWS_NOT_FOUND:
   ar: "الخبر غير موجود"
   en: "News not found"
 
+NEWS_FOLLOW_NOT_FOUND:
+  ar: "أنت لا تتابع الأخبار"
+  en: "You are not following news"
+
+NEWS_FOLLOW_FAILED:
+  ar: "حدث خطأ أثناء محاولة متابعة الخبر. يرجى المحاولة مرة أخرى لاحقاً."
+  en: "An error occurred while trying to follow news. Please try again later."
+
 EVENT_NOT_FOUND:
   ar: "الفعالية غير موجودة"
   en: "Event not found"
@@ -424,6 +432,14 @@ CONTENT_ARCHIVED:
 ASSET_UPLOADED:
   ar: "تم رفع الملف بنجاح"
   en: "Asset uploaded successfully"
+
+NEWS_FOLLOWED:
+  ar: "تم متابعة الأخبار بنجاح"
+  en: "News followed successfully"
+
+NEWS_UNFOLLOWED:
+  ar: "تم إلغاء متابعة الأخبار بنجاح"
+  en: "News unfollowed successfully"
 
 RESOURCE_UPDATED:
   ar: "تم تحديث المصدر بنجاح"

@@ -43,6 +43,7 @@ public interface ICceDbContext
     IQueryable<DomainCountry.CountryProfile> CountryProfiles { get; }
     IQueryable<DomainCountry.CountryKapsarcSnapshot> CountryKapsarcSnapshots { get; }
     IQueryable<News> News { get; }
+    IQueryable<NewsFollow> NewsFollows { get; }
     IQueryable<Event> Events { get; }
     IQueryable<Tag> Tags { get; }
     IQueryable<Page> Pages { get; }

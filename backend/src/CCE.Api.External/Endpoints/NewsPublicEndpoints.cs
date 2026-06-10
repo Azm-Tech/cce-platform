@@ -1,4 +1,6 @@
 using CCE.Api.Common.Extensions;
+using CCE.Application.Content.Commands.FollowNews;
+using CCE.Application.Content.Commands.UnfollowNews;
 using CCE.Application.Content.Public.Queries.GetPublicNewsById;
 using CCE.Application.Content.Public.Queries.ListPublicNews;
 using MediatR;
@@ -40,6 +42,24 @@ public static class NewsPublicEndpoints
         })
         .AllowAnonymous()
         .WithName("GetPublicNewsById");
+
+        news.MapPost("/follow", async (
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var response = await mediator.Send(new FollowNewsCommand(), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .WithName("FollowNews");
+
+        news.MapDelete("/follow", async (
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var response = await mediator.Send(new UnfollowNewsCommand(), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .WithName("UnfollowNews");
 
         return app;
     }

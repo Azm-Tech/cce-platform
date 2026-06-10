@@ -20,6 +20,7 @@ public static class SystemCode
     public const string ERR001 = "ERR001"; // User not found (also used as ERR001 in appendix — keep)
     public const string ERR002 = "ERR002"; // Resource download failure (appendix)
     public const string ERR003 = "ERR003"; // Resource share failure (appendix)
+    public const string ERR005 = "ERR005"; // News follow failure (US012)
     public const string ERR013 = "ERR013"; // Required fields empty (appendix)
 
     public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
@@ -96,6 +97,9 @@ public static class SystemCode
     public const string ERR090 = "ERR090"; // Map not found
     public const string ERR091 = "ERR091"; // Node not found
     public const string ERR092 = "ERR092"; // Edge not found
+
+    // ─── Content Errors (extended) ───
+    public const string ERR093 = "ERR093"; // News follow not found
 
     // ─── Media Errors ───
     public const string ERR110 = "ERR110"; // Media file not found

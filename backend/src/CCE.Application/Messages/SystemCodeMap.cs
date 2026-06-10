@@ -45,6 +45,8 @@ public static class SystemCodeMap
         ["RESOURCE_DOWNLOAD_FAILED"] = SystemCode.ERR002,
         ["RESOURCE_UPLOAD_FAILED"] = SystemCode.ERR029,
         ["RESOURCE_DELETE_FAILED"] = SystemCode.ERR030,
+        ["NEWS_FOLLOW_NOT_FOUND"] = SystemCode.ERR093,
+        ["NEWS_FOLLOW_FAILED"] = SystemCode.ERR005,
 
         // ─── Community Errors ───
         ["TOPIC_NOT_FOUND"] = SystemCode.ERR060,
@@ -187,6 +189,8 @@ public static class SystemCodeMap
         ["RESOURCE_UPDATED"] = SystemCode.CON026,
         ["RESOURCE_DELETED"] = SystemCode.CON022,
         ["RESOURCE_PUBLISHED"] = SystemCode.CON028,
+        ["NEWS_FOLLOWED"] = SystemCode.CON033,
+        ["NEWS_UNFOLLOWED"] = SystemCode.CON034,
         ["RESOURCE_DOWNLOAD_SUCCESS"] = SystemCode.CON001,
         ["RESOURCE_SHARE_SUCCESS"] = SystemCode.CON002,
         ["RESOURCE_SHARE_FAILED"] = SystemCode.ERR003,
