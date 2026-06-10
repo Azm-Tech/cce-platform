@@ -108,7 +108,7 @@ public static class SystemCode
     public const string ERR101 = "ERR101"; // Technology not found
 
     // ─── InterestTopic Errors ───
-    public const string ERR110 = "ERR110"; // Interest topic not found
+    public const string ERR114 = "ERR114"; // Interest topic not found
 
     // ─── Platform Settings Errors ───
     public const string ERR053 = "ERR053"; // Homepage settings not found

@@ -105,7 +105,7 @@ public static class SystemCodeMap
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
 
         // ─── InterestTopic Errors ───
-        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR110,
+        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR114,
 
         // ─── Platform Settings Errors ───
         ["HOMEPAGE_SETTINGS_NOT_FOUND"] = SystemCode.ERR053,

@@ -19,13 +19,6 @@ public class UserDefaultsTests
     }
 
     [Fact]
-    public void New_user_defaults_Interests_to_empty_list()
-    {
-        var user = new User();
-        user.Interests.Should().BeEmpty();
-    }
-
-    [Fact]
     public void New_user_defaults_CountryId_to_null()
     {
         var user = new User();

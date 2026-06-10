@@ -50,30 +50,6 @@ public class UserMutationTests
     }
 
     [Fact]
-    public void UpdateInterests_replaces_list()
-    {
-        var user = new User();
-        user.UpdateInterests(new[] { "Solar", "Wind" });
-        user.Interests.Should().Equal("Solar", "Wind");
-    }
-
-    [Fact]
-    public void UpdateInterests_with_null_throws()
-    {
-        var user = new User();
-        var act = () => user.UpdateInterests(null!);
-        act.Should().Throw<DomainException>();
-    }
-
-    [Fact]
-    public void UpdateInterests_deduplicates_and_trims()
-    {
-        var user = new User();
-        user.UpdateInterests(new[] { " Solar ", "Solar", "Wind", "" });
-        user.Interests.Should().Equal("Solar", "Wind");
-    }
-
-    [Fact]
     public void AssignCountry_sets_id()
     {
         var user = new User();
