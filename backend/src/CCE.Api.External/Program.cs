@@ -124,10 +124,12 @@ app.MapFeaturedPostsFeedEndpoints();
 app.MapAboutSettingsPublicEndpoints();
 app.MapPoliciesSettingsPublicEndpoints();
 app.MapMediaPublicEndpoints();
-        app.MapVerificationEndpoints();
-        app.MapStateRepresentativeEndpoints();
-        app.MapCountryCodesPublicEndpoints();
-        app.MapRedisAdminEndpoints();
+app.MapVerificationEndpoints();
+app.MapStateRepresentativeEndpoints();
+app.MapCountryCodesPublicEndpoints();
+app.MapRedisAdminEndpoints();
+app.MapUserInterestEndpoints();
+app.MapInterestTopicPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

@@ -98,6 +98,9 @@ public interface ICceDbContext
     // ─── Media ───
     IQueryable<MediaFile> MediaFiles { get; }
 
+    // ─── Interest Topics ───
+    IQueryable<InterestTopic> InterestTopics { get; }
+
     // Write operations
     void Add<T>(T entity) where T : class;
     void Attach<T>(T entity) where T : class;

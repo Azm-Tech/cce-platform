@@ -673,3 +673,15 @@ LOOKUP_CREATED:
 LOOKUP_UPDATED:
   ar: "تم التحديث بنجاح"
   en: "Updated successfully"
+INTEREST_NOT_FOUND:
+  ar: "الاهتمام غير موجود"
+  en: "Interest not found"
+
+INTEREST_UPSERTED:
+  ar: "تم تحديث الاهتمامات بنجاح"
+  en: "Interests updated successfully"
+
+INTEREST_TOPIC_NOT_FOUND:
+  ar: "موضوع الاهتمام غير موجود"
+  en: "Interest topic not found"
+

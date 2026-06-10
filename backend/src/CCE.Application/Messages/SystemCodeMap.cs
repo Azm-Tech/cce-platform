@@ -104,6 +104,9 @@ public static class SystemCodeMap
         ["SCENARIO_NOT_FOUND"] = SystemCode.ERR100,
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
 
+        // ─── InterestTopic Errors ───
+        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR110,
+
         // ─── Platform Settings Errors ───
         ["HOMEPAGE_SETTINGS_NOT_FOUND"] = SystemCode.ERR053,
         ["ABOUT_SETTINGS_NOT_FOUND"] = SystemCode.ERR054,
@@ -146,6 +149,7 @@ public static class SystemCodeMap
         ["PASSWORD_RESET"] = SystemCode.CON014,
         ["LOGOUT_SUCCESS"] = SystemCode.CON015,
         ["REGISTER_SUCCESS"] = SystemCode.CON017,
+        ["INTEREST_UPSERTED"] = SystemCode.CON019,
         ["USER_DELETED"] = SystemCode.CON018,
 
         // ─── Backend-only Identity Success (appendix numbers already taken) ───
@@ -159,6 +163,11 @@ public static class SystemCodeMap
         // ─── Platform Settings Success ───
         ["SETTINGS_UPDATED"] = SystemCode.CON016,
         ["CONTENT_UPDATE_FAILED"] = SystemCode.ERR025,
+
+        // ─── InterestTopic Success ───
+        ["INTEREST_TOPIC_CREATED"] = SystemCode.CON048,
+        ["INTEREST_TOPIC_UPDATED"] = SystemCode.CON049,
+        ["INTEREST_TOPIC_DELETED"] = SystemCode.CON072,
 
         // ─── Content Success ───
         ["CONTENT_CREATED"] = SystemCode.CON020,

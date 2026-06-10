@@ -13,7 +13,6 @@ public sealed record UpdateMyProfileCommand(
     string OrganizationName,
     string LocalePreference,
     KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string> Interests,
     string? AvatarUrl,
     System.Guid? CountryId,
     System.Guid? CountryCodeId) : IRequest<Response<UserProfileDto>>;
