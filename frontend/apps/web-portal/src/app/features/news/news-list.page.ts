@@ -1,12 +1,13 @@
 
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
@@ -39,11 +40,12 @@ interface ActiveChip {
   standalone: true,
   imports: [
     FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatButtonModule,
-    MatSelectModule,
     MatPaginatorModule,
     MatProgressBarModule,
     TranslocoModule,
@@ -71,6 +73,18 @@ export class NewsListPage implements OnInit {
   readonly dateTo = signal('');
   readonly sortOrder = signal<SortOrder>('newest');
   readonly filtersOpen = signal(false);
+
+  readonly sortOrderOptions = [
+    { value: 'newest' as const, label: 'Newest' },
+    { value: 'oldest' as const, label: 'Oldest' },
+  ];
+  readonly sortOrderSearch = new FormControl('');
+  private readonly sortOrderSearchValue = toSignal(this.sortOrderSearch.valueChanges, { initialValue: '' });
+  readonly filteredSortOrderOptions = computed(() => {
+    const q = (this.sortOrderSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.sortOrderOptions;
+    return this.sortOrderOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
 
   // ─── Pagination + load state ────────────────────────────
   readonly page = signal(1);
@@ -170,7 +184,16 @@ export class NewsListPage implements OnInit {
     this.sortOrder.set(qp.get('sort') === 'oldest' ? 'oldest' : 'newest');
     this.query.set(qp.get('q') ?? '');
     this.viewMode.set(qp.get('view') === 'list' ? 'list' : 'grid');
+
+    const sortMatch = this.sortOrderOptions.find(o => o.value === this.sortOrder());
+    if (sortMatch) this.sortOrderSearch.setValue(sortMatch.label, { emitEvent: false });
+
     void this.load();
+  }
+
+  onSortOrderSelected(value: SortOrder, label: string): void {
+    this.setSort(value);
+    this.sortOrderSearch.setValue(label, { emitEvent: false });
   }
 
   // ─── Handlers ───────────────────────────────────────────

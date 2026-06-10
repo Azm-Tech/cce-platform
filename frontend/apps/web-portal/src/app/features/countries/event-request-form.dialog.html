@@ -50,19 +50,21 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'newsEventRequest.form.hour' | transloco }}</mat-label>
-        <mat-select formControlName="startHour">
-          @for (h of hourOptions; track h) {
-            <mat-option [value]="h">{{ h }}</mat-option>
+        <input matInput [formControl]="startHourSearch" [matAutocomplete]="startHourAuto" />
+        <mat-autocomplete #startHourAuto (optionSelected)="onStartHourSelected($event.option.value)">
+          @for (h of filteredStartHours(); track h.value) {
+            <mat-option [value]="h.value">{{ h.label }}</mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'newsEventRequest.form.minute' | transloco }}</mat-label>
-        <mat-select formControlName="startMinute">
-          @for (m of minuteOptions; track m) {
-            <mat-option [value]="m">{{ m }}</mat-option>
+        <input matInput [formControl]="startMinuteSearch" [matAutocomplete]="startMinuteAuto" />
+        <mat-autocomplete #startMinuteAuto (optionSelected)="onStartMinuteSelected($event.option.value)">
+          @for (m of filteredStartMinutes(); track m.value) {
+            <mat-option [value]="m.value">{{ m.label }}</mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
 
@@ -79,19 +81,21 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'newsEventRequest.form.hour' | transloco }}</mat-label>
-        <mat-select formControlName="endHour">
-          @for (h of hourOptions; track h) {
-            <mat-option [value]="h">{{ h }}</mat-option>
+        <input matInput [formControl]="endHourSearch" [matAutocomplete]="endHourAuto" />
+        <mat-autocomplete #endHourAuto (optionSelected)="onEndHourSelected($event.option.value)">
+          @for (h of filteredEndHours(); track h.value) {
+            <mat-option [value]="h.value">{{ h.label }}</mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'newsEventRequest.form.minute' | transloco }}</mat-label>
-        <mat-select formControlName="endMinute">
-          @for (m of minuteOptions; track m) {
-            <mat-option [value]="m">{{ m }}</mat-option>
+        <input matInput [formControl]="endMinuteSearch" [matAutocomplete]="endMinuteAuto" />
+        <mat-autocomplete #endMinuteAuto (optionSelected)="onEndMinuteSelected($event.option.value)">
+          @for (m of filteredEndMinutes(); track m.value) {
+            <mat-option [value]="m.value">{{ m.label }}</mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
 
@@ -123,12 +127,13 @@
 
     <mat-form-field appearance="outline">
       <mat-label>{{ 'newsEventRequest.form.topic' | transloco }}</mat-label>
-      <mat-select formControlName="topicId">
+      <input matInput [formControl]="topicSearch" [matAutocomplete]="topicAuto" />
+      <mat-autocomplete #topicAuto (optionSelected)="onTopicSelected($event.option.value, $event.option.viewValue)">
         <mat-option value="">—</mat-option>
-        @for (t of topics(); track t.id) {
+        @for (t of filteredTopics(); track t.id) {
           <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
     </mat-form-field>
 
     <div class="cce-event-request-form__image">

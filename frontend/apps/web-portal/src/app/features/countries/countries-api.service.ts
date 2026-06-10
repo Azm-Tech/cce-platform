@@ -37,7 +37,9 @@ export class CountriesApiService {
   async listCountryCodes(opts: { search?: string; isActive?: boolean } = {}): Promise<Result<CountryCode[]>> {
     if (opts.isActive === true && !opts.search) {
       this.activeCountryCodesCache ??= this.fetchCountryCodes(opts);
-      return this.activeCountryCodesCache;
+      const result = await this.activeCountryCodesCache;
+      if (!result.ok) this.activeCountryCodesCache = null;
+      return result;
     }
     return this.fetchCountryCodes(opts);
   }

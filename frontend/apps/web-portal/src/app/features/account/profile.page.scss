@@ -562,12 +562,31 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   z-index: 1;
 }
 
+.cce-profile__edit-avatar-trigger {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: 3px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.15s;
+
+  &:hover, &:focus-visible { outline-color: rgba(255, 255, 255, 0.6); }
+  &:hover .cce-profile__edit-avatar-overlay { opacity: 1; }
+
+  &--busy { cursor: default; }
+  &--busy .cce-profile__edit-avatar-overlay { opacity: 1; }
+}
+
 .cce-profile__edit-avatar-img {
   width: 64px;
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
   border: 2.5px solid rgba(255, 255, 255, 0.45);
+  display: block;
 }
 
 .cce-profile__edit-avatar-initials {
@@ -590,16 +609,42 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   inset: 0;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.38);
-  cursor: pointer;
+  gap: 0.15rem;
+  background: rgba(0, 0, 0, 0.52);
   opacity: 0;
   transition: opacity 0.18s;
 
-  mat-icon { color: #fff; font-size: 1.2rem; width: 1.2rem; height: 1.2rem; }
+  mat-icon { color: #fff; font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
+}
 
-  &:hover, &--busy { opacity: 1; }
+.cce-profile__edit-avatar-overlay-text {
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.cce-profile__edit-avatar-badge {
+  position: absolute;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #006c4f;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  mat-icon { font-size: 0.65rem; width: 0.65rem; height: 0.65rem; color: #fff; }
 }
 
 .cce-profile__edit-avatar-bar {

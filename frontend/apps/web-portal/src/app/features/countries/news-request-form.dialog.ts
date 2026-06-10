@@ -1,13 +1,14 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
@@ -33,13 +34,13 @@ interface NewsRequestForm {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     RichTextEditorComponent,
     TranslocoModule,
   ],
@@ -64,6 +65,17 @@ export class NewsRequestFormDialogComponent {
   readonly saving = signal(false);
   readonly errorKey = signal<string | null>(null);
   private featuredImageUrl: string | null = null;
+
+  readonly topicSearch = new FormControl('');
+  private readonly topicSearchValue = toSignal(this.topicSearch.valueChanges, { initialValue: '' });
+  readonly filteredTopics = computed(() => {
+    const q = (this.topicSearchValue() ?? '').trim().toLowerCase();
+    const all = this.topics();
+    if (!q) return all;
+    return all.filter(t =>
+      t.nameAr.includes(q) || t.nameEn.toLowerCase().includes(q)
+    );
+  });
 
   readonly form = new FormGroup<NewsRequestForm>({
     titleAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -130,6 +142,11 @@ export class NewsRequestFormDialogComponent {
     } else {
       this.errorKey.set('errors.ERR029');
     }
+  }
+
+  onTopicSelected(id: string, displayText: string): void {
+    this.form.controls.topicId.setValue(id);
+    this.topicSearch.setValue(id ? displayText : '', { emitEvent: false });
   }
 
   cancel(): void { this.ref.close(null); }

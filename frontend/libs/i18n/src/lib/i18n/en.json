@@ -1741,6 +1741,8 @@
       "toast": {
         "saved": "Profile saved."
       },
+      "changePhoto": "Change photo",
+      "avatarUploaded": "Photo uploaded. Save your profile to apply it.",
       "avatarUploadError": "Failed to upload photo. Please try again.",
       "expertCta": {
         "title": "Become an Expert",

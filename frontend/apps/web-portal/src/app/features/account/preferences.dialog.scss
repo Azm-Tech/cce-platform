@@ -75,7 +75,8 @@
     flex-direction: column;
     gap: 0.65rem;
 
-    &--err .cce-prefs__kl-card { outline: 1px solid rgba(183, 28, 28, 0.3); }
+    &--err .cce-prefs__kl-card    { outline: 1px solid rgba(183, 28, 28, 0.3); }
+    &--err .cce-prefs__radio-card { outline: 1px solid rgba(183, 28, 28, 0.3); }
   }
 
   &__section-title {

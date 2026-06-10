@@ -241,22 +241,31 @@
 
         <div class="cce-profile__edit-band">
           <div class="cce-profile__edit-avatar-zone">
-            @if (form.get('avatarUrl')?.value) {
-              <img class="cce-profile__edit-avatar-img" [src]="form.get('avatarUrl')?.value" alt="" />
-            } @else {
-              <span class="cce-profile__edit-avatar-initials">{{ profileInitials() }}</span>
-            }
             <label
-              class="cce-profile__edit-avatar-overlay"
-              [class.cce-profile__edit-avatar-overlay--busy]="uploading()"
+              class="cce-profile__edit-avatar-trigger"
+              [class.cce-profile__edit-avatar-trigger--busy]="uploading()"
+              [attr.aria-label]="'account.profile.changePhoto' | transloco"
             >
-              <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
-              @if (uploading()) {
-                <mat-progress-bar mode="indeterminate" class="cce-profile__edit-avatar-bar" />
+              @if (form.get('avatarUrl')?.value) {
+                <img class="cce-profile__edit-avatar-img" [src]="form.get('avatarUrl')?.value" alt="" />
               } @else {
-                <mat-icon>photo_camera</mat-icon>
+                <span class="cce-profile__edit-avatar-initials">{{ profileInitials() }}</span>
               }
+              <span class="cce-profile__edit-avatar-overlay">
+                @if (uploading()) {
+                  <mat-progress-bar mode="indeterminate" class="cce-profile__edit-avatar-bar" />
+                } @else {
+                  <mat-icon>photo_camera</mat-icon>
+                  <span class="cce-profile__edit-avatar-overlay-text">{{ 'account.profile.changePhoto' | transloco }}</span>
+                }
+              </span>
+              <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
             </label>
+            @if (!uploading()) {
+              <span class="cce-profile__edit-avatar-badge" aria-hidden="true">
+                <mat-icon>photo_camera</mat-icon>
+              </span>
+            }
           </div>
           <div class="cce-profile__edit-band-info">
             <span class="cce-profile__edit-band-title">{{ 'account.profile.editTitle' | transloco }}</span>
@@ -309,21 +318,24 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>{{ 'account.profile.field.nationality' | transloco }}</mat-label>
-                <mat-select formControlName="countryCodeId">
+                <input matInput [formControl]="countryCodeSearch" [matAutocomplete]="ccAuto" />
+                <mat-autocomplete #ccAuto (optionSelected)="onCountryCodeSelected($event.option.value, $event.option.viewValue)">
                   <mat-option [value]="null">—</mat-option>
-                  @for (cc of countryCodes(); track cc.id) {
+                  @for (cc of filteredCountryCodes(); track cc.id) {
                     <mat-option [value]="cc.id">
                       {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
                     </mat-option>
                   }
-                </mat-select>
+                </mat-autocomplete>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
-                <mat-select formControlName="localePreference">
-                  <mat-option value="en">English</mat-option>
-                  <mat-option value="ar">العربية</mat-option>
-                </mat-select>
+                <input matInput [formControl]="localeSearch" [matAutocomplete]="localeAuto" />
+                <mat-autocomplete #localeAuto (optionSelected)="onLocaleSelected($event.option.value, $event.option.viewValue)">
+                  @for (opt of filteredLocaleOptions(); track opt.value) {
+                    <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                  }
+                </mat-autocomplete>
               </mat-form-field>
             </div>
           </div>

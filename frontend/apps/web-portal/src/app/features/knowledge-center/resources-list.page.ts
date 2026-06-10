@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -30,13 +30,14 @@ import type { Country } from '../countries/country.types';
   standalone: true,
   imports: [
     FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatPaginatorModule,
-    MatSelectModule,
     TranslocoModule,
     FilterRailComponent,
     ResourceCardComponent,
@@ -104,6 +105,19 @@ export class ResourcesListPage implements OnInit {
   readonly viewMode = signal<'grid' | 'list'>('grid');
   readonly sortBy = signal<'date' | 'views' | 'title'>('date');
 
+  readonly sortByOptions = [
+    { value: 'date' as const, label: 'Date' },
+    { value: 'views' as const, label: 'Views' },
+    { value: 'title' as const, label: 'Title' },
+  ];
+  readonly sortBySearch = new FormControl('');
+  private readonly sortBySearchValue = toSignal(this.sortBySearch.valueChanges, { initialValue: '' });
+  readonly filteredSortByOptions = computed(() => {
+    const q = (this.sortBySearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.sortByOptions;
+    return this.sortByOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
+
   ngOnInit(): void {
     const qp = this.route.snapshot.queryParamMap;
     const p = Number(qp.get('page') ?? 1);
@@ -116,9 +130,18 @@ export class ResourcesListPage implements OnInit {
     const rt = qp.get('resourceType') as ResourceType | null;
     this.resourceType.set(rt && (RESOURCE_TYPES as readonly string[]).includes(rt) ? rt : '');
 
+    const sortByMatch = this.sortByOptions.find(o => o.value === this.sortBy());
+    if (sortByMatch) this.sortBySearch.setValue(sortByMatch.label, { emitEvent: false });
+
     void this.loadCategories();
     void this.loadCountries();
     void this.load();
+  }
+
+  onSortBySelected(value: 'date' | 'views' | 'title', label: string): void {
+    this.sortBy.set(value);
+    this.sortBySearch.setValue(label, { emitEvent: false });
+    this.syncUrl();
   }
 
   async loadCategories(): Promise<void> {

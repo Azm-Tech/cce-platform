@@ -80,19 +80,34 @@ export interface EvaluationPayload {
   feedback?: string | null;
 }
 
-export type PersonalizedKnowledgeLevel = 'High' | 'Medium' | 'Low';
-export type SectorOfWork = 'Government' | 'Academic' | 'Private';
+export type InterestTopicCategory = 'carbon_area' | 'knowledge_assessment' | 'job_sector';
 
-export const PERSONALIZED_KNOWLEDGE_LEVELS: readonly PersonalizedKnowledgeLevel[] =
-  ['High', 'Medium', 'Low'] as const;
+export interface InterestTopicOption {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  category: InterestTopicCategory;
+  isActive: boolean;
+}
 
-export const SECTORS_OF_WORK: readonly SectorOfWork[] =
-  ['Government', 'Academic', 'Private'] as const;
+export interface InterestQuestion {
+  category: InterestTopicCategory;
+  titleAr: string;
+  titleEn: string;
+  type: 'multiple' | 'single';
+  options: InterestTopicOption[];
+}
 
-/** Payload for the US019 dedicated preferences endpoint (not yet deployed). */
-export interface PersonalizedSuggestionsPayload {
-  interests: string[];
-  knowledgeLevel: PersonalizedKnowledgeLevel;
-  sectorOfWork: SectorOfWork;
-  countryId: string;
+export interface MyInterests {
+  carbonAreaTopics: InterestTopicOption[];
+  knowledgeAssessmentTopic: InterestTopicOption | null;
+  jobSectorTopic: InterestTopicOption | null;
+  targetCountryId: string | null;
+}
+
+export interface UpdateMyInterestsPayload {
+  carbonAreaIds: string[];
+  knowledgeAssessmentId: string;
+  jobSectorId: string;
+  targetCountryId: string;
 }

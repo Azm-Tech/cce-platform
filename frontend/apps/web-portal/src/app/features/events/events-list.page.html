@@ -44,10 +44,12 @@
     <!-- Sort -->
     <mat-form-field appearance="outline" class="cce-list-toolbar__sort">
       <mat-icon matPrefix>sort</mat-icon>
-      <mat-select [ngModel]="sortOrder()" (ngModelChange)="setSort($event)">
-        <mat-option value="soonest">{{ 'events.filters.sortSoonest' | transloco }}</mat-option>
-        <mat-option value="latest">{{ 'events.filters.sortLatest' | transloco }}</mat-option>
-      </mat-select>
+      <input matInput [formControl]="sortOrderSearch" [matAutocomplete]="sortOrderAuto" />
+      <mat-autocomplete #sortOrderAuto (optionSelected)="onSortOrderSelected($event.option.value, $event.option.viewValue)">
+        @for (opt of filteredSortOrderOptions(); track opt.value) {
+          <mat-option [value]="opt.value">{{ ('events.filters.sort' + (opt.value === 'soonest' ? 'Soonest' : 'Latest')) | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
     </mat-form-field>
 
     <!-- View toggle (far left in RTL) -->

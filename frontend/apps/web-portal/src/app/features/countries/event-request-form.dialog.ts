@@ -1,6 +1,8 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
@@ -22,8 +23,8 @@ import { ContentType, type CountryContentRequest } from './country.types';
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
-const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({ value: String(i).padStart(2, '0'), label: String(i).padStart(2, '0') }));
+const MINUTE_OPTIONS = ['00', '15', '30', '45'].map(m => ({ value: m, label: m }));
 
 function combineDateTime(date: Date | null, hour: string, minute: string): string {
   if (!date) return '';
@@ -60,6 +61,7 @@ interface EventRequestForm {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDatepickerModule,
     MatDialogModule,
@@ -67,7 +69,6 @@ interface EventRequestForm {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     RichTextEditorComponent,
     TranslocoModule,
   ],
@@ -95,6 +96,49 @@ export class EventRequestFormDialogComponent {
   readonly hourOptions = HOUR_OPTIONS;
   readonly minuteOptions = MINUTE_OPTIONS;
   private featuredImageUrl: string | null = null;
+
+  readonly topicSearch = new FormControl('');
+  private readonly topicSearchValue = toSignal(this.topicSearch.valueChanges, { initialValue: '' });
+  readonly filteredTopics = computed(() => {
+    const q = (this.topicSearchValue() ?? '').trim().toLowerCase();
+    const all = this.topics();
+    if (!q) return all;
+    return all.filter(t =>
+      t.nameAr.includes(q) || t.nameEn.toLowerCase().includes(q)
+    );
+  });
+
+  readonly startHourSearch = new FormControl('09');
+  private readonly startHourSearchValue = toSignal(this.startHourSearch.valueChanges, { initialValue: '09' });
+  readonly filteredStartHours = computed(() => {
+    const q = (this.startHourSearchValue() ?? '').trim();
+    if (!q) return this.hourOptions;
+    return this.hourOptions.filter(o => o.label.startsWith(q));
+  });
+
+  readonly startMinuteSearch = new FormControl('00');
+  private readonly startMinuteSearchValue = toSignal(this.startMinuteSearch.valueChanges, { initialValue: '00' });
+  readonly filteredStartMinutes = computed(() => {
+    const q = (this.startMinuteSearchValue() ?? '').trim();
+    if (!q) return this.minuteOptions;
+    return this.minuteOptions.filter(o => o.label.startsWith(q));
+  });
+
+  readonly endHourSearch = new FormControl('17');
+  private readonly endHourSearchValue = toSignal(this.endHourSearch.valueChanges, { initialValue: '17' });
+  readonly filteredEndHours = computed(() => {
+    const q = (this.endHourSearchValue() ?? '').trim();
+    if (!q) return this.hourOptions;
+    return this.hourOptions.filter(o => o.label.startsWith(q));
+  });
+
+  readonly endMinuteSearch = new FormControl('00');
+  private readonly endMinuteSearchValue = toSignal(this.endMinuteSearch.valueChanges, { initialValue: '00' });
+  readonly filteredEndMinutes = computed(() => {
+    const q = (this.endMinuteSearchValue() ?? '').trim();
+    if (!q) return this.minuteOptions;
+    return this.minuteOptions.filter(o => o.label.startsWith(q));
+  });
 
   readonly form = new FormGroup<EventRequestForm>(
     {
@@ -178,6 +222,31 @@ export class EventRequestFormDialogComponent {
     } else {
       this.errorKey.set('errors.ERR029');
     }
+  }
+
+  onTopicSelected(id: string, displayText: string): void {
+    this.form.controls.topicId.setValue(id);
+    this.topicSearch.setValue(id ? displayText : '', { emitEvent: false });
+  }
+
+  onStartHourSelected(value: string): void {
+    this.form.controls.startHour.setValue(value);
+    this.startHourSearch.setValue(value, { emitEvent: false });
+  }
+
+  onStartMinuteSelected(value: string): void {
+    this.form.controls.startMinute.setValue(value);
+    this.startMinuteSearch.setValue(value, { emitEvent: false });
+  }
+
+  onEndHourSelected(value: string): void {
+    this.form.controls.endHour.setValue(value);
+    this.endHourSearch.setValue(value, { emitEvent: false });
+  }
+
+  onEndMinuteSelected(value: string): void {
+    this.form.controls.endMinute.setValue(value);
+    this.endMinuteSearch.setValue(value, { emitEvent: false });
   }
 
   cancel(): void { this.ref.close(null); }

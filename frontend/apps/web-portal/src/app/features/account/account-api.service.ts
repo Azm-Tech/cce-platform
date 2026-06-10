@@ -6,9 +6,11 @@ import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   EvaluationPayload,
   ExpertRequestStatus,
-  PersonalizedSuggestionsPayload,
+  InterestQuestion,
+  MyInterests,
   ServiceRatingPayload,
   SubmitExpertRequestPayload,
+  UpdateMyInterestsPayload,
   UpdateMyProfilePayload,
   UserProfile,
 } from './account.types';
@@ -63,10 +65,25 @@ export class AccountApiService {
     );
   }
 
-  // TODO: replace placeholder path once backend deploys the US019 endpoint
-  async submitPersonalizedSuggestions(payload: PersonalizedSuggestionsPayload): Promise<Result<void>> {
+  async getInterestQuestions(): Promise<Result<InterestQuestion[]>> {
     return this.run(() =>
-      firstValueFrom(this.http.post<void>('/api/me/preferences', payload)),
+      firstValueFrom(
+        this.http.get<{ data: InterestQuestion[] }>('/api/interest-topics/questions').pipe(map(res => res.data)),
+      ),
+    );
+  }
+
+  async getMyInterests(): Promise<Result<MyInterests>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http.get<{ data: MyInterests }>('/api/me/interests').pipe(map(res => res.data)),
+      ),
+    );
+  }
+
+  async updateMyInterests(payload: UpdateMyInterestsPayload): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.patch<void>('/api/me/interests', payload)),
     );
   }
 

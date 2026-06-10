@@ -1,13 +1,14 @@
 
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
@@ -31,13 +32,13 @@ interface ResourceRequestForm {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     RichTextEditorComponent,
     TranslocoModule,
   ],
@@ -54,6 +55,14 @@ export class ResourceRequestFormDialogComponent {
   private readonly countryId = inject<string>(MAT_DIALOG_DATA);
 
   readonly resourceTypes = RESOURCE_TYPES;
+
+  readonly resourceTypeSearch = new FormControl('');
+  private readonly resourceTypeSearchValue = toSignal(this.resourceTypeSearch.valueChanges, { initialValue: '' });
+  readonly filteredResourceTypes = computed(() => {
+    const q = (this.resourceTypeSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.resourceTypes;
+    return this.resourceTypes.filter(t => t.toLowerCase().includes(q));
+  });
 
   readonly form = new FormGroup<ResourceRequestForm>({
     titleAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -122,6 +131,12 @@ export class ResourceRequestFormDialogComponent {
     } else {
       this.errorKey.set('errors.ERR029');
     }
+  }
+
+  onResourceTypeSelected(value: string, displayText: string): void {
+    this.form.controls.resourceType.setValue(value);
+    this.resourceTypeSearch.setValue(displayText, { emitEvent: false });
+    this.form.controls.resourceType.markAsTouched();
   }
 
   cancel(): void {

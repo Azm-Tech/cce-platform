@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +12,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
@@ -36,13 +37,13 @@ interface ProfileFormShape {
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    MatAutocompleteModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     TranslocoModule,
   ],
   templateUrl: './profile.page.html',
@@ -70,6 +71,29 @@ export class ProfilePage implements OnInit {
   readonly mode = signal<'view' | 'edit'>('view');
 
   readonly locale = this.localeService.locale;
+
+  readonly countryCodeSearch = new FormControl('');
+  private readonly countryCodeSearchValue = toSignal(this.countryCodeSearch.valueChanges, { initialValue: '' });
+  readonly filteredCountryCodes = computed(() => {
+    const q = (this.countryCodeSearchValue() ?? '').trim().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(cc =>
+      cc.name.ar.includes(q) || cc.name.en.toLowerCase().includes(q)
+    );
+  });
+
+  readonly localeOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'ar', label: 'العربية' },
+  ];
+  readonly localeSearch = new FormControl('');
+  private readonly localeSearchValue = toSignal(this.localeSearch.valueChanges, { initialValue: '' });
+  readonly filteredLocaleOptions = computed(() => {
+    const q = (this.localeSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.localeOptions;
+    return this.localeOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
 
   readonly notProvisioned = computed(() => this.errorKind() === 'not-found');
 
@@ -137,7 +161,7 @@ export class ProfilePage implements OnInit {
     } else {
       this.errorKind.set(profileRes.error.kind);
     }
-    if (countryCodesRes.ok) this.countryCodes.set(countryCodesRes.value);
+    if (countryCodesRes.ok && Array.isArray(countryCodesRes.value)) this.countryCodes.set(countryCodesRes.value);
     if (expertRes.ok) {
       this.expertStatus.set(expertRes.value);
       this.expertStatusLoaded.set(true);
@@ -156,8 +180,30 @@ export class ProfilePage implements OnInit {
       countryCodeId: p.countryCodeId,
       avatarUrl: p.avatarUrl,
     });
+    const ccMatch = this.countryCodes().find(cc => cc.id === p.countryCodeId);
+    this.countryCodeSearch.setValue(
+      ccMatch ? (this.locale() === 'ar' ? ccMatch.name.ar : ccMatch.name.en) : '',
+      { emitEvent: false }
+    );
+    const localeMatch = this.localeOptions.find(o => o.value === p.localePreference);
+    this.localeSearch.setValue(localeMatch ? localeMatch.label : '', { emitEvent: false });
     this.saveErrorKind.set(null);
     this.mode.set('edit');
+    if (!this.countryCodes().length) {
+      void this.countriesApi.listCountryCodes({ isActive: true }).then((res) => {
+        if (res.ok && Array.isArray(res.value)) this.countryCodes.set(res.value);
+      });
+    }
+  }
+
+  onCountryCodeSelected(id: string | null, displayText: string): void {
+    this.form.controls.countryCodeId.setValue(id);
+    this.countryCodeSearch.setValue(id === null ? '' : displayText, { emitEvent: false });
+  }
+
+  onLocaleSelected(value: string, label: string): void {
+    this.form.controls.localePreference.setValue(value);
+    this.localeSearch.setValue(label, { emitEvent: false });
   }
 
   cancelEdit(): void {
@@ -198,11 +244,8 @@ export class ProfilePage implements OnInit {
   }
 
   openPreferences(): void {
-    const p = this.profile();
-    if (!p) return;
     import('./preferences.dialog').then(({ PreferencesDialogComponent }) => {
       const ref = this.dialog.open(PreferencesDialogComponent, {
-        data: p,
         panelClass: 'cce-dialog-no-padding',
         autoFocus: 'first-tabbable',
       });
@@ -216,12 +259,36 @@ export class ProfilePage implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.uploading.set(true);
-    const res = await this.mediaApi.uploadFile(file);
-    this.uploading.set(false);
-    if (res.ok) {
-      this.form.patchValue({ avatarUrl: res.value.url });
-    } else {
+    const uploadRes = await this.mediaApi.uploadFile(file);
+    if (!uploadRes.ok) {
+      this.uploading.set(false);
       this.toast.error('account.profile.avatarUploadError');
+      return;
+    }
+
+    const avatarUrl = uploadRes.value.url;
+    this.form.patchValue({ avatarUrl });
+
+    const v = this.form.getRawValue();
+    const p = this.profile()!;
+    const saveRes = await this.api.updateProfile({
+      firstName: v.firstName,
+      lastName: v.lastName,
+      jobTitle: v.jobTitle,
+      organizationName: v.organizationName,
+      localePreference: v.localePreference,
+      knowledgeLevel: p.knowledgeLevel || 'Beginner',
+      interests: p.interests,
+      avatarUrl,
+      countryCodeId: v.countryCodeId,
+    });
+    this.uploading.set(false);
+    if (saveRes.ok) {
+      this.profile.set(saveRes.value);
+      this.toast.success('account.profile.toast.saved');
+    } else {
+      this.form.markAllAsTouched();
+      this.saveErrorKind.set(saveRes.error.kind);
     }
   }
 

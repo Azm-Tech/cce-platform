@@ -12,13 +12,14 @@
 
   <mat-form-field appearance="outline" class="cce-scenario-header__city">
     <mat-label>{{ 'interactiveCity.builder.cityType' | transloco }}</mat-label>
-    <mat-select formControlName="cityType">
-      @for (c of cityTypes; track c) {
+    <input matInput [formControl]="cityTypeSearch" [matAutocomplete]="cityTypeAuto" />
+    <mat-autocomplete #cityTypeAuto (optionSelected)="onCityTypeSelected($event.option.value)">
+      @for (c of filteredCityTypes(); track c) {
         <mat-option [value]="c">
           {{ 'interactiveCity.cityType.' + c | transloco }}
         </mat-option>
       }
-    </mat-select>
+    </mat-autocomplete>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-scenario-header__year">

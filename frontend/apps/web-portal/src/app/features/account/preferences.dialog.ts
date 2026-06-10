@@ -6,43 +6,37 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { CommunityApiService } from '../community/community-api.service';
-import type { PublicTopic } from '../community/community.types';
 import { CountriesApiService } from '../countries/countries-api.service';
 import type { Country } from '../countries/country.types';
 import { AccountApiService } from './account-api.service';
-import {
-  PERSONALIZED_KNOWLEDGE_LEVELS,
-  SECTORS_OF_WORK,
-  type PersonalizedKnowledgeLevel,
-  type PersonalizedSuggestionsPayload,
-  type SectorOfWork,
-  type UserProfile,
-} from './account.types';
+import type { InterestQuestion, InterestTopicOption } from './account.types';
 
 @Component({
   selector: 'cce-preferences-dialog',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     TranslocoModule,
   ],
   templateUrl: './preferences.dialog.html',
@@ -51,61 +45,106 @@ import {
 })
 export class PreferencesDialogComponent implements OnInit {
   private readonly api = inject(AccountApiService);
-  private readonly communityApi = inject(CommunityApiService);
   private readonly countriesApi = inject(CountriesApiService);
   private readonly locale = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly ref = inject(MatDialogRef<PreferencesDialogComponent, boolean>);
 
-  readonly profile = inject<UserProfile>(MAT_DIALOG_DATA);
-
-  readonly topics = signal<PublicTopic[]>([]);
+  readonly questions = signal<InterestQuestion[]>([]);
   readonly countries = signal<Country[]>([]);
-  readonly topicsLoading = signal(true);
+  readonly loading = signal(true);
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
-  readonly interestsError = signal(false);
 
-  readonly selectedTopicIds = signal<Set<string>>(new Set());
-  readonly knowledgeLevels = PERSONALIZED_KNOWLEDGE_LEVELS;
-  readonly sectorsOfWork = SECTORS_OF_WORK;
+  readonly selectedCarbonIds = signal<Set<string>>(new Set());
+  readonly selectedKnowledgeId = signal<string | null>(null);
+  readonly selectedJobSectorId = signal<string | null>(null);
+  readonly targetCountryId = new FormControl<string | null>(null, Validators.required);
 
-  readonly isAr = computed(() => this.locale.locale() === 'ar');
-  readonly topicName = (t: PublicTopic) => this.isAr() ? t.nameAr : t.nameEn;
-
-  readonly form = new FormGroup({
-    knowledgeLevel: new FormControl<PersonalizedKnowledgeLevel | null>(null, Validators.required),
-    sectorOfWork: new FormControl<SectorOfWork | null>(null, Validators.required),
-    countryId: new FormControl<string | null>(null, Validators.required),
+  readonly countrySearch = new FormControl('');
+  private readonly countrySearchValue = toSignal(this.countrySearch.valueChanges, { initialValue: '' });
+  readonly filteredCountries = computed(() => {
+    const q = (this.countrySearchValue() ?? '').trim().toLowerCase();
+    const all = this.countries();
+    if (!q) return all;
+    return all.filter(c =>
+      c.nameAr.includes(q) || c.nameEn.toLowerCase().includes(q)
+    );
   });
 
-  async ngOnInit(): Promise<void> {
-    this.form.patchValue({ countryId: this.profile.countryId ?? null });
-    if (this.profile.interests?.length) {
-      this.selectedTopicIds.set(new Set(this.profile.interests));
-    }
+  readonly carbonQuestion = computed(() => this.questions().find(q => q.category === 'carbon_area') ?? null);
+  readonly knowledgeQuestion = computed(() => this.questions().find(q => q.category === 'knowledge_assessment') ?? null);
+  readonly jobSectorQuestion = computed(() => this.questions().find(q => q.category === 'job_sector') ?? null);
 
-    const [topicsRes, countriesRes] = await Promise.all([
-      this.communityApi.listTopics(),
+  readonly carbonError = signal(false);
+  readonly knowledgeError = signal(false);
+  readonly jobSectorError = signal(false);
+
+  readonly isAr = computed(() => this.locale.locale() === 'ar');
+  readonly optionName = (opt: InterestTopicOption) => this.isAr() ? opt.nameAr : opt.nameEn;
+
+  async ngOnInit(): Promise<void> {
+    const [questionsRes, interestsRes, countriesRes] = await Promise.all([
+      this.api.getInterestQuestions(),
+      this.api.getMyInterests(),
       this.countriesApi.listCountries(),
     ]);
-    this.topicsLoading.set(false);
-    if (topicsRes.ok) {
-      this.topics.set(topicsRes.value.filter((t) => t.parentId === null));
-    }
+    this.loading.set(false);
+
+    if (questionsRes.ok) this.questions.set(questionsRes.value);
     if (countriesRes.ok) this.countries.set(countriesRes.value);
+
+    if (interestsRes.ok) {
+      const saved = interestsRes.value;
+      if (saved.carbonAreaTopics?.length) {
+        this.selectedCarbonIds.set(new Set(saved.carbonAreaTopics.map(t => t.id)));
+      }
+      if (saved.knowledgeAssessmentTopic) {
+        this.selectedKnowledgeId.set(saved.knowledgeAssessmentTopic.id);
+      }
+      if (saved.jobSectorTopic) {
+        this.selectedJobSectorId.set(saved.jobSectorTopic.id);
+      }
+      if (saved.targetCountryId) {
+        this.targetCountryId.setValue(saved.targetCountryId);
+        const match = this.countries().find(c => c.id === saved.targetCountryId);
+        if (match) {
+          this.countrySearch.setValue(this.isAr() ? match.nameAr : match.nameEn, { emitEvent: false });
+        }
+      }
+    }
   }
 
-  toggleTopic(id: string): void {
-    const next = new Set(this.selectedTopicIds());
+  onTargetCountrySelected(id: string | null, displayText: string): void {
+    this.targetCountryId.setValue(id);
+    this.countrySearch.setValue(id === null ? '' : displayText, { emitEvent: false });
+    this.targetCountryId.markAsTouched();
+  }
+
+  toggleCarbon(id: string): void {
+    const next = new Set(this.selectedCarbonIds());
     if (next.has(id)) next.delete(id);
     else next.add(id);
-    this.selectedTopicIds.set(next);
-    if (next.size > 0) this.interestsError.set(false);
+    this.selectedCarbonIds.set(next);
+    if (next.size > 0) this.carbonError.set(false);
   }
 
-  isSelected(id: string): boolean {
-    return this.selectedTopicIds().has(id);
+  selectKnowledge(id: string): void {
+    this.selectedKnowledgeId.set(id);
+    this.knowledgeError.set(false);
+  }
+
+  selectJobSector(id: string): void {
+    this.selectedJobSectorId.set(id);
+    this.jobSectorError.set(false);
+  }
+
+  optionIcon(opt: InterestTopicOption): string {
+    const icons: Record<string, string> = {
+      High: 'workspace_premium', Medium: 'auto_stories', Low: 'school',
+      Government: 'account_balance', Academic: 'school', Private: 'business_center',
+    };
+    return icons[opt.nameEn] ?? 'label';
   }
 
   skip(): void {
@@ -114,21 +153,26 @@ export class PreferencesDialogComponent implements OnInit {
   }
 
   async save(): Promise<void> {
-    this.form.markAllAsTouched();
-    const noInterests = this.selectedTopicIds().size === 0;
-    this.interestsError.set(noInterests);
-    if (this.form.invalid || noInterests) return;
+    const carbonIds = [...this.selectedCarbonIds()];
+    const knowledgeId = this.selectedKnowledgeId();
+    const jobSectorId = this.selectedJobSectorId();
+    const countryId = this.targetCountryId.value;
 
-    const v = this.form.getRawValue();
-    const payload: PersonalizedSuggestionsPayload = {
-      interests: [...this.selectedTopicIds()],
-      knowledgeLevel: v.knowledgeLevel!,
-      sectorOfWork: v.sectorOfWork!,
-      countryId: v.countryId!,
-    };
+    this.carbonError.set(carbonIds.length === 0);
+    this.knowledgeError.set(!knowledgeId);
+    this.jobSectorError.set(!jobSectorId);
+    this.targetCountryId.markAsTouched();
+
+    if (!carbonIds.length || !knowledgeId || !jobSectorId || !countryId) return;
+
     this.saving.set(true);
     this.errorKind.set(null);
-    const res = await this.api.submitPersonalizedSuggestions(payload);
+    const res = await this.api.updateMyInterests({
+      carbonAreaIds: carbonIds,
+      knowledgeAssessmentId: knowledgeId,
+      jobSectorId,
+      targetCountryId: countryId,
+    });
     this.saving.set(false);
     if (res.ok) {
       localStorage.setItem('cce_prefs_shown', '1');

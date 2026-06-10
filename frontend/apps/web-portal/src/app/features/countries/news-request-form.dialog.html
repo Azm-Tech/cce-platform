@@ -25,12 +25,13 @@
 
     <mat-form-field appearance="outline">
       <mat-label>{{ 'newsEventRequest.form.topic' | transloco }}</mat-label>
-      <mat-select formControlName="topicId">
+      <input matInput [formControl]="topicSearch" [matAutocomplete]="topicAuto" />
+      <mat-autocomplete #topicAuto (optionSelected)="onTopicSelected($event.option.value, $event.option.viewValue)">
         <mat-option value="">—</mat-option>
-        @for (t of topics(); track t.id) {
+        @for (t of filteredTopics(); track t.id) {
           <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
     </mat-form-field>
 
     <cce-rich-text-editor
