@@ -508,6 +508,51 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
 }
 
+/* ─── Expert request status ─────────────────────────────────────────────── */
+.cce-profile__expert-status-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cce-profile__expert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem 0.3rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &--pending  { background: #fff3cd; color: #856404; }
+  &--approved { background: #d4edda; color: #155724; }
+  &--rejected { background: #fdecea; color: #b00020; }
+}
+
+.cce-profile__expert-details-link {
+  margin-inline-start: auto;
+  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.cce-profile__expert-bio {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(0, 0, 0, 0.7);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ─── CTA cards ─────────────────────────────────────────────────────────── */
 .cce-profile__cta-card {
   display: flex;

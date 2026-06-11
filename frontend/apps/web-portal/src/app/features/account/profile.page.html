@@ -225,6 +225,45 @@
             </section>
           }
 
+          <!-- Expert request status -->
+          @if (expertStatus(); as es) {
+            <section class="cce-profile__section-card">
+              <h2 class="cce-profile__section-title">
+                <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>verified_user</mat-icon></span>
+                {{ 'account.profile.section.expertRequest' | transloco }}
+              </h2>
+
+              <div class="cce-profile__expert-status-row">
+                <span class="cce-profile__expert-badge cce-profile__expert-badge--{{ es.status.toLowerCase() }}">
+                  <mat-icon>
+                    @switch (es.status) {
+                      @case ('Pending')  { hourglass_top }
+                      @case ('Approved') { verified }
+                      @case ('Rejected') { cancel }
+                    }
+                  </mat-icon>
+                  {{ ('account.profile.expertStatus.' + es.status) | transloco }}
+                </span>
+                <a mat-button routerLink="/me/expert-request" class="cce-profile__expert-details-link">
+                  {{ 'account.profile.expertRequest.viewDetails' | transloco }}
+                  <mat-icon>chevron_right</mat-icon>
+                </a>
+              </div>
+
+              <div class="cce-profile__expert-bio">
+                {{ locale() === 'ar' ? es.requestedBioAr : es.requestedBioEn }}
+              </div>
+
+              @if (es.requestedTags?.length) {
+                <div class="cce-profile__interests" style="margin-top: 0.75rem">
+                  @for (tag of es.requestedTags; track tag) {
+                    <span class="cce-profile__interest-chip">{{ tag }}</span>
+                  }
+                </div>
+              }
+            </section>
+          }
+
           <!-- Expert CTA -->
           @if (showExpertCta()) {
             <div class="cce-profile__cta-card cce-profile__cta-card--expert">

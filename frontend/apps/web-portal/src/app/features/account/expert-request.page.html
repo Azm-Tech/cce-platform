@@ -30,6 +30,33 @@
         </button>
       </div>
     }
+
+    @if (!showForm()) {
+      <div class="cce-expert-request__details">
+        <h2 class="cce-expert-request__details-title">{{ 'account.expert.submittedData' | transloco }}</h2>
+
+        <div class="cce-expert-request__detail-row">
+          <span class="cce-expert-request__detail-label">{{ 'account.expert.field.bioAr' | transloco }}</span>
+          <p class="cce-expert-request__detail-value" dir="rtl">{{ s.requestedBioAr }}</p>
+        </div>
+
+        <div class="cce-expert-request__detail-row">
+          <span class="cce-expert-request__detail-label">{{ 'account.expert.field.bioEn' | transloco }}</span>
+          <p class="cce-expert-request__detail-value" dir="ltr">{{ s.requestedBioEn }}</p>
+        </div>
+
+        @if (s.requestedTags?.length) {
+          <div class="cce-expert-request__detail-row">
+            <span class="cce-expert-request__detail-label">{{ 'account.expert.field.tags' | transloco }}</span>
+            <div class="cce-expert-request__tags">
+              @for (tag of s.requestedTags; track tag) {
+                <span class="cce-expert-request__tag">{{ tag }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
   }
 
   @if (showForm()) {

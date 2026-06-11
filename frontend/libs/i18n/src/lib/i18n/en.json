@@ -1713,7 +1713,8 @@
       "notProvisioned": "We're still setting up your profile. Please retry in a moment.",
       "section": {
         "personal": "Personal Information",
-        "expertise": "Expertise & Interests"
+        "expertise": "Expertise & Interests",
+        "expertRequest": "Expert Request"
       },
       "field": {
         "email": "Email",
@@ -1756,6 +1757,9 @@
         "Pending": "Application under review",
         "Approved": "Verified Expert",
         "Rejected": "Application rejected"
+      },
+      "expertRequest": {
+        "viewDetails": "View Details"
       }
     },
     "logout": {
@@ -1787,7 +1791,8 @@
       "toast": {
         "submitted": "Request submitted."
       },
-      "cvUploadError": "Failed to upload CV. Please try again."
+      "cvUploadError": "Failed to upload CV. Please try again.",
+      "submittedData": "Submitted Information"
     },
     "serviceRating": {
       "openButton": "Rate this page",
