@@ -63,7 +63,8 @@ public sealed class ApproveCountryResourceRequestCommandHandler
         e.ProposedTitleAr, e.ProposedTitleEn,
         e.ProposedDescriptionAr, e.ProposedDescriptionEn,
         e.ProposedResourceType, e.ProposedAssetFileId,
-        e.ProposedTopicId, e.ProposedStartsOn, e.ProposedEndsOn,
+        e.ProposedTopicId, e.ProposedCategoryId,
+        e.ProposedStartsOn, e.ProposedEndsOn,
         e.ProposedLocationAr, e.ProposedLocationEn, e.ProposedOnlineMeetingUrl,
         e.SubmittedOn, e.AdminNotesAr, e.AdminNotesEn,
         e.ProcessedById, e.ProcessedOn);
