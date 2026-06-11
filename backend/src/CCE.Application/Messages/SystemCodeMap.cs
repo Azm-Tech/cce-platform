@@ -12,6 +12,7 @@ public static class SystemCodeMap
         ["USER_NOT_FOUND"] = SystemCode.ERR001,
         ["EMAIL_EXISTS"] = SystemCode.ERR019,
         ["INVALID_CREDENTIALS"] = SystemCode.ERR020,
+        ["CONTACT_NOT_VERIFIED"] = SystemCode.ERR004,
         ["PASSWORD_RECOVERY_FAILED"] = SystemCode.ERR023,
         ["LOGOUT_FAILED"] = SystemCode.ERR024,
 
@@ -62,6 +63,7 @@ public static class SystemCodeMap
         ["JOIN_REQUEST_NOT_FOUND"] = SystemCode.ERR141,
         ["POLL_NOT_FOUND"] = SystemCode.ERR142,
         ["POLL_CLOSED"] = SystemCode.ERR143,
+        ["CANNOT_FOLLOW_SELF"] = SystemCode.ERR144,
 
         // ─── Community Success ───
         ["POST_VOTED"] = SystemCode.CON065,
@@ -105,7 +107,7 @@ public static class SystemCodeMap
         ["TECHNOLOGY_NOT_FOUND"] = SystemCode.ERR101,
 
         // ─── InterestTopic Errors ───
-        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR110,
+        ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR114,
 
         // ─── Platform Settings Errors ───
         ["HOMEPAGE_SETTINGS_NOT_FOUND"] = SystemCode.ERR053,

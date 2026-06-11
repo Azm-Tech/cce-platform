@@ -182,17 +182,13 @@ public class User : IdentityUser<System.Guid>
 
     public void SetKnowledgeLevel(KnowledgeLevel level) => KnowledgeLevel = level;
 
-    public void UpdateInterests(IEnumerable<string> interests)
+    public void UpdateInterests(IEnumerable<System.Guid> interestTopicIds)
     {
-        if (interests is null)
-        {
-            throw new DomainException("interests collection cannot be null.");
-        }
-        Interests = interests
-            .Select(static s => s?.Trim() ?? string.Empty)
-            .Where(static s => s.Length > 0)
-            .Distinct()
-            .ToList();
+        if (interestTopicIds is null)
+            throw new DomainException("interestTopicIds collection cannot be null.");
+        UserInterestTopics.Clear();
+        foreach (var id in interestTopicIds.Distinct())
+            UserInterestTopics.Add(new UserInterestTopic { UserId = Id, InterestTopicId = id });
     }
 
     public bool IsDeleted { get; private set; }

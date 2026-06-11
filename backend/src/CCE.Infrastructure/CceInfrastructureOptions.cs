@@ -15,7 +15,7 @@ public sealed class CceInfrastructureOptions
     public string RedisConnectionString { get; init; } = string.Empty;
 
     /// <summary>Root directory for dev-mode file uploads. Created on first save if missing.</summary>
-    public string LocalUploadsRoot { get; init; } = "./backend/uploads/";
+    public string LocalUploadsRoot { get; init; } = "./backend/";
 
     /// <summary>ClamAV daemon hostname. Default <c>localhost</c>.</summary>
     public string ClamAvHost { get; init; } = "localhost";

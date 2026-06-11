@@ -321,6 +321,10 @@ ACCOUNT_DEACTIVATED:
   ar: "الحساب غير نشط"
   en: "Account is deactivated"
 
+CONTACT_NOT_VERIFIED:
+  ar: "يرجى التحقق من بريدك الإلكتروني أو رقم هاتفك قبل تسجيل الدخول."
+  en: "Please verify your email or phone number before signing in."
+
 USERNAME_EXISTS:
   ar: "اسم المستخدم مستخدم بالفعل"
   en: "Username already taken"
@@ -462,6 +466,10 @@ ALREADY_FOLLOWING:
 NOT_FOLLOWING:
   ar: "أنت لا تتابع هذا"
   en: "You are not following this"
+
+CANNOT_FOLLOW_SELF:
+  ar: "لا يمكنك متابعة نفسك"
+  en: "You cannot follow yourself"
 
 CANNOT_MARK_ANSWERED:
   ar: "غير مصرح لك بتحديد الإجابة"

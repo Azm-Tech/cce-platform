@@ -7,7 +7,10 @@ using CCE.Application.Community.Public.Queries.GetPostShareLink;
 using CCE.Application.Community.Public.Queries.GetPublicPostById;
 using CCE.Application.Community.Public.Queries.GetPollResults;
 using CCE.Application.Community.Public.Queries.GetPublicTopicBySlug;
+using CCE.Application.Community.Public.Queries.GetCommunityRoles;
 using CCE.Application.Community.Public.Queries.GetReplyThread;
+using CCE.Application.Community.Public.Queries.ListCommunityFeed;
+using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
@@ -34,6 +37,40 @@ public static class CommunityPublicEndpoints
                 new ListPublicCommunitiesQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicCommunities");
+
+        // GET /api/community/feed — community home feed (hot/newest/top-voted, tag filter by Id)
+        community.MapGet("/feed", async (
+            PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
+            int? page, int? pageSize,
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var query = new ListCommunityFeedQuery(
+                sort ?? PostFeedSort.Hot,
+                tagIds ?? System.Array.Empty<System.Guid>(),
+                communityId,
+                topicId,
+                currentUser.GetUserId(),
+                page ?? 1,
+                pageSize ?? 20);
+            var result = await mediator.Send(query, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).AllowAnonymous().WithName("ListCommunityFeed");
+
+        // GET /api/community/experts/leaderboard — top experts by contribution count
+        community.MapGet("/experts/leaderboard", async (
+            int? page, int? pageSize, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListExpertLeaderboardQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).AllowAnonymous().WithName("ListExpertLeaderboard");
+
+        // GET /api/community/roles — fixed community membership role definitions
+        community.MapGet("/roles", async (IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new GetCommunityRolesQuery(), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).AllowAnonymous().WithName("GetCommunityRoles");
 
         // GET /api/community/communities/{slug} — community by slug
         community.MapGet("/communities/{slug}", async (
