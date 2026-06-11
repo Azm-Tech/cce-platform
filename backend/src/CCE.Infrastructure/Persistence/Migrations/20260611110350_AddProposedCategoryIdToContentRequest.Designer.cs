@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260611110350_AddProposedCategoryIdToContentRequest")]
+    partial class AddProposedCategoryIdToContentRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1266,83 +1269,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_news_topic_id");
 
                     b.ToTable("news", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Content.NewsFollow", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("followed_on");
-
-                    b.Property<Guid?>("LastModifiedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by_id");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("last_modified_on");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("status");
-
-                    b.Property<DateTimeOffset?>("UnfollowedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("unfollowed_on");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_news_follows");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ux_news_follow_user");
-
-                    b.ToTable("news_follows", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Content.NewsFollowLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("NewsId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("news_id");
-
-                    b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("timestamp");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_news_follow_logs");
-
-                    b.HasIndex("NewsId")
-                        .HasDatabaseName("ix_news_follow_logs_news_id");
-
-                    b.HasIndex("UserId", "NewsId")
-                        .HasDatabaseName("ix_news_follow_log_user_news");
-
-                    b.HasIndex("UserId", "Timestamp")
-                        .HasDatabaseName("ix_news_follow_log_user_timestamp");
-
-                    b.ToTable("news_follow_logs", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.NewsletterSubscription", b =>
@@ -4544,16 +4470,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_post_attachments_posts_post_id");
-                });
-
-            modelBuilder.Entity("CCE.Domain.Content.NewsFollowLog", b =>
-                {
-                    b.HasOne("CCE.Domain.Content.News", null)
-                        .WithMany()
-                        .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_news_follow_logs_news_news_id");
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>

@@ -26,6 +26,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         ResourceType? proposedResourceType,
         System.Guid? proposedAssetFileId,
         System.Guid? proposedTopicId,
+        System.Guid? proposedCategoryId,
         System.DateTimeOffset? proposedStartsOn,
         System.DateTimeOffset? proposedEndsOn,
         string? proposedLocationAr,
@@ -43,6 +44,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         ProposedResourceType = proposedResourceType;
         ProposedAssetFileId = proposedAssetFileId;
         ProposedTopicId = proposedTopicId;
+        ProposedCategoryId = proposedCategoryId;
         ProposedStartsOn = proposedStartsOn;
         ProposedEndsOn = proposedEndsOn;
         ProposedLocationAr = proposedLocationAr;
@@ -64,6 +66,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
     // Resource-specific (null for News/Event)
     public ResourceType? ProposedResourceType { get; private set; }
     public System.Guid? ProposedAssetFileId { get; private set; }
+    public System.Guid? ProposedCategoryId { get; private set; }
 
     // News/Event-specific
     public System.Guid? ProposedTopicId { get; private set; }
@@ -90,6 +93,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         string descriptionAr, string descriptionEn,
         ResourceType resourceType,
         System.Guid assetFileId,
+        System.Guid categoryId,
         ISystemClock clock)
     {
         if (countryId == System.Guid.Empty) throw new DomainException("CountryId is required.");
@@ -99,12 +103,14 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         if (string.IsNullOrWhiteSpace(descriptionAr)) throw new DomainException("DescriptionAr is required.");
         if (string.IsNullOrWhiteSpace(descriptionEn)) throw new DomainException("DescriptionEn is required.");
         if (assetFileId == System.Guid.Empty) throw new DomainException("AssetFileId is required.");
+        if (categoryId == System.Guid.Empty) throw new DomainException("CategoryId is required.");
         return new CountryContentRequest(
             System.Guid.NewGuid(), countryId, requestedById,
             ContentType.Resource,
             titleAr, titleEn, descriptionAr, descriptionEn,
             resourceType, assetFileId,
-            null, null, null, null, null, null,
+            null, categoryId,
+            null, null, null, null, null,
             clock.UtcNow);
     }
 
@@ -129,7 +135,8 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
             ContentType.News,
             titleAr, titleEn, contentAr, contentEn,
             null, featuredImageAssetId,
-            topicId, null, null, null, null, null,
+            topicId, null,
+            null, null, null, null, null,
             clock.UtcNow);
     }
 
@@ -144,6 +151,7 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         string? locationAr,
         string? locationEn,
         string? onlineMeetingUrl,
+        System.Guid? featuredImageAssetId,
         ISystemClock clock)
     {
         if (countryId == System.Guid.Empty) throw new DomainException("CountryId is required.");
@@ -158,8 +166,9 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
             System.Guid.NewGuid(), countryId, requestedById,
             ContentType.Event,
             titleAr, titleEn, descriptionAr, descriptionEn,
-            null, null,
-            topicId, startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl,
+            null, featuredImageAssetId,
+            topicId, null,
+            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl,
             clock.UtcNow);
     }
 
