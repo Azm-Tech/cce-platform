@@ -123,6 +123,12 @@
   &:hover { text-decoration: underline; }
 }
 
+/* ── Enter-phone step ──────────────────────────────────────── */
+.cce-auth__phone-field {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
 /* ── OTP boxes ─────────────────────────────────────────────── */
 .cce-otp {
   display: flex;

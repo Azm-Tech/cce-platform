@@ -121,6 +121,22 @@
   font-weight: 500;
 }
 
+.cce-login__unverified {
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 0.95rem;
+  background: #fffbeb;
+  color: #78350f;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  p { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.5; }
+
+  button { width: 100%; border-color: rgba(245, 158, 11, 0.4) !important; color: #78350f !important; }
+}
+
 .cce-login__submit {
   height: 44px;
   border-radius: 999px !important;

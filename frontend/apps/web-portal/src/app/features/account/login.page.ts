@@ -14,7 +14,8 @@ import { AuthApiService } from '../../core/auth/auth-api.service';
 type LoginState =
   | { kind: 'idle' }
   | { kind: 'submitting' }
-  | { kind: 'error'; messageKey: string };
+  | { kind: 'error'; messageKey: string }
+  | { kind: 'phone-not-verified' };
 
 @Component({
   selector: 'cce-login',
@@ -90,6 +91,13 @@ type LoginState =
               <p class="cce-login__error" role="alert">
                 {{ errorMessageKey() | transloco }}
               </p>
+            } @else if (state().kind === 'phone-not-verified') {
+              <div class="cce-login__unverified" role="alert">
+                <p>{{ 'account.login.errorPhoneNotVerified' | transloco }}</p>
+                <button mat-stroked-button type="button" (click)="goVerifyPhone()">
+                  {{ 'account.login.verifyPhoneButton' | transloco }}
+                </button>
+              </div>
             }
 
             <button
@@ -153,12 +161,18 @@ export class LoginPage {
       const status = (err as HttpErrorResponse).status;
       if (status === 400 || status === 401) {
         this.state.set({ kind: 'error', messageKey: 'account.login.errorInvalid' });
+      } else if (status === 403) {
+        this.state.set({ kind: 'phone-not-verified' });
       } else if (status === 404) {
         this.state.set({ kind: 'error', messageKey: 'account.login.errorNotFound' });
       } else {
         this.state.set({ kind: 'error', messageKey: 'account.login.errorGeneric' });
       }
     }
+  }
+
+  goVerifyPhone(): void {
+    void this.router.navigate(['/verify-phone']);
   }
 
   errorMessageKey(): string {

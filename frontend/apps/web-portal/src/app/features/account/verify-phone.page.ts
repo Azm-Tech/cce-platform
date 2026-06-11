@@ -9,9 +9,13 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AuthApiService } from '../../core/auth/auth-api.service';
@@ -22,7 +26,11 @@ type PageState = 'sending' | 'idle' | 'verifying' | 'error';
   selector: 'cce-verify-phone',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
     TranslocoModule,
   ],
@@ -35,10 +43,15 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
   private readonly authApi = inject(AuthApiService);
   private readonly cdr = inject(ChangeDetectorRef);
 
+  readonly step = signal<'enter-phone' | 'verify'>('verify');
   readonly state = signal<PageState>('sending');
   readonly errorKey = signal<string>('');
   readonly countdown = signal<number>(0);
   readonly phoneNumber = signal<string>('');
+  readonly phoneControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^\+?\d{7,15}$/),
+  ]);
 
   readonly digits = Array.from({ length: 6 }, () => signal(''));
   readonly otpInputs = viewChildren<ElementRef<HTMLInputElement>>('otpInput');
@@ -49,15 +62,18 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
   constructor() {
     const nav = this.router.getCurrentNavigation();
     const phone = (nav?.extras.state as { phoneNumber?: string })?.phoneNumber ?? '';
-    this.phoneNumber.set(phone);
+    if (phone) {
+      this.phoneNumber.set(phone);
+    } else {
+      this.step.set('enter-phone');
+      this.state.set('idle');
+    }
   }
 
   ngOnInit(): void {
-    if (!this.phoneNumber()) {
-      this.router.navigate(['/register']);
-      return;
+    if (this.step() === 'verify') {
+      this.sendOtp();
     }
-    this.sendOtp();
   }
 
   ngOnDestroy(): void {
@@ -101,6 +117,14 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
     const pasted = text.replace(/\D/g, '').slice(0, 6).split('');
     pasted.forEach((d, i) => this.digits[i]?.set(d));
     this.focusBox(Math.min(pasted.length, 5));
+  }
+
+  submitPhone(): void {
+    this.phoneControl.markAllAsTouched();
+    if (this.phoneControl.invalid || this.state() === 'sending') return;
+    this.phoneNumber.set(this.phoneControl.value!.trim());
+    this.step.set('verify');
+    this.sendOtp();
   }
 
   resend(): void {

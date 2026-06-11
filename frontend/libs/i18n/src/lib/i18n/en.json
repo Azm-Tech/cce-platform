@@ -1623,6 +1623,8 @@
       "errorNotFound": "Account not found or not yet active.",
       "errorForbidden": "Your account does not have access to this panel.",
       "errorGeneric": "We couldn't sign you in. Please try again.",
+      "errorPhoneNotVerified": "Your phone number hasn't been verified yet. Please verify it to sign in.",
+      "verifyPhoneButton": "Verify phone number",
       "noAccount": "Don't have an account?",
       "register": "Create one",
       "alreadySignedIn": "You're already signed in.",
@@ -1705,7 +1707,12 @@
       "resendIn": "Resend in {{s}}s",
       "errorInvalid": "Invalid or expired code. Please try again.",
       "errorRateLimit": "Please wait 60 seconds before requesting a new code.",
-      "errorGeneric": "Something went wrong. Please try again."
+      "errorGeneric": "Something went wrong. Please try again.",
+      "enterPhoneTitle": "Verify your phone",
+      "enterPhoneHint": "Enter the phone number you registered with to receive a verification code.",
+      "phoneLabel": "Phone number",
+      "continueButton": "Send code",
+      "invalidPhone": "Enter a valid phone number (e.g. +966501234567)"
     },
     "profile": {
       "title": "My profile",
