@@ -5,19 +5,25 @@ import {
   ElementRef,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   signal,
   viewChildren,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
+import { CountriesApiService } from '../countries/countries-api.service';
+import type { CountryCode } from '../countries/country.types';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 
 type PageState = 'sending' | 'idle' | 'verifying' | 'error';
@@ -27,9 +33,9 @@ type PageState = 'sending' | 'idle' | 'verifying' | 'error';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     TranslocoModule,
@@ -41,16 +47,45 @@ type PageState = 'sending' | 'idle' | 'verifying' | 'error';
 export class VerifyPhonePage implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authApi = inject(AuthApiService);
+  private readonly countriesApi = inject(CountriesApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  readonly locale = inject(LocaleService).locale;
 
   readonly step = signal<'enter-phone' | 'verify'>('verify');
   readonly state = signal<PageState>('sending');
   readonly errorKey = signal<string>('');
   readonly countdown = signal<number>(0);
   readonly phoneNumber = signal<string>('');
-  readonly phoneControl = new FormControl('', [
+  readonly countryCodes = signal<CountryCode[]>([]);
+
+  // Dial-code autocomplete
+  readonly phoneCodeControl = new FormControl<CountryCode | null>(null, [Validators.required]);
+  private readonly phoneCodeInput = toSignal(
+    this.phoneCodeControl.valueChanges.pipe(map(v => (typeof v === 'string' ? v : ''))),
+    { initialValue: '' },
+  );
+  readonly filteredPhoneCodes = computed(() => {
+    const q = this.phoneCodeInput().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(
+      cc =>
+        cc.name.ar.toLowerCase().includes(q) ||
+        cc.name.en.toLowerCase().includes(q) ||
+        cc.dialCode.includes(q),
+    );
+  });
+  readonly displayPhoneCode = (cc: CountryCode | null): string => {
+    if (!cc) return '';
+    const name = this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    return `${name} (${cc.dialCode})`;
+  };
+
+  // Local phone number
+  readonly localPhoneControl = new FormControl('', [
     Validators.required,
-    Validators.pattern(/^\+?\d{7,15}$/),
+    Validators.maxLength(15),
+    Validators.pattern(/^[\d\s\-()]+$/),
   ]);
 
   readonly digits = Array.from({ length: 6 }, () => signal(''));
@@ -73,6 +108,10 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.step() === 'verify') {
       this.sendOtp();
+    } else {
+      void this.countriesApi.listCountryCodes({ isActive: true }).then(res => {
+        if (res.ok) this.countryCodes.set(res.value);
+      });
     }
   }
 
@@ -120,9 +159,13 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
   }
 
   submitPhone(): void {
-    this.phoneControl.markAllAsTouched();
-    if (this.phoneControl.invalid || this.state() === 'sending') return;
-    this.phoneNumber.set(this.phoneControl.value!.trim());
+    this.phoneCodeControl.markAllAsTouched();
+    this.localPhoneControl.markAllAsTouched();
+    if (this.phoneCodeControl.invalid || this.localPhoneControl.invalid || this.state() === 'sending') return;
+    const phoneCode = this.phoneCodeControl.value as CountryCode;
+    const dial = phoneCode.dialCode.replace(/^\+/, '');
+    const local = this.localPhoneControl.value!.replace(/\s/g, '');
+    this.phoneNumber.set(`${dial}${local}`);
     this.step.set('verify');
     this.sendOtp();
   }
