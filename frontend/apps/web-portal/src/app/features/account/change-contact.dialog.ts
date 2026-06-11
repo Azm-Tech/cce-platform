@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnInit,
   computed,
   inject,
   signal,
+  viewChildren,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -60,13 +62,10 @@ export class ChangeContactDialogComponent implements OnInit {
 
   private verificationId = '';
 
-  // Email field (phone type uses phoneCodeControl + localPhoneControl below)
-  readonly newValueControl = new FormControl('', [
-    Validators.required,
-    Validators.email,
-  ]);
+  // ── Email ────────────────────────────────────────────────────
+  readonly newValueControl = new FormControl('', [Validators.required, Validators.email]);
 
-  // Phone: dial-code autocomplete
+  // ── Phone: dial-code autocomplete ────────────────────────────
   readonly phoneCodeControl = new FormControl<CountryCode | null>(null, [Validators.required]);
   private readonly phoneCodeInput = toSignal(
     this.phoneCodeControl.valueChanges.pipe(map(v => (typeof v === 'string' ? v : ''))),
@@ -89,14 +88,13 @@ export class ChangeContactDialogComponent implements OnInit {
     return `${name} (${cc.dialCode})`;
   };
 
-  // Phone: local number
+  // ── Phone: local number ──────────────────────────────────────
   readonly localPhoneControl = new FormControl('', [
     Validators.required,
     Validators.maxLength(15),
     Validators.pattern(/^[\d\s\-()]+$/),
   ]);
 
-  // Display string used in the "OTP sent to …" step 2 message
   readonly phoneDisplay = computed(() => {
     const cc = this.phoneCodeControl.value as CountryCode | null;
     const local = this.localPhoneControl.value ?? '';
@@ -104,10 +102,17 @@ export class ChangeContactDialogComponent implements OnInit {
     return `${cc.dialCode} ${local}`;
   });
 
-  readonly otpControl = new FormControl('', [
-    Validators.required,
-    Validators.pattern(/^\d{4,8}$/),
-  ]);
+  // ── OTP boxes ────────────────────────────────────────────────
+  readonly digits = Array.from({ length: 6 }, () => signal(''));
+  readonly otpInputs = viewChildren<ElementRef<HTMLInputElement>>('otpInput');
+
+  get otpCode(): string {
+    return this.digits.map(d => d()).join('');
+  }
+
+  get isOtpComplete(): boolean {
+    return this.digits.every(d => /^\d$/.test(d()));
+  }
 
   ngOnInit(): void {
     if (this.data.type !== 'phone') return;
@@ -138,22 +143,19 @@ export class ChangeContactDialogComponent implements OnInit {
     if (res.ok) {
       this.verificationId = res.value.verificationId;
       this.step.set('verify');
+      setTimeout(() => this.focusBox(0));
     } else {
       this.errorKind.set(res.error.kind);
     }
   }
 
   async confirmChange(): Promise<void> {
-    if (this.otpControl.invalid) {
-      this.otpControl.markAsTouched();
-      return;
-    }
+    if (!this.isOtpComplete) return;
     this.confirming.set(true);
     this.errorKind.set(null);
-    const code = this.otpControl.value!.trim();
     const res = this.data.type === 'email'
-      ? await this.api.confirmEmailChange(this.verificationId, code)
-      : await this.api.confirmPhoneChange(this.verificationId, code);
+      ? await this.api.confirmEmailChange(this.verificationId, this.otpCode)
+      : await this.api.confirmPhoneChange(this.verificationId, this.otpCode);
     this.confirming.set(false);
     if (res.ok) {
       this.ref.close(true);
@@ -164,8 +166,43 @@ export class ChangeContactDialogComponent implements OnInit {
 
   back(): void {
     this.step.set('request');
-    this.otpControl.reset();
+    this.digits.forEach(d => d.set(''));
     this.errorKind.set(null);
+  }
+
+  onDigitInput(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const digit = input.value.replace(/\D/g, '').slice(-1);
+    this.digits[index].set(digit);
+    input.value = digit;
+    if (digit && index < 5) this.focusBox(index + 1);
+  }
+
+  onKeyDown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Backspace') {
+      if (this.digits[index]()) {
+        this.digits[index].set('');
+      } else if (index > 0) {
+        this.digits[index - 1].set('');
+        this.focusBox(index - 1);
+      }
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      this.focusBox(index - 1);
+    } else if (event.key === 'ArrowRight' && index < 5) {
+      this.focusBox(index + 1);
+    }
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text') ?? '';
+    const pasted = text.replace(/\D/g, '').slice(0, 6).split('');
+    pasted.forEach((d, i) => this.digits[i]?.set(d));
+    this.focusBox(Math.min(pasted.length, 5));
+  }
+
+  private focusBox(index: number): void {
+    this.otpInputs()[index]?.nativeElement.focus();
   }
 
   private buildPhoneValue(): string {
@@ -177,7 +214,6 @@ export class ChangeContactDialogComponent implements OnInit {
 
   private prefillPhone(phone: string, codes: CountryCode[]): void {
     const stripped = phone.replace(/^\+/, '');
-    // Sort by dial-code length descending so longer codes match before shorter ones
     const sorted = [...codes].sort((a, b) => b.dialCode.length - a.dialCode.length);
     const match = sorted.find(cc => stripped.startsWith(cc.dialCode.replace(/^\+/, '')));
     if (!match) return;

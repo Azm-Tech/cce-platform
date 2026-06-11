@@ -31,12 +31,7 @@
         <mat-form-field class="cce-cc__field">
           <mat-label>{{ 'account.changeContact.newEmail' | transloco }}</mat-label>
           <mat-icon matPrefix>alternate_email</mat-icon>
-          <input
-            matInput
-            type="email"
-            autocomplete="off"
-            [formControl]="newValueControl"
-          />
+          <input matInput type="email" autocomplete="off" [formControl]="newValueControl" />
           @if (newValueControl.hasError('required')) {
             <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
           } @else if (newValueControl.hasError('email')) {
@@ -44,16 +39,10 @@
           }
         </mat-form-field>
       } @else {
-        <!-- Phone: dial-code autocomplete + local number, pre-filled from current phone -->
         <div class="cce-cc__phone-row">
           <mat-form-field class="cce-cc__phone-code">
             <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
-            <input
-              matInput
-              [formControl]="phoneCodeControl"
-              [matAutocomplete]="phoneCodeAuto"
-              autocomplete="off"
-            />
+            <input matInput [formControl]="phoneCodeControl" [matAutocomplete]="phoneCodeAuto" autocomplete="off" />
             <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
               @for (cc of filteredPhoneCodes(); track cc.id) {
                 <mat-option [value]="cc">
@@ -71,14 +60,7 @@
 
           <mat-form-field class="cce-cc__phone-number">
             <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
-            <input
-              matInput
-              type="tel"
-              inputmode="numeric"
-              autocomplete="tel-national"
-              dir="ltr"
-              [formControl]="localPhoneControl"
-            />
+            <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" dir="ltr" [formControl]="localPhoneControl" />
             @if (localPhoneControl.hasError('required') && localPhoneControl.touched) {
               <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
             } @else if (localPhoneControl.hasError('pattern') && localPhoneControl.touched) {
@@ -101,23 +83,28 @@
         </p>
       </div>
 
-      <mat-form-field class="cce-cc__field">
-        <mat-label>{{ 'account.changeContact.otpCode' | transloco }}</mat-label>
-        <mat-icon matPrefix>pin</mat-icon>
-        <input
-          matInput
-          [formControl]="otpControl"
-          type="text"
-          inputmode="numeric"
-          maxlength="8"
-          autocomplete="one-time-code"
-        />
-        @if (otpControl.hasError('required')) {
-          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
-        } @else if (otpControl.hasError('pattern')) {
-          <mat-error>{{ 'account.changeContact.invalidOtp' | transloco }}</mat-error>
+      <div
+        class="cce-cc__otp"
+        dir="ltr"
+        role="group"
+        [attr.aria-label]="'account.changeContact.otpCode' | transloco"
+      >
+        @for (digit of digits; track $index) {
+          <input
+            #otpInput
+            class="cce-cc__otp-box"
+            [class.cce-cc__otp-box--filled]="digit()"
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            autocomplete="one-time-code"
+            [value]="digit()"
+            (input)="onDigitInput($event, $index)"
+            (keydown)="onKeyDown($event, $index)"
+            (paste)="onPaste($event)"
+          />
         }
-      </mat-form-field>
+      </div>
 
     }
 
@@ -129,9 +116,7 @@
         {{ 'common.actions.cancel' | transloco }}
       </button>
       <button mat-flat-button color="primary" type="button" [disabled]="sending()" (click)="requestChange()">
-        @if (sending()) {
-          <mat-progress-spinner diameter="18" mode="indeterminate" />
-        }
+        @if (sending()) { <mat-progress-spinner diameter="18" mode="indeterminate" /> }
         {{ 'account.changeContact.sendOtp' | transloco }}
       </button>
     } @else {
@@ -139,10 +124,8 @@
         <mat-icon>arrow_back</mat-icon>
         {{ 'account.changeContact.back' | transloco }}
       </button>
-      <button mat-flat-button color="primary" type="button" [disabled]="confirming()" (click)="confirmChange()">
-        @if (confirming()) {
-          <mat-progress-spinner diameter="18" mode="indeterminate" />
-        }
+      <button mat-flat-button color="primary" type="button" [disabled]="!isOtpComplete || confirming()" (click)="confirmChange()">
+        @if (confirming()) { <mat-progress-spinner diameter="18" mode="indeterminate" /> }
         {{ 'account.changeContact.confirm' | transloco }}
       </button>
     }
