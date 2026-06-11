@@ -12,6 +12,7 @@ public enum LoginFailureReason
     None = 0,
     InvalidCredentials = 1,
     Deactivated = 2,
+    ContactNotVerified = 3,
 }
 
 /// <summary>Outcome of a sign-in attempt. <see cref="Token"/> is non-null only when <see cref="Failure"/> is None.</summary>
@@ -20,6 +21,7 @@ public sealed record LoginResult(AuthTokenDto? Token, LoginFailureReason Failure
     public static LoginResult Success(AuthTokenDto token) => new(token, LoginFailureReason.None);
     public static readonly LoginResult InvalidCredentials = new(null, LoginFailureReason.InvalidCredentials);
     public static readonly LoginResult Deactivated = new(null, LoginFailureReason.Deactivated);
+    public static readonly LoginResult ContactNotVerified = new(null, LoginFailureReason.ContactNotVerified);
 }
 
 public interface IAuthService

@@ -86,7 +86,6 @@ public static class ProfileEndpoints
                 userId,
                 body.FirstName, body.LastName, body.JobTitle, body.OrganizationName,
                 body.LocalePreference, body.KnowledgeLevel,
-                body.Interests ?? System.Array.Empty<string>(),
                 body.AvatarUrl, body.CountryId, body.CountryCodeId);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();

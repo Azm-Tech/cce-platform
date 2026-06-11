@@ -20,6 +20,7 @@ public static class SystemCode
     public const string ERR001 = "ERR001"; // User not found (also used as ERR001 in appendix — keep)
     public const string ERR002 = "ERR002"; // Resource download failure (appendix)
     public const string ERR003 = "ERR003"; // Resource share failure (appendix)
+    public const string ERR004 = "ERR004"; // No verified contact (email/phone)
     public const string ERR013 = "ERR013"; // Required fields empty (appendix)
 
     public const string ERR019 = "ERR019"; // Email already exists / Account creation failure (appendix)
@@ -78,6 +79,7 @@ public static class SystemCode
     public const string ERR141 = "ERR141"; // Community join request not found
     public const string ERR142 = "ERR142"; // Poll not found
     public const string ERR143 = "ERR143"; // Poll is closed
+    public const string ERR144 = "ERR144"; // Cannot follow self
 
     // ─── Country / State-Rep Errors ───
     public const string ERR070 = "ERR070"; // Country not found
@@ -108,7 +110,7 @@ public static class SystemCode
     public const string ERR101 = "ERR101"; // Technology not found
 
     // ─── InterestTopic Errors ───
-    public const string ERR110 = "ERR110"; // Interest topic not found
+    public const string ERR114 = "ERR114"; // Interest topic not found
 
     // ─── Platform Settings Errors ───
     public const string ERR053 = "ERR053"; // Homepage settings not found

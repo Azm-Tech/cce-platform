@@ -78,8 +78,9 @@ public sealed class MessageFactory
     public Response<T> InterestUpserted<T>(T data) => Ok(data, "INTEREST_UPSERTED");
     public Response<T> EmailExists<T>()        => Conflict<T>(ApplicationErrors.Identity.EMAIL_EXISTS);
     public Response<T> InvalidCredentials<T>() => Unauthorized<T>(ApplicationErrors.Identity.INVALID_CREDENTIALS);
-    public Response<T> NotAuthenticated<T>()   => Unauthorized<T>(ApplicationErrors.Identity.NOT_AUTHENTICATED);
-    public Response<T> AccountDeactivated<T>() => Forbidden<T>(ApplicationErrors.Identity.ACCOUNT_DEACTIVATED);
+    public Response<T> NotAuthenticated<T>()     => Unauthorized<T>(ApplicationErrors.Identity.NOT_AUTHENTICATED);
+    public Response<T> AccountDeactivated<T>()   => Forbidden<T>(ApplicationErrors.Identity.ACCOUNT_DEACTIVATED);
+    public Response<T> ContactNotVerified<T>()   => Forbidden<T>(ApplicationErrors.Identity.CONTACT_NOT_VERIFIED);
 
     // ─── Convenience shortcuts (Content domain) ───
 
@@ -88,6 +89,9 @@ public sealed class MessageFactory
     public Response<T> ResourceNotFound<T>()  => NotFound<T>("RESOURCE_NOT_FOUND");
     public Response<T> PageNotFound<T>()      => NotFound<T>("PAGE_NOT_FOUND");
     public Response<T> TopicNotFound<T>()     => NotFound<T>("TOPIC_NOT_FOUND");
+    public Response<T> CannotFollowSelf<T>()  => ValidationError<T>(
+        ApplicationErrors.Community.CANNOT_FOLLOW_SELF,
+        new[] { Field("userId", ApplicationErrors.Community.CANNOT_FOLLOW_SELF) });
     public Response<T> CategoryNotFound<T>()  => NotFound<T>("CATEGORY_NOT_FOUND");
     public Response<T> AssetNotFound<T>()     => NotFound<T>("ASSET_NOT_FOUND");
     public Response<T> AssetNotClean<T>()     => BusinessRule<T>("ASSET_NOT_CLEAN");

@@ -87,4 +87,26 @@ public static class PaginationExtensions
         => query is IAsyncEnumerable<T>
             ? await query.CountAsync(ct).ConfigureAwait(false)
             : query.Count();
+
+    /// <summary>
+    /// Determines whether any element matches <paramref name="predicate"/>, dispatching to EF's
+    /// <c>AnyAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>Any</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<bool> AnyAsyncEither<T>(
+        this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.AnyAsync(predicate, ct).ConfigureAwait(false)
+            : query.Any(predicate.Compile());
+
+    /// <summary>
+    /// Returns the first element matching <paramref name="predicate"/> (or <c>null</c>), dispatching to
+    /// EF's <c>FirstOrDefaultAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>FirstOrDefault</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<T?> FirstOrDefaultAsyncEither<T>(
+        this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.FirstOrDefaultAsync(predicate, ct).ConfigureAwait(false)
+            : query.FirstOrDefault(predicate.Compile());
 }

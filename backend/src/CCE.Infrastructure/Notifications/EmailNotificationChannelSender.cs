@@ -1,25 +1,21 @@
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Notifications;
 using CCE.Domain.Notifications;
-using CCE.Infrastructure.Email;
-using CCE.Integration.Communication;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace CCE.Infrastructure.Notifications;
 
 public sealed class EmailNotificationChannelSender : INotificationChannelHandler
 {
-    private readonly ICommunicationGatewayClient _client;
-    private readonly IOptions<EmailOptions> _options;
+    private readonly IEmailSender _emailSender;
     private readonly ILogger<EmailNotificationChannelSender> _logger;
 
     public EmailNotificationChannelSender(
-        ICommunicationGatewayClient client,
-        IOptions<EmailOptions> options,
+        IEmailSender emailSender,
         ILogger<EmailNotificationChannelSender> logger)
     {
-        _client = client;
-        _options = options;
+        _emailSender = emailSender;
         _logger = logger;
     }
 
@@ -43,52 +39,49 @@ public sealed class EmailNotificationChannelSender : INotificationChannelHandler
 
         try
         {
-            var request = new SendEmailRequest(
-                To: to,
-                From: _options.Value.FromAddress,
-                Subject: notification.Subject,
-                Html: notification.Body);
-
-            var response = await _client.SendEmailAsync(request, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!"success".Equals(response.Status, StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.LogError(
-                    "Gateway email send failed for {To} template {TemplateCode}: {Error}",
-                    to, notification.TemplateCode, response.Error);
-                return new ChannelSendResult(
-                    false, Error: $"Gateway email send failed: {response.Error}");
-            }
+            await _emailSender.SendAsync(
+                to,
+                notification.Subject,
+                notification.Body,
+                notification.TemplateCode,
+                cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation(
-                "Sent email via gateway to {To} template {TemplateCode} (id {Id})",
-                to, notification.TemplateCode, response.Id);
+                "Sent email via SMTP to {To} template {TemplateCode}",
+                to, notification.TemplateCode);
 
-            return new ChannelSendResult(true, ProviderMessageId: response.Id);
-        }
-        catch (System.Net.Http.HttpRequestException ex)
-        {
-            _logger.LogError(
-                ex,
-                "Email channel HTTP failure for template {TemplateCode}",
-                notification.TemplateCode);
-            return new ChannelSendResult(false, Error: ex.Message);
+            return new ChannelSendResult(true);
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogError(
                 ex,
-                "Email channel invalid operation for template {TemplateCode}",
-                notification.TemplateCode);
+                "SMTP email send failed for {To} template {TemplateCode}",
+                to, notification.TemplateCode);
             return new ChannelSendResult(false, Error: ex.Message);
         }
         catch (OperationCanceledException ex) when (ex.CancellationToken != cancellationToken)
         {
             _logger.LogError(
                 ex,
-                "Email channel timeout for template {TemplateCode}",
-                notification.TemplateCode);
+                "SMTP email send timed out for {To} template {TemplateCode}",
+                to, notification.TemplateCode);
+            return new ChannelSendResult(false, Error: ex.Message);
+        }
+        catch (MailKit.Net.Smtp.SmtpCommandException ex)
+        {
+            _logger.LogError(
+                ex,
+                "SMTP command failed for {To} template {TemplateCode}",
+                to, notification.TemplateCode);
+            return new ChannelSendResult(false, Error: ex.Message);
+        }
+        catch (MailKit.Net.Smtp.SmtpProtocolException ex)
+        {
+            _logger.LogError(
+                ex,
+                "SMTP protocol error for {To} template {TemplateCode}",
+                to, notification.TemplateCode);
             return new ChannelSendResult(false, Error: ex.Message);
         }
     }

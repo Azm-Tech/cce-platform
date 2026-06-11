@@ -1,16 +1,14 @@
 using CCE.Api.Common.Extensions;
-using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Content.Commands.UploadAsset;
+using CCE.Application.Content.Queries.DownloadFile;
 using CCE.Application.Content.Queries.GetAssetById;
 using CCE.Domain;
-using CCE.Domain.Content;
 using CCE.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace CCE.Api.Internal.Endpoints;
@@ -67,26 +65,13 @@ public static class AssetEndpoints
 
         assets.MapGet("/{id:guid}/download", async (
             System.Guid id,
-            HttpContext httpContext,
-            ICceDbContext db,
-            IFileStorage storage,
+            IMediator mediator,
             CancellationToken ct) =>
         {
-            var asset = await db.AssetFiles.FirstOrDefaultAsync(a => a.Id == id, ct).ConfigureAwait(false);
-            if (asset is null)
-                return Results.NotFound();
-
-            if (asset.VirusScanStatus != VirusScanStatus.Clean)
-                return Results.StatusCode(StatusCodes.Status403Forbidden);
-
-            httpContext.Response.ContentType = asset.MimeType;
-            httpContext.Response.Headers.ContentDisposition =
-                $"inline; filename=\"{System.Net.WebUtility.UrlEncode(asset.OriginalFileName)}\"";
-
-            await using var stream = await storage.OpenReadAsync(asset.Url, ct).ConfigureAwait(false);
-            await stream.CopyToAsync(httpContext.Response.Body, ct).ConfigureAwait(false);
-
-            return Results.Empty;
+            var result = await mediator.Send(new DownloadFileQuery(id, DownloadFileType.Asset), ct);
+            return result.Success
+                ? Results.File(result.Data!.Content, result.Data.MimeType, result.Data.OriginalFileName)
+                : result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("DownloadAsset");

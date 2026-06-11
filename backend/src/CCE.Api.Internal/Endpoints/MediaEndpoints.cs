@@ -1,5 +1,6 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Content;
+using CCE.Application.Content.Queries.DownloadFile;
 using CCE.Application.Media.Commands.DeleteMedia;
 using CCE.Application.Media.Commands.UploadMedia;
 using CCE.Application.Media.Commands.UpdateMediaMetadata;
@@ -68,16 +69,12 @@ public static class MediaEndpoints
         media.MapGet("{id:guid}/download", async (
             System.Guid id,
             IMediator mediator,
-            HttpContext httpContext,
             CancellationToken ct) =>
         {
-            var meta = await mediator.Send(new GetMediaByIdQuery(id), ct).ConfigureAwait(false);
-            if (!meta.Success || meta.Data is null)
-                return Results.NotFound();
-
-            var fileStorage = httpContext.RequestServices.GetRequiredKeyedService<IFileStorage>("media");
-            var stream = await fileStorage.OpenReadAsync(meta.Data.StorageKey, ct).ConfigureAwait(false);
-            return Results.File(stream, meta.Data.MimeType, meta.Data.OriginalFileName);
+            var result = await mediator.Send(new DownloadFileQuery(id, DownloadFileType.Media), ct);
+            return result.Success
+                ? Results.File(result.Data!.Content, result.Data.MimeType, result.Data.OriginalFileName)
+                : result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("DownloadMediaInternal");
