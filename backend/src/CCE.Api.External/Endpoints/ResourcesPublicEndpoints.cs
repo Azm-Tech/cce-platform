@@ -1,3 +1,4 @@
+using System.IO;
 using CCE.Api.Common.Extensions;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
@@ -48,7 +49,7 @@ public static class ResourcesPublicEndpoints
             System.Guid id,
             HttpContext httpContext,
             ICceDbContext db,
-            IFileStorage storage,
+            IFileStorageFactory storageFactory,
             IResourceViewCountRepository viewCounter,
             CancellationToken cancellationToken) =>
         {
@@ -66,8 +67,21 @@ public static class ResourcesPublicEndpoints
             httpContext.Response.Headers.ContentDisposition =
                 $"inline; filename=\"{System.Net.WebUtility.UrlEncode(asset.OriginalFileName)}\"";
 
-            await using var stream = await storage.OpenReadAsync(asset.Url, cancellationToken).ConfigureAwait(false);
-            await stream.CopyToAsync(httpContext.Response.Body, cancellationToken).ConfigureAwait(false);
+            Stream fileStream;
+            try
+            {
+                var storage = storageFactory.GetStorage(DownloadFileType.Asset);
+                fileStream = await storage.OpenReadAsync(asset.Url, cancellationToken).ConfigureAwait(false);
+            }
+            catch (FileNotFoundException)
+            {
+                return Results.NotFound();
+            }
+
+            await using (fileStream)
+            {
+                await fileStream.CopyToAsync(httpContext.Response.Body, cancellationToken).ConfigureAwait(false);
+            }
 
             _ = Task.Run(async () =>
             {

@@ -1,6 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Identity.Public;
 using CCE.Application.Messages;
 using MediatR;
@@ -48,7 +49,7 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
             user.UserName,
             user.LocalePreference,
             user.KnowledgeLevel,
-            user.Interests,
+            System.Array.Empty<InterestTopicDto>(),
             user.CountryId,
             user.CountryCodeId,
             user.AvatarUrl,

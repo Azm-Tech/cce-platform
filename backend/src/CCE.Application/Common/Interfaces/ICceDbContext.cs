@@ -44,6 +44,7 @@ public interface ICceDbContext
     IQueryable<DomainCountry.CountryKapsarcSnapshot> CountryKapsarcSnapshots { get; }
     IQueryable<News> News { get; }
     IQueryable<NewsFollow> NewsFollows { get; }
+    IQueryable<NewsFollowLog> NewsFollowLogs { get; }
     IQueryable<Event> Events { get; }
     IQueryable<Tag> Tags { get; }
     IQueryable<Page> Pages { get; }

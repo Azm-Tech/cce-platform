@@ -181,6 +181,7 @@ public static class DependencyInjection
             var opts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
             return new LocalFileStorage(opts.MediaUploadsRoot);
         });
+        services.AddSingleton<IFileStorageFactory, FileStorageFactory>();
 
         // Media upload options (bound from "Media" section in appsettings)
         services.Configure<MediaUploadOptions>(configuration.GetSection(MediaUploadOptions.SectionName));

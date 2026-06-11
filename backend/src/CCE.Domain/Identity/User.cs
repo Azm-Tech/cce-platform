@@ -182,19 +182,6 @@ public class User : IdentityUser<System.Guid>
 
     public void SetKnowledgeLevel(KnowledgeLevel level) => KnowledgeLevel = level;
 
-    public void UpdateInterests(IEnumerable<string> interests)
-    {
-        if (interests is null)
-        {
-            throw new DomainException("interests collection cannot be null.");
-        }
-        Interests = interests
-            .Select(static s => s?.Trim() ?? string.Empty)
-            .Where(static s => s.Length > 0)
-            .Distinct()
-            .ToList();
-    }
-
     public bool IsDeleted { get; private set; }
 
     public DateTimeOffset? DeletedOn { get; private set; }

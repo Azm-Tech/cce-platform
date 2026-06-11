@@ -1274,9 +1274,29 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("FollowedOn")
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("followed_on");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UnfollowedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("unfollowed_on");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
@@ -1290,6 +1310,39 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ux_news_follow_user");
 
                     b.ToTable("news_follows", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Content.NewsFollowLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("NewsId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("news_id");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("timestamp");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_news_follow_logs");
+
+                    b.HasIndex("NewsId")
+                        .HasDatabaseName("ix_news_follow_logs_news_id");
+
+                    b.HasIndex("UserId", "NewsId")
+                        .HasDatabaseName("ix_news_follow_log_user_news");
+
+                    b.HasIndex("UserId", "Timestamp")
+                        .HasDatabaseName("ix_news_follow_log_user_timestamp");
+
+                    b.ToTable("news_follow_logs", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Content.NewsletterSubscription", b =>
@@ -2289,6 +2342,40 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("expert_request_attachments", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Identity.InterestTopic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("category");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("name_ar");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("name_en");
+
+                    b.HasKey("Id")
+                        .HasName("pk_interest_topics");
+
+                    b.ToTable("interest_topics", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2533,11 +2620,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("following_count");
 
-                    b.PrimitiveCollection<string>("Interests")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("interests");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
@@ -2642,6 +2724,25 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasFilter("[normalized_user_name] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CCE.Domain.Identity.UserInterestTopic", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("InterestTopicId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("interest_topic_id");
+
+                    b.HasKey("UserId", "InterestTopicId")
+                        .HasName("pk_user_interest_topics");
+
+                    b.HasIndex("InterestTopicId")
+                        .HasDatabaseName("ix_user_interest_topics_interest_topic_id");
+
+                    b.ToTable("user_interest_topics", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.InteractiveCity.CityScenario", b =>
@@ -4441,6 +4542,16 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_post_attachments_posts_post_id");
                 });
 
+            modelBuilder.Entity("CCE.Domain.Content.NewsFollowLog", b =>
+                {
+                    b.HasOne("CCE.Domain.Content.News", null)
+                        .WithMany()
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_news_follow_logs_news_news_id");
+                });
+
             modelBuilder.Entity("CCE.Domain.Content.ResourceCountry", b =>
                 {
                     b.HasOne("CCE.Domain.Content.Resource", null)
@@ -4469,6 +4580,27 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_refresh_tokens_asp_net_users_user_id");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Identity.UserInterestTopic", b =>
+                {
+                    b.HasOne("CCE.Domain.Identity.InterestTopic", "InterestTopic")
+                        .WithMany()
+                        .HasForeignKey("InterestTopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_interest_topics_interest_topics_interest_topic_id");
+
+                    b.HasOne("CCE.Domain.Identity.User", "User")
+                        .WithMany("UserInterestTopics")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_interest_topics_users_user_id");
+
+                    b.Navigation("InterestTopic");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CCE.Domain.Lookups.CountryCode", b =>
@@ -4935,6 +5067,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CCE.Domain.Identity.ExpertRegistrationRequest", b =>
                 {
                     b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("CCE.Domain.Identity.User", b =>
+                {
+                    b.Navigation("UserInterestTopics");
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>

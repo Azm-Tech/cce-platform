@@ -60,6 +60,11 @@ public sealed class AuthService : IAuthService
         if (!await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false))
             return LoginResult.InvalidCredentials;
 
+        // Credentials correct — but does the user have at least one verified contact?
+        if (!await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false)
+            && !await _userManager.IsPhoneNumberConfirmedAsync(user).ConfigureAwait(false))
+            return LoginResult.ContactNotVerified;
+
         // Credentials are valid — but a deactivated account may not sign in.
         if (user.Status != UserStatus.Active)
             return LoginResult.Deactivated;

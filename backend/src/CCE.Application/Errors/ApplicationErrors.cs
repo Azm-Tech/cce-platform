@@ -43,6 +43,7 @@ public static class ApplicationErrors
         public const string EXPERT_REQUEST_ALREADY_EXISTS = "EXPERT_REQUEST_ALREADY_EXISTS";
         public const string STATE_REP_ASSIGNMENT_NOT_FOUND = "STATE_REP_ASSIGNMENT_NOT_FOUND";
         public const string STATE_REP_ASSIGNMENT_EXISTS = "STATE_REP_ASSIGNMENT_EXISTS";
+        public const string CONTACT_NOT_VERIFIED = "CONTACT_NOT_VERIFIED";
     }
 
     public static class Content
@@ -89,6 +90,7 @@ public static class ApplicationErrors
         public const string RATING_NOT_FOUND = "RATING_NOT_FOUND";
         public const string ALREADY_FOLLOWING = "ALREADY_FOLLOWING";
         public const string NOT_FOLLOWING = "NOT_FOLLOWING";
+        public const string CANNOT_FOLLOW_SELF = "CANNOT_FOLLOW_SELF";
         public const string CANNOT_MARK_ANSWERED = "CANNOT_MARK_ANSWERED";
         public const string EDIT_WINDOW_EXPIRED = "EDIT_WINDOW_EXPIRED";
         public const string POST_VOTED = "POST_VOTED";

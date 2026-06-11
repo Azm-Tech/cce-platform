@@ -56,6 +56,7 @@ public sealed class CceDbContext
     public DbSet<HomepageSection> HomepageSections => Set<HomepageSection>();
     public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
     public DbSet<NewsFollow> NewsFollows => Set<NewsFollow>();
+    public DbSet<NewsFollowLog> NewsFollowLogs => Set<NewsFollowLog>();
 
     // ─── Country ───
     public DbSet<CCE.Domain.Country.Country> Countries => Set<CCE.Domain.Country.Country>();
@@ -190,6 +191,7 @@ public sealed class CceDbContext
     IQueryable<ServiceEvaluation> ICceDbContext.ServiceEvaluations => ServiceEvaluations.AsNoTracking();
     IQueryable<MediaFile> ICceDbContext.MediaFiles => MediaFiles.AsNoTracking();
     IQueryable<NewsFollow> ICceDbContext.NewsFollows => NewsFollows.AsNoTracking();
+    IQueryable<NewsFollowLog> ICceDbContext.NewsFollowLogs => NewsFollowLogs.AsNoTracking();
 
     void ICceDbContext.Add<T>(T entity) where T : class => Set<T>().Add(entity);
     void ICceDbContext.Attach<T>(T entity) where T : class => Set<T>().Attach(entity);

@@ -24,6 +24,7 @@ internal sealed class LoginCommandHandler
         return result.Failure switch
         {
             LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
+            LoginFailureReason.ContactNotVerified => _msg.ContactNotVerified<AuthTokenDto>(),
             LoginFailureReason.None => _msg.Ok(result.Token!, "LOGIN_SUCCESS"),
             _ => _msg.InvalidCredentials<AuthTokenDto>(),
         };
