@@ -75,6 +75,23 @@
         <mat-icon>view_agenda</mat-icon>
       </button>
     </div>
+
+    <!-- Follow -->
+    <button
+      type="button"
+      class="cce-list-toolbar__chip"
+      [class.cce-list-toolbar__chip--active]="isFollowing()"
+      [disabled]="followLoading()"
+      [attr.aria-pressed]="isFollowing()"
+      (click)="toggleFollow()"
+    >
+      @if (followLoading()) {
+        <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      } @else {
+        <mat-icon aria-hidden="true">{{ isFollowing() ? 'notifications_active' : 'notifications' }}</mat-icon>
+      }
+      {{ (isFollowing() ? 'news.followingButton' : 'news.followButton') | transloco }}
+    </button>
   </div>
 
   <!-- ─── Filter panel (collapsible) ──────────────────────── -->

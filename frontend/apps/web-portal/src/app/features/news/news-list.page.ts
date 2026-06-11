@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
-import { WorkbenchHeroComponent } from '@frontend/ui-kit';
+import { ToastService, WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { NewsApiService } from './news-api.service';
 import { NewsCardComponent } from './news-card.component';
@@ -62,6 +62,7 @@ export class NewsListPage implements OnInit {
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
   private readonly t = inject(TranslocoService);
+  private readonly toast = inject(ToastService);
 
   // ─── Search / view ──────────────────────────────────────
   readonly query = signal('');
@@ -85,6 +86,10 @@ export class NewsListPage implements OnInit {
     if (!q) return this.sortOrderOptions;
     return this.sortOrderOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
   });
+
+  // ─── Follow ─────────────────────────────────────────────
+  readonly isFollowing = signal(false);
+  readonly followLoading = signal(false);
 
   // ─── Pagination + load state ────────────────────────────
   readonly page = signal(1);
@@ -189,6 +194,7 @@ export class NewsListPage implements OnInit {
     if (sortMatch) this.sortOrderSearch.setValue(sortMatch.label, { emitEvent: false });
 
     void this.load();
+    void this.api.getFollowStatus().then(following => this.isFollowing.set(following));
   }
 
   onSortOrderSelected(value: SortOrder, label: string): void {
@@ -279,6 +285,20 @@ export class NewsListPage implements OnInit {
   clearQuery(): void {
     this.query.set('');
     this.syncUrl();
+  }
+
+  async toggleFollow(): Promise<void> {
+    const prev = this.isFollowing();
+    this.followLoading.set(true);
+    this.isFollowing.set(!prev);
+    const res = prev ? await this.api.unfollowNews() : await this.api.followNews();
+    this.followLoading.set(false);
+    if (res.ok) {
+      this.toast.success(prev ? 'news.unfollowSuccess' : 'news.followSuccess');
+    } else {
+      this.isFollowing.set(prev);
+      this.toast.error('errors.ERR005');
+    }
   }
 
   retry(): void {

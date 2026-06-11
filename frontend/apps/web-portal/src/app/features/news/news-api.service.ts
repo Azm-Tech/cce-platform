@@ -39,6 +39,27 @@ export class NewsApiService {
     });
   }
 
+  async getFollowStatus(): Promise<boolean> {
+    try {
+      await firstValueFrom(this.http.get('/api/news/follow'));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async followNews(): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.post('/api/news/follow', {}));
+    });
+  }
+
+  async unfollowNews(): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.delete('/api/news/follow'));
+    });
+  }
+
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {
     try {
       return { ok: true, value: await fn() };
