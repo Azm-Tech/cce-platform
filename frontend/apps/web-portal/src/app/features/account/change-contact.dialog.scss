@@ -68,6 +68,26 @@
     width: 100%;
   }
 
+  &__phone-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  &__phone-code,
+  &__phone-number {
+    width: 100%;
+  }
+
+  &__dial-badge {
+    margin-inline-start: auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.02em;
+  }
+
   &__otp-sent {
     display: flex;
     align-items: flex-start;

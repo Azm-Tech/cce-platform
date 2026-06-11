@@ -242,8 +242,9 @@ export class ProfilePage implements OnInit {
 
   openChangeContact(type: 'email' | 'phone'): void {
     import('./change-contact.dialog').then(({ ChangeContactDialogComponent }) => {
+      const p = this.profile();
       const ref = this.dialog.open(ChangeContactDialogComponent, {
-        data: { type },
+        data: { type, currentPhone: type === 'phone' ? p?.phoneNumber : undefined },
         panelClass: 'cce-dialog-no-padding',
         autoFocus: 'first-tabbable',
         width: '460px',
