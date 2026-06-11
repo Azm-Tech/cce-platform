@@ -101,6 +101,38 @@ export class AccountApiService {
     );
   }
 
+  async requestEmailChange(newEmail: string): Promise<Result<{ verificationId: string }>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http
+          .post<{ data: { verificationId: string } }>('/api/me/email/request-change', { newEmail })
+          .pipe(map((res) => res.data)),
+      ),
+    );
+  }
+
+  async requestPhoneChange(newPhone: string): Promise<Result<{ verificationId: string }>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http
+          .post<{ data: { verificationId: string } }>('/api/me/phone/request-change', { newPhone })
+          .pipe(map((res) => res.data)),
+      ),
+    );
+  }
+
+  async confirmEmailChange(verificationId: string, code: string): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.post<void>('/api/me/email/confirm-change', { verificationId, code })),
+    );
+  }
+
+  async confirmPhoneChange(verificationId: string, code: string): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.post<void>('/api/me/phone/confirm-change', { verificationId, code })),
+    );
+  }
+
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {
     try {
       return { ok: true, value: await fn() };

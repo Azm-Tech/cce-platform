@@ -118,6 +118,22 @@
               {{ 'account.profile.editButton' | transloco }}
             </button>
 
+            @if (showExpertCta()) {
+              <a
+                mat-stroked-button
+                color="primary"
+                routerLink="/me/expert-request"
+                class="cce-profile__sidebar-expert-btn"
+              >
+                <mat-icon>workspace_premium</mat-icon>
+                @if (expertBadgeStatus() === 'Rejected') {
+                  {{ 'account.profile.expertCta.reapplyButton' | transloco }}
+                } @else {
+                  {{ 'account.profile.expertCta.button' | transloco }}
+                }
+              </a>
+            }
+
           </div>
         </aside>
 
@@ -147,12 +163,20 @@
                 <dt>{{ 'account.profile.field.organizationName' | transloco }}</dt>
                 <dd>{{ p.organizationName || '—' }}</dd>
               </div>
-              @if (p.phoneNumber) {
-                <div class="cce-profile__field-row">
-                  <dt>{{ 'account.profile.field.phoneNumber' | transloco }}</dt>
-                  <dd>{{ p.phoneNumber }}</dd>
-                </div>
-              }
+              <div class="cce-profile__field-row cce-profile__field-row--action">
+                <dt>{{ 'account.profile.field.email' | transloco }}</dt>
+                <dd>{{ p.email || '—' }}</dd>
+                <button mat-stroked-button type="button" class="cce-profile__change-btn" (click)="openChangeContact('email')">
+                  <mat-icon>edit</mat-icon>{{ 'account.changeContact.change' | transloco }}
+                </button>
+              </div>
+              <div class="cce-profile__field-row cce-profile__field-row--action">
+                <dt>{{ 'account.profile.field.phoneNumber' | transloco }}</dt>
+                <dd>{{ p.phoneNumber || '—' }}</dd>
+                <button mat-stroked-button type="button" class="cce-profile__change-btn" (click)="openChangeContact('phone')">
+                  <mat-icon>edit</mat-icon>{{ 'account.changeContact.change' | transloco }}
+                </button>
+              </div>
               <div class="cce-profile__field-row">
                 <dt>{{ 'account.profile.field.nationality' | transloco }}</dt>
                 <dd>{{ countryCodeLabel() }}</dd>

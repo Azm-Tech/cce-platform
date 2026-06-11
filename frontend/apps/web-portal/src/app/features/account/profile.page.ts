@@ -109,7 +109,6 @@ export class ProfilePage implements OnInit {
   });
 
   readonly showExpertCta = computed(() => {
-    if (!this.expertStatusLoaded()) return false;
     const s = this.expertStatus();
     return s === null || s.status === 'Rejected';
   });
@@ -162,10 +161,8 @@ export class ProfilePage implements OnInit {
       this.errorKind.set(profileRes.error.kind);
     }
     if (countryCodesRes.ok && Array.isArray(countryCodesRes.value)) this.countryCodes.set(countryCodesRes.value);
-    if (expertRes.ok) {
-      this.expertStatus.set(expertRes.value);
-      this.expertStatusLoaded.set(true);
-    }
+    if (expertRes.ok) this.expertStatus.set(expertRes.value);
+    this.expertStatusLoaded.set(true);
   }
 
   enterEditMode(): void {
@@ -241,6 +238,23 @@ export class ProfilePage implements OnInit {
 
   retry(): void {
     void this.load();
+  }
+
+  openChangeContact(type: 'email' | 'phone'): void {
+    import('./change-contact.dialog').then(({ ChangeContactDialogComponent }) => {
+      const ref = this.dialog.open(ChangeContactDialogComponent, {
+        data: { type },
+        panelClass: 'cce-dialog-no-padding',
+        autoFocus: 'first-tabbable',
+        width: '460px',
+      });
+      ref.afterClosed().subscribe((saved) => {
+        if (saved) {
+          this.toast.success(type === 'email' ? 'account.changeContact.successEmail' : 'account.changeContact.successPhone');
+          void this.load();
+        }
+      });
+    });
   }
 
   openPreferences(): void {

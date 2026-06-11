@@ -1,0 +1,105 @@
+<div class="cce-cc">
+
+  <div class="cce-cc__header">
+    <div class="cce-cc__header-icon" aria-hidden="true">
+      <mat-icon>{{ data.type === 'email' ? 'mail' : 'phone' }}</mat-icon>
+    </div>
+    <h2 class="cce-cc__title">
+      {{ (data.type === 'email' ? 'account.changeContact.titleEmail' : 'account.changeContact.titlePhone') | transloco }}
+    </h2>
+    <button mat-icon-button type="button" mat-dialog-close class="cce-cc__close" [attr.aria-label]="'common.actions.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="cce-cc__body">
+
+    @if (errorKind()) {
+      <div class="cce-cc__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      </div>
+    }
+
+    @if (step() === 'request') {
+
+      <p class="cce-cc__hint">
+        {{ (data.type === 'email' ? 'account.changeContact.hintEmail' : 'account.changeContact.hintPhone') | transloco }}
+      </p>
+
+      <mat-form-field class="cce-cc__field">
+        <mat-label>
+          {{ (data.type === 'email' ? 'account.changeContact.newEmail' : 'account.changeContact.newPhone') | transloco }}
+        </mat-label>
+        <mat-icon matPrefix>{{ data.type === 'email' ? 'alternate_email' : 'smartphone' }}</mat-icon>
+        <input
+          matInput
+          [formControl]="newValueControl"
+          [type]="data.type === 'email' ? 'email' : 'tel'"
+          [placeholder]="data.type === 'phone' ? '+966XXXXXXXXX' : ''"
+          autocomplete="off"
+        />
+        @if (newValueControl.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        } @else if (newValueControl.hasError('email') || newValueControl.hasError('pattern')) {
+          <mat-error>{{ 'common.validation.invalid' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+    } @else {
+
+      <div class="cce-cc__otp-sent">
+        <mat-icon class="cce-cc__otp-sent-icon">mark_email_read</mat-icon>
+        <p class="cce-cc__hint">
+          {{ (data.type === 'email' ? 'account.changeContact.otpSentEmail' : 'account.changeContact.otpSentPhone') | transloco : { value: newValueControl.value } }}
+        </p>
+      </div>
+
+      <mat-form-field class="cce-cc__field">
+        <mat-label>{{ 'account.changeContact.otpCode' | transloco }}</mat-label>
+        <mat-icon matPrefix>pin</mat-icon>
+        <input
+          matInput
+          [formControl]="otpControl"
+          type="text"
+          inputmode="numeric"
+          maxlength="8"
+          autocomplete="one-time-code"
+        />
+        @if (otpControl.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        } @else if (otpControl.hasError('pattern')) {
+          <mat-error>{{ 'account.changeContact.invalidOtp' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+    }
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cce-cc__actions">
+    @if (step() === 'request') {
+      <button mat-button type="button" mat-dialog-close>
+        {{ 'common.actions.cancel' | transloco }}
+      </button>
+      <button mat-flat-button color="primary" type="button" [disabled]="sending()" (click)="requestChange()">
+        @if (sending()) {
+          <mat-progress-spinner diameter="18" mode="indeterminate" />
+        }
+        {{ 'account.changeContact.sendOtp' | transloco }}
+      </button>
+    } @else {
+      <button mat-button type="button" [disabled]="confirming()" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'account.changeContact.back' | transloco }}
+      </button>
+      <button mat-flat-button color="primary" type="button" [disabled]="confirming()" (click)="confirmChange()">
+        @if (confirming()) {
+          <mat-progress-spinner diameter="18" mode="indeterminate" />
+        }
+        {{ 'account.changeContact.confirm' | transloco }}
+      </button>
+    }
+  </mat-dialog-actions>
+
+</div>
