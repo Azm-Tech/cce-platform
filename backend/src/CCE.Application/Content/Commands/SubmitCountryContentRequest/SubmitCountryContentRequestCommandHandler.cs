@@ -115,6 +115,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
             body.TitleAr, body.TitleEn,
             body.DescriptionAr, body.DescriptionEn,
             body.ResourceType, body.AssetFileId,
+            body.CategoryId,
             _clock);
     }
 
@@ -184,6 +185,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
             body.TopicId,
             body.StartsOn, body.EndsOn,
             body.LocationAr, body.LocationEn, body.OnlineMeetingUrl,
+            body.FeaturedImageAssetId,
             _clock);
     }
 }

@@ -22,6 +22,7 @@ internal sealed class CountryContentRequestConfiguration : IEntityTypeConfigurat
         // Resource-specific (nullable for News/Event)
         builder.Property(r => r.ProposedResourceType).HasConversion<int>().IsRequired(false);
         builder.Property(r => r.ProposedAssetFileId).IsRequired(false);
+        builder.Property(r => r.ProposedCategoryId).IsRequired(false);
 
         // News/Event-specific
         builder.Property(r => r.ProposedTopicId).IsRequired(false);

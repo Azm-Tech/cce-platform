@@ -16,6 +16,7 @@ public sealed record CountryContentRequestDto(
     ResourceType? ProposedResourceType,
     System.Guid? ProposedAssetFileId,
     System.Guid? ProposedTopicId,
+    System.Guid? ProposedCategoryId,
     System.DateTimeOffset? ProposedStartsOn,
     System.DateTimeOffset? ProposedEndsOn,
     string? ProposedLocationAr,

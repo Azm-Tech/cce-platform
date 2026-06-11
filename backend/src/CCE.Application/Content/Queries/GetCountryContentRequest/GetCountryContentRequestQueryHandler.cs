@@ -46,7 +46,8 @@ public sealed class GetCountryContentRequestQueryHandler
             entity.ProposedTitleAr, entity.ProposedTitleEn,
             entity.ProposedDescriptionAr, entity.ProposedDescriptionEn,
             entity.ProposedResourceType, entity.ProposedAssetFileId,
-            entity.ProposedTopicId, entity.ProposedStartsOn, entity.ProposedEndsOn,
+            entity.ProposedTopicId, entity.ProposedCategoryId,
+            entity.ProposedStartsOn, entity.ProposedEndsOn,
             entity.ProposedLocationAr, entity.ProposedLocationEn, entity.ProposedOnlineMeetingUrl,
             entity.SubmittedOn, entity.AdminNotesAr, entity.AdminNotesEn,
             entity.ProcessedById, entity.ProcessedOn);
