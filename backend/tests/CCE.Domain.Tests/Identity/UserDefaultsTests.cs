@@ -22,7 +22,7 @@ public class UserDefaultsTests
     public void New_user_defaults_Interests_to_empty_list()
     {
         var user = new User();
-        user.Interests.Should().BeEmpty();
+        user.UserInterestTopics.Should().BeEmpty();
     }
 
     [Fact]

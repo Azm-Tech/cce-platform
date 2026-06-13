@@ -113,6 +113,7 @@ public sealed class Resource : AggregateRoot<System.Guid>
             ResourceId: Id,
             CountryId: CountryId,
             CategoryId: CategoryId,
+            UploadedById: UploadedById,
             OccurredOn: PublishedOn.Value));
     }
 

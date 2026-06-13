@@ -34,20 +34,20 @@ public sealed class NewsletterSubscription : AggregateRoot<System.Guid>
 
     public static NewsletterSubscription Subscribe(string email, string localePreference, ISystemClock clock)
     {
-        _ = clock;
         if (string.IsNullOrWhiteSpace(email) || !EmailPattern.IsMatch(email))
-        {
             throw new DomainException($"email '{email}' is invalid.");
-        }
         if (localePreference != "ar" && localePreference != "en")
-        {
             throw new DomainException("locale must be 'ar' or 'en'.");
-        }
-        return new NewsletterSubscription(
+
+        var sub = new NewsletterSubscription(
             id: System.Guid.NewGuid(),
             email: email,
             localePreference: localePreference,
             confirmationToken: System.Guid.NewGuid().ToString("N"));
+
+        sub.IsConfirmed = true;
+        sub.ConfirmedOn = clock.UtcNow;
+        return sub;
     }
 
     public void Confirm(string token, ISystemClock clock)
@@ -68,5 +68,19 @@ public sealed class NewsletterSubscription : AggregateRoot<System.Guid>
     public void Unsubscribe(ISystemClock clock)
     {
         UnsubscribedOn = clock.UtcNow;
+    }
+
+    /// <summary>
+    /// Re-activates a previously unsubscribed address. Resets the confirmation state so the
+    /// double opt-in flow runs again, and clears <see cref="UnsubscribedOn"/>.
+    /// </summary>
+    public void Resubscribe(string localePreference, ISystemClock clock)
+    {
+        if (localePreference != "ar" && localePreference != "en")
+            throw new DomainException("locale must be 'ar' or 'en'.");
+        LocalePreference = localePreference;
+        UnsubscribedOn = null;
+        IsConfirmed = true;
+        ConfirmedOn = clock.UtcNow;
     }
 }

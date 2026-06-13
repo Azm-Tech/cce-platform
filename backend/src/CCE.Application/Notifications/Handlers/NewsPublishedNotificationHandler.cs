@@ -42,7 +42,11 @@ public sealed class NewsPublishedNotificationHandler
             RecipientUserId: news.AuthorId,
             EventType: NotificationEventType.NewsPublished,
             Channels: [NotificationChannel.InApp],
-            MetaData: new Dictionary<string, string>(),
+            MetaData: new Dictionary<string, string>
+            {
+                ["TitleAr"] = news.TitleAr,
+                ["TitleEn"] = news.TitleEn,
+            },
             Locale: "en"), cancellationToken).ConfigureAwait(false);
     }
 }

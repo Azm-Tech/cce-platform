@@ -18,6 +18,7 @@ public class CountryContentRequestTests
             descriptionAr: "وصف", descriptionEn: "Description",
             resourceType: ResourceType.Paper,
             assetFileId: System.Guid.NewGuid(),
+            categoryId: System.Guid.NewGuid(),
             clock: clock);
 
     // ─── SubmitResource ───────────────────────────────────────────────────────
@@ -49,7 +50,7 @@ public class CountryContentRequestTests
         var act = () => CountryContentRequest.SubmitResource(
             System.Guid.NewGuid(), System.Guid.NewGuid(),
             titleAr, titleEn, descAr, descEn,
-            ResourceType.Paper, System.Guid.NewGuid(), clock);
+            ResourceType.Paper, System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
         act.Should().Throw<DomainException>();
     }
 
@@ -60,7 +61,7 @@ public class CountryContentRequestTests
         var act = () => CountryContentRequest.SubmitResource(
             System.Guid.NewGuid(), System.Guid.NewGuid(),
             "ا", "x", "ا", "x",
-            ResourceType.Paper, System.Guid.Empty, clock);
+            ResourceType.Paper, System.Guid.Empty, System.Guid.NewGuid(), clock);
         act.Should().Throw<DomainException>().WithMessage("*AssetFileId*");
     }
 
@@ -107,7 +108,7 @@ public class CountryContentRequestTests
         var r = CountryContentRequest.SubmitEvent(
             System.Guid.NewGuid(), System.Guid.NewGuid(),
             "عنوان", "Title", "وصف", "Description",
-            topicId, start, end, "الرياض", "Riyadh", null, clock);
+            topicId, start, end, "الرياض", "Riyadh", null, null, clock);
 
         r.Type.Should().Be(ContentType.Event);
         r.ProposedStartsOn.Should().Be(start);
@@ -125,7 +126,7 @@ public class CountryContentRequestTests
             "ا", "x", "ا", "x",
             System.Guid.NewGuid(),
             clock.UtcNow.AddDays(2), clock.UtcNow.AddDays(1),
-            null, null, null, clock);
+            null, null, null, null, clock);
         act.Should().Throw<DomainException>().WithMessage("*StartsOn*");
     }
 

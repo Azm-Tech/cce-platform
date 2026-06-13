@@ -174,13 +174,11 @@ public static class DependencyInjection
         services.AddExternalApiClient<CCE.Integration.Kapsarc.IKapsarcGatewayClient>("KapsarcGateway");
         services.AddScoped<CCE.Application.Kapsarc.IKapsarcClient, CCE.Infrastructure.Kapsarc.GatewayKapsarcClient>();
 
-        // File storage + virus scanning
-        services.AddSingleton<IFileStorage, LocalFileStorage>();
+        // File storage — S3-backed (Supabase / MinIO / R2). Both asset and media slots
+        // use the same singleton S3 client. LocalFileStorage is no longer registered.
+        services.AddSingleton<IFileStorage, S3FileStorage>();
         services.AddKeyedSingleton<IFileStorage>("media", (sp, _) =>
-        {
-            var opts = sp.GetRequiredService<IOptions<CceInfrastructureOptions>>().Value;
-            return new LocalFileStorage(opts.MediaUploadsRoot);
-        });
+            sp.GetRequiredService<IFileStorage>());
         services.AddSingleton<IFileStorageFactory, FileStorageFactory>();
 
         // Media upload options (bound from "Media" section in appsettings)
@@ -192,6 +190,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceRepository, ResourceRepository>();
         services.AddScoped<INewsRepository, NewsRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<INewsletterSubscriptionRepository, NewsletterSubscriptionRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
         services.AddScoped<IHomepageSectionRepository, HomepageSectionRepository>();
         services.AddScoped<ICountryContentRequestRepository, CountryContentRequestRepository>();

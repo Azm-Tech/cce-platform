@@ -30,4 +30,11 @@ public sealed class EventRepository : IEventRepository
         _db.SetExpectedRowVersion(@event, expectedRowVersion);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
+
+    public Task<ContentTitle?> GetTitleAsync(System.Guid id, CancellationToken ct)
+        => _db.Events
+            .AsNoTracking()
+            .Where(e => e.Id == id)
+            .Select(e => new ContentTitle(e.TitleAr, e.TitleEn))
+            .FirstOrDefaultAsync(ct);
 }

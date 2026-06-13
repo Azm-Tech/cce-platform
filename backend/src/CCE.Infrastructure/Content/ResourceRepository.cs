@@ -30,4 +30,11 @@ public sealed class ResourceRepository : IResourceRepository
         _db.SetExpectedRowVersion(resource, expectedRowVersion);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
+
+    public Task<ContentTitle?> GetTitleAsync(System.Guid id, CancellationToken ct)
+        => _db.Resources
+            .AsNoTracking()
+            .Where(r => r.Id == id)
+            .Select(r => new ContentTitle(r.TitleAr, r.TitleEn))
+            .FirstOrDefaultAsync(ct);
 }

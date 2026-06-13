@@ -32,6 +32,18 @@ public sealed class CceInfrastructureOptions
     /// <summary>Root directory for media file storage. When under wwwroot/, files are also served as static content.</summary>
     public string MediaUploadsRoot { get; init; } = "./wwwroot/media/";
 
+    /// <summary>S3-compatible object store endpoint (Supabase / MinIO / R2). Example: <c>https://xxx.supabase.co/storage/v1/s3</c>.</summary>
+    public string S3EndpointUrl { get; init; } = string.Empty;
+
+    /// <summary>S3 access key ID.</summary>
+    public string S3AccessKey { get; init; } = string.Empty;
+
+    /// <summary>S3 secret access key.</summary>
+    public string S3SecretKey { get; init; } = string.Empty;
+
+    /// <summary>S3 bucket name for all asset/media uploads.</summary>
+    public string S3BucketName { get; init; } = "uploads";
+
     /// <summary>Meilisearch HTTP base URL. Default <c>http://localhost:7700</c>.</summary>
     public string MeilisearchUrl { get; init; } = "http://localhost:7700";
 
@@ -40,4 +52,10 @@ public sealed class CceInfrastructureOptions
 
     /// <summary>Output-cache TTL in seconds for anonymous reads. Default 60.</summary>
     public int OutputCacheTtlSeconds { get; init; } = 60;
+
+    /// <summary>
+    /// Max concurrent newsletter dispatch tasks per content-publish event.
+    /// Tune upward if subscriber lists are large and bus throughput allows it. Default 10.
+    /// </summary>
+    public int NewsletterFanOutConcurrency { get; init; } = 10;
 }

@@ -30,4 +30,18 @@ public sealed class NewsRepository : INewsRepository
         _db.SetExpectedRowVersion(news, expectedRowVersion);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
     }
+
+    public Task<ContentTitle?> GetTitleAsync(System.Guid id, CancellationToken ct)
+        => _db.News
+            .AsNoTracking()
+            .Where(n => n.Id == id)
+            .Select(n => new ContentTitle(n.TitleAr, n.TitleEn))
+            .FirstOrDefaultAsync(ct);
+
+    public Task<NewsNotificationData?> GetNotificationDataAsync(System.Guid id, CancellationToken ct)
+        => _db.News
+            .AsNoTracking()
+            .Where(n => n.Id == id)
+            .Select(n => new NewsNotificationData(n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn))
+            .FirstOrDefaultAsync(ct);
 }
