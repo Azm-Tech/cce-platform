@@ -3,7 +3,7 @@ using CCE.Application.Common.Messaging.IntegrationEvents;
 using CCE.Domain.Community.Events;
 using MediatR;
 
-namespace CCE.Application.Notifications.Handlers;
+namespace CCE.Application.Community.EventHandlers;
 
 /// <summary>
 /// Bridge: when <see cref="PostCreatedEvent"/> is dispatched (pre-commit, inside the

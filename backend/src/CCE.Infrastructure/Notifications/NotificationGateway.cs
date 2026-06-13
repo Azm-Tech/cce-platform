@@ -248,7 +248,29 @@ public sealed class NotificationGateway : INotificationGateway
                 Error: "Channel disabled by user settings.");
         }
 
-        var sendResult = await sender.SendAsync(rendered, cancellationToken).ConfigureAwait(false);
+        ChannelSendResult sendResult;
+#pragma warning disable CA1031 // Channels must fail independently — a single channel's exception is logged and recorded as Failed, then the remaining channels continue.
+        try
+        {
+            sendResult = await sender.SendAsync(rendered, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogError(
+                ex,
+                "Notification channel {Channel} threw while sending template {TemplateCode} to recipient {RecipientUserId}.",
+                channel,
+                request.TemplateCode,
+                request.RecipientUserId);
+
+            notificationLog.MarkFailed(ex.Message);
+            return new NotificationChannelDispatchResult(
+                channel,
+                NotificationDeliveryStatus.Failed,
+                NotificationLogId: notificationLog.Id,
+                Error: ex.Message);
+        }
+#pragma warning restore CA1031
 
         if (sendResult.Success)
         {
