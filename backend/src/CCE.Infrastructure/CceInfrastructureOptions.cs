@@ -52,4 +52,10 @@ public sealed class CceInfrastructureOptions
 
     /// <summary>Output-cache TTL in seconds for anonymous reads. Default 60.</summary>
     public int OutputCacheTtlSeconds { get; init; } = 60;
+
+    /// <summary>
+    /// Max concurrent newsletter dispatch tasks per content-publish event.
+    /// Tune upward if subscriber lists are large and bus throughput allows it. Default 10.
+    /// </summary>
+    public int NewsletterFanOutConcurrency { get; init; } = 10;
 }

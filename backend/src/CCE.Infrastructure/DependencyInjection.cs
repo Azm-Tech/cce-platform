@@ -190,6 +190,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceRepository, ResourceRepository>();
         services.AddScoped<INewsRepository, NewsRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<INewsletterSubscriptionRepository, NewsletterSubscriptionRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
         services.AddScoped<IHomepageSectionRepository, HomepageSectionRepository>();
         services.AddScoped<ICountryContentRequestRepository, CountryContentRequestRepository>();

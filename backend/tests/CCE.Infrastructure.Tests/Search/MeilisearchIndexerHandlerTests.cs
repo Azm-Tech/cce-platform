@@ -51,7 +51,7 @@ public class MeilisearchIndexerHandlerTests
         var search = Substitute.For<ISearchClient>();
         var sut = new NewsPublishedIndexHandler(db, search, NullLogger<NewsPublishedIndexHandler>.Instance);
 
-        var evt = new NewsPublishedEvent(news.Id, clock.UtcNow);
+        var evt = new NewsPublishedEvent(news.Id, news.TopicId, news.AuthorId, clock.UtcNow);
         await sut.Handle(evt, CancellationToken.None);
 
         await search.Received(1).UpsertAsync(
@@ -92,7 +92,7 @@ public class MeilisearchIndexerHandlerTests
         var search = Substitute.For<ISearchClient>();
         var sut = new ResourcePublishedIndexHandler(db, search, NullLogger<ResourcePublishedIndexHandler>.Instance);
 
-        var evt = new ResourcePublishedEvent(resource.Id, null, resource.CategoryId, clock.UtcNow);
+        var evt = new ResourcePublishedEvent(resource.Id, null, resource.CategoryId, resource.UploadedById, clock.UtcNow);
         await sut.Handle(evt, CancellationToken.None);
 
         await search.Received(1).UpsertAsync(
@@ -133,7 +133,7 @@ public class MeilisearchIndexerHandlerTests
         var search = Substitute.For<ISearchClient>();
         var sut = new EventScheduledIndexHandler(db, search, NullLogger<EventScheduledIndexHandler>.Instance);
 
-        var evt = new EventScheduledEvent(ev.Id, BaseTime, BaseTime.AddHours(2), clock.UtcNow);
+        var evt = new EventScheduledEvent(ev.Id, ev.TopicId, BaseTime, BaseTime.AddHours(2), clock.UtcNow);
         await sut.Handle(evt, CancellationToken.None);
 
         await search.Received(1).UpsertAsync(

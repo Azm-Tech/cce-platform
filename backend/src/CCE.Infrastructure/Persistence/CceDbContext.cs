@@ -204,7 +204,7 @@ public sealed class CceDbContext
         {
             return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (DbUpdateConcurrencyException ex)
+         catch (DbUpdateConcurrencyException ex)
         {
             throw new ConcurrencyException("Concurrent update conflict.", ex);
         }

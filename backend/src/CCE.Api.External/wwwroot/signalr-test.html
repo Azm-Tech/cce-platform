@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SignalR Notification Test Harness</title>
+<script src="/js/signalr.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; color: #333; }
+  h1 { font-size: 1.4rem; margin-bottom: 16px; }
+  h2 { font-size: 1rem; margin-bottom: 8px; }
+  .panel { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .panel-title { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: #666; margin-bottom: 10px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 8px; }
+  .row label { font-size: 0.8rem; color: #555; display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 140px; }
+  .row input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; font-family: monospace; width: 100%; }
+  .row input:focus { outline: none; border-color: #4a90d9; }
+  button { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.82rem; font-weight: 500; background: #e8e8e8; color: #333; transition: background 0.15s; }
+  button:hover { background: #d0d0d0; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #4a90d9; color: #fff; }
+  .btn-primary:hover { background: #357abd; }
+  .btn-danger { background: #d9534f; color: #fff; }
+  .btn-danger:hover { background: #c9302c; }
+  .btn-success { background: #5cb85c; color: #fff; }
+  .btn-success:hover { background: #4cae4c; }
+  .btn-warning { background: #f0ad4e; color: #fff; }
+  .btn-warning:hover { background: #eea236; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
+  .badge-connected { background: #d4edda; color: #155724; }
+  .badge-disconnected { background: #f8d7da; color: #721c24; }
+  .status-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; }
+  #log { background: #1e1e1e; color: #d4d4d4; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.78rem; padding: 12px; border-radius: 6px; height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+  .log-entry { margin-bottom: 3px; }
+  .log-time { color: #6a9955; }
+  .log-event { color: #569cd6; }
+  .log-payload { color: #ce9178; }
+  .log-info { color: #9cdcfe; }
+  .log-error { color: #f48771; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .subsection { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+</style>
+</head>
+<body>
+
+<h1>SignalR Notification Test Harness</h1>
+
+<div class="status-bar">
+  <span>Status:</span>
+  <span class="badge badge-disconnected" id="connectionStatus">Disconnected</span>
+  <span id="connectionIdLabel" style="font-size:0.8rem;color:#888;"></span>
+</div>
+
+  <div class="panel">
+  <div class="panel-title">Connection</div>
+  <div class="row">
+    <label>Mode
+      <span style="display:flex;gap:4px;margin-top:2px">
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#e8e8e8">
+          <input type="radio" name="mode" value="dev" checked onchange="toggleMode()" /> Dev
+        </label>
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#fff">
+          <input type="radio" name="mode" value="prod" onchange="toggleMode()" /> Prod
+        </label>
+      </span>
+    </label>
+    <label>Server URL<input id="serverUrl" value="" placeholder="/hubs/notifications on same origin" /></label>
+    <label>JWT Token <small style="color:#999">(blank = use cookie)</small><input id="jwtToken" placeholder="dev:cce-user or real JWT" /></label>
+    <label>Dev Role<select id="devRole" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:0.85rem">
+      <option value="cce-super-admin">cce-super-admin</option>
+      <option value="cce-admin">cce-admin</option>
+      <option value="cce-content-manager">cce-content-manager</option>
+      <option value="cce-reviewer">cce-reviewer</option>
+      <option value="cce-expert">cce-expert</option>
+      <option value="cce-user" selected>cce-user</option>
+      <option value="cce-state-representative">cce-state-representative</option>
+    </select></label>
+  </div>
+  <div class="actions">
+    <button id="btnDevSignIn">Dev Sign-In</button>
+    <button class="btn-primary" id="btnConnect">Connect</button>
+    <button class="btn-danger" id="btnDisconnect" disabled>Disconnect</button>
+    <button id="btnClearLog">Clear Log</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Rooms</div>
+  <div class="row">
+    <label>Post ID<input id="postId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+    <label>Community ID<input id="communityId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+    <label>Topic ID<input id="topicId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+  </div>
+  <div class="actions" style="margin-bottom:4px">
+    <button class="btn-success" id="btnSubscribe">Subscribe(post)</button>
+    <button class="btn-warning" id="btnUnsubscribe">Unsubscribe(post)</button>
+    <button class="btn-success" id="btnSubscribeCommunity">SubscribeCommunity</button>
+    <button class="btn-warning" id="btnUnsubscribeCommunity">UnsubscribeCommunity</button>
+    <button class="btn-success" id="btnSubscribeTopic">SubscribeTopic</button>
+    <button class="btn-warning" id="btnUnsubscribeTopic">UnsubscribeTopic</button>
+  </div>
+  <div class="subsection">
+    <div style="font-size:0.8rem; color:#888; margin-bottom:6px">Typing Indicators</div>
+    <div class="actions">
+      <button id="btnStartTyping">StartTyping</button>
+      <button id="btnStopTyping">StopTyping</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Event Log <span id="eventCount" style="font-weight:normal;color:#999;margin-left:8px">0 events</span></div>
+  <div id="log">Waiting for connection...</div>
+</div>
+
+<script src="/js/signalr-test.js"></script>
+</body>
+</html>

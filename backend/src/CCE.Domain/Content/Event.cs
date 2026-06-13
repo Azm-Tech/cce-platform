@@ -104,7 +104,7 @@ public sealed class Event : AggregateRoot<System.Guid>
         var iCalUid = $"{id:N}@cce.moenergy.gov.sa";
         var ev = new Event(id, titleAr, titleEn, descriptionAr, descriptionEn,
             startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid, topicId);
-        ev.RaiseDomainEvent(new EventScheduledEvent(id, startsOn, endsOn, clock.UtcNow));
+        ev.RaiseDomainEvent(new EventScheduledEvent(id, topicId, startsOn, endsOn, clock.UtcNow));
         return ev;
     }
 

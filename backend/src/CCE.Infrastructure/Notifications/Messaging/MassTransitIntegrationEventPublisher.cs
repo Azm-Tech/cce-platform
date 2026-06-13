@@ -1,5 +1,6 @@
 using CCE.Application.Common.Messaging;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace CCE.Infrastructure.Notifications.Messaging;
 
@@ -16,11 +17,18 @@ namespace CCE.Infrastructure.Notifications.Messaging;
 public sealed class MassTransitIntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger<MassTransitIntegrationEventPublisher> _logger;
 
-    public MassTransitIntegrationEventPublisher(IPublishEndpoint publishEndpoint)
-        => _publishEndpoint = publishEndpoint;
+    public MassTransitIntegrationEventPublisher(IPublishEndpoint publishEndpoint, ILogger<MassTransitIntegrationEventPublisher> logger)
+    {
+        _publishEndpoint = publishEndpoint;
+        _logger = logger;
+    }
 
     public Task PublishAsync<T>(T @event, CancellationToken cancellationToken)
         where T : class
-        => _publishEndpoint.Publish(@event, cancellationToken);
+    {
+        _logger.LogInformation("MassTransitIntegrationEventPublisher.PublishAsync: type={Type}, endpointType={EndpointType}", typeof(T).Name, _publishEndpoint.GetType().FullName);
+        return _publishEndpoint.Publish(@event, cancellationToken);
+    }
 }

@@ -2,6 +2,7 @@ using CCE.Domain.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace CCE.Infrastructure.Persistence.Interceptors;
 
@@ -23,10 +24,12 @@ namespace CCE.Infrastructure.Persistence.Interceptors;
 public sealed class DomainEventDispatcher : SaveChangesInterceptor
 {
     private readonly IPublisher _publisher;
+    private readonly ILogger<DomainEventDispatcher> _logger;
 
-    public DomainEventDispatcher(IPublisher publisher)
+    public DomainEventDispatcher(IPublisher publisher, ILogger<DomainEventDispatcher> logger)
     {
         _publisher = publisher;
+        _logger = logger;
     }
 
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -43,6 +46,7 @@ public sealed class DomainEventDispatcher : SaveChangesInterceptor
             .ToList();
 
         var allEvents = entriesWithEvents.SelectMany(e => e.DomainEvents).ToList();
+        _logger.LogInformation("DomainEventDispatcher: Found {Count} entities with events, {EventCount} total events", entriesWithEvents.Count, allEvents.Count);
 
         foreach (var entity in entriesWithEvents)
         {
@@ -51,6 +55,7 @@ public sealed class DomainEventDispatcher : SaveChangesInterceptor
 
         foreach (var domainEvent in allEvents)
         {
+            _logger.LogInformation("DomainEventDispatcher: Publishing event {EventType}", domainEvent.GetType().Name);
             await _publisher.Publish(domainEvent, cancellationToken).ConfigureAwait(false);
         }
 

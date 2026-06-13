@@ -41,7 +41,11 @@ public sealed class ResourcePublishedNotificationHandler
             RecipientUserId: resource.UploadedById,
             EventType: NotificationEventType.ResourcePublished,
             Channels: [NotificationChannel.InApp],
-            MetaData: new Dictionary<string, string>(),
+            MetaData: new Dictionary<string, string>
+            {
+                ["TitleAr"] = resource.TitleAr,
+                ["TitleEn"] = resource.TitleEn,
+            },
             Locale: "en"), cancellationToken).ConfigureAwait(false);
     }
 }

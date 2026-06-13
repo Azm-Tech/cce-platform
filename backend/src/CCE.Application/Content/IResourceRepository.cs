@@ -7,4 +7,5 @@ public interface IResourceRepository
     Task SaveAsync(Resource resource, CancellationToken ct);
     Task<Resource?> FindAsync(System.Guid id, CancellationToken ct);
     Task UpdateAsync(Resource resource, byte[] expectedRowVersion, CancellationToken ct);
+    Task<ContentTitle?> GetTitleAsync(System.Guid id, CancellationToken ct);
 }

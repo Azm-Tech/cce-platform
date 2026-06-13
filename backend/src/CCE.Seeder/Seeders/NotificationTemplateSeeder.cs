@@ -35,32 +35,50 @@ public sealed class NotificationTemplateSeeder : ISeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var added = 0;
+        var changed = 0;
         foreach (var t in Templates)
         {
             var id = DeterministicGuid.From($"notif_template:{t.Code}:{t.Channel}");
 
-            if (await _ctx.NotificationTemplates.IgnoreQueryFilters()
-                .AnyAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false))
+            var existing = await _ctx.NotificationTemplates.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
+
+            // Fallback: previous versions may have used a different deterministic UUID
+            if (existing is null)
             {
-                continue;
+                existing = await _ctx.NotificationTemplates.IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(x => x.Code == t.Code && x.Channel == t.Channel, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
-            var template = NotificationTemplate.Define(
-                t.Code, t.SubjectAr, t.SubjectEn, t.BodyAr, t.BodyEn, t.Channel, "{}");
-            typeof(NotificationTemplate).GetProperty(nameof(template.Id))!.SetValue(template, id);
+            if (existing is null)
+            {
+                var template = NotificationTemplate.Define(
+                    t.Code, t.SubjectAr, t.SubjectEn, t.BodyAr, t.BodyEn, t.Channel, "{}");
+                typeof(NotificationTemplate).GetProperty(nameof(template.Id))!.SetValue(template, id);
 
-            _ctx.NotificationTemplates.Add(template);
-            added++;
-            _logger.LogInformation("Seeded notification template {Code}/{Channel}.", t.Code, t.Channel);
+                _ctx.NotificationTemplates.Add(template);
+                _logger.LogInformation("Seeded notification template {Code}/{Channel}.", t.Code, t.Channel);
+                changed++;
+            }
+            else if (existing.BodyAr != t.BodyAr || existing.BodyEn != t.BodyEn ||
+                     existing.SubjectAr != t.SubjectAr || existing.SubjectEn != t.SubjectEn)
+            {
+                typeof(NotificationTemplate).GetProperty(nameof(existing.BodyAr))!.SetValue(existing, t.BodyAr);
+                typeof(NotificationTemplate).GetProperty(nameof(existing.BodyEn))!.SetValue(existing, t.BodyEn);
+                typeof(NotificationTemplate).GetProperty(nameof(existing.SubjectAr))!.SetValue(existing, t.SubjectAr);
+                typeof(NotificationTemplate).GetProperty(nameof(existing.SubjectEn))!.SetValue(existing, t.SubjectEn);
+                _logger.LogInformation("Updated notification template {Code}/{Channel}.", t.Code, t.Channel);
+                changed++;
+            }
         }
 
-        if (added > 0)
+        if (changed > 0)
         {
             await _ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        _logger.LogInformation("NotificationTemplateSeeder complete ({Added} new).", added);
+        _logger.LogInformation("NotificationTemplateSeeder complete ({Changed} changed/added).", changed);
     }
 
     private sealed record TemplateSeed(
@@ -134,19 +152,41 @@ public sealed class NotificationTemplateSeeder : ISeeder
             "<p>تم تقديم طلب محتوى جديد ({{Type}}) وبانتظار المراجعة.</p>",
             "<p>A new content request ({{Type}}) has been submitted and is awaiting review.</p>"),
 
-        // News published — author notice (InApp)
+        // News published — InApp (author + subscribers) + Email (subscribers)
         new("NEWS_PUBLISHED", NotificationChannel.InApp,
-            "تم نشر الخبر",
+            "خبر جديد منشور",
             "News published",
-            "تم نشر الخبر الخاص بك على المنصة.",
-            "Your news article has been published on the platform."),
+            "تم نشر خبر جديد: {{TitleAr}}",
+            "New article published: {{TitleEn}}"),
+        new("NEWS_PUBLISHED", NotificationChannel.Email,
+            "خبر جديد على المنصة",
+            "New article on the platform",
+            "<p>مرحباً {{RecipientName}}،</p><p>تم نشر خبر جديد على منصة CCE Knowledge Center:</p><h2>{{TitleAr}}</h2><p>{{ContentBodyAr}}</p><p style='text-align:center;'><a href='{{ArticleUrl}}' class='btn' style='display:inline-block;padding:12px 28px;background-color:#1a73e8;color:#fff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:500;margin:16px 0;'>قراءة الخبر كاملاً</a></p><p>مع تحيات،<br/>فريق CCE Knowledge Center</p>",
+            "<p>Dear {{RecipientName}},</p><p>A new article has been published on CCE Knowledge Center:</p><h2>{{TitleEn}}</h2><p>{{ContentBodyEn}}</p><p style='text-align:center;'><a href='{{ArticleUrl}}' class='btn' style='display:inline-block;padding:12px 28px;background-color:#1a73e8;color:#fff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:500;margin:16px 0;'>Read full article</a></p><p>Best regards,<br/>CCE Knowledge Center Team</p>"),
 
-        // Resource published — uploader notice (InApp)
+        // Resource published — InApp (uploader + subscribers) + Email (subscribers)
         new("RESOURCE_PUBLISHED", NotificationChannel.InApp,
-            "تم نشر المورد",
+            "مورد جديد منشور",
             "Resource published",
-            "تم نشر المورد الذي قمت برفعه على المنصة.",
-            "The resource you uploaded has been published on the platform."),
+            "تم نشر مورد جديد: {{TitleAr}}",
+            "New resource published: {{TitleEn}}"),
+        new("RESOURCE_PUBLISHED", NotificationChannel.Email,
+            "مورد جديد على المنصة",
+            "New resource on the platform",
+            "<p>تم نشر مورد جديد على المنصة: <strong>{{TitleAr}}</strong></p>",
+            "<p>A new resource has been published on the platform: <strong>{{TitleEn}}</strong></p>"),
+
+        // Event scheduled — InApp + Email (subscribers)
+        new("EVENT_SCHEDULED", NotificationChannel.InApp,
+            "فعالية جديدة مجدولة",
+            "New event scheduled",
+            "تم تحديد موعد فعالية جديدة: {{TitleAr}} في {{StartsOn}}",
+            "A new event has been scheduled: {{TitleEn}} on {{StartsOn}}"),
+        new("EVENT_SCHEDULED", NotificationChannel.Email,
+            "فعالية جديدة على المنصة",
+            "New event on the platform",
+            "<p>تم تحديد موعد فعالية جديدة: <strong>{{TitleAr}}</strong></p><p>الموعد: {{StartsOn}}</p>",
+            "<p>A new event has been scheduled: <strong>{{TitleEn}}</strong></p><p>Date: {{StartsOn}}</p>"),
 
         // Community — new post for topic/community followers (InApp)
         new("COMMUNITY_POST_CREATED", NotificationChannel.InApp,

@@ -108,7 +108,7 @@ public sealed class News : AggregateRoot<System.Guid>
     {
         if (IsPublished) return;
         PublishedOn = clock.UtcNow;
-        RaiseDomainEvent(new NewsPublishedEvent(Id, PublishedOn.Value));
+        RaiseDomainEvent(new NewsPublishedEvent(Id, TopicId, AuthorId, PublishedOn.Value));
     }
 
     public void SetTags(IEnumerable<Tag> tags)

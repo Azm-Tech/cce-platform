@@ -61,6 +61,15 @@ public static class MessagingServiceExtensions
             registerConsumers = true;
         }
 
+        // An InMemory bus is per-process: messages published (and relayed out of the EF bus outbox)
+        // only reach consumers hosted in the SAME process. So whenever the effective transport is
+        // InMemory — whether configured directly or via the fallback above — the publishing process
+        // MUST also host the consumers, otherwise the outbox delivery service stamps sent_time and
+        // the message is dropped on a bus with no receive endpoints. (RabbitMQ is a shared broker, so
+        // a separate CCE.Worker can consume there; InMemory has no such option.)
+        if (!useRabbitMq)
+            registerConsumers = true;
+
         services.AddMassTransit(x =>
         {
             // EF Core transactional outbox. Publishing through IPublishEndpoint while a CceDbContext is
@@ -87,6 +96,7 @@ public static class MessagingServiceExtensions
                 x.AddConsumer<VoteConsumer, VoteConsumerDefinition>();
                 x.AddConsumer<RankingConsumer, RankingConsumerDefinition>();
                 x.AddConsumer<NotificationConsumer, NotificationConsumerDefinition>();
+                x.AddConsumer<ContentNotificationConsumer, ContentNotificationConsumerDefinition>();
                 x.AddConsumer<SignalRConsumer, SignalRConsumerDefinition>();
             }
 
