@@ -1,4 +1,5 @@
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Community;
 using CCE.Domain.Common;
@@ -47,6 +48,11 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
         {
             post.DecrementCommentsCount(_clock);
         }
+
+        var replyAuthor = await _db.Users
+            .FirstOrDefaultAsyncEither(u => u.Id == reply.AuthorId, cancellationToken)
+            .ConfigureAwait(false);
+        replyAuthor?.DecrementCommentsCount();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

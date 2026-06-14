@@ -3,16 +3,15 @@ using CCE.Domain.Community;
 namespace CCE.Application.Community.Public.Dtos;
 
 /// <summary>
-/// A single post in the community home feed. Same shape as <see cref="PublicPostDto"/> plus the
-/// post's tag IDs (so the client can render/echo the active tag filter) and user-specific flags
-/// (IsExpert, IsWatchlisted, VoteStatus) that are populated when a UserId is provided.
+/// Enriched single-post view returned by GET /api/community/posts/{id}.
+/// Author data is nested in <see cref="PostAuthorDto"/>. User-specific flags
+/// (IsWatchlisted, VoteStatus) are populated when a UserId is provided.
 /// </summary>
-public sealed record CommunityFeedItemDto(
+public sealed record PostDetailDto(
     System.Guid Id,
     System.Guid CommunityId,
     System.Guid TopicId,
-    System.Guid AuthorId,
-    string? AuthorName,
+    PostAuthorDto Author,
     PostType Type,
     string? Title,
     string? Content,
@@ -23,10 +22,8 @@ public sealed record CommunityFeedItemDto(
     int DownvoteCount,
     int CommentsCount,
     System.Collections.Generic.IReadOnlyList<System.Guid> AttachmentIds,
-    System.Collections.Generic.IReadOnlyList<System.Guid> TagIds,
     System.DateTimeOffset CreatedOn,
     string TopicNameAr,
     string TopicNameEn,
-    bool IsExpert,
     bool IsWatchlisted,
     int VoteStatus);

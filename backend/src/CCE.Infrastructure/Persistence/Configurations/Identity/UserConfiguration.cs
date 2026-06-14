@@ -31,6 +31,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         // the lazy-resolver's idempotent linkage stays safe under concurrent first-sign-ins.
         builder.Property(u => u.FollowerCount).HasDefaultValue(0);
         builder.Property(u => u.FollowingCount).HasDefaultValue(0);
+        builder.Property(u => u.PostsCount).HasDefaultValue(0);
+        builder.Property(u => u.CommentsCount).HasDefaultValue(0);
         builder.HasIndex(u => u.EntraIdObjectId)
             .HasDatabaseName("ix_asp_net_users_entra_id_object_id")
             .IsUnique()
