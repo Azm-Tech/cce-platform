@@ -11,4 +11,7 @@ public enum PostFeedSort
 
     /// <summary>Highest up-vote count first.</summary>
     TopVoted = 2,
+
+    /// <summary>Highest comment count first.</summary>
+    MostCommented = 3,
 }

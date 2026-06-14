@@ -45,6 +45,12 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Denormalized following count (source of truth = UserFollow rows). Updated on follow/unfollow.</summary>
     public int FollowingCount { get; private set; }
 
+    /// <summary>Denormalized published-post count (source of truth = Post rows with Status=Published). Updated on Publish/SoftDelete.</summary>
+    public int PostsCount { get; private set; }
+
+    /// <summary>Denormalized reply count (source of truth = PostReply rows). Updated on reply create/soft-delete.</summary>
+    public int CommentsCount { get; private set; }
+
     /// <summary>
     /// Sub-11: stable Entra ID Object ID (<c>oid</c> claim) for this user. Populated lazily on
     /// first sign-in by <c>EntraIdUserResolver</c>. Null until the user signs in via Entra ID
@@ -257,6 +263,10 @@ public class User : IdentityUser<System.Guid>
     public void DecrementFollowers() { if (FollowerCount > 0) FollowerCount--; }
     public void IncrementFollowing() => FollowingCount++;
     public void DecrementFollowing() { if (FollowingCount > 0) FollowingCount--; }
+    public void IncrementPostsCount() => PostsCount++;
+    public void DecrementPostsCount() { if (PostsCount > 0) PostsCount--; }
+    public void IncrementCommentsCount() => CommentsCount++;
+    public void DecrementCommentsCount() { if (CommentsCount > 0) CommentsCount--; }
 
     public void Activate() => Status = UserStatus.Active;
 

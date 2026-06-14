@@ -1,22 +1,26 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
 
 public sealed class ListPublicPostsInTopicQueryHandler
-    : IRequestHandler<ListPublicPostsInTopicQuery, PagedResult<PublicPostDto>>
+    : IRequestHandler<ListPublicPostsInTopicQuery, Response<PagedResult<PublicPostDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListPublicPostsInTopicQueryHandler(ICceDbContext db)
+    public ListPublicPostsInTopicQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<PublicPostDto>> Handle(
+    public async Task<Response<PagedResult<PublicPostDto>>> Handle(
         ListPublicPostsInTopicQuery request,
         CancellationToken cancellationToken)
     {
@@ -31,11 +35,10 @@ public sealed class ListPublicPostsInTopicQueryHandler
         var items = paged.Items.ToList();
         if (items.Count == 0)
         {
-            return new PagedResult<PublicPostDto>(
-                System.Array.Empty<PublicPostDto>(),
-                paged.Page,
-                paged.PageSize,
-                paged.Total);
+            return _msg.Ok(
+                new PagedResult<PublicPostDto>(
+                    System.Array.Empty<PublicPostDto>(), paged.Page, paged.PageSize, paged.Total),
+                "ITEMS_LISTED");
         }
 
         var authorIds = items.Select(p => p.AuthorId).Distinct().ToList();
@@ -61,7 +64,9 @@ public sealed class ListPublicPostsInTopicQueryHandler
             authorNames.GetValueOrDefault(p.AuthorId),
             attachmentsByPost.GetValueOrDefault(p.Id, new List<System.Guid>()))).ToList();
 
-        return new PagedResult<PublicPostDto>(dtos, paged.Page, paged.PageSize, paged.Total);
+        return _msg.Ok(
+            new PagedResult<PublicPostDto>(dtos, paged.Page, paged.PageSize, paged.Total),
+            "ITEMS_LISTED");
     }
 
     internal static PublicPostDto MapToDto(
