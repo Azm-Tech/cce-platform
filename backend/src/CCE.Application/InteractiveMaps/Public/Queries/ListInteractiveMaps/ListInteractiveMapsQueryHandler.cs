@@ -31,6 +31,7 @@ internal sealed class ListInteractiveMapsQueryHandler
 
         var mapIds = maps.Select(m => m.Id).ToList();
         var nodes = await _db.InteractiveMapNodes
+            .Include(n => n.Tags)
             .Where(n => mapIds.Contains(n.InteractiveMapId) && n.IsActive)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -38,7 +39,9 @@ internal sealed class ListInteractiveMapsQueryHandler
         var nodesByMapId = nodes.GroupBy(n => n.InteractiveMapId)
             .ToDictionary(g => g.Key, g => g.OrderBy(n => n.Category).ThenBy(n => n.Level).Select(PublicInteractiveMapNodeDto.FromEntity).ToList() as IReadOnlyList<PublicInteractiveMapNodeDto>);
 
-        var dtos = maps.Select(m => PublicInteractiveMapDto.FromEntity(m, nodesByMapId.GetValueOrDefault(m.Id) ?? [])).ToList();
+        var dtos = maps.Select(m =>
+            PublicInteractiveMapDto.FromEntity(m, nodesByMapId.GetValueOrDefault(m.Id) ?? [])
+        ).ToList();
 
         return _msg.Ok(dtos as IReadOnlyList<PublicInteractiveMapDto>, "ITEMS_LISTED");
     }

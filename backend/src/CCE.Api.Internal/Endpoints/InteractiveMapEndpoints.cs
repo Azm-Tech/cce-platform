@@ -51,7 +51,7 @@ public static class InteractiveMapEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new CreateInteractiveMapCommand(
-                body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn, body.Slug);
+                body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToCreatedHttpResult();
         })
@@ -64,7 +64,7 @@ public static class InteractiveMapEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new UpdateInteractiveMapCommand(
-                id, body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn, body.Slug, body.IsActive);
+                id, body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn, body.IsActive);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -106,7 +106,7 @@ public static class InteractiveMapEndpoints
             var cmd = new CreateInteractiveMapNodeCommand(
                 mapId, body.NameAr, body.NameEn, body.IconKey, body.Category,
                 body.CategoryNameAr, body.CategoryNameEn, body.Level,
-                body.ParentId, body.TopicId, body.TopicSlug);
+                body.ParentId, body.TopicId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToCreatedHttpResult();
         })
@@ -121,7 +121,7 @@ public static class InteractiveMapEndpoints
             var cmd = new UpdateInteractiveMapNodeCommand(
                 mapId, id, body.NameAr, body.NameEn, body.IconKey, body.Category,
                 body.CategoryNameAr, body.CategoryNameEn, body.Level,
-                body.ParentId, body.TopicId, body.TopicSlug, body.IsActive);
+                body.ParentId, body.TopicId, body.IsActive);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -146,15 +146,13 @@ public sealed record CreateInteractiveMapRequest(
     string NameAr,
     string NameEn,
     string? DescriptionAr,
-    string? DescriptionEn,
-    string Slug);
+    string? DescriptionEn);
 
 public sealed record UpdateInteractiveMapRequest(
     string NameAr,
     string NameEn,
     string? DescriptionAr,
     string? DescriptionEn,
-    string Slug,
     bool IsActive);
 
 public sealed record CreateInteractiveMapNodeRequest(
@@ -166,8 +164,7 @@ public sealed record CreateInteractiveMapNodeRequest(
     string? CategoryNameEn,
     int Level,
     System.Guid? ParentId,
-    System.Guid? TopicId,
-    string? TopicSlug);
+    System.Guid TopicId);
 
 public sealed record UpdateInteractiveMapNodeRequest(
     string NameAr,
@@ -178,6 +175,5 @@ public sealed record UpdateInteractiveMapNodeRequest(
     string? CategoryNameEn,
     int Level,
     System.Guid? ParentId,
-    System.Guid? TopicId,
-    string? TopicSlug,
+    System.Guid TopicId,
     bool IsActive);

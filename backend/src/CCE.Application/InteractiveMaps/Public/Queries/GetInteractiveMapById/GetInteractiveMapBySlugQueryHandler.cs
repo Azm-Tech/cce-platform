@@ -5,26 +5,26 @@ using CCE.Application.Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CCE.Application.InteractiveMaps.Public.Queries.GetInteractiveMapBySlug;
+namespace CCE.Application.InteractiveMaps.Public.Queries.GetInteractiveMapById;
 
-internal sealed class GetInteractiveMapBySlugQueryHandler
-    : IRequestHandler<GetInteractiveMapBySlugQuery, Response<PublicInteractiveMapDto>>
+internal sealed class GetPublicInteractiveMapByIdQueryHandler
+    : IRequestHandler<GetPublicInteractiveMapByIdQuery, Response<PublicInteractiveMapDto>>
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
 
-    public GetInteractiveMapBySlugQueryHandler(ICceDbContext db, MessageFactory msg)
+    public GetPublicInteractiveMapByIdQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
         _msg = msg;
     }
 
     public async Task<Response<PublicInteractiveMapDto>> Handle(
-        GetInteractiveMapBySlugQuery request,
+        GetPublicInteractiveMapByIdQuery request,
         CancellationToken cancellationToken)
     {
         var map = await _db.InteractiveMaps
-            .Where(m => m.Slug == request.Slug && m.IsActive)
+            .Where(m => m.Id == request.Id && m.IsActive)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -32,6 +32,7 @@ internal sealed class GetInteractiveMapBySlugQueryHandler
             return _msg.MapNotFound<PublicInteractiveMapDto>();
 
         var nodes = await _db.InteractiveMapNodes
+            .Include(n => n.Tags)
             .Where(n => n.InteractiveMapId == map.Id && n.IsActive)
             .OrderBy(n => n.Category)
             .ThenBy(n => n.Level)

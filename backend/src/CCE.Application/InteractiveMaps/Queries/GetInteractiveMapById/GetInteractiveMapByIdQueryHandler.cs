@@ -31,7 +31,6 @@ internal sealed class GetInteractiveMapByIdQueryHandler
                 m.NameEn,
                 m.DescriptionAr,
                 m.DescriptionEn,
-                m.Slug,
                 m.IsActive))
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);

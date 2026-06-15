@@ -1,3 +1,4 @@
+using CCE.Domain.Content;
 using CCE.Domain.InteractiveMaps;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ public sealed class InteractiveMapSeeder : ISeeder
         int Level,
         string? ParentKey);
 
-    private const string MapSlug = "co2-emissions";
+    private const string MapKey = "co2-emissions";
 
     private static readonly NodeSpec[] Nodes =
     {
@@ -91,7 +92,7 @@ public sealed class InteractiveMapSeeder : ISeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var mapId = DeterministicGuid.From($"interactive_map:{MapSlug}");
+        var mapId = DeterministicGuid.From($"interactive_map:{MapKey}");
         var mapExists = await _ctx.InteractiveMaps
             .IgnoreQueryFilters()
             .AnyAsync(m => m.Id == mapId, cancellationToken)
@@ -103,17 +104,23 @@ public sealed class InteractiveMapSeeder : ISeeder
                 "انبعاثات ثاني أكسيد الكربون",
                 "CO₂ Emissions",
                 "خريطة تفاعلية لمصادر انبعاثات ثاني أكسيد الكربون",
-                "An interactive map of CO₂ emission sources",
-                MapSlug);
+                "An interactive map of CO₂ emission sources");
             typeof(InteractiveMap).GetProperty(nameof(map.Id))!.SetValue(map, mapId);
+
             _ctx.InteractiveMaps.Add(map);
-            _logger.LogInformation("interactive map: created {Slug}", MapSlug);
+            _logger.LogInformation("interactive map: created");
         }
+
+        var tag = await _ctx.Tags
+            .FirstOrDefaultAsync(t => t.NameEn == "Emissions", cancellationToken)
+            .ConfigureAwait(false);
+
+        var topicId = new System.Guid("36BD1319-8965-AAF2-F5DC-76E849C2C53C");
 
         var nodeIds = new Dictionary<string, Guid>();
         foreach (var n in Nodes)
         {
-            var id = DeterministicGuid.From($"im_node:{MapSlug}:{n.Key}");
+            var id = DeterministicGuid.From($"im_node:{MapKey}:{n.Key}");
             nodeIds[n.Key] = id;
 
             var exists = await _ctx.InteractiveMapNodes
@@ -126,13 +133,17 @@ public sealed class InteractiveMapSeeder : ISeeder
             var node = InteractiveMapNode.Create(
                 mapId, n.NameAr, n.NameEn, n.IconKey,
                 category: null, categoryNameAr: null, categoryNameEn: null,
-                n.Level, parentId, topicId: null, topicSlug: null);
+                n.Level, parentId, topicId);
             typeof(InteractiveMapNode).GetProperty(nameof(node.Id))!.SetValue(node, id);
+
+            if (tag is not null)
+                node.SetTags([tag]);
+
             _ctx.InteractiveMapNodes.Add(node);
             _logger.LogInformation("  node: created {Key}", n.Key);
         }
 
         await _ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        _logger.LogInformation("interactive map: {Slug} → {Count} nodes", MapSlug, Nodes.Length);
+        _logger.LogInformation("interactive map: {Key} → {Count} nodes", MapKey, Nodes.Length);
     }
 }

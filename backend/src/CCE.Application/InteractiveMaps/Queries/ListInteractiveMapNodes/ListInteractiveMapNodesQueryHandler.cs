@@ -5,6 +5,7 @@ using CCE.Application.InteractiveMaps.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.InteractiveMaps;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.InteractiveMaps.Queries.ListInteractiveMapNodes;
 
@@ -25,6 +26,7 @@ internal sealed class ListInteractiveMapNodesQueryHandler
         CancellationToken cancellationToken)
     {
         var query = _db.InteractiveMapNodes
+            .Include(n => n.Tags)
             .Where(n => n.InteractiveMapId == request.MapId)
             .WhereIf(request.IsActive.HasValue, n => n.IsActive == request.IsActive!.Value)
             .OrderBy(n => n.Category)
@@ -46,6 +48,6 @@ internal sealed class ListInteractiveMapNodesQueryHandler
         n.Level,
         n.ParentId,
         n.TopicId,
-        n.TopicSlug,
-        n.IsActive);
+        n.IsActive,
+        n.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn)).ToList());
 }

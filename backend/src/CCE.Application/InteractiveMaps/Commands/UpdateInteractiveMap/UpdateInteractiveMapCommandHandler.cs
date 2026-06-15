@@ -35,8 +35,7 @@ internal sealed class UpdateInteractiveMapCommandHandler
             request.NameAr,
             request.NameEn,
             request.DescriptionAr,
-            request.DescriptionEn,
-            request.Slug);
+            request.DescriptionEn);
 
         if (request.IsActive)
             entity.Activate();

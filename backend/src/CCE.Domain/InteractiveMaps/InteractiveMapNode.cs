@@ -1,10 +1,13 @@
 using CCE.Domain.Common;
+using CCE.Domain.Content;
 
 namespace CCE.Domain.InteractiveMaps;
 
 [Audited]
 public sealed class InteractiveMapNode : Entity<System.Guid>
 {
+    private readonly List<Tag> _tags = new();
+
     private InteractiveMapNode(
         System.Guid id,
         System.Guid interactiveMapId,
@@ -16,8 +19,7 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         string? categoryNameEn,
         int level,
         System.Guid? parentId,
-        System.Guid? topicId,
-        string? topicSlug) : base(id)
+        System.Guid topicId) : base(id)
     {
         InteractiveMapId = interactiveMapId;
         NameAr = nameAr;
@@ -29,7 +31,6 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         Level = level;
         ParentId = parentId;
         TopicId = topicId;
-        TopicSlug = topicSlug;
         IsActive = true;
     }
 
@@ -51,11 +52,11 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
 
     public System.Guid? ParentId { get; private set; }
 
-    public System.Guid? TopicId { get; private set; }
-
-    public string? TopicSlug { get; private set; }
+    public System.Guid TopicId { get; private set; }
 
     public bool IsActive { get; private set; }
+
+    public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
 
     public static InteractiveMapNode Create(
         System.Guid interactiveMapId,
@@ -67,8 +68,7 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         string? categoryNameEn,
         int level,
         System.Guid? parentId,
-        System.Guid? topicId,
-        string? topicSlug)
+        System.Guid topicId)
     {
         if (string.IsNullOrWhiteSpace(nameAr))
             throw new DomainException("NameAr is required.");
@@ -88,8 +88,7 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
             categoryNameEn: categoryNameEn,
             level: level,
             parentId: parentId,
-            topicId: topicId,
-            topicSlug: topicSlug);
+            topicId: topicId);
     }
 
     public void UpdateDetails(
@@ -101,8 +100,7 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         string? categoryNameEn,
         int level,
         System.Guid? parentId,
-        System.Guid? topicId,
-        string? topicSlug)
+        System.Guid topicId)
     {
         if (string.IsNullOrWhiteSpace(nameAr))
             throw new DomainException("NameAr is required.");
@@ -120,7 +118,12 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         Level = level;
         ParentId = parentId;
         TopicId = topicId;
-        TopicSlug = topicSlug;
+    }
+
+    public void SetTags(IEnumerable<Tag> tags)
+    {
+        _tags.Clear();
+        _tags.AddRange(tags);
     }
 
     public void Deactivate() => IsActive = false;

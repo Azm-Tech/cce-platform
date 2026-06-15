@@ -17,9 +17,5 @@ internal sealed class UpdateInteractiveMapCommandValidator : AbstractValidator<U
             .MaximumLength(512).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
         RuleFor(x => x.DescriptionEn)
             .MaximumLength(512).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
-        RuleFor(x => x.Slug)
-            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD)
-            .MaximumLength(128).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH)
-            .Matches("^[a-z0-9]+(-[a-z0-9]+)*$").WithErrorCode(ApplicationErrors.Validation.INVALID_FORMAT);
     }
 }

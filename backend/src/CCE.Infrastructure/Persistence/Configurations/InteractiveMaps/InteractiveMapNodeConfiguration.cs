@@ -1,3 +1,4 @@
+using CCE.Domain.Content;
 using CCE.Domain.InteractiveMaps;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,8 +21,12 @@ internal sealed class InteractiveMapNodeConfiguration : IEntityTypeConfiguration
         builder.Property(n => n.CategoryNameAr).HasMaxLength(128);
         builder.Property(n => n.CategoryNameEn).HasMaxLength(128);
         builder.Property(n => n.Level).IsRequired();
-        builder.Property(n => n.TopicSlug).HasMaxLength(128);
+        builder.Property(n => n.TopicId).IsRequired();
         builder.Property(n => n.IsActive).IsRequired();
+
+        builder.HasMany(n => n.Tags)
+               .WithMany()
+               .UsingEntity(j => j.ToTable("interactive_map_node_tag"));
 
         builder.HasIndex(n => n.InteractiveMapId).HasDatabaseName("ix_interactive_map_node_map_id");
         builder.HasIndex(n => n.ParentId).HasDatabaseName("ix_interactive_map_node_parent_id");

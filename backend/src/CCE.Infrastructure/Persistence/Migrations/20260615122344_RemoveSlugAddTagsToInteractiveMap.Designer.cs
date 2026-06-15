@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615122344_RemoveSlugAddTagsToInteractiveMap")]
+    partial class RemoveSlugAddTagsToInteractiveMap
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2954,9 +2957,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("parent_id");
 
-                    b.Property<Guid>("TopicId")
+                    b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("topic_id");
+
+                    b.Property<string>("TopicSlug")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("topic_slug");
 
                     b.HasKey("Id")
                         .HasName("pk_interactive_map_nodes");
@@ -4167,23 +4175,23 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("event_tag", (string)null);
                 });
 
-            modelBuilder.Entity("InteractiveMapNodeTag", b =>
+            modelBuilder.Entity("InteractiveMapTag", b =>
                 {
-                    b.Property<Guid>("InteractiveMapNodeId")
+                    b.Property<Guid>("InteractiveMapId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("interactive_map_node_id");
+                        .HasColumnName("interactive_map_id");
 
                     b.Property<Guid>("TagsId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("tags_id");
 
-                    b.HasKey("InteractiveMapNodeId", "TagsId")
-                        .HasName("pk_interactive_map_node_tag");
+                    b.HasKey("InteractiveMapId", "TagsId")
+                        .HasName("pk_interactive_map_tag");
 
                     b.HasIndex("TagsId")
-                        .HasDatabaseName("ix_interactive_map_node_tag_tags_id");
+                        .HasDatabaseName("ix_interactive_map_tag_tags_id");
 
-                    b.ToTable("interactive_map_node_tag", (string)null);
+                    b.ToTable("interactive_map_tag", (string)null);
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
@@ -5003,21 +5011,21 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_event_tag_tags_tags_id");
                 });
 
-            modelBuilder.Entity("InteractiveMapNodeTag", b =>
+            modelBuilder.Entity("InteractiveMapTag", b =>
                 {
-                    b.HasOne("CCE.Domain.InteractiveMaps.InteractiveMapNode", null)
+                    b.HasOne("CCE.Domain.InteractiveMaps.InteractiveMap", null)
                         .WithMany()
-                        .HasForeignKey("InteractiveMapNodeId")
+                        .HasForeignKey("InteractiveMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_interactive_map_node_tag_interactive_map_nodes_interactive_map_node_id");
+                        .HasConstraintName("fk_interactive_map_tag_interactive_maps_interactive_map_id");
 
                     b.HasOne("CCE.Domain.Content.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_interactive_map_node_tag_tags_tags_id");
+                        .HasConstraintName("fk_interactive_map_tag_tags_tags_id");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

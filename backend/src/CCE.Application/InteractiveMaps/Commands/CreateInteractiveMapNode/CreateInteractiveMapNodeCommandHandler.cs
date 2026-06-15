@@ -37,8 +37,7 @@ internal sealed class CreateInteractiveMapNodeCommandHandler
             request.CategoryNameEn,
             request.Level,
             request.ParentId,
-            request.TopicId,
-            request.TopicSlug);
+            request.TopicId);
 
         await _repo.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

@@ -14,6 +14,5 @@ public sealed record UpdateInteractiveMapNodeCommand(
     string? CategoryNameEn,
     int Level,
     System.Guid? ParentId,
-    System.Guid? TopicId,
-    string? TopicSlug,
+    System.Guid TopicId,
     bool IsActive) : IRequest<Response<VoidData>>;

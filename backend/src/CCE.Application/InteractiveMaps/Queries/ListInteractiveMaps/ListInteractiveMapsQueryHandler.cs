@@ -38,6 +38,5 @@ internal sealed class ListInteractiveMapsQueryHandler
         m.NameEn,
         m.DescriptionAr,
         m.DescriptionEn,
-        m.Slug,
         m.IsActive);
 }

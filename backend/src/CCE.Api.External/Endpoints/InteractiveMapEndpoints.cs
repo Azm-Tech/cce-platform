@@ -1,5 +1,5 @@
 using CCE.Api.Common.Extensions;
-using CCE.Application.InteractiveMaps.Public.Queries.GetInteractiveMapBySlug;
+using CCE.Application.InteractiveMaps.Public.Queries.GetInteractiveMapById;
 using CCE.Application.InteractiveMaps.Public.Queries.ListInteractiveMaps;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -23,15 +23,15 @@ public static class InteractiveMapEndpoints
         .AllowAnonymous()
         .WithName("ListPublicInteractiveMaps");
 
-        maps.MapGet("/{slug}", async (
-            string slug,
+        maps.MapGet("/{id:guid}", async (
+            System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var result = await mediator.Send(new GetInteractiveMapBySlugQuery(slug), cancellationToken).ConfigureAwait(false);
+            var result = await mediator.Send(new GetPublicInteractiveMapByIdQuery(id), cancellationToken).ConfigureAwait(false);
             return result.ToHttpResult();
         })
         .AllowAnonymous()
-        .WithName("GetPublicInteractiveMapBySlug");
+        .WithName("GetPublicInteractiveMapById");
 
         return app;
     }

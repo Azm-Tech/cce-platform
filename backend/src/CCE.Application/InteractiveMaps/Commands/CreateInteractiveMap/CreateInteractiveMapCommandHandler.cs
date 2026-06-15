@@ -31,8 +31,7 @@ internal sealed class CreateInteractiveMapCommandHandler
             request.NameAr,
             request.NameEn,
             request.DescriptionAr,
-            request.DescriptionEn,
-            request.Slug);
+            request.DescriptionEn);
 
         await _repo.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

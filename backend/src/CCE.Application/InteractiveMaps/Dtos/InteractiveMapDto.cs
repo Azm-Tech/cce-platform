@@ -6,5 +6,4 @@ public sealed record InteractiveMapDto(
     string NameEn,
     string? DescriptionAr,
     string? DescriptionEn,
-    string Slug,
     bool IsActive);

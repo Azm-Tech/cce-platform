@@ -7,5 +7,4 @@ public sealed record CreateInteractiveMapCommand(
     string NameAr,
     string NameEn,
     string? DescriptionAr,
-    string? DescriptionEn,
-    string Slug) : IRequest<Response<VoidData>>;
+    string? DescriptionEn) : IRequest<Response<VoidData>>;

@@ -11,6 +11,6 @@ public sealed record InteractiveMapNodeDto(
     string? CategoryNameEn,
     int Level,
     System.Guid? ParentId,
-    System.Guid? TopicId,
-    string? TopicSlug,
-    bool IsActive);
+    System.Guid TopicId,
+    bool IsActive,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

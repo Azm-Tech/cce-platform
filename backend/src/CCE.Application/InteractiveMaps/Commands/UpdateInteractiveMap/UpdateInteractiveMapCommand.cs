@@ -9,5 +9,4 @@ public sealed record UpdateInteractiveMapCommand(
     string NameEn,
     string? DescriptionAr,
     string? DescriptionEn,
-    string Slug,
     bool IsActive) : IRequest<Response<VoidData>>;

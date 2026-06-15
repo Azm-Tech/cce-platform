@@ -18,5 +18,7 @@ internal sealed class UpdateInteractiveMapNodeCommandValidator : AbstractValidat
             .MaximumLength(128).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
         RuleFor(x => x.Level)
             .GreaterThanOrEqualTo(0).WithErrorCode(ApplicationErrors.Validation.INVALID_FORMAT);
+        RuleFor(x => x.TopicId)
+            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD);
     }
 }

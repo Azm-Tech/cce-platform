@@ -40,8 +40,7 @@ internal sealed class UpdateInteractiveMapNodeCommandHandler
             request.CategoryNameEn,
             request.Level,
             request.ParentId,
-            request.TopicId,
-            request.TopicSlug);
+            request.TopicId);
 
         if (request.IsActive)
             entity.Activate();

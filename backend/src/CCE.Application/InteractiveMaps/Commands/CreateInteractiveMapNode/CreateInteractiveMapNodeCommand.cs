@@ -13,5 +13,4 @@ public sealed record CreateInteractiveMapNodeCommand(
     string? CategoryNameEn,
     int Level,
     System.Guid? ParentId,
-    System.Guid? TopicId,
-    string? TopicSlug) : IRequest<Response<VoidData>>;
+    System.Guid TopicId) : IRequest<Response<VoidData>>;
