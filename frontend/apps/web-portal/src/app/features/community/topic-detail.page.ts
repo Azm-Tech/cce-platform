@@ -124,7 +124,7 @@ export class TopicDetailPage implements OnInit {
       ComposePostDialogData,
       ComposePostDialogResult
     >(ComposePostDialogComponent, {
-      data: { topicId: t.id },
+      data: { topics: [t], preselectedTopicId: t.id },
       autoFocus: 'first-tabbable',
     });
     ref.afterClosed().subscribe((result) => {

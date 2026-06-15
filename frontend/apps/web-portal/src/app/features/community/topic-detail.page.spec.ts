@@ -21,11 +21,15 @@ const TOPIC: PublicTopic = {
 };
 
 const POST: PublicPost = {
-  id: 'p1', topicId: 't1', authorId: 'u1',
+  id: 'p1', communityId: 'c1', topicId: 't1',
+  type: 'Info',
+  title: 'Test', author: { id: 'u1', name: 'Alice', avatarUrl: null, isExpert: false, postsCount: 0, followerCount: 0 },
   content: 'Hello', locale: 'en',
-  isAnswerable: true,
-  answeredReplyId: null,
-  createdOn: '2026-04-29T12:00:00Z',
+  isAnswerable: true, answeredReplyId: null,
+  upvoteCount: 0, downvoteCount: 0, commentsCount: 0,
+  attachmentIds: [], createdOn: '2026-04-29T12:00:00Z',
+  topicNameAr: null, topicNameEn: null,
+  isWatchlisted: false, voteStatus: 0,
 };
 
 function ok<T>(value: T): Result<T> {
