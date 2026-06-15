@@ -32,16 +32,16 @@ import { ToastService } from '@frontend/ui-kit';
       <span>{{ 'share.button' | transloco }}</span>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="copyLink()">
+      <button type="button" mat-menu-item (click)="copyLink()">
         <mat-icon>link</mat-icon>
         <span>{{ 'share.copyLink' | transloco }}</span>
       </button>
-      <button mat-menu-item (click)="shareByEmail()">
+      <button type="button" mat-menu-item (click)="shareByEmail()">
         <mat-icon>email</mat-icon>
         <span>{{ 'share.email' | transloco }}</span>
       </button>
       @if (canNativeShare()) {
-        <button mat-menu-item (click)="shareNative()">
+        <button type="button" mat-menu-item (click)="shareNative()">
           <mat-icon>ios_share</mat-icon>
           <span>{{ 'share.native' | transloco }}</span>
         </button>

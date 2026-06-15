@@ -6,10 +6,11 @@ import { tokenInterceptor } from './core/http/token.interceptor';
 import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
 import { authInterceptor } from './core/http/auth.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
-import { serverErrorInterceptor } from '@frontend/ui-kit';
+import { serverErrorInterceptor, provideCceIcons } from '@frontend/ui-kit';
 import { localeInterceptor } from '@frontend/i18n';
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
 import { appRoutes } from './app.routes';
 import { EnvService } from './core/env.service';
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    provideCceIcons(),
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
@@ -39,7 +41,9 @@ export const appConfig: ApplicationConfig = {
       const locale = inject(LocaleService);
       const auth = inject(AuthService);
       await env.load();
-      translate.setActiveLang(locale.locale());
+      const lang = locale.locale();
+      translate.setActiveLang(lang);
+      await firstValueFrom(translate.load(lang));
       await auth.refresh();
     }),
   ],

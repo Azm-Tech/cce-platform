@@ -16,7 +16,7 @@
         [placeholder]="'events.searchPlaceholder' | transloco"
       />
       @if (query()) {
-        <button matSuffix mat-icon-button
+        <button type="button" matSuffix mat-icon-button
           [attr.aria-label]="'events.clearSearch' | transloco"
           (click)="clearQuery()">
           <mat-icon>close</mat-icon>

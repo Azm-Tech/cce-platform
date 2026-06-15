@@ -112,15 +112,15 @@
           <dl class="cce-sp__stat-list">
             <div class="cce-sp__stat-row">
               <dt>{{ 'stateProfile.population' | transloco }}</dt>
-              <dd>{{ p.population != null ? (p.population | number) : '—' }}</dd>
+              <dd>{{ p.population !== null ? (p.population | number) : '—' }}</dd>
             </div>
             <div class="cce-sp__stat-row">
               <dt>{{ 'stateProfile.areaSqKm' | transloco }}</dt>
-              <dd>{{ p.areaSqKm != null ? (p.areaSqKm | number:'1.0-2') : '—' }}</dd>
+              <dd>{{ p.areaSqKm !== null ? (p.areaSqKm | number:'1.0-2') : '—' }}</dd>
             </div>
             <div class="cce-sp__stat-row">
               <dt>{{ 'stateProfile.gdpPerCapita' | transloco }}</dt>
-              <dd>{{ p.gdpPerCapita != null ? (p.gdpPerCapita | number:'1.0-2') : '—' }}</dd>
+              <dd>{{ p.gdpPerCapita !== null ? (p.gdpPerCapita | number:'1.0-2') : '—' }}</dd>
             </div>
             <div class="cce-sp__stat-row">
               <dt>{{ 'stateProfile.ndcDocument' | transloco }}</dt>

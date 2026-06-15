@@ -70,12 +70,12 @@ export class RegisterPage implements OnInit {
       firstName: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z؀-ۿ\s'\-]+$/),
+        Validators.pattern(/^[-a-zA-Z؀-ۿ\s']+$/),
       ]),
       lastName: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z؀-ۿ\s'\-]+$/),
+        Validators.pattern(/^[-a-zA-Z؀-ۿ\s']+$/),
       ]),
       emailAddress: new FormControl('', [
         Validators.required,

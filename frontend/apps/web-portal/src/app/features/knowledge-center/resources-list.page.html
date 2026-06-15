@@ -80,7 +80,7 @@
             [placeholder]="'resources.search.placeholder' | transloco"
           />
           @if (searchInput()) {
-            <button matSuffix mat-icon-button aria-label="clear" (click)="searchInput.set(''); onSearch()">
+            <button type="button" matSuffix mat-icon-button aria-label="clear" (click)="searchInput.set(''); onSearch()">
               <mat-icon>close</mat-icon>
             </button>
           }
@@ -97,13 +97,13 @@
         </mat-form-field>
 
         <div class="cce-resources-list__view-toggle">
-          <button mat-icon-button
+          <button type="button" mat-icon-button
             [class.cce-resources-list__view-btn--active]="viewMode() === 'grid'"
             [attr.aria-label]="'resources.view.grid' | transloco"
             (click)="viewMode.set('grid')">
             <mat-icon>grid_view</mat-icon>
           </button>
-          <button mat-icon-button
+          <button type="button" mat-icon-button
             [class.cce-resources-list__view-btn--active]="viewMode() === 'list'"
             [attr.aria-label]="'resources.view.list' | transloco"
             (click)="viewMode.set('list')">

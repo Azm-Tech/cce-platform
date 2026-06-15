@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   /** Navigates to the login page, preserving returnUrl for post-login redirect. */
-  signIn(returnUrl: string = '/'): void {
+  signIn(returnUrl = '/'): void {
     void this.router.navigate(['/login'], {
       queryParams: returnUrl && returnUrl !== '/login' ? { returnUrl } : undefined,
     });

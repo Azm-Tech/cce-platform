@@ -63,7 +63,7 @@ import type { ResourceListItem, ResourceType } from './knowledge.types';
 
       <!-- ── Actions ── -->
       <footer class="cce-resource-card__footer">
-        <button mat-stroked-button
+        <button type="button" mat-stroked-button
           class="cce-resource-card__download-btn"
           (click)="onDownload($event)"
           [disabled]="downloading()">
@@ -74,7 +74,7 @@ import type { ResourceListItem, ResourceType } from './knowledge.types';
           }
           {{ 'resources.download.openButton' | transloco }}
         </button>
-        <button mat-icon-button
+        <button type="button" mat-icon-button
           class="cce-resource-card__share-btn"
           [attr.aria-label]="'share.button' | transloco"
           (click)="onShare($event)">

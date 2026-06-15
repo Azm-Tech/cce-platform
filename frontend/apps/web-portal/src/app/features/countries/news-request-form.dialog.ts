@@ -73,7 +73,7 @@ export class NewsRequestFormDialogComponent {
     const all = this.topics();
     if (!q) return all;
     return all.filter(t =>
-      t.nameAr.includes(q) || t.nameEn.toLowerCase().includes(q)
+      (t.nameAr ?? '').toLowerCase().includes(q) || (t.nameEn ?? '').toLowerCase().includes(q)
     );
   });
 

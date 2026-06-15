@@ -56,13 +56,14 @@
 
       <mat-menu #regionMenu="matMenu" xPosition="before">
         @if (regionFilter()) {
-          <button mat-menu-item (click)="setRegion(null)">
+          <button type="button" mat-menu-item (click)="setRegion(null)">
             <mat-icon>close</mat-icon>
             {{ 'countries.filter.all' | transloco }}
           </button>
         }
         @for (region of regions(); track region) {
           <button
+            type="button"
             mat-menu-item
             [class.cce-region-item--active]="regionFilter() === region"
             (click)="setRegion(region)"

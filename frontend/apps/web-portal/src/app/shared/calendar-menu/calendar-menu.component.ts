@@ -69,7 +69,7 @@ export interface CalendarEventInput {
       </button>
       <mat-menu #menu="matMenu">
         @for (p of others(); track p) {
-          <button mat-menu-item (click)="open(p)">
+          <button type="button" mat-menu-item (click)="open(p)">
             <mat-icon>{{ iconFor(p) }}</mat-icon>
             <span>{{ ('events.calendar.addTo.' + p) | transloco }}</span>
           </button>

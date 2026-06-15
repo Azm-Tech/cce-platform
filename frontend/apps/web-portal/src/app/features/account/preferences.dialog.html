@@ -66,14 +66,15 @@
             <div class="cce-prefs__radio-group">
               @for (opt of q.options; track opt.id) {
                 @if (opt.isActive) {
-                  <label
+                  <button
+                    type="button"
                     class="cce-prefs__radio-card"
                     [class.cce-prefs__radio-card--sel]="selectedKnowledgeId() === opt.id"
                     (click)="selectKnowledge(opt.id)"
                   >
                     <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">{{ optionIcon(opt) }}</mat-icon>
                     <span class="cce-prefs__radio-label">{{ optionName(opt) }}</span>
-                  </label>
+                  </button>
                 }
               }
             </div>
@@ -93,14 +94,15 @@
             <div class="cce-prefs__radio-group">
               @for (opt of q.options; track opt.id) {
                 @if (opt.isActive) {
-                  <label
+                  <button
+                    type="button"
                     class="cce-prefs__radio-card"
                     [class.cce-prefs__radio-card--sel]="selectedJobSectorId() === opt.id"
                     (click)="selectJobSector(opt.id)"
                   >
                     <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">{{ optionIcon(opt) }}</mat-icon>
                     <span class="cce-prefs__radio-label">{{ optionName(opt) }}</span>
-                  </label>
+                  </button>
                 }
               }
             </div>
