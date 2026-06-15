@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -39,7 +39,10 @@ describe('TopicsPage', () => {
     dialog = { open: jest.fn().mockReturnValue(dialogRef) };
 
     await TestBed.configureTestingModule({
-      imports: [TopicsPage, TranslocoModule.forRoot()],
+      imports: [TopicsPage, TranslocoTestingModule.forRoot({
+        langs: { en: {}, ar: {} },
+        translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+      })],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),

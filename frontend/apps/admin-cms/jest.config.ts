@@ -9,6 +9,10 @@ export default {
       {
         tsconfig: '<rootDir>/tsconfig.spec.json',
         stringifyContentPathRegex: '\\.(html|svg)$',
+        // Material 21+ entry points are package-exports only; ts-jest's CJS
+        // type-checker can't resolve them. Transpile-only — Jest's resolver
+        // handles exports maps at runtime.
+        isolatedModules: true,
       },
     ],
   },

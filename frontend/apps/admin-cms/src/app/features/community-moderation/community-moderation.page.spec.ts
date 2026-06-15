@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { signal } from '@angular/core';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -56,7 +56,10 @@ describe('CommunityModerationPage', () => {
     toast = { success: jest.fn(), error: jest.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [CommunityModerationPage, TranslocoModule.forRoot()],
+      imports: [CommunityModerationPage, TranslocoTestingModule.forRoot({
+        langs: { en: {}, ar: {} },
+        translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+      })],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityModerationApiService, useValue: api },

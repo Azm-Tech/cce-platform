@@ -3,7 +3,7 @@ import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, i
 import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { apiEnvelopeInterceptor, serverErrorInterceptor } from '@frontend/ui-kit';
+import { apiEnvelopeInterceptor, serverErrorInterceptor, provideCceIcons } from '@frontend/ui-kit';
 import { localeInterceptor, LocaleService, TranslocoHttpLoader } from '@frontend/i18n';
 import { tokenInterceptor } from './core/http/token.interceptor';
 import { authInterceptor } from './core/http/auth.interceptor';
@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    provideCceIcons(),
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
