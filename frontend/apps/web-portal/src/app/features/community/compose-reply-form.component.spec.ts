@@ -3,9 +3,14 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
+
+const TRANSLOCO = TranslocoTestingModule.forRoot({
+  langs: { en: {}, ar: {} },
+  translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+});
 
 function ok<T>(value: T): Result<T> {
   return { ok: true, value };
@@ -25,7 +30,7 @@ describe('ComposeReplyFormComponent', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [ComposeReplyFormComponent, TranslocoModule.forRoot()],
+      imports: [ComposeReplyFormComponent, TRANSLOCO],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { createReply } },
@@ -41,10 +46,13 @@ describe('ComposeReplyFormComponent', () => {
     fixture.detectChanges();
   });
 
-  it('valid submit calls createReply(postId, { content, locale })', async () => {
+  it('valid submit calls createReply with correct payload', async () => {
     component.form.patchValue({ content: 'My reply', locale: 'en' });
     await component.submit();
-    expect(createReply).toHaveBeenCalledWith('p1', { content: 'My reply', locale: 'en' });
+    expect(createReply).toHaveBeenCalledWith(
+      'p1',
+      expect.objectContaining({ content: 'My reply', locale: 'en', parentReplyId: null }),
+    );
   });
 
   it('empty content makes form invalid; submit short-circuits', async () => {
@@ -56,7 +64,6 @@ describe('ComposeReplyFormComponent', () => {
   });
 
   it('locale defaults to LocaleService.locale() at ngOnInit', async () => {
-    // Re-create with ar locale.
     localeSig.set('ar');
     fixture = TestBed.createComponent(ComposeReplyFormComponent);
     component = fixture.componentInstance;

@@ -1,201 +1,194 @@
-/* Reply — social-feed comment with avatar tile + bubble. */
+$p-50:  #ebf2fe;
+$p-100: #c5d9fc;
+$p-500: #4285f2;
+$p-900: #082f59;
+$n-200: #e3e7ee;
+$n-300: #c9d0da;
+$n-500: #748091;
+$n-600: #4e5866;
+$n-900: #13171c;
+$font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host { display: block; }
 
 .cce-reply {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: row;
   align-items: flex-start;
+  gap: 12px;
+  padding-block: 24px;
+  border-bottom: 1px solid $n-200;
+  font-family: $font;
+
+  &:last-child { border-bottom: none; }
 }
 
-/* Highlight ring when this reply is the active "replying to" target. */
-.cce-reply--highlighted .cce-reply__bubble {
-  border-color: rgba(0, 108, 79, 0.55);
-  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.18);
-}
-
-/* Wrapper around the bubble + actions + children — keeps the avatar
- * column lined up with the top of the bubble. */
-.cce-reply__main { min-width: 0; }
-
+/* ── Avatar — inline-end (left in RTL) ─────────────────── */
 .cce-reply__avatar {
-  display: inline-flex;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $p-100;
+  border: 1px solid $p-50;
+  color: $p-900;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: $font;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 70%, #c8a045 100%);
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: -0.01em;
-  flex: 0 0 auto;
+  line-height: 1;
 }
 
-/* Bubble — like FB / IG comment bubbles. */
-.cce-reply__bubble {
-  background: #f4faf7;
-  border: 1px solid rgba(0, 60, 44, 0.06);
-  border-radius: 14px;
-  padding: 0.65rem 0.95rem 0.55rem;
+/* ── Body — inline-start (right in RTL) ────────────────── */
+.cce-reply__body {
+  flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Accepted-answer ribbon — leans into the brand greens. */
-.cce-reply--accepted .cce-reply__bubble {
-  background: linear-gradient(135deg, rgba(20, 184, 143, 0.08) 0%, rgba(0, 108, 79, 0.08) 100%);
-  border-color: rgba(20, 184, 143, 0.45);
-  box-shadow: 0 0 0 2px rgba(20, 184, 143, 0.18);
-}
-
-.cce-reply__accepted {
+/* Accepted badge */
+.cce-reply__accepted-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #1e6b3a;
-  background: linear-gradient(135deg, rgba(20, 184, 143, 0.22), rgba(0, 108, 79, 0.18));
-  border: 1px solid rgba(20, 184, 143, 0.35);
-  padding: 0.25rem 0.55rem;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 2px 8px;
   border-radius: 999px;
-  margin-bottom: 0.45rem;
+  align-self: flex-start;
 
   mat-icon { font-size: 14px; width: 14px; height: 14px; }
 }
 
-/* ─── Head ──────────────────────────────────────────────── */
-.cce-reply__head { margin-bottom: 0.25rem; }
-
-.cce-reply__author-row {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  font-size: 0.85rem;
-}
-.cce-reply__author-name {
-  font-weight: 700;
-  color: #1c2724;
-  letter-spacing: -0.005em;
-}
-.cce-reply__author-handle {
-  color: rgba(28, 39, 36, 0.55);
-  font-weight: 500;
-  font-size: 0.78rem;
-}
-
-.cce-reply__expert {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6b4f0a;
-  background: linear-gradient(135deg, rgba(200, 160, 69, 0.22), rgba(212, 185, 105, 0.26));
-  border: 1px solid rgba(200, 160, 69, 0.36);
-  padding: 0.18rem 0.5rem;
-  border-radius: 999px;
-
-  mat-icon { font-size: 12px; width: 12px; height: 12px; }
-}
-
-.cce-reply__lang {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
-  background: rgba(28, 39, 36, 0.05);
-  border: 1px solid rgba(28, 39, 36, 0.1);
-  padding: 0.16rem 0.45rem;
-  border-radius: 999px;
-}
-
-/* ─── Body ───────────────────────────────────────────────── */
-.cce-reply__content {
-  margin: 0.2rem 0 0.4rem;
-  font-size: 0.92rem;
-  line-height: 1.55;
-  color: #1c2724;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* ─── Foot ───────────────────────────────────────────────── */
-.cce-reply__foot {
+/* Meta row: name + badge | timestamp */
+.cce-reply__meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: 0.15rem;
-}
-.cce-reply__time {
-  font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
-  font-weight: 500;
+  gap: 8px;
 }
 
-/* ─── Action row (Like / Dislike / Reply) ───────────────── */
+.cce-reply__author-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cce-reply__author-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: $n-900;
+  font-family: $font;
+  line-height: 1.3;
+}
+
+.cce-reply__expert-icon {
+  color: #15803d;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.cce-reply__time {
+  font-size: 14px;
+  color: $n-500;
+  font-family: $font;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Content text */
+.cce-reply__content {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: $n-600;
+  word-wrap: break-word;
+  font-family: $font;
+}
+
+/* Actions row: vote box + reply btn */
 .cce-reply__actions {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: 0.35rem;
-  padding-inline-start: 0.4rem;
 }
 
+/* Upvote widget: [count] | [↑] */
+.cce-reply__vote {
+  height: 46px;
+  border: 1px solid $n-300;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.cce-reply__vote-score {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $n-500;
+  font-family: $font;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.cce-reply__vote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  border: none;
+  background: transparent;
+  color: $n-500;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+
+  &:hover:not(:disabled) { color: $p-500; }
+  &--active { color: $p-500; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+/* Reply text button */
 .cce-reply__reply-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 4px;
   border: none;
   background: transparent;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: rgba(28, 39, 36, 0.65);
-  border-radius: 8px;
-  padding: 0.3rem 0.55rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: $n-500;
+  font-family: $font;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  padding: 4px 8px;
+  transition: color 0.12s;
 
-  mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-  &:hover {
-    color: #006c4f;
-    background: rgba(0, 108, 79, 0.06);
-  }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &:hover { color: $p-500; }
 }
 
-/* Inline reply composer — appears below the bubble when this reply
- * is the active "replying to" target. */
+/* Inline thread composer */
 .cce-reply__composer {
-  margin: 0.65rem 0 0.25rem;
+  margin-top: 8px;
 }
 
-/* ─── Nested children (threaded replies) ────────────────── */
+/* Nested children */
 .cce-reply__children {
-  margin-top: 0.65rem;
-  padding-inline-start: 0.6rem;
-  border-inline-start: 2px solid rgba(0, 108, 79, 0.16);
-}
-.cce-reply__children > .cce-reply:last-child { margin-bottom: 0; }
-
-@media (max-width: 540px) {
-  .cce-reply__children {
-    padding-inline-start: 0.4rem;
-  }
-  .cce-reply__reply-btn span { display: none; }
+  margin-top: 4px;
+  padding-inline-start: 12px;
+  border-inline-start: 2px solid $n-200;
 }

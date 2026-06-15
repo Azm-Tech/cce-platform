@@ -1,23 +1,15 @@
 <section class="cce-post-detail">
-  <a class="cce-post-detail__back" routerLink="/community">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'community.detail.backToCommunity' | transloco }}
-  </a>
 
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate" class="cce-post-detail__progress" />
-  }
-
-  <!-- ─── Not-found state ─────────────────────────────────── -->
+  <!-- ─── Not-found / error states ──────────────────────────── -->
   @if (notFound()) {
     <div class="cce-post-detail__notfound" role="alert">
       <span class="cce-post-detail__notfound-art" aria-hidden="true">
-        <mat-icon>chat_bubble_outline</mat-icon>
+        <mat-icon svgIcon="messages-square"></mat-icon>
       </span>
       <h1>{{ 'community.notFound' | transloco }}</h1>
       <p>{{ 'community.detail.postNotFoundDesc' | transloco }}</p>
       <a mat-flat-button color="primary" routerLink="/community">
-        <mat-icon>arrow_back</mat-icon>
+        <mat-icon svgIcon="chevron-right"></mat-icon>
         {{ 'community.detail.backToCommunity' | transloco }}
       </a>
     </div>
@@ -29,195 +21,333 @@
     </div>
   }
 
-  <!-- ─── Skeleton (initial load, no post yet) ────────────── -->
+  <!-- ─── Skeleton (initial load) ───────────────────────────── -->
   @if (loading() && !post()) {
-    <div class="cce-post-detail__skeleton-card" aria-busy="true">
-      <span class="cce-post-detail__skel-avatar"></span>
-      <div class="cce-post-detail__skel-lines">
-        <span class="cce-post-detail__skel-line cce-post-detail__skel-line--sm"></span>
-        <span class="cce-post-detail__skel-line cce-post-detail__skel-line--lg"></span>
-        <span class="cce-post-detail__skel-line"></span>
-        <span class="cce-post-detail__skel-line"></span>
+    <div class="cce-post-detail__layout cce-post-detail__layout--loading" aria-busy="true" aria-label="loading">
+      <aside class="cce-post-detail__sidebar">
+        <div class="cce-post-detail__skel-block cce-post-detail__skel-block--avatar"></div>
+        <div class="cce-post-detail__skel-block cce-post-detail__skel-block--name"></div>
+        <div class="cce-post-detail__skel-block cce-post-detail__skel-block--line"></div>
+        <div class="cce-post-detail__skel-block cce-post-detail__skel-block--stats"></div>
+        <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
+        <div class="cce-post-detail__skel-block cce-post-detail__skel-block--actions"></div>
+      </aside>
+      <div class="cce-post-detail__main">
+        <div class="cce-post-detail__post">
+          <div class="cce-post-detail__skel-block cce-post-detail__skel-block--chips"></div>
+          <div class="cce-post-detail__skel-block cce-post-detail__skel-block--title"></div>
+          <div class="cce-post-detail__skel-block cce-post-detail__skel-block--body"></div>
+          <div class="cce-post-detail__skel-block cce-post-detail__skel-block--body cce-post-detail__skel-block--short"></div>
+        </div>
       </div>
     </div>
   }
 
-  <!-- ─── Post (FB / IG / X-style card) ───────────────────── -->
+  <!-- ─── Two-column layout ─────────────────────────────────── -->
   @if (post(); as p) {
-    <article
-      class="cce-post-detail__post"
-      [class.cce-post-detail__post--resolved]="!!p.answeredReplyId"
-    >
-      <header class="cce-post-detail__head">
-        <span class="cce-post-detail__avatar" aria-hidden="true">
-          {{ authorInitial(p.authorId) }}
-        </span>
+    <div class="cce-post-detail__layout">
 
-        <div class="cce-post-detail__author">
-          <span class="cce-post-detail__author-row">
-            <span class="cce-post-detail__author-name">
-              {{ 'community.detail.memberHandle' | transloco }}
+      <!-- ── Sidebar (PHYSICAL LEFT — grid-column:1 forced by RTL override) ── -->
+      <aside class="cce-post-detail__sidebar">
+
+        <!-- Avatar -->
+        <div class="cce-post-detail__sb-avatar" aria-hidden="true">
+          {{ authorDisplayInitial() }}
+        </div>
+
+        @if (profileLoading()) {
+          <div class="cce-post-detail__sb-skel-name"></div>
+          <div class="cce-post-detail__sb-skel-line"></div>
+          <div class="cce-post-detail__sb-skel-stats"></div>
+          <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
+          <div class="cce-post-detail__sb-skel-line cce-post-detail__sb-skel-line--short"></div>
+        } @else {
+          <!-- Name + expert badge -->
+          <div class="cce-post-detail__sb-author">
+            <span class="cce-post-detail__sb-name">
+              {{ authorDisplayName() || ('community.detail.memberHandle' | transloco) }}
             </span>
-            <span class="cce-post-detail__author-handle">
-              {{ authorHandle(p.authorId) }}
-            </span>
-          </span>
-          <span class="cce-post-detail__byline">
+            @if (authorJobTitle()) {
+              <span class="cce-post-detail__sb-job-title">{{ authorJobTitle() }}</span>
+            }
+            @if (authorOrganization()) {
+              <span class="cce-post-detail__sb-org">{{ authorOrganization() }}</span>
+            }
+            @if (authorIsExpert()) {
+              <span class="cce-post-detail__sb-expert">
+                <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+                {{ 'community.profile.expertBadge' | transloco }}
+              </span>
+            }
+          </div>
+
+          <!-- Stats: two equal columns, border-inline-end divider -->
+          <div class="cce-post-detail__sb-stats">
+            <div class="cce-post-detail__sb-stat cce-post-detail__sb-stat--first">
+              <span class="cce-post-detail__sb-stat-val">{{ authorProfile()?.postCount ?? 0 }}</span>
+              <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.posts' | transloco }}</span>
+            </div>
+            <div class="cce-post-detail__sb-stat">
+              <span class="cce-post-detail__sb-stat-val">{{ authorProfile()?.replyCount ?? 0 }}</span>
+              <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.replies' | transloco }}</span>
+            </div>
+          </div>
+
+          <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
+
+          <!-- Profile link | follow (hidden when viewing own post) -->
+          <div class="cce-post-detail__sb-bottom">
+            <a [routerLink]="['/community', 'users', authorId()]" class="cce-post-detail__sb-profile-link">
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+              {{ (isOwnPost() ? 'community.detail.myProfile' : 'community.detail.fullProfile') | transloco }}
+            </a>
+            @if (isAuthenticated() && !isOwnPost()) {
+              <div class="cce-post-detail__sb-follow-wrap">
+                <span class="cce-post-detail__sb-follow-lbl">{{ 'community.detail.followAuthor' | transloco }}</span>
+                <button
+                  type="button"
+                  class="cce-post-detail__sb-follow-btn"
+                  [class.cce-post-detail__sb-follow-btn--active]="userFollow.isFollowing()"
+                  cceFollow
+                  entityType="user"
+                  [entityId]="authorId() ?? ''"
+                  #userFollow="cceFollow"
+                  [attr.aria-label]="'community.detail.followAuthor' | transloco"
+                >
+                  <mat-icon svgIcon="{{ userFollow.isFollowing() ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+      </aside>
+
+      <!-- ── Main content (PHYSICAL RIGHT — grid-column:2 forced by RTL override) ── -->
+      <div class="cce-post-detail__main">
+
+        <!-- Back link at inline-start (right in RTL) -->
+        <div class="cce-post-detail__back-row">
+          <a routerLink="/community" class="cce-post-detail__back-link">
+            {{ 'community.detail.backToCommunity' | transloco }}
+            <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+          </a>
+        </div>
+
+        @if (loading()) {
+          <mat-progress-bar mode="indeterminate" class="cce-post-detail__progress" />
+        }
+
+        <!-- ── Post card ──────────────────────────────────────────── -->
+        <article
+          class="cce-post-detail__post"
+          [class.cce-post-detail__post--resolved]="!!p.answeredReplyId"
+        >
+
+          <!-- Header: chips (inline-start/right) | follow-post (inline-end/left) -->
+          <header class="cce-post-detail__post-header">
+            <div class="cce-post-detail__chips" role="list">
+              @if (topicName()) {
+                <span class="cce-post-detail__chip cce-post-detail__chip--topic" role="listitem">
+                  {{ topicName() }}
+                </span>
+              }
+              @if (p.type === 'Info') {
+                <span class="cce-post-detail__chip cce-post-detail__chip--info" role="listitem">
+                  {{ 'community.postType.informational' | transloco }}
+                </span>
+              } @else if (p.type === 'Question') {
+                <span class="cce-post-detail__chip cce-post-detail__chip--question" role="listitem">
+                  {{ 'community.postType.question' | transloco }}
+                </span>
+              }
+              @if (p.answeredReplyId) {
+                <span class="cce-post-detail__chip cce-post-detail__chip--resolved" role="listitem">
+                  <mat-icon aria-hidden="true">check_circle</mat-icon>
+                  {{ 'community.detail.resolvedTag' | transloco }}
+                </span>
+              }
+              @if (postShowLangBadge()) {
+                <span class="cce-post-detail__chip cce-post-detail__chip--lang" role="listitem">
+                  {{ 'community.languageBadge' | transloco:{ locale: p.locale } }}
+                </span>
+              }
+            </div>
+            @if (isAuthenticated()) {
+              <button
+                type="button"
+                class="cce-post-detail__post-save"
+                [class.cce-post-detail__post-save--active]="isPostFollowed()"
+                [attr.aria-label]="'community.detail.actionSave' | transloco"
+                (click)="togglePostFollow()"
+              >
+                <mat-icon svgIcon="{{ isPostFollowed() ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
+              </button>
+            }
+          </header>
+
+          <!-- Title -->
+          @if (p.title) {
+            <h1 class="cce-post-detail__title" dir="auto">{{ p.title }}</h1>
+          }
+
+          <!-- Body -->
+          @if (p.content) {
+            <p class="cce-post-detail__body" dir="auto">{{ p.content }}</p>
+          }
+
+          <!-- ── Attachments card ──────────────────────────────── -->
+          @if (p.attachmentIds && p.attachmentIds.length > 0) {
+            <div class="cce-post-detail__attachments">
+              <h3 class="cce-post-detail__attachments-title">
+                <mat-icon aria-hidden="true">attach_file</mat-icon>
+                {{ 'community.detail.attachments' | transloco }}
+              </h3>
+              <ul class="cce-post-detail__attachments-list" role="list">
+                @for (attId of p.attachmentIds; track attId) {
+                  <li class="cce-post-detail__attachment-item">
+                    <span class="cce-post-detail__attachment-link">
+                      <span class="cce-post-detail__attachment-icon">
+                        <mat-icon aria-hidden="true">description</mat-icon>
+                      </span>
+                      <span class="cce-post-detail__attachment-info">
+                        <span class="cce-post-detail__attachment-name">
+                          {{ 'community.detail.unnamedFile' | transloco }}
+                        </span>
+                      </span>
+                    </span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          <hr class="cce-post-detail__divider" aria-hidden="true" />
+
+          <!-- Footer: timestamp (inline-start/right) | share + vote (inline-end/left) -->
+          <footer class="cce-post-detail__post-footer">
             <time
+              class="cce-post-detail__timestamp"
               [attr.datetime]="p.createdOn"
               [title]="p.createdOn | date:'medium'"
             >{{ timeAgo(p.createdOn) }}</time>
-            <span aria-hidden="true">·</span>
-            @if (p.answeredReplyId) {
-              <span class="cce-post-detail__chip cce-post-detail__chip--resolved">
-                <mat-icon aria-hidden="true">check_circle</mat-icon>
-                {{ 'community.detail.resolvedTag' | transloco }}
-              </span>
-            } @else if (p.isAnswerable) {
-              <span class="cce-post-detail__chip cce-post-detail__chip--question">
-                <mat-icon aria-hidden="true">help_outline</mat-icon>
-                {{ 'community.detail.questionTag' | transloco }}
-              </span>
+
+            <div class="cce-post-detail__post-actions">
+              <button
+                type="button"
+                class="cce-post-detail__share-btn"
+                [attr.aria-label]="'community.detail.composeTitle' | transloco"
+                (click)="focusComposer()"
+              >
+                <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+                <span class="cce-post-detail__action-count">{{ p.commentsCount }}</span>
+              </button>
+              <button
+                type="button"
+                class="cce-post-detail__share-btn"
+                [attr.aria-label]="'community.detail.actionShare' | transloco"
+                (click)="copyLink()"
+              >
+                <mat-icon svgIcon="share" aria-hidden="true"></mat-icon>
+              </button>
+              <div class="cce-post-detail__vote" dir="ltr">
+                <button
+                  type="button"
+                  class="cce-post-detail__vote-btn"
+                  [class.cce-post-detail__vote-btn--active]="myVote() === -1"
+                  [attr.aria-pressed]="myVote() === -1"
+                  [attr.aria-label]="'community.detail.actionDislike' | transloco"
+                  [disabled]="voting()"
+                  (click)="onVote(-1)"
+                >
+                  <mat-icon svgIcon="arrow-big-down" aria-hidden="true"></mat-icon>
+                </button>
+                <span class="cce-post-detail__vote-score">{{ voteScore() }}</span>
+                <button
+                  type="button"
+                  class="cce-post-detail__vote-btn cce-post-detail__vote-btn--up"
+                  [class.cce-post-detail__vote-btn--active]="myVote() === 1"
+                  [attr.aria-pressed]="myVote() === 1"
+                  [attr.aria-label]="'community.detail.actionLike' | transloco"
+                  [disabled]="voting()"
+                  (click)="onVote(1)"
+                >
+                  <mat-icon svgIcon="arrow-big-up" aria-hidden="true"></mat-icon>
+                </button>
+              </div>
+            </div>
+          </footer>
+
+        </article>
+
+        <!-- ── Replies card ────────────────────────────────────────── -->
+        <section class="cce-post-detail__replies-card" id="replies">
+
+          <!-- Compose section -->
+          <div class="cce-post-detail__compose" #composer>
+            @if (isAuthenticated()) {
+              <cce-compose-reply-form
+                [postId]="p.id"
+                (replyCreated)="onReplyCreated()"
+              />
             } @else {
-              <span class="cce-post-detail__chip cce-post-detail__chip--discussion">
-                <mat-icon aria-hidden="true">forum</mat-icon>
-                {{ 'community.detail.discussionTag' | transloco }}
-              </span>
+              <cce-sign-in-cta messageKey="community.signInToReply" />
             }
-            @if (postShowLangBadge()) {
-              <span class="cce-post-detail__chip cce-post-detail__chip--lang">
-                {{ 'community.languageBadge' | transloco:{ locale: p.locale } }}
-              </span>
-            }
-          </span>
-        </div>
+          </div>
 
-        <button
-          type="button"
-          mat-icon-button
-          class="cce-post-detail__more"
-          [attr.aria-label]="'community.detail.actionMore' | transloco"
-        >
-          <mat-icon>more_horiz</mat-icon>
-        </button>
-      </header>
+          <hr class="cce-post-detail__replies-divider" aria-hidden="true" />
 
-      <div class="cce-post-detail__body">{{ p.content }}</div>
+          <!-- Replies header -->
+          <div class="cce-post-detail__replies-hd">
+            <span class="cce-post-detail__replies-count">
+              {{ (total() === 1
+                  ? 'community.detail.repliesCountSingular'
+                  : 'community.detail.repliesCount') | transloco:{ count: total() } }}
+            </span>
+            <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+          </div>
 
-      <!-- Stats row: reply count -->
-      <div class="cce-post-detail__stats">
-        <span>
-          <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
-          {{ (total() === 1
-              ? 'community.detail.repliesCountSingular'
-              : 'community.detail.repliesCount') | transloco:{ count: total() } }}
-        </span>
-      </div>
+          @if (!loading() && replies().length === 0) {
+            <div class="cce-post-detail__empty">
+              <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+              <p>{{ 'community.detail.noReplies' | transloco }}</p>
+            </div>
+          }
 
-      <!-- Action bar: Like / Dislike / Reply / Save / Share -->
-      <div class="cce-post-detail__actions">
-        <cce-like-dislike-control
-          class="cce-post-detail__action-likes"
-          [entityId]="p.id"
-          entityType="post"
-        />
+          @for (r of topLevelReplies(); track r.id) {
+            <cce-reply
+              [reply]="r"
+              [isAccepted]="r.id === p.answeredReplyId"
+              [acceptedReplyId]="p.answeredReplyId"
+              [canMarkAnswer]="canMarkAnswer()"
+              [postId]="p.id"
+              [markableForPostId]="canMarkAnswer() && r.id !== p.answeredReplyId ? p.id : null"
+              [children]="descendantsOf(r.id)"
+              [replyingToId]="replyingToReplyId()"
+              [isAuthenticated]="isAuthenticated()"
+              (answerMarked)="onAnswerMarked()"
+              (replyClicked)="onReplyToReply($event)"
+              (replyCreated)="onReplyCreated()"
+              (cancelReply)="cancelThreadReply()"
+            />
+          }
 
-        <button
-          type="button"
-          class="cce-post-detail__action"
-          (click)="focusComposer()"
-        >
-          <mat-icon>chat_bubble_outline</mat-icon>
-          <span>{{ 'community.detail.actionReply' | transloco }}</span>
-        </button>
+          @if (total() > pageSize()) {
+            <mat-paginator
+              class="cce-post-detail__paginator"
+              [length]="total()"
+              [pageIndex]="page() - 1"
+              [pageSize]="pageSize()"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="onPage($event)"
+            />
+          }
 
-        @if (isAuthenticated()) {
-          <button
-            type="button"
-            class="cce-post-detail__action"
-            cceFollow
-            entityType="post"
-            [entityId]="p.id"
-          >
-            <mat-icon>bookmark_border</mat-icon>
-            <span>{{ 'community.detail.actionSave' | transloco }}</span>
-          </button>
-        }
+        </section>
 
-        <button
-          type="button"
-          class="cce-post-detail__action"
-          (click)="copyLink()"
-        >
-          <mat-icon>share</mat-icon>
-          <span>{{ 'community.detail.actionShare' | transloco }}</span>
-        </button>
-      </div>
-    </article>
+      </div><!-- /.cce-post-detail__main -->
 
-    <!-- Inline composer (FB-style "Add a reply") -->
-    <section class="cce-post-detail__compose" #composer>
-      <h2 class="cce-post-detail__section-title">
-        <mat-icon aria-hidden="true">edit_note</mat-icon>
-        {{ 'community.detail.composeTitle' | transloco }}
-      </h2>
-      @if (isAuthenticated()) {
-        <cce-compose-reply-form
-          [postId]="p.id"
-          (replyCreated)="onReplyCreated()"
-        />
-      } @else {
-        <cce-sign-in-cta messageKey="community.signInToReply" />
-      }
-    </section>
-
-    <!-- Replies feed -->
-    <section class="cce-post-detail__replies">
-      <h2 class="cce-post-detail__section-title">
-        <mat-icon aria-hidden="true">forum</mat-icon>
-        {{ 'community.detail.repliesTitle' | transloco }}
-        @if (total() > 0) {
-          <span class="cce-post-detail__section-count">{{ total() }}</span>
-        }
-      </h2>
-
-      @if (!loading() && replies().length === 0) {
-        <div class="cce-post-detail__empty">
-          <span class="cce-post-detail__empty-art" aria-hidden="true">
-            <mat-icon>chat_bubble_outline</mat-icon>
-          </span>
-          <p>{{ 'community.detail.noReplies' | transloco }}</p>
-        </div>
-      }
-
-      @for (r of topLevelReplies(); track r.id) {
-        <cce-reply
-          [reply]="r"
-          [isAccepted]="r.id === p.answeredReplyId"
-          [acceptedReplyId]="p.answeredReplyId"
-          [canMarkAnswer]="canMarkAnswer()"
-          [postId]="p.id"
-          [markableForPostId]="canMarkAnswer() && r.id !== p.answeredReplyId ? p.id : null"
-          [children]="descendantsOf(r.id)"
-          [replyingToId]="replyingToReplyId()"
-          [isAuthenticated]="isAuthenticated()"
-          (answerMarked)="onAnswerMarked()"
-          (replyClicked)="onReplyToReply($event)"
-          (replyCreated)="onReplyCreated()"
-          (cancelReply)="cancelThreadReply()"
-        />
-      }
-
-      @if (total() > pageSize()) {
-        <mat-paginator
-          class="cce-post-detail__paginator"
-          [length]="total()"
-          [pageIndex]="page() - 1"
-          [pageSize]="pageSize()"
-          [pageSizeOptions]="[10, 20, 50]"
-          (page)="onPage($event)"
-        />
-      }
-    </section>
+    </div><!-- /.cce-post-detail__layout -->
   }
+
 </section>

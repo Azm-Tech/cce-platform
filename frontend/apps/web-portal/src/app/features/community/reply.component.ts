@@ -1,34 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
+import { ToastService } from '@frontend/ui-kit';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
-import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
-import { LikeDislikeControlComponent } from './like-dislike-control.component';
+import { timeAgo } from './lib/social-helpers';
 import { MarkAnswerButtonComponent } from './mark-answer-button.component';
-import type { PublicPostReply } from './community.types';
+import { CommunityApiService } from './community-api.service';
+import type { PublicPostReply, VoteDirection } from './community.types';
 
-/**
- * Reply card rendered in the social-feed style: gradient avatar tile,
- * speech-bubble body, byline with locale-aware time-ago, expert + lang
- * chips, and an action row with Like / Dislike thumbs + a Reply button
- * that opens an inline thread composer in the parent page. Optional
- * "Mark as answer" footer is visible only to the post author for a
- * not-yet-accepted reply.
- *
- * The component accepts a list of nested children so reply-to-reply
- * conversations can render as an indented thread.
- */
 @Component({
   selector: 'cce-reply',
   standalone: true,
   imports: [
-    CommonModule, DatePipe,
+    DatePipe,
     MatIconModule,
     TranslocoModule,
     ComposeReplyFormComponent,
-    LikeDislikeControlComponent,
     MarkAnswerButtonComponent,
   ],
   templateUrl: './reply.component.html',
@@ -37,54 +26,66 @@ import type { PublicPostReply } from './community.types';
 })
 export class ReplyComponent {
   private readonly localeService = inject(LocaleService);
+  private readonly api = inject(CommunityApiService);
+  private readonly toast = inject(ToastService);
 
   readonly reply = input.required<PublicPostReply>();
-  /** True when this reply is the post's accepted answer. Renders a green ribbon. */
   readonly isAccepted = input<boolean>(false);
-  /** When provided, shows the "mark as accepted answer" button (author-only host gates this). */
   readonly markableForPostId = input<string | null>(null);
-  /** Direct children of this reply in the thread tree. Rendered indented. */
   readonly children = input<readonly PublicPostReply[]>([]);
-  /** The id of the reply currently being replied to. Drives the
-   *  highlight ring on the targeted bubble. */
   readonly replyingToId = input<string | null>(null);
-  /** When this reply is the post's accepted answer (parent-only flag). */
   readonly acceptedReplyId = input<string | null>(null);
-  /** Active user id used to gate the Mark-as-answer button on children. */
   readonly canMarkAnswer = input<boolean>(false);
-  /** Post id used by the Mark-as-answer button on child replies. */
   readonly postId = input<string | null>(null);
-
-  /** Whether the active user is authenticated. Drives whether the
-   *  inline reply composer or a sign-in CTA shows up when this reply
-   *  is the active replyingTo target. */
   readonly isAuthenticated = input<boolean>(false);
-  /** Re-emitted by the inner MarkAnswerButton so parent pages can refresh. */
+
   readonly answerMarked = output<void>();
-  /** User clicked the "Reply" button — parent page opens the inline
-   *  thread composer with this reply as the parent. */
   readonly replyClicked = output<PublicPostReply>();
-  /** Emitted when the inline composer creates a reply — propagates
-   *  up to the page so it can refresh the list. */
   readonly replyCreated = output<void>();
-  /** Emitted when the user closes the inline composer — propagates
-   *  up so the page clears `replyingToReplyId`. */
   readonly cancelReply = output<void>();
 
   readonly locale = this.localeService.locale;
-  readonly showLanguageBadge = computed(
-    () => this.reply().locale !== this.localeService.locale(),
-  );
-  readonly isHighlighted = computed(
-    () => this.replyingToId() === this.reply().id,
+
+  readonly isHighlighted = computed(() => this.replyingToId() === this.reply().id);
+
+  readonly displayName = computed(() => this.reply().authorName?.trim() || 'عضو');
+  readonly avatarInitial = computed(() => {
+    const name = this.reply().authorName?.trim();
+    return name ? name[0].toUpperCase() : '?';
+  });
+
+  readonly myVote = signal<VoteDirection>(0);
+  readonly voting = signal(false);
+  readonly voteScore = computed(
+    () => this.reply().upvoteCount + (this.myVote() === 1 ? 1 : 0),
   );
 
-  // ─── Social helpers (locale-aware) ───────────────────────
   timeAgo(iso: string): string { return timeAgo(iso, this.locale()); }
-  authorHandle(id: string): string { return authorHandle(id); }
-  authorInitial(id: string): string { return authorInitial(id); }
 
   onReplyClick(): void {
     this.replyClicked.emit(this.reply());
+  }
+
+  async onVote(): Promise<void> {
+    if (!this.isAuthenticated()) {
+      this.toast.error('community.signInToRate');
+      return;
+    }
+    if (this.voting()) return;
+
+    const prev = this.myVote();
+    const next: VoteDirection = prev === 1 ? 0 : 1;
+
+    this.myVote.set(next);
+    this.voting.set(true);
+
+    const res = await this.api.voteReply(this.reply().id, next);
+
+    this.voting.set(false);
+
+    if (!res.ok) {
+      this.myVote.set(prev);
+      this.toast.error('errors.' + res.error.kind);
+    }
   }
 }

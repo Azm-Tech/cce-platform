@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AuthService, type CurrentUser } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import { FollowsApiService } from '../follows/follows-api.service';
@@ -12,17 +12,24 @@ import type { PagedResult, PublicPost, PublicPostReply } from './community.types
 import { PostDetailPage } from './post-detail.page';
 
 const POST: PublicPost = {
-  id: 'p1', topicId: 't1', authorId: 'u1',
+  id: 'p1', communityId: 'c1', topicId: 't1',
+  type: 'Question',
+  title: 'Test post',
+  author: { id: 'u1', name: 'Test Author', avatarUrl: null, isExpert: false, postsCount: 0, followerCount: 0 },
   content: 'Question content', locale: 'en',
   isAnswerable: true,
-  answeredReplyId: null,
+  upvoteCount: 5, downvoteCount: 0, commentsCount: 2,
+  answeredReplyId: null, attachmentIds: [],
   createdOn: '2026-04-29T12:00:00Z',
+  topicNameAr: null, topicNameEn: null,
+  isWatchlisted: false, voteStatus: 0,
 };
 
 const R1: PublicPostReply = {
   id: 'r1', postId: 'p1', authorId: 'u2',
   content: 'first', locale: 'en',
   parentReplyId: null, isByExpert: false,
+  depth: 0, childCount: 0, upvoteCount: 0,
   createdOn: '2026-04-29T13:00:00Z',
 };
 const R2: PublicPostReply = { ...R1, id: 'r2', content: 'second', isByExpert: true };
@@ -42,6 +49,8 @@ describe('PostDetailPage', () => {
   let page: PostDetailPage;
   let getPost: jest.Mock;
   let listReplies: jest.Mock;
+  let listTopics: jest.Mock;
+  let getCommunityUser: jest.Mock;
   let isAuthSig: ReturnType<typeof signal<boolean>>;
   let currentUserSig: ReturnType<typeof signal<CurrentUser | null>>;
 
@@ -50,15 +59,17 @@ describe('PostDetailPage', () => {
     listReplies = jest.fn().mockResolvedValue(
       ok({ items: [R1, R2], page: 1, pageSize: 20, total: 2 } as PagedResult<PublicPostReply>),
     );
+    listTopics = jest.fn().mockResolvedValue(ok([]));
+    getCommunityUser = jest.fn().mockResolvedValue(ok({}));
     isAuthSig = signal<boolean>(opts.user !== null);
     currentUserSig = signal<CurrentUser | null>(opts.user ?? null);
 
     await TestBed.configureTestingModule({
-      imports: [PostDetailPage, TranslocoModule.forRoot()],
+      imports: [PostDetailPage, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
-        { provide: CommunityApiService, useValue: { getPost, listReplies, ratePost: jest.fn(), markAnswer: jest.fn(), createReply: jest.fn() } },
+        { provide: CommunityApiService, useValue: { getPost, listReplies, listTopics, getCommunityUser, ratePost: jest.fn(), markAnswer: jest.fn(), createReply: jest.fn() } },
         {
           provide: FollowsApiService,
           useValue: {
@@ -110,7 +121,7 @@ describe('PostDetailPage', () => {
     getPost.mockResolvedValueOnce(ok({ ...POST, answeredReplyId: 'r2' }));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(page.orderedReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
+    expect(page.topLevelReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
   });
 
   it('canMarkAnswer is true when current user is the post author and post is answerable', async () => {

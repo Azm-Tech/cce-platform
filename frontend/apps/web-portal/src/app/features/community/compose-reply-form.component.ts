@@ -3,11 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, sign
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
@@ -24,13 +20,9 @@ interface ComposeReplyFormShape {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatRadioModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   templateUrl: './compose-reply-form.component.html',
   styleUrl: './compose-reply-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,17 +34,8 @@ export class ComposeReplyFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly postId = input.required<string>();
-  /** When set, the reply is created as a child of this reply (threaded
-   *  comment). The PostDetailPage drives this via a "Replying to @handle"
-   *  affordance below the parent. */
   readonly parentReplyId = input<string | null>(null);
-  /** Optional already-translated handle of the parent reply's author
-   *  (e.g. `@d70d6a`). Shown above the textarea so the user knows who
-   *  they're replying to. Only used when parentReplyId is set. */
   readonly parentHandle = input<string | null>(null);
-  /** Emitted when the user clicks the inline cancel button (only
-   *  rendered when replying to a comment). PostDetailPage uses this
-   *  to clear the `replyingToReplyId` state. */
   readonly cancelReply = output<void>();
   readonly replyCreated = output<string>();
 
@@ -63,13 +46,12 @@ export class ComposeReplyFormComponent implements OnInit {
     content: this.fb.nonNullable.control('', [
       Validators.required,
       Validators.minLength(1),
-      Validators.maxLength(5000),
+      Validators.maxLength(500),
     ]),
     locale: this.fb.nonNullable.control<'ar' | 'en'>('en', Validators.required),
   });
 
   ngOnInit(): void {
-    // Default locale to current LocaleService value at construction time.
     this.form.controls.locale.setValue(this.localeService.locale());
   }
 

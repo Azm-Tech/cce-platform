@@ -3,9 +3,15 @@
   [formGroup]="form"
   (ngSubmit)="submit()"
 >
+  <!-- Header row -->
+  <div class="cce-compose-reply__hd">
+    <span class="cce-compose-reply__title">{{ 'community.detail.composeTitle' | transloco }}</span>
+    <mat-icon svgIcon="message-square-plus" aria-hidden="true" class="cce-compose-reply__hd-icon"></mat-icon>
+  </div>
+
   @if (parentReplyId() && parentHandle(); as h) {
     <div class="cce-compose-reply__parent" role="status">
-      <mat-icon aria-hidden="true">reply</mat-icon>
+      <mat-icon svgIcon="reply" aria-hidden="true"></mat-icon>
       <span>{{ 'community.detail.replyToReply' | transloco:{ handle: h } }}</span>
       <button
         type="button"
@@ -13,40 +19,42 @@
         [attr.aria-label]="'community.detail.cancelReply' | transloco"
         (click)="cancelReply.emit()"
       >
-        <mat-icon>close</mat-icon>
+        <mat-icon svgIcon="x"></mat-icon>
       </button>
     </div>
   }
 
   @if (errorKind()) {
     <div class="cce-compose-reply__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
       {{ ('errors.' + errorKind()) | transloco }}
     </div>
   }
 
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'community.reply.placeholder' | transloco }}</mat-label>
+  <!-- Plain textarea -->
+  <div class="cce-compose-reply__textarea-wrap">
     <textarea
-      matInput
+      class="cce-compose-reply__textarea"
       formControlName="content"
-      rows="3"
-      maxlength="5000"
+      [placeholder]="'community.replyPlaceholder' | transloco"
+      maxlength="500"
+      rows="5"
+      dir="auto"
     ></textarea>
-  </mat-form-field>
+    <span class="cce-compose-reply__char-count">{{ form.controls.content.value.length }} / 500</span>
+  </div>
 
+  <!-- Submit row -->
   <div class="cce-compose-reply__row">
-    <mat-radio-group formControlName="locale" class="cce-compose-reply__locale">
-      <mat-radio-button value="en">English</mat-radio-button>
-      <mat-radio-button value="ar">العربية</mat-radio-button>
-    </mat-radio-group>
-
     <button
-      mat-flat-button
-      color="primary"
       type="submit"
+      class="cce-compose-reply__submit"
       [disabled]="form.invalid || submitting()"
     >
-      {{ 'community.reply.submit' | transloco }}
+      @if (submitting()) {
+        <mat-icon class="cce-compose-reply__spin" aria-hidden="true">refresh</mat-icon>
+      }
+      {{ 'community.sendReply' | transloco }}
     </button>
   </div>
 </form>
