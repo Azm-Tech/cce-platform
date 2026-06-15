@@ -1,14 +1,794 @@
-/* Topics list — toolbar/grid/skeleton/empty/error shared via global
- * styles (apps/web-portal/src/styles.scss). */
+// ── Design tokens (from Figma) ────────────────────────────────────────────────
+// Primary
+$p-50:  #ebf2fe;
+$p-100: #c5d9fc;
+$p-200: #96baf9;
+$p-500: #4285f2;
+$p-600: #2e6dd4;
+$p-700: #235bb0;
+$p-800: #174a8d;
+$p-900: #082f59;
+// Neutrals
+$n-50:  #f9fafb;
+$n-100: #f1f3f7;
+$n-200: #e3e7ee;
+$n-300: #c9d0da;
+$n-500: #748091;
+$n-600: #4e5866;
+$n-800: #242930;
+$n-900: #13171c;
+// Font
+$font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host {
   display: block;
-  max-width: 1240px;
-  margin-inline: auto;
-  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem) 4rem;
+  font-family: $font;
+  background: $n-50;
+  min-height: 100vh;
 }
 
-.cce-topics-list__progress {
-  margin-bottom: 1rem;
-  --mdc-linear-progress-active-indicator-color: #006c4f;
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+.cp-page {
+  max-width: 1728px;
+  margin-inline: auto;
+  padding: 0 clamp(1rem, 4vw, 5rem) 5rem;
+}
+
+// ── Two-column grid (RTL: col 1 = right sidebar 400px, col 2 = left feed) ────
+.cp-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  SIDEBAR (right column)
+// ═════════════════════════════════════════════════════════════════════════════
+.cp-sidebar {
+  position: sticky;
+  top: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border: 1px solid $n-100;
+}
+
+// ── User profile card ─────────────────────────────────────────────────────────
+.cp-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 32px 16px 24px;
+
+  &__avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 9999px;
+    background: $p-100;
+    border: 1px solid $p-50;
+    color: $p-900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 400;
+    font-family: $font;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 32px;
+    color: $n-800;
+    font-family: $font;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: $n-500;
+    font-family: $font;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #15803d;
+    }
+  }
+
+  // Stats row
+  &__stats {
+    display: flex;
+    width: 100%;
+    text-align: center;
+  }
+
+  &__stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 4px;
+
+    strong {
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 32px;
+      color: $n-900;
+      font-family: $font;
+    }
+
+    span {
+      font-size: 16px;
+      line-height: 24px;
+      color: $n-500;
+      font-family: $font;
+    }
+  }
+
+  &__stat-divider {
+    width: 1px;
+    background: $n-200;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 28px;
+    color: $p-500;
+    text-decoration: none;
+
+    mat-icon { font-size: 24px; width: 24px; height: 24px; }
+    &:hover { color: $p-600; }
+  }
+}
+
+// ── Primary CTA ───────────────────────────────────────────────────────────────
+.cp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  height: 46px;
+  padding: 10px 12px;
+  background: $p-500;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  font-family: $font;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+  &:hover { background: $p-600; }
+}
+
+// ── Divider ───────────────────────────────────────────────────────────────────
+.cp-sidebar-divider {
+  width: 100%;
+  height: 1px;
+  background: $n-200;
+  flex-shrink: 0;
+}
+
+// ── Topics sidebar section ────────────────────────────────────────────────────
+.cp-sidebar-topics {
+  padding: 16px 0;
+}
+
+.cp-sidebar-topics__title {
+  margin: 0;
+  padding: 0 16px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  color: $n-900;
+  font-family: $font;
+  text-align: end;
+}
+
+.cp-topics-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cp-topic-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 58px;
+  padding: 8px 16px;
+  border: none;
+  border-bottom: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  font-family: $font;
+  cursor: pointer;
+  text-align: inherit;
+  color: $n-900;
+  gap: 12px;
+  transition: background 0.12s;
+
+  &__label { flex: 1; text-align: start; }
+
+  &__badge {
+    padding: 1px 11px 5px;
+    border-radius: 9999px;
+    background: $n-50;
+    border: 1px solid $n-200;
+    color: $n-600;
+    font-size: 14px;
+    line-height: 20px;
+    font-family: $font;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  &:hover { background: $p-50; }
+
+  &--active {
+    background: $p-50;
+    border: 1px solid $p-100;
+    color: $p-500;
+
+    .cp-topic-item__badge {
+      background: $n-50;
+      border-color: $n-200;
+      color: $n-600;
+    }
+  }
+}
+
+// ── Sidebar rules collapsible ────────────────────────────────────────────────
+.cp-sidebar-rules {
+  padding: 24px 16px;
+  border-top: 1px solid $n-200;
+
+  &__details {
+    border: 1px solid $n-200;
+    border-radius: 8px;
+    background: $n-50;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &[open] {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+      .cp-sidebar-rules__summary mat-icon {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: $n-900;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-family: $font;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: $n-500;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $n-600;
+    font-family: $font;
+    text-align: start;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $p-500;
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ── Sidebar roles ───────────────────────────────────────────────────────────────
+.cp-sidebar-roles {
+  padding: 0 16px 24px;
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: start;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: $n-900;
+    font-family: $font;
+  }
+
+  &__desc {
+    font-size: 13px;
+    line-height: 19px;
+    color: $n-600;
+    font-family: $font;
+  }
+}
+
+// ── Sidebar footer ────────────────────────────────────────────────────────────
+.cp-sidebar-footer {
+  margin-top: auto;
+  padding: 24px 16px;
+  border-top: 1px solid $n-200;
+  background: $n-50;
+  text-align: center;
+  font-family: $font;
+
+  &__copyright {
+    font-size: 14px;
+    line-height: 20px;
+    color: $n-500;
+    margin-bottom: 8px;
+  }
+
+  &__links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  &__link {
+    font-size: 14px;
+    line-height: 20px;
+    color: $p-500;
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover {
+      color: $p-700;
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── Topic skeleton ────────────────────────────────────────────────────────────
+.cp-topics-skel { pointer-events: none; }
+
+.cp-topic-skel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  padding: 8px 16px;
+  gap: 12px;
+
+  &__label {
+    height: 14px;
+    flex: 1;
+    border-radius: 4px;
+  }
+
+  &__badge {
+    width: 36px;
+    height: 22px;
+    border-radius: 9999px;
+    flex-shrink: 0;
+  }
+
+  @for $i from 1 through 7 {
+    &:nth-child(#{$i}) .cp-topic-skel__label,
+    &:nth-child(#{$i}) .cp-topic-skel__badge {
+      animation-delay: #{($i - 1) * 0.07}s;
+    }
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  MAIN FEED (left column)
+// ═════════════════════════════════════════════════════════════════════════════
+.cp-feed {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+}
+
+// ── Page title ────────────────────────────────────────────────────────────────
+.cp-page-title {
+  margin: 0 0 10px;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+}
+
+// ── Search bar ────────────────────────────────────────────────────────────────
+.cp-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    position: absolute;
+    inset-inline-end: 13px;
+    color: $n-500;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &__input {
+    width: 100%;
+    height: 64px;
+    padding: 8px 48px 8px 16px;
+    background: #fff;
+    border: 1px solid $n-200;
+    border-radius: 0;
+    font-size: 18px;
+    font-family: $font;
+    color: $n-900;
+    outline: none;
+    transition: border-color 0.15s;
+    text-align: start;
+
+    &::placeholder { color: $n-500; }
+    &:focus { border-color: $p-500; }
+  }
+
+  &__clear {
+    position: absolute;
+    inset-inline-start: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: $n-200;
+    color: $n-500;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    &:hover { background: $n-300; }
+  }
+}
+
+// ── Filter bar ────────────────────────────────────────────────────────────────
+.cp-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+// Category dropdown (RTL start = right)
+.cp-category-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  width: 200px;
+  height: 46px;
+  border: 1px solid $n-300;
+  border-radius: 0;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  font-family: $font;
+  color: $n-900;
+  cursor: pointer;
+  justify-content: space-between;
+  text-align: start;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; color: $n-500; flex-shrink: 0; }
+  &:hover { border-color: $n-500; }
+}
+
+.cp-filter-dropdowns {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+}
+
+// Sort chips (pill shape matching Figma)
+.cp-sort-tabs {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.cp-sort-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 15px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1px solid $n-200;
+  background: #fff;
+  color: $p-600;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.13s;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &:hover {
+    border-color: $p-600;
+    background: $p-50;
+  }
+
+  &--active {
+    background: $p-50;
+    border-color: $p-600;
+    color: $p-800;
+
+    &:hover { background: $p-100; }
+  }
+}
+
+// ── Post list ─────────────────────────────────────────────────────────────────
+.cp-feed__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Error ─────────────────────────────────────────────────────────────────────
+.cp-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 16px;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  &__retry {
+    margin-inline-start: auto;
+    border: 1px solid #fca5a5;
+    background: transparent;
+    color: #b91c1c;
+    padding: 4px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+    &:hover { background: #fee2e2; }
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.cp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 20px;
+  text-align: center;
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; color: $n-300; }
+  p { margin: 0; font-size: 18px; color: $n-500; font-family: $font; }
+}
+
+// ── Skeleton shimmer ──────────────────────────────────────────────────────────
+.cp-skel {
+  border-radius: 4px;
+  background: linear-gradient(90deg, $n-100 25%, $n-50 50%, $n-100 75%);
+  background-size: 200% 100%;
+  animation: cp-shimmer 1.6s ease-in-out infinite;
+
+  &--name        { height: 14px; width: 150px; }
+  &--sm          { height: 12px; width: 70px; }
+  &--title       { height: 20px; width: 70%; }
+  &--body        { height: 14px; width: 100%; }
+  &--body-short  { width: 60%; }
+  &--chip        { height: 22px; width: 80px; border-radius: 9999px; }
+}
+
+.cp-card-skel {
+  background: #fff;
+  border: 1px solid $n-100;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &__header { display: flex; align-items: center; gap: 12px; }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, $p-100 25%, $p-50 50%, $p-100 75%);
+    background-size: 200% 100%;
+    animation: cp-shimmer 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  &__meta { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  &__chips { display: flex; gap: 8px; margin-inline-start: auto; }
+}
+
+.cp-progress {
+  height: 2px;
+  background: $n-100;
+  overflow: hidden;
+
+  &__bar {
+    height: 100%;
+    background: $p-500;
+    animation: cp-bar 1.4s ease-in-out infinite;
+    width: 40%;
+  }
+}
+
+@keyframes cp-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes cp-bar {
+  0%   { transform: translateX(-250%); }
+  100% { transform: translateX(350%); }
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+.cp-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 1rem 0;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid $n-200;
+    background: #fff;
+    color: $n-500;
+    cursor: pointer;
+    transition: all 0.12s;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { border-color: $p-500; color: $p-500; }
+  }
+
+  &__num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid $n-200;
+    background: #fff;
+    color: $n-500;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+    transition: all 0.12s;
+
+    &--active { background: $p-500; border-color: $p-500; color: #fff; }
+    &:hover:not(&--active) { border-color: $p-500; color: $p-500; }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 1024px) {
+  .cp-layout { grid-template-columns: 1fr; }
+  .cp-sidebar { position: static; order: 2; }
+  .cp-feed { order: 1; }
+}
+
+@media (max-width: 600px) {
+  .cp-page-title { font-size: 24px; line-height: 32px; }
+  .cp-sort-tabs { overflow-x: auto; padding-bottom: 2px; gap: 8px; }
+  .cp-filter-bar { flex-direction: column; align-items: stretch; }
+  .cp-category-btn { width: 100%; }
 }

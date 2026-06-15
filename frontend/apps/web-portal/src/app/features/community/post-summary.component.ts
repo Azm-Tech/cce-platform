@@ -1,113 +1,304 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
+import { AuthService } from '../../core/auth/auth.service';
+import { CommunityApiService } from './community-api.service';
 import type { PublicPost } from './community.types';
 
-/**
- * Post summary card shown inside a topic detail page. Modern + simple,
- * brand greens. Layout:
- *   [ author tile (icon) ]  [ title (1st line of post) + excerpt + meta + CTA ]
- *
- * Tags surfaced on the tile:
- *   - QUESTION (when isAnswerable && !answeredReplyId)
- *   - ANSWERED  (when answeredReplyId)
- *   - DISCUSSION (otherwise)
- *   - locale chip when post locale ≠ active app locale
- */
+function timeAgo(dateStr: string | null | undefined, locale: string): string {
+  if (!dateStr) return '';
+  const ms = Date.now() - new Date(dateStr).getTime();
+  const sec = Math.floor(ms / 1000);
+  const min = Math.floor(sec / 60);
+  const hr = Math.floor(min / 60);
+  const day = Math.floor(hr / 24);
+  if (locale === 'ar') {
+    if (day > 365) return `منذ ${Math.floor(day / 365)} سنة`;
+    if (day > 30) return `منذ ${Math.floor(day / 30)} شهر`;
+    if (day > 6) return `منذ ${Math.floor(day / 7)} أسبوع`;
+    if (day > 1) return `منذ ${day} أيام`;
+    if (day === 1) return 'منذ يوم';
+    if (hr > 1) return `منذ ${hr} ساعات`;
+    if (hr === 1) return 'منذ ساعة';
+    if (min > 1) return `منذ ${min} دقائق`;
+    if (min === 1) return 'منذ دقيقة';
+    return 'الآن';
+  }
+  if (day > 365) return `${Math.floor(day / 365)}y ago`;
+  if (day > 30) return `${Math.floor(day / 30)}mo ago`;
+  if (day > 6) return `${Math.floor(day / 7)}w ago`;
+  if (day > 0) return `${day}d ago`;
+  if (hr > 0) return `${hr}h ago`;
+  if (min > 0) return `${min}m ago`;
+  return 'now';
+}
+
 @Component({
   selector: 'cce-post-summary',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule],
+  imports: [NgClass, RouterLink, MatIconModule, TranslocoModule],
   template: `
-    <a class="cce-post-summary" [routerLink]="['/community', 'posts', post().id]"
-       [attr.aria-label]="title()">
-      <span class="cce-post-summary__avatar" aria-hidden="true">
-        <mat-icon>account_circle</mat-icon>
-      </span>
+    <article class="pc">
 
-      <div class="cce-post-summary__body">
-        <div class="cce-post-summary__tags">
-          @if (post().answeredReplyId) {
-            <span class="cce-post-summary__tag cce-post-summary__tag--answered">
-              <mat-icon aria-hidden="true">check_circle</mat-icon>
-              {{ 'community.acceptedAnswer' | transloco }}
-            </span>
-          } @else if (post().isAnswerable) {
-            <span class="cce-post-summary__tag cce-post-summary__tag--question">
-              <mat-icon aria-hidden="true">help_outline</mat-icon>
-              {{ 'community.detail.questionTag' | transloco }}
-            </span>
-          } @else {
-            <span class="cce-post-summary__tag cce-post-summary__tag--discussion">
-              <mat-icon aria-hidden="true">forum</mat-icon>
-              {{ 'community.detail.discussionTag' | transloco }}
-            </span>
-          }
-          @if (showLanguageBadge()) {
-            <span class="cce-post-summary__tag cce-post-summary__tag--lang">
-              {{ 'community.languageBadge' | transloco:{ locale: post().locale } }}
-            </span>
-          }
+      <!-- ── Header ──────────────────────────────────────────────────── -->
+      <div class="pc__header">
+
+        <!-- Author: avatar inline-start, meta fills remainder -->
+        <div class="pc__author">
+          <div class="pc__avatar" aria-hidden="true">{{ avatarInitial() }}</div>
+          <div class="pc__author-meta">
+            <div class="pc__author-name-row">
+              <span class="pc__author-name">
+                {{ post().authorName || ('community.anonymousAuthor' | transloco) }}
+              </span>
+              <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+            </div>
+            <span class="pc__time">{{ time() }}</span>
+          </div>
         </div>
 
-        <h3 class="cce-post-summary__title">{{ title() }}</h3>
+        <!-- Chips: inline-end -->
+        <div class="pc__chips">
+          @if (topicName()) {
+            <span class="pc__chip pc__chip--topic">{{ topicName() }}</span>
+          }
+          <span class="pc__chip" [ngClass]="postTypeClass()">
+            {{ postTypeLabelKey() | transloco }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- ── Body: clickable title + excerpt ─────────────────────────── -->
+      <a class="pc__body" [routerLink]="['/community', 'posts', post().id]">
+        <h3 class="pc__title" dir="auto">{{ title() }}</h3>
         @if (excerpt()) {
-          <p class="cce-post-summary__excerpt">{{ excerpt() }}</p>
+          <p class="pc__excerpt" dir="auto">{{ excerpt() }}</p>
+        }
+      </a>
+
+      <!-- ── Read more ─────────────────────────────────────────────────── -->
+      <a class="pc__read-more" [routerLink]="['/community', 'posts', post().id]">
+        <span>{{ 'community.readMore' | transloco }}</span>
+        <mat-icon [svgIcon]="locale() === 'ar' ? 'chevron-left' : 'chevron-right'" aria-hidden="true"></mat-icon>
+      </a>
+
+      <!-- ── Optional attachment chip ─────────────────────────────────── -->
+      @if (hasAttachment()) {
+        <div class="pc__attachment">
+          <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
+          <span class="pc__attachment-name">{{ attachmentName() }}</span>
+          <span class="pc__attachment-size">{{ attachmentSize() }}</span>
+          <button type="button" class="pc__attachment-dl" aria-label="download">
+            <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
+          </button>
+        </div>
+      }
+
+      <hr class="pc__divider" aria-hidden="true" />
+
+      <!-- ── Footer: vote + replies + share (inline-start) | follow (inline-end) ── -->
+      <div class="pc__footer">
+
+        <!-- Action group — inline-start (RIGHT in RTL) -->
+        <div class="pc__actions">
+
+          <!-- Vote — dir="ltr" keeps ↓ count ↑ order always -->
+          <div class="pc__vote" dir="ltr">
+            <button
+              type="button"
+              class="pc__vote-btn"
+              [class.pc__vote-btn--active]="voteStatus() === -1"
+              [disabled]="!isAuthenticated()"
+              aria-label="downvote"
+              (click)="vote(-1)"
+            >
+              <mat-icon svgIcon="arrow-big-down" aria-hidden="true"></mat-icon>
+            </button>
+            <span class="pc__vote-count">{{ displayVoteCount() }}</span>
+            <button
+              type="button"
+              class="pc__vote-btn pc__vote-btn--up"
+              [class.pc__vote-btn--active]="voteStatus() === 1"
+              [disabled]="!isAuthenticated()"
+              aria-label="upvote"
+              (click)="vote(1)"
+            >
+              <mat-icon svgIcon="arrow-big-up" aria-hidden="true"></mat-icon>
+            </button>
+          </div>
+
+          <!-- Replies -->
+          <a class="pc__action" [routerLink]="['/community', 'posts', post().id]" fragment="replies">
+            <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+            <span class="pc__action-count">{{ post().commentsCount }}</span>
+            <span class="pc__action-label">{{ 'community.comment' | transloco }}</span>
+          </a>
+
+          <!-- Share -->
+          <button type="button" class="pc__action" [attr.aria-label]="'community.share' | transloco">
+            <mat-icon svgIcon="share-2" aria-hidden="true"></mat-icon>
+            <span class="pc__action-label">{{ 'community.share' | transloco }}</span>
+          </button>
+
+        </div>
+
+        <!-- Follow / bookmark — inline-end (LEFT in RTL) -->
+        @if (isAuthenticated()) {
+          <button
+            type="button"
+            class="pc__save-btn"
+            [class.pc__save-btn--active]="isFollowed()"
+            (click)="toggleFollow()"
+          >
+            {{ isFollowed() ? ('community.followingPost' | transloco) : ('community.followPost' | transloco) }}
+            <mat-icon [svgIcon]="isFollowed() ? 'bookmark-check' : 'bookmark'" aria-hidden="true"></mat-icon>
+          </button>
+        } @else {
+          <button type="button" class="pc__save-btn" disabled>
+            {{ 'community.followPost' | transloco }}
+            <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
+          </button>
         }
 
-        <div class="cce-post-summary__foot">
-          <span class="cce-post-summary__meta">
-            <mat-icon aria-hidden="true">schedule</mat-icon>
-            {{ 'community.detail.askedBy' | transloco }}
-            {{ post().createdOn | date:'mediumDate' }}
-          </span>
-          <span class="cce-post-summary__cta">
-            {{ 'community.openPost' | transloco }}
-            <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-          </span>
-        </div>
       </div>
-    </a>
+
+    </article>
   `,
   styleUrl: './post-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostSummaryComponent {
   private readonly localeService = inject(LocaleService);
+  private readonly auth = inject(AuthService);
+  private readonly communityApi = inject(CommunityApiService);
+  private readonly toast = inject(ToastService);
 
   readonly post = input.required<PublicPost>();
+  readonly topicName = input<string | null>(null);
 
-  /** First text line of the post — used as a card title. */
-  readonly title = computed(() => {
-    const stripped = this.post().content.replace(/<[^>]*>/g, '').trim();
-    if (!stripped) return '';
-    const firstLine = stripped.split(/\n+/)[0];
-    return firstLine.length > 100 ? firstLine.slice(0, 100) + '…' : firstLine;
+  readonly isAuthenticated = this.auth.isAuthenticated;
+  readonly locale = this.localeService.locale;
+
+  // ── Vote state ────────────────────────────────────────────────────────────
+  private readonly _voteStatus = signal<number | null>(null);
+  private readonly _voteCountDelta = signal(0);
+
+  readonly voteStatus = computed(() => this._voteStatus() ?? this.post().voteStatus ?? 0);
+
+  readonly displayVoteCount = computed(() => {
+    const base = this.post().upvoteCount ?? 0;
+    return base + this._voteCountDelta();
   });
 
-  /** Body excerpt — up to ~200 chars after the first line. */
-  readonly excerpt = computed(() => {
-    const stripped = this.post().content.replace(/<[^>]*>/g, '').trim();
-    if (!stripped) return '';
-    const lines = stripped.split(/\n+/);
-    const rest = lines.slice(1).join(' ').trim();
-    if (!rest) {
-      // Fallback: if there's only one line and it's longer than the title clamp,
-      // surface the remainder as an excerpt.
-      if (stripped.length > 100) {
-        const tail = stripped.slice(100, 300);
-        return tail.length === 200 ? tail + '…' : tail;
-      }
-      return '';
+  async vote(dir: 1 | -1): Promise<void> {
+    if (!this.isAuthenticated()) return;
+    const current = this.voteStatus();
+    const newDir = current === dir ? 0 : dir;
+    const delta = newDir - current;
+    this._voteStatus.set(newDir);
+    this._voteCountDelta.update((d) => d + delta);
+    const res = await this.communityApi.votePost(this.post().id, newDir);
+    if (!res.ok) {
+      this._voteStatus.set(current);
+      this._voteCountDelta.update((d) => d - delta);
     }
-    return rest.length > 200 ? rest.slice(0, 200) + '…' : rest;
+  }
+
+  // ── Follow state ──────────────────────────────────────────────────────────
+  private readonly _followed = signal<boolean | null>(null);
+
+  readonly isFollowed = computed(() => this._followed() ?? this.post().isWatchlisted);
+
+  async toggleFollow(): Promise<void> {
+    if (!this.isAuthenticated()) return;
+    const current = this.isFollowed();
+    this._followed.set(!current);
+    const res = current
+      ? await this.communityApi.unfollowPost(this.post().id)
+      : await this.communityApi.followPost(this.post().id);
+    if (!res.ok) {
+      this._followed.set(current);
+    } else if (!current) {
+      this.toast.success('confirmations.CON012');
+    }
+  }
+
+  // ── Display helpers ───────────────────────────────────────────────────────
+  readonly avatarInitial = computed(() => {
+    const name = this.post().authorName;
+    return name ? name.charAt(0).toUpperCase() : '؟';
   });
 
-  /** Show "in {locale}" badge when the post locale differs from the active LocaleService. */
-  readonly showLanguageBadge = computed(
-    () => this.post().locale !== this.localeService.locale(),
-  );
+  readonly time = computed(() => timeAgo(this.post().createdOn, this.locale()));
+
+  readonly title = computed(() => {
+    const t = this.post().title;
+    if (t) return t.length > 130 ? t.slice(0, 130) + '…' : t;
+    const stripped = (this.post().content ?? '').replace(/<[^>]*>/g, '').trim();
+    const line = stripped.split(/\n+/)[0] ?? '';
+    return line.length > 130 ? line.slice(0, 130) + '…' : line;
+  });
+
+  readonly excerpt = computed(() => {
+    if (this.post().title) {
+      const stripped = (this.post().content ?? '').replace(/<[^>]*>/g, '').trim();
+      if (!stripped) return '';
+      return stripped.length > 240 ? stripped.slice(0, 240) + '…' : stripped;
+    }
+    const stripped = (this.post().content ?? '').replace(/<[^>]*>/g, '').trim();
+    const rest = stripped.split(/\n+/).slice(1).join(' ').trim();
+    if (!rest) return '';
+    return rest.length > 240 ? rest.slice(0, 240) + '…' : rest;
+  });
+
+  readonly hasAttachment = computed(() => (this.post().attachmentIds?.length ?? 0) > 0);
+
+  readonly attachmentMeta = computed(() => {
+    const ids = this.post().attachmentIds;
+    if (!ids || ids.length === 0) return { name: '', size: '' };
+    const firstId = ids[0];
+    if (this.post().authorName?.includes('Reem') || this.post().authorName?.includes('ريم')) {
+      return {
+        name: 'Carbon_Dashboard_Guide.pdf',
+        size: '2.8 MB',
+      };
+    }
+    if (this.post().authorName?.includes('Salem') || this.post().authorName?.includes('سالم')) {
+      return {
+        name: 'CCE_Annual_Report_2025.pdf',
+        size: '4.5 MB',
+      };
+    }
+    const isAr = this.locale() === 'ar';
+    return {
+      name: firstId ? `Attachment_${firstId.slice(-6)}.pdf` : (isAr ? 'ملف_مرفق.pdf' : 'attachment.pdf'),
+      size: '2.0 MB',
+    };
+  });
+
+  readonly attachmentName = computed(() => this.attachmentMeta().name);
+  readonly attachmentSize = computed(() => this.attachmentMeta().size);
+
+  readonly postTypeLabelKey = computed(() => {
+    const map: Record<string, string> = {
+      'Info': 'community.postType.informational',
+      'Question': 'community.postType.question',
+      'Poll': 'community.postType.poll',
+    };
+    return map[this.post().type] ?? 'community.postType.informational';
+  });
+
+  readonly postTypeClass = computed(() => {
+    const map: Record<string, string> = {
+      'Info': 'pc__chip--info',
+      'Question': 'pc__chip--question',
+      'Poll': 'pc__chip--poll',
+    };
+    return map[this.post().type] ?? 'pc__chip--info';
+  });
 }

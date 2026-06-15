@@ -3,37 +3,127 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
+  CommunityDto,
+  CommunityRole,
+  CommunityUserProfile,
   CreatePostPayload,
   CreateReplyPayload,
+  EditReplyPayload,
+  FeaturedPost,
+  MarkAnswerPayload,
   PagedResult,
+  PollInputPayload,
+  PollResults,
+  PostShareLink,
+  PostType,
   PublicPost,
   PublicPostReply,
   PublicTopic,
+  UpdateDraftPayload,
+  VoteDirection,
 } from './community.types';
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
+
+/** Web-portal responses are wrapped in { data: T }. This unwraps them. */
+function unwrap<T>(res: { data?: T } | T | null | undefined): T {
+  if (res && typeof res === 'object' && 'data' in (res as object)) {
+    const inner = (res as { data?: T }).data;
+    if (inner !== undefined && inner !== null) return inner;
+  }
+  return res as T;
+}
+
+function unwrapPaged<T>(res: { data?: PagedResult<T> } | PagedResult<T> | null | undefined): PagedResult<T> {
+  const inner = unwrap<PagedResult<T>>(res);
+  if (inner && Array.isArray((inner as PagedResult<T>).items)) return inner as PagedResult<T>;
+  return { items: [], total: 0, page: 1, pageSize: 0 };
+}
 
 @Injectable({ providedIn: 'root' })
 export class CommunityApiService {
   private readonly http = inject(HttpClient);
 
+  // ── Communities ───────────────────────────────────────────────────────────
+
+  async listCommunities(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<CommunityDto>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<CommunityDto>(
+        await firstValueFrom(this.http.get<{ data?: PagedResult<CommunityDto> }>('/api/community/communities', { params })),
+      ),
+    );
+  }
+
+  async getCommunityBySlug(slug: string): Promise<Result<CommunityDto>> {
+    return this.run(async () =>
+      unwrap<CommunityDto>(
+        await firstValueFrom(
+          this.http.get<{ data?: CommunityDto }>(`/api/community/communities/${encodeURIComponent(slug)}`),
+        ),
+      ),
+    );
+  }
+
+  async joinCommunity(id: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.post(`/api/community/communities/${encodeURIComponent(id)}/join`, {}));
+    });
+  }
+
+  async leaveCommunity(id: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.post(`/api/community/communities/${encodeURIComponent(id)}/leave`, {}));
+    });
+  }
+
+  async followCommunity(id: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.post(`/api/community/communities/${encodeURIComponent(id)}/follow`, {}));
+    });
+  }
+
+  async unfollowCommunity(id: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.delete(`/api/community/communities/${encodeURIComponent(id)}/follow`));
+    });
+  }
+
+  // ── Roles ─────────────────────────────────────────────────────────────────
+
+  async listRoles(): Promise<Result<CommunityRole[]>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<{ data?: CommunityRole[] } | CommunityRole[]>('/api/community/roles'),
+      );
+      return unwrap<CommunityRole[]>(res) ?? [];
+    });
+  }
+
+  // ── Topics ────────────────────────────────────────────────────────────────
+
   async listTopics(): Promise<Result<PublicTopic[]>> {
     return this.run(async () => {
       const res = await firstValueFrom(
-        this.http.get<PublicTopic[] | { data: PublicTopic[] }>('/api/topics'),
+        this.http.get<{ data?: PublicTopic[] } | PublicTopic[]>('/api/topics'),
       );
-      if (Array.isArray(res)) return res;
-      return (res as { data: PublicTopic[] }).data ?? [];
+      return unwrap<PublicTopic[]>(res) ?? [];
     });
   }
 
   async getTopicBySlug(slug: string): Promise<Result<PublicTopic>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<PublicTopic>(`/api/community/topics/${encodeURIComponent(slug)}`),
+    return this.run(async () =>
+      unwrap<PublicTopic>(
+        await firstValueFrom(
+          this.http.get<{ data?: PublicTopic }>(`/api/community/topics/${encodeURIComponent(slug)}`),
+        ),
       ),
     );
   }
+
+  // ── Posts ─────────────────────────────────────────────────────────────────
 
   async listPosts(
     topicId: string,
@@ -42,23 +132,115 @@ export class CommunityApiService {
     let params = new HttpParams();
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<PagedResult<PublicPost>>(
-          `/api/community/topics/${encodeURIComponent(topicId)}/posts`,
-          { params },
+    return this.run(async () =>
+      unwrapPaged<PublicPost>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<PublicPost> }>(
+            `/api/community/topics/${encodeURIComponent(topicId)}/posts`,
+            { params },
+          ),
         ),
       ),
     );
   }
 
   async getPost(id: string): Promise<Result<PublicPost>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<PublicPost>(`/api/community/posts/${encodeURIComponent(id)}`),
+    return this.run(async () =>
+      unwrap<PublicPost>(
+        await firstValueFrom(
+          this.http.get<{ data?: PublicPost }>(`/api/community/posts/${encodeURIComponent(id)}`),
+        ),
       ),
     );
   }
+
+  async createPost(payload: CreatePostPayload): Promise<Result<{ id: string }>> {
+    return this.run(async () =>
+      unwrap<{ id: string }>(
+        await firstValueFrom(this.http.post<{ data?: { id: string } }>('/api/community/posts', payload)),
+      ),
+    );
+  }
+
+  async updateDraft(postId: string, payload: UpdateDraftPayload): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.put(`/api/community/posts/${encodeURIComponent(postId)}/draft`, payload),
+      );
+    });
+  }
+
+  async deleteDraft(postId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.delete(`/api/community/posts/${encodeURIComponent(postId)}/draft`));
+    });
+  }
+
+  async publishPost(postId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/community/posts/${encodeURIComponent(postId)}/publish`, {}),
+      );
+    });
+  }
+
+  async listMyDrafts(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<PublicPost>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<PublicPost>(
+        await firstValueFrom(this.http.get<{ data?: PagedResult<PublicPost> }>('/api/me/posts/drafts', { params })),
+      ),
+    );
+  }
+
+  async votePost(postId: string, direction: VoteDirection): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/community/posts/${encodeURIComponent(postId)}/vote`, { direction }),
+      );
+    });
+  }
+
+  async sharePost(postId: string): Promise<Result<PostShareLink>> {
+    return this.run(async () =>
+      unwrap<PostShareLink>(
+        await firstValueFrom(
+          this.http.get<{ data?: PostShareLink }>(`/api/community/posts/${encodeURIComponent(postId)}/share`),
+        ),
+      ),
+    );
+  }
+
+  async markAnswer(postId: string, replyId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      const payload: MarkAnswerPayload = { replyId };
+      await firstValueFrom(
+        this.http.post(`/api/community/posts/${encodeURIComponent(postId)}/mark-answer`, payload),
+      );
+    });
+  }
+
+  // ── Post follow ───────────────────────────────────────────────────────────
+
+  async followPost(postId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/me/follows/posts/${encodeURIComponent(postId)}`, {}),
+      );
+    });
+  }
+
+  async unfollowPost(postId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.delete(`/api/me/follows/posts/${encodeURIComponent(postId)}`),
+      );
+    });
+  }
+
+  // ── Replies ───────────────────────────────────────────────────────────────
 
   async listReplies(
     postId: string,
@@ -67,70 +249,154 @@ export class CommunityApiService {
     let params = new HttpParams();
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<PagedResult<PublicPostReply>>(
-          `/api/community/posts/${encodeURIComponent(postId)}/replies`,
-          { params },
+    return this.run(async () =>
+      unwrapPaged<PublicPostReply>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<PublicPostReply> }>(
+            `/api/community/posts/${encodeURIComponent(postId)}/replies`,
+            { params },
+          ),
         ),
       ),
     );
   }
 
-  async createPost(payload: CreatePostPayload): Promise<Result<{ id: string }>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<{ id: string }>('/api/community/posts', payload),
-      ),
-    );
-  }
-
-  async createReply(
-    postId: string,
-    payload: CreateReplyPayload,
-  ): Promise<Result<{ id: string }>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<{ id: string }>(
-          `/api/community/posts/${encodeURIComponent(postId)}/replies`,
-          payload,
+  async getReplyThread(
+    replyId: string,
+    opts: { page?: number; pageSize?: number } = {},
+  ): Promise<Result<PagedResult<PublicPostReply>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<PublicPostReply>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<PublicPostReply> }>(
+            `/api/community/replies/${encodeURIComponent(replyId)}/thread`,
+            { params },
+          ),
         ),
       ),
     );
   }
 
-  async ratePost(postId: string, stars: number): Promise<Result<void>> {
-    return this.run(async () => {
-      await firstValueFrom(
-        this.http.post(
-          `/api/community/posts/${encodeURIComponent(postId)}/rate`,
-          { stars },
+  async createReply(postId: string, payload: CreateReplyPayload): Promise<Result<{ id: string }>> {
+    return this.run(async () =>
+      unwrap<{ id: string }>(
+        await firstValueFrom(
+          this.http.post<{ data?: { id: string } }>(
+            `/api/community/posts/${encodeURIComponent(postId)}/replies`,
+            payload,
+          ),
         ),
-      );
-    });
-  }
-
-  async markAnswer(postId: string, replyId: string): Promise<Result<void>> {
-    return this.run(async () => {
-      await firstValueFrom(
-        this.http.post(
-          `/api/community/posts/${encodeURIComponent(postId)}/mark-answer`,
-          { replyId },
-        ),
-      );
-    });
+      ),
+    );
   }
 
   async editReply(replyId: string, content: string): Promise<Result<void>> {
     return this.run(async () => {
+      const payload: EditReplyPayload = { content };
       await firstValueFrom(
-        this.http.put(
-          `/api/community/replies/${encodeURIComponent(replyId)}`,
-          { content },
-        ),
+        this.http.put(`/api/community/replies/${encodeURIComponent(replyId)}`, payload),
       );
     });
   }
+
+  async voteReply(replyId: string, direction: VoteDirection): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/community/replies/${encodeURIComponent(replyId)}/vote`, { direction }),
+      );
+    });
+  }
+
+  // ── Polls ─────────────────────────────────────────────────────────────────
+
+  async getPollResults(pollId: string): Promise<Result<PollResults>> {
+    return this.run(async () =>
+      unwrap<PollResults>(
+        await firstValueFrom(
+          this.http.get<{ data?: PollResults }>(`/api/community/polls/${encodeURIComponent(pollId)}/results`),
+        ),
+      ),
+    );
+  }
+
+  async votePoll(pollId: string, optionIds: string[]): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/community/polls/${encodeURIComponent(pollId)}/vote`, { optionIds }),
+      );
+    });
+  }
+
+  // ── Community user profile ────────────────────────────────────────────────
+
+  async getCommunityUser(userId: string): Promise<Result<CommunityUserProfile>> {
+    return this.run(async () =>
+      unwrap<CommunityUserProfile>(
+        await firstValueFrom(
+          this.http.get<{ data?: CommunityUserProfile }>(`/api/community/users/${encodeURIComponent(userId)}`),
+        ),
+      ),
+    );
+  }
+
+  // ── Feed ──────────────────────────────────────────────────────────────────
+
+  async getFeaturedPosts(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<FeaturedPost>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<FeaturedPost>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<FeaturedPost> }>('/api/feed/featured-posts', { params }),
+        ),
+      ),
+    );
+  }
+
+  async listFeedPosts(
+    communityId: string,
+    opts: { page?: number; pageSize?: number; sort?: string; topicId?: string; type?: PostType; search?: string } = {},
+  ): Promise<Result<PagedResult<PublicPost>>> {
+    let params = new HttpParams();
+    if (communityId) params = params.set('communityId', communityId);
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    if (opts.sort) params = params.set('sort', opts.sort);
+    if (opts.topicId) params = params.set('topicId', opts.topicId);
+    if (opts.type !== undefined && opts.type !== null) params = params.set('type', opts.type);
+    if (opts.search?.trim()) params = params.set('search', opts.search.trim());
+    return this.run(async () =>
+      unwrapPaged<PublicPost>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<PublicPost> }>('/api/community/feed', { params }),
+        ),
+      ),
+    );
+  }
+
+  // ── Poll payload builder (convenience) ───────────────────────────────────
+
+  static buildPollPayload(opts: {
+    deadline: string;
+    optionLabels: string[];
+    allowMultiple?: boolean;
+    isAnonymous?: boolean;
+    showResultsBeforeClose?: boolean;
+  }): PollInputPayload {
+    return {
+      deadline: opts.deadline,
+      optionLabels: opts.optionLabels,
+      allowMultiple: opts.allowMultiple ?? false,
+      isAnonymous: opts.isAnonymous ?? false,
+      showResultsBeforeClose: opts.showResultsBeforeClose ?? false,
+    };
+  }
+
+  // ── Private ───────────────────────────────────────────────────────────────
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {
     try {
