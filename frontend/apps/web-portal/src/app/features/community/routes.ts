@@ -16,4 +16,9 @@ export const COMMUNITY_ROUTES: Routes = [
     loadComponent: () =>
       import('./post-detail.page').then((m) => m.PostDetailPage),
   },
+  {
+    path: 'users/:id',
+    loadComponent: () =>
+      import('./community-user-profile.page').then((m) => m.CommunityUserProfilePage),
+  },
 ];

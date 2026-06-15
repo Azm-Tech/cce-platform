@@ -1,0 +1,215 @@
+$p-50:  #ebf2fe;
+$p-100: #c5d9fc;
+$p-500: #4285f2;
+$p-600: #2e6dd4;
+$p-900: #082f59;
+$n-50:  #f9fafb;
+$n-100: #f1f3f7;
+$n-200: #e3e7ee;
+$n-300: #c9d0da;
+$n-500: #748091;
+$n-800: #242930;
+$n-900: #13171c;
+$font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
+
+:host {
+  display: block;
+  font-family: $font;
+  background: $n-50;
+  min-height: 100vh;
+}
+
+.cup-page {
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 3rem clamp(1rem, 4vw, 2rem);
+}
+
+.cup-card {
+  background: #fff;
+  border: 1px solid $n-100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 24px 32px;
+  text-align: center;
+
+  &__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 9999px;
+    background: $p-100;
+    border: 1px solid $p-50;
+    color: $p-900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 400;
+    font-family: $font;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: $n-900;
+    font-family: $font;
+  }
+
+  &__expert {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #15803d;
+    font-family: $font;
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  }
+
+  &__job, &__org {
+    font-size: 14px;
+    color: $n-500;
+    font-family: $font;
+  }
+
+  &__stats {
+    display: flex;
+    width: 100%;
+    border-top: 1px solid $n-200;
+    border-bottom: 1px solid $n-200;
+    padding: 16px 0;
+    text-align: center;
+  }
+
+  &__stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    strong {
+      font-size: 24px;
+      font-weight: 700;
+      color: $n-900;
+      font-family: $font;
+    }
+
+    span {
+      font-size: 13px;
+      color: $n-500;
+      font-family: $font;
+    }
+  }
+
+  &__stat-divider {
+    width: 1px;
+    background: $n-200;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  &__follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid $n-300;
+    background: #fff;
+    color: $n-800;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+    transition: all 0.13s;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+    &:hover { border-color: $p-500; color: $p-500; }
+
+    &--active {
+      background: $p-50;
+      border-color: $p-500;
+      color: $p-600;
+    }
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $p-500;
+    text-decoration: none;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { color: $p-600; }
+  }
+}
+
+// Skeleton
+.cup-skeleton {
+  background: #fff;
+  border: 1px solid $n-100;
+  padding: 40px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cup-skel {
+  background: linear-gradient(90deg, $n-100 25%, $n-50 50%, $n-100 75%);
+  background-size: 200% 100%;
+  animation: cup-shimmer 1.6s ease-in-out infinite;
+  border-radius: 4px;
+
+  &--avatar { width: 72px; height: 72px; border-radius: 9999px; }
+  &--name   { width: 160px; height: 20px; }
+  &--line   { width: 100px; height: 14px; }
+  &--stats  { width: 100%; height: 60px; }
+}
+
+@keyframes cup-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.cup-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 15px;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  button {
+    margin-inline-start: auto;
+    border: 1px solid #fca5a5;
+    background: transparent;
+    color: #b91c1c;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+    &:hover { background: #fee2e2; }
+  }
+}
