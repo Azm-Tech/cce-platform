@@ -5,6 +5,7 @@ using CCE.Domain.Content;
 using CCE.Domain.Evaluation;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
+using CCE.Domain.InteractiveMaps;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Lookups;
 using CCE.Domain.Media;
@@ -97,6 +98,10 @@ public interface ICceDbContext
 
     // ─── Media ───
     IQueryable<MediaFile> MediaFiles { get; }
+
+    // ─── Interactive Maps ───
+    IQueryable<InteractiveMap> InteractiveMaps { get; }
+    IQueryable<InteractiveMapNode> InteractiveMapNodes { get; }
 
     // ─── Interest Topics ───
     IQueryable<InterestTopic> InterestTopics { get; }

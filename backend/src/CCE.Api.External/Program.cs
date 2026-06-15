@@ -115,6 +115,7 @@ app.MapSearchEndpoints();
 app.MapCommunityPublicEndpoints();
 app.MapCommunityWriteEndpoints();
 app.MapKnowledgeMapEndpoints();
+app.MapInteractiveMapPublicEndpoints();
 app.MapInteractiveCityEndpoints();
 app.MapAssistantEndpoints();
 app.MapKapsarcEndpoints();

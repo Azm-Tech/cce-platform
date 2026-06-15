@@ -141,6 +141,17 @@ public sealed class MessageFactory
     public Response<T> KapsarcDataUnavailable<T>()           => BusinessRule<T>(ApplicationErrors.Country.KAPSARC_DATA_UNAVAILABLE);
     public Response<T> KapsarcSnapshotRefreshed<T>(T data)   => Ok(data, ApplicationErrors.Country.KAPSARC_SNAPSHOT_REFRESHED);
 
+    // ─── Convenience shortcuts (InteractiveMaps domain) ───
+
+    public Response<T> MapNotFound<T>() => NotFound<T>(ApplicationErrors.InteractiveMaps.MAP_NOT_FOUND);
+    public Response<VoidData> MapCreated() => Ok(ApplicationErrors.InteractiveMaps.MAP_CREATED);
+    public Response<VoidData> MapUpdated() => Ok(ApplicationErrors.InteractiveMaps.MAP_UPDATED);
+    public Response<VoidData> MapDeleted() => Ok(ApplicationErrors.InteractiveMaps.MAP_DELETED);
+    public Response<T> NodeNotFound<T>() => NotFound<T>(ApplicationErrors.InteractiveMaps.NODE_NOT_FOUND);
+    public Response<VoidData> NodeCreated() => Ok(ApplicationErrors.InteractiveMaps.NODE_CREATED);
+    public Response<VoidData> NodeUpdated() => Ok(ApplicationErrors.InteractiveMaps.NODE_UPDATED);
+    public Response<VoidData> NodeDeleted() => Ok(ApplicationErrors.InteractiveMaps.NODE_DELETED);
+
     // ─── Convenience shortcuts (Evaluation domain) ───
 
     public Response<VoidData> EvaluationSubmitted() => Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);

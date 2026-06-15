@@ -99,6 +99,10 @@ public static class SystemCode
     public const string ERR091 = "ERR091"; // Node not found
     public const string ERR092 = "ERR092"; // Edge not found
 
+    // ─── InteractiveMap Errors ───
+    public const string ERR150 = "ERR150"; // Interactive map not found
+    public const string ERR151 = "ERR151"; // Interactive map node not found
+
     // ─── Media Errors ───
     public const string ERR110 = "ERR110"; // Media file not found
     public const string ERR111 = "ERR111"; // Invalid file type
@@ -242,6 +246,14 @@ public static class SystemCode
     // ─── Lookups Success ───
     public const string CON070 = "CON070"; // Lookup created
     public const string CON071 = "CON071"; // Lookup updated
+
+    // ─── InteractiveMap Success ───
+    public const string CON150 = "CON150"; // Interactive map created
+    public const string CON151 = "CON151"; // Interactive map updated
+    public const string CON152 = "CON152"; // Interactive map deleted
+    public const string CON153 = "CON153"; // Interactive map node created
+    public const string CON154 = "CON154"; // Interactive map node updated
+    public const string CON155 = "CON155"; // Interactive map node deleted
 
     // ─── General Success ───
     public const string CON100 = "CON100"; // Items listed successfully

@@ -127,6 +127,13 @@ public static class ApplicationErrors
         public const string NOTIFICATION_TEMPLATE_UPDATED = "NOTIFICATION_TEMPLATE_UPDATED";
     }
 
+    public static class KnowledgeMap
+    {
+        public const string MAP_NOT_FOUND = "MAP_NOT_FOUND";
+        public const string NODE_NOT_FOUND = "NODE_NOT_FOUND";
+        public const string EDGE_NOT_FOUND = "EDGE_NOT_FOUND";
+    }
+
     public static class PlatformSettings
     {
         public const string HOMEPAGE_SETTINGS_NOT_FOUND = "HOMEPAGE_SETTINGS_NOT_FOUND";
@@ -170,11 +177,16 @@ public static class ApplicationErrors
         public const string LOOKUP_UPDATED = "LOOKUP_UPDATED";
     }
 
-    public static class KnowledgeMap
+    public static class InteractiveMaps
     {
-        public const string MAP_NOT_FOUND = "MAP_NOT_FOUND";
-        public const string NODE_NOT_FOUND = "NODE_NOT_FOUND";
-        public const string EDGE_NOT_FOUND = "EDGE_NOT_FOUND";
+        public const string MAP_NOT_FOUND = "INTERACTIVE_MAP_NOT_FOUND";
+        public const string MAP_CREATED = "INTERACTIVE_MAP_CREATED";
+        public const string MAP_UPDATED = "INTERACTIVE_MAP_UPDATED";
+        public const string MAP_DELETED = "INTERACTIVE_MAP_DELETED";
+        public const string NODE_NOT_FOUND = "INTERACTIVE_MAP_NODE_NOT_FOUND";
+        public const string NODE_CREATED = "INTERACTIVE_MAP_NODE_CREATED";
+        public const string NODE_UPDATED = "INTERACTIVE_MAP_NODE_UPDATED";
+        public const string NODE_DELETED = "INTERACTIVE_MAP_NODE_DELETED";
     }
 
     public static class InteractiveCity

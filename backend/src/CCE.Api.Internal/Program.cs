@@ -90,6 +90,7 @@ app.MapAuditEndpoints();
 app.MapHomepageSettingsEndpoints();
 app.MapAboutSettingsEndpoints();
 app.MapPoliciesSettingsEndpoints();
+        app.MapInteractiveMapEndpoints();
         app.MapMediaEndpoints();
         app.MapCountryCodeEndpoints();
         app.MapCountryCodesPublicEndpoints();

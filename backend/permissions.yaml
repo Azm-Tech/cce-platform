@@ -226,6 +226,10 @@ groups:
     CountryProfiles:
       description: Generate country profiles report
       roles: [cce-super-admin, cce-admin]
+  InteractiveMap:
+    Manage:
+      description: Create/update/delete interactive maps
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
   Lookup:
     Manage:
       description: Manage lookup tables (nationalities, country phone codes)
