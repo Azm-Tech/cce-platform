@@ -28,7 +28,11 @@ export class FollowsStoreService {
     this.loadPromise = (async () => {
       const res = await this.api.getMyFollows();
       this.loading = false;
-      if (res.ok) this._state.set(res.value);
+      if (res.ok) {
+        this._state.set(res.value);
+      } else {
+        this.loadPromise = null;
+      }
     })();
     return this.loadPromise;
   }
