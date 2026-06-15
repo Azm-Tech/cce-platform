@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260614094710_AddUserActivityCounters")]
+    partial class AddUserActivityCounters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2860,132 +2863,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_city_tech_is_active");
 
                     b.ToTable("city_technologies", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.InteractiveMaps.InteractiveMap", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<string>("DescriptionAr")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasColumnName("description_ar");
-
-                    b.Property<string>("DescriptionEn")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasColumnName("description_en");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("NameAr")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("name_ar");
-
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("name_en");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasColumnName("slug");
-
-                    b.HasKey("Id")
-                        .HasName("pk_interactive_maps");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ux_interactive_map_slug");
-
-                    b.ToTable("interactive_maps", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.InteractiveMaps.InteractiveMapNode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<int?>("Category")
-                        .HasColumnType("int")
-                        .HasColumnName("category");
-
-                    b.Property<string>("CategoryNameAr")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasColumnName("category_name_ar");
-
-                    b.Property<string>("CategoryNameEn")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasColumnName("category_name_en");
-
-                    b.Property<string>("IconKey")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasColumnName("icon_key");
-
-                    b.Property<Guid>("InteractiveMapId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("interactive_map_id");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int")
-                        .HasColumnName("level");
-
-                    b.Property<string>("NameAr")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("name_ar");
-
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("name_en");
-
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("parent_id");
-
-                    b.Property<Guid?>("TopicId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("topic_id");
-
-                    b.Property<string>("TopicSlug")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasColumnName("topic_slug");
-
-                    b.HasKey("Id")
-                        .HasName("pk_interactive_map_nodes");
-
-                    b.HasIndex("InteractiveMapId")
-                        .HasDatabaseName("ix_interactive_map_node_map_id");
-
-                    b.HasIndex("ParentId")
-                        .HasDatabaseName("ix_interactive_map_node_parent_id");
-
-                    b.HasIndex("TopicId")
-                        .HasDatabaseName("ix_interactive_map_node_topic_id");
-
-                    b.ToTable("interactive_map_nodes", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.KnowledgeMaps.KnowledgeMap", b =>

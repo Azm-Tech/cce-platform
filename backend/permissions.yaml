@@ -71,6 +71,9 @@ groups:
       Delete:
         description: Soft-delete a center resource
         roles: [cce-super-admin, cce-admin, cce-content-manager]
+      View:
+        description: View resource center categories
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-state-representative, cce-reviewer]
     Country:
       Approve:
         description: Approve a country resource request

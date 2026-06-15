@@ -38,10 +38,10 @@ public static class CommunityPublicEndpoints
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicCommunities");
 
-        // GET /api/community/feed — community home feed (hot/newest/top-voted, tag filter by Id)
+        // GET /api/community/feed — community home feed (hot/newest/top-voted/most-commented, tag + type filter)
         community.MapGet("/feed", async (
             PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
-            int? page, int? pageSize,
+            CCE.Domain.Community.PostType? postType, int? page, int? pageSize,
             ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
             var query = new ListCommunityFeedQuery(
@@ -50,6 +50,7 @@ public static class CommunityPublicEndpoints
                 communityId,
                 topicId,
                 currentUser.GetUserId(),
+                postType,
                 page ?? 1,
                 pageSize ?? 20);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
@@ -83,8 +84,8 @@ public static class CommunityPublicEndpoints
         community.MapGet("/topics/{slug}", async (
             string slug, IMediator mediator, CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetPublicTopicBySlugQuery(slug), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetPublicTopicBySlugQuery(slug), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         }).AllowAnonymous().WithName("GetPublicTopicBySlug");
 
         community.MapGet("/topics/{id:guid}/posts", async (
@@ -93,14 +94,15 @@ public static class CommunityPublicEndpoints
         {
             var result = await mediator.Send(
                 new ListPublicPostsInTopicQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicPostsInTopic");
 
         community.MapGet("/posts/{id:guid}", async (
-            System.Guid id, IMediator mediator, CancellationToken ct) =>
+            System.Guid id, ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetPublicPostByIdQuery(id), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetPublicPostByIdQuery(id, currentUser.GetUserId()), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
         }).AllowAnonymous().WithName("GetPublicPostById");
 
         // GET /api/community/polls/{id}/results — poll tallies (hidden until close when configured)
@@ -142,7 +144,7 @@ public static class CommunityPublicEndpoints
         {
             var result = await mediator.Send(
                 new ListPublicPostRepliesQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicPostReplies");
 
         var follows = app.MapGroup("/api/me/follows")
@@ -155,8 +157,8 @@ public static class CommunityPublicEndpoints
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
             if (userId == System.Guid.Empty) return Results.Unauthorized();
-            var dto = await mediator.Send(new GetMyFollowsQuery(userId), ct).ConfigureAwait(false);
-            return Results.Ok(dto);
+            var result = await mediator.Send(new GetMyFollowsQuery(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         }).WithName("GetMyFollows");
 
         // GET /api/me/posts/drafts — the caller's own unpublished drafts

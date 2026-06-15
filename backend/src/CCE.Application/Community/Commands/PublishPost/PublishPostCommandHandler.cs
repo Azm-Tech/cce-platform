@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -37,6 +38,12 @@ public sealed class PublishPostCommandHandler
         if (post.AuthorId != userId.Value) return _msg.Forbidden<VoidData>(ApplicationErrors.General.FORBIDDEN);
 
         post.Publish(_clock);
+
+        var author = await _db.Users
+            .FirstOrDefaultAsyncEither(u => u.Id == post.AuthorId, cancellationToken)
+            .ConfigureAwait(false);
+        author?.IncrementPostsCount();
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return _msg.Ok(ApplicationErrors.Community.POST_PUBLISHED);
     }

@@ -37,9 +37,10 @@ public sealed class ListCommunityFeedQueryHandler
         var pageSize = System.Math.Clamp(request.PageSize, 1, PaginationExtensions.MaxPageSize);
         var tagIds = request.TagIds ?? System.Array.Empty<System.Guid>();
 
-        // ─── Redis fast-path: community-scoped Hot/Newest, no tag filter ───
+        // ─── Redis fast-path: community-scoped Hot/Newest, no tag filter, no post-type filter ───
         var canUseRedis = tagIds.Count == 0
             && request.CommunityId.HasValue
+            && request.PostType is null
             && (request.Sort == PostFeedSort.Hot || request.Sort == PostFeedSort.Newest);
 
         if (canUseRedis)
@@ -56,7 +57,7 @@ public sealed class ListCommunityFeedQueryHandler
                 var total = await _db.Posts
                     .Where(p => p.CommunityId == communityId && p.Status == PostStatus.Published)
                     .CountAsyncEither(cancellationToken).ConfigureAwait(false);
-                var hydrated = await HydrateAsync(ids, cancellationToken).ConfigureAwait(false);
+                var hydrated = await HydrateAsync(ids, request.UserId, cancellationToken).ConfigureAwait(false);
                 return _msg.Ok(
                     new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
                     "ITEMS_LISTED");
@@ -68,13 +69,16 @@ public sealed class ListCommunityFeedQueryHandler
         var communityFilter = request.CommunityId;
         var topicFilter = request.TopicId;
 
+        var postTypeFilter = request.PostType;
+
         var query = _db.Posts
             .Where(p => p.Status == PostStatus.Published)
             .Where(p => _db.Communities.Any(c =>
                 c.Id == p.CommunityId && c.IsActive && c.Visibility == CommunityVisibility.Public))
             .WhereIf(communityFilter.HasValue, p => p.CommunityId == communityFilter!.Value)
             .WhereIf(topicFilter.HasValue, p => p.TopicId == topicFilter!.Value)
-            .WhereIf(tagIds.Count > 0, p => p.Tags.Any(t => tagIds.Contains(t.Id)));
+            .WhereIf(tagIds.Count > 0, p => p.Tags.Any(t => tagIds.Contains(t.Id)))
+            .WhereIf(postTypeFilter.HasValue, p => p.Type == postTypeFilter!.Value);
 
         query = request.Sort switch
         {
@@ -84,6 +88,9 @@ public sealed class ListCommunityFeedQueryHandler
             PostFeedSort.TopVoted => query
                 .OrderByDescending(p => p.UpvoteCount)
                 .ThenByDescending(p => p.Score),
+            PostFeedSort.MostCommented => query
+                .OrderByDescending(p => p.CommentsCount)
+                .ThenByDescending(p => p.Score),
             _ => query.OrderByDescending(p => p.Score),
         };
 
@@ -92,7 +99,7 @@ public sealed class ListCommunityFeedQueryHandler
             .ToPagedResultAsync(page, pageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        var items = await HydrateAsync(pagedIds.Items, cancellationToken).ConfigureAwait(false);
+        var items = await HydrateAsync(pagedIds.Items, request.UserId, cancellationToken).ConfigureAwait(false);
         return _msg.Ok(
             new PagedResult<CommunityFeedItemDto>(items, page, pageSize, pagedIds.Total),
             "ITEMS_LISTED");
@@ -104,7 +111,7 @@ public sealed class ListCommunityFeedQueryHandler
     /// out, then batch-enriches author names, attachment IDs, and tag IDs.
     /// </summary>
     private async Task<IReadOnlyList<CommunityFeedItemDto>> HydrateAsync(
-        IReadOnlyList<System.Guid> orderedIds, CancellationToken ct)
+        IReadOnlyList<System.Guid> orderedIds, System.Guid? userId, CancellationToken ct)
     {
         if (orderedIds.Count == 0)
         {
@@ -150,6 +157,43 @@ public sealed class ListCommunityFeedQueryHandler
             .ConfigureAwait(false))
             .ToDictionary(x => x.Id, x => (IReadOnlyList<System.Guid>)x.TagIds);
 
+        var topicIds = posts.Select(p => p.TopicId).Distinct().ToList();
+        var topicNames = (await _db.Topics
+            .Where(t => topicIds.Contains(t.Id))
+            .Select(t => new { t.Id, t.NameAr, t.NameEn })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false))
+            .ToDictionary(t => t.Id, t => (t.NameAr, t.NameEn));
+
+        var expertAuthorIds = new System.Collections.Generic.HashSet<System.Guid>(
+            await _db.ExpertProfiles
+                .Where(e => authorIds.Contains(e.UserId))
+                .Select(e => e.UserId)
+                .ToListAsyncEither(ct)
+                .ConfigureAwait(false));
+
+        var watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>();
+        if (userId.HasValue)
+        {
+            watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>(
+                await _db.PostFollows
+                    .Where(pf => postIds.Contains(pf.PostId) && pf.UserId == userId.Value)
+                    .Select(pf => pf.PostId)
+                    .ToListAsyncEither(ct)
+                    .ConfigureAwait(false));
+        }
+
+        var voteByPost = new System.Collections.Generic.Dictionary<System.Guid, int>();
+        if (userId.HasValue)
+        {
+            voteByPost = (await _db.PostVotes
+                .Where(pv => postIds.Contains(pv.PostId) && pv.UserId == userId.Value)
+                .Select(pv => new { pv.PostId, pv.Value })
+                .ToListAsyncEither(ct)
+                .ConfigureAwait(false))
+                .ToDictionary(v => v.PostId, v => v.Value);
+        }
+
         var byId = posts.ToDictionary(p => p.Id);
         var empty = (IReadOnlyList<System.Guid>)System.Array.Empty<System.Guid>();
 
@@ -169,10 +213,16 @@ public sealed class ListCommunityFeedQueryHandler
                 p.IsAnswerable,
                 p.AnsweredReplyId,
                 p.UpvoteCount,
+                p.DownvoteCount,
                 p.CommentsCount,
                 attachmentsByPost.GetValueOrDefault(p.Id, empty),
                 tagsByPost.GetValueOrDefault(p.Id, empty),
-                p.CreatedOn))
+                p.CreatedOn,
+                topicNames.GetValueOrDefault(p.TopicId).NameAr ?? string.Empty,
+                topicNames.GetValueOrDefault(p.TopicId).NameEn ?? string.Empty,
+                expertAuthorIds.Contains(p.AuthorId),
+                watchlistedPostIds.Contains(p.Id),
+                voteByPost.GetValueOrDefault(p.Id, 0)))
             .ToList();
     }
 }

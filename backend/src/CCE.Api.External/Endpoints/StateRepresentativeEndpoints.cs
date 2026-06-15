@@ -3,6 +3,7 @@ using CCE.Api.Common.Requests;
 using CCE.Application.Content.Commands.SubmitCountryContentRequest;
 using CCE.Application.Content.Queries.GetCountryContentRequest;
 using CCE.Application.Content.Queries.ListCountryContentRequests;
+using CCE.Application.Content.Public.Queries.ListPublicResourceCategories;
 using CCE.Application.Country.Commands.UpsertCountryProfile;
 using CCE.Application.Country.Queries.GetMyCountryProfile;
 using CCE.Domain;
@@ -69,6 +70,15 @@ public static class StateRepresentativeEndpoints
         })
         .RequireAuthorization(Permissions.Content_Country_Submit)
         .WithName("SubmitCountryContentRequest");
+
+        // — list resource categories for content submission
+        group.MapGet("/resource-categories", async (IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new ListPublicResourceCategoriesQuery(), ct).ConfigureAwait(false);
+            return Results.Ok(result);
+        })
+        .RequireAuthorization(Permissions.Resource_Center_View)
+        .WithName("ListStateRepResourceCategories");
 
         return app;
     }

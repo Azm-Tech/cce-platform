@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Errors;
@@ -81,6 +82,11 @@ public sealed class CreateReplyCommandHandler
 
         // Increment the denormalized comment count atomically with the reply persistence.
         post.IncrementCommentsCount(_clock);
+
+        var replyAuthor = await _db.Users
+            .FirstOrDefaultAsyncEither(u => u.Id == authorId.Value, cancellationToken)
+            .ConfigureAwait(false);
+        replyAuthor?.IncrementCommentsCount();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
