@@ -362,6 +362,12 @@
     "ERR030": "Could not delete the resource. Please try again.",
     "ERR033": "Sorry, there was a problem updating the profile. Please try again.",
     "ERR005": "Could not update your follow status. Please try again.",
+    "ERR012": "Sorry, could not follow this topic right now. Please try again.",
+    "ERR014": "Sorry, a problem occurred while publishing the post. Please try again.",
+    "ERR015": "Sorry, could not follow this post right now. Please try again.",
+    "ERR016": "Reply cannot be empty.",
+    "ERR017": "Sorry, a problem occurred while sending the reply. Please try again.",
+    "ERR032": "Sorry, a problem occurred while deleting the post. Please try again.",
     "fileType": "Unsupported file format. Allowed formats: PDF or Word.",
     "ERR001": "An error occurred while loading the page.",
     "ERR025": "Sorry, a problem occurred while updating the content."
@@ -384,7 +390,12 @@
     "CON020": "News/event deleted successfully.",
     "CON021": "Uploaded successfully!",
     "CON016": "Update completed successfully.",
+    "CON010": "You are now following this topic. You will receive notifications about new posts.",
+    "CON011": "Post created successfully!",
+    "CON012": "You are now following this post. You will receive notifications about new replies.",
+    "CON013": "Reply sent successfully!",
     "CON024": "Your request has been submitted successfully. It will be reviewed by an admin shortly. Thank you for your contribution!",
+    "CON025": "Post deleted successfully!",
     "CON026": "Country profile updated successfully!"
   },
   "nav": {
@@ -1902,11 +1913,14 @@
     "errorToast": "Couldn't update follow status. Try again."
   },
   "community": {
+    "pageTitle": "Knowledge Community",
+    "topicsTitle": "Topics",
+    "expertBadge": "Expert",
     "title": "Community",
     "subtitle": "Discussions, questions, and answers from researchers, practitioners, and experts across the network.",
     "eyebrow": "COMMUNITY · DISCUSSIONS",
     "tag": "TOPIC",
-    "searchPlaceholder": "Search topics by name or description…",
+    "searchPlaceholder": "Search the community…",
     "filteredEmpty": "No topics match your search.",
     "clearSearch": "Clear",
     "openTopic": "Open topic",
@@ -1942,7 +1956,14 @@
       "actionDisliked": "Disliked",
       "replyToReply": "Replying to {{handle}}",
       "cancelReply": "Cancel reply",
-      "replyToCommentLabel": "Reply"
+      "replyToCommentLabel": "Reply",
+      "fullProfile": "Full profile",
+      "myProfile": "My profile",
+      "followAuthor": "Follow",
+      "followingAuthor": "Following",
+      "attachments": "Attachments",
+      "download": "Download",
+      "unnamedFile": "File"
     },
     "filters": {
       "open": "Filters",
@@ -1959,7 +1980,6 @@
     "signInToRate": "Sign in to rate.",
     "signInButton": "Sign in",
     "acceptedAnswer": "Accepted answer",
-    "expertBadge": "Expert",
     "languageBadge": "in {{locale}}",
     "notFound": "Topic / post not found.",
     "empty": {
@@ -1969,8 +1989,12 @@
     },
     "compose": {
       "title": "Compose new post",
+      "typeLabel": "Post type",
+      "topicLabel": "Topic",
+      "selectTopic": "Select a topic",
+      "titleLabel": "Post title",
       "content": "Content",
-      "locale": "Language",
+      "locale": "Post language",
       "isAnswerable": "Allow replies to be marked as accepted answer",
       "submit": "Post",
       "toast": "Post created."
@@ -1986,6 +2010,83 @@
     "markAnswer": {
       "button": "Mark as accepted answer",
       "toast": "Marked as accepted answer."
+    },
+    "postType": {
+      "informational": "Informational",
+      "question": "Question",
+      "poll": "Poll"
+    },
+    "followTopic": "Follow topic",
+    "followingTopic": "Following",
+    "unfollowTopic": "Unfollow topic",
+    "followPost": "Follow post",
+    "followingPost": "Following",
+    "unfollowPost": "Unfollow post",
+    "joinCommunity": "Join",
+    "leaveCommunity": "Leave",
+    "memberCount": "{{count}} members",
+    "verifiedExpert": "Verified expert",
+    "draftTag": "Draft",
+    "saveDraft": "Save as draft",
+    "publishPost": "Publish",
+    "pollDeadline": "Poll closes",
+    "pollVote": "Vote",
+    "pollVoted": "Voted",
+    "pollClosed": "Poll closed",
+    "replyCharCount": "{{current}}/{{max}}",
+    "replyPlaceholder": "Write your reply…",
+    "sendReply": "Send reply",
+    "filter": {
+      "sortHot": "Hot",
+      "sortNewest": "Newest",
+      "sortTop": "Most Voted",
+      "sortMostReplied": "Most Discussed",
+      "allTopics": "All topics",
+      "allCategories": "All",
+      "allTypes": "All types"
+    },
+    "profile": {
+      "followers": "Followers",
+      "following": "Following",
+      "posts": "Posts",
+      "myPosts": "My posts",
+      "followedPosts": "Posts I follow",
+      "followedTopics": "Topics I follow",
+      "registerExpert": "Register as expert",
+      "myProfile": "My Profile",
+      "newPost": "Create new post",
+      "empty": "You haven't posted anything yet.",
+      "emptyDesc": "Create your first post to contribute to the community.",
+      "expertBadge": "Verified expert",
+      "replies": "Replies"
+    },
+    "anonymousAuthor": "Anonymous",
+    "share": "Share",
+    "comment": "Comment",
+    "readMore": "Read more",
+    "membersLabel": "Members",
+    "rules": {
+      "title": "Community Rules",
+      "rule1": {
+        "title": "Commitment to scientific accuracy and integrity"
+      },
+      "rule2": {
+        "title": "Mutual respect and constructive criticism"
+      },
+      "rule3": {
+        "title": "Scientific integrity and copyrights"
+      },
+      "rule4": {
+        "title": "Commitment to specialized topics (no random posting)"
+      }
+    },
+    "roles": {
+      "title": "Community roles"
+    },
+    "footer": {
+      "copyright": "All Rights Reserved © 2026",
+      "privacy": "Privacy Policy",
+      "terms": "Terms and Conditions"
     }
   },
   "knowledgeMaps": {
