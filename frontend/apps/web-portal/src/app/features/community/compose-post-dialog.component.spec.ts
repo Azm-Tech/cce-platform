@@ -4,15 +4,29 @@ import { signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
 import {
   ComposePostDialogComponent,
   type ComposePostDialogData,
   type ComposePostDialogResult,
 } from './compose-post-dialog.component';
+import type { PublicTopic } from './community.types';
 
 const VALID_CONTENT = 'This is content of at least ten characters.';
+const VALID_TITLE = 'A valid post title';
+
+const MOCK_TOPIC: PublicTopic = {
+  id: 't1',
+  nameAr: 'موضوع',
+  nameEn: 'Topic',
+  descriptionAr: null,
+  descriptionEn: null,
+  slug: 'topic',
+  parentId: null,
+  iconUrl: null,
+  orderIndex: 0,
+};
 
 function ok<T>(value: T): Result<T> {
   return { ok: true, value };
@@ -32,7 +46,7 @@ describe('ComposePostDialogComponent', () => {
     const localeSig = signal<'ar' | 'en'>(localeStart);
 
     await TestBed.configureTestingModule({
-      imports: [ComposePostDialogComponent, TranslocoModule.forRoot()],
+      imports: [ComposePostDialogComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { createPost } },
@@ -44,7 +58,10 @@ describe('ComposePostDialogComponent', () => {
         },
         {
           provide: MAT_DIALOG_DATA,
-          useValue: { topicId: 't1' } satisfies ComposePostDialogData,
+          useValue: {
+            topics: [MOCK_TOPIC],
+            preselectedTopicId: 't1',
+          } satisfies ComposePostDialogData,
         },
       ],
     }).compileComponents();
@@ -54,21 +71,39 @@ describe('ComposePostDialogComponent', () => {
     fixture.detectChanges();
   }
 
-  it('valid submit posts payload with topicId from dialog data', async () => {
+  it('valid submit posts payload with correct fields', async () => {
     await setup('en');
-    component.form.patchValue({ content: VALID_CONTENT, locale: 'en', isAnswerable: false });
-    await component.submit();
-    expect(createPost).toHaveBeenCalledWith({
-      topicId: 't1',
+    component.form.patchValue({
+      title: VALID_TITLE,
       content: VALID_CONTENT,
       locale: 'en',
       isAnswerable: false,
     });
+    await component.submit();
+    expect(createPost).toHaveBeenCalledWith(
+      expect.objectContaining({
+        topicId: 't1',
+        title: VALID_TITLE,
+        content: VALID_CONTENT,
+        locale: 'en',
+        isAnswerable: false,
+        saveAsDraft: false,
+      }),
+    );
   });
 
   it('content shorter than 10 chars makes form invalid (submit short-circuits)', async () => {
     await setup('en');
-    component.form.patchValue({ content: 'too short' });
+    component.form.patchValue({ title: VALID_TITLE, content: 'too short' });
+    expect(component.form.invalid).toBe(true);
+    createPost.mockClear();
+    await component.submit();
+    expect(createPost).not.toHaveBeenCalled();
+  });
+
+  it('missing title makes form invalid (submit short-circuits)', async () => {
+    await setup('en');
+    component.form.patchValue({ title: '', content: VALID_CONTENT });
     expect(component.form.invalid).toBe(true);
     createPost.mockClear();
     await component.submit();
@@ -82,7 +117,12 @@ describe('ComposePostDialogComponent', () => {
 
   it('on success: toast.success + dialogRef.close({ submitted: true, postId })', async () => {
     await setup('en');
-    component.form.patchValue({ content: VALID_CONTENT, locale: 'en', isAnswerable: true });
+    component.form.patchValue({
+      title: VALID_TITLE,
+      content: VALID_CONTENT,
+      locale: 'en',
+      isAnswerable: true,
+    });
     await component.submit();
     expect(toastSuccess).toHaveBeenCalledWith('community.compose.toast');
     expect(dialogClose).toHaveBeenCalledWith({ submitted: true, postId: 'p2' });
@@ -91,7 +131,12 @@ describe('ComposePostDialogComponent', () => {
   it('on error: dialog stays open, errorKind signal set, no close call', async () => {
     await setup('en');
     createPost.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
-    component.form.patchValue({ content: VALID_CONTENT, locale: 'en', isAnswerable: true });
+    component.form.patchValue({
+      title: VALID_TITLE,
+      content: VALID_CONTENT,
+      locale: 'en',
+      isAnswerable: true,
+    });
     await component.submit();
     expect(component.errorKind()).toBe('server');
     expect(dialogClose).not.toHaveBeenCalled();

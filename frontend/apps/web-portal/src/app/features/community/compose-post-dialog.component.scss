@@ -1,31 +1,254 @@
-:host { display: block; }
+// ── Design tokens ─────────────────────────────────────────────────────────────
+$p-50:  #ebf2fe;
+$p-500: #4285f2;
+$p-600: #2e6dd4;
+$p-800: #174a8d;
+$n-100: #f1f3f7;
+$n-200: #e3e7ee;
+$n-300: #c9d0da;
+$n-500: #748091;
+$n-600: #4e5866;
+$n-800: #242930;
+$n-900: #13171c;
+$font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
-.cce-compose-post {
-  display: grid;
-  gap: 0.75rem;
-  min-width: 480px;
-  max-width: 640px;
-
-  mat-form-field { width: 100%; }
+// ── Dialog shell ──────────────────────────────────────────────────────────────
+:host {
+  display: flex;
+  flex-direction: column;
+  font-family: $font;
 }
 
-.cce-compose-post__locale {
+// ── Header ────────────────────────────────────────────────────────────────────
+.cpd__header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.cpd__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  color: $n-900;
+  font-family: $font;
+}
+
+.cpd__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: transparent;
+  color: $n-500;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.13s, color 0.13s;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  &:hover { border-color: $n-500; color: $n-800; }
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+.cpd__body {
+  padding: 20px 24px !important;
+  margin: 0 !important;
+}
+
+.cpd__error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  font-family: $font;
+  margin-bottom: 16px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+// ── Form layout ───────────────────────────────────────────────────────────────
+.cpd__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cpd__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--row {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+
+.cpd__label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  color: $n-800;
+  font-family: $font;
+  flex-shrink: 0;
+}
+
+.cpd__mat-field {
+  width: 100%;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    font-family: $font;
+  }
+}
+
+// ── Post type selector ────────────────────────────────────────────────────────
+.cpd__type-row {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.cce-compose-post__label {
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.9rem;
+.cpd__type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid $n-200;
+  border-radius: 9999px;
+  background: #fff;
+  color: $n-600;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: $font;
+  cursor: pointer;
+  transition: all 0.13s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { border-color: $p-500; color: $p-600; }
+
+  &--active {
+    background: $p-50;
+    border-color: $p-600;
+    color: $p-800;
+    font-weight: 700;
+  }
 }
 
-.cce-compose-post__checkbox { margin-top: 0.25rem; }
+// ── Answerable toggle ─────────────────────────────────────────────────────────
+.cpd__answerable-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: $font;
+  color: $n-600;
+  cursor: pointer;
+  user-select: none;
+}
 
-.cce-compose-post__error {
-  background: #fdecea;
-  color: #b00020;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+.cpd__answerable-check {
+  width: 16px;
+  height: 16px;
+  accent-color: $p-500;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+// ── Language toggle ───────────────────────────────────────────────────────────
+.cpd__locale-tabs {
+  display: flex;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cpd__locale-btn {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: $n-500;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: $font;
+  cursor: pointer;
+  transition: all 0.13s;
+
+  &--active {
+    background: $p-50;
+    color: $p-800;
+    font-weight: 700;
+  }
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+.cpd__footer {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px !important;
+  border-top: 1px solid $n-100;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+.cpd__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &--cancel {
+    background: transparent;
+    border: 1px solid $n-300;
+    color: $n-600;
+
+    &:hover:not(:disabled) { border-color: $n-500; }
+  }
+
+  &--submit {
+    background: $p-500;
+    border: 1px solid $p-500;
+    color: #fff;
+
+    &:hover:not(:disabled) { background: $p-600; border-color: $p-600; }
+    &:disabled { background: $n-200; border-color: $n-200; color: $n-500; }
+  }
+}
+
+.cpd__spin {
+  animation: cpd-spin 0.8s linear infinite;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+@keyframes cpd-spin {
+  to { transform: rotate(360deg); }
 }
