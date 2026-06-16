@@ -10,4 +10,6 @@ public sealed record CommunityUserProfileDto(
     string? AvatarUrl,
     bool IsExpert,
     int PostCount,
-    int ReplyCount);
+    int ReplyCount,
+    int FollowerCount,
+    int FollowingCount);
