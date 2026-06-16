@@ -7,8 +7,10 @@ namespace CCE.Application.Common.Messaging.IntegrationEvents;
 /// </summary>
 public sealed record VoteCreatedIntegrationEvent(
     System.Guid PostId,
+    System.Guid CommunityId,
     System.Guid UserId,
-    int Direction,        // +1 = up, -1 = down, 0 = retract
+    int Direction,            // +1 = up, -1 = down, 0 = retract
+    int PreviousDirection,    // what the user had before this change (+1 / -1 / 0)
     int UpvoteCount,
     int DownvoteCount,
     double Score);

@@ -52,11 +52,17 @@ internal sealed class UploadMediaCommandHandler
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Authenticated user required.");
 
-        var storageKey = await _fileStorage.SaveAsync(request.FileStream, request.FileName, ct)
+        // Buffer into MemoryStream so the upload stream is seekable and has a known length —
+        // same pattern as UploadAssetCommandHandler. Raw request streams are not seekable and
+        // cause silent failures with S3-compatible APIs.
+        await using var buffer = new MemoryStream();
+        await request.FileStream.CopyToAsync(buffer, ct).ConfigureAwait(false);
+        buffer.Position = 0;
+
+        var storageKey = await _fileStorage.SaveAsync(buffer, request.FileName, ct, request.ContentType)
             .ConfigureAwait(false);
 
-        var baseUrl = _opts.BaseUrl.TrimEnd('/');
-        var url = $"{baseUrl}/{storageKey}";
+        var url = _fileStorage.GetPublicUrl(storageKey).ToString();
 
         var mediaFile = MediaFile.Create(
             storageKey,

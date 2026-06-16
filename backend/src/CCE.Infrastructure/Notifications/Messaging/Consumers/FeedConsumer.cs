@@ -1,3 +1,4 @@
+using CCE.Application.Common.Caching;
 using CCE.Application.Common.Messaging.IntegrationEvents;
 using CCE.Application.Community;
 using CCE.Application.Common.Interfaces;
@@ -25,12 +26,14 @@ public sealed class FeedConsumer : IConsumer<PostCreatedIntegrationEvent>
 {
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
+    private readonly IOutputCacheInvalidator _cacheInvalidator;
     private readonly ILogger<FeedConsumer> _logger;
 
-    public FeedConsumer(ICceDbContext db, IRedisFeedStore feedStore, ILogger<FeedConsumer> logger)
+    public FeedConsumer(ICceDbContext db, IRedisFeedStore feedStore, IOutputCacheInvalidator cacheInvalidator, ILogger<FeedConsumer> logger)
     {
         _db = db;
         _feedStore = feedStore;
+        _cacheInvalidator = cacheInvalidator;
         _logger = logger;
     }
 
@@ -63,6 +66,9 @@ public sealed class FeedConsumer : IConsumer<PostCreatedIntegrationEvent>
             _logger.LogInformation(
                 "FeedConsumer: Author {AuthorId} is celebrity/expert — skipping personal feed fan-out.",
                 evt.AuthorId);
+            await _cacheInvalidator
+                .EvictRegionsAsync([CacheRegions.Posts, CacheRegions.Feed], context.CancellationToken)
+                .ConfigureAwait(false);
             return;
         }
 
@@ -103,5 +109,12 @@ public sealed class FeedConsumer : IConsumer<PostCreatedIntegrationEvent>
         _logger.LogInformation(
             "FeedConsumer: Fan-out complete for PostId={PostId} — {Count} followers.",
             evt.PostId, followerIds.Count);
+
+        // Evict the output cache so the next anonymous request sees the updated feed.
+        // Without this, the middleware serves the stale cached HTTP response even though the
+        // Redis sorted-sets are already updated.
+        await _cacheInvalidator
+            .EvictRegionsAsync([CacheRegions.Posts, CacheRegions.Feed], context.CancellationToken)
+            .ConfigureAwait(false);
     }
 }

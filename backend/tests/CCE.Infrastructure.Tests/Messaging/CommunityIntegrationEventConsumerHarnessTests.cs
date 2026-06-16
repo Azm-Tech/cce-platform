@@ -41,16 +41,19 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
         try
         {
             var postId = System.Guid.NewGuid();
+            var communityId = System.Guid.NewGuid();
             await harness.Bus.Publish(new VoteCreatedIntegrationEvent(
-                postId, System.Guid.NewGuid(), Direction: 1, UpvoteCount: 1, DownvoteCount: 0, Score: 1.0));
+                postId, communityId, System.Guid.NewGuid(), Direction: 1, PreviousDirection: 0, UpvoteCount: 1, DownvoteCount: 0, Score: 1.0));
 
             (await harness.GetConsumerHarness<VoteConsumer>().Consumed.Any<VoteCreatedIntegrationEvent>())
                 .Should().BeTrue();
 
-            // The consumer keeps the Redis hot counter warm (the realtime VoteChanged push is owned by the
-            // API handler — VoteConsumer has no IHubContext dependency, so it cannot double-push).
+            // The consumer keeps the Redis hot counter warm and updates the hot leaderboard score.
+            // The realtime VoteChanged push is owned by the API handler.
             await feedStore.Received(1).IncrementPostVotesAsync(
                 postId, 1, 0, Arg.Any<CancellationToken>());
+            await feedStore.Received(1).AddToHotLeaderboardAsync(
+                communityId, postId, 1.0, Arg.Any<CancellationToken>());
         }
         finally
         {

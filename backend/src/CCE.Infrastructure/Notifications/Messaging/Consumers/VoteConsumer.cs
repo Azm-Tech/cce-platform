@@ -32,10 +32,19 @@ public sealed class VoteConsumer : IConsumer<VoteCreatedIntegrationEvent>
             "VoteConsumer: PostId={PostId} Direction={Direction} Up={Up} Down={Down} Score={Score}",
             evt.PostId, evt.Direction, evt.UpvoteCount, evt.DownvoteCount, evt.Score);
 
-        // Update Redis hot counters (best-effort; SQL is source of truth).
-        var upDelta = evt.Direction == 1 ? 1 : evt.Direction == -1 ? 0 : evt.UpvoteCount > 0 ? -1 : 0;
-        var downDelta = evt.Direction == -1 ? 1 : evt.Direction == 1 ? 0 : evt.DownvoteCount > 0 ? -1 : 0;
+        // Derive counter deltas from the transition (previousDirection → direction).
+        // Using PreviousDirection is the only way to handle retractions correctly: when
+        // Direction=0 and PreviousDirection=1 the user removed their upvote, so upvotes -1.
+        // Checking evt.UpvoteCount > 0 was wrong — if the last upvote was removed the
+        // post-action count is already 0 and the Redis counter would not be decremented.
+        var upDelta   = (evt.PreviousDirection == 1 ? -1 : 0) + (evt.Direction == 1 ? 1 : 0);
+        var downDelta = (evt.PreviousDirection == -1 ? -1 : 0) + (evt.Direction == -1 ? 1 : 0);
         await _feedStore.IncrementPostVotesAsync(evt.PostId, upDelta, downDelta, context.CancellationToken)
+            .ConfigureAwait(false);
+
+        // Update the hot leaderboard score so ranking reflects votes without waiting for the next
+        // post to be published (which was the only previous trigger for RankingConsumer).
+        await _feedStore.AddToHotLeaderboardAsync(evt.CommunityId, evt.PostId, evt.Score, context.CancellationToken)
             .ConfigureAwait(false);
     }
 }

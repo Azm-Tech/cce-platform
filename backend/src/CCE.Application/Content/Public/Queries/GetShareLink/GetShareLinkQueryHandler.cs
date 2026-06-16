@@ -33,6 +33,7 @@ public sealed class GetShareLinkQueryHandler
             ShareContentType.News => await GetNewsAsync(request.Id, isAr, cancellationToken).ConfigureAwait(false),
             ShareContentType.Events => await GetEventAsync(request.Id, isAr, cancellationToken).ConfigureAwait(false),
             ShareContentType.Resources => await GetResourceAsync(request.Id, isAr, cancellationToken).ConfigureAwait(false),
+            ShareContentType.Countries => await GetCountryAsync(request.Id, isAr, cancellationToken).ConfigureAwait(false),
             _ => null
         };
 
@@ -76,6 +77,24 @@ public sealed class GetShareLinkQueryHandler
             Link: $"events/{id}",
             Title: isAr ? item.TitleAr : item.TitleEn,
             ImageUrl: item.FeaturedImageUrl);
+    }
+
+    private async Task<ShareLinkDto?> GetCountryAsync(
+        System.Guid id, bool isAr, CancellationToken ct)
+    {
+        var list = await _db.Countries
+            .Where(c => c.Id == id && c.IsActive)
+            .Select(c => new { c.NameAr, c.NameEn, c.FlagUrl })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+
+        var item = list.SingleOrDefault();
+        if (item is null) return null;
+
+        return new ShareLinkDto(
+            Link: $"countries/{id}",
+            Title: isAr ? item.NameAr : item.NameEn,
+            ImageUrl: item.FlagUrl);
     }
 
     private async Task<ShareLinkDto?> GetResourceAsync(

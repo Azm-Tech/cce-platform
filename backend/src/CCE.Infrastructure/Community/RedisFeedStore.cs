@@ -96,6 +96,32 @@ public sealed class RedisFeedStore : IRedisFeedStore
         }
     }
 
+    public async Task<long> GetCommunityFeedCountAsync(Guid communityId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await Db.SortedSetLengthAsync($"feed:community:{communityId}").ConfigureAwait(false);
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for GetCommunityFeedCountAsync(community={CommunityId}).", communityId);
+            return 0;
+        }
+    }
+
+    public async Task<long> GetHotLeaderboardCountAsync(Guid communityId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await Db.SortedSetLengthAsync($"hot:{communityId}").ConfigureAwait(false);
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for GetHotLeaderboardCountAsync(community={CommunityId}).", communityId);
+            return 0;
+        }
+    }
+
     public async Task RemoveFromFeedAsync(Guid userId, Guid postId, CancellationToken ct = default)
     {
         try
@@ -198,7 +224,11 @@ public sealed class RedisFeedStore : IRedisFeedStore
         {
             var key = $"hot:{communityId}";
             await Db.SortedSetAddAsync(key, postId.ToString(), score).ConfigureAwait(false);
-            await Db.SortedSetRemoveRangeByRankAsync(key, 0, -1001).ConfigureAwait(false); // trim to top 1000
+            // Only trim when the set exceeds 1 000. Using -1001 with ZREMRANGEBYRANK is unsafe for
+            // smaller sets: Redis clamps the negative rank to 0 and removes the entry just added.
+            var len = await Db.SortedSetLengthAsync(key).ConfigureAwait(false);
+            if (len > 1000)
+                await Db.SortedSetRemoveRangeByRankAsync(key, 0, len - 1001).ConfigureAwait(false);
             await Db.KeyExpireAsync(key, HotTtl).ConfigureAwait(false);
         }
         catch (RedisException ex)

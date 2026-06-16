@@ -35,6 +35,13 @@ public sealed class CceInfrastructureOptions
     /// <summary>S3-compatible object store endpoint (Supabase / MinIO / R2). Example: <c>https://xxx.supabase.co/storage/v1/s3</c>.</summary>
     public string S3EndpointUrl { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Public CDN/storage base URL used to build file URLs returned to clients.
+    /// For Supabase: <c>https://&lt;project&gt;.supabase.co/storage/v1/object/public</c>.
+    /// The bucket name and storage key are appended automatically: <c>{S3PublicBaseUrl}/{bucket}/{key}</c>.
+    /// </summary>
+    public string S3PublicBaseUrl { get; init; } = string.Empty;
+
     /// <summary>S3 access key ID.</summary>
     public string S3AccessKey { get; init; } = string.Empty;
 

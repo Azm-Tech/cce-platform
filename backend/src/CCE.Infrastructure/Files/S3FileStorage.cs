@@ -10,28 +10,34 @@ public sealed class S3FileStorage : IFileStorage, IDisposable
 {
     private readonly AmazonS3Client _client;
     private readonly string _bucket;
+    private readonly string _publicBaseUrl;
 
     public S3FileStorage(IOptions<CceInfrastructureOptions> options)
     {
         var opts = options.Value;
         _bucket = opts.S3BucketName;
+        _publicBaseUrl = opts.S3PublicBaseUrl;
 
         var config = new AmazonS3Config
         {
             ServiceURL = opts.S3EndpointUrl,
             ForcePathStyle = true,
             UseHttp = false,
+            // Supabase S3-compatible API always requires us-east-1 regardless of project region.
+            // Without this the SDK omits the region from the Signature V4 header and Supabase
+            // returns 404 "Bucket not found" even when the bucket exists.
+            AuthenticationRegion = "us-east-1",
         };
 
         var credentials = new BasicAWSCredentials(opts.S3AccessKey, opts.S3SecretKey);
         _client = new AmazonS3Client(credentials, config);
     }
 
-    public async Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct)
+    public async Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct, string? contentType = null)
     {
         var now = System.DateTimeOffset.UtcNow;
         var ext = System.IO.Path.GetExtension(suggestedFileName);
-        var key = $"uploads/{now:yyyy}/{now:MM}/{System.Guid.NewGuid():N}{ext}";
+        var key = $"{now:yyyy}/{now:MM}/{System.Guid.NewGuid():N}{ext}";
 
         var req = new PutObjectRequest
         {
@@ -39,11 +45,15 @@ public sealed class S3FileStorage : IFileStorage, IDisposable
             Key = key,
             InputStream = content,
             AutoCloseStream = false,
+            ContentType = contentType ?? "application/octet-stream",
         };
 
         await _client.PutObjectAsync(req, ct).ConfigureAwait(false);
         return key;
     }
+
+    public System.Uri GetPublicUrl(string storageKey)
+        => new($"{_publicBaseUrl.TrimEnd('/')}/{_bucket}/{storageKey}");
 
     public async Task<System.IO.Stream> OpenReadAsync(string storageKey, CancellationToken ct)
     {
