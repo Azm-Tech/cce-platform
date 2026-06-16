@@ -27,7 +27,7 @@ public sealed class GetCommunityUserProfileQueryHandler
     {
         var user = await _db.Users
             .Where(u => u.Id == request.UserId)
-            .Select(u => new { u.Id, u.FirstName, u.LastName, u.JobTitle, u.OrganizationName, u.AvatarUrl })
+            .Select(u => new { u.Id, u.FirstName, u.LastName, u.JobTitle, u.OrganizationName, u.AvatarUrl, u.FollowerCount, u.FollowingCount })
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -43,7 +43,7 @@ public sealed class GetCommunityUserProfileQueryHandler
 
         var dto = new CommunityUserProfileDto(
             user.Id, user.FirstName, user.LastName, user.JobTitle, user.OrganizationName,
-            user.AvatarUrl, isExpert, postCount, replyCount);
+            user.AvatarUrl, isExpert, postCount, replyCount, user.FollowerCount, user.FollowingCount);
         return _msg.Ok(dto, "ITEMS_LISTED");
     }
 }
