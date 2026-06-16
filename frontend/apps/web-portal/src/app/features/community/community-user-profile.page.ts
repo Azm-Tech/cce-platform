@@ -70,7 +70,7 @@ import type { CommunityUserProfile } from './community.types';
             </div>
           </div>
 
-          @if (isAuthenticated() && userId()) {
+          @if (isAuthenticated() && !isOwnProfile() && userId()) {
             <button
               type="button"
               class="cup-card__follow-btn"
@@ -108,6 +108,8 @@ export class CommunityUserProfilePage implements OnInit {
   readonly isAuthenticated = this.auth.isAuthenticated;
 
   readonly userId = computed(() => this.route.snapshot.paramMap.get('id'));
+  readonly currentUserId = computed(() => this.auth.currentUser()?.id ?? null);
+  readonly isOwnProfile = computed(() => !!this.currentUserId() && this.currentUserId() === this.userId());
 
   readonly displayName = computed(() => {
     const p = this.profile();
