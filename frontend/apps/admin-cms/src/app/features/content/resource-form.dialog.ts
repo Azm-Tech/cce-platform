@@ -2,6 +2,7 @@
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -58,6 +59,7 @@ const DESCRIPTION_MAX = 500;
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
@@ -116,6 +118,20 @@ const DESCRIPTION_MAX = 500;
       font-size: 0.85rem;
       color: rgba(0, 0, 0, 0.6);
       font-weight: 500;
+    }
+
+    .cce-resource-form__asset-existing {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      background: #fff;
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.87);
+
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: rgba(0,0,0,0.54); }
     }
 
     .cce-resource-form__error {

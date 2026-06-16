@@ -851,6 +851,7 @@
       "resourceType": "النوع",
       "categoryId": "التصنيف",
       "asset": "الملف",
+      "currentFile": "الملف الحالي",
       "topicId": "الموضوع",
       "countryIds": "الدول المشمولة"
     },

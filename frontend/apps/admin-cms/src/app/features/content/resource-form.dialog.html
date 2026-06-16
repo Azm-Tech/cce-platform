@@ -76,12 +76,19 @@
       }
     </mat-form-field>
 
-    @if (!isEdit) {
-      <div class="cce-resource-form__asset">
-        <span class="cce-resource-form__asset-label">{{ 'resources.field.asset' | transloco }}</span>
+    <div class="cce-resource-form__asset">
+      <span class="cce-resource-form__asset-label">
+        {{ (isEdit ? 'resources.field.currentFile' : 'resources.field.asset') | transloco }}
+      </span>
+      @if (isEdit && data.resource?.assetFileName) {
+        <div class="cce-resource-form__asset-existing">
+          <mat-icon>description</mat-icon>
+          <span>{{ data.resource!.assetFileName }}</span>
+        </div>
+      } @else if (!isEdit) {
         <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
-      </div>
-    }
+      }
+    </div>
 
     @if (errorKind(); as kind) {
       <div class="cce-resource-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>

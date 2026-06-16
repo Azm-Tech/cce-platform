@@ -107,6 +107,7 @@ export interface Resource {
   uploadedById: string;
   publishedBy?: string | null;
   assetFileId: string;
+  assetFileName?: string | null;
   publishedOn: string | null;
   viewCount: number;
   isCenterManaged: boolean;

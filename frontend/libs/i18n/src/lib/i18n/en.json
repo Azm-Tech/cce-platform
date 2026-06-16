@@ -851,6 +851,7 @@
       "resourceType": "Type",
       "categoryId": "Category",
       "asset": "File",
+      "currentFile": "Current file",
       "topicId": "Topic",
       "countryIds": "Covered Countries"
     },
