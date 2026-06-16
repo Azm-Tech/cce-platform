@@ -93,10 +93,21 @@
         ></textarea>
       </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>{{ 'account.expert.field.tags' | transloco }}</mat-label>
-        <input matInput type="text" formControlName="requestedTags" placeholder="waste, water, carbon" />
-      </mat-form-field>
+      @if (allTopics().length) {
+        <div class="cce-expert-request__topics-field">
+          <span class="cce-expert-request__topics-label">{{ 'account.expert.field.tags' | transloco }}</span>
+          <div class="cce-expert-request__topic-chips">
+            @for (topic of allTopics(); track topic.id) {
+              <button
+                type="button"
+                class="cce-expert-request__topic-chip"
+                [class.cce-expert-request__topic-chip--on]="selectedTags().has(topic.id)"
+                (click)="toggleTag(topic.id)"
+              >{{ isAr() ? topic.nameAr : topic.nameEn }}</button>
+            }
+          </div>
+        </div>
+      }
 
       <div class="cce-expert-request__cv-upload">
         <label class="cce-expert-request__cv-label" [class.cce-expert-request__cv-label--busy]="uploadingCv()">

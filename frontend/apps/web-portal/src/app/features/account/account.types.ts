@@ -77,6 +77,7 @@ export interface EvaluationPayload {
   overallSatisfaction?: number;
   easeOfUse?: number;
   contentSuitability?: number;
+  personalizedSuggestions?: number;
   feedback?: string | null;
 }
 

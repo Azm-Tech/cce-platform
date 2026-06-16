@@ -65,7 +65,8 @@ export class EventDetailPage implements OnInit {
   readonly description = computed(() => {
     const e = this.event();
     if (!e) return '';
-    return this.locale() === 'ar' ? e.descriptionAr : e.descriptionEn;
+    const raw = this.locale() === 'ar' ? e.descriptionAr : e.descriptionEn;
+    return (raw ?? '').replace(/&nbsp;/g, ' ').replace(/ /g, ' ');
   });
 
   /** Resolved venue line: online URL when online, locale-aware location
@@ -97,7 +98,8 @@ export class EventDetailPage implements OnInit {
     const e = this.event();
     if (!e) return null;
     const v = this.locale() === 'ar' ? e.outcomesAr : e.outcomesEn;
-    return v?.trim() ? v : null;
+    if (!v?.trim()) return null;
+    return v.replace(/&nbsp;/g, ' ').replace(/ /g, ' ');
   });
 
   /** True when the event starts and ends on the same calendar day —

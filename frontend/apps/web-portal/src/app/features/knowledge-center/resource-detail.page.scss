@@ -466,7 +466,10 @@ $shimmer: linear-gradient(90deg, #ececec 25%, #e3e3e3 50%, #ececec 75%);
   line-height: 1.8;
   color: rgba(28, 39, 36, 0.80);
   max-width: 760px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 
+  img, table, video, iframe { max-width: 100%; }
   ::ng-deep p { margin: 0 0 1em; }
   ::ng-deep h2, ::ng-deep h3 { color: #1c2724; }
 }

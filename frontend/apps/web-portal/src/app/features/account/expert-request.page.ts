@@ -13,12 +13,11 @@ import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
-import type { ExpertRequestStatus, SubmitExpertRequestPayload } from './account.types';
+import type { ExpertRequestStatus, InterestTopicOption, SubmitExpertRequestPayload } from './account.types';
 
 interface ExpertFormShape {
   requestedBioAr: FormControl<string>;
   requestedBioEn: FormControl<string>;
-  requestedTags: FormControl<string>;     // comma-separated
 }
 
 @Component({
@@ -42,6 +41,8 @@ export class ExpertRequestPage implements OnInit {
   private readonly router = inject(Router);
 
   readonly status = signal<ExpertRequestStatus | null>(null);
+  readonly allTopics = signal<InterestTopicOption[]>([]);
+  readonly selectedTags = signal<Set<string>>(new Set());
   readonly loading = signal(false);
   readonly submitting = signal(false);
   readonly uploadingCv = signal(false);
@@ -49,6 +50,8 @@ export class ExpertRequestPage implements OnInit {
   readonly cvAssetFileId = signal<string | null>(null);
   readonly errorKind = signal<string | null>(null);
   readonly submitErrorKind = signal<string | null>(null);
+
+  readonly isAr = computed(() => this.locale() === 'ar');
 
   /** True when status is null (no request yet) OR user clicked resubmit after rejection. */
   readonly showForm = signal(false);
@@ -64,7 +67,6 @@ export class ExpertRequestPage implements OnInit {
   readonly form: FormGroup<ExpertFormShape> = this.fb.nonNullable.group({
     requestedBioAr: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(50), Validators.maxLength(2000)]),
     requestedBioEn: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(50), Validators.maxLength(2000)]),
-    requestedTags: this.fb.nonNullable.control(''),
   });
 
   ngOnInit(): void {
@@ -74,13 +76,26 @@ export class ExpertRequestPage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
-    const res = await this.api.getExpertStatus();
+    const [statusRes, topicsRes] = await Promise.all([
+      this.api.getExpertStatus(),
+      this.api.getInterestQuestions(),
+    ]);
     this.loading.set(false);
-    if (res.ok) {
-      this.status.set(res.value);
-      this.showForm.set(res.value === null);
+    if (statusRes.ok) {
+      this.status.set(statusRes.value);
+      this.showForm.set(statusRes.value === null);
     } else {
-      this.errorKind.set(res.error.kind);
+      this.errorKind.set(statusRes.error.kind);
+    }
+    if (topicsRes.ok) {
+      const seen = new Set<string>();
+      const flat: InterestTopicOption[] = [];
+      for (const q of topicsRes.value) {
+        for (const opt of q.options) {
+          if (opt.isActive && !seen.has(opt.id)) { seen.add(opt.id); flat.push(opt); }
+        }
+      }
+      this.allTopics.set(flat);
     }
   }
 
@@ -89,7 +104,14 @@ export class ExpertRequestPage implements OnInit {
     this.submitErrorKind.set(null);
     this.cvFileName.set(null);
     this.cvAssetFileId.set(null);
+    this.selectedTags.set(new Set());
     this.showForm.set(true);
+  }
+
+  toggleTag(id: string): void {
+    const next = new Set(this.selectedTags());
+    if (next.has(id)) { next.delete(id); } else { next.add(id); }
+    this.selectedTags.set(next);
   }
 
   async onCvFileChange(event: Event): Promise<void> {
@@ -112,7 +134,7 @@ export class ExpertRequestPage implements OnInit {
     const payload: SubmitExpertRequestPayload = {
       requestedBioAr: v.requestedBioAr,
       requestedBioEn: v.requestedBioEn,
-      requestedTags: this.parseTags(v.requestedTags),
+      requestedTags: [...this.selectedTags()].map(id => this.allTopics().find(t => t.id === id)?.nameEn ?? '').filter(Boolean),
       cvAssetFileId: this.cvAssetFileId(),
     };
     this.submitting.set(true);
@@ -129,14 +151,4 @@ export class ExpertRequestPage implements OnInit {
     }
   }
 
-  private parseTags(raw: string): string[] {
-    return Array.from(
-      new Set(
-        raw
-          .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0),
-      ),
-    ).slice(0, 10);
-  }
 }

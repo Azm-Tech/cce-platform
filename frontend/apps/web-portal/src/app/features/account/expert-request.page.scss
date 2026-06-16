@@ -150,3 +150,47 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
+
+.cce-expert-request__topics-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.cce-expert-request__topics-label {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cce-expert-request__topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cce-expert-request__topic-chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: transparent;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  line-height: 1.4;
+
+  &:hover {
+    border-color: #006c4f;
+    background: rgba(0, 108, 79, 0.05);
+    color: #006c4f;
+  }
+
+  &--on {
+    border-color: #006c4f;
+    background: rgba(0, 108, 79, 0.1);
+    color: #006c4f;
+    font-weight: 600;
+  }
+}

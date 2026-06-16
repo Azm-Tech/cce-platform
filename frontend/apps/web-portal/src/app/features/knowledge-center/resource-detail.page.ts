@@ -51,7 +51,8 @@ export class ResourceDetailPage implements OnInit {
   readonly description = computed(() => {
     const r = this.resource();
     if (!r) return '';
-    return this.locale() === 'ar' ? r.descriptionAr : r.descriptionEn;
+    const raw = this.locale() === 'ar' ? r.descriptionAr : r.descriptionEn;
+    return (raw ?? '').replace(/&nbsp;/g, ' ').replace(/ /g, ' ');
   });
 
   /** Estimated reading time in minutes — assumes 220 words per minute,

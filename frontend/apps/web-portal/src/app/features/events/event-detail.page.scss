@@ -303,8 +303,11 @@
   font-size: 1rem;
   line-height: 1.75;
   color: #1c2724;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+
+  img, table, video, iframe { max-width: 100%; }
 }
 
 /* ─── Speakers grid ─────────────────────────────────────── */

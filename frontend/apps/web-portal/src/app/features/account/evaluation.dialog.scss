@@ -1,8 +1,8 @@
 .cce-eval {
-  min-width: 480px;
-  max-width: 540px;
+  min-width: 540px;
+  max-width: 640px;
 
-  @media (max-width: 540px) { min-width: 0; width: 100%; }
+  @media (max-width: 600px) { min-width: 0; width: 100%; }
 
   &__header {
     padding: 1.4rem 1.25rem 0.9rem;
@@ -99,23 +99,33 @@
       .mat-button-toggle-checked {
         background: #006c4f !important;
         .cce-eval__tval { color: #fff; }
+        .mat-pseudo-checkbox { border-color: rgba(255, 255, 255, 0.7) !important; }
+        .mat-pseudo-checkbox-checked {
+          background-color: #fff !important;
+          &::after { border-color: #006c4f !important; }
+        }
       }
     }
   }
 
   &__tval {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    font-weight: 600;
     color: #1c2724;
-    line-height: 2;
+    line-height: 1.25;
+    white-space: nowrap;
+    padding: 0.1rem 0;
   }
 
-  &__scale-ends {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.68rem;
-    color: rgba(28, 39, 36, 0.42);
-    padding: 0 0.1rem;
+  &__required {
+    color: #b71c1c;
+    margin-inline-start: 0.15rem;
+  }
+
+  &__field-err {
+    font-size: 0.76rem;
+    color: #b71c1c;
+    margin-top: 0.1rem;
   }
 
   &__feedback-field {
@@ -143,7 +153,7 @@
         font-size: 2.1rem;
         width: 2.1rem;
         height: 2.1rem;
-        color: #fff;
+        color: #fff !important;
       }
     }
 

@@ -148,7 +148,7 @@
             <h2 class="cce-event-detail__section-title">
               {{ 'events.detail.overviewTitle' | transloco }}
             </h2>
-            <p class="cce-event-detail__description">{{ description() }}</p>
+            <div class="cce-event-detail__description" [innerHTML]="description()"></div>
           </section>
 
           <!-- ─── Speakers (hidden until backend sends data) ─ -->
@@ -182,7 +182,7 @@
             <h2 class="cce-event-detail__section-title">
               {{ 'events.detail.outcomesTab' | transloco }}
             </h2>
-            <p class="cce-event-detail__description">{{ outcomes() }}</p>
+            <div class="cce-event-detail__description" [innerHTML]="outcomes()"></div>
           </section>
         }
       </article>
