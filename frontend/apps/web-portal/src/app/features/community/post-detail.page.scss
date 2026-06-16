@@ -298,6 +298,7 @@ $layout-gap:   32px;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
   &:hover { color: $blue; }
+  &--active { color: $blue; }
 }
 
 /* ─── Sidebar profile skeleton ──────────────────────────────── */
@@ -471,6 +472,7 @@ $layout-gap:   32px;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
   &:hover { color: $blue; }
+  &--active { color: $blue; }
 }
 
 /* Title */
@@ -682,8 +684,8 @@ $layout-gap:   32px;
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
 
   &:hover { color: $blue; }
-  &--active { color: $blue; }
-  &--active.cce-post-detail__vote-btn--up { color: $green-text; }
+  &--active { color: $text-body; }
+  &--active.cce-post-detail__vote-btn--up { color: $blue; }
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 

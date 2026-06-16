@@ -94,9 +94,16 @@ export class NewsCardComponent {
   readonly excerpt = computed(() => {
     const a = this.article();
     const content = this.locale() === 'ar' ? a.contentAr : a.contentEn;
-    const stripped = (content ?? '').replace(/<[^>]*>/g, '').trim();
+    const stripped = this.decodeEntities((content ?? '').replace(/<[^>]*>/g, '')).trim();
     return stripped.length > 160 ? stripped.slice(0, 160) + '…' : stripped;
   });
+
+  private decodeEntities(html: string): string {
+    if (typeof document === 'undefined') return html;
+    const el = document.createElement('textarea');
+    el.innerHTML = html;
+    return el.value;
+  }
 
   readonly publisher = computed<string | null>(() => {
     const a = this.article() as NewsArticle & { authorName?: string; publishedBy?: string };

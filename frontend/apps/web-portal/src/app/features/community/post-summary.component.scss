@@ -293,6 +293,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
   &:hover { border-color: $n-500; }
+  &--active { color: $p-500; border-color: $p-200; }
 }
 
 // Action group — inline-start (RIGHT in RTL)
@@ -362,6 +363,8 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   mat-icon { font-size: 22px; width: 22px; height: 22px; }
   &:hover { background: $n-100; }
   &--up:hover { background: #f0fdf4; color: #15803d; }
+  &--active { color: $n-600; }
+  &--up.pc__vote-btn--active { color: $p-500; }
 }
 
 .pc__vote-count {

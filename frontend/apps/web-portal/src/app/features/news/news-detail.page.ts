@@ -57,7 +57,9 @@ export class NewsDetailPage implements OnInit {
   readonly contentHtml = computed(() => {
     const a = this.article();
     if (!a) return '';
-    return this.isAr() ? a.contentAr : a.contentEn;
+    const raw = this.isAr() ? a.contentAr : a.contentEn;
+    // Replace &nbsp; entities with regular spaces so text wraps normally.
+    return (raw ?? '').replace(/&nbsp;/g, ' ').replace(/ /g, ' ');
   });
 
   readonly topicLabel = computed(() => {

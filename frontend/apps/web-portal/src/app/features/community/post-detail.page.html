@@ -101,7 +101,7 @@
               <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
               {{ (isOwnPost() ? 'community.detail.myProfile' : 'community.detail.fullProfile') | transloco }}
             </a>
-            @if (isAuthenticated() && !isOwnPost()) {
+            @if (isAuthenticated() && !isOwnPost() && authorId()) {
               <div class="cce-post-detail__sb-follow-wrap">
                 <span class="cce-post-detail__sb-follow-lbl">{{ 'community.detail.followAuthor' | transloco }}</span>
                 <button
@@ -109,8 +109,8 @@
                   class="cce-post-detail__sb-follow-btn"
                   [class.cce-post-detail__sb-follow-btn--active]="userFollow.isFollowing()"
                   cceFollow
-                  entityType="user"
-                  [entityId]="authorId() ?? ''"
+                  [entityType]="'user'"
+                  [entityId]="authorId()!"
                   #userFollow="cceFollow"
                   [attr.aria-label]="'community.detail.followAuthor' | transloco"
                 >

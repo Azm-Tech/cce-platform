@@ -249,6 +249,11 @@
   font-size: 1rem;
   line-height: 1.85;
   color: rgba(28, 39, 36, 0.85);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+
+  img, table, video, iframe { max-width: 100%; }
 
   h2, h3 {
     margin: 1.75rem 0 0.85rem;

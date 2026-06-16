@@ -358,13 +358,13 @@ body { min-height: 100vh; }
 /* ─── Grid: always 3 cards per row at desktop, 2 at tablet, 1 at phone. */
 .cce-list-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
   margin-bottom: 1.25rem;
   align-items: stretch;
 }
-@media (max-width: 1000px) { .cce-list-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px)  { .cce-list-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .cce-list-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px)  { .cce-list-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* `--list` modifier: single-column stack of horizontal cards
  * (image on the start, content beside it). Cards detect the parent

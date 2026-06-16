@@ -34,27 +34,27 @@ describe('FollowsApiService', () => {
     if (res.ok) expect(res.value).toEqual(SAMPLE);
   });
 
-  it('follow("topic", id) POSTs to /api/me/follows/topics/{id}', async () => {
+  it('follow("topic", id) PUTs to /api/me/follows/topics/{id}', async () => {
     const promise = sut.follow('topic', 't1');
     const req = http.expectOne('/api/me/follows/topics/t1');
-    expect(req.request.method).toBe('POST');
+    expect(req.request.method).toBe('PUT');
     req.flush({});
     const res = await promise;
     expect(res.ok).toBe(true);
   });
 
-  it('follow("user", id) POSTs to /api/me/follows/users/{id}', async () => {
+  it('follow("user", id) PUTs to /api/me/follows/users/{id}', async () => {
     const promise = sut.follow('user', 'u1');
     const req = http.expectOne('/api/me/follows/users/u1');
-    expect(req.request.method).toBe('POST');
+    expect(req.request.method).toBe('PUT');
     req.flush({});
     await promise;
   });
 
-  it('follow("post", id) POSTs to /api/me/follows/posts/{id}', async () => {
+  it('follow("post", id) PUTs to /api/me/follows/posts/{id}', async () => {
     const promise = sut.follow('post', 'p1');
     const req = http.expectOne('/api/me/follows/posts/p1');
-    expect(req.request.method).toBe('POST');
+    expect(req.request.method).toBe('PUT');
     req.flush({});
     await promise;
   });

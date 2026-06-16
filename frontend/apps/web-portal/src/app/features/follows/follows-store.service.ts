@@ -71,9 +71,9 @@ export class FollowsStoreService {
 
   private idsFor(s: MyFollows, type: FollowEntityType): string[] {
     switch (type) {
-      case 'topic': return s.topicIds;
-      case 'user': return s.userIds;
-      case 'post': return s.postIds;
+      case 'topic': return s.topicIds ?? [];
+      case 'user': return s.userIds ?? [];
+      case 'post': return s.postIds ?? [];
     }
   }
 

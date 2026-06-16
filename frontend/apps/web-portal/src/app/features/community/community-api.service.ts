@@ -227,7 +227,7 @@ export class CommunityApiService {
   async followPost(postId: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(
-        this.http.post(`/api/me/follows/posts/${encodeURIComponent(postId)}`, {}),
+        this.http.put(`/api/me/follows/posts/${encodeURIComponent(postId)}`, {}),
       );
     });
   }

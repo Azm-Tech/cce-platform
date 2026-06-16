@@ -258,13 +258,6 @@ export class PostDetailPage implements OnInit {
       }
       if (postRes.ok) {
         this.post.set(postRes.value);
-        const authorId = postRes.value.author?.id ?? postRes.value.authorId;
-        if (authorId) {
-          this.profileLoading.set(true);
-          const profileRes = await this.api.getCommunityUser(authorId);
-          this.profileLoading.set(false);
-          if (profileRes.ok) this.authorProfile.set(profileRes.value);
-        }
       } else {
         this.errorKind.set(postRes.error.kind);
       }
@@ -276,8 +269,14 @@ export class PostDetailPage implements OnInit {
       this.errorKind.set('server');
     } finally {
       this.loading.set(false);
-      this.profileLoading.set(false);
     }
+    // Load author profile in background — sidebar shows post.author data immediately
+    const p = this.post();
+    if (!p) return;
+    const authorId = p.author?.id ?? p.authorId;
+    if (!authorId) return;
+    const profileRes = await this.api.getCommunityUser(authorId);
+    if (profileRes.ok) this.authorProfile.set(profileRes.value);
   }
 
   async onPage(e: PageEvent): Promise<void> {

@@ -11,13 +11,26 @@ export class FollowsApiService {
   private readonly http = inject(HttpClient);
 
   async getMyFollows(): Promise<Result<MyFollows>> {
-    return this.run(() => firstValueFrom(this.http.get<MyFollows>('/api/me/follows')));
+    return this.run(async () => {
+      const raw = await firstValueFrom(
+        this.http.get<{ data?: MyFollows } | MyFollows>('/api/me/follows'),
+      );
+      // Unwrap envelope if API returns { data: { ... } }
+      const follows = (raw && typeof raw === 'object' && 'data' in raw && raw.data)
+        ? raw.data as MyFollows
+        : raw as MyFollows;
+      return {
+        topicIds: follows?.topicIds ?? [],
+        userIds: follows?.userIds ?? [],
+        postIds: follows?.postIds ?? [],
+      };
+    });
   }
 
   async follow(type: FollowEntityType, id: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(
-        this.http.post(this.urlFor(type, id), {}),
+        this.http.put(this.urlFor(type, id), {}),
       );
     });
   }
