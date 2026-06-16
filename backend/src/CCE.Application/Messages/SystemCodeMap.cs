@@ -96,6 +96,10 @@ public static class SystemCodeMap
         ["NODE_NOT_FOUND"] = SystemCode.ERR091,
         ["EDGE_NOT_FOUND"] = SystemCode.ERR092,
 
+        // ─── InteractiveMap Errors ───
+        ["INTERACTIVE_MAP_NOT_FOUND"] = SystemCode.ERR150,
+        ["INTERACTIVE_MAP_NODE_NOT_FOUND"] = SystemCode.ERR151,
+
         // ─── Media Errors ───
         ["MEDIA_FILE_NOT_FOUND"] = SystemCode.ERR110,
         ["INVALID_FILE_TYPE"] = SystemCode.ERR111,
@@ -215,6 +219,14 @@ public static class SystemCodeMap
 
         // ─── Evaluation Success ───
         ["EVALUATION_SUBMITTED"] = SystemCode.CON008,
+
+        // ─── InteractiveMap Success ───
+        ["INTERACTIVE_MAP_CREATED"] = SystemCode.CON150,
+        ["INTERACTIVE_MAP_UPDATED"] = SystemCode.CON151,
+        ["INTERACTIVE_MAP_DELETED"] = SystemCode.CON152,
+        ["INTERACTIVE_MAP_NODE_CREATED"] = SystemCode.CON153,
+        ["INTERACTIVE_MAP_NODE_UPDATED"] = SystemCode.CON154,
+        ["INTERACTIVE_MAP_NODE_DELETED"] = SystemCode.CON155,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,

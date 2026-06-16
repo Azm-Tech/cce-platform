@@ -77,6 +77,7 @@ builder.Services.AddScoped<ISeeder, DemoUsersSeeder>();
     builder.Services.AddScoped<ISeeder, ReferenceDataSeeder>();
     builder.Services.AddScoped<ISeeder, CountryCodeSeeder>();
     builder.Services.AddScoped<ISeeder, KnowledgeMapSeeder>();
+    builder.Services.AddScoped<ISeeder, InteractiveMapSeeder>();
 builder.Services.AddScoped<ISeeder, PlatformSettingsSeeder>();
 builder.Services.AddScoped<ISeeder, NotificationTemplateSeeder>();
 builder.Services.AddScoped<ISeeder, DemoDataSeeder>();

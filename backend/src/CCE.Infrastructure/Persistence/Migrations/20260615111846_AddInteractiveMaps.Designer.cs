@@ -4,6 +4,7 @@ using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CCE.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CceDbContext))]
-    partial class CceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615111846_AddInteractiveMaps")]
+    partial class AddInteractiveMaps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2495,12 +2498,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(2048)")
                         .HasColumnName("avatar_url");
 
-                    b.Property<int>("CommentsCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("comments_count");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)")
@@ -2614,12 +2611,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit")
                         .HasColumnName("phone_number_confirmed");
-
-                    b.Property<int>("PostsCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("posts_count");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)")
@@ -2894,8 +2885,18 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasColumnName("name_en");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("slug");
+
                     b.HasKey("Id")
                         .HasName("pk_interactive_maps");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ux_interactive_map_slug");
 
                     b.ToTable("interactive_maps", (string)null);
                 });
@@ -2954,9 +2955,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("parent_id");
 
-                    b.Property<Guid>("TopicId")
+                    b.Property<Guid?>("TopicId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("topic_id");
+
+                    b.Property<string>("TopicSlug")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("topic_slug");
 
                     b.HasKey("Id")
                         .HasName("pk_interactive_map_nodes");
@@ -4167,25 +4173,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("event_tag", (string)null);
                 });
 
-            modelBuilder.Entity("InteractiveMapNodeTag", b =>
-                {
-                    b.Property<Guid>("InteractiveMapNodeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("interactive_map_node_id");
-
-                    b.Property<Guid>("TagsId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("tags_id");
-
-                    b.HasKey("InteractiveMapNodeId", "TagsId")
-                        .HasName("pk_interactive_map_node_tag");
-
-                    b.HasIndex("TagsId")
-                        .HasDatabaseName("ix_interactive_map_node_tag_tags_id");
-
-                    b.ToTable("interactive_map_node_tag", (string)null);
-                });
-
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
                 {
                     b.Property<long>("Id")
@@ -5001,23 +4988,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_event_tag_tags_tags_id");
-                });
-
-            modelBuilder.Entity("InteractiveMapNodeTag", b =>
-                {
-                    b.HasOne("CCE.Domain.InteractiveMaps.InteractiveMapNode", null)
-                        .WithMany()
-                        .HasForeignKey("InteractiveMapNodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_interactive_map_node_tag_interactive_map_nodes_interactive_map_node_id");
-
-                    b.HasOne("CCE.Domain.Content.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_interactive_map_node_tag_tags_tags_id");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

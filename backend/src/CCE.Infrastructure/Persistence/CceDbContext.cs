@@ -9,6 +9,7 @@ using CCE.Domain.Country;
 using CCE.Domain.Evaluation;
 using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
+using CCE.Domain.InteractiveMaps;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Lookups;
 using CCE.Domain.Media;
@@ -86,6 +87,10 @@ public sealed class CceDbContext
     public DbSet<KnowledgeMapNode> KnowledgeMapNodes => Set<KnowledgeMapNode>();
     public DbSet<KnowledgeMapEdge> KnowledgeMapEdges => Set<KnowledgeMapEdge>();
     public DbSet<KnowledgeMapAssociation> KnowledgeMapAssociations => Set<KnowledgeMapAssociation>();
+
+    // ─── Interactive Maps ───
+    public DbSet<InteractiveMap> InteractiveMaps => Set<InteractiveMap>();
+    public DbSet<InteractiveMapNode> InteractiveMapNodes => Set<InteractiveMapNode>();
 
     // ─── Interactive City ───
     public DbSet<CityScenario> CityScenarios => Set<CityScenario>();
@@ -173,6 +178,8 @@ public sealed class CceDbContext
     IQueryable<KnowledgeMapEdge> ICceDbContext.KnowledgeMapEdges => KnowledgeMapEdges.AsNoTracking();
     IQueryable<KnowledgeMapAssociation> ICceDbContext.KnowledgeMapAssociations => KnowledgeMapAssociations.AsNoTracking();
     IQueryable<CityScenario> ICceDbContext.CityScenarios => CityScenarios.AsNoTracking();
+    IQueryable<InteractiveMap> ICceDbContext.InteractiveMaps => InteractiveMaps.AsNoTracking();
+    IQueryable<InteractiveMapNode> ICceDbContext.InteractiveMapNodes => InteractiveMapNodes.AsNoTracking();
     IQueryable<InterestTopic> ICceDbContext.InterestTopics => InterestTopics.AsNoTracking();
     IQueryable<CityTechnology> ICceDbContext.CityTechnologies => CityTechnologies.AsNoTracking();
     IQueryable<CityScenarioResult> ICceDbContext.CityScenarioResults => CityScenarioResults.AsNoTracking();

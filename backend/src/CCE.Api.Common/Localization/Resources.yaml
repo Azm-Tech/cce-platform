@@ -693,3 +693,35 @@ INTEREST_TOPIC_NOT_FOUND:
   ar: "موضوع الاهتمام غير موجود"
   en: "Interest topic not found"
 
+INTERACTIVE_MAP_NOT_FOUND:
+  ar: "الخريطة التفاعلية غير موجودة"
+  en: "Interactive map not found"
+
+INTERACTIVE_MAP_CREATED:
+  ar: "تم إنشاء الخريطة التفاعلية بنجاح"
+  en: "Interactive map created successfully"
+
+INTERACTIVE_MAP_UPDATED:
+  ar: "تم تحديث الخريطة التفاعلية بنجاح"
+  en: "Interactive map updated successfully"
+
+INTERACTIVE_MAP_DELETED:
+  ar: "تم حذف الخريطة التفاعلية بنجاح"
+  en: "Interactive map deleted successfully"
+
+INTERACTIVE_MAP_NODE_NOT_FOUND:
+  ar: "العنصر غير موجود في الخريطة التفاعلية"
+  en: "Interactive map node not found"
+
+INTERACTIVE_MAP_NODE_CREATED:
+  ar: "تم إنشاء العنصر في الخريطة التفاعلية بنجاح"
+  en: "Interactive map node created successfully"
+
+INTERACTIVE_MAP_NODE_UPDATED:
+  ar: "تم تحديث العنصر في الخريطة التفاعلية بنجاح"
+  en: "Interactive map node updated successfully"
+
+INTERACTIVE_MAP_NODE_DELETED:
+  ar: "تم حذف العنصر من الخريطة التفاعلية بنجاح"
+  en: "Interactive map node deleted successfully"
+
