@@ -80,12 +80,34 @@
       <span class="cce-resource-form__asset-label">
         {{ (isEdit ? 'resources.field.currentFile' : 'resources.field.asset') | transloco }}
       </span>
-      @if (isEdit && data.resource?.assetFileName) {
-        <div class="cce-resource-form__asset-existing">
-          <mat-icon>description</mat-icon>
-          <span>{{ data.resource!.assetFileName }}</span>
-        </div>
-      } @else if (!isEdit) {
+
+      @if (isEdit) {
+        @if (replacingFile()) {
+          <!-- Upload widget + cancel -->
+          <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
+          <button type="button" mat-button (click)="cancelReplaceFile()">
+            {{ 'common.actions.cancel' | transloco }}
+          </button>
+        } @else if (assetFile()) {
+          <!-- New file chosen — show it with option to revert -->
+          <div class="cce-resource-form__asset-existing">
+            <mat-icon>description</mat-icon>
+            <span>{{ assetFile()!.originalFileName }}</span>
+          </div>
+          <button type="button" mat-button (click)="cancelReplaceFile()">
+            {{ 'common.actions.cancel' | transloco }}
+          </button>
+        } @else {
+          <!-- Current file — show it with a Change button -->
+          <div class="cce-resource-form__asset-existing">
+            <mat-icon>description</mat-icon>
+            <span>{{ data.resource?.assetFileName || data.resource?.assetFileId }}</span>
+            <button type="button" mat-button class="cce-resource-form__asset-change" (click)="startReplaceFile()">
+              {{ 'resources.field.changeFile' | transloco }}
+            </button>
+          </div>
+        }
+      } @else {
         <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
       }
     </div>

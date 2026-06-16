@@ -132,6 +132,13 @@ const DESCRIPTION_MAX = 500;
       color: rgba(0, 0, 0, 0.87);
 
       mat-icon { font-size: 18px; width: 18px; height: 18px; color: rgba(0,0,0,0.54); }
+
+      span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+
+    .cce-resource-form__asset-change {
+      margin-inline-start: auto;
+      flex-shrink: 0;
     }
 
     .cce-resource-form__error {
@@ -159,6 +166,7 @@ export class ResourceFormDialogComponent {
   readonly descriptionMax = DESCRIPTION_MAX;
   readonly form: FormGroup<ResourceForm>;
   readonly assetFile = signal<AssetFile | null>(null);
+  readonly replacingFile = signal(false);
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly isEdit: boolean;
@@ -194,6 +202,17 @@ export class ResourceFormDialogComponent {
 
   onAssetUploaded(asset: AssetFile): void {
     this.assetFile.set(asset);
+    this.replacingFile.set(false);
+  }
+
+  startReplaceFile(): void {
+    this.replacingFile.set(true);
+    this.assetFile.set(null);
+  }
+
+  cancelReplaceFile(): void {
+    this.replacingFile.set(false);
+    this.assetFile.set(null);
   }
 
   async save(): Promise<void> {
@@ -214,6 +233,7 @@ export class ResourceFormDialogComponent {
     if (!v.resourceType) return; // unreachable when form is valid — narrows the type
 
     if (this.isEdit && this.data.resource) {
+      const newAsset = this.assetFile();
       const res = await this.api.updateResource(this.data.resource.id, {
         titleAr: v.titleAr,
         titleEn: v.titleEn,
@@ -222,6 +242,7 @@ export class ResourceFormDialogComponent {
         resourceType: v.resourceType,
         categoryId: v.categoryId,
         countryIds: v.countryIds,
+        ...(newAsset ? { assetFileId: newAsset.id } : {}),
         rowVersion: this.data.resource.rowVersion,
       });
       this.saving.set(false);

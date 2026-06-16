@@ -148,6 +148,8 @@ export interface UpdateResourceBody {
   categoryId: string;
   topicId?: string | null;
   countryIds?: string[];
+  /** Omit to keep the existing asset; include to replace it. */
+  assetFileId?: string;
   rowVersion: string;
 }
 

@@ -852,6 +852,7 @@
       "categoryId": "Category",
       "asset": "File",
       "currentFile": "Current file",
+      "changeFile": "Change file",
       "topicId": "Topic",
       "countryIds": "Covered Countries"
     },
