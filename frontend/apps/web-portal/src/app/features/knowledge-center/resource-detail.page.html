@@ -127,6 +127,12 @@
                 <dd>{{ r.publishedOn | date: 'mediumDate' }}</dd>
               </div>
             }
+            @if (r.publishedBy) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factPublishedBy' | transloco }}</dt>
+                <dd>{{ r.publishedBy }}</dd>
+              </div>
+            }
             @if (r.assetFileName) {
               <div class="cce-resource-detail__fact">
                 <dt>{{ 'resources.detail.factFile' | transloco }}</dt>

@@ -42,6 +42,8 @@ export interface ResourceListItem {
   descriptionAr?: string;
   descriptionEn?: string;
   resourceType: ResourceType;
+  /** Localized Arabic label for the resource type — returned by live API. */
+  resourceTypeAr?: string | null;
   categoryId: string;
   categoryNameAr?: string;
   categoryNameEn?: string;
@@ -52,6 +54,7 @@ export interface ResourceListItem {
   assetFileName?: string;
   publishedOn: string | null;
   viewCount: number;
+  isPublished?: boolean;
 }
 
 /** A "key result" highlight card on the resource detail page. */
@@ -68,6 +71,7 @@ export interface Resource extends ResourceListItem {
   uploadedById: string;
   assetFileId: string;
   isCenterManaged: boolean;
+  publishedBy?: string | null;
   /** Optional — rendered as the "Key results" grid when present. */
   highlights?: ResourceHighlight[];
 }

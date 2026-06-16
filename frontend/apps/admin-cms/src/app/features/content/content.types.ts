@@ -96,6 +96,8 @@ export interface Resource {
   descriptionAr: string;
   descriptionEn: string;
   resourceType: ResourceType;
+  /** Localized Arabic label for the resource type — returned by live API. */
+  resourceTypeAr?: string | null;
   categoryId: string;
   /** Localized category names — returned by the list/detail API. */
   categoryNameAr?: string;
@@ -103,6 +105,7 @@ export interface Resource {
   topicId: string | null;
   countryIds: string[];
   uploadedById: string;
+  publishedBy?: string | null;
   assetFileId: string;
   publishedOn: string | null;
   viewCount: number;

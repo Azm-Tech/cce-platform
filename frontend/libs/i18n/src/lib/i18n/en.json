@@ -910,6 +910,7 @@
       "metaViews": "views",
       "factType": "Type",
       "factPublished": "Published",
+      "factPublishedBy": "Published by",
       "factReadingTime": "Reading time",
       "factViews": "Views",
       "relatedEyebrow": "Related",
