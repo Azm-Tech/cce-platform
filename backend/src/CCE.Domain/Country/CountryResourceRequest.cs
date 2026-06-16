@@ -1,6 +1,7 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using CCE.Domain.Country.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Country;
 
@@ -32,7 +33,9 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         string? proposedLocationAr,
         string? proposedLocationEn,
         string? proposedOnlineMeetingUrl,
-        System.DateTimeOffset submittedOn) : base(id)
+        System.DateTimeOffset submittedOn,
+        System.Guid? proposedKnowledgeLevelId,
+        System.Guid? proposedJobSectorId) : base(id)
     {
         CountryId = countryId;
         RequestedById = requestedById;
@@ -50,6 +53,8 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         ProposedLocationAr = proposedLocationAr;
         ProposedLocationEn = proposedLocationEn;
         ProposedOnlineMeetingUrl = proposedOnlineMeetingUrl;
+        ProposedKnowledgeLevelId = proposedKnowledgeLevelId;
+        ProposedJobSectorId = proposedJobSectorId;
         SubmittedOn = submittedOn;
         Status = CountryContentRequestStatus.Pending;
     }
@@ -78,6 +83,10 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
     public string? ProposedLocationEn { get; private set; }
     public string? ProposedOnlineMeetingUrl { get; private set; }
 
+    // Interest-topic links (nullable)
+    public System.Guid? ProposedKnowledgeLevelId { get; private set; }
+    public System.Guid? ProposedJobSectorId { get; private set; }
+
     public System.DateTimeOffset SubmittedOn { get; private set; }
     public string? AdminNotesAr { get; private set; }
     public string? AdminNotesEn { get; private set; }
@@ -94,7 +103,9 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         ResourceType resourceType,
         System.Guid assetFileId,
         System.Guid categoryId,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? proposedKnowledgeLevelId = null,
+        System.Guid? proposedJobSectorId = null)
     {
         if (countryId == System.Guid.Empty) throw new DomainException("CountryId is required.");
         if (requestedById == System.Guid.Empty) throw new DomainException("RequestedById is required.");
@@ -111,7 +122,8 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
             resourceType, assetFileId,
             null, categoryId,
             null, null, null, null, null,
-            clock.UtcNow);
+            clock.UtcNow,
+            proposedKnowledgeLevelId, proposedJobSectorId);
     }
 
     public static CountryContentRequest SubmitNews(
@@ -121,7 +133,9 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         string contentAr, string contentEn,
         System.Guid topicId,
         System.Guid? featuredImageAssetId,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? proposedKnowledgeLevelId = null,
+        System.Guid? proposedJobSectorId = null)
     {
         if (countryId == System.Guid.Empty) throw new DomainException("CountryId is required.");
         if (requestedById == System.Guid.Empty) throw new DomainException("RequestedById is required.");
@@ -137,7 +151,8 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
             null, featuredImageAssetId,
             topicId, null,
             null, null, null, null, null,
-            clock.UtcNow);
+            clock.UtcNow,
+            proposedKnowledgeLevelId, proposedJobSectorId);
     }
 
     public static CountryContentRequest SubmitEvent(
@@ -152,7 +167,9 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
         string? locationEn,
         string? onlineMeetingUrl,
         System.Guid? featuredImageAssetId,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? proposedKnowledgeLevelId = null,
+        System.Guid? proposedJobSectorId = null)
     {
         if (countryId == System.Guid.Empty) throw new DomainException("CountryId is required.");
         if (requestedById == System.Guid.Empty) throw new DomainException("RequestedById is required.");
@@ -169,7 +186,8 @@ public sealed class CountryContentRequest : AggregateRoot<System.Guid>
             null, featuredImageAssetId,
             topicId, null,
             startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl,
-            clock.UtcNow);
+            clock.UtcNow,
+            proposedKnowledgeLevelId, proposedJobSectorId);
     }
 
     // ─── State transitions ─────────────────────────────────────────────────────

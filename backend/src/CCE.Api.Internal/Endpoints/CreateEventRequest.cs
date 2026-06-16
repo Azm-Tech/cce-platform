@@ -10,4 +10,6 @@ public sealed record CreateEventRequest(
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
     System.Guid TopicId,
-    System.Collections.Generic.List<System.Guid>? TagIds = null);
+    System.Collections.Generic.List<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null);

@@ -6,4 +6,6 @@ public sealed record CreateNewsBody(
     string ContentAr,
     string ContentEn,
     System.Guid? FeaturedImageAssetId,
-    System.Guid TopicId) : ContentBody;
+    System.Guid TopicId,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : ContentBody;

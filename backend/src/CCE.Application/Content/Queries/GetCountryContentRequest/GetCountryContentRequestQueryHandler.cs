@@ -50,7 +50,8 @@ public sealed class GetCountryContentRequestQueryHandler
             entity.ProposedStartsOn, entity.ProposedEndsOn,
             entity.ProposedLocationAr, entity.ProposedLocationEn, entity.ProposedOnlineMeetingUrl,
             entity.SubmittedOn, entity.AdminNotesAr, entity.AdminNotesEn,
-            entity.ProcessedById, entity.ProcessedOn);
+            entity.ProcessedById, entity.ProcessedOn,
+            entity.ProposedKnowledgeLevelId, entity.ProposedJobSectorId);
 
         return _messages.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
     }

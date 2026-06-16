@@ -14,4 +14,6 @@ public sealed record PublicNewsDto(
     string? FeaturedImageUrl,
     System.DateTimeOffset PublishedOn,
     bool IsFeatured,
-    System.Collections.Generic.IReadOnlyList<TagDto> Tags);
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags,
+    System.Guid? KnowledgeLevelId,
+    System.Guid? JobSectorId);

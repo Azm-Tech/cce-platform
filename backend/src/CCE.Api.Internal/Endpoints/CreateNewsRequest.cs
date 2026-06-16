@@ -3,4 +3,6 @@ namespace CCE.Api.Internal.Endpoints;
 public sealed record CreateNewsRequest(
     string TitleAr, string TitleEn, string ContentAr, string ContentEn,
     System.Guid TopicId, string? FeaturedImageUrl,
-    System.Collections.Generic.List<System.Guid>? TagIds = null);
+    System.Collections.Generic.List<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null);

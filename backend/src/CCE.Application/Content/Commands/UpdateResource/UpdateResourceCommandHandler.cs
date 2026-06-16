@@ -57,7 +57,9 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
             request.DescriptionEn,
             request.ResourceType,
             request.CategoryId,
-            request.CountryIds);
+            request.CountryIds,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         _db.SetExpectedRowVersion(resource, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

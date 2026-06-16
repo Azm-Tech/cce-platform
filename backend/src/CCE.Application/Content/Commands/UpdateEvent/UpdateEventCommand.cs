@@ -13,4 +13,6 @@ public sealed record UpdateEventCommand(
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
     System.Guid TopicId,
-    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<EventDto>>;
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<EventDto>>;

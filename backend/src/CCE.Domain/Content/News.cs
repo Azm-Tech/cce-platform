@@ -1,5 +1,6 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
@@ -20,7 +21,9 @@ public sealed class News : AggregateRoot<System.Guid>
         string contentEn,
         System.Guid topicId,
         System.Guid authorId,
-        string? featuredImageUrl) : base(id)
+        string? featuredImageUrl,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -29,6 +32,8 @@ public sealed class News : AggregateRoot<System.Guid>
         TopicId = topicId;
         AuthorId = authorId;
         FeaturedImageUrl = featuredImageUrl;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
@@ -42,6 +47,8 @@ public sealed class News : AggregateRoot<System.Guid>
     public bool IsFeatured { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
     public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
 
     public bool IsPublished => PublishedOn is not null;
 
@@ -53,7 +60,9 @@ public sealed class News : AggregateRoot<System.Guid>
         System.Guid topicId,
         System.Guid authorId,
         string? featuredImageUrl,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         _ = clock;
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
@@ -75,7 +84,9 @@ public sealed class News : AggregateRoot<System.Guid>
             contentEn: contentEn,
             topicId: topicId,
             authorId: authorId,
-            featuredImageUrl: featuredImageUrl);
+            featuredImageUrl: featuredImageUrl,
+            knowledgeLevelId: knowledgeLevelId,
+            jobSectorId: jobSectorId);
     }
 
     public void UpdateContent(
@@ -84,7 +95,9 @@ public sealed class News : AggregateRoot<System.Guid>
         string contentAr,
         string contentEn,
         System.Guid topicId,
-        string? featuredImageUrl)
+        string? featuredImageUrl,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -102,6 +115,8 @@ public sealed class News : AggregateRoot<System.Guid>
         ContentEn = contentEn;
         TopicId = topicId;
         FeaturedImageUrl = featuredImageUrl;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public void Publish(ISystemClock clock)

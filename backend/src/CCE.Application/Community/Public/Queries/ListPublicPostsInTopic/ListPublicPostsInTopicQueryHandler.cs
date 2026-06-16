@@ -46,10 +46,14 @@ public sealed class ListPublicPostsInTopicQueryHandler
 
         var authorNames = (await _db.Users
             .Where(u => authorIds.Contains(u.Id))
-            .Select(u => new { u.Id, Name = u.FirstName + " " + u.LastName })
+            .Select(u => new { u.Id, u.FirstName, u.LastName, u.UserName })
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false))
-            .ToDictionary(a => a.Id, a => a.Name);
+            .ToDictionary(a => a.Id, a =>
+            {
+                var fullName = $"{a.FirstName} {a.LastName}".Trim();
+                return string.IsNullOrEmpty(fullName) ? a.UserName ?? string.Empty : fullName;
+            });
 
         var attachmentsByPost = (await _db.PostAttachments
             .Where(a => postIds.Contains(a.PostId))

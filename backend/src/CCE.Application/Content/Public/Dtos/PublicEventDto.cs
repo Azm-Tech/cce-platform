@@ -18,4 +18,6 @@ public sealed record PublicEventDto(
     System.Guid TopicId,
     string TopicNameAr,
     string TopicNameEn,
-    System.Collections.Generic.IReadOnlyList<TagDto> Tags);
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags,
+    System.Guid? KnowledgeLevelId,
+    System.Guid? JobSectorId);

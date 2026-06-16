@@ -4,7 +4,6 @@ using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
-using CCE.Domain.Identity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,15 +13,22 @@ public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublic
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _messages;
+    private readonly IUserContentInterestResolver _resolver;
 
-    public ListPublicResourcesQueryHandler(ICceDbContext db, MessageFactory messages)
+    public ListPublicResourcesQueryHandler(ICceDbContext db, MessageFactory messages, IUserContentInterestResolver resolver)
     {
         _db = db;
         _messages = messages;
+        _resolver = resolver;
     }
 
     public async Task<Response<PagedResult<PublicResourceDto>>> Handle(ListPublicResourcesQuery request, CancellationToken cancellationToken)
     {
+        var knowledgeLevelId = request.KnowledgeLevelId;
+        var jobSectorId = request.JobSectorId;
+
+        (knowledgeLevelId, jobSectorId) = await _resolver.ResolveAsync(knowledgeLevelId, jobSectorId, cancellationToken).ConfigureAwait(false);
+
         var query = _db.Resources
             .AsNoTracking()
             .Include(r => r.Countries)
@@ -34,8 +40,23 @@ public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublic
                      r.DescriptionEn.Contains(request.Search!))
             .WhereIf(request.CategoryId.HasValue,   r => r.CategoryId == request.CategoryId!.Value)
             .WhereIf(request.CountryId.HasValue,    r => r.Countries.Any(c => c.CountryId == request.CountryId!.Value))
-            .WhereIf(request.ResourceType.HasValue, r => r.ResourceType == request.ResourceType!.Value)
-            .OrderByDescending(r => r.PublishedOn);
+            .WhereIf(request.ResourceType.HasValue, r => r.ResourceType == request.ResourceType!.Value);
+
+        if (knowledgeLevelId.HasValue || jobSectorId.HasValue)
+        {
+            query = query.Where(r =>
+                (!knowledgeLevelId.HasValue || r.KnowledgeLevelId == null || r.KnowledgeLevelId == knowledgeLevelId.Value) &&
+                (!jobSectorId.HasValue || r.JobSectorId == null || r.JobSectorId == jobSectorId.Value));
+
+            query = query.OrderByDescending(r =>
+                (knowledgeLevelId.HasValue && r.KnowledgeLevelId == knowledgeLevelId.Value ? 2 : 0) +
+                (jobSectorId.HasValue && r.JobSectorId == jobSectorId.Value ? 1 : 0))
+                .ThenByDescending(r => r.PublishedOn);
+        }
+        else
+        {
+            query = query.OrderByDescending(r => r.PublishedOn);
+        }
 
         var paged = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
@@ -101,10 +122,13 @@ public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublic
                 countryNames,
                 userNameMap.GetValueOrDefault(r.UploadedById) ?? string.Empty,
                 r.PublishedOn!.Value,
-                r.ViewCount);
+                r.ViewCount,
+                r.KnowledgeLevelId,
+                r.JobSectorId);
         }).ToList();
 
         var result = new PagedResult<PublicResourceDto>(dtos, paged.Page, paged.PageSize, paged.Total);
         return _messages.Ok(result, "ITEMS_LISTED");
     }
+
 }

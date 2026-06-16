@@ -14,21 +14,43 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _messages;
+    private readonly IUserContentInterestResolver _resolver;
 
-    public ListPublicNewsQueryHandler(ICceDbContext db, MessageFactory messages)
+    public ListPublicNewsQueryHandler(ICceDbContext db, MessageFactory messages, IUserContentInterestResolver resolver)
     {
         _db = db;
         _messages = messages;
+        _resolver = resolver;
     }
 
     public async Task<Response<PagedResult<PublicNewsDto>>> Handle(ListPublicNewsQuery request, CancellationToken cancellationToken)
     {
+        var knowledgeLevelId = request.KnowledgeLevelId;
+        var jobSectorId = request.JobSectorId;
+
+        (knowledgeLevelId, jobSectorId) = await _resolver.ResolveAsync(knowledgeLevelId, jobSectorId, cancellationToken).ConfigureAwait(false);
+
         var query = _db.News
             .Where(n => n.PublishedOn != null)
             .WhereIf(request.IsFeatured.HasValue, n => n.IsFeatured == request.IsFeatured!.Value)
             .WhereIf(request.TopicId.HasValue, n => n.TopicId == request.TopicId!.Value)
-            .WhereIf(request.TagIds?.Count > 0, n => n.Tags.Any(t => request.TagIds!.Contains(t.Id)))
-            .OrderByDescending(n => n.PublishedOn);
+            .WhereIf(request.TagIds?.Count > 0, n => n.Tags.Any(t => request.TagIds!.Contains(t.Id)));
+
+        if (knowledgeLevelId.HasValue || jobSectorId.HasValue)
+        {
+            query = query.Where(n =>
+                (!knowledgeLevelId.HasValue || n.KnowledgeLevelId == null || n.KnowledgeLevelId == knowledgeLevelId.Value) &&
+                (!jobSectorId.HasValue || n.JobSectorId == null || n.JobSectorId == jobSectorId.Value));
+
+            query = query.OrderByDescending(n =>
+                (knowledgeLevelId.HasValue && n.KnowledgeLevelId == knowledgeLevelId.Value ? 2 : 0) +
+                (jobSectorId.HasValue && n.JobSectorId == jobSectorId.Value ? 1 : 0))
+                .ThenByDescending(n => n.PublishedOn);
+        }
+        else
+        {
+            query = query.OrderByDescending(n => n.PublishedOn);
+        }
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
@@ -69,5 +91,8 @@ public sealed class ListPublicNewsQueryHandler : IRequestHandler<ListPublicNewsQ
         n.FeaturedImageUrl,
         n.PublishedOn!.Value,
         n.IsFeatured,
-        tagByNewsId.TryGetValue(n.Id, out var tags) ? tags : new List<TagDto>());
+        tagByNewsId.TryGetValue(n.Id, out var tags) ? tags : new List<TagDto>(),
+        n.KnowledgeLevelId,
+        n.JobSectorId);
+
 }

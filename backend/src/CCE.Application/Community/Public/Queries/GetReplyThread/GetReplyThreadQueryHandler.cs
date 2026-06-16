@@ -37,10 +37,16 @@ public sealed class GetReplyThreadQueryHandler
         var paged = await _db.PostReplies
             .Where(r => r.ThreadPath.StartsWith(prefix) && r.Id != request.ReplyId)
             .OrderBy(r => r.ThreadPath)
-            .Select(r => ListPublicPostRepliesQueryHandler.MapToDto(r))
             .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _msg.Ok(paged, "ITEMS_LISTED");
+        var authorIds = paged.Items.Select(r => r.AuthorId).Distinct().ToList();
+        var authorMap = await ListPublicPostRepliesQueryHandler.LoadAuthorMapAsync(_db, authorIds, cancellationToken).ConfigureAwait(false);
+
+        var dtos = paged.Items.Select(r => ListPublicPostRepliesQueryHandler.MapToDto(r, authorMap)).ToList();
+
+        return _msg.Ok(
+            new PagedResult<PublicPostReplyDto>(dtos, paged.Page, paged.PageSize, paged.Total),
+            "ITEMS_LISTED");
     }
 }

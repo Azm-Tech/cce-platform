@@ -6,4 +6,6 @@ public sealed record UpdateEventRequest(
     string? LocationAr, string? LocationEn,
     string? OnlineMeetingUrl, string? FeaturedImageUrl,
     System.Guid TopicId,
-    System.Collections.Generic.List<System.Guid>? TagIds = null);
+    System.Collections.Generic.List<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null);

@@ -1,5 +1,6 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
@@ -23,7 +24,9 @@ public sealed class Resource : AggregateRoot<System.Guid>
         System.Guid categoryId,
         System.Guid? countryId,
         System.Guid uploadedById,
-        System.Guid assetFileId) : base(id)
+        System.Guid assetFileId,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -34,6 +37,8 @@ public sealed class Resource : AggregateRoot<System.Guid>
         CountryId = countryId;
         UploadedById = uploadedById;
         AssetFileId = assetFileId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
@@ -47,6 +52,8 @@ public sealed class Resource : AggregateRoot<System.Guid>
     public System.Guid AssetFileId { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
     public long ViewCount { get; private set; }
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
 
     private readonly List<ResourceCountry> _countries = new();
     public IReadOnlyCollection<ResourceCountry> Countries => _countries.AsReadOnly();
@@ -71,7 +78,9 @@ public sealed class Resource : AggregateRoot<System.Guid>
         System.Guid uploadedById,
         System.Guid assetFileId,
         IEnumerable<System.Guid> countryIds,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         _ = clock;
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
@@ -92,7 +101,9 @@ public sealed class Resource : AggregateRoot<System.Guid>
             categoryId: categoryId,
             countryId: countryId,
             uploadedById: uploadedById,
-            assetFileId: assetFileId);
+            assetFileId: assetFileId,
+            knowledgeLevelId: knowledgeLevelId,
+            jobSectorId: jobSectorId);
 
         foreach (var cid in countryIds.Distinct().Where(id => id != System.Guid.Empty))
         {
@@ -128,7 +139,9 @@ public sealed class Resource : AggregateRoot<System.Guid>
         string descriptionEn,
         ResourceType resourceType,
         System.Guid categoryId,
-        IEnumerable<System.Guid> countryIds)
+        IEnumerable<System.Guid> countryIds,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -141,6 +154,8 @@ public sealed class Resource : AggregateRoot<System.Guid>
         DescriptionEn = descriptionEn;
         ResourceType = resourceType;
         CategoryId = categoryId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
         SyncCountries(countryIds);
     }
 

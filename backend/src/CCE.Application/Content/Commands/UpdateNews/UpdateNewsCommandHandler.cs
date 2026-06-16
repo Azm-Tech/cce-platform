@@ -47,7 +47,9 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
             request.ContentAr,
             request.ContentEn,
             request.TopicId,
-            request.FeaturedImageUrl);
+            request.FeaturedImageUrl,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         if (request.TagIds is not null)
         {

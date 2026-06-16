@@ -18,6 +18,8 @@ internal sealed class NewsConfiguration : IEntityTypeConfiguration<News>
         builder.Property(n => n.RowVersion).IsRowVersion();
         builder.HasIndex(n => n.PublishedOn).HasDatabaseName("ix_news_published_on");
         builder.HasIndex(n => n.TopicId).HasDatabaseName("ix_news_topic_id");
+        builder.Property(n => n.KnowledgeLevelId).IsRequired(false);
+        builder.Property(n => n.JobSectorId).IsRequired(false);
 
         builder.HasMany(n => n.Tags)
                .WithMany()

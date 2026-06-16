@@ -10,4 +10,6 @@ public sealed record UpdateNewsCommand(
     string ContentAr, string ContentEn,
     System.Guid TopicId,
     string? FeaturedImageUrl,
-    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<NewsDto>>;
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<NewsDto>>;

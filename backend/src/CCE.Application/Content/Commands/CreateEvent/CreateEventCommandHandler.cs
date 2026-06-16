@@ -47,7 +47,9 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
             request.OnlineMeetingUrl,
             request.FeaturedImageUrl,
             request.TopicId,
-            _clock);
+            _clock,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         if (request.TagIds?.Count > 0)
         {
