@@ -18,6 +18,8 @@ internal sealed class ResourceConfiguration : IEntityTypeConfiguration<Resource>
         builder.Property(r => r.RowVersion).IsRowVersion();
         builder.HasIndex(r => new { r.CategoryId, r.PublishedOn }).HasDatabaseName("ix_resource_category_published");
         builder.HasIndex(r => r.AssetFileId).HasDatabaseName("ix_resource_asset_file_id");
+        builder.Property(r => r.KnowledgeLevelId).IsRequired(false);
+        builder.Property(r => r.JobSectorId).IsRequired(false);
         builder.Ignore(r => r.DomainEvents);
 
         builder.HasMany(r => r.Countries)

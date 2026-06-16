@@ -14,15 +14,22 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _messages;
+    private readonly IUserContentInterestResolver _resolver;
 
-    public ListPublicEventsQueryHandler(ICceDbContext db, MessageFactory messages)
+    public ListPublicEventsQueryHandler(ICceDbContext db, MessageFactory messages, IUserContentInterestResolver resolver)
     {
         _db = db;
         _messages = messages;
+        _resolver = resolver;
     }
 
     public async Task<Response<PagedResult<PublicEventDto>>> Handle(ListPublicEventsQuery request, CancellationToken cancellationToken)
     {
+        var knowledgeLevelId = request.KnowledgeLevelId;
+        var jobSectorId = request.JobSectorId;
+
+        (knowledgeLevelId, jobSectorId) = await _resolver.ResolveAsync(knowledgeLevelId, jobSectorId, cancellationToken).ConfigureAwait(false);
+
         var query = _db.Events.AsQueryable();
 
         if (request.From.HasValue && request.To.HasValue)
@@ -37,7 +44,22 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
 
         query = query.WhereIf(request.TopicId.HasValue, e => e.TopicId == request.TopicId!.Value);
         query = query.WhereIf(request.TagIds?.Count > 0, e => e.Tags.Any(t => request.TagIds!.Contains(t.Id)));
-        query = query.OrderBy(e => e.StartsOn);
+
+        if (knowledgeLevelId.HasValue || jobSectorId.HasValue)
+        {
+            query = query.Where(e =>
+                (!knowledgeLevelId.HasValue || e.KnowledgeLevelId == null || e.KnowledgeLevelId == knowledgeLevelId.Value) &&
+                (!jobSectorId.HasValue || e.JobSectorId == null || e.JobSectorId == jobSectorId.Value));
+
+            query = query.OrderByDescending(e =>
+                (knowledgeLevelId.HasValue && e.KnowledgeLevelId == knowledgeLevelId.Value ? 2 : 0) +
+                (jobSectorId.HasValue && e.JobSectorId == jobSectorId.Value ? 1 : 0))
+                .ThenBy(e => e.StartsOn);
+        }
+        else
+        {
+            query = query.OrderBy(e => e.StartsOn);
+        }
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
 
@@ -82,5 +104,8 @@ public sealed class ListPublicEventsQueryHandler : IRequestHandler<ListPublicEve
         e.TopicId,
         topicById.TryGetValue(e.TopicId, out var t) ? t.NameAr : string.Empty,
         topicById.TryGetValue(e.TopicId, out t) ? t.NameEn : string.Empty,
-        tagByEventId.TryGetValue(e.Id, out var tags) ? tags : new List<TagDto>());
+        tagByEventId.TryGetValue(e.Id, out var tags) ? tags : new List<TagDto>(),
+        e.KnowledgeLevelId,
+        e.JobSectorId);
+
 }

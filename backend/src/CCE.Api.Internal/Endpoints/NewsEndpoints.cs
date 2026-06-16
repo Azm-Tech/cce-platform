@@ -52,7 +52,7 @@ public static class NewsEndpoints
             CreateNewsRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var cmd = new CreateNewsCommand(body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds);
+            var cmd = new CreateNewsCommand(body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds, body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -64,7 +64,7 @@ public static class NewsEndpoints
             UpdateNewsRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var cmd = new UpdateNewsCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds);
+            var cmd = new UpdateNewsCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, body.TopicId, body.FeaturedImageUrl, body.TagIds, body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

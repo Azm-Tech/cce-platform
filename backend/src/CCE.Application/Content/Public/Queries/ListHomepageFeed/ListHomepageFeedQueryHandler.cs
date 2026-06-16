@@ -85,7 +85,11 @@ public sealed class ListHomepageFeedQueryHandler
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var authorById = authorsList.ToDictionary(
             u => u.Id,
-            u => $"{u.FirstName} {u.LastName}".Trim());
+            u =>
+            {
+                var fullName = $"{u.FirstName} {u.LastName}".Trim();
+                return string.IsNullOrEmpty(fullName) ? u.UserName ?? string.Empty : fullName;
+            });
 
         return _messages.Ok(result.Map(r => MapToDto(r, topicById, authorById)), "ITEMS_LISTED");
     }

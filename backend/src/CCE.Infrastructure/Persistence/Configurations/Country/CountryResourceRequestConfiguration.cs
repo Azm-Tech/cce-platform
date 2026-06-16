@@ -33,6 +33,8 @@ internal sealed class CountryContentRequestConfiguration : IEntityTypeConfigurat
         builder.Property(r => r.ProposedLocationAr).HasMaxLength(512).IsRequired(false);
         builder.Property(r => r.ProposedLocationEn).HasMaxLength(512).IsRequired(false);
         builder.Property(r => r.ProposedOnlineMeetingUrl).HasMaxLength(2048).IsRequired(false);
+        builder.Property(r => r.ProposedKnowledgeLevelId).IsRequired(false);
+        builder.Property(r => r.ProposedJobSectorId).IsRequired(false);
 
         builder.HasIndex(r => new { r.CountryId, r.Status, r.Type })
             .HasDatabaseName("ix_country_content_request_country_status_type");

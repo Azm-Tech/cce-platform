@@ -74,7 +74,9 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
             uploadedById.Value,
             request.AssetFileId,
             request.CountryIds,
-            _clock);
+            _clock,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         await _repo.AddAsync(resource, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

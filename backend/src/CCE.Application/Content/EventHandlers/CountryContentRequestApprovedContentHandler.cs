@@ -63,7 +63,8 @@ public sealed class CountryContentRequestApprovedContentHandler
             request.RequestedById,
             request.ProposedAssetFileId ?? throw new DomainException("AssetFileId is required for resource requests."),
             [request.CountryId],
-            _clock);
+            _clock,
+            request.ProposedKnowledgeLevelId, request.ProposedJobSectorId);
 
         resource.Publish(_clock);
         _db.Add(resource);
@@ -88,7 +89,8 @@ public sealed class CountryContentRequestApprovedContentHandler
             request.ProposedTopicId ?? throw new DomainException("TopicId is required for news requests."),
             request.RequestedById,
             featuredImageUrl,
-            _clock);
+            _clock,
+            request.ProposedKnowledgeLevelId, request.ProposedJobSectorId);
 
         news.Publish(_clock);
         _db.Add(news);
@@ -117,7 +119,8 @@ public sealed class CountryContentRequestApprovedContentHandler
             request.ProposedOnlineMeetingUrl,
             featuredImageUrl,
             request.ProposedTopicId ?? throw new DomainException("TopicId is required for event requests."),
-            _clock);
+            _clock,
+            request.ProposedKnowledgeLevelId, request.ProposedJobSectorId);
 
         _db.Add(ev);
     }

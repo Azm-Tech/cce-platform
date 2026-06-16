@@ -11,4 +11,6 @@ public sealed record CreateEventBody(
     string? LocationEn,
     string? OnlineMeetingUrl,
     System.Guid? FeaturedImageAssetId,
-    System.Guid TopicId) : ContentBody;
+    System.Guid TopicId,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : ContentBody;

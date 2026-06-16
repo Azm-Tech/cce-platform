@@ -51,5 +51,7 @@ public sealed class GetPublicNewsByIdQueryHandler : IRequestHandler<GetPublicNew
         n.FeaturedImageUrl,
         n.PublishedOn!.Value,
         n.IsFeatured,
-        tags ?? new List<TagDto>());
+        tags ?? new List<TagDto>(),
+        n.KnowledgeLevelId,
+        n.JobSectorId);
 }

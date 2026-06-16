@@ -67,5 +67,6 @@ public sealed class ApproveCountryResourceRequestCommandHandler
         e.ProposedStartsOn, e.ProposedEndsOn,
         e.ProposedLocationAr, e.ProposedLocationEn, e.ProposedOnlineMeetingUrl,
         e.SubmittedOn, e.AdminNotesAr, e.AdminNotesEn,
-        e.ProcessedById, e.ProcessedOn);
+        e.ProcessedById, e.ProcessedOn,
+        e.ProposedKnowledgeLevelId, e.ProposedJobSectorId);
 }

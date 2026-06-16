@@ -19,4 +19,6 @@ public sealed record PublicResourceDto(
     IReadOnlyList<string> CountryNames,
     string PublishedBy,
     System.DateTimeOffset PublishedOn,
-    long ViewCount);
+    long ViewCount,
+    System.Guid? KnowledgeLevelId,
+    System.Guid? JobSectorId);

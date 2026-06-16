@@ -58,7 +58,8 @@ public sealed class ListCountryContentRequestsQueryHandler
                     r.ProposedStartsOn, r.ProposedEndsOn,
                     r.ProposedLocationAr, r.ProposedLocationEn, r.ProposedOnlineMeetingUrl,
                     r.SubmittedOn, r.AdminNotesAr, r.AdminNotesEn,
-                    r.ProcessedById, r.ProcessedOn),
+                    r.ProcessedById, r.ProcessedOn,
+                    r.ProposedKnowledgeLevelId, r.ProposedJobSectorId),
                 request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 

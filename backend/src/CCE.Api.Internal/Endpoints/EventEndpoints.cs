@@ -51,7 +51,8 @@ public static class EventEndpoints
                 body.StartsOn, body.EndsOn,
                 body.LocationAr, body.LocationEn,
                 body.OnlineMeetingUrl, body.FeaturedImageUrl,
-                body.TopicId, body.TagIds);
+                body.TopicId, body.TagIds,
+                body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -69,7 +70,8 @@ public static class EventEndpoints
                 body.DescriptionAr, body.DescriptionEn,
                 body.LocationAr, body.LocationEn,
                 body.OnlineMeetingUrl, body.FeaturedImageUrl,
-                body.TopicId, body.TagIds);
+                body.TopicId, body.TagIds,
+                body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

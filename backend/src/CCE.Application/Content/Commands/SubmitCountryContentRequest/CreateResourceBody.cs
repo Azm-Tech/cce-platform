@@ -11,4 +11,6 @@ public sealed record CreateResourceBody(
     System.Guid CategoryId,
     System.Guid? TopicId,
     System.Collections.Generic.List<System.Guid>? CountryIds,
-    System.Guid AssetFileId) : ContentBody;
+    System.Guid AssetFileId,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : ContentBody;

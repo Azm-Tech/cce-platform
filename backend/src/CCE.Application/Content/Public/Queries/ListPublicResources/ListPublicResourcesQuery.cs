@@ -12,4 +12,6 @@ public sealed record ListPublicResourcesQuery(
     string? Search = null,
     System.Guid? CategoryId = null,
     System.Guid? CountryId = null,
-    ResourceType? ResourceType = null) : IRequest<Response<PagedResult<PublicResourceDto>>>;
+    ResourceType? ResourceType = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<PagedResult<PublicResourceDto>>>;

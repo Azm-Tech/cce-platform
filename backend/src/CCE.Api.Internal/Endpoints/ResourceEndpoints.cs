@@ -55,7 +55,8 @@ public static class ResourceEndpoints
                 body.TitleAr, body.TitleEn,
                 body.DescriptionAr, body.DescriptionEn,
                 body.ResourceType, body.CategoryId, body.CountryId, body.AssetFileId,
-                body.CountryIds);
+                body.CountryIds,
+                body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
@@ -72,7 +73,8 @@ public static class ResourceEndpoints
                 body.TitleAr, body.TitleEn,
                 body.DescriptionAr, body.DescriptionEn,
                 body.ResourceType, body.CategoryId,
-                body.CountryIds);
+                body.CountryIds,
+                body.KnowledgeLevelId, body.JobSectorId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

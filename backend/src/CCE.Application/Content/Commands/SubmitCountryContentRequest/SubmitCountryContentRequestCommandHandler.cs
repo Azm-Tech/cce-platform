@@ -116,7 +116,8 @@ public sealed class SubmitCountryContentRequestCommandHandler
             body.DescriptionAr, body.DescriptionEn,
             body.ResourceType, body.AssetFileId,
             body.CategoryId,
-            _clock);
+            _clock,
+            body.KnowledgeLevelId, body.JobSectorId);
     }
 
     private async Task<CountryContentRequest> SubmitNewsAsync(
@@ -148,7 +149,8 @@ public sealed class SubmitCountryContentRequestCommandHandler
             body.TitleAr, body.TitleEn,
             body.ContentAr, body.ContentEn,
             body.TopicId, body.FeaturedImageAssetId,
-            _clock);
+            _clock,
+            body.KnowledgeLevelId, body.JobSectorId);
     }
 
     private async Task<CountryContentRequest> SubmitEventAsync(
@@ -186,6 +188,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
             body.StartsOn, body.EndsOn,
             body.LocationAr, body.LocationEn, body.OnlineMeetingUrl,
             body.FeaturedImageAssetId,
-            _clock);
+            _clock,
+            body.KnowledgeLevelId, body.JobSectorId);
     }
 }

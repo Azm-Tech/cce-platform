@@ -50,7 +50,9 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
             request.TopicId,
             authorId.Value,
             request.FeaturedImageUrl,
-            _clock);
+            _clock,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         if (request.TagIds?.Count > 0)
         {

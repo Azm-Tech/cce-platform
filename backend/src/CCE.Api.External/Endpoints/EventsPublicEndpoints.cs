@@ -20,6 +20,7 @@ public static class EventsPublicEndpoints
             System.DateTimeOffset? from, System.DateTimeOffset? to,
             System.Guid? topicId,
             [FromQuery] System.Guid[]? tagIds,
+            System.Guid? knowledgeLevelId, System.Guid? jobSectorId,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicEventsQuery(
@@ -28,7 +29,9 @@ public static class EventsPublicEndpoints
                 From: from,
                 To: to,
                 TopicId: topicId,
-                TagIds: tagIds);
+                TagIds: tagIds,
+                KnowledgeLevelId: knowledgeLevelId,
+                JobSectorId: jobSectorId);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

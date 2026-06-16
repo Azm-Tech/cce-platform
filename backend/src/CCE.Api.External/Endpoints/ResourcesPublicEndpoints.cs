@@ -23,12 +23,15 @@ public static class ResourcesPublicEndpoints
         resources.MapGet("", async (
             int? page, int? pageSize, string? search,
             System.Guid? categoryId, System.Guid? countryId, ResourceType? resourceType,
+            System.Guid? knowledgeLevelId, System.Guid? jobSectorId,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicResourcesQuery(
                 Page: page ?? 1, PageSize: pageSize ?? 20,
                 Search: search,
-                CategoryId: categoryId, CountryId: countryId, ResourceType: resourceType);
+                CategoryId: categoryId, CountryId: countryId, ResourceType: resourceType,
+                KnowledgeLevelId: knowledgeLevelId,
+                JobSectorId: jobSectorId);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

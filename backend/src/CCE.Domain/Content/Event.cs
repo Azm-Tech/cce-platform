@@ -1,5 +1,6 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
@@ -24,7 +25,9 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? onlineMeetingUrl,
         string? featuredImageUrl,
         string iCalUid,
-        System.Guid topicId) : base(id)
+        System.Guid topicId,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -38,6 +41,8 @@ public sealed class Event : AggregateRoot<System.Guid>
         FeaturedImageUrl = featuredImageUrl;
         ICalUid = iCalUid;
         TopicId = topicId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
@@ -57,6 +62,8 @@ public sealed class Event : AggregateRoot<System.Guid>
     public System.Guid TopicId { get; private set; }
 
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
 
     private readonly List<Tag> _tags = new();
     public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
@@ -79,7 +86,9 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? onlineMeetingUrl,
         string? featuredImageUrl,
         System.Guid topicId,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -103,7 +112,8 @@ public sealed class Event : AggregateRoot<System.Guid>
         var id = System.Guid.NewGuid();
         var iCalUid = $"{id:N}@cce.moenergy.gov.sa";
         var ev = new Event(id, titleAr, titleEn, descriptionAr, descriptionEn,
-            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid, topicId);
+            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid, topicId,
+            knowledgeLevelId, jobSectorId);
         ev.RaiseDomainEvent(new EventScheduledEvent(id, topicId, startsOn, endsOn, clock.UtcNow));
         return ev;
     }
@@ -117,7 +127,9 @@ public sealed class Event : AggregateRoot<System.Guid>
         string? locationEn,
         string? onlineMeetingUrl,
         string? featuredImageUrl,
-        System.Guid topicId)
+        System.Guid topicId,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -143,6 +155,8 @@ public sealed class Event : AggregateRoot<System.Guid>
         OnlineMeetingUrl = onlineMeetingUrl;
         FeaturedImageUrl = featuredImageUrl;
         TopicId = topicId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public void Reschedule(System.DateTimeOffset startsOn, System.DateTimeOffset endsOn)

@@ -50,7 +50,9 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
             request.LocationEn,
             request.OnlineMeetingUrl,
             request.FeaturedImageUrl,
-            request.TopicId);
+            request.TopicId,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
         if (request.TagIds is not null)
         {

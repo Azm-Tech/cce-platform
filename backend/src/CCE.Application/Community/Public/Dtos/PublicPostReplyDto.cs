@@ -11,4 +11,6 @@ public sealed record PublicPostReplyDto(
     int Depth,
     int ChildCount,
     int UpvoteCount,
-    System.DateTimeOffset CreatedOn);
+    System.DateTimeOffset CreatedOn,
+    string AuthorName,
+    string? AuthorAvatarUrl);

@@ -12,4 +12,6 @@ public sealed record UpdateResourceCommand(
     string DescriptionEn,
     ResourceType ResourceType,
     System.Guid CategoryId,
-    IReadOnlyList<System.Guid> CountryIds) : IRequest<Response<System.Guid>>;
+    IReadOnlyList<System.Guid> CountryIds,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<System.Guid>>;

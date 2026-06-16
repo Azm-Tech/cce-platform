@@ -55,5 +55,7 @@ public sealed class GetPublicEventByIdQueryHandler : IRequestHandler<GetPublicEv
         e.TopicId,
         topicNameAr,
         topicNameEn,
-        tags ?? new List<TagDto>());
+        tags ?? new List<TagDto>(),
+        e.KnowledgeLevelId,
+        e.JobSectorId);
 }

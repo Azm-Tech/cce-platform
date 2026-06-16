@@ -11,4 +11,6 @@ public sealed record CreateResourceRequest(
     System.Guid CategoryId,
     System.Guid? CountryId,
     System.Guid AssetFileId,
-    List<System.Guid> CountryIds);
+    List<System.Guid> CountryIds,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null);

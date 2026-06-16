@@ -10,4 +10,6 @@ public sealed record UpdateResourceRequest(
     ResourceType ResourceType,
     System.Guid CategoryId,
     List<System.Guid> CountryIds,
-    string RowVersion);
+    string RowVersion,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null);

@@ -14,4 +14,6 @@ public sealed record CreateResourceCommand(
     System.Guid CategoryId,
     System.Guid? CountryId,
     System.Guid AssetFileId,
-    IReadOnlyList<System.Guid> CountryIds) : IRequest<Response<System.Guid>>;
+    IReadOnlyList<System.Guid> CountryIds,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<System.Guid>>;

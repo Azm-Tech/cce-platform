@@ -17,6 +17,7 @@ public static class NewsPublicEndpoints
         news.MapGet("", async (
             int? page, int? pageSize, bool? isFeatured, System.Guid? topicId,
             [FromQuery] System.Guid[]? tagIds,
+            System.Guid? knowledgeLevelId, System.Guid? jobSectorId,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicNewsQuery(
@@ -24,7 +25,9 @@ public static class NewsPublicEndpoints
                 PageSize: pageSize ?? 20,
                 IsFeatured: isFeatured,
                 TopicId: topicId,
-                TagIds: tagIds);
+                TagIds: tagIds,
+                KnowledgeLevelId: knowledgeLevelId,
+                JobSectorId: jobSectorId);
             var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })

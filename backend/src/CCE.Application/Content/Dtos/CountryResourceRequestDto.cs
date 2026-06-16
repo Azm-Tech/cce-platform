@@ -26,4 +26,6 @@ public sealed record CountryContentRequestDto(
     string? AdminNotesAr,
     string? AdminNotesEn,
     System.Guid? ProcessedById,
-    System.DateTimeOffset? ProcessedOn);
+    System.DateTimeOffset? ProcessedOn,
+    System.Guid? ProposedKnowledgeLevelId,
+    System.Guid? ProposedJobSectorId);

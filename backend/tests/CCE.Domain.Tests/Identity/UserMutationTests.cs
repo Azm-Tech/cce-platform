@@ -55,7 +55,7 @@ public class UserMutationTests
         var user = new User();
         var topics = new[] { System.Guid.NewGuid(), System.Guid.NewGuid() };
         user.UpdateInterests(topics);
-        user.UserInterestTopics.Select(t => t.TopicId).Should().BeEquivalentTo(topics);
+        user.UserInterestTopics.Select(t => t.InterestTopicId).Should().BeEquivalentTo(topics);
     }
 
     [Fact]

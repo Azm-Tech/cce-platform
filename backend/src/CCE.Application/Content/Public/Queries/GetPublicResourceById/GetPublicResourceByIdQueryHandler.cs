@@ -83,7 +83,9 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
             countries.Select(c => c.NameAr).ToList(),
             publishedBy,
             r.PublishedOn!.Value,
-            r.ViewCount);
+            r.ViewCount,
+            r.KnowledgeLevelId,
+            r.JobSectorId);
     }
 
     private static string GetPublishedByName(string? firstName, string? lastName, string? userName)
