@@ -1,5 +1,5 @@
 
-import { DatePipe, DOCUMENT } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -24,7 +24,6 @@ export class RequestDetailDialogComponent {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly media = inject(MediaApiService);
   private readonly toast = inject(ToastService);
-  private readonly document = inject(DOCUMENT);
   readonly request = inject<CountryContentRequest>(MAT_DIALOG_DATA);
   readonly locale = inject(LocaleService).locale;
   readonly statusKey = contentRequestStatusKey;
@@ -39,22 +38,8 @@ export class RequestDetailDialogComponent {
     const assetId = this.request.proposedAssetFileId;
     if (!assetId) return;
     this.downloading.set(true);
-    const res = await this.media.getAsset(assetId);
+    const res = await this.media.downloadAsset(assetId);
     this.downloading.set(false);
-    if (!res.ok) {
-      this.toast.error('errors.ERR002');
-      return;
-    }
-    const { url } = res.value;
-    // Resolve relative URLs against the current origin
-    const absolute = url.startsWith('http') ? url : new URL(url, this.document.location.origin).toString();
-    const a = this.document.createElement('a');
-    a.href = absolute;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    // Let the browser determine the filename from the URL / Content-Disposition
-    this.document.body.appendChild(a);
-    a.click();
-    this.document.body.removeChild(a);
+    if (!res.ok) this.toast.error('errors.ERR002');
   }
 }

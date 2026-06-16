@@ -24,6 +24,25 @@ export class MediaApiService {
     return this.upload('/api/assets', file);
   }
 
+  async downloadAsset(id: string, filename?: string): Promise<Result<void>> {
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(`/api/assets/${encodeURIComponent(id)}/download`, { responseType: 'blob' }),
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename ?? id;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return { ok: true, value: undefined };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
   async getAsset(id: string): Promise<Result<MediaAsset>> {
     try {
       const res = await firstValueFrom(
