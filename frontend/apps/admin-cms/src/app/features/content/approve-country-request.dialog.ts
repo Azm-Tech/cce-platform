@@ -50,7 +50,7 @@ interface ApproveForm {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button type="button" (click)="cancel()">
-        {{ 'common.cancel' | transloco }}
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
         @if (saving()) { <mat-spinner diameter="18" /> }
