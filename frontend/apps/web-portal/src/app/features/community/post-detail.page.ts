@@ -167,6 +167,8 @@ export class PostDetailPage implements OnInit {
     return authorHandle(r.authorId);
   });
 
+  readonly authorFollowerCount = computed(() => this.post()?.author?.followerCount ?? 0);
+
   readonly authorJobTitle = computed(() => this.authorProfile()?.jobTitle ?? null);
   readonly authorOrganization = computed(() => this.authorProfile()?.organizationName ?? null);
 
