@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { ApproveCountryRequestDialogComponent } from './approve-country-request.dialog';
 import { RejectCountryRequestDialogComponent } from './reject-country-request.dialog';
@@ -42,6 +43,7 @@ export class CountryRequestDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
   private readonly sanitizer = inject(DomSanitizer);
+  readonly locale = inject(LocaleService).locale;
 
   safe(html: string | null | undefined): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html ?? '');

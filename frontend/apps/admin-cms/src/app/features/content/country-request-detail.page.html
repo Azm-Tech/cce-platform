@@ -81,9 +81,15 @@
           <span class="cce-crd__hero-date">{{ req.submittedOn | date:'mediumDate' }}</span>
         </div>
 
-        <h1>{{ req.proposedTitleEn ?? req.proposedTitleAr ?? ('countryRequest.untitled' | transloco) }}</h1>
+        <h1>{{
+          locale() === 'ar'
+            ? (req.proposedTitleAr ?? req.proposedTitleEn ?? ('countryRequest.untitled' | transloco))
+            : (req.proposedTitleEn ?? req.proposedTitleAr ?? ('countryRequest.untitled' | transloco))
+        }}</h1>
         @if (req.proposedTitleAr && req.proposedTitleEn) {
-          <p style="margin:0;color:rgba(255,255,255,0.6);font-size:0.9rem">{{ req.proposedTitleAr }}</p>
+          <p style="margin:0;color:rgba(255,255,255,0.6);font-size:0.9rem">
+            {{ locale() === 'ar' ? req.proposedTitleEn : req.proposedTitleAr }}
+          </p>
         }
       </div>
 
