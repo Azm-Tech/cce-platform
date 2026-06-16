@@ -386,7 +386,12 @@
                   <mat-option [value]="null">—</mat-option>
                   @for (cc of filteredCountryCodes(); track cc.id) {
                     <mat-option [value]="cc.id">
-                      {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                      <span class="cce-profile__cc-option">
+                        @if (cc.flagUrl) {
+                          <img class="cce-profile__cc-flag" [src]="cc.flagUrl" [alt]="" aria-hidden="true" />
+                        }
+                        {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                      </span>
                     </mat-option>
                   }
                 </mat-autocomplete>

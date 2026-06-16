@@ -799,3 +799,17 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
     mat-progress-spinner { --mdc-circular-progress-active-indicator-color: #fff; }
   }
 }
+
+.cce-profile__cc-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cce-profile__cc-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

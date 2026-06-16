@@ -64,7 +64,12 @@
           <mat-autocomplete #nationalityAuto [displayWith]="displayNationality" autoActiveFirstOption>
             @for (cc of filteredNationalities(); track cc.id) {
               <mat-option [value]="cc">
-                {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                <span class="cce-register__cc-option">
+                  @if (cc.flagUrl) {
+                    <img class="cce-register__cc-flag" [src]="cc.flagUrl" [alt]="" aria-hidden="true" />
+                  }
+                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                </span>
               </mat-option>
             } @empty {
               <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>

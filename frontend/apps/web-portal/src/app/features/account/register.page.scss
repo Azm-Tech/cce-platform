@@ -218,6 +218,20 @@
   align-items: center;
 }
 
+.cce-register__cc-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cce-register__cc-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 /* Mobile */
 @media (max-width: 480px) {
   .cce-register { padding: 1.5rem 1.25rem; }

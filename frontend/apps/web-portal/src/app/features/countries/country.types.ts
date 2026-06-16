@@ -146,6 +146,7 @@ export interface CountryCode {
   id: string;
   dialCode: string;
   name: { ar: string; en: string };
+  flagUrl?: string;
   isActive: boolean;
 }
 
