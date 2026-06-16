@@ -13,4 +13,4 @@ public sealed record InteractiveMapNodeDto(
     System.Guid? ParentId,
     System.Guid TopicId,
     bool IsActive,
-    System.Collections.Generic.IReadOnlyList<TagDto> Tags);
+    System.Collections.Generic.IReadOnlyList<InteractiveMapTagDto> Tags);

@@ -179,7 +179,7 @@ public sealed class Post : AggregateRoot<System.Guid>
     {
         ApplyVote(oldValue, newValue);
         RaiseDomainEvent(new PostVotedEvent(
-            Id, userId, newValue, UpvoteCount, DownvoteCount, Score, clock.UtcNow));
+            Id, CommunityId, userId, newValue, oldValue, UpvoteCount, DownvoteCount, Score, clock.UtcNow));
     }
 
     /// <summary>

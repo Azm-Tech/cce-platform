@@ -14,11 +14,11 @@ public sealed record PublicInteractiveMapNodeDto(
     int Level,
     System.Guid? ParentId,
     System.Guid TopicId,
-    System.Collections.Generic.IReadOnlyList<TagDto> Tags)
+    System.Collections.Generic.IReadOnlyList<InteractiveMapTagDto> Tags)
 {
     internal static PublicInteractiveMapNodeDto FromEntity(InteractiveMapNode n) => new(
         n.Id, n.NameAr, n.NameEn, n.IconKey,
         n.Category, n.CategoryNameAr, n.CategoryNameEn,
         n.Level, n.ParentId, n.TopicId,
-        n.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn)).ToList());
+        n.Tags.Select(t => new InteractiveMapTagDto(t.Id, t.NameAr, t.NameEn)).ToList());
 }

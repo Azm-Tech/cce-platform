@@ -49,5 +49,5 @@ internal sealed class ListInteractiveMapNodesQueryHandler
         n.ParentId,
         n.TopicId,
         n.IsActive,
-        n.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn)).ToList());
+        n.Tags.Select(t => new InteractiveMapTagDto(t.Id, t.NameAr, t.NameEn)).ToList());
 }

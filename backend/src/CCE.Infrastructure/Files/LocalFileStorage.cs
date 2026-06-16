@@ -22,7 +22,7 @@ public sealed class LocalFileStorage : IFileStorage
         _root = root;
     }
 
-    public async Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct)
+    public async Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct, string? contentType = null)
     {
         var now = System.DateTimeOffset.UtcNow;
         var ext = Path.GetExtension(suggestedFileName);
@@ -56,4 +56,8 @@ public sealed class LocalFileStorage : IFileStorage
         }
         return Task.CompletedTask;
     }
+
+    // Local storage serves files from wwwroot/media/ at /media/{key}.
+    public System.Uri GetPublicUrl(string storageKey)
+        => new($"/media/{storageKey}", System.UriKind.Relative);
 }

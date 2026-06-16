@@ -16,6 +16,8 @@ public interface IRedisFeedStore
     Task AddToCommunityFeedAsync(Guid communityId, Guid postId, DateTimeOffset publishedOn, CancellationToken ct = default);
     Task<IReadOnlyList<Guid>> GetUserFeedAsync(Guid userId, int page, int pageSize, CancellationToken ct = default);
     Task<IReadOnlyList<Guid>> GetCommunityFeedAsync(Guid communityId, int page, int pageSize, CancellationToken ct = default);
+    Task<long> GetCommunityFeedCountAsync(Guid communityId, CancellationToken ct = default);
+    Task<long> GetHotLeaderboardCountAsync(Guid communityId, CancellationToken ct = default);
     Task RemoveFromFeedAsync(Guid userId, Guid postId, CancellationToken ct = default);
 
     // ─── Post hot counters ───

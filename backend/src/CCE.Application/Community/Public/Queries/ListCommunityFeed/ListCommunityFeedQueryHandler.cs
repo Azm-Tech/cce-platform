@@ -54,12 +54,16 @@ public sealed class ListCommunityFeedQueryHandler
 
             if (ids.Count > 0)
             {
-                var total = await _db.Posts
-                    .Where(p => p.CommunityId == communityId && p.Status == PostStatus.Published)
-                    .CountAsyncEither(cancellationToken).ConfigureAwait(false);
+                // Use the Redis sorted-set cardinality as the total so the pagination count is
+                // consistent with the items source. Using SQL total here caused phantom pages:
+                // deleted/unpublished posts stay in Redis until TTL, so HydrateAsync silently
+                // drops stale IDs and each page appears shorter than pageSize while total stays high.
+                var total = request.Sort == PostFeedSort.Hot
+                    ? await _feedStore.GetHotLeaderboardCountAsync(communityId, cancellationToken).ConfigureAwait(false)
+                    : await _feedStore.GetCommunityFeedCountAsync(communityId, cancellationToken).ConfigureAwait(false);
                 var hydrated = await HydrateAsync(ids, request.UserId, cancellationToken).ConfigureAwait(false);
                 return _msg.Ok(
-                    new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
+                    new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, (int)total),
                     "ITEMS_LISTED");
             }
             // Redis cold/unavailable — fall through to SQL.

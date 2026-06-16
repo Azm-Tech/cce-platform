@@ -9,13 +9,21 @@ public interface IFileStorage
     /// <summary>
     /// Persists <paramref name="content"/> under a generated key derived from the current
     /// year/month and a fresh Guid (preserving the original extension).
-    /// Returns the storage key (e.g. <c>uploads/2026/04/abc123.pdf</c>) — NOT a URL.
+    /// Returns the storage key (e.g. <c>2026/04/abc123.pdf</c>) — NOT a URL.
+    /// <paramref name="contentType"/> is stored as object metadata so browsers receive the correct
+    /// Content-Type header when fetching the file directly from storage (e.g. image/jpeg, video/mp4).
     /// </summary>
-    Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct);
+    Task<string> SaveAsync(Stream content, string suggestedFileName, CancellationToken ct, string? contentType = null);
 
     /// <summary>Opens a read stream for the previously-saved key.</summary>
     Task<Stream> OpenReadAsync(string storageKey, CancellationToken ct);
 
     /// <summary>Deletes the stored object. No-op if the key doesn't exist.</summary>
     Task DeleteAsync(string storageKey, CancellationToken ct);
+
+    /// <summary>
+    /// Returns the publicly-accessible URL for a previously-saved storage key.
+    /// Each implementation constructs this differently (S3/Supabase CDN URL vs. local static-file URL).
+    /// </summary>
+    System.Uri GetPublicUrl(string storageKey);
 }

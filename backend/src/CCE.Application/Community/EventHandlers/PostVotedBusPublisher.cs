@@ -21,8 +21,10 @@ public sealed class PostVotedBusPublisher : INotificationHandler<PostVotedEvent>
     public Task Handle(PostVotedEvent notification, CancellationToken cancellationToken)
         => _publisher.PublishAsync(new VoteCreatedIntegrationEvent(
             notification.PostId,
+            notification.CommunityId,
             notification.UserId,
             notification.Direction,
+            notification.PreviousDirection,
             notification.UpvoteCount,
             notification.DownvoteCount,
             notification.Score), cancellationToken);
