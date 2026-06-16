@@ -13,6 +13,7 @@ import {
   type Country, type CountryCode, type CountryContentRequest, type CountryProfile,
   type StateProfile, type SubmitRequestBody, type UpdateStateProfileBody,
 } from './country.types';
+import type { ResourceCategory } from '../knowledge-center/knowledge.types';
 
 /**
  * Compile-time contract tripwire: every field this feature reads must
@@ -175,6 +176,15 @@ export class CountriesApiService {
       type:   typeMap[rawType] ?? contentTypeFromApiValue(r.type as unknown as number),
       status: normalizedStatus,
     };
+  }
+
+  async listResourceCategories(): Promise<Result<ResourceCategory[]>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<ResourceCategory[] | { data: ResourceCategory[] }>('/api/state/resource-categories'),
+      );
+      return Array.isArray(res) ? res : (res as { data: ResourceCategory[] }).data ?? [];
+    });
   }
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {

@@ -50,6 +50,18 @@
       }
     </mat-form-field>
 
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'resourceRequest.form.category' | transloco }}</mat-label>
+      <mat-select formControlName="categoryId">
+        @for (cat of categories(); track cat.id) {
+          <mat-option [value]="cat.id">{{ locale() === 'ar' ? cat.nameAr : cat.nameEn }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.categoryId.touched && form.controls.categoryId.hasError('required')) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
     <!-- File upload -->
     <div class="cce-resource-request-form__file">
       <span class="cce-resource-request-form__file-label">{{ 'resourceRequest.form.file' | transloco }}</span>

@@ -764,6 +764,7 @@
       "descAr": "الوصف بالعربية",
       "descEn": "الوصف بالإنجليزية",
       "type": "نوع المورد",
+      "category": "التصنيف",
       "file": "ملف المورد",
       "chooseFile": "اختر ملفاً (PDF أو Word)",
       "fileTypeError": "يُسمح فقط بملفات PDF و Word.",

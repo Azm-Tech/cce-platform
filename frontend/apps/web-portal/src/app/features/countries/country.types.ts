@@ -96,6 +96,7 @@ export interface SubmitRequestContent {
   descriptionAr?: string | null;
   descriptionEn?: string | null;
   resourceType?: number | null;
+  categoryId?: string | null;
   assetFileId?: string | null;
   startsOn?: string | null;
   endsOn?: string | null;

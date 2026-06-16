@@ -764,6 +764,7 @@
       "descAr": "Description (Arabic)",
       "descEn": "Description (English)",
       "type": "Resource type",
+      "category": "Category",
       "file": "Resource file",
       "chooseFile": "Choose a file (PDF or Word)",
       "fileTypeError": "Only PDF and Word files are allowed.",

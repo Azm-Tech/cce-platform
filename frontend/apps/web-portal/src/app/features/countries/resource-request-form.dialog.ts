@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -9,10 +9,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
-import { RESOURCE_TYPE_VALUE, RESOURCE_TYPES } from '../knowledge-center/knowledge.types';
+import { RESOURCE_TYPE_VALUE, RESOURCE_TYPES, type ResourceCategory } from '../knowledge-center/knowledge.types';
 import { CountriesApiService } from './countries-api.service';
 import { ContentType, type CountryContentRequest } from './country.types';
 
@@ -25,6 +27,7 @@ interface ResourceRequestForm {
   descriptionAr: FormControl<string>;
   descriptionEn: FormControl<string>;
   resourceType: FormControl<string>;
+  categoryId: FormControl<string>;
 }
 
 @Component({
@@ -39,6 +42,7 @@ interface ResourceRequestForm {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     RichTextEditorComponent,
     TranslocoModule,
   ],
@@ -46,15 +50,18 @@ interface ResourceRequestForm {
   styleUrl: './resource-request-form.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ResourceRequestFormDialogComponent {
+export class ResourceRequestFormDialogComponent implements OnInit {
   private readonly api = inject(CountriesApiService);
   private readonly media = inject(MediaApiService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
   private readonly ref =
     inject<MatDialogRef<ResourceRequestFormDialogComponent, CountryContentRequest | null>>(MatDialogRef);
   private readonly countryId = inject<string>(MAT_DIALOG_DATA);
 
   readonly resourceTypes = RESOURCE_TYPES;
+  readonly categories = signal<ResourceCategory[]>([]);
+  readonly locale = this.localeService.locale;
 
   readonly resourceTypeSearch = new FormControl('');
   private readonly resourceTypeSearchValue = toSignal(this.resourceTypeSearch.valueChanges, { initialValue: '' });
@@ -70,12 +77,22 @@ export class ResourceRequestFormDialogComponent {
     descriptionAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] }),
     descriptionEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] }),
     resourceType: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    categoryId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
   readonly selectedFile = signal<File | null>(null);
   readonly fileError = signal<string | null>(null);
   readonly saving = signal(false);
   readonly errorKey = signal<string | null>(null);
+
+  ngOnInit(): void {
+    void this.loadCategories();
+  }
+
+  private async loadCategories(): Promise<void> {
+    const res = await this.api.listResourceCategories();
+    if (res.ok) this.categories.set(res.value);
+  }
 
   onFileChange(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
@@ -120,6 +137,7 @@ export class ResourceRequestFormDialogComponent {
         descriptionAr: v.descriptionAr,
         descriptionEn: v.descriptionEn,
         resourceType: RESOURCE_TYPE_VALUE[v.resourceType as keyof typeof RESOURCE_TYPE_VALUE] ?? 0,
+        categoryId: v.categoryId || null,
         assetFileId: uploadRes.value.id,
       },
     });
