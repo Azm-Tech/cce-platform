@@ -76,7 +76,7 @@ export class CountryRequestDetailPage implements OnInit {
     const r = this.request();
     if (!r) return;
     const ref = this.dialog.open(ApproveCountryRequestDialogComponent, {
-      data: { requestId: r.id },
+      data: { requestId: r.id, titleAr: r.proposedTitleAr, titleEn: r.proposedTitleEn },
       width: '500px',
     });
     const updated = await firstValueFrom(ref.afterClosed());

@@ -6,11 +6,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { ContentApiService } from './content-api.service';
 import type { AdminCountryContentRequest } from './content.types';
 
 export interface ApproveCountryRequestDialogData {
   requestId: string;
+  titleAr: string | null;
+  titleEn: string | null;
 }
 
 interface ApproveForm {
@@ -31,7 +34,9 @@ interface ApproveForm {
     TranslocoModule,
   ],
   template: `
-    <h2 mat-dialog-title>{{ 'countryRequest.approve.title' | transloco }}</h2>
+    <h2 mat-dialog-title>
+      {{ locale() === 'ar' ? (data.titleAr || data.titleEn) : (data.titleEn || data.titleAr) }}
+    </h2>
     <mat-dialog-content>
       <p>{{ 'countryRequest.approve.confirm' | transloco }}</p>
       <form [formGroup]="form" class="cce-approve-form">
@@ -64,6 +69,7 @@ interface ApproveForm {
 })
 export class ApproveCountryRequestDialogComponent {
   private readonly api = inject(ContentApiService);
+  readonly locale = inject(LocaleService).locale;
 
   readonly form = new FormGroup<ApproveForm>({
     adminNotesAr: new FormControl('', { nonNullable: true }),
