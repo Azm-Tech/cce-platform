@@ -1,12 +1,12 @@
-$p-50:  #ebf2fe;
-$p-100: #c5d9fc;
-$p-500: #4285f2;
-$p-900: #082f59;
-$n-200: #e3e7ee;
-$n-300: #c9d0da;
-$n-500: #748091;
-$n-600: #4e5866;
-$n-900: #13171c;
+$p-50:  var(--primary--50);
+$p-100: var(--primary--100);
+$p-500: var(--primary--500);
+$p-900: var(--primary--900);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-600: var(--neutrals--600);
+$n-900: var(--neutrals--900);
 $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host { display: block; }
@@ -57,9 +57,9 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 4px;
   font-size: 12px;
   font-weight: 700;
-  color: #15803d;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  color: var(--success--600);
+  background: var(--success--50);
+  border: 1px solid var(--success--200);
   padding: 2px 8px;
   border-radius: 999px;
   align-self: flex-start;
@@ -90,7 +90,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 .cce-reply__expert-icon {
-  color: #15803d;
+  color: var(--success--600);
   font-size: 20px;
   width: 20px;
   height: 20px;

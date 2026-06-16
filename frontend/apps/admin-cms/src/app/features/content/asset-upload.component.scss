@@ -51,8 +51,8 @@
 }
 
 .cce-asset-upload__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
 }

@@ -17,28 +17,25 @@
    1. CSS variables — gradient + motion + glass tokens
    ========================================================= */
 :root {
-  --cce-fancy-grad-brand: linear-gradient(135deg, #006c4f 0%, #0f8b6c 45%, #c8a045 100%);
+  --cce-fancy-grad-brand: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 45%, var(--color-accent) 100%);
   --cce-fancy-grad-brand-soft:
-    radial-gradient(1200px 600px at 12% -10%, rgba(0, 108, 79, 0.18), transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, rgba(200, 160, 69, 0.20), transparent 55%);
-  --cce-fancy-grad-hero:
-    radial-gradient(1400px 700px at 20% 0%, rgba(15, 139, 108, 0.10), transparent 55%),
-    radial-gradient(1100px 700px at 100% 100%, rgba(244, 163, 0, 0.12), transparent 50%),
-    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+    radial-gradient(1200px 600px at 12% -10%, rgba(var(--color-brand-rgb), 0.18), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, rgba(var(--color-accent-rgb), 0.20), transparent 55%);
+  --cce-fancy-grad-hero: var(--neutrals--50);
   --cce-fancy-glass-bg: rgba(255, 255, 255, 0.72);
   --cce-fancy-glass-bg-strong: rgba(255, 255, 255, 0.88);
-  --cce-fancy-glass-border: 1px solid rgba(0, 108, 79, 0.10);
-  --cce-fancy-glass-blur: blur(14px) saturate(140%);
-  --cce-fancy-shadow-soft: 0 6px 22px -8px rgba(0, 48, 31, 0.18);
-  --cce-fancy-shadow-hover: 0 14px 40px -10px rgba(0, 48, 31, 0.30);
-  --cce-fancy-shadow-glow: 0 0 0 6px rgba(0, 108, 79, 0.10);
-  --cce-fancy-ring: 0 0 0 3px rgba(15, 139, 108, 0.45);
+  --cce-fancy-glass-border: 1px solid rgba(var(--color-brand-rgb), 0.10);
+  --cce-fancy-glass-blur: blur(10px) saturate(140%);
+  --cce-fancy-shadow-soft: 0 6px 22px -8px rgba(var(--color-brand-shadow-rgb), 0.18);
+  --cce-fancy-shadow-hover: 0 14px 40px -10px rgba(var(--color-brand-shadow-rgb), 0.30);
+  --cce-fancy-shadow-glow: 0 0 0 6px rgba(var(--color-brand-rgb), 0.10);
+  --cce-fancy-ring: 0 0 0 3px rgba(var(--color-brand-mid-rgb), 0.45);
   --cce-fancy-easing-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
   --cce-fancy-easing-soft: cubic-bezier(0.4, 0, 0.2, 1);
-  --cce-fancy-accent: #c8a045;
-  --cce-fancy-accent-bright: #f4a300;
-  --cce-fancy-primary: #006c4f;
-  --cce-fancy-primary-bright: #0f8b6c;
+  --cce-fancy-accent: var(--color-accent);
+  --cce-fancy-accent-bright: var(--warning--400);
+  --cce-fancy-primary: var(--color-brand);
+  --cce-fancy-primary-bright: var(--color-brand-mid);
 }
 
 /* =========================================================
@@ -50,16 +47,14 @@ html {
 }
 
 ::selection {
-  background: rgba(15, 139, 108, 0.28);
+  background: rgba(var(--color-brand-mid-rgb), 0.28);
   color: var(--cce-fancy-primary);
 }
 
-/* Subtle gradient backdrop on the body so flat white surfaces don't
-   feel sterile. Routed pages can override with their own background. */
+/* Flat app background (token). Routed pages can override their own. */
 body {
   background: var(--cce-fancy-grad-hero) !important;
-  background-attachment: fixed !important;
-  color: #1c2724;
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -70,7 +65,7 @@ body {
    ========================================================= */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 108, 79, 0.35) transparent;
+  scrollbar-color: rgba(var(--color-brand-rgb), 0.35) transparent;
 }
 *::-webkit-scrollbar {
   width: 10px;
@@ -80,14 +75,14 @@ body {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(0, 108, 79, 0.40), rgba(15, 139, 108, 0.35));
+  background: linear-gradient(180deg, rgba(var(--color-brand-rgb), 0.40), rgba(var(--color-brand-mid-rgb), 0.35));
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
   transition: background 0.2s;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(0, 108, 79, 0.65), rgba(15, 139, 108, 0.6));
+  background: linear-gradient(180deg, rgba(var(--color-brand-rgb), 0.65), rgba(var(--color-brand-mid-rgb), 0.6));
   background-clip: padding-box;
 }
 
@@ -126,7 +121,7 @@ body {
 mat-card,
 .mat-mdc-card {
   border-radius: 8px !important;
-  background: #ffffff !important;
+  background: var(--white) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -168,7 +163,7 @@ mat-card,
 .mat-mdc-raised-button:hover,
 .mat-mdc-flat-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.40) !important;
+  box-shadow: 0 6px 18px -6px rgba(var(--color-brand-rgb), 0.40) !important;
 }
 .mat-mdc-raised-button:hover::after,
 .mat-mdc-flat-button:hover::after {
@@ -178,27 +173,27 @@ mat-card,
 /* Stroked / outlined buttons — branded green border */
 .mat-mdc-stroked-button,
 .mat-mdc-outlined-button {
-  --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.40);
-  --mdc-outlined-button-label-text-color: #006c4f;
+  --mdc-outlined-button-outline-color: rgba(var(--color-brand-rgb), 0.40);
+  --mdc-outlined-button-label-text-color: var(--color-brand);
 }
 .mat-mdc-stroked-button:hover,
 .mat-mdc-outlined-button:hover {
-  background: rgba(15, 139, 108, 0.08) !important;
-  border-color: #006c4f !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.08) !important;
+  border-color: var(--color-brand) !important;
   transform: translateY(-1px);
 }
 
 /* Text (basic) buttons — subtle hover tint */
 .mat-mdc-button:hover:not([disabled]):not(.mat-mdc-icon-button) {
-  background: rgba(15, 139, 108, 0.08) !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.08) !important;
 }
 
 /* Icon buttons — circular brand-tint hover */
 .mat-mdc-icon-button {
-  --mat-mdc-button-persistent-ripple-color: rgba(15, 139, 108, 0.32);
+  --mat-mdc-button-persistent-ripple-color: rgba(var(--color-brand-mid-rgb), 0.32);
   transition: background-color 0.18s ease, transform 0.18s ease;
   &:hover:not([disabled]) {
-    background: rgba(15, 139, 108, 0.10) !important;
+    background: rgba(var(--color-brand-mid-rgb), 0.10) !important;
     transform: scale(1.05);
   }
 }
@@ -220,17 +215,17 @@ mat-card,
 .mat-mdc-fab,
 .mat-mdc-mini-fab,
 .mat-mdc-extended-fab {
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
-  color: #fff !important;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 100%) !important;
+  color: var(--white) !important;
   box-shadow:
-    0 6px 18px -4px rgba(15, 139, 108, 0.55),
+    0 6px 18px -4px rgba(var(--color-brand-mid-rgb), 0.55),
     0 0 0 1px rgba(255, 255, 255, 0.20) inset !important;
   transition: transform 0.20s var(--cce-fancy-easing-emphasized),
               box-shadow 0.20s var(--cce-fancy-easing-emphasized) !important;
   &:hover {
     transform: translateY(-2px) scale(1.03);
     box-shadow:
-      0 12px 28px -6px rgba(15, 139, 108, 0.65),
+      0 12px 28px -6px rgba(var(--color-brand-mid-rgb), 0.65),
       0 0 0 1px rgba(255, 255, 255, 0.30) inset !important;
   }
 }
@@ -253,40 +248,40 @@ mat-card,
   /* CSS variables Material exposes — re-tinted to brand */
   --mdc-outlined-text-field-container-shape: 10px;
   --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.38);
-  --mdc-outlined-text-field-hover-outline-color: rgba(0, 108, 79, 0.6);
-  --mdc-outlined-text-field-focus-outline-color: #006c4f;
-  --mdc-outlined-text-field-error-outline-color: #dc2626;
-  --mdc-outlined-text-field-error-hover-outline-color: #b91c1c;
-  --mdc-outlined-text-field-error-focus-outline-color: #dc2626;
-  --mdc-outlined-text-field-label-text-color: rgba(28, 39, 36, 0.62);
-  --mdc-outlined-text-field-hover-label-text-color: rgba(28, 39, 36, 0.85);
-  --mdc-outlined-text-field-focus-label-text-color: #006c4f;
-  --mdc-outlined-text-field-input-text-color: #1c2724;
-  --mdc-outlined-text-field-input-text-placeholder-color: rgba(28, 39, 36, 0.45);
+  --mdc-outlined-text-field-hover-outline-color: rgba(var(--color-brand-rgb), 0.6);
+  --mdc-outlined-text-field-focus-outline-color: var(--color-brand);
+  --mdc-outlined-text-field-error-outline-color: var(--danger--500);
+  --mdc-outlined-text-field-error-hover-outline-color: var(--danger--600);
+  --mdc-outlined-text-field-error-focus-outline-color: var(--danger--500);
+  --mdc-outlined-text-field-label-text-color: rgba(var(--color-text-primary-rgb), 0.62);
+  --mdc-outlined-text-field-hover-label-text-color: rgba(var(--color-text-primary-rgb), 0.85);
+  --mdc-outlined-text-field-focus-label-text-color: var(--color-brand);
+  --mdc-outlined-text-field-input-text-color: var(--color-text-primary);
+  --mdc-outlined-text-field-input-text-placeholder-color: rgba(var(--color-text-primary-rgb), 0.45);
   --mdc-outlined-text-field-disabled-outline-color: rgba(0, 0, 0, 0.10);
-  --mdc-outlined-text-field-disabled-input-text-color: rgba(28, 39, 36, 0.40);
+  --mdc-outlined-text-field-disabled-input-text-color: rgba(var(--color-text-primary-rgb), 0.40);
 
   /* For filled variant */
-  --mdc-filled-text-field-container-color: rgba(15, 139, 108, 0.05);
-  --mdc-filled-text-field-hover-state-layer-color: rgba(15, 139, 108, 0.08);
-  --mdc-filled-text-field-focus-state-layer-color: rgba(15, 139, 108, 0.10);
-  --mdc-filled-text-field-active-indicator-color: rgba(0, 108, 79, 0.32);
-  --mdc-filled-text-field-hover-active-indicator-color: #006c4f;
-  --mdc-filled-text-field-focus-active-indicator-color: #006c4f;
+  --mdc-filled-text-field-container-color: rgba(var(--color-brand-mid-rgb), 0.05);
+  --mdc-filled-text-field-hover-state-layer-color: rgba(var(--color-brand-mid-rgb), 0.08);
+  --mdc-filled-text-field-focus-state-layer-color: rgba(var(--color-brand-mid-rgb), 0.10);
+  --mdc-filled-text-field-active-indicator-color: rgba(var(--color-brand-rgb), 0.32);
+  --mdc-filled-text-field-hover-active-indicator-color: var(--color-brand);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-brand);
 }
 
 
 /* Filled variant — smooth corners + soft hover lift */
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-  background-color: rgba(15, 139, 108, 0.05) !important;
+  background-color: rgba(var(--color-brand-mid-rgb), 0.05) !important;
   border-radius: 12px 12px 0 0 !important;
   transition: background-color 0.20s, box-shadow 0.20s;
 }
 .mdc-text-field--filled:not(.mdc-text-field--disabled):hover {
-  background-color: rgba(15, 139, 108, 0.10) !important;
+  background-color: rgba(var(--color-brand-mid-rgb), 0.10) !important;
 }
 .mat-mdc-form-field-focus-overlay {
-  background-color: rgba(15, 139, 108, 0.06) !important;
+  background-color: rgba(var(--color-brand-mid-rgb), 0.06) !important;
 }
 
 /* Floating label tightening */
@@ -300,14 +295,14 @@ mat-card,
 
 /* Hint text more legible */
 .mat-mdc-form-field-hint {
-  color: rgba(28, 39, 36, 0.55) !important;
+  color: rgba(var(--color-text-primary-rgb), 0.55) !important;
   font-size: 0.78rem !important;
   letter-spacing: 0.005em;
 }
 
 /* Error message — branded red, inline-icon vibe */
 .mat-mdc-form-field-error {
-  color: #dc2626 !important;
+  color: var(--danger--500) !important;
   font-weight: 500 !important;
   font-size: 0.78rem !important;
   letter-spacing: 0.005em;
@@ -320,30 +315,30 @@ mat-card,
 
 /* Required asterisk — brand-amber so it doesn't read as error */
 .mat-mdc-form-field-required-marker {
-  color: #d97706 !important;
+  color: var(--warning--500) !important;
 }
 
 /* ── Inputs / textareas (any variant) ───────────────────── */
 .mat-mdc-input-element,
 .mdc-text-field input.mat-mdc-form-field-input-control,
 .mdc-text-field textarea.mat-mdc-form-field-input-control {
-  caret-color: #006c4f !important;
+  caret-color: var(--color-brand) !important;
   letter-spacing: -0.005em;
 }
 .mat-mdc-input-element::placeholder {
-  color: rgba(28, 39, 36, 0.45) !important;
+  color: rgba(var(--color-text-primary-rgb), 0.45) !important;
   font-weight: 500;
 }
 
 /* Prefix / suffix icons inside form fields */
 .mat-mdc-form-field-icon-prefix mat-icon,
 .mat-mdc-form-field-icon-suffix mat-icon {
-  color: rgba(15, 139, 108, 0.65) !important;
+  color: rgba(var(--color-brand-mid-rgb), 0.65) !important;
   transition: color 0.18s ease;
 }
 .mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-prefix mat-icon,
 .mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-suffix mat-icon {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
 }
 
 /* ── RTL fix: floating label overlaps with matPrefix icon ── */
@@ -367,14 +362,14 @@ mat-card,
 
 /* ── Mat-select arrow + value ───────────────────────────── */
 .mat-mdc-select-arrow {
-  color: rgba(15, 139, 108, 0.65) !important;
+  color: rgba(var(--color-brand-mid-rgb), 0.65) !important;
   transition: transform 0.20s var(--cce-fancy-easing-emphasized), color 0.18s ease;
 }
 .mat-mdc-select-trigger:hover .mat-mdc-select-arrow {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
 }
 .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
   transform: rotate(180deg);
 }
 .mat-mdc-select-value-text { font-weight: 500; }
@@ -389,27 +384,27 @@ mat-card,
 }
 .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: rgba(15, 139, 108, 0.10) !important;
-  color: #006c4f !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.10) !important;
+  color: var(--color-brand) !important;
 }
 .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
   font-weight: 700 !important;
-  background: linear-gradient(90deg, rgba(15, 139, 108, 0.14), rgba(200, 160, 69, 0.06)) !important;
+  background: linear-gradient(90deg, rgba(var(--color-brand-mid-rgb), 0.14), rgba(var(--color-accent-rgb), 0.06)) !important;
 }
 .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
 }
 
 /* ── Checkboxes ─────────────────────────────────────────── */
 .mat-mdc-checkbox {
-  --mdc-checkbox-selected-checkmark-color: #ffffff;
-  --mdc-checkbox-selected-focus-icon-color: #006c4f;
-  --mdc-checkbox-selected-hover-icon-color: #006c4f;
-  --mdc-checkbox-selected-icon-color: #006c4f;
-  --mdc-checkbox-selected-pressed-icon-color: #006c4f;
-  --mdc-checkbox-unselected-focus-icon-color: rgba(0, 108, 79, 0.55);
-  --mdc-checkbox-unselected-hover-icon-color: rgba(0, 108, 79, 0.55);
-  --mdc-checkbox-unselected-icon-color: rgba(28, 39, 36, 0.45);
+  --mdc-checkbox-selected-checkmark-color: var(--white);
+  --mdc-checkbox-selected-focus-icon-color: var(--color-brand);
+  --mdc-checkbox-selected-hover-icon-color: var(--color-brand);
+  --mdc-checkbox-selected-icon-color: var(--color-brand);
+  --mdc-checkbox-selected-pressed-icon-color: var(--color-brand);
+  --mdc-checkbox-unselected-focus-icon-color: rgba(var(--color-brand-rgb), 0.55);
+  --mdc-checkbox-unselected-hover-icon-color: rgba(var(--color-brand-rgb), 0.55);
+  --mdc-checkbox-unselected-icon-color: rgba(var(--color-text-primary-rgb), 0.45);
   --mdc-checkbox-state-layer-size: 36px;
 }
 .mat-mdc-checkbox label {
@@ -419,31 +414,31 @@ mat-card,
 
 /* ── Radio buttons ──────────────────────────────────────── */
 .mat-mdc-radio-button {
-  --mdc-radio-selected-focus-icon-color: #006c4f;
-  --mdc-radio-selected-hover-icon-color: #006c4f;
-  --mdc-radio-selected-icon-color: #006c4f;
-  --mdc-radio-selected-pressed-icon-color: #006c4f;
-  --mdc-radio-unselected-focus-icon-color: rgba(0, 108, 79, 0.55);
-  --mdc-radio-unselected-hover-icon-color: rgba(0, 108, 79, 0.55);
-  --mdc-radio-unselected-icon-color: rgba(28, 39, 36, 0.45);
+  --mdc-radio-selected-focus-icon-color: var(--color-brand);
+  --mdc-radio-selected-hover-icon-color: var(--color-brand);
+  --mdc-radio-selected-icon-color: var(--color-brand);
+  --mdc-radio-selected-pressed-icon-color: var(--color-brand);
+  --mdc-radio-unselected-focus-icon-color: rgba(var(--color-brand-rgb), 0.55);
+  --mdc-radio-unselected-hover-icon-color: rgba(var(--color-brand-rgb), 0.55);
+  --mdc-radio-unselected-icon-color: rgba(var(--color-text-primary-rgb), 0.45);
 }
 
 /* ── Slide-toggle (gradient when checked) ────────────────── */
 .mat-mdc-slide-toggle {
-  --mdc-switch-selected-track-color: #14b88f;
-  --mdc-switch-selected-hover-track-color: #14b88f;
-  --mdc-switch-selected-pressed-track-color: #006c4f;
-  --mdc-switch-selected-focus-track-color: #14b88f;
-  --mdc-switch-selected-handle-color: #ffffff;
-  --mdc-switch-selected-hover-handle-color: #ffffff;
-  --mdc-switch-selected-pressed-handle-color: #ffffff;
-  --mdc-switch-selected-focus-handle-color: #ffffff;
-  --mdc-switch-selected-icon-color: #006c4f;
+  --mdc-switch-selected-track-color: var(--color-brand-accent);
+  --mdc-switch-selected-hover-track-color: var(--color-brand-accent);
+  --mdc-switch-selected-pressed-track-color: var(--color-brand);
+  --mdc-switch-selected-focus-track-color: var(--color-brand-accent);
+  --mdc-switch-selected-handle-color: var(--white);
+  --mdc-switch-selected-hover-handle-color: var(--white);
+  --mdc-switch-selected-pressed-handle-color: var(--white);
+  --mdc-switch-selected-focus-handle-color: var(--white);
+  --mdc-switch-selected-icon-color: var(--color-brand);
   --mdc-switch-handle-shape: 999px;
   --mdc-switch-track-shape: 999px;
 }
 .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked .mdc-switch__track::after {
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 100%) !important;
 }
 .mat-mdc-slide-toggle label {
   letter-spacing: -0.005em !important;
@@ -452,41 +447,41 @@ mat-card,
 
 /* ── Date picker ─────────────────────────────────────────── */
 .mat-datepicker-toggle .mat-mdc-icon-button mat-icon {
-  color: rgba(15, 139, 108, 0.65);
+  color: rgba(var(--color-brand-mid-rgb), 0.65);
   transition: color 0.18s ease;
 }
 .mat-datepicker-toggle:hover .mat-mdc-icon-button mat-icon {
-  color: #006c4f;
+  color: var(--color-brand);
 }
 .mat-datepicker-content {
   border-radius: 14px !important;
   box-shadow: var(--cce-fancy-shadow-hover) !important;
 }
 .mat-calendar-body-selected {
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 100%) !important;
-  color: #fff !important;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 100%) !important;
+  color: var(--white) !important;
 }
 .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-  border-color: #006c4f !important;
+  border-color: var(--color-brand) !important;
 }
 
 /* ── Chips (filter / input chips) ────────────────────────── */
 .mat-mdc-chip {
   --mdc-chip-container-shape: 999px;
-  --mdc-chip-elevated-container-color: rgba(15, 139, 108, 0.08);
-  --mdc-chip-label-text-color: #1c2724;
+  --mdc-chip-elevated-container-color: rgba(var(--color-brand-mid-rgb), 0.08);
+  --mdc-chip-label-text-color: var(--color-text-primary);
   font-weight: 600 !important;
   letter-spacing: 0.005em;
   transition: background-color 0.18s, transform 0.18s;
 }
 .mat-mdc-chip:hover {
-  background: rgba(15, 139, 108, 0.14) !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.14) !important;
   transform: translateY(-1px);
 }
 .mat-mdc-chip.mat-mdc-chip-selected {
-  background: linear-gradient(135deg, #006c4f, #14b88f) !important;
-  color: #ffffff !important;
-  --mdc-chip-label-text-color: #ffffff;
+  background: linear-gradient(135deg, var(--color-brand), var(--color-brand-accent)) !important;
+  color: var(--white) !important;
+  --mdc-chip-label-text-color: var(--white);
 }
 
 /* ── Native HTML inputs (fallback for non-Material) ────── */
@@ -494,9 +489,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
 textarea:not(.mat-mdc-input-element):not(.mat-mdc-form-field-input-control),
 select:not(.mat-mdc-select):not(.mat-mdc-form-field-input-control) {
   font: inherit;
-  color: #1c2724;
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  color: var(--color-text-primary);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
   letter-spacing: -0.005em;
@@ -504,20 +499,20 @@ select:not(.mat-mdc-select):not(.mat-mdc-form-field-input-control) {
   transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
 
   &::placeholder {
-    color: rgba(28, 39, 36, 0.45);
+    color: rgba(var(--color-text-primary-rgb), 0.45);
     font-weight: 500;
   }
   &:hover:not(:disabled):not([readonly]) {
-    border-color: rgba(0, 108, 79, 0.40);
+    border-color: rgba(var(--color-brand-rgb), 0.40);
   }
   &:focus:not(:disabled):not([readonly]) {
-    border-color: #006c4f;
-    box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.18);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(var(--color-brand-mid-rgb), 0.18);
   }
   &:disabled,
   &[readonly] {
     background: rgba(0, 0, 0, 0.03);
-    color: rgba(28, 39, 36, 0.50);
+    color: rgba(var(--color-text-primary-rgb), 0.50);
     border-color: rgba(0, 0, 0, 0.08);
     cursor: not-allowed;
   }
@@ -526,7 +521,7 @@ select:not(.mat-mdc-select):not(.mat-mdc-form-field-input-control) {
 /* Native checkbox / radio — accent color */
 input[type="checkbox"]:not(.mat-mdc-input-element),
 input[type="radio"]:not(.mat-mdc-input-element) {
-  accent-color: #006c4f;
+  accent-color: var(--color-brand);
   cursor: pointer;
 }
 
@@ -538,7 +533,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* ── Form layout — better label/group spacing ──────────── */
 fieldset:not(.mat-mdc-form-field) {
-  border: 1px solid rgba(0, 108, 79, 0.10);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.10);
   border-radius: 12px;
   padding: 1rem 1.25rem 1.25rem;
   margin-block: 0.5rem 1.25rem;
@@ -549,14 +544,14 @@ legend:not(.mat-mdc-form-field-label) {
   font-weight: 700;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: #006c4f;
+  color: var(--color-brand);
 }
 
 label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc-radio-button label):not(.mdc-floating-label):not(.mat-mdc-form-field-label) {
   display: inline-block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.78);
+  color: rgba(var(--color-text-primary-rgb), 0.78);
   margin-bottom: 0.3rem;
   letter-spacing: 0.005em;
 }
@@ -582,7 +577,7 @@ label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc
 
 /* Snackbar — branded gradient */
 .mat-mdc-snack-bar-container {
-  --mdc-snackbar-container-color: rgba(0, 48, 31, 0.95) !important;
+  --mdc-snackbar-container-color: rgba(var(--color-brand-shadow-rgb), 0.95) !important;
   --mat-mdc-snack-bar-button-color: var(--cce-fancy-accent-bright) !important;
   border-radius: 12px !important;
   box-shadow: var(--cce-fancy-shadow-hover) !important;
@@ -590,8 +585,8 @@ label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc
 
 /* Tooltip — softer, branded edge */
 .mat-mdc-tooltip {
-  --mdc-plain-tooltip-container-color: rgba(0, 48, 31, 0.94) !important;
-  --mdc-plain-tooltip-supporting-text-color: #fff !important;
+  --mdc-plain-tooltip-container-color: rgba(var(--color-brand-shadow-rgb), 0.94) !important;
+  --mdc-plain-tooltip-supporting-text-color: var(--white) !important;
   border-radius: 8px !important;
   font-size: 12px !important;
   letter-spacing: 0.02em;
@@ -601,17 +596,17 @@ label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc
 /* Chips (filter chips) — branded gradient on selected */
 .mat-mdc-chip.mat-mdc-chip-selected.mat-primary {
   background: var(--cce-fancy-grad-brand) !important;
-  color: #fff !important;
+  color: var(--white) !important;
 }
 
 /* Mat-icon-button — circular hover ring */
 .mat-mdc-icon-button:hover {
-  background: rgba(15, 139, 108, 0.10) !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.10) !important;
 }
 
 /* Toolbar — subtle glass when used as a header */
 .mat-toolbar.mat-primary {
-  background: linear-gradient(135deg, #006c4f 0%, #008c66 100%) !important;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand) 100%) !important;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--cce-fancy-shadow-soft) !important;
 }
 
@@ -688,8 +683,8 @@ label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc
   padding: 1px;
   background: var(--cce-fancy-grad-brand);
   -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+    linear-gradient(var(--black) 0 0) content-box,
+    linear-gradient(var(--black) 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   pointer-events: none;
@@ -766,8 +761,8 @@ cce-footer {
   /* No top margin: the footer sits flush against the routed content
      so full-bleed pages don't show a strip of body backdrop above it. */
   margin-top: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 48, 31, 0.04) 25%, rgba(0, 48, 31, 0.08) 100%);
-  border-top: 1px solid rgba(0, 108, 79, 0.10);
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--color-brand-shadow-rgb), 0.04) 25%, rgba(var(--color-brand-shadow-rgb), 0.08) 100%);
+  border-top: 1px solid rgba(var(--color-brand-rgb), 0.10);
 }
 
 /* =========================================================
@@ -775,9 +770,9 @@ cce-footer {
    ========================================================= */
 .cce-fancy-skeleton {
   background: linear-gradient(90deg,
-    rgba(0, 108, 79, 0.06) 0%,
-    rgba(0, 108, 79, 0.14) 50%,
-    rgba(0, 108, 79, 0.06) 100%);
+    rgba(var(--color-brand-rgb), 0.06) 0%,
+    rgba(var(--color-brand-rgb), 0.14) 50%,
+    rgba(var(--color-brand-rgb), 0.06) 100%);
   background-size: 200% 100%;
   animation: cceShimmer 1.4s ease-in-out infinite;
   border-radius: 8px;

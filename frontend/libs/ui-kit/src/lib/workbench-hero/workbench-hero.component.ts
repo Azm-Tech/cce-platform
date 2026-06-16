@@ -98,11 +98,11 @@ export interface HeroStep {
       font-size: 0.7rem;
       font-weight: 800;
       letter-spacing: 0.18em;
-      color: #006c4f;
+      color: var(--color-brand);
       margin-bottom: 1rem;
       padding: 0.4rem 0.85rem;
-      background: rgba(15, 139, 108, 0.08);
-      border: 1px solid rgba(0, 108, 79, 0.18);
+      background: rgba(var(--color-brand-mid-rgb), 0.08);
+      border: 1px solid rgba(var(--color-brand-rgb), 0.18);
       border-radius: 999px;
       text-transform: uppercase;
     }
@@ -111,8 +111,8 @@ export interface HeroStep {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #14b88f;
-      box-shadow: 0 0 8px rgba(20, 184, 143, 0.65);
+      background: var(--color-brand-accent);
+      box-shadow: 0 0 8px rgba(var(--color-brand-accent-rgb), 0.65);
       animation: cceWorkbenchHeroDotPulse 2.4s ease-in-out infinite;
     }
     @keyframes cceWorkbenchHeroDotPulse {
@@ -127,10 +127,10 @@ export interface HeroStep {
       font-weight: 900;
       letter-spacing: -0.025em;
       line-height: 1;
-      color: #1c2724;
+      color: var(--color-text-primary);
     }
     .cce-workbench-hero__title-grad {
-      background: linear-gradient(135deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+      background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 50%, var(--color-accent) 100%);
       -webkit-background-clip: text;
               background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -139,7 +139,7 @@ export interface HeroStep {
     .cce-workbench-hero__subtitle {
       margin: 0 0 1.5rem;
       font-size: 1.05rem;
-      color: rgba(28, 39, 36, 0.62);
+      color: rgba(var(--color-text-primary-rgb), 0.62);
       line-height: 1.55;
       max-width: 660px;
     }
@@ -159,16 +159,16 @@ export interface HeroStep {
       align-items: center;
       gap: 0.85rem;
       padding: 0.85rem 1rem;
-      background: #ffffff;
+      background: var(--white);
       border: 1px solid rgba(0, 0, 0, 0.06);
       border-radius: 14px;
-      box-shadow: 0 4px 14px -10px rgba(0, 48, 31, 0.10);
+      box-shadow: 0 4px 14px -10px rgba(var(--color-brand-shadow-rgb), 0.10);
       transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
     .cce-workbench-hero__step:hover {
-      border-color: rgba(0, 108, 79, 0.25);
+      border-color: rgba(var(--color-brand-rgb), 0.25);
       transform: translateY(-1px);
-      box-shadow: 0 10px 22px -10px rgba(0, 48, 31, 0.18);
+      box-shadow: 0 10px 22px -10px rgba(var(--color-brand-shadow-rgb), 0.18);
     }
 
     .cce-workbench-hero__step-num {
@@ -181,23 +181,23 @@ export interface HeroStep {
       font-weight: 800;
       font-size: 1.1rem;
       letter-spacing: -0.01em;
-      color: #ffffff;
-      background: linear-gradient(135deg, #006c4f, #14b88f);
+      color: var(--white);
+      background: linear-gradient(135deg, var(--color-brand), var(--color-brand-accent));
       box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.25) inset,
-        0 6px 14px -4px rgba(15, 139, 108, 0.45);
+        0 6px 14px -4px rgba(var(--color-brand-mid-rgb), 0.45);
     }
     .cce-workbench-hero__step[data-step="2"] .cce-workbench-hero__step-num {
-      background: linear-gradient(135deg, #d97706, #fbbf24);
+      background: linear-gradient(135deg, var(--warning--500), var(--warning--400));
       box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.25) inset,
-        0 6px 14px -4px rgba(217, 119, 6, 0.40);
+        0 6px 14px -4px rgba(var(--warning--500-rgb), 0.40);
     }
     .cce-workbench-hero__step[data-step="3"] .cce-workbench-hero__step-num {
-      background: linear-gradient(135deg, #4f46e5, #818cf8);
+      background: linear-gradient(135deg, var(--info--600), var(--info--400));
       box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.25) inset,
-        0 6px 14px -4px rgba(79, 70, 229, 0.40);
+        0 6px 14px -4px rgba(var(--info--600-rgb), 0.40);
     }
 
     .cce-workbench-hero__step-text {
@@ -209,13 +209,13 @@ export interface HeroStep {
     .cce-workbench-hero__step-label {
       font-weight: 700;
       font-size: 0.92rem;
-      color: #1c2724;
+      color: var(--color-text-primary);
       letter-spacing: -0.005em;
       line-height: 1.2;
     }
     .cce-workbench-hero__step-desc {
       font-size: 0.78rem;
-      color: rgba(28, 39, 36, 0.55);
+      color: rgba(var(--color-text-primary-rgb), 0.55);
       line-height: 1.3;
     }
 

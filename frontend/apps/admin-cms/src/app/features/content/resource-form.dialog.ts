@@ -127,7 +127,7 @@ const DESCRIPTION_MAX = 500;
       padding: 8px 12px;
       border: 1px solid rgba(0, 0, 0, 0.12);
       border-radius: 4px;
-      background: #fff;
+      background: var(--white);
       font-size: 0.9rem;
       color: rgba(0, 0, 0, 0.87);
 
@@ -142,8 +142,8 @@ const DESCRIPTION_MAX = 500;
     }
 
     .cce-resource-form__error {
-      background: #fdecea;
-      color: #b00020;
+      background: var(--danger--50);
+      color: var(--danger--600);
       padding: 0.6rem 0.85rem;
       border-radius: 6px;
       font-size: 0.85rem;

@@ -64,7 +64,7 @@ interface ApproveForm {
     </mat-dialog-actions>
   `,
   styles: [`.cce-approve-form { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.5rem; }
-    .cce-approve-form__error { background: #fdecea; color: #b00020; padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.85rem; }`],
+    .cce-approve-form__error { background: var(--danger--50); color: var(--danger--600); padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.85rem; }`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApproveCountryRequestDialogComponent {

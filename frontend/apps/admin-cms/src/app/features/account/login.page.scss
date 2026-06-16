@@ -11,13 +11,13 @@
     align-items: center;
     justify-content: center;
     padding: 3rem 2.5rem;
-    background: linear-gradient(150deg, #002d1f 0%, #006c4f 60%, #0f8b6c 100%);
+    background: linear-gradient(150deg, var(--primary--950) 0%, var(--color-brand) 60%, var(--color-brand-mid) 100%);
   }
 
   &__brand-content {
     position: relative;
     z-index: 1;
-    color: #fff;
+    color: var(--white);
     max-width: 380px;
   }
 
@@ -31,7 +31,7 @@
       display: inline-block;
       width: 36px;
       height: 36px;
-      background: #c8a045;
+      background: var(--color-accent);
       border-radius: 10px;
     }
 
@@ -39,7 +39,7 @@
       font-size: 1.4rem;
       font-weight: 800;
       letter-spacing: 0.06em;
-      color: #fff;
+      color: var(--white);
     }
   }
 
@@ -48,7 +48,7 @@
     font-weight: 800;
     line-height: 1.25;
     margin: 0 0 1rem;
-    color: #fff;
+    color: var(--white);
   }
 
   &__brand-desc {
@@ -75,7 +75,7 @@
   &__stat-value {
     font-size: 1.4rem;
     font-weight: 800;
-    color: #c8a045;
+    color: var(--color-accent);
     letter-spacing: -0.02em;
   }
 
@@ -100,8 +100,8 @@
     &--1 {
       width: 420px;
       height: 420px;
-      background: rgba(200, 160, 69, 0.08);
-      border: 1px solid rgba(200, 160, 69, 0.15);
+      background: rgba(var(--color-accent-rgb), 0.08);
+      border: 1px solid rgba(var(--color-accent-rgb), 0.15);
       bottom: -160px;
       inset-inline-end: -120px;
     }
@@ -118,7 +118,7 @@
     &--3 {
       width: 120px;
       height: 120px;
-      background: rgba(200, 160, 69, 0.12);
+      background: rgba(var(--color-accent-rgb), 0.12);
       top: 42%;
       inset-inline-end: 8%;
     }
@@ -154,7 +154,7 @@
     align-items: center;
     justify-content: center;
     padding: 2rem 1.5rem;
-    background: #f4f7f5;
+    background: var(--primary--50);
   }
 
   &__lang-switcher {
@@ -166,16 +166,16 @@
   &__card {
     width: 100%;
     max-width: 400px;
-    background: #fff;
+    background: var(--white);
     border-radius: 16px;
     padding: 2.5rem 2rem;
-    box-shadow: 0 4px 24px rgba(0, 48, 31, 0.10);
+    box-shadow: 0 4px 24px rgba(var(--color-brand-shadow-rgb), 0.10);
   }
 
   &__title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #002d1f;
+    color: var(--primary--950);
     margin: 0 0 0.25rem;
   }
 
@@ -196,10 +196,10 @@
 
   &__error {
     font-size: 0.85rem;
-    color: #b00020;
+    color: var(--danger--600);
     margin: 0.25rem 0;
     padding: 0.6rem 0.75rem;
-    background: rgba(176, 0, 32, 0.06);
+    background: rgba(var(--danger--600-rgb), 0.06);
     border-radius: 6px;
   }
 
@@ -217,7 +217,7 @@
   }
 
   &__footer-link {
-    color: #006c4f;
+    color: var(--color-brand);
     font-weight: 600;
     text-decoration: none;
     &:hover { text-decoration: underline; }

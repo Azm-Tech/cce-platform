@@ -4,11 +4,11 @@
 
 :host {
   display: block;
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.08);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 26px -20px rgba(0, 48, 31, 0.22);
+  box-shadow: 0 10px 26px -20px rgba(var(--color-brand-shadow-rgb), 0.22);
 }
 
 .cce-paged-table {
@@ -17,8 +17,8 @@
 
 .cce-paged-table__progress {
   margin: 0;
-  --mdc-linear-progress-active-indicator-color: #006c4f;
-  --mdc-linear-progress-track-color: rgba(0, 108, 79, 0.12);
+  --mdc-linear-progress-active-indicator-color: var(--color-brand);
+  --mdc-linear-progress-track-color: rgba(var(--color-brand-rgb), 0.12);
 }
 
 /* Material table inside the host — header tinted, rows hover with a
@@ -28,29 +28,29 @@
   background: transparent !important;
 }
 :host ::ng-deep .mat-mdc-header-row {
-  background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important;
-  border-bottom: 1px solid rgba(0, 108, 79, 0.18) !important;
+  background: linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%) !important;
+  border-bottom: 1px solid rgba(var(--color-brand-rgb), 0.18) !important;
 }
 :host ::ng-deep .mat-mdc-header-cell {
   font-weight: 800 !important;
   font-size: 0.74rem !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase;
-  color: rgba(0, 60, 44, 0.78) !important;
+  color: rgba(var(--color-brand-shadow-rgb), 0.78) !important;
 }
 :host ::ng-deep .mat-mdc-row {
   transition: background 0.15s ease;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: rgba(20, 184, 143, 0.05) !important;
+  background: rgba(var(--color-brand-accent-rgb), 0.05) !important;
 }
 :host ::ng-deep .mat-mdc-row.cce-paged-table__row--clickable {
   cursor: pointer;
 }
 :host ::ng-deep .mat-mdc-cell {
   font-size: 0.92rem !important;
-  color: #1c2724 !important;
-  border-bottom-color: rgba(0, 60, 44, 0.05) !important;
+  color: var(--color-text-primary) !important;
+  border-bottom-color: rgba(var(--color-brand-shadow-rgb), 0.05) !important;
 }
 :host ::ng-deep .mat-mdc-row:last-of-type .mat-mdc-cell {
   border-bottom: 0 !important;
@@ -58,25 +58,25 @@
 
 /* Empty state row (when the consumer's *matNoDataRow renders). */
 :host ::ng-deep .mat-mdc-no-data-row {
-  background: #fbfdfb;
+  background: var(--primary--50);
   font-style: italic;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 /* Paginator inside the host */
 :host ::ng-deep .mat-mdc-paginator {
   background: transparent !important;
-  border-top: 1px dashed rgba(0, 60, 44, 0.10);
+  border-top: 1px dashed rgba(var(--color-brand-shadow-rgb), 0.10);
   padding: 0.25rem 0 !important;
 }
 :host ::ng-deep .mat-mdc-paginator-page-size-label,
 :host ::ng-deep .mat-mdc-paginator-range-label {
-  color: rgba(28, 39, 36, 0.65) !important;
+  color: rgba(var(--color-text-primary-rgb), 0.65) !important;
   font-weight: 600 !important;
 }
 :host ::ng-deep .mat-mdc-icon-button.mat-mdc-paginator-navigation-next,
 :host ::ng-deep .mat-mdc-icon-button.mat-mdc-paginator-navigation-previous,
 :host ::ng-deep .mat-mdc-icon-button.mat-mdc-paginator-navigation-first,
 :host ::ng-deep .mat-mdc-icon-button.mat-mdc-paginator-navigation-last {
-  --mdc-icon-button-icon-color: #006c4f;
+  --mdc-icon-button-icon-color: var(--color-brand);
 }

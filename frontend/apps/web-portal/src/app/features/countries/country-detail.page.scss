@@ -12,7 +12,7 @@
   100% { background-position: 600px 0; }
 }
 
-$shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+$shimmer: linear-gradient(90deg, var(--neutrals--100) 25%, var(--neutrals--200) 50%, var(--neutrals--100) 75%);
 
 %shimmer-block {
   background: $shimmer;
@@ -48,7 +48,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-detail-skeleton__header {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 1.5rem 1.75rem;
@@ -107,7 +107,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-detail-skeleton__stat-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 1rem 1.1rem 0.85rem;
@@ -166,7 +166,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-detail-skeleton__chart-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   padding: 1.25rem 1.25rem 1rem;
@@ -197,9 +197,9 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 /* ─── Error states ──────────────────────────────────────── */
 .cce-country-detail__notfound,
 .cce-country-detail__error {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid rgba(220, 38, 38, 0.20);
+  background: var(--danger--50);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.20);
   padding: 1.25rem 1.5rem;
   border-radius: 14px;
   margin: 1rem 0;
@@ -215,8 +215,8 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   height: 15px;
   border-radius: 50%;
   background: transparent;
-  border: 1.5px solid #f59e0b;
-  color: #f59e0b;
+  border: 1.5px solid var(--warning--400);
+  color: var(--warning--400);
   font-size: 9px;
   font-weight: 800;
   line-height: 1;
@@ -227,8 +227,8 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: #f59e0b;
-    color: #ffffff;
+    background: var(--warning--400);
+    color: var(--white);
   }
 }
 
@@ -248,13 +248,13 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   gap: 0.3rem;
   font-size: 0.86rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.70);
+  color: rgba(var(--color-text-primary-rgb), 0.70);
   text-decoration: none;
   transition: color 0.15s ease;
 
   /* RTL (Arabic): arrow_forward already points → which is "back" in RTL — no flip needed */
   mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
-  &:hover { color: #006c4f; }
+  &:hover { color: var(--color-brand); }
 }
 
 /* LTR: flip → to ← so "back" points left */
@@ -271,7 +271,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   font-size: 0.84rem !important;
   gap: 0.35rem;
   height: 38px;
-  color: #1c2724 !important;
+  color: var(--color-text-primary) !important;
   border-color: rgba(0, 0, 0, 0.15) !important;
 
   mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
@@ -282,34 +282,34 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 .cce-country-detail__download-btn {
   border-radius: 8px !important;
   font-size: 0.84rem !important;
-  background: #006c4f !important;
-  color: #ffffff !important;
+  background: var(--color-brand) !important;
+  color: var(--white) !important;
   height: 38px;
   display: inline-flex !important;
   align-items: center;
   gap: 0.35rem;
 
   mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
-  &:hover { background: #005a40 !important; }
+  &:hover { background: var(--color-brand-darker) !important; }
 }
 
 /* ─── Header ────────────────────────────────────────────── */
 .cce-country-detail__header {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 1.5rem 1.75rem;
   margin-bottom: 1.25rem;
-  box-shadow: 0 4px 16px -8px rgba(0, 48, 31, 0.08);
+  box-shadow: 0 4px 16px -8px rgba(var(--color-brand-shadow-rgb), 0.08);
 }
 
 .cce-country-detail__classification-badge {
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #006c4f;
-  background: rgba(15, 139, 108, 0.10);
-  border: 1px solid rgba(0, 108, 79, 0.20);
+  color: var(--color-brand);
+  background: rgba(var(--color-brand-mid-rgb), 0.10);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.20);
   border-radius: 999px;
   padding: 0.2rem 0.7rem;
   margin-bottom: 0.85rem;
@@ -337,14 +337,14 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   margin: 0 0 0.25rem;
   font-size: clamp(1.35rem, 2.5vw, 1.75rem);
   font-weight: 800;
-  color: #1c2724;
+  color: var(--color-text-primary);
   letter-spacing: -0.015em;
 }
 
 .cce-country-detail__region {
   margin: 0;
   font-size: 0.86rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 .cce-country-detail__separator {
@@ -364,7 +364,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-country-detail__stat-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 1rem 1.1rem 0.85rem;
@@ -377,20 +377,20 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   font-size: 1.25rem;
   width: 1.25rem;
   height: 1.25rem;
-  color: rgba(28, 39, 36, 0.35);
+  color: rgba(var(--color-text-primary-rgb), 0.35);
   margin-bottom: 0.3rem;
 }
 
 .cce-country-detail__stat-label {
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   font-weight: 500;
 }
 
 .cce-country-detail__stat-value {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1c2724;
+  color: var(--color-text-primary);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   display: flex;
@@ -401,18 +401,18 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 .cce-country-detail__stat-unit {
   font-size: 0.78rem;
   font-weight: 500;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 .cce-country-detail__stat-sub {
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 
   &--trend {
     display: flex;
     align-items: center;
     gap: 0.15rem;
-    color: #006c4f;
+    color: var(--color-brand);
     mat-icon { font-size: 0.85rem; width: 0.85rem; height: 0.85rem; }
   }
 }
@@ -430,7 +430,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   padding: 0.65rem 1.1rem;
   font-size: 0.88rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
@@ -439,8 +439,8 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   white-space: nowrap;
   transition: color 0.15s ease, border-color 0.15s ease;
 
-  &:hover { color: #006c4f; }
-  &--active { color: #1c2724; border-bottom-color: #1c2724; }
+  &:hover { color: var(--color-brand); }
+  &--active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); }
 }
 
 /* ─── Analytics tab ─────────────────────────────────────── */
@@ -454,7 +454,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-country-detail__chart-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   padding: 1.25rem 1.25rem 1rem;
@@ -472,19 +472,19 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   margin: 0 0 0.2rem;
   font-size: 0.92rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-country-detail__chart-sub {
   margin: 0 0 0.75rem;
   font-size: 0.76rem;
-  color: rgba(28, 39, 36, 0.50);
+  color: rgba(var(--color-text-primary-rgb), 0.50);
 }
 
 .cce-country-detail__chart-range-badge {
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   background: rgba(0, 0, 0, 0.05);
   border-radius: 999px;
   padding: 0.2rem 0.6rem;
@@ -522,7 +522,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
   font-size: 0.76rem;
-  color: rgba(28, 39, 36, 0.70);
+  color: rgba(var(--color-text-primary-rgb), 0.70);
 
   li { display: flex; align-items: center; gap: 0.35rem; }
 }
@@ -531,12 +531,12 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #006c4f;
+  background: var(--color-brand);
   flex-shrink: 0;
 }
 
 .cce-country-detail__radar-score {
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
 }
 
 /* ─── Achievements ──────────────────────────────────────── */
@@ -544,7 +544,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   margin: 0 0 1rem;
   font-size: 1rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-country-detail__achievement-cards {
@@ -556,7 +556,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 }
 
 .cce-country-detail__achievement-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 1.1rem;
@@ -570,7 +570,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   font-size: 1rem;
   width: 1rem;
   height: 1rem;
-  color: rgba(28, 39, 36, 0.35);
+  color: rgba(var(--color-text-primary-rgb), 0.35);
   position: absolute;
   top: 1rem;
   inset-inline-end: 1rem;
@@ -580,7 +580,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   margin: 0;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
   padding-inline-end: 1.5rem;
   line-height: 1.35;
 }
@@ -588,7 +588,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 .cce-country-detail__achievement-desc {
   margin: 0;
   font-size: 0.78rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
   line-height: 1.50;
   flex: 1;
 }
@@ -598,7 +598,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   align-items: center;
   gap: 0.3rem;
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
   font-variant-numeric: tabular-nums;
   margin-top: auto;
 
@@ -607,7 +607,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 
 /* ─── Content sections (resources / initiatives) ────────── */
 .cce-country-detail__content-section {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   padding: 1.5rem 1.75rem;
@@ -619,7 +619,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     justify-content: center;
     min-height: 200px;
     gap: 0.75rem;
-    color: rgba(28, 39, 36, 0.40);
+    color: rgba(var(--color-text-primary-rgb), 0.40);
     text-align: center;
 
     mat-icon { font-size: 2.5rem; width: 2.5rem; height: 2.5rem; }
@@ -630,11 +630,11 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 .cce-country-detail__body {
   line-height: 1.65;
   font-size: 0.95rem;
-  color: rgba(28, 39, 36, 0.82);
+  color: rgba(var(--color-text-primary-rgb), 0.82);
 
   ::ng-deep p { margin: 0 0 0.85rem; &:last-child { margin-bottom: 0; } }
   ::ng-deep ul, ::ng-deep ol { padding-inline-start: 1.5rem; margin: 0.5rem 0; }
   ::ng-deep li { margin-bottom: 0.4rem; line-height: 1.55; }
-  ::ng-deep strong { color: #006c4f; font-weight: 700; }
-  ::ng-deep a { color: #006c4f; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(0,108,79,0.30); &:hover { border-bottom-color: #006c4f; } }
+  ::ng-deep strong { color: var(--color-brand); font-weight: 700; }
+  ::ng-deep a { color: var(--color-brand); font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(var(--color-brand-rgb),0.30); &:hover { border-bottom-color: var(--color-brand); } }
 }

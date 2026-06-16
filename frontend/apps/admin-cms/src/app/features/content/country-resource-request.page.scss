@@ -38,22 +38,22 @@
   }
 
   &--pending {
-    background: #fef8ec;
-    color: #7c5a0a;
-    border: 1px solid rgba(200, 160, 69, 0.35);
-    &::before { background: #c8a045; }
+    background: var(--warning--50);
+    color: var(--warning--600);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+    &::before { background: var(--color-accent); }
   }
   &--approved {
-    background: #e8f4f1;
-    color: #00513b;
-    border: 1px solid rgba(0, 108, 79, 0.28);
-    &::before { background: #006c4f; }
+    background: var(--primary--100);
+    color: var(--primary--900);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.28);
+    &::before { background: var(--color-brand); }
   }
   &--rejected {
-    background: #fff5f4;
-    color: #8a1f0d;
-    border: 1px solid rgba(183, 28, 28, 0.22);
-    &::before { background: #b71c1c; }
+    background: var(--danger--50);
+    color: var(--danger--800);
+    border: 1px solid rgba(var(--danger--600-rgb), 0.22);
+    &::before { background: var(--danger--600); }
   }
 }
 
@@ -61,8 +61,8 @@
 :host {
   /* Tab header background */
   .mat-mdc-tab-header {
-    background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%);
-    border: 1px solid rgba(0, 108, 79, 0.12);
+    background: linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.12);
     border-radius: 12px;
     margin-bottom: 1.25rem;
     padding: 0.3rem 0.5rem;
@@ -79,23 +79,23 @@
     font-weight: 700 !important;
     font-size: 0.86rem !important;
     letter-spacing: 0.02em;
-    color: rgba(0, 60, 44, 0.55) !important;
+    color: rgba(var(--color-brand-shadow-rgb), 0.55) !important;
     transition: color 0.2s;
   }
   .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-    color: #006c4f !important;
+    color: var(--color-brand) !important;
   }
 
   /* Active indicator — thicker green underline */
   .mdc-tab-indicator__content--underline {
-    border-color: #006c4f !important;
+    border-color: var(--color-brand) !important;
     border-top-width: 3px !important;
     border-radius: 2px 2px 0 0;
   }
 
   /* Tab ripple */
   .mat-mdc-tab .mat-ripple-element {
-    background-color: rgba(0, 108, 79, 0.08) !important;
+    background-color: rgba(var(--color-brand-rgb), 0.08) !important;
   }
 
   /* Space between tab header and table content */
@@ -104,10 +104,10 @@
 
 /* ── Table + paginator wrapper ────────────────────────────── */
 .cce-crr__table-wrap {
-  border: 1px solid rgba(0, 60, 44, 0.08);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 24px -16px rgba(0, 48, 31, 0.2);
+  box-shadow: 0 8px 24px -16px rgba(var(--color-brand-shadow-rgb), 0.2);
 }
 
 .cce-crr__table {
@@ -120,12 +120,12 @@
 
 /* ── Paginator as table footer ────────────────────────────── */
 .cce-crr__paginator {
-  border-top: 1px solid rgba(0, 60, 44, 0.08) !important;
-  background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important;
+  border-top: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08) !important;
+  background: linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%) !important;
   border-radius: 0 0 16px 16px !important;
 
   /* Override admin-polish transparent background */
-  &.mat-mdc-paginator { background: linear-gradient(180deg, #f4faf7 0%, #ecf6f1 100%) !important; }
+  &.mat-mdc-paginator { background: linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%) !important; }
 }
 
 /* Left accent stripe per row status */
@@ -144,15 +144,15 @@
     transition: opacity 0.15s;
   }
 
-  &--pending::after   { background: #c8a045; opacity: 1; }
-  &--approved::after  { background: #006c4f; opacity: 1; }
-  &--rejected::after  { background: #b71c1c; opacity: 1; }
+  &--pending::after   { background: var(--color-accent); opacity: 1; }
+  &--approved::after  { background: var(--color-brand); opacity: 1; }
+  &--rejected::after  { background: var(--danger--600); opacity: 1; }
 }
 
 /* Title cell — primary content */
 .cce-crr__cell-title {
   font-weight: 600;
-  color: #1c2724;
+  color: var(--color-text-primary);
   max-width: 340px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -162,13 +162,13 @@
 /* Date cell — muted */
 .cce-crr__cell-date {
   font-size: 0.86rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   white-space: nowrap;
 }
 
 /* View action button */
 .cce-crr__view-btn {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
 }
 
 /* ── Empty state ──────────────────────────────────────────── */
@@ -180,10 +180,10 @@
   gap: 0.75rem;
   padding: 4rem 2rem;
   margin-top: 0.5rem;
-  background: linear-gradient(160deg, #f4faf7 0%, #ecf6f1 100%);
-  border: 1.5px dashed rgba(0, 108, 79, 0.2);
+  background: linear-gradient(160deg, var(--primary--50) 0%, var(--primary--50) 100%);
+  border: 1.5px dashed rgba(var(--color-brand-rgb), 0.2);
   border-radius: 16px;
-  color: rgba(0, 60, 44, 0.5);
+  color: rgba(var(--color-brand-shadow-rgb), 0.5);
 
   mat-icon {
     font-size: 2.5rem;
@@ -200,9 +200,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
-  color: #8a1f0d;
-  border: 1px solid rgba(183, 28, 28, 0.18);
+  background: linear-gradient(180deg, var(--danger--50) 0%, var(--danger--50) 100%);
+  color: var(--danger--800);
+  border: 1px solid rgba(var(--danger--600-rgb), 0.18);
   border-radius: 12px;
   margin-top: 0.5rem;
   font-weight: 500;

@@ -1,7 +1,7 @@
-:host { display: block; height: 100%; }
+:host { display: block; height: 100%; content-visibility: auto; contain-intrinsic-size: auto 360px; }
 
 .cce-country-card {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 12px;
   padding: 1.25rem 1.1rem 1rem;
@@ -13,8 +13,8 @@
   box-sizing: border-box;
 
   &:hover {
-    border-color: rgba(0, 108, 79, 0.30);
-    box-shadow: 0 8px 24px -8px rgba(0, 48, 31, 0.14);
+    border-color: rgba(var(--color-brand-rgb), 0.30);
+    box-shadow: 0 8px 24px -8px rgba(var(--color-brand-shadow-rgb), 0.14);
   }
 }
 
@@ -45,7 +45,7 @@
 .cce-country-card__name {
   font-size: 1rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
   line-height: 1.30;
   letter-spacing: -0.01em;
 }
@@ -58,14 +58,14 @@
 
 .cce-country-card__stat-label {
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   font-weight: 500;
 }
 
 .cce-country-card__stat-value {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #1c2724;
+  color: var(--color-text-primary);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -78,10 +78,10 @@
 
 .cce-country-card__trend {
   font-size: 1rem;
-  color: rgba(28, 39, 36, 0.40);
+  color: rgba(var(--color-text-primary-rgb), 0.40);
 
-  &--up { color: #006c4f; }
-  &--down { color: #991b1b; }
+  &--up { color: var(--color-brand); }
+  &--down { color: var(--danger--700); }
 }
 
 .cce-country-card__divider {
@@ -98,14 +98,14 @@
   border-radius: 8px !important;
   font-size: 0.82rem !important;
   font-weight: 600 !important;
-  color: #1c2724 !important;
+  color: var(--color-text-primary) !important;
   border-color: rgba(0, 0, 0, 0.18) !important;
   height: 36px;
   text-decoration: none;
 
   &:hover {
-    border-color: #006c4f !important;
-    color: #006c4f !important;
-    background: rgba(15, 139, 108, 0.05) !important;
+    border-color: var(--color-brand) !important;
+    color: var(--color-brand) !important;
+    background: rgba(var(--color-brand-mid-rgb), 0.05) !important;
   }
 }

@@ -14,8 +14,8 @@
   flex-direction: column;
   height: 100%;
   background:
-    radial-gradient(400px 200px at 0% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #fafaf7 100%);
+    radial-gradient(400px 200px at 0% 0%, rgba(var(--color-brand-mid-rgb), 0.10), transparent 60%),
+    linear-gradient(180deg, var(--white) 0%, var(--neutrals--50) 100%);
   overflow: hidden;
   border-radius: inherit; /* pick up dialog's outer radius */
 }
@@ -27,8 +27,8 @@
   justify-content: space-between;
   gap: 0.6rem;
   padding: 0.75rem 0.85rem 0.75rem 1rem;
-  border-bottom: 1px solid rgba(0, 108, 79, 0.10);
-  background: linear-gradient(180deg, #ffffff 0%, rgba(15, 139, 108, 0.04) 100%);
+  border-bottom: 1px solid rgba(var(--color-brand-rgb), 0.10);
+  background: linear-gradient(180deg, var(--white) 0%, rgba(var(--color-brand-mid-rgb), 0.04) 100%);
   flex-shrink: 0;
 }
 
@@ -45,14 +45,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 60%, #c8a045 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 60%, var(--color-accent) 100%);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.30) inset,
-    0 6px 14px -4px rgba(15, 139, 108, 0.55);
+    0 6px 14px -4px rgba(var(--color-brand-mid-rgb), 0.55);
   flex-shrink: 0;
 
   mat-icon {
-    color: #ffffff;
+    color: var(--white);
     font-size: 22px;
     width: 22px;
     height: 22px;
@@ -71,15 +71,15 @@
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.16em;
-  color: #006c4f;
+  color: var(--color-brand);
   text-transform: uppercase;
 }
 .cce-assistant-dialog__brand-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #14b88f;
-  box-shadow: 0 0 6px rgba(20, 184, 143, 0.65);
+  background: var(--color-brand-accent);
+  box-shadow: 0 0 6px rgba(var(--color-brand-accent-rgb), 0.65);
   animation: cceAssistDotPulse 2.4s ease-in-out infinite;
 }
 @keyframes cceAssistDotPulse {
@@ -89,7 +89,7 @@
 .cce-assistant-dialog__brand-title {
   font-weight: 800;
   font-size: 0.95rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
   letter-spacing: -0.005em;
   line-height: 1.2;
 }
@@ -132,11 +132,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 60%, #c8a045 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 60%, var(--color-accent) 100%);
+  color: var(--white);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.30) inset,
-    0 10px 22px -6px rgba(15, 139, 108, 0.55);
+    0 10px 22px -6px rgba(var(--color-brand-mid-rgb), 0.55);
   animation: cceAssistGlyphFloat 4.2s ease-in-out infinite alternate;
 
   mat-icon {
@@ -154,13 +154,13 @@
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 .cce-assistant-dialog__hero-body {
   margin: 0 auto;
   max-width: 320px;
   font-size: 0.88rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
   line-height: 1.45;
 }
 
@@ -176,7 +176,7 @@
   align-items: center;
   gap: 0.7rem;
   padding: 0.65rem 0.85rem;
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 12px;
   cursor: pointer;
@@ -190,9 +190,9 @@
 
   &:hover {
     transform: translateY(-1px);
-    border-color: rgba(0, 108, 79, 0.30);
-    box-shadow: 0 8px 18px -10px rgba(0, 48, 31, 0.20);
-    background: linear-gradient(135deg, #ffffff 0%, rgba(15, 139, 108, 0.04) 100%);
+    border-color: rgba(var(--color-brand-rgb), 0.30);
+    box-shadow: 0 8px 18px -10px rgba(var(--color-brand-shadow-rgb), 0.20);
+    background: linear-gradient(135deg, var(--white) 0%, rgba(var(--color-brand-mid-rgb), 0.04) 100%);
   }
 }
 .cce-assistant-dialog__suggestion-icon {
@@ -202,9 +202,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--prompt-from, #006c4f), var(--prompt-to, #14b88f));
-  color: #ffffff;
-  box-shadow: 0 4px 10px -4px var(--prompt-glow, rgba(15, 139, 108, 0.45));
+  background: linear-gradient(135deg, var(--prompt-from, var(--color-brand)), var(--prompt-to, var(--color-brand-accent)));
+  color: var(--white);
+  box-shadow: 0 4px 10px -4px var(--prompt-glow, rgba(var(--color-brand-mid-rgb), 0.45));
 
   mat-icon {
     font-size: 18px;
@@ -212,12 +212,12 @@
     height: 18px;
   }
 }
-.cce-assistant-dialog__suggestion[data-tier="policy"]   { --prompt-from: #4f46e5; --prompt-to: #818cf8; --prompt-glow: rgba(79, 70, 229, 0.45); }
-.cce-assistant-dialog__suggestion[data-tier="energy"]   { --prompt-from: #d97706; --prompt-to: #fbbf24; --prompt-glow: rgba(217, 119, 6, 0.45); }
-.cce-assistant-dialog__suggestion[data-tier="circular"] { --prompt-from: #006c4f; --prompt-to: #14b88f; --prompt-glow: rgba(15, 139, 108, 0.45); }
-.cce-assistant-dialog__suggestion[data-tier="finance"]  { --prompt-from: #0891b2; --prompt-to: #22d3ee; --prompt-glow: rgba(8, 145, 178, 0.45); }
-.cce-assistant-dialog__suggestion[data-tier="cities"]   { --prompt-from: #7c3aed; --prompt-to: #a78bfa; --prompt-glow: rgba(124, 58, 237, 0.45); }
-.cce-assistant-dialog__suggestion[data-tier="tech"]     { --prompt-from: #dc2626; --prompt-to: #f87171; --prompt-glow: rgba(220, 38, 38, 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="policy"]   { --prompt-from: var(--info--600); --prompt-to: var(--info--400); --prompt-glow: rgba(var(--info--600-rgb), 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="energy"]   { --prompt-from: var(--warning--500); --prompt-to: var(--warning--400); --prompt-glow: rgba(var(--warning--500-rgb), 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="circular"] { --prompt-from: var(--color-brand); --prompt-to: var(--color-brand-accent); --prompt-glow: rgba(var(--color-brand-mid-rgb), 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="finance"]  { --prompt-from: var(--tertiary--700); --prompt-to: var(--tertiary--600); --prompt-glow: rgba(var(--tertiary--700-rgb), 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="cities"]   { --prompt-from: var(--info--500); --prompt-to: var(--info--400); --prompt-glow: rgba(var(--info--500-rgb), 0.45); }
+.cce-assistant-dialog__suggestion[data-tier="tech"]     { --prompt-from: var(--danger--500); --prompt-to: var(--danger--400); --prompt-glow: rgba(var(--danger--500-rgb), 0.45); }
 
 .cce-assistant-dialog__suggestion-text {
   display: flex;
@@ -229,12 +229,12 @@
   font-size: 0.60rem;
   font-weight: 800;
   letter-spacing: 0.14em;
-  color: var(--prompt-from, #006c4f);
+  color: var(--prompt-from, var(--color-brand));
 }
 .cce-assistant-dialog__suggestion-prompt {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1c2724;
+  color: var(--color-text-primary);
   letter-spacing: -0.005em;
   line-height: 1.30;
 }
@@ -253,7 +253,7 @@
 .cce-assistant-dialog__compose {
   flex-shrink: 0;
   padding: 0.55rem 0.75rem 0.75rem;
-  border-top: 1px solid rgba(0, 108, 79, 0.08);
+  border-top: 1px solid rgba(var(--color-brand-rgb), 0.08);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);

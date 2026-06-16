@@ -32,7 +32,11 @@
             "output": "assets/i18n"
           }
         ],
-        "styles": ["apps/admin-cms/src/styles.scss"],
+        "styles": [
+          "apps/admin-cms/src/styles.scss",
+          { "input": "node_modules/quill/dist/quill.core.css", "bundleName": "quill", "inject": false },
+          { "input": "node_modules/quill/dist/quill.snow.css", "bundleName": "quill", "inject": false }
+        ],
         "scripts": []
       },
       "configurations": {
@@ -47,6 +51,12 @@
               "type": "anyComponentStyle",
               "maximumWarning": "8kb",
               "maximumError": "16kb"
+            },
+            {
+              "type": "bundle",
+              "name": "styles",
+              "maximumWarning": "140kb",
+              "maximumError": "170kb"
             }
           ],
           "outputHashing": "all"
@@ -83,6 +93,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "stylelint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "stylelint \"apps/admin-cms/**/*.scss\""
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",

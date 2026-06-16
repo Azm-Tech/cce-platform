@@ -16,12 +16,12 @@
   justify-content: space-between;
   padding: 1rem 1.25rem;
   background:
-    radial-gradient(900px 200px at 100% 0%, rgba(20, 184, 143, 0.08), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
-  border: 1px solid rgba(0, 108, 79, 0.16);
+    radial-gradient(900px 200px at 100% 0%, rgba(var(--color-brand-accent-rgb), 0.08), transparent 60%),
+    linear-gradient(180deg, var(--white) 0%, var(--primary--50) 100%);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.16);
   border-radius: 16px;
   margin-top: 1.25rem;
-  box-shadow: 0 -8px 24px -16px rgba(0, 48, 31, 0.18);
+  box-shadow: 0 -8px 24px -16px rgba(var(--color-brand-shadow-rgb), 0.18);
 }
 
 .cce-totals-bar__cells {
@@ -45,28 +45,28 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 .cce-totals-bar__value {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #1c2724;
+  color: var(--color-text-primary);
   display: inline-flex;
   align-items: baseline;
   gap: 0.2rem;
 }
 
-.cce-totals-bar__value--good { color: #006c4f; }
-.cce-totals-bar__value--bad { color: #c62828; }
+.cce-totals-bar__value--good { color: var(--color-brand); }
+.cce-totals-bar__value--bad { color: var(--danger--600); }
 
 .cce-totals-bar__unit {
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 /* F009 — neutrality progress bar */
@@ -76,7 +76,7 @@
 .cce-totals-bar__progress {
   margin-top: 0.4rem;
   height: 8px;
-  background: rgba(0, 108, 79, 0.1);
+  background: rgba(var(--color-brand-rgb), 0.1);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -84,31 +84,31 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #006c4f 0%, #14b88f 100%);
+  background: linear-gradient(90deg, var(--color-brand) 0%, var(--color-brand-accent) 100%);
   transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cce-totals-bar__progress-fill--neutral {
-  background: linear-gradient(90deg, #14b88f 0%, #c8a045 100%);
+  background: linear-gradient(90deg, var(--color-brand-accent) 0%, var(--color-accent) 100%);
 }
 .cce-totals-bar__neutrality-icon {
   font-size: 18px !important;
   width: 18px !important;
   height: 18px !important;
-  color: #006c4f;
+  color: var(--color-brand);
   margin-inline-end: 0.2rem;
 }
 .cce-totals-bar__neutrality-gap {
   margin-top: 0.25rem;
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.6);
+  color: rgba(var(--color-text-primary-rgb), 0.6);
   font-weight: 600;
 }
 
 .cce-totals-bar__summary {
   flex: 1 1 100%;
   font-size: 0.88rem;
-  color: rgba(28, 39, 36, 0.78);
-  border-top: 1px dashed rgba(0, 108, 79, 0.22);
+  color: rgba(var(--color-text-primary-rgb), 0.78);
+  border-top: 1px dashed rgba(var(--color-brand-rgb), 0.22);
   padding-top: 0.55rem;
   line-height: 1.55;
 }
@@ -122,11 +122,11 @@
 
 .cce-totals-bar__recommend {
   border-radius: 999px !important;
-  --mdc-outlined-button-label-text-color: #006c4f;
-  --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.4);
+  --mdc-outlined-button-label-text-color: var(--color-brand);
+  --mdc-outlined-button-outline-color: rgba(var(--color-brand-rgb), 0.4);
 }
 .cce-totals-bar__recommend:hover:not(:disabled) {
-  background: rgba(0, 108, 79, 0.06) !important;
+  background: rgba(var(--color-brand-rgb), 0.06) !important;
 }
 .cce-totals-bar__recommend mat-icon {
   margin-inline-end: 0.25rem;

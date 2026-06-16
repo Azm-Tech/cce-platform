@@ -8,9 +8,9 @@
   gap: 0.45rem;
   padding: 0.35rem 0.85rem;
   margin-inline-end: 0.5rem;
-  background: rgba(15, 139, 108, 0.08);
-  border: 1px solid rgba(0, 108, 79, 0.20);
-  color: #006c4f;
+  background: rgba(var(--color-brand-mid-rgb), 0.08);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.20);
+  color: var(--color-brand);
   font-weight: 700;
   font-size: 0.78rem;
   letter-spacing: 0.02em;
@@ -23,8 +23,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #14b88f 0%, #006c4f 100%);
-  box-shadow: 0 0 8px rgba(20, 184, 143, 0.55);
+  background: linear-gradient(135deg, var(--color-brand-accent) 0%, var(--color-brand) 100%);
+  box-shadow: 0 0 8px rgba(var(--color-brand-accent-rgb), 0.55);
 }
 
 @media (max-width: 640px) {

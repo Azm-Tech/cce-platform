@@ -7,7 +7,7 @@
 
 .cce-state-rep-create__error {
   font-size: 14px;
-  color: var(--mat-sys-error, #b00020);
+  color: var(--mat-sys-error, var(--danger--600));
 }
 
 .cce-select-filter {
@@ -15,7 +15,7 @@
   top: 0;
   z-index: 1;
   padding: 8px 12px;
-  background: var(--mat-select-panel-background-color, #fff);
+  background: var(--mat-select-panel-background-color, var(--white));
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
   &__input {

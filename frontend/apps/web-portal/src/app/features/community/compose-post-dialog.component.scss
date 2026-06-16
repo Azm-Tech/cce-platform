@@ -1,15 +1,15 @@
 // ── Design tokens ─────────────────────────────────────────────────────────────
-$p-50:  #ebf2fe;
-$p-500: #4285f2;
-$p-600: #2e6dd4;
-$p-800: #174a8d;
-$n-100: #f1f3f7;
-$n-200: #e3e7ee;
-$n-300: #c9d0da;
-$n-500: #748091;
-$n-600: #4e5866;
-$n-800: #242930;
-$n-900: #13171c;
+$p-50:  var(--primary--50);
+$p-500: var(--primary--500);
+$p-600: var(--primary--600);
+$p-800: var(--primary--800);
+$n-100: var(--neutrals--100);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-600: var(--neutrals--600);
+$n-800: var(--neutrals--800);
+$n-900: var(--neutrals--900);
 $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 // ── Dialog shell ──────────────────────────────────────────────────────────────
@@ -67,10 +67,10 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--danger--50);
+  border: 1px solid var(--danger--200);
   border-radius: 8px;
-  color: #dc2626;
+  color: var(--danger--500);
   font-size: 14px;
   font-family: $font;
   margin-bottom: 16px;
@@ -130,13 +130,13 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   padding: 0 16px;
   border: 1px solid $n-200;
   border-radius: 9999px;
-  background: #fff;
+  background: var(--white);
   color: $n-600;
   font-size: 14px;
   font-weight: 400;
   font-family: $font;
   cursor: pointer;
-  transition: all 0.13s;
+  transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
@@ -188,7 +188,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   font-weight: 400;
   font-family: $font;
   cursor: pointer;
-  transition: all 0.13s;
+  transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
 
   &--active {
     background: $p-50;
@@ -220,7 +220,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   font-weight: 700;
   font-family: $font;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, filter 0.15s;
 
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -235,7 +235,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   &--submit {
     background: $p-500;
     border: 1px solid $p-500;
-    color: #fff;
+    color: var(--white);
 
     &:hover:not(:disabled) { background: $p-600; border-color: $p-600; }
     &:disabled { background: $n-200; border-color: $n-200; color: $n-500; }

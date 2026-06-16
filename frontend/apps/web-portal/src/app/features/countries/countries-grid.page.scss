@@ -17,13 +17,13 @@
   font-size: clamp(1.55rem, 3vw, 2.2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-countries-grid__subtitle {
   margin: 0;
   font-size: 0.95rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
 }
 
 /* ─── Unified toolbar ──────────────────────────────────── */
@@ -37,7 +37,7 @@
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   padding: 0.5rem 0.75rem;
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   flex-wrap: wrap;
@@ -76,22 +76,22 @@
   padding: 0 1rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: #f5f6f7;
-  color: rgba(28, 39, 36, 0.72);
+  background: var(--neutrals--100);
+  color: rgba(var(--color-text-primary-rgb), 0.72);
   font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
-  &:hover { background: rgba(0, 108, 79, 0.06); border-color: #006c4f; color: #006c4f; }
+  &:hover { background: rgba(var(--color-brand-rgb), 0.06); border-color: var(--color-brand); color: var(--color-brand); }
 
   &--active {
-    background: #006c4f;
-    color: #ffffff;
-    border-color: #006c4f;
+    background: var(--color-brand);
+    color: var(--white);
+    border-color: var(--color-brand);
 
-    &:hover { background: #005a40; border-color: #005a40; }
+    &:hover { background: var(--color-brand-darker); border-color: var(--color-brand-darker); }
   }
 
   &--dropdown { padding-inline-end: 0.65rem; }
@@ -106,7 +106,7 @@
 
 /* Region menu active item */
 ::ng-deep .cce-region-item--active {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
   font-weight: 700 !important;
 }
 
@@ -123,8 +123,8 @@
   height: 40px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: #f5f6f7;
-  color: rgba(28, 39, 36, 0.55);
+  background: var(--neutrals--100);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -133,22 +133,22 @@
 
   mat-icon { font-size: 1.15rem; width: 1.15rem; height: 1.15rem; }
 
-  &:hover { background: rgba(0, 108, 79, 0.06); border-color: #006c4f; color: #006c4f; }
+  &:hover { background: rgba(var(--color-brand-rgb), 0.06); border-color: var(--color-brand); color: var(--color-brand); }
 
   &--active {
-    background: #006c4f;
-    color: #ffffff;
-    border-color: #006c4f;
+    background: var(--color-brand);
+    color: var(--white);
+    border-color: var(--color-brand);
 
-    &:hover { background: #005a40; border-color: #005a40; }
+    &:hover { background: var(--color-brand-darker); border-color: var(--color-brand-darker); }
   }
 }
 
 /* ─── Error / empty ────────────────────────────────────── */
 .cce-countries-grid__error {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid rgba(220, 38, 38, 0.20);
+  background: var(--danger--50);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.20);
   padding: 0.85rem 1.1rem;
   border-radius: 10px;
   margin-bottom: 1.25rem;
@@ -162,9 +162,9 @@
 .cce-countries-grid__empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: rgba(28, 39, 36, 0.55);
-  background: rgba(15, 139, 108, 0.04);
-  border: 1px dashed rgba(15, 139, 108, 0.20);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
+  background: rgba(var(--color-brand-mid-rgb), 0.04);
+  border: 1px dashed rgba(var(--color-brand-mid-rgb), 0.20);
   border-radius: 12px;
 }
 
@@ -195,20 +195,20 @@
   padding: 0 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 8px;
-  background: #ffffff;
-  color: rgba(28, 39, 36, 0.75);
+  background: var(--white);
+  color: rgba(var(--color-text-primary-rgb), 0.75);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
 
   mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
 
-  &:hover:not([disabled]) { border-color: #006c4f; color: #006c4f; }
-  &--active { background: #006c4f; color: #ffffff; border-color: #006c4f; }
+  &:hover:not([disabled]) { border-color: var(--color-brand); color: var(--color-brand); }
+  &--active { background: var(--color-brand); color: var(--white); border-color: var(--color-brand); }
   &[disabled] { opacity: 0.35; cursor: not-allowed; }
 }
 
@@ -218,10 +218,10 @@
   100% { background-position: 600px 0; }
 }
 
-$shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+$shimmer: linear-gradient(90deg, var(--neutrals--100) 25%, var(--neutrals--200) 50%, var(--neutrals--100) 75%);
 
 .cce-country-skeleton {
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 1rem 1rem 0.85rem;
@@ -277,7 +277,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   overflow: hidden;
-  background: #f5f6f7;
+  background: var(--neutrals--100);
   min-height: 420px;
 }
 
@@ -287,14 +287,14 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   inset-inline-end: 1.25rem;
   top: 1.25rem;
   width: 272px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.14);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.14);
   border-radius: 12px;
   padding: 1.25rem 1.1rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  box-shadow: 0 8px 32px -8px rgba(0, 48, 31, 0.18);
+  box-shadow: 0 8px 32px -8px rgba(var(--color-brand-shadow-rgb), 0.18);
   z-index: 10;
 }
 
@@ -311,11 +311,11 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  color: rgba(28, 39, 36, 0.40);
+  color: rgba(var(--color-text-primary-rgb), 0.40);
   transition: background 0.12s ease, color 0.12s ease;
 
   mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
-  &:hover { background: rgba(0, 0, 0, 0.06); color: #1c2724; }
+  &:hover { background: rgba(0, 0, 0, 0.06); color: var(--color-text-primary); }
 }
 
 .cce-map-panel__flag-wrap {
@@ -331,7 +331,7 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
   line-height: 1.25;
 }
 
@@ -343,13 +343,13 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 
 .cce-map-panel__stat-label {
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 
 .cce-map-panel__stat-value {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #1c2724;
+  color: var(--color-text-primary);
   display: flex;
   align-items: baseline;
   gap: 0.25rem;
@@ -359,11 +359,11 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
 .cce-map-panel__stat-of {
   font-size: 0.78rem;
   font-weight: 500;
-  color: rgba(28, 39, 36, 0.50);
+  color: rgba(var(--color-text-primary-rgb), 0.50);
 }
 
-.cce-map-panel__trend { color: rgba(28, 39, 36, 0.40); font-size: 1rem; }
-.cce-map-panel__trend.up { color: #006c4f; }
+.cce-map-panel__trend { color: rgba(var(--color-text-primary-rgb), 0.40); font-size: 1rem; }
+.cce-map-panel__trend.up { color: var(--color-brand); }
 
 .cce-map-panel__divider { border: none; border-top: 1px solid rgba(0, 0, 0, 0.08); margin: 0; }
 
@@ -376,12 +376,12 @@ $shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   border-radius: 8px !important;
   font-size: 0.84rem !important;
   font-weight: 600 !important;
-  background: #006c4f !important;
-  color: #ffffff !important;
+  background: var(--color-brand) !important;
+  color: var(--white) !important;
   height: 38px;
   text-decoration: none;
 
-  &:hover { background: #005a40 !important; }
+  &:hover { background: var(--color-brand-darker) !important; }
 }
 
 /* ─── Responsive ───────────────────────────────────────── */

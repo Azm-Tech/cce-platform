@@ -7,12 +7,12 @@
   margin: 0 0 1.25rem;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-about__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -21,10 +21,10 @@
 /* ── Card ─────────────────────────────────────────────────── */
 .cce-about__card {
   display: block;
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.10);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.10);
   border-radius: 14px;
-  box-shadow: 0 6px 18px -14px rgba(0, 48, 31, 0.20);
+  box-shadow: 0 6px 18px -14px rgba(var(--color-brand-shadow-rgb), 0.20);
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.25rem;
 }
@@ -36,7 +36,7 @@
   gap: 1rem;
   margin: 0 0 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(0, 60, 44, 0.08);
+  border-bottom: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
 }
 
 .cce-about__hd-title {
@@ -46,7 +46,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-about__count {
@@ -57,8 +57,8 @@
   height: 22px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(0, 108, 79, 0.12);
-  color: #006c4f;
+  background: rgba(var(--color-brand-rgb), 0.12);
+  color: var(--color-brand);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -87,14 +87,14 @@
 .cce-about__label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.78);
+  color: rgba(var(--color-text-primary-rgb), 0.78);
 }
 
 .cce-about__input {
   font-family: inherit;
   font-size: 0.95rem;
-  color: #1c2724;
-  background: #ffffff;
+  color: var(--color-text-primary);
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.20);
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
@@ -104,18 +104,18 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &::placeholder {
-    color: rgba(28, 39, 36, 0.40);
+    color: rgba(var(--color-text-primary-rgb), 0.40);
   }
   &:hover:not(:disabled):not([readonly]) {
-    border-color: rgba(0, 108, 79, 0.55);
+    border-color: rgba(var(--color-brand-rgb), 0.55);
   }
   &:focus:not(:disabled):not([readonly]) {
-    border-color: #006c4f;
-    box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.16);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.16);
   }
   &:disabled {
     background: rgba(0, 0, 0, 0.03);
-    color: rgba(28, 39, 36, 0.45);
+    color: rgba(var(--color-text-primary-rgb), 0.45);
     cursor: not-allowed;
   }
 }
@@ -128,7 +128,7 @@ textarea.cce-about__input {
 
 .cce-about__hint {
   font-size: 0.74rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   align-self: flex-end;
 }
 
@@ -162,33 +162,33 @@ textarea.cce-about__input {
 }
 
 .cce-about__btn--primary {
-  background: #006c4f;
-  color: #ffffff;
+  background: var(--color-brand);
+  color: var(--white);
 
   &:hover:not(:disabled) {
-    background: #00583f;
+    background: var(--color-brand-darker);
     transform: translateY(-1px);
   }
 }
 
 .cce-about__btn--ghost {
-  background: #ffffff;
-  color: #006c4f;
-  border-color: rgba(0, 108, 79, 0.35);
+  background: var(--white);
+  color: var(--color-brand);
+  border-color: rgba(var(--color-brand-rgb), 0.35);
 
   &:hover:not(:disabled) {
-    background: rgba(0, 108, 79, 0.06);
-    border-color: #006c4f;
+    background: rgba(var(--color-brand-rgb), 0.06);
+    border-color: var(--color-brand);
   }
 }
 
 .cce-about__btn--text {
   background: transparent;
-  color: rgba(28, 39, 36, 0.7);
+  color: rgba(var(--color-text-primary-rgb), 0.7);
 
   &:hover:not(:disabled) {
     background: rgba(0, 0, 0, 0.04);
-    color: #1c2724;
+    color: var(--color-text-primary);
   }
 }
 
@@ -201,15 +201,15 @@ textarea.cce-about__input {
   border: none;
   background: transparent;
   border-radius: 50%;
-  color: rgba(0, 60, 44, 0.7);
+  color: rgba(var(--color-brand-shadow-rgb), 0.7);
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
 
   mat-icon { font-size: 20px; width: 20px; height: 20px; }
 
   &:hover:not(:disabled) {
-    background: rgba(0, 108, 79, 0.10);
-    color: #006c4f;
+    background: rgba(var(--color-brand-rgb), 0.10);
+    color: var(--color-brand);
   }
   &:disabled {
     opacity: 0.5;
@@ -218,18 +218,18 @@ textarea.cce-about__input {
 }
 
 .cce-about__icon-btn--danger {
-  color: rgba(176, 0, 32, 0.75);
+  color: rgba(var(--danger--600-rgb), 0.75);
 
   &:hover:not(:disabled) {
-    background: rgba(176, 0, 32, 0.08);
-    color: #b00020;
+    background: rgba(var(--danger--600-rgb), 0.08);
+    color: var(--danger--600);
   }
 }
 
 /* ── Edit Box ─────────────────────────────────────────────── */
 .cce-about__edit-box {
-  background: rgba(0, 108, 79, 0.03);
-  border: 1px solid rgba(0, 108, 79, 0.14);
+  background: rgba(var(--color-brand-rgb), 0.03);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.14);
   border-radius: 10px;
   padding: 1rem 1.25rem;
   margin-bottom: 1rem;
@@ -239,7 +239,7 @@ textarea.cce-about__input {
   margin: 0 0 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #006c4f;
+  color: var(--color-brand);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -274,7 +274,7 @@ textarea.cce-about__input {
 
 .cce-about__cell-primary {
   font-weight: 600;
-  color: #1c2724;
+  color: var(--color-text-primary);
   line-height: 1.35;
 }
 
@@ -287,7 +287,7 @@ textarea.cce-about__input {
 .cce-about__cell-detail {
   margin-top: 0.25rem;
   font-size: 0.85rem;
-  color: rgba(28, 39, 36, 0.75);
+  color: rgba(var(--color-text-primary-rgb), 0.75);
   line-height: 1.4;
 }
 
@@ -324,7 +324,7 @@ textarea.cce-about__input {
   border-radius: 8px;
   object-fit: contain;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  background: #fafafa;
+  background: var(--neutrals--50);
 }
 
 .cce-about__logo--placeholder {
@@ -336,7 +336,7 @@ textarea.cce-about__input {
 }
 
 .cce-about__link {
-  color: #006c4f;
+  color: var(--color-brand);
   font-size: 0.82rem;
   text-decoration: none;
   display: inline-block;

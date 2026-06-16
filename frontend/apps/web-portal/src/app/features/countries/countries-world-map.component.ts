@@ -73,18 +73,18 @@ const COUNTRY_COORDS: Record<string, [number, number]> = {
     .cce-world-map__svg { width: 100%; height: auto; display: block; }
     :host ::ng-deep .cce-dot {
       cursor: pointer;
-      fill: #1c2724;
-      stroke: #ffffff;
+      fill: var(--color-text-primary);
+      stroke: var(--white);
       stroke-width: 1.5;
       transition: fill 0.18s ease, r 0.18s ease;
     }
     :host ::ng-deep .cce-dot:hover, :host ::ng-deep .cce-dot--active {
-      fill: #006c4f;
-      stroke: #14b88f;
+      fill: var(--color-brand);
+      stroke: var(--color-brand-accent);
     }
     :host ::ng-deep .cce-world-path {
-      fill: #d1d5db;
-      stroke: #ffffff;
+      fill: var(--neutrals--300);
+      stroke: var(--white);
       stroke-width: 0.4;
     }
   `],

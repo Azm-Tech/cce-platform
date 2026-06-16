@@ -1,8 +1,8 @@
 :host { display: block; }
 
 .cce-sign-in-cta {
-  background: rgba(21, 101, 192, 0.05);
-  border: 1px dashed rgba(21, 101, 192, 0.25);
+  background: rgba(var(--primary--700-rgb), 0.05);
+  border: 1px dashed rgba(var(--primary--700-rgb), 0.25);
   border-radius: 6px;
   padding: 1rem;
   text-align: center;

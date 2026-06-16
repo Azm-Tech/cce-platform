@@ -15,12 +15,12 @@
 
   /* Subtle mint scrollbar */
   scrollbar-width: thin;
-  scrollbar-color: rgba(15, 139, 108, 0.30) transparent;
+  scrollbar-color: rgba(var(--color-brand-mid-rgb), 0.30) transparent;
   &::-webkit-scrollbar {
     width: 6px;
   }
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(0, 108, 79, 0.35), rgba(15, 139, 108, 0.30));
+    background: linear-gradient(180deg, rgba(var(--color-brand-rgb), 0.35), rgba(var(--color-brand-mid-rgb), 0.30));
     border-radius: 999px;
   }
   &::-webkit-scrollbar-track {
@@ -45,7 +45,7 @@
   margin: 0;
   padding: 2rem;
   text-align: center;
-  color: rgba(28, 39, 36, 0.50);
+  color: rgba(var(--color-text-primary-rgb), 0.50);
   font-size: 0.95rem;
   font-style: normal;
 }

@@ -81,7 +81,7 @@ interface RescheduleForm {
       .cce-reschedule__date { grid-column: 1 / -1; }
     }
     .cce-reschedule__error {
-      background: #fdecea; color: #b00020; padding: 0.6rem 0.85rem;
+      background: var(--danger--50); color: var(--danger--600); padding: 0.6rem 0.85rem;
       border-radius: 6px; margin-top: 0.5rem; font-size: 0.85rem;
     }
   `],

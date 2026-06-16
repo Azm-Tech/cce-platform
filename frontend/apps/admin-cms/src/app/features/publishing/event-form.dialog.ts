@@ -128,7 +128,7 @@ interface EventForm {
       border: 1px solid rgba(0,0,0,0.08); object-fit: cover;
     }
     .cce-event-form__error {
-      background: #fdecea; color: #b00020; padding: 0.6rem 0.85rem;
+      background: var(--danger--50); color: var(--danger--600); padding: 0.6rem 0.85rem;
       border-radius: 6px; margin-top: 0.5rem; font-size: 0.85rem;
     }
     @media (max-width: 600px) {

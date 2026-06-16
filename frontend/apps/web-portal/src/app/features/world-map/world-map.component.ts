@@ -85,8 +85,8 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       <svg #svg class="cce-world-map__svg" role="img" aria-label="Interactive world map of cities">
         <defs>
           <radialGradient id="oceanGradient" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stop-color="#0b1d3a" />
-            <stop offset="100%" stop-color="#020617" />
+            <stop offset="0%" style="stop-color: var(--cce-map-ocean-top);" />
+            <stop offset="100%" style="stop-color: var(--cce-map-ocean-bottom);" />
           </radialGradient>
           <filter id="countryGlow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="1.5" result="blur" />
@@ -126,7 +126,7 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
 
       /* Countries — high-contrast borders + clear fill */
       :host ::ng-deep .cce-world-map__countries path {
-        fill: #1e3a5f;
+        fill: var(--cce-map-land);
         stroke: rgba(255, 255, 255, 0.7);
         stroke-width: 1.4;
         stroke-linejoin: round;
@@ -136,8 +136,8 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         cursor: default;
       }
       :host ::ng-deep .cce-world-map__countries path:hover {
-        fill: #2d5a87;
-        stroke: #ffffff;
+        fill: var(--cce-map-land-hover);
+        stroke: var(--white);
       }
       :host ::ng-deep .cce-world-map__countries path.cce-country--visible {
         animation: countryFadeIn 700ms ease-out forwards;
@@ -225,9 +225,9 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         transition: fill-opacity 0.2s ease, stroke-width 0.2s ease, stroke 0.2s ease;
         animation: cityBoundaryFadeIn 900ms ease-out 1.4s forwards;
       }
-      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--low    { fill: #4ade80; }
-      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--medium { fill: #fbbf24; }
-      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--high   { fill: #f87171; }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--low    { fill: var(--success--400); }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--medium { fill: var(--warning--400); }
+      :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--high   { fill: var(--danger--400); }
       :host ::ng-deep .cce-world-map__city-boundaries path.cce-city-boundary--filtered-out {
         opacity: 0 !important;
       }
@@ -258,20 +258,20 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         animation: markerDropIn 800ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker__core {
-        fill: #f4a300;
-        stroke: #fff;
+        fill: var(--warning--400);
+        stroke: var(--white);
         stroke-width: 1.2;
         filter: url(#markerGlow);
         transition: fill 0.2s ease, r 0.2s ease;
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--low .cce-city-marker__core {
-        fill: #4ade80;
+        fill: var(--success--400);
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--medium .cce-city-marker__core {
-        fill: #fbbf24;
+        fill: var(--warning--400);
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--high .cce-city-marker__core {
-        fill: #f87171;
+        fill: var(--danger--400);
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker__pulse {
         fill: none;
@@ -280,20 +280,20 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
         transform-origin: center;
         animation: markerPulse 2.4s ease-out infinite;
       }
-      :host ::ng-deep .cce-world-map__cities .cce-city-marker--low .cce-city-marker__pulse { color: #4ade80; }
-      :host ::ng-deep .cce-world-map__cities .cce-city-marker--medium .cce-city-marker__pulse { color: #fbbf24; }
-      :host ::ng-deep .cce-world-map__cities .cce-city-marker--high .cce-city-marker__pulse { color: #f87171; }
+      :host ::ng-deep .cce-world-map__cities .cce-city-marker--low .cce-city-marker__pulse { color: var(--success--400); }
+      :host ::ng-deep .cce-world-map__cities .cce-city-marker--medium .cce-city-marker__pulse { color: var(--warning--400); }
+      :host ::ng-deep .cce-world-map__cities .cce-city-marker--high .cce-city-marker__pulse { color: var(--danger--400); }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker:hover .cce-city-marker__core {
         r: 7;
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--selected .cce-city-marker__core {
-        stroke: #fff;
+        stroke: var(--white);
         stroke-width: 2.5;
         r: 8;
       }
       :host ::ng-deep .cce-world-map__cities .cce-city-marker--selected .cce-city-marker__ring {
         fill: none;
-        stroke: #fff;
+        stroke: var(--white);
         stroke-width: 2;
         animation: selectedRing 1.8s ease-out infinite;
         transform-origin: center;
@@ -302,7 +302,7 @@ type GeoFeatureCollection = { type: 'FeatureCollection'; features: GeoFeature[] 
       /* Tooltip label */
       :host ::ng-deep .cce-world-map__cities .cce-city-marker__label {
         pointer-events: none;
-        fill: #fff;
+        fill: var(--white);
         font-family: ui-sans-serif, system-ui, sans-serif;
         font-size: 11px;
         font-weight: 600;

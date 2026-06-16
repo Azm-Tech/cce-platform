@@ -16,7 +16,7 @@
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.65);
+  color: rgba(var(--color-text-primary-rgb), 0.65);
   border-radius: 10px;
   padding: 0.45rem 0.7rem;
   cursor: pointer;
@@ -29,24 +29,24 @@
   }
 }
 .cce-like-dislike__btn:hover {
-  background: rgba(0, 108, 79, 0.06);
-  color: #006c4f;
+  background: rgba(var(--color-brand-rgb), 0.06);
+  color: var(--color-brand);
 }
 .cce-like-dislike__btn:active {
   transform: scale(0.96);
 }
 .cce-like-dislike__btn--active {
-  color: #006c4f;
-  background: rgba(0, 108, 79, 0.1);
+  color: var(--color-brand);
+  background: rgba(var(--color-brand-rgb), 0.1);
   font-weight: 700;
 }
 .cce-like-dislike__btn--down.cce-like-dislike__btn--active {
-  color: #b00020;
-  background: rgba(176, 0, 32, 0.08);
+  color: var(--danger--600);
+  background: rgba(var(--danger--600-rgb), 0.08);
 }
 .cce-like-dislike__btn--down:hover {
-  color: #b00020;
-  background: rgba(176, 0, 32, 0.06);
+  color: var(--danger--600);
+  background: rgba(var(--danger--600-rgb), 0.06);
 }
 
 .cce-like-dislike__count {
@@ -57,19 +57,19 @@
   height: 18px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(28, 39, 36, 0.06);
-  color: rgba(28, 39, 36, 0.7);
+  background: rgba(var(--color-text-primary-rgb), 0.06);
+  color: rgba(var(--color-text-primary-rgb), 0.7);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 .cce-like-dislike__btn--active .cce-like-dislike__count {
-  background: rgba(0, 108, 79, 0.16);
-  color: #006c4f;
+  background: rgba(var(--color-brand-rgb), 0.16);
+  color: var(--color-brand);
 }
 .cce-like-dislike__btn--down.cce-like-dislike__btn--active .cce-like-dislike__count {
-  background: rgba(176, 0, 32, 0.12);
-  color: #b00020;
+  background: rgba(var(--danger--600-rgb), 0.12);
+  color: var(--danger--600);
 }
 
 /* Compact mode hides the verbal label so the control fits inside

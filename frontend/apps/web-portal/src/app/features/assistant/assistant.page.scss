@@ -12,9 +12,9 @@
   margin-block: -1.5rem -2rem;
   min-height: calc(100vh - 80px);
   background:
-    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
-    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
-    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+    radial-gradient(900px 400px at 15% 0%, rgba(var(--color-brand-mid-rgb), 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(var(--color-accent-rgb), 0.08), transparent 55%),
+    linear-gradient(180deg, var(--neutrals--50) 0%, var(--primary--50) 100%);
   padding-block: 1.5rem 2rem;
   padding-inline: clamp(1rem, 3vw, 2.5rem);
   box-sizing: border-box;
@@ -53,19 +53,19 @@
   font-size: 0.70rem;
   font-weight: 800;
   letter-spacing: 0.18em;
-  color: #006c4f;
+  color: var(--color-brand);
   margin-bottom: 0.6rem;
   padding: 0.35rem 0.75rem;
-  background: rgba(15, 139, 108, 0.08);
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  background: rgba(var(--color-brand-mid-rgb), 0.08);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
   border-radius: 999px;
 }
 .cce-assistant__eyebrow-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #14b88f;
-  box-shadow: 0 0 8px rgba(20, 184, 143, 0.65);
+  background: var(--color-brand-accent);
+  box-shadow: 0 0 8px rgba(var(--color-brand-accent-rgb), 0.65);
   animation: cceAssistantDotPulse 2.4s ease-in-out infinite;
 }
 @keyframes cceAssistantDotPulse {
@@ -79,13 +79,13 @@
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.15;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-assistant__subtitle {
   margin: 0;
   font-size: 0.95rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
   line-height: 1.50;
   max-width: 580px;
 }
@@ -106,14 +106,14 @@
 }
 
 .cce-assistant__hero {
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.10);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.10);
   border-radius: 22px;
   padding: 2.25rem 2rem 1.85rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 12px 32px -16px rgba(0, 48, 31, 0.16);
+  box-shadow: 0 12px 32px -16px rgba(var(--color-brand-shadow-rgb), 0.16);
 
   &::before {
     content: '';
@@ -122,7 +122,7 @@
     inset-inline-end: -120px;
     width: 280px;
     height: 280px;
-    background: radial-gradient(circle, rgba(20, 184, 143, 0.18) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(var(--color-brand-accent-rgb), 0.18) 0%, transparent 65%);
     filter: blur(20px);
     pointer-events: none;
   }
@@ -136,11 +136,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 60%, #c8a045 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 60%, var(--color-accent) 100%);
+  color: var(--white);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.30) inset,
-    0 12px 28px -8px rgba(15, 139, 108, 0.55);
+    0 12px 28px -8px rgba(var(--color-brand-mid-rgb), 0.55);
   position: relative;
   animation: cceAssistantGlyphFloat 4.2s ease-in-out infinite alternate;
 
@@ -160,14 +160,14 @@
   font-size: clamp(1.4rem, 2.5vw, 1.85rem);
   font-weight: 800;
   letter-spacing: -0.015em;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 
 .cce-assistant__hero-body {
   margin: 0 auto;
   max-width: 540px;
   font-size: 1rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
   line-height: 1.55;
 }
 
@@ -184,7 +184,7 @@
   align-items: center;
   gap: 0.85rem;
   padding: 1rem 1.1rem;
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   cursor: pointer;
@@ -198,19 +198,19 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(0, 108, 79, 0.30);
-    box-shadow: 0 12px 28px -14px rgba(0, 48, 31, 0.22);
-    background: linear-gradient(135deg, #ffffff 0%, rgba(15, 139, 108, 0.04) 100%);
+    border-color: rgba(var(--color-brand-rgb), 0.30);
+    box-shadow: 0 12px 28px -14px rgba(var(--color-brand-shadow-rgb), 0.22);
+    background: linear-gradient(135deg, var(--white) 0%, rgba(var(--color-brand-mid-rgb), 0.04) 100%);
 
     .cce-assistant__suggestion-arrow {
-      color: #006c4f;
+      color: var(--color-brand);
       transform: translateX(3px);
     }
   }
   &:focus-visible {
     outline: none;
-    border-color: #006c4f;
-    box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.20);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(var(--color-brand-mid-rgb), 0.20);
   }
 }
 
@@ -221,29 +221,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--prompt-from, #006c4f), var(--prompt-to, #14b88f));
-  color: #ffffff;
-  box-shadow: 0 4px 12px -4px var(--prompt-glow, rgba(15, 139, 108, 0.45));
+  background: linear-gradient(135deg, var(--prompt-from, var(--color-brand)), var(--prompt-to, var(--color-brand-accent)));
+  color: var(--white);
+  box-shadow: 0 4px 12px -4px var(--prompt-glow, rgba(var(--color-brand-mid-rgb), 0.45));
 
   mat-icon { font-size: 22px; width: 22px; height: 22px; }
 }
 .cce-assistant__suggestion[data-tier="policy"] {
-  --prompt-from: #4f46e5; --prompt-to: #818cf8; --prompt-glow: rgba(79, 70, 229, 0.45);
+  --prompt-from: var(--info--600); --prompt-to: var(--info--400); --prompt-glow: rgba(var(--info--600-rgb), 0.45);
 }
 .cce-assistant__suggestion[data-tier="energy"] {
-  --prompt-from: #d97706; --prompt-to: #fbbf24; --prompt-glow: rgba(217, 119, 6, 0.45);
+  --prompt-from: var(--warning--500); --prompt-to: var(--warning--400); --prompt-glow: rgba(var(--warning--500-rgb), 0.45);
 }
 .cce-assistant__suggestion[data-tier="circular"] {
-  --prompt-from: #006c4f; --prompt-to: #14b88f; --prompt-glow: rgba(15, 139, 108, 0.45);
+  --prompt-from: var(--color-brand); --prompt-to: var(--color-brand-accent); --prompt-glow: rgba(var(--color-brand-mid-rgb), 0.45);
 }
 .cce-assistant__suggestion[data-tier="finance"] {
-  --prompt-from: #0891b2; --prompt-to: #22d3ee; --prompt-glow: rgba(8, 145, 178, 0.45);
+  --prompt-from: var(--tertiary--700); --prompt-to: var(--tertiary--600); --prompt-glow: rgba(var(--tertiary--700-rgb), 0.45);
 }
 .cce-assistant__suggestion[data-tier="cities"] {
-  --prompt-from: #7c3aed; --prompt-to: #a78bfa; --prompt-glow: rgba(124, 58, 237, 0.45);
+  --prompt-from: var(--info--500); --prompt-to: var(--info--400); --prompt-glow: rgba(var(--info--500-rgb), 0.45);
 }
 .cce-assistant__suggestion[data-tier="tech"] {
-  --prompt-from: #dc2626; --prompt-to: #f87171; --prompt-glow: rgba(220, 38, 38, 0.45);
+  --prompt-from: var(--danger--500); --prompt-to: var(--danger--400); --prompt-glow: rgba(var(--danger--500-rgb), 0.45);
 }
 
 .cce-assistant__suggestion-text {
@@ -256,17 +256,17 @@
   font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.14em;
-  color: var(--prompt-from, #006c4f);
+  color: var(--prompt-from, var(--color-brand));
 }
 .cce-assistant__suggestion-prompt {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #1c2724;
+  color: var(--color-text-primary);
   letter-spacing: -0.005em;
   line-height: 1.35;
 }
 .cce-assistant__suggestion-arrow {
-  color: rgba(28, 39, 36, 0.30);
+  color: rgba(var(--color-text-primary-rgb), 0.30);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -283,8 +283,8 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.5rem;
   padding: 0.85rem 1rem;
-  background: rgba(15, 139, 108, 0.05);
-  border: 1px solid rgba(0, 108, 79, 0.10);
+  background: rgba(var(--color-brand-mid-rgb), 0.05);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.10);
   border-radius: 14px;
   margin-top: 0.25rem;
 }
@@ -294,10 +294,10 @@
   gap: 0.55rem;
   font-size: 0.85rem;
   font-weight: 500;
-  color: rgba(28, 39, 36, 0.72);
+  color: rgba(var(--color-text-primary-rgb), 0.72);
 
   mat-icon {
-    color: #006c4f;
+    color: var(--color-brand);
     font-size: 20px;
     width: 20px;
     height: 20px;

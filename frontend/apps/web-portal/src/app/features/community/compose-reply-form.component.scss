@@ -1,12 +1,12 @@
-$p-50:  #ebf2fe;
-$p-500: #4285f2;
-$p-600: #2e6dd4;
-$p-800: #174a8d;
-$n-200: #e3e7ee;
-$n-300: #c9d0da;
-$n-500: #748091;
-$n-600: #4e5866;
-$n-900: #13171c;
+$p-50:  var(--primary--50);
+$p-500: var(--primary--500);
+$p-600: var(--primary--600);
+$p-800: var(--primary--800);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-600: var(--neutrals--600);
+$n-900: var(--neutrals--900);
 $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host { display: block; }
@@ -51,7 +51,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   min-height: 130px;
   padding: 16px;
   border: 1px solid $n-300;
-  background: #fff;
+  background: var(--white);
   font-size: 16px;
   color: $n-900;
   font-family: $font;
@@ -60,7 +60,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   box-sizing: border-box;
   line-height: 1.6;
 
-  &::placeholder { color: #98a2b0; }
+  &::placeholder { color: var(--neutrals--400); }
   &:focus { border-color: $p-500; }
 }
 
@@ -103,9 +103,9 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background: var(--danger--50);
+  border: 1px solid var(--danger--200);
+  color: var(--danger--500);
   font-size: 14px;
   font-family: $font;
 

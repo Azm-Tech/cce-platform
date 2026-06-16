@@ -18,8 +18,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--mat-sys-primary-container, #e8f5e9);
-    color: var(--mat-sys-on-primary-container, #1b5e20);
+    background: var(--mat-sys-primary-container, var(--success--50));
+    color: var(--mat-sys-on-primary-container, var(--success--800));
     flex-shrink: 0;
 
     mat-icon { font-size: 20px; width: 20px; height: 20px; }
@@ -50,8 +50,8 @@
     gap: 8px;
     padding: 10px 12px;
     border-radius: 8px;
-    background: #fdecea;
-    color: #b71c1c;
+    background: var(--danger--50);
+    color: var(--danger--600);
     font-size: 0.85rem;
 
     mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
@@ -60,7 +60,7 @@
   &__hint {
     margin: 0;
     font-size: 0.875rem;
-    color: var(--mat-sys-on-surface-variant, #616161);
+    color: var(--mat-sys-on-surface-variant, var(--neutrals--600));
     line-height: 1.5;
   }
 
@@ -98,25 +98,25 @@
   &__otp-box {
     width: 44px;
     height: 52px;
-    border: 2px solid rgba(0, 108, 79, 0.22);
+    border: 2px solid rgba(var(--color-brand-rgb), 0.22);
     border-radius: 10px;
     text-align: center;
     font-size: 1.4rem;
     font-weight: 700;
-    color: #1c2724;
-    background: #fff;
+    color: var(--color-text-primary);
+    background: var(--white);
     outline: none;
     caret-color: transparent;
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 
     &:focus {
-      border-color: #006c4f;
-      box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.12);
+      border-color: var(--color-brand);
+      box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.12);
     }
 
     &--filled {
-      border-color: rgba(0, 108, 79, 0.45);
-      background: rgba(0, 108, 79, 0.04);
+      border-color: rgba(var(--color-brand-rgb), 0.45);
+      background: rgba(var(--color-brand-rgb), 0.04);
     }
   }
 
@@ -127,7 +127,7 @@
   }
 
   &__otp-sent-icon {
-    color: var(--mat-sys-primary, #2e7d32);
+    color: var(--mat-sys-primary, var(--success--700));
     flex-shrink: 0;
     margin-top: 2px;
   }

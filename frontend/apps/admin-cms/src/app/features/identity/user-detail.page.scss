@@ -9,8 +9,8 @@
 }
 
 .cce-user-detail__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -33,8 +33,8 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #1565c0;
-  color: #fff;
+  background: var(--primary--700);
+  color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,11 +95,11 @@
 // ── Status chips ─────────────────────────────────────────────────────────────
 
 ::ng-deep .cce-chip--active.mat-mdc-chip {
-  --mdc-chip-label-text-color: #1b5e20;
-  background-color: #e8f5e9;
+  --mdc-chip-label-text-color: var(--success--800);
+  background-color: var(--success--50);
 }
 
 ::ng-deep .cce-chip--inactive.mat-mdc-chip {
-  --mdc-chip-label-text-color: #b71c1c;
-  background-color: #ffebee;
+  --mdc-chip-label-text-color: var(--danger--600);
+  background-color: var(--danger--50);
 }

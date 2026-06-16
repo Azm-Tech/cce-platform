@@ -13,9 +13,9 @@
   margin-block: -1.5rem -2rem;
   min-height: calc(100vh - 80px);
   background:
-    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
-    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
-    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+    radial-gradient(900px 400px at 15% 0%, rgba(var(--color-brand-mid-rgb), 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(var(--color-accent-rgb), 0.08), transparent 55%),
+    linear-gradient(180deg, var(--neutrals--50) 0%, var(--primary--50) 100%);
   padding-block: 1.5rem 4rem;
   padding-inline: clamp(1rem, 3vw, 2.5rem);
   box-sizing: border-box;
@@ -37,8 +37,8 @@
   overflow: hidden;
   height: 3px !important;
   margin-bottom: 1rem;
-  --mdc-linear-progress-active-indicator-color: #14b88f;
-  --mdc-linear-progress-track-color: rgba(15, 139, 108, 0.12);
+  --mdc-linear-progress-active-indicator-color: var(--color-brand-accent);
+  --mdc-linear-progress-track-color: rgba(var(--color-brand-mid-rgb), 0.12);
 }
 
 /* ─── Error banner ───────────────────────────────────── */
@@ -47,9 +47,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
-  color: #991b1b;
-  border: 1px solid rgba(220, 38, 38, 0.22);
+  background: linear-gradient(135deg, var(--danger--50) 0%, var(--white) 100%);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.22);
   padding: 0.95rem 1.25rem;
   border-radius: 12px;
   margin: 1rem 0 1.5rem;
@@ -59,7 +59,7 @@
     content: '⚠';
     font-size: 1.2rem;
     line-height: 1;
-    color: #dc2626;
+    color: var(--danger--500);
   }
   span { flex: 1; }
 }

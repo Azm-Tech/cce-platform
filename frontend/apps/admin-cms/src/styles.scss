@@ -4,13 +4,8 @@
 @use "./fancy";
 @use "./admin-polish";
 
-// Quill rich-text editor styles
-@import "quill/dist/quill.core.css";
-@import "quill/dist/quill.snow.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// Quill editor CSS is NOT global — it's a lazy `quill` style bundle
+// (see project.json) loaded on demand by cce-rich-text-editor. (PERF001 A1)
 
 @include theme.cce-theme;
 
@@ -19,7 +14,7 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background: #fafafa;
+  background: var(--neutrals--50);
   // Prevent horizontal scrollbar from full-bleed pages.
   overflow-x: hidden;
   overflow-x: clip;

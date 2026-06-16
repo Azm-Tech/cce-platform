@@ -1,0 +1,99 @@
+// ============================================================
+//  CCE Platform — Design System CSS Custom Properties.
+//
+//  This file does NOT hold color values. It EMITS runtime CSS
+//  custom properties derived from _palette.scss (the single
+//  source of truth). RGB triplets for rgba() are computed from
+//  the same hex via palette.rgb-triplet() — never hand-written.
+//
+//  To rebrand: edit _palette.scss, not this file.
+// ============================================================
+
+@use "sass:map";
+@use "./palette" as p;
+
+@mixin cce-css-vars {
+  :root {
+    /* ── Base ──────────────────────────────────────── */
+    --white: #{p.$white};
+    --black: #{p.$black};
+
+    /* ── Figma scales ──────────────────────────────── */
+    @each $shade, $value in p.$primary   { --primary--#{$shade}:   #{$value}; }
+    @each $shade, $value in p.$secondary { --secondary--#{$shade}: #{$value}; }
+    @each $shade, $value in p.$tertiary  { --tertiary--#{$shade}:  #{$value}; }
+    @each $shade, $value in p.$neutrals  { --neutrals--#{$shade}:  #{$value}; }
+    @each $shade, $value in p.$danger    { --danger--#{$shade}:    #{$value}; }
+    @each $shade, $value in p.$success   { --success--#{$shade}:   #{$value}; }
+    @each $shade, $value in p.$warning   { --warning--#{$shade}:   #{$value}; }
+    @each $shade, $value in p.$info      { --info--#{$shade}:      #{$value}; }
+
+    /* ── Brand semantics ───────────────────────────── */
+    --color-brand:        #{p.$brand};
+    --color-brand-dark:   #{p.$brand-dark};
+    --color-brand-darker: #{p.$brand-darker};
+    --color-brand-mid:    #{p.$brand-mid};
+    --color-brand-accent: #{p.$brand-accent};
+
+    --color-text-primary: #{p.$text-primary};
+
+    --color-accent:       #{p.$accent};
+    --color-accent-light: #{p.$accent-light};
+
+    /* Map theme (world-map SVG) */
+    --cce-map-ocean-top:    #{p.$map-ocean-top};
+    --cce-map-ocean-bottom: #{p.$map-ocean-bottom};
+    --cce-map-land:         #{p.$map-land};
+    --cce-map-land-hover:   #{p.$map-land-hover};
+
+    /* Material M3 `--mat-sys-*` compatibility shims.
+       The theme is M2 (components don't read these), but ~23 hand-written
+       app styles reference them. Aliasing to the palette here (a) gives them
+       correct on-brand values in BOTH apps, and (b) removes the dependency on
+       the redundant azure-blue M3 prebuilt theme. (PERF001 C / azure-blue) */
+    --mat-sys-primary:              var(--color-brand);
+    --mat-sys-primary-container:    var(--primary--50);
+    --mat-sys-on-primary-container: var(--primary--900);
+    --mat-sys-on-surface-variant:   var(--neutrals--600);
+    --mat-sys-surface-variant:      var(--neutrals--100);
+    --mat-sys-outline:              var(--neutrals--300);
+    --mat-sys-error:                var(--danger--500);
+
+    /* ── RGB channels — auto-derived, for rgba(var(--x-rgb), α) ── */
+    --color-brand-rgb:        #{p.rgb-triplet(p.$brand)};
+    --color-brand-mid-rgb:    #{p.rgb-triplet(p.$brand-mid)};
+    --color-brand-accent-rgb: #{p.rgb-triplet(p.$brand-accent)};
+    --color-brand-shadow-rgb: #{p.rgb-triplet(p.$brand-dark)};
+    --color-brand-dark-rgb:   #{p.rgb-triplet(p.$brand-darker)};
+    --color-text-primary-rgb: #{p.rgb-triplet(p.$text-primary)};
+    --color-accent-rgb:       #{p.rgb-triplet(p.$accent)};
+
+    --color-map-panel-rgb:    #{p.rgb-triplet(p.$map-panel)};
+    --neutrals--dark-rgb:     #{p.rgb-triplet(p.$neutral-dark)};
+
+    --primary--600-rgb:       #{p.rgb-triplet(map.get(p.$primary, 600))};
+    --primary--700-rgb:       #{p.rgb-triplet(map.get(p.$primary, 700))};
+    --primary--950-rgb:       #{p.rgb-triplet(map.get(p.$primary, 950))};
+    --tertiary--700-rgb:      #{p.rgb-triplet(map.get(p.$tertiary, 700))};
+    --tertiary--800-rgb:      #{p.rgb-triplet(map.get(p.$tertiary, 800))};
+    --success--600-rgb:       #{p.rgb-triplet(map.get(p.$success, 600))};
+    --warning--700-rgb:       #{p.rgb-triplet(map.get(p.$warning, 700))};
+    --neutrals--50-rgb:       #{p.rgb-triplet(map.get(p.$neutrals, 50))};
+    --neutrals--200-rgb:      #{p.rgb-triplet(map.get(p.$neutrals, 200))};
+    --neutrals--400-rgb:      #{p.rgb-triplet(map.get(p.$neutrals, 400))};
+    --neutrals--900-rgb:      #{p.rgb-triplet(map.get(p.$neutrals, 900))};
+    --secondary--950-rgb:     #{p.rgb-triplet(map.get(p.$secondary, 950))};
+    --danger--400-rgb:        #{p.rgb-triplet(map.get(p.$danger, 400))};
+    --danger--500-rgb:        #{p.rgb-triplet(map.get(p.$danger, 500))};
+    --danger--600-rgb:        #{p.rgb-triplet(map.get(p.$danger, 600))};
+    --danger--50-rgb:         #{p.rgb-triplet(map.get(p.$danger, 50))};
+    --success--400-rgb:       #{p.rgb-triplet(map.get(p.$success, 400))};
+    --success--700-rgb:       #{p.rgb-triplet(map.get(p.$success, 700))};
+    --success--100-rgb:       #{p.rgb-triplet(map.get(p.$success, 100))};
+    --success--50-rgb:        #{p.rgb-triplet(map.get(p.$success, 50))};
+    --info--500-rgb:          #{p.rgb-triplet(map.get(p.$info, 500))};
+    --info--600-rgb:          #{p.rgb-triplet(map.get(p.$info, 600))};
+    --warning--400-rgb:       #{p.rgb-triplet(map.get(p.$warning, 400))};
+    --warning--500-rgb:       #{p.rgb-triplet(map.get(p.$warning, 500))};
+  }
+}

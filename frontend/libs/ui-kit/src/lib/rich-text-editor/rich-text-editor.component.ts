@@ -3,9 +3,11 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnInit,
   forwardRef,
   inject,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { QuillModule, type QuillModules } from 'ngx-quill';
 import type { ContentChange } from 'ngx-quill';
@@ -76,7 +78,7 @@ const BASIC_TOOLBAR: QuillModules = {
     }
 
     .cce-rte__counter--over {
-      color: #b00020;
+      color: var(--danger--600);
       font-weight: 600;
     }
 
@@ -85,7 +87,7 @@ const BASIC_TOOLBAR: QuillModules = {
       border: 1px solid rgba(0, 0, 0, 0.38);
       border-bottom: none;
       border-radius: 4px 4px 0 0;
-      background: #fafafa;
+      background: var(--neutrals--50);
       font-family: inherit;
     }
 
@@ -146,7 +148,7 @@ const BASIC_TOOLBAR: QuillModules = {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RichTextEditorComponent implements ControlValueAccessor {
+export class RichTextEditorComponent implements ControlValueAccessor, OnInit {
   @Input() label = '';
   @Input() placeholder = '';
   /** When set, shows a live character counter (counts the HTML string,
@@ -161,8 +163,22 @@ export class RichTextEditorComponent implements ControlValueAccessor {
   @Input() dir?: 'rtl' | 'ltr';
 
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly doc = inject(DOCUMENT);
 
   readonly modules: QuillModules = BASIC_TOOLBAR;
+
+  /** Quill's stylesheet is shipped as a lazy `quill` style bundle (see
+   *  project.json) instead of the global render-blocking bundle. Inject it
+   *  once, the first time any editor instance mounts. (PERF001 A1) */
+  ngOnInit(): void {
+    const id = 'cce-quill-css';
+    if (this.doc.getElementById(id)) return;
+    const link = this.doc.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = 'quill.css';
+    this.doc.head.appendChild(link);
+  }
 
   value = '';
   isDisabled = false;

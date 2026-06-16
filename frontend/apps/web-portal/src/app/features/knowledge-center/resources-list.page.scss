@@ -62,7 +62,7 @@
 ::ng-deep cce-filter-rail {
   display: block;
   block-size: max-content;
-  background: #ffffff;
+  background: var(--white);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -89,7 +89,7 @@
   margin: 0 0 0.5rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.60);
+  color: rgba(var(--color-text-primary-rgb), 0.60);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -126,19 +126,19 @@
   font-family: inherit;
   direction: inherit;  /* follow page direction (rtl in Arabic) */
   text-align: start;   /* placeholder + text start at the right margin in RTL */
-  color: rgba(28, 39, 36, 0.85);
+  color: rgba(var(--color-text-primary-rgb), 0.85);
   background: rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 6px;
   outline: none;
 
   &:focus {
-    border-color: #006c4f;
-    background: #fff;
+    border-color: var(--color-brand);
+    background: var(--white);
   }
 
   &::placeholder {
-    color: rgba(28, 39, 36, 0.40);
+    color: rgba(var(--color-text-primary-rgb), 0.40);
   }
 }
 
@@ -146,7 +146,7 @@
   margin: 0;
   padding: 0.4rem 0.25rem;
   font-size: 0.8rem;
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
 }
 
 ::ng-deep .cce-filter-check {
@@ -167,7 +167,7 @@
     align-items: center;
     width: auto;
     font-size: 0.82rem !important;
-    color: rgba(28, 39, 36, 0.75) !important;
+    color: rgba(var(--color-text-primary-rgb), 0.75) !important;
   }
 
   .mdc-form-field > label {
@@ -184,17 +184,17 @@
 }
 
 ::ng-deep .cce-filter-check.mat-mdc-checkbox-checked .mdc-form-field {
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
   font-weight: 500 !important;
 }
 
 ::ng-deep .cce-filter-check .mdc-checkbox__background {
-  border-color: rgba(28, 39, 36, 0.30) !important;
+  border-color: rgba(var(--color-text-primary-rgb), 0.30) !important;
 }
 
 ::ng-deep .cce-filter-check.mat-mdc-checkbox-checked .mdc-checkbox__background {
-  background-color: #006c4f !important;
-  border-color: #006c4f !important;
+  background-color: var(--color-brand) !important;
+  border-color: var(--color-brand) !important;
 }
 
 /* ─── Content column ───────────────────────────────────── */
@@ -211,7 +211,7 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   padding: 0.65rem 1rem;
@@ -224,7 +224,7 @@
   --mdc-outlined-text-field-container-shape: 8px;
   --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.2);
   --mdc-outlined-text-field-hover-outline-color: rgba(0, 0, 0, 0.32);
-  --mdc-outlined-text-field-focus-outline-color: #006c4f;
+  --mdc-outlined-text-field-focus-outline-color: var(--color-brand);
 
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
 
@@ -255,7 +255,7 @@
   min-width: 200px;
 
   ::ng-deep .mat-mdc-text-field-wrapper {
-    background-color: rgba(0, 108, 79, 0.05);
+    background-color: rgba(var(--color-brand-rgb), 0.05);
   }
 }
 
@@ -280,23 +280,23 @@
 }
 
 .cce-resources-list__view-btn--active {
-  background: #fff !important;
+  background: var(--white) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
 }
 
 ::ng-deep .cce-resources-list__content mat-progress-bar {
   border-radius: 0 !important;
   height: 2px !important;
-  --mdc-linear-progress-active-indicator-color: #006c4f;
+  --mdc-linear-progress-active-indicator-color: var(--color-brand);
   --mdc-linear-progress-track-color: rgba(0, 0, 0, 0.06);
 }
 
 /* Error */
 .cce-resources-list__error {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid rgba(220, 38, 38, 0.20);
+  background: var(--danger--50);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.20);
   padding: 0.75rem 1rem;
   border-radius: 6px;
   font-weight: 500;
@@ -307,7 +307,7 @@
 .cce-resources-list__empty {
   text-align: center;
   padding: 3rem 1.5rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   font-size: 0.95rem;
   background: transparent;
   border: 1px dashed rgba(0, 0, 0, 0.12);
@@ -345,10 +345,10 @@
   100% { background-position: 600px 0; }
 }
 
-$shimmer: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+$shimmer: linear-gradient(90deg, var(--neutrals--100) 25%, var(--neutrals--200) 50%, var(--neutrals--100) 75%);
 
 .cce-resource-skeleton {
-  background: #fff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   overflow: hidden;

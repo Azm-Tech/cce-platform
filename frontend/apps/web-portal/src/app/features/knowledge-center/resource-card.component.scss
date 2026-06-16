@@ -1,27 +1,29 @@
 :host {
   display: block;
   height: 100%;
-  --type-color: #006c4f;
-  --type-tint: rgba(0, 108, 79, 0.08);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
+  --type-color: var(--color-brand);
+  --type-tint: rgba(var(--color-brand-rgb), 0.08);
 }
 
 /* ── Type colors ────────────────────────────────────────── */
-.cce-resource-card[data-type="Paper"]          { --type-color: #dc2626; --type-tint: rgba(220,38,38,.08); }
-.cce-resource-card[data-type="Article"]        { --type-color: #d97706; --type-tint: rgba(217,119,6,.08); }
-.cce-resource-card[data-type="Study"]          { --type-color: #4f46e5; --type-tint: rgba(79,70,229,.08); }
-.cce-resource-card[data-type="Presentation"]   { --type-color: #0891b2; --type-tint: rgba(8,145,178,.08); }
-.cce-resource-card[data-type="ScientificPaper"]{ --type-color: #0d9488; --type-tint: rgba(13,148,136,.08); }
-.cce-resource-card[data-type="Report"]         { --type-color: #ea580c; --type-tint: rgba(234,88,12,.08); }
-.cce-resource-card[data-type="Book"]           { --type-color: #92400e; --type-tint: rgba(146,64,14,.08); }
-.cce-resource-card[data-type="Research"]       { --type-color: #7c3aed; --type-tint: rgba(124,58,237,.08); }
-.cce-resource-card[data-type="CceGuide"]       { --type-color: #15803d; --type-tint: rgba(21,128,61,.08); }
-.cce-resource-card[data-type="Media"]          { --type-color: #2563eb; --type-tint: rgba(37,99,235,.08); }
+.cce-resource-card[data-type="Paper"]          { --type-color: var(--danger--500); --type-tint: rgba(var(--danger--500-rgb),.08); }
+.cce-resource-card[data-type="Article"]        { --type-color: var(--warning--500); --type-tint: rgba(var(--warning--500-rgb),.08); }
+.cce-resource-card[data-type="Study"]          { --type-color: var(--info--600); --type-tint: rgba(var(--info--600-rgb),.08); }
+.cce-resource-card[data-type="Presentation"]   { --type-color: var(--tertiary--700); --type-tint: rgba(var(--tertiary--700-rgb),.08); }
+.cce-resource-card[data-type="ScientificPaper"]{ --type-color: var(--tertiary--800); --type-tint: rgba(var(--tertiary--800-rgb),.08); }
+.cce-resource-card[data-type="Report"]         { --type-color: var(--warning--500); --type-tint: rgba(var(--warning--500-rgb),.08); }
+.cce-resource-card[data-type="Book"]           { --type-color: var(--warning--700); --type-tint: rgba(var(--warning--700-rgb),.08); }
+.cce-resource-card[data-type="Research"]       { --type-color: var(--info--500); --type-tint: rgba(var(--info--500-rgb),.08); }
+.cce-resource-card[data-type="CceGuide"]       { --type-color: var(--success--600); --type-tint: rgba(var(--success--600-rgb),.08); }
+.cce-resource-card[data-type="Media"]          { --type-color: var(--primary--600); --type-tint: rgba(var(--primary--600-rgb),.08); }
 
 /* ── Card shell ─────────────────────────────────────────── */
 .cce-resource-card {
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.09);
   border-radius: 12px;
   overflow: hidden;
@@ -74,7 +76,7 @@
   align-items: center;
   gap: 4px;
   background: var(--type-color);
-  color: #fff;
+  color: var(--white);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -108,7 +110,7 @@
   font-size: 0.94rem;
   font-weight: 600;
   line-height: 1.45;
-  color: #1c2724;
+  color: var(--color-text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -122,7 +124,7 @@
 .cce-resource-card__category {
   margin: 0;
   font-size: 0.75rem;
-  color: rgba(28, 39, 36, 0.50);
+  color: rgba(var(--color-text-primary-rgb), 0.50);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -142,7 +144,7 @@
   align-items: center;
   gap: 4px;
   font-size: 0.75rem;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -198,7 +200,7 @@
   align-items: center !important;
   justify-content: center !important;
   flex-shrink: 0;
-  color: rgba(28, 39, 36, 0.50) !important;
+  color: rgba(var(--color-text-primary-rgb), 0.50) !important;
 
   mat-icon {
     font-size: 18px;

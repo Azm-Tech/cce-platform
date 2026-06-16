@@ -1,0 +1,85 @@
+// ============================================================
+//  CCE Platform — Color palette: THE SINGLE SOURCE OF TRUTH.
+//  Every color in the app is defined ONCE here as a Sass value.
+//
+//  Two consumers derive from this file:
+//    • _css-vars.scss  — emits runtime CSS custom properties
+//                        (used by all component SCSS via var()).
+//    • _dga-theme.scss — builds the Angular Material M2 theme.
+//
+//  To rebrand the app, edit the values in this file only.
+//  RGB triplets for rgba() are computed automatically — never
+//  hand-maintained.
+// ============================================================
+
+@use "sass:color";
+
+// ── Figma design system scales ──────────────────────────────
+$primary: (
+  50:  #ebf2fe, 100: #c5d9fc, 200: #96baf9, 300: #6b9cf6, 400: #5490f4,
+  500: #4285f2, 600: #2e6dd4, 700: #235bb0, 800: #174a8d, 900: #082f59, 950: #002645,
+);
+$secondary: (
+  50:  #f2fbf5, 100: #cffae1, 200: #cbf5dc, 300: #c7f2d8, 400: #c0f0d1,
+  500: #baedcc, 600: #7dc9a0, 700: #4ba876, 800: #2a7a52, 900: #1a5438, 950: #0f3322,
+);
+$tertiary: (
+  50:  #f3faff, 100: #e6f5fd, 200: #def1fc, 300: #d7effc, 400: #cfecfc,
+  500: #c9e8fb, 600: #85c5ef, 700: #459ed9, 800: #1e72a8, 900: #124d75, 950: #0a2f48,
+);
+$neutrals: (
+  50:  #f9fafb, 100: #f1f3f7, 200: #e3e7ee, 300: #c9d0da, 400: #98a2b0,
+  500: #748091, 600: #4e5866, 700: #383f4a, 800: #242930, 900: #13171c, 950: #090b0e,
+);
+$danger: (
+  50:  #fef2f2, 100: #fee2e2, 200: #fecaca, 300: #fca5a5, 400: #f87171,
+  500: #dc2626, 600: #b91c1c, 700: #991b1b, 800: #7f1d1d, 900: #450a0a, 950: #1c0303,
+);
+$success: (
+  50:  #f0fdf4, 100: #dcfce7, 200: #bbf7d0, 300: #42d177, 400: #20bb59,
+  500: #16a34a, 600: #15803d, 700: #166534, 800: #14532d, 900: #052e16, 950: #021208,
+);
+$warning: (
+  50:  #fffbeb, 100: #fef3c7, 200: #fde68a, 300: #fcd34d, 400: #fbbf24,
+  500: #d97706, 600: #b45309, 700: #92400e, 800: #78350f, 900: #451a03, 950: #1c0a01,
+);
+$info: (
+  50:  #f5f3ff, 100: #ede9fe, 200: #ddd6fe, 300: #c4b5fd, 400: #a78bfa,
+  500: #7c3aed, 600: #6d28d9, 700: #5b21b6, 800: #4c1d95, 900: #2e1065, 950: #150838,
+);
+
+// ── Base ────────────────────────────────────────────────────
+$white: #ffffff;
+$black: #000000;
+
+// ── Semantic brand tokens (current app identity = blue) ─────
+// Change these to rebrand. They reference the scales above so a
+// scale edit cascades automatically.
+$brand:        map-get($primary, 500);   // canonical brand
+$brand-mid:    map-get($primary, 600);   // gradient mid stop
+$brand-accent: map-get($primary, 700);   // gradient deep stop
+$brand-dark:   map-get($primary, 900);   // deep navy surfaces
+$brand-darker: map-get($primary, 800);
+
+// Secondary accent — sky blue (no gold)
+$accent:       map-get($tertiary, 700);
+$accent-light: map-get($tertiary, 600);
+
+// Text
+$text-primary: #1c2724;
+
+// ── Standalone tones used in shadows / data-viz that are NOT
+//    part of a named scale shade. Kept distinct on purpose. ──
+$neutral-dark:     #101828;  // deep slate (overlays/shadows)
+$map-panel:        #0f1b31;  // explore/map panel navy
+$map-ocean-top:    #0b1d3a;  // world-map ocean gradient (top)
+$map-ocean-bottom: #020617;  // world-map ocean gradient (bottom)
+$map-land:         #1e3a5f;  // world-map landmass fill
+$map-land-hover:   #2d5a87;  // world-map landmass hover fill
+
+// ── Helper: hex → "r, g, b" triplet for rgba(var(--x), a) ───
+@function rgb-triplet($c) {
+  @return #{color.channel($c, "red",   $space: rgb)},
+          #{color.channel($c, "green", $space: rgb)},
+          #{color.channel($c, "blue",  $space: rgb)};
+}

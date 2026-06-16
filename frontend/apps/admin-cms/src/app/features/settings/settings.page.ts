@@ -59,8 +59,8 @@ const DEFAULT_SETTINGS: SettingsModel = {
     timezone: 'Asia/Riyadh',
   },
   branding: {
-    primaryColor: '#006c4f',
-    accentColor: '#c8a045',
+    primaryColor: 'var(--color-brand)',
+    accentColor: 'var(--color-accent)',
     logoUrl: 'https://assets.cce.local/logo.svg',
   },
   email: {

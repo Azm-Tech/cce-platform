@@ -6,13 +6,13 @@
 }
 
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
-$green:      #006c4f;
-$green-dark: #003a2b;
-$green-mid:  #0f8b6c;
-$gold:       #c8a045;
-$text:       #1c2724;
-$muted:      rgba(28, 39, 36, 0.50);
-$border:     rgba(0, 108, 79, 0.12);
+$green:      var(--color-brand);
+$green-dark: var(--color-brand-dark);
+$green-mid:  var(--color-brand-mid);
+$gold:       var(--color-accent);
+$text:       var(--color-text-primary);
+$muted:      rgba(var(--color-text-primary-rgb), 0.50);
+$border:     rgba(var(--color-brand-rgb), 0.12);
 $radius:     16px;
 $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
 
@@ -23,7 +23,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
 }
 
 .skel-pulse {
-  background: linear-gradient(90deg, #ececec 25%, #f9f9f9 50%, #ececec 75%);
+  background: linear-gradient(90deg, var(--neutrals--200) 25%, var(--neutrals--50) 50%, var(--neutrals--200) 75%);
   background-size: 800px 100%;
   animation: skel-shimmer 1.5s infinite linear;
   border-radius: $radius;
@@ -65,7 +65,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
 }
 
 .cce-sp__error-icon {
-  mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: #dc2626; }
+  mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: var(--danger--500); }
 }
 
 .cce-sp__error-msg { margin: 0; font-size: 0.95rem; color: $muted; }
@@ -76,7 +76,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   border-radius: $radius;
   overflow: hidden;
   background: linear-gradient(140deg, $green-dark 0%, $green 60%, $green-mid 100%);
-  box-shadow: 0 8px 32px -8px rgba(0, 48, 31, 0.35);
+  box-shadow: 0 8px 32px -8px rgba(var(--color-brand-shadow-rgb), 0.35);
   margin-bottom: 1.25rem;
 }
 
@@ -126,7 +126,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   margin: 0 0 0.3rem;
   font-size: 1.25rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--white);
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
@@ -137,9 +137,9 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   border-radius: 999px;
   font-size: 0.74rem;
   font-weight: 700;
-  background: rgba(200, 160, 69, 0.25);
-  color: #f0d084;
-  border: 1px solid rgba(200, 160, 69, 0.35);
+  background: rgba(var(--color-accent-rgb), 0.25);
+  color: var(--color-accent-light);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.35);
   letter-spacing: 0.03em;
 }
 
@@ -165,7 +165,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   border-color: rgba(255, 255, 255, 0.4) !important;
   --mdc-outlined-button-label-text-color: rgba(255, 255, 255, 0.9);
   --mdc-outlined-button-outline-color: rgba(255, 255, 255, 0.4);
-  --mdc-outlined-button-hover-label-text-color: #fff;
+  --mdc-outlined-button-hover-label-text-color: var(--white);
   font-size: 0.83rem !important;
 
   mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: inherit; }
@@ -192,7 +192,7 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
 
 /* ─── Cards ─────────────────────────────────────────────────────────────── */
 .cce-sp__card {
-  background: #fff;
+  background: var(--white);
   border-radius: $radius;
   border: 1px solid $border;
   box-shadow: $shadow;
@@ -288,9 +288,9 @@ $shadow:     0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;
-  background: rgba(0, 108, 79, 0.08);
+  background: rgba(var(--color-brand-rgb), 0.08);
   color: $green;
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
 }
 
 /* ─── Stats list ────────────────────────────────────────────────────────── */

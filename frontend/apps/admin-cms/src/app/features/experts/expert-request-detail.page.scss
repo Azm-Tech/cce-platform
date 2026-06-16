@@ -9,8 +9,8 @@
 }
 
 .cce-expert-detail__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -38,9 +38,9 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
 
-  &--pending  { background: #fff3cd; color: #856404; }
-  &--approved { background: #d4edda; color: #155724; }
-  &--rejected { background: #fdecea; color: #b00020; }
+  &--pending  { background: var(--warning--100); color: var(--warning--700); }
+  &--approved { background: var(--success--100); color: var(--success--800); }
+  &--rejected { background: var(--danger--50); color: var(--danger--600); }
 }
 
 .cce-expert-detail__meta {
@@ -50,14 +50,14 @@
 }
 
 .cce-expert-detail__card {
-  background: #fff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 
-  &--approved { border-color: rgba(21, 87, 36, 0.25); background: rgba(212, 237, 218, 0.2); }
-  &--rejected { border-color: rgba(176, 0, 32, 0.2); background: rgba(253, 236, 234, 0.4); }
+  &--approved { border-color: rgba(var(--success--700-rgb), 0.25); background: rgba(var(--success--100-rgb), 0.2); }
+  &--rejected { border-color: rgba(var(--danger--600-rgb), 0.2); background: rgba(var(--danger--50-rgb), 0.4); }
 }
 
 .cce-expert-detail__section-title {

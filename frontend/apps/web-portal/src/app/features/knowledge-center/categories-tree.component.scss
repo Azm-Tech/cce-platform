@@ -35,7 +35,7 @@
   border-radius: 4px;
   cursor: pointer;
   font: inherit;
-  color: rgba(28, 39, 36, 0.78);
+  color: rgba(var(--color-text-primary-rgb), 0.78);
   font-weight: 400;
   font-size: 0.9rem;
   line-height: 1.40;
@@ -43,11 +43,11 @@
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
-    color: #1c2724;
+    color: var(--color-text-primary);
   }
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(15, 139, 108, 0.30);
+    box-shadow: 0 0 0 2px rgba(var(--color-brand-mid-rgb), 0.30);
   }
 
   &--all {
@@ -59,11 +59,11 @@
   }
   &--child {
     font-size: 0.85rem;
-    color: rgba(28, 39, 36, 0.65);
+    color: rgba(var(--color-text-primary-rgb), 0.65);
   }
   &--selected {
-    color: #006c4f !important;
+    color: var(--color-brand) !important;
     font-weight: 600;
-    background: rgba(15, 139, 108, 0.08) !important;
+    background: rgba(var(--color-brand-mid-rgb), 0.08) !important;
   }
 }

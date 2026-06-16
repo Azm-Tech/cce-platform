@@ -6,7 +6,7 @@
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 1.25rem;
-  color: #006c4f !important;
+  color: var(--color-brand) !important;
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -17,9 +17,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
-  color: #8a1f0d;
-  border: 1px solid rgba(183, 28, 28, 0.18);
+  background: linear-gradient(180deg, var(--danger--50) 0%, var(--danger--50) 100%);
+  color: var(--danger--800);
+  border: 1px solid rgba(var(--danger--600-rgb), 0.18);
   border-radius: 12px;
   margin-bottom: 1rem;
   font-weight: 500;
@@ -35,14 +35,14 @@
   padding: 1.5rem 2rem;
   margin-bottom: 1.5rem;
   border-radius: 16px;
-  background: #e8f4f1;
-  border: 1px solid rgba(0, 108, 79, 0.12);
+  background: var(--primary--100);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.12);
   border-inline-start-width: 5px;
-  box-shadow: 0 4px 20px -10px rgba(0, 48, 31, 0.14);
+  box-shadow: 0 4px 20px -10px rgba(var(--color-brand-shadow-rgb), 0.14);
 
-  &--pending  { border-inline-start-color: #c8a045; background: #fdf8ed; border-color: rgba(200, 160, 69, 0.25); border-inline-start-color: #c8a045; }
-  &--approved { border-inline-start-color: #006c4f; }
-  &--rejected { border-inline-start-color: #b71c1c; background: #fdf2f1; border-color: rgba(183, 28, 28, 0.12); border-inline-start-color: #b71c1c; }
+  &--pending  { border-inline-start-color: var(--color-accent); background: var(--warning--50); border-color: rgba(var(--color-accent-rgb), 0.25); border-inline-start-color: var(--color-accent); }
+  &--approved { border-inline-start-color: var(--color-brand); }
+  &--rejected { border-inline-start-color: var(--danger--600); background: var(--danger--50); border-color: rgba(var(--danger--600-rgb), 0.12); border-inline-start-color: var(--danger--600); }
 }
 
 .cce-crd__hero-content { flex: 1; min-width: 0; }
@@ -61,7 +61,7 @@
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #003a2b 0%, #006c4f 60%, #0f8b6c 100%);
+  background: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand) 60%, var(--color-brand-mid) 100%);
   -webkit-background-clip: text;
           background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -79,9 +79,9 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: #e8f4f1;
-  color: #005038;
-  border: 1px solid rgba(0, 108, 79, 0.2);
+  background: var(--primary--100);
+  color: var(--color-brand-darker);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.2);
 }
 
 .cce-crd__status-badge {
@@ -103,28 +103,28 @@
   }
 
   &--pending {
-    background: #fef8ec;
-    color: #7c5a0a;
-    border: 1px solid rgba(200, 160, 69, 0.35);
-    &::before { background: #c8a045; }
+    background: var(--warning--50);
+    color: var(--warning--600);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+    &::before { background: var(--color-accent); }
   }
   &--approved {
-    background: #e8f4f1;
-    color: #00513b;
-    border: 1px solid rgba(0, 108, 79, 0.28);
-    &::before { background: #006c4f; }
+    background: var(--primary--100);
+    color: var(--primary--900);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.28);
+    &::before { background: var(--color-brand); }
   }
   &--rejected {
-    background: #fff5f4;
-    color: #8a1f0d;
-    border: 1px solid rgba(183, 28, 28, 0.22);
-    &::before { background: #b71c1c; }
+    background: var(--danger--50);
+    color: var(--danger--800);
+    border: 1px solid rgba(var(--danger--600-rgb), 0.22);
+    &::before { background: var(--danger--600); }
   }
 }
 
 .cce-crd__hero-date {
   font-size: 0.82rem;
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
   font-weight: 500;
 }
 
@@ -143,7 +143,7 @@
 }
 
 %skeleton-base {
-  background: linear-gradient(90deg, #eef3f1 25%, #daeee7 50%, #eef3f1 75%);
+  background: linear-gradient(90deg, var(--primary--50) 25%, var(--primary--100) 50%, var(--primary--50) 75%);
   background-size: 1200px 100%;
   animation: cce-shimmer 1.6s infinite linear;
   border-radius: 6px;
@@ -162,8 +162,8 @@
 }
 
 .cce-crd__skeleton-card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.08);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -214,11 +214,11 @@
 
 /* ── Section cards ────────────────────────────────────────── */
 .cce-crd__section {
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.08);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px -10px rgba(0, 48, 31, 0.12);
+  box-shadow: 0 4px 16px -10px rgba(var(--color-brand-shadow-rgb), 0.12);
 }
 
 .cce-crd__section-title {
@@ -227,10 +227,10 @@
   gap: 0.6rem;
   margin: 0 0 1.25rem;
   padding-bottom: 0.85rem;
-  border-bottom: 1px solid rgba(0, 60, 44, 0.07);
+  border-bottom: 1px solid rgba(var(--color-brand-shadow-rgb), 0.07);
   font-size: 0.78rem;
   font-weight: 800;
-  color: #006c4f;
+  color: var(--color-brand);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 
@@ -239,7 +239,7 @@
     width: 3px;
     height: 14px;
     border-radius: 999px;
-    background: linear-gradient(180deg, #006c4f 0%, #c8a045 100%);
+    background: linear-gradient(180deg, var(--color-brand) 0%, var(--color-accent) 100%);
     flex-shrink: 0;
   }
 }
@@ -264,14 +264,14 @@
 .cce-crd__label {
   font-size: 0.72rem;
   font-weight: 700;
-  color: rgba(0, 60, 44, 0.5);
+  color: rgba(var(--color-brand-shadow-rgb), 0.5);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .cce-crd__value {
   font-size: 0.93rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
   font-weight: 500;
   line-height: 1.5;
 }
@@ -279,23 +279,23 @@
 /* ── Admin notes section — status-tinted ─────────────────── */
 .cce-crd__notes-section {
   &--approved {
-    border-color: rgba(0, 108, 79, 0.2);
-    background: linear-gradient(180deg, #f4faf7 0%, #edf8f3 100%);
+    border-color: rgba(var(--color-brand-rgb), 0.2);
+    background: linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%);
 
-    .cce-crd__section-title { color: #00513b; }
+    .cce-crd__section-title { color: var(--primary--900); }
   }
   &--rejected {
-    border-color: rgba(183, 28, 28, 0.18);
-    background: linear-gradient(180deg, #fff8f7 0%, #fff1ef 100%);
+    border-color: rgba(var(--danger--600-rgb), 0.18);
+    background: linear-gradient(180deg, var(--danger--50) 0%, var(--danger--50) 100%);
 
-    .cce-crd__section-title { color: #8a1f0d; }
+    .cce-crd__section-title { color: var(--danger--800); }
   }
 }
 
 /* ── Rich text content (Quill output) ────────────────────── */
 .cce-crd__rich-content {
   font-size: 0.93rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
   line-height: 1.7;
   padding: 0;
 
@@ -321,8 +321,8 @@
 /* ── Download button ──────────────────────────────────────── */
 .cce-crd__download-btn {
   align-self: flex-start;
-  --mdc-outlined-button-outline-color: rgba(0, 108, 79, 0.35) !important;
-  --mdc-outlined-button-label-text-color: #006c4f !important;
+  --mdc-outlined-button-outline-color: rgba(var(--color-brand-rgb), 0.35) !important;
+  --mdc-outlined-button-label-text-color: var(--color-brand) !important;
   font-size: 0.82rem;
   font-weight: 600;
 

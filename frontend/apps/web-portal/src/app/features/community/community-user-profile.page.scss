@@ -1,15 +1,15 @@
-$p-50:  #ebf2fe;
-$p-100: #c5d9fc;
-$p-500: #4285f2;
-$p-600: #2e6dd4;
-$p-900: #082f59;
-$n-50:  #f9fafb;
-$n-100: #f1f3f7;
-$n-200: #e3e7ee;
-$n-300: #c9d0da;
-$n-500: #748091;
-$n-800: #242930;
-$n-900: #13171c;
+$p-50:  var(--primary--50);
+$p-100: var(--primary--100);
+$p-500: var(--primary--500);
+$p-600: var(--primary--600);
+$p-900: var(--primary--900);
+$n-50:  var(--neutrals--50);
+$n-100: var(--neutrals--100);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-800: var(--neutrals--800);
+$n-900: var(--neutrals--900);
 $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host {
@@ -26,7 +26,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 .cup-card {
-  background: #fff;
+  background: var(--white);
   border: 1px solid $n-100;
   display: flex;
   flex-direction: column;
@@ -70,7 +70,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     align-items: center;
     gap: 4px;
     font-size: 14px;
-    color: #15803d;
+    color: var(--success--600);
     font-family: $font;
 
     mat-icon { font-size: 16px; width: 16px; height: 16px; }
@@ -126,13 +126,13 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     height: 40px;
     padding: 0 16px;
     border: 1px solid $n-300;
-    background: #fff;
+    background: var(--white);
     color: $n-800;
     font-size: 15px;
     font-weight: 700;
     font-family: $font;
     cursor: pointer;
-    transition: all 0.13s;
+    transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
 
     mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
@@ -161,7 +161,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 // Skeleton
 .cup-skeleton {
-  background: #fff;
+  background: var(--white);
   border: 1px solid $n-100;
   padding: 40px 24px 32px;
   display: flex;
@@ -192,9 +192,9 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: var(--danger--50);
+  border: 1px solid var(--danger--200);
+  color: var(--danger--600);
   font-size: 15px;
   font-family: $font;
 
@@ -202,14 +202,14 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
   button {
     margin-inline-start: auto;
-    border: 1px solid #fca5a5;
+    border: 1px solid var(--danger--300);
     background: transparent;
-    color: #b91c1c;
+    color: var(--danger--600);
     padding: 4px 12px;
     font-size: 13px;
     font-weight: 700;
     font-family: $font;
     cursor: pointer;
-    &:hover { background: #fee2e2; }
+    &:hover { background: var(--danger--100); }
   }
 }

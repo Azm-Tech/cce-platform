@@ -9,15 +9,15 @@
   align-items: center;
   gap: 0.3rem;
   overflow-x: auto;
-  background: rgba(0, 108, 79, 0.04);
-  border: 1px solid rgba(0, 108, 79, 0.12);
+  background: rgba(var(--color-brand-rgb), 0.04);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.12);
   border-radius: 14px;
   padding: 0.3rem;
   scrollbar-width: thin;
 
   &::-webkit-scrollbar { height: 6px; }
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 108, 79, 0.25);
+    background: rgba(var(--color-brand-rgb), 0.25);
     border-radius: 999px;
   }
 }
@@ -32,28 +32,28 @@
   font: inherit;
   font-size: 0.86rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.7);
+  color: rgba(var(--color-text-primary-rgb), 0.7);
   cursor: pointer;
   border-radius: 999px;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.18s ease;
 
   &:hover {
-    color: #006c4f;
-    background: rgba(0, 108, 79, 0.08);
+    color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.08);
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(0, 108, 79, 0.28);
+    outline: 3px solid rgba(var(--color-brand-rgb), 0.28);
     outline-offset: 2px;
   }
 
   &--active {
-    background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
-    color: #ffffff;
-    box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 100%);
+    color: var(--white);
+    box-shadow: 0 6px 14px -8px rgba(var(--color-brand-rgb), 0.55);
 
-    &:hover { color: #ffffff; background: linear-gradient(135deg, #00553e 0%, #0a7f60 100%); }
+    &:hover { color: var(--white); background: linear-gradient(135deg, var(--color-brand-darker) 0%, var(--color-brand-mid) 100%); }
   }
 }
 
