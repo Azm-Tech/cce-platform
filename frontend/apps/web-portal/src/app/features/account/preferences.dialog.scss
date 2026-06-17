@@ -263,3 +263,7 @@
     width: 100%;
   }
 }
+
+/* Country option flag (consistent with registration / profile dropdowns) */
+.cce-prefs__cc-option { display: flex; align-items: center; gap: 0.5rem; }
+.cce-prefs__cc-flag { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }

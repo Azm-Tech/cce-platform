@@ -119,7 +119,14 @@
             [placeholder]="'preferences.countryPlaceholder' | transloco" />
           <mat-autocomplete #countryAuto (optionSelected)="onTargetCountrySelected($event.option.value, $event.option.viewValue)">
             @for (c of filteredCountries(); track c.id) {
-              <mat-option [value]="c.id">{{ isAr() ? c.nameAr : c.nameEn }}</mat-option>
+              <mat-option [value]="c.id">
+                <span class="cce-prefs__cc-option">
+                  @if (c.flagUrl) {
+                    <img class="cce-prefs__cc-flag" [src]="c.flagUrl" [alt]="" aria-hidden="true" />
+                  }
+                  {{ isAr() ? c.nameAr : c.nameEn }}
+                </span>
+              </mat-option>
             }
           </mat-autocomplete>
           @if (targetCountryId.invalid && targetCountryId.touched) {

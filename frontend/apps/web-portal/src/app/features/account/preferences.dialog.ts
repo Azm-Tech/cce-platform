@@ -51,6 +51,10 @@ export class PreferencesDialogComponent implements OnInit {
   private readonly ref = inject(MatDialogRef<PreferencesDialogComponent, boolean>);
 
   readonly questions = signal<InterestQuestion[]>([]);
+  /** Countries for the "country of interest" select. Uses listCountries (not
+   *  /api/country-codes) because the saved value is `targetCountryId`, which
+   *  the backend validates as a Country id (a country-code id → ERR070).
+   *  Country carries flagUrl, so the dropdown still shows flags. */
   readonly countries = signal<Country[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);

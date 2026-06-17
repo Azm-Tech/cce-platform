@@ -93,11 +93,18 @@
     gap: 8px;
     justify-content: center;
     padding: 8px 0 4px;
+    width: 100%;
+    box-sizing: border-box;
+    /* OTP is entered left-to-right regardless of UI direction */
+    direction: ltr;
   }
 
   &__otp-box {
-    width: 44px;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 52px;
     height: 52px;
+    box-sizing: border-box;
     border: 2px solid rgba(var(--color-brand-rgb), 0.22);
     border-radius: 10px;
     text-align: center;

@@ -145,7 +145,9 @@ export class ProfilePage implements OnInit {
     this.errorKind.set(null);
     const [profileRes, countryCodesRes, expertRes] = await Promise.all([
       this.api.getProfile(),
-      this.countriesApi.listCountryCodes({ isActive: true }),
+      // All country codes (no isActive filter) so a saved countryCodeId
+      // always resolves to its nationality label — same source as registration.
+      this.countriesApi.listCountryCodes(),
       this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
@@ -187,7 +189,7 @@ export class ProfilePage implements OnInit {
     this.saveErrorKind.set(null);
     this.mode.set('edit');
     if (!this.countryCodes().length) {
-      void this.countriesApi.listCountryCodes({ isActive: true }).then((res) => {
+      void this.countriesApi.listCountryCodes().then((res) => {
         if (res.ok && Array.isArray(res.value)) this.countryCodes.set(res.value);
       });
     }
