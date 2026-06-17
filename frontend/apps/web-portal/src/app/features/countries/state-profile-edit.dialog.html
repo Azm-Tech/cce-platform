@@ -102,12 +102,12 @@
           {{ 'stateProfile.description' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="descriptionAr"
             dir="rtl"
             [label]="'stateProfile.edit.descriptionAr' | transloco"
           />
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="descriptionEn"
             dir="ltr"
             [label]="'stateProfile.edit.descriptionEn' | transloco"
@@ -122,12 +122,12 @@
           {{ 'stateProfile.keyInitiatives' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="keyInitiativesAr"
             dir="rtl"
             [label]="'stateProfile.edit.keyInitiativesAr' | transloco"
           />
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="keyInitiativesEn"
             dir="ltr"
             [label]="'stateProfile.edit.keyInitiativesEn' | transloco"
@@ -142,12 +142,12 @@
           {{ 'stateProfile.contactInfo' | transloco }}
         </p>
         <div class="cce-sp-edit__bilingual">
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="contactInfoAr"
             dir="rtl"
             [label]="'stateProfile.edit.contactInfoAr' | transloco"
           />
-          <cce-rich-text-editor
+          <cce-rich-text-editor [imageUploader]="uploadImage"
             formControlName="contactInfoEn"
             dir="ltr"
             [label]="'stateProfile.edit.contactInfoEn' | transloco"

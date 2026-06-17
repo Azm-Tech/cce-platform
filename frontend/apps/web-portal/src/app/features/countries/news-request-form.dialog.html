@@ -34,14 +34,14 @@
       </mat-autocomplete>
     </mat-form-field>
 
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       formControlName="contentAr"
       [label]="'newsEventRequest.form.contentAr' | transloco"
       [maxLength]="2000"
       dir="rtl"
     />
 
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       formControlName="contentEn"
       [label]="'newsEventRequest.form.contentEn' | transloco"
       [maxLength]="2000"

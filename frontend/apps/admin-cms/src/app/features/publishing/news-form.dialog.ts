@@ -75,6 +75,12 @@ interface NewsForm {
 export class NewsFormDialogComponent {
   private readonly api = inject(PublishingApiService);
   private readonly assets = inject(ContentApiService);
+
+  /** Inline-image uploader for the rich-text editor (asset media store). */
+  readonly uploadImage = async (file: File): Promise<string | null> => {
+    const res = await this.assets.uploadMedia(file);
+    return res.ok ? res.value.url : null;
+  };
   private readonly toast = inject(ToastService);
   private readonly localeService = inject(LocaleService);
   readonly form: FormGroup<NewsForm>;

@@ -69,4 +69,30 @@ $cce-theme: mat.m2-define-light-theme((
       scroll-behavior: auto !important;
     }
   }
+
+  // Rich-text (Quill) OUTPUT rendered via [innerHTML] on public/detail
+  // pages. The editor itself loads quill.snow.css lazily; detail pages
+  // render the saved HTML without it, so the align/indent/direction
+  // classes + blockquote/code-block need styling here to actually show.
+  .ql-align-center  { text-align: center; }
+  .ql-align-right   { text-align: right; }
+  .ql-align-justify { text-align: justify; }
+  .ql-direction-rtl { direction: rtl; }
+  @for $i from 1 through 8 {
+    .ql-indent-#{$i} { padding-inline-start: #{$i * 3}em; }
+  }
+  blockquote {
+    border-inline-start: 4px solid var(--color-brand);
+    margin-inline: 0;
+    padding-inline-start: 1rem;
+    color: var(--neutrals--700);
+  }
+  pre.ql-syntax {
+    background: var(--neutrals--900);
+    color: var(--neutrals--50);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
 }

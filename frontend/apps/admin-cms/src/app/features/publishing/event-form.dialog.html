@@ -15,14 +15,14 @@
         <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-event-form__field--full"
       formControlName="descriptionAr"
       dir="rtl"
       [label]="'events.field.descriptionAr' | transloco"
       [maxLength]="descMax"
     />
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-event-form__field--full"
       formControlName="descriptionEn"
       dir="ltr"

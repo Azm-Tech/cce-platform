@@ -11,13 +11,26 @@ import { DOCUMENT } from '@angular/common';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { QuillModule, type QuillModules } from 'ngx-quill';
 import type { ContentChange } from 'ngx-quill';
+import type Quill from 'quill';
 
-const BASIC_TOOLBAR: QuillModules = {
+// Rich authoring toolbar shared by every cce-rich-text-editor instance
+// (news, events, resources, country requests, state profile, …).
+// The `image` button uploads via the consumer-supplied `imageUploader`
+// (asset API) and inserts the returned URL — NOT a base64 blob — so the
+// stored HTML stays small. Without an uploader it falls back to Quill's
+// default base64 behaviour.
+const RICH_TOOLBAR: QuillModules = {
   toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline'],
+    [{ header: [1, 2, 3, 4, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    ['blockquote', 'code-block'],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link'],
+    [{ indent: '-1' }, { indent: '+1' }],
+    [{ align: [] }],
+    [{ script: 'sub' }, { script: 'super' }],
+    [{ direction: 'rtl' }],
+    ['link', 'image'],
     ['clean'],
   ],
 };
@@ -42,6 +55,7 @@ const BASIC_TOOLBAR: QuillModules = {
         [readOnly]="isDisabled"
         [ngModel]="value"
         (onContentChanged)="onContentChanged($event)"
+        (onEditorCreated)="onEditorCreated($event)"
         (onBlur)="onTouched()"
         format="html"
       />
@@ -102,6 +116,7 @@ const BASIC_TOOLBAR: QuillModules = {
       min-height: 120px;
       padding: 10px 12px;
       line-height: 1.6;
+      color: var(--color-text-primary);
     }
 
     :host ::ng-deep .ql-editor.ql-blank::before {
@@ -138,6 +153,41 @@ const BASIC_TOOLBAR: QuillModules = {
       color: rgba(0, 0, 0, 0.38);
       cursor: not-allowed;
     }
+
+    /* Arabic labels for the header-style picker (Quill renders these via
+       CSS ::before). Scoped to RTL so the English UI keeps Quill defaults. */
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+      content: 'عادي' !important;
+    }
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+      content: 'عنوان 1' !important;
+    }
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+      content: 'عنوان 2' !important;
+    }
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+      content: 'عنوان 3' !important;
+    }
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
+      content: 'عنوان 4' !important;
+    }
+
+    /* In RTL the header picker's dropdown arrow (Quill positions its SVG at
+       right:0) collides with the Arabic label. Move the arrow to the left
+       and pad the label so the text has clear room. */
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label {
+      padding-right: 8px;
+      padding-left: 20px;
+    }
+    :host-context([dir="rtl"]) ::ng-deep .ql-snow .ql-picker.ql-header .ql-picker-label svg {
+      right: auto;
+      left: 0;
+    }
   `],
   providers: [
     {
@@ -162,10 +212,47 @@ export class RichTextEditorComponent implements ControlValueAccessor, OnInit {
    *  Unset = inherit from the document. */
   @Input() dir?: 'rtl' | 'ltr';
 
+  /** Uploads an image file and resolves to its URL (or null on failure).
+   *  When provided, the toolbar image button uploads via this function
+   *  (asset API) and inserts the URL — keeping the stored HTML small.
+   *  When omitted, the image button falls back to Quill's base64 embed. */
+  @Input() imageUploader?: (file: File) => Promise<string | null>;
+
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly doc = inject(DOCUMENT);
 
-  readonly modules: QuillModules = BASIC_TOOLBAR;
+  /** The Quill instance, captured on (onEditorCreated). */
+  private quill: Quill | null = null;
+
+  readonly modules: QuillModules = RICH_TOOLBAR;
+
+  /** Wire the toolbar image button to upload-then-insert-URL when an
+   *  `imageUploader` is supplied. */
+  onEditorCreated(quill: Quill): void {
+    this.quill = quill;
+    if (!this.imageUploader) return;
+    const toolbar = quill.getModule('toolbar') as {
+      addHandler(name: string, handler: () => void): void;
+    };
+    toolbar.addHandler('image', () => this.pickAndUploadImage());
+  }
+
+  private pickAndUploadImage(): void {
+    const input = this.doc.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file || !this.imageUploader || !this.quill) return;
+      const url = await this.imageUploader(file);
+      if (!url) return;
+      const range = this.quill.getSelection(true);
+      const index = range ? range.index : 0;
+      this.quill.insertEmbed(index, 'image', url, 'user');
+      this.quill.setSelection(index + 1, 0);
+    };
+    input.click();
+  }
 
   /** Quill's stylesheet is shipped as a lazy `quill` style bundle (see
    *  project.json) instead of the global render-blocking bundle. Inject it

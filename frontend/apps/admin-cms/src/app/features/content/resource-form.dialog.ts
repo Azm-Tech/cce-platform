@@ -157,6 +157,12 @@ const DESCRIPTION_MAX = 500;
 })
 export class ResourceFormDialogComponent {
   private readonly api = inject(ContentApiService);
+
+  /** Inline-image uploader for the rich-text editor (asset media store). */
+  readonly uploadImage = async (file: File): Promise<string | null> => {
+    const res = await this.api.uploadMedia(file);
+    return res.ok ? res.value.url : null;
+  };
   private readonly taxonomy = inject(TaxonomyApiService);
   private readonly countryApi = inject(CountryApiService);
   private readonly localeService = inject(LocaleService);

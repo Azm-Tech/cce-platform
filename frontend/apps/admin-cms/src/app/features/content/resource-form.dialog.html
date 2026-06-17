@@ -23,14 +23,14 @@
       </mat-form-field>
     </div>
 
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-resource-form__full"
       formControlName="descriptionAr"
       [label]="'resources.field.descriptionAr' | transloco"
       [maxLength]="descriptionMax"
       dir="rtl"
     />
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-resource-form__full"
       formControlName="descriptionEn"
       [label]="'resources.field.descriptionEn' | transloco"

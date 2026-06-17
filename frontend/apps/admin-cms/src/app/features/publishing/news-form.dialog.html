@@ -26,14 +26,14 @@
         <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
       }
     </mat-form-field>
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-news-form__field--full"
       formControlName="contentAr"
       dir="rtl"
       [label]="'news.field.contentAr' | transloco"
       [maxLength]="contentMax"
     />
-    <cce-rich-text-editor
+    <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-news-form__field--full"
       formControlName="contentEn"
       dir="ltr"

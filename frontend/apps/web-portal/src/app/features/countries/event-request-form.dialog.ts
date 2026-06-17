@@ -81,6 +81,13 @@ export class EventRequestFormDialogComponent {
   private readonly api = inject(CountriesApiService);
   private readonly communityApi = inject(CommunityApiService);
   private readonly media = inject(MediaApiService);
+
+  /** Inline-image uploader for the rich-text editor — uploads to the
+   *  public media store and returns the URL (no base64 in content). */
+  readonly uploadImage = async (file: File): Promise<string | null> => {
+    const res = await this.media.uploadFile(file);
+    return res.ok ? res.value.url : null;
+  };
   private readonly toast = inject(ToastService);
   private readonly localeService = inject(LocaleService);
   private readonly ref =
