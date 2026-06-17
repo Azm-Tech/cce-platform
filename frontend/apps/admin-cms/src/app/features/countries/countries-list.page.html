@@ -16,7 +16,7 @@
     <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.flag' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
       @if (r.flagUrl) {
-        <img [src]="r.flagUrl" [alt]="r.nameEn + ' flag'" class="cce-countries__flag" />
+        <img [src]="r.flagUrl" [alt]="(isAr() ? r.nameAr : r.nameEn) + ' flag'" class="cce-countries__flag" />
       }
     </td>
   </ng-container>
@@ -26,11 +26,11 @@
   </ng-container>
   <ng-container matColumnDef="nameEn">
     <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.name' | transloco }}</th>
-    <td mat-cell *matCellDef="let r">{{ r.nameEn }}</td>
+    <td mat-cell *matCellDef="let r">{{ isAr() ? r.nameAr : r.nameEn }}</td>
   </ng-container>
   <ng-container matColumnDef="region">
     <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.region' | transloco }}</th>
-    <td mat-cell *matCellDef="let r">{{ r.regionEn }}</td>
+    <td mat-cell *matCellDef="let r">{{ isAr() ? r.regionAr : r.regionEn }}</td>
   </ng-container>
   <ng-container matColumnDef="isActive">
     <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.active' | transloco }}</th>

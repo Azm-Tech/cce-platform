@@ -174,3 +174,20 @@ $muted:      rgba(var(--color-text-primary-rgb), 0.50);
     @media (max-width: 480px) { grid-template-columns: 1fr; }
   }
 }
+
+.cce-sp-edit__ndc-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-brand);
+
+  &:hover { text-decoration: underline; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}

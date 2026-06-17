@@ -57,7 +57,12 @@ export class StateProfileEditDialogComponent {
   private readonly toast = inject(ToastService);
   private readonly ref =
     inject<MatDialogRef<StateProfileEditDialogComponent, StateProfile | null>>(MatDialogRef);
-  private readonly current = inject<StateProfile>(MAT_DIALOG_DATA);
+  protected readonly current = inject<StateProfile>(MAT_DIALOG_DATA);
+
+  /** Existing NDC asset id, from either the object (`ndcDocument`) or bare
+   *  id (`ndcAssetId`) read shape. */
+  protected readonly currentNdcAssetId =
+    this.current.ndcDocument?.assetId ?? this.current.ndcAssetId ?? null;
 
   readonly form = new FormGroup<EditProfileForm>({
     descriptionAr: new FormControl(this.current.descriptionAr ?? '', { nonNullable: true }),
@@ -97,6 +102,13 @@ export class StateProfileEditDialogComponent {
     this.selectedNdc.set(file);
   }
 
+  /** Open the currently-stored NDC document (by its asset id) in a new tab. */
+  async viewCurrentNdc(): Promise<void> {
+    if (!this.currentNdcAssetId) return;
+    const res = await this.media.getAsset(this.currentNdcAssetId);
+    if (res.ok) window.open(res.value.url, '_blank', 'noopener');
+  }
+
   async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -107,7 +119,7 @@ export class StateProfileEditDialogComponent {
     this.saving.set(true);
     this.errorKey.set(null);
 
-    let ndcAssetId: string | null = this.current.ndcAssetId;
+    let ndcAssetId: string | null = this.currentNdcAssetId;
     if (this.selectedNdc()) {
       const uploadRes = await this.media.uploadAsset(this.selectedNdc()!);
       if (!uploadRes.ok) {

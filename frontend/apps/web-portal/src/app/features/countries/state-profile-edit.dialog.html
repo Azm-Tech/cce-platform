@@ -90,6 +90,12 @@
           class="cce-sp-edit__ndc-input"
           (change)="onNdcChange($event)"
         />
+        @if (currentNdcAssetId && !selectedNdc()) {
+          <button type="button" class="cce-sp-edit__ndc-view" (click)="viewCurrentNdc()">
+            <mat-icon aria-hidden="true">visibility</mat-icon>
+            {{ 'stateProfile.edit.viewCurrentNdc' | transloco }}
+          </button>
+        }
         @if (ndcError()) {
           <p class="cce-sp-edit__ndc-error">{{ ndcError()! | transloco }}</p>
         }

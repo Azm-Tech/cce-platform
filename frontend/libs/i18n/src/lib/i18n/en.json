@@ -719,7 +719,8 @@
       "chooseNdc": "Choose NDC file (PDF)",
       "ndcTypeError": "Only PDF files are allowed.",
       "mustBePositiveInt": "Must be a positive integer greater than zero.",
-      "mustBePositive": "Must be greater than zero."
+      "mustBePositive": "Must be greater than zero.",
+      "viewCurrentNdc": "View current file"
     }
   },
   "myRequests": {
@@ -1564,7 +1565,17 @@
       "keyInitiativesAr": "Key initiatives (Arabic)",
       "keyInitiativesEn": "Key initiatives (English)",
       "contactInfoAr": "Contact info (Arabic)",
-      "contactInfoEn": "Contact info (English)"
+      "contactInfoEn": "Contact info (English)",
+      "population": "Population",
+      "areaSqKm": "Area (km²)",
+      "gdpPerCapita": "GDP per capita",
+      "statsSection": "Statistics",
+      "ndcSection": "NDC Attachment",
+      "chooseNdc": "Choose a PDF file",
+      "ndcTypeError": "Only PDF files are allowed",
+      "mustBePositive": "Must be a positive value",
+      "mustBePositiveInt": "Must be a positive whole number",
+      "viewCurrentNdc": "View current file"
     },
     "edit": {
       "save": "Save",

@@ -1,7 +1,8 @@
 
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { LocaleService } from '@frontend/i18n';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -32,6 +33,10 @@ import type { Country } from './country.types';
 })
 export class CountriesListPage implements OnInit {
   private readonly api = inject(CountryApiService);
+  private readonly locale = inject(LocaleService);
+
+  /** Active locale → pick the matching bilingual field for display. */
+  readonly isAr = computed(() => this.locale.locale() === 'ar');
 
   readonly displayedColumns = ['flag', 'iso', 'nameEn', 'region', 'isActive', 'actions'];
   readonly searchInput = signal('');

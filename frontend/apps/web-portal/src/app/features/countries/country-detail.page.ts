@@ -10,11 +10,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService } from './countries-api.service';
-import { getMockAchievements, getMockCardStats, getMockCountryMeta, getMockKapsarc, getMockProfile } from './testing/countries-mock';
+import { MediaApiService } from '../../core/media/media-api.service';
+import { getMockAchievements, getMockCardStats, getMockCountryMeta, getMockKapsarc } from './testing/countries-mock';
 import { flagEmojiFor, flagUrlFor } from './flag-helpers';
 import type { Country, CountryAchievement, CountryMeta, CountryProfile, KapsarcSnapshot } from './country.types';
 
-type Tab = 'analytics' | 'resources' | 'initiatives' | 'experts';
+type Tab = 'analytics' | 'experts';
 
 interface RadarAxis {
   labelKey: string;
@@ -56,6 +57,14 @@ export class CountryDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
+  private readonly media = inject(MediaApiService);
+
+  /** Open the country's NDC document (by asset id) in a new tab. */
+  async viewNdc(assetId: string): Promise<void> {
+    const res = await this.media.getAsset(assetId);
+    if (res.ok) window.open(res.value.url, '_blank', 'noopener');
+    else this.toast.error(`errors.${res.error.kind}`);
+  }
 
   readonly country = signal<Country | null>(null);
   readonly profile = signal<CountryProfile | null>(null);
@@ -64,7 +73,7 @@ export class CountryDetailPage implements OnInit {
   readonly flagFailed = signal(false);
   readonly activeTab = signal<Tab>('analytics');
   readonly downloadOpen = signal(false);
-  readonly tabList: Tab[] = ['analytics', 'resources', 'initiatives', 'experts'];
+  readonly tabList: Tab[] = ['analytics', 'experts'];
   readonly detailSkeletons = Array.from({ length: 6 });
 
   readonly mockHint = computed(() =>
@@ -312,34 +321,23 @@ export class CountryDetailPage implements OnInit {
     if (!id) { this.errorKind.set('not-found'); return; }
     this.loading.set(true);
 
-    const [countryRes, profileRes] = await Promise.all([
-      this.countriesApi.getById(id),
-      this.countriesApi.getProfile(id),
-    ]);
+    // The profile endpoint already returns the header data (name / flag /
+    // iso), so we only fetch it — no separate /api/countries/{id} call.
+    const profileRes = await this.countriesApi.getProfile(id);
     this.loading.set(false);
 
-    if (countryRes.ok) {
-      this.country.set(countryRes.value);
-    }
-
     if (profileRes.ok) {
-      this.profile.set(profileRes.value);
-      // If getById failed, build a minimal Country from the profile data
-      if (!countryRes.ok) {
-        const p = profileRes.value;
-        const iso2 = p.flagUrl?.match(/\/([a-z]{2})\.png/i)?.[1]?.toUpperCase() ?? '';
-        this.country.set({
-          id, isoAlpha3: p.isoAlpha3, isoAlpha2: iso2,
-          nameAr: p.nameAr, nameEn: p.nameEn,
-          regionAr: '', regionEn: '',
-          flagUrl: p.flagUrl ?? '',
-        });
-      }
+      const p = profileRes.value;
+      this.profile.set(p);
+      const iso2 = p.flagUrl?.match(/\/([a-z]{2})\.png/i)?.[1]?.toUpperCase() ?? '';
+      this.country.set({
+        id, isoAlpha3: p.isoAlpha3, isoAlpha2: iso2,
+        nameAr: p.nameAr, nameEn: p.nameEn,
+        regionAr: '', regionEn: '',
+        flagUrl: p.flagUrl ?? '',
+      });
     } else {
-      // Profile failed — show error and fall back to mock content
       this.errorKind.set(profileRes.error.kind);
-      const c = this.country();
-      if (c) this.profile.set(getMockProfile(c) as unknown as CountryProfile);
     }
   }
 }

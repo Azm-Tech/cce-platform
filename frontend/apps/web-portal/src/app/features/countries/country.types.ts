@@ -53,6 +53,13 @@ export interface CountryContentRequest {
   processedOn: string | null;
 }
 
+/** NDC document as returned by profile GET endpoints (read shape). The PUT
+ *  bodies accept just the `ndcAssetId` string. */
+export interface NdcDocument {
+  assetId: string;
+  originalFileName: string;
+}
+
 /** State rep country profile — GET /api/state/profile */
 export interface StateProfile {
   id: string;
@@ -66,6 +73,9 @@ export interface StateProfile {
   population: number | null;
   areaSqKm: number | null;
   gdpPerCapita: number | null;
+  /** Some endpoints return the NDC as an object, others as a bare id —
+   *  read with `ndcDocument?.assetId ?? ndcAssetId`. */
+  ndcDocument: NdcDocument | null;
   ndcAssetId: string | null;
   cceClassification: string | null;
   ccePerformanceScore: number | null;
@@ -176,7 +186,7 @@ export interface CountryProfile {
   population: number | null;
   areaSqKm: number | null;
   gdpPerCapita: number | null;
-  ndcDocument: string | null;
+  ndcDocument: NdcDocument | null;
   cceClassification: string | null;
   ccePerformanceScore: number | null;
   cceTotalIndex: number | null;

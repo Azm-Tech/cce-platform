@@ -719,7 +719,8 @@
       "chooseNdc": "اختر ملف NDC (PDF)",
       "ndcTypeError": "يُسمح فقط بملفات PDF.",
       "mustBePositiveInt": "يجب أن يكون عدداً صحيحاً أكبر من صفر.",
-      "mustBePositive": "يجب أن تكون القيمة أكبر من صفر."
+      "mustBePositive": "يجب أن تكون القيمة أكبر من صفر.",
+      "viewCurrentNdc": "عرض الملف الحالي"
     }
   },
   "myRequests": {
@@ -1564,7 +1565,17 @@
       "keyInitiativesAr": "المبادرات الرئيسية (عربي)",
       "keyInitiativesEn": "المبادرات الرئيسية (إنجليزي)",
       "contactInfoAr": "بيانات التواصل (عربي)",
-      "contactInfoEn": "بيانات التواصل (إنجليزي)"
+      "contactInfoEn": "بيانات التواصل (إنجليزي)",
+      "population": "عدد السكان",
+      "areaSqKm": "المساحة (كم²)",
+      "gdpPerCapita": "الناتج المحلي الإجمالي للفرد",
+      "statsSection": "الإحصاءات",
+      "ndcSection": "مرفق المساهمة المحددة وطنياً (NDC)",
+      "chooseNdc": "اختر ملف PDF",
+      "ndcTypeError": "يُسمح بملفات PDF فقط",
+      "mustBePositive": "يجب أن تكون قيمة موجبة",
+      "mustBePositiveInt": "يجب أن يكون عدداً صحيحاً موجباً",
+      "viewCurrentNdc": "عرض الملف الحالي"
     },
     "edit": {
       "save": "حفظ",

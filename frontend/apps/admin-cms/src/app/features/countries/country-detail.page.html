@@ -13,7 +13,7 @@
 @if (country(); as c) {
   <mat-card class="cce-country-detail__card">
     <mat-card-header>
-      <mat-card-title>{{ c.nameEn }} ({{ c.isoAlpha3 }})</mat-card-title>
+      <mat-card-title>{{ (isAr() ? c.nameAr : c.nameEn) }} ({{ c.isoAlpha3 }})</mat-card-title>
       <mat-card-subtitle>{{ 'countries.detail.subtitle' | transloco }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
@@ -62,34 +62,108 @@
     <mat-card-content>
       <form [formGroup]="profileForm" class="cce-country-detail__form">
         <div class="cce-country-detail__row">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.descriptionAr' | transloco }}</mat-label>
-            <textarea matInput formControlName="descriptionAr" rows="4"></textarea>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.descriptionEn' | transloco }}</mat-label>
-            <textarea matInput formControlName="descriptionEn" rows="4"></textarea>
-          </mat-form-field>
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="descriptionAr"
+            dir="rtl"
+            [label]="'countries.field.descriptionAr' | transloco"
+          />
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="descriptionEn"
+            dir="ltr"
+            [label]="'countries.field.descriptionEn' | transloco"
+          />
         </div>
         <div class="cce-country-detail__row">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.keyInitiativesAr' | transloco }}</mat-label>
-            <textarea matInput formControlName="keyInitiativesAr" rows="3"></textarea>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.keyInitiativesEn' | transloco }}</mat-label>
-            <textarea matInput formControlName="keyInitiativesEn" rows="3"></textarea>
-          </mat-form-field>
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="keyInitiativesAr"
+            dir="rtl"
+            [label]="'countries.field.keyInitiativesAr' | transloco"
+          />
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="keyInitiativesEn"
+            dir="ltr"
+            [label]="'countries.field.keyInitiativesEn' | transloco"
+          />
         </div>
         <div class="cce-country-detail__row">
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="contactInfoAr"
+            dir="rtl"
+            [label]="'countries.field.contactInfoAr' | transloco"
+          />
+          <cce-rich-text-editor
+            [imageUploader]="uploadImage"
+            formControlName="contactInfoEn"
+            dir="ltr"
+            [label]="'countries.field.contactInfoEn' | transloco"
+          />
+        </div>
+
+        <!-- Statistics -->
+        <div class="cce-country-detail__stats">
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.contactInfoAr' | transloco }}</mat-label>
-            <input matInput formControlName="contactInfoAr" />
+            <mat-label>{{ 'countries.field.population' | transloco }}</mat-label>
+            <input matInput type="number" step="1" min="1" formControlName="population" />
+            @if (profileForm.controls.population.touched && profileForm.controls.population.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (profileForm.controls.population.touched && (profileForm.controls.population.hasError('min') || profileForm.controls.population.hasError('pattern'))) {
+              <mat-error>{{ 'countries.field.mustBePositiveInt' | transloco }}</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.contactInfoEn' | transloco }}</mat-label>
-            <input matInput formControlName="contactInfoEn" />
+            <mat-label>{{ 'countries.field.areaSqKm' | transloco }}</mat-label>
+            <input matInput type="number" step="any" min="0.01" formControlName="areaSqKm" />
+            @if (profileForm.controls.areaSqKm.touched && profileForm.controls.areaSqKm.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (profileForm.controls.areaSqKm.touched && profileForm.controls.areaSqKm.hasError('min')) {
+              <mat-error>{{ 'countries.field.mustBePositive' | transloco }}</mat-error>
+            }
           </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'countries.field.gdpPerCapita' | transloco }}</mat-label>
+            <input matInput type="number" step="any" min="0.01" formControlName="gdpPerCapita" />
+            @if (profileForm.controls.gdpPerCapita.touched && profileForm.controls.gdpPerCapita.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (profileForm.controls.gdpPerCapita.touched && profileForm.controls.gdpPerCapita.hasError('min')) {
+              <mat-error>{{ 'countries.field.mustBePositive' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- NDC attachment (PDF) -->
+        <div class="cce-country-detail__ndc">
+          <label class="cce-country-detail__ndc-zone" for="ndc-file-input"
+            [class.cce-country-detail__ndc-zone--selected]="!!selectedNdc()">
+            <mat-icon aria-hidden="true">{{ selectedNdc() ? 'description' : 'upload_file' }}</mat-icon>
+            <span class="cce-country-detail__ndc-name">
+              {{ selectedNdc()?.name ?? ('countries.field.chooseNdc' | transloco) }}
+            </span>
+            <span class="cce-country-detail__ndc-tag">PDF</span>
+          </label>
+          <input
+            id="ndc-file-input"
+            type="file"
+            accept=".pdf"
+            class="cce-country-detail__ndc-input"
+            (change)="onNdcChange($event)"
+          />
+          @if (ndcAssetId() && !selectedNdc()) {
+            <button type="button" class="cce-country-detail__ndc-view" (click)="viewNdc()">
+              <mat-icon aria-hidden="true">visibility</mat-icon>
+              {{ 'countries.field.viewCurrentNdc' | transloco }}
+            </button>
+          }
+          @if (ndcError()) {
+            <p class="cce-country-detail__ndc-error">{{ ndcError()! | transloco }}</p>
+          }
         </div>
       </form>
     </mat-card-content>
