@@ -10,13 +10,14 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { CountryApiService } from '../countries/country-api.service';
 import type { Country } from '../countries/country.types';
 import { IdentityApiService } from './identity-api.service';
@@ -33,12 +34,12 @@ interface StateRepCreateForm {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
     TranslocoModule,
   ],
   templateUrl: './state-rep-create.dialog.html',
@@ -48,8 +49,11 @@ interface StateRepCreateForm {
 export class StateRepCreateDialogComponent implements OnInit {
   private readonly api = inject(IdentityApiService);
   private readonly countryApi = inject(CountryApiService);
+  private readonly localeService = inject(LocaleService);
   private readonly ref =
     inject<MatDialogRef<StateRepCreateDialogComponent, StateRepAssignment | null>>(MatDialogRef);
+
+  readonly isAr = computed(() => this.localeService.locale() === 'ar');
 
   readonly form = new FormGroup<StateRepCreateForm>({
     userId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -91,6 +95,16 @@ export class StateRepCreateDialogComponent implements OnInit {
       (c) => c.nameAr.includes(term) || c.nameEn.toLowerCase().includes(term),
     );
   });
+
+  /** Autocomplete selection → set the form id + reflect the label in the input. */
+  onUserSelected(id: string, display: string): void {
+    this.form.controls.userId.setValue(id);
+    this.userFilterCtrl.setValue(display, { emitEvent: false });
+  }
+  onCountrySelected(id: string, display: string): void {
+    this.form.controls.countryId.setValue(id);
+    this.countryFilterCtrl.setValue(display, { emitEvent: false });
+  }
 
   async ngOnInit(): Promise<void> {
     const [usersRes, countriesRes] = await Promise.all([

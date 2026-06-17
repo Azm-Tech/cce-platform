@@ -31,3 +31,17 @@
     }
   }
 }
+
+/* Country option flag (consistent with other flagged dropdowns) */
+.cce-state-rep-create__cc-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cce-state-rep-create__cc-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

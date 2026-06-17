@@ -57,7 +57,12 @@
       >
         @for (country of filteredCountries(); track country.id) {
           <mat-option [value]="country">
-            {{ locale() === 'ar' ? country.nameAr : country.nameEn }}
+            <span class="cce-user-create__cc-option">
+              @if (country.flagUrl) {
+                <img class="cce-user-create__cc-flag" [src]="country.flagUrl" [alt]="" aria-hidden="true" />
+              }
+              {{ locale() === 'ar' ? country.nameAr : country.nameEn }}
+            </span>
           </mat-option>
         } @empty {
           <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
