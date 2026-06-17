@@ -40,6 +40,11 @@
     --color-accent:       #{p.$accent};
     --color-accent-light: #{p.$accent-light};
 
+    /* Brand logo mark (fixed identity colors; blue = --color-brand) */
+    --logo-navy:  #{p.$logo-navy};
+    --logo-sky:   #{p.$logo-sky};
+    --logo-green: #{p.$logo-green};
+
     /* Map theme (world-map SVG) */
     --cce-map-ocean-top:    #{p.$map-ocean-top};
     --cce-map-ocean-bottom: #{p.$map-ocean-bottom};

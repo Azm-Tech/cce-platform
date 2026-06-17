@@ -1,5 +1,21 @@
 <header class="cce-header" role="banner">
-  <a routerLink="/" class="cce-header__logo" (click)="closeMobileMenu()">CCE</a>
+  <a
+    routerLink="/"
+    class="cce-header__logo"
+    (click)="closeMobileMenu()"
+    [attr.aria-label]="('header.brandLine1' | transloco) + ' ' + ('header.brandLine2' | transloco)"
+  >
+    <svg class="cce-header__logo-mark" viewBox="1575.32 29.5272 72.6779 62.9456" aria-hidden="true" focusable="false">
+      <path style="fill: var(--logo-sky)" d="M1616.04 74.2281H1598.42H1582.96L1593.49 92.4728H1616.04L1606.92 83.3504L1616.04 74.2281Z" />
+      <path style="fill: var(--logo-navy)" d="M1582.31 66.2211L1590.37 58.172L1598.42 66.2211V47.7549V29.5272H1593.49L1575.32 60.9913L1582.31 66.2211Z" />
+      <path style="fill: var(--logo-green)" d="M1607.29 47.7549H1624.89H1640.36L1629.82 29.5272H1607.29L1616.4 38.6411L1607.29 47.7549Z" />
+      <path style="fill: var(--color-brand)" d="M1641.01 55.7106L1632.95 63.7682L1624.89 55.7106V55.8128V74.2279V92.4726H1629.82L1648 60.9915L1641.01 55.7106Z" />
+    </svg>
+    <span class="cce-header__logo-text">
+      <span class="cce-header__logo-line1">{{ 'header.brandLine1' | transloco }}</span>
+      <span class="cce-header__logo-line2">{{ 'header.brandLine2' | transloco }}</span>
+    </span>
+  </a>
 
   <nav
     id="cce-primary-nav"
@@ -99,7 +115,6 @@
   </nav>
 
   <cce-search-box class="cce-header__search" />
-  <cce-locale-switcher class="cce-header__locale" />
 
   @if (isAuthenticated()) {
     <button
@@ -175,9 +190,12 @@
 
   } @else {
     <button type="button" mat-flat-button color="primary" (click)="signIn()" class="cce-header__signin">
+      <mat-icon class="cce-header__signin-icon" aria-hidden="true">login</mat-icon>
       {{ 'header.signIn' | transloco }}
     </button>
   }
+
+  <cce-locale-switcher class="cce-header__locale" />
 
   <button
     type="button"

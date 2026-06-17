@@ -457,7 +457,9 @@
     "manageProfile": "Manage Profile",
     "myRequests": "My Requests",
     "roleStateRep": "State Representative",
-    "stateRepSection": "My Country"
+    "stateRepSection": "My Country",
+    "brandLine1": "Knowledge Center",
+    "brandLine2": "for Circular Carbon Economy"
   },
   "footer": {
     "about": "About",
