@@ -81,6 +81,7 @@ builder.Services.AddScoped<ISeeder, DemoUsersSeeder>();
 builder.Services.AddScoped<ISeeder, PlatformSettingsSeeder>();
 builder.Services.AddScoped<ISeeder, NotificationTemplateSeeder>();
 builder.Services.AddScoped<ISeeder, DemoDataSeeder>();
+builder.Services.AddScoped<ISeeder, DemoTopicDataSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 using var host = builder.Build();

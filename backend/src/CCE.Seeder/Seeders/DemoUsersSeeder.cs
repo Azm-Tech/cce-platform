@@ -28,13 +28,14 @@ public sealed class DemoUsersSeeder : ISeeder
 
     private static readonly (string Email, string Password, string Role, string FirstName, string LastName)[] Users =
     {
-        ("superadmin@cce.local",  "SuperAdminPass123!",  "cce-super-admin",    "Super",   "Admin"),
-        ("admin@cce.local",       "AdminPass123!",       "cce-admin",          "System",  "Admin"),
-        ("contentmgr@cce.local",  "ContentMgrPass123!",  "cce-content-manager", "Content", "Manager"),
-        ("staterep@cce.local",    "StateRepPass123!",    "cce-state-representative",      "State",   "Representative"),
-        ("reviewer@cce.local",    "ReviewerPass1!",      "cce-reviewer",       "Content", "Reviewer"),
-        ("expert@cce.local",      "ExpertPass123!",      "cce-expert",         "Domain",  "Expert"),
-        ("user@cce.local",        "UserPass12345!",      "cce-user",           "Regular", "User"),
+        ("superadmin@cce.local",       "SuperAdminPass123!",  "cce-super-admin",    "Super",   "Admin"),
+        ("ahmed.elbatal@azm.com",      "SuperAdminPass123!",  "cce-super-admin",    "Ahmed",   "Elbatal"),
+        ("admin@cce.local",            "AdminPass123!",       "cce-admin",          "System",  "Admin"),
+        ("contentmgr@cce.local",       "ContentMgrPass123!",  "cce-content-manager", "Content", "Manager"),
+        ("staterep@cce.local",         "StateRepPass123!",    "cce-state-representative",      "State",   "Representative"),
+        ("reviewer@cce.local",         "ReviewerPass1!",      "cce-reviewer",       "Content", "Reviewer"),
+        ("expert@cce.local",           "ExpertPass123!",      "cce-expert",         "Domain",  "Expert"),
+        ("user@cce.local",             "UserPass12345!",      "cce-user",           "Regular", "User"),
     };
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)

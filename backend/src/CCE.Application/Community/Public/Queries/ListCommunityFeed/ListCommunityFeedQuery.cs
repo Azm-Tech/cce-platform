@@ -19,4 +19,5 @@ public sealed record ListCommunityFeedQuery(
     System.Guid? UserId,
     CCE.Domain.Community.PostType? PostType,
     int Page,
-    int PageSize) : IRequest<Response<PagedResult<CommunityFeedItemDto>>>;
+    int PageSize,
+    System.Guid? AuthorId = null) : IRequest<Response<PagedResult<CommunityFeedItemDto>>>;

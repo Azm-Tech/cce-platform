@@ -12,6 +12,7 @@ using CCE.Application.Community.Public.Queries.GetReplyThread;
 using CCE.Application.Community.Public.Queries.ListCommunityFeed;
 using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
+using CCE.Application.Community.Public.Queries.GetMyTopics;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
@@ -161,8 +162,30 @@ public static class CommunityPublicEndpoints
             return result.ToHttpResult();
         }).WithName("GetMyFollows");
 
+        // GET /api/me/posts — the caller's own published posts (same filters/sorting as community feed)
         // GET /api/me/posts/drafts — the caller's own unpublished drafts
         var me = app.MapGroup("/api/me/posts").WithTags("Community").RequireAuthorization();
+        me.MapGet("", async (
+            PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
+            CCE.Domain.Community.PostType? postType, int? page, int? pageSize,
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId();
+            if (userId is null || userId == System.Guid.Empty)
+                return Results.Unauthorized();
+            var query = new ListCommunityFeedQuery(
+                sort ?? PostFeedSort.Newest,
+                tagIds ?? System.Array.Empty<System.Guid>(),
+                communityId,
+                topicId,
+                userId,
+                postType,
+                page ?? 1,
+                pageSize ?? 20,
+                AuthorId: userId);
+            var result = await mediator.Send(query, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("ListMyPosts");
         me.MapGet("/drafts", async (int? page, int? pageSize, IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(
@@ -178,6 +201,17 @@ public static class CommunityPublicEndpoints
                 new ListMyMentionsQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).WithName("ListMyMentions");
+
+        // GET /api/me/topics — topics followed by the caller
+        var meTopics = app.MapGroup("/api/me/topics").WithTags("Community").RequireAuthorization();
+        meTopics.MapGet("", async (
+            string? search, int? page, int? pageSize,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new GetMyTopicsQuery(search, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("GetMyTopics");
 
         return app;
     }
