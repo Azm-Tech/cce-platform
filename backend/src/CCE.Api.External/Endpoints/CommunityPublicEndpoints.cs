@@ -17,6 +17,7 @@ using CCE.Application.Community.Public.Queries.ListMyMentions;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
+using CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -81,6 +82,17 @@ public static class CommunityPublicEndpoints
             var result = await mediator.Send(new GetCommunityBySlugQuery(slug), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("GetCommunityBySlug");
+
+        // GET /api/community/topics — global topics discovery (paginated, searchable, sortable)
+        community.MapGet("/topics", async (
+            string? search, string? sortBy, int? page, int? pageSize,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListPublicTopicsPaginatedQuery(search, sortBy, page ?? 1, pageSize ?? 20), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).AllowAnonymous().WithName("ListPublicTopicsPaginated");
 
         community.MapGet("/topics/{slug}", async (
             string slug, IMediator mediator, CancellationToken ct) =>
