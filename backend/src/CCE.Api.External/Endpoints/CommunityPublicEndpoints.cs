@@ -13,6 +13,7 @@ using CCE.Application.Community.Public.Queries.ListCommunityFeed;
 using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
+using CCE.Application.Community.Public.Queries.ListUserFeed;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
@@ -160,6 +161,28 @@ public static class CommunityPublicEndpoints
             var result = await mediator.Send(new GetMyFollowsQuery(userId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).WithName("GetMyFollows");
+
+        // GET /api/me/feed — personal home feed with the same filters as community feed
+        var myFeed = app.MapGroup("/api/me").WithTags("Community").RequireAuthorization();
+        myFeed.MapGet("/feed", async (
+            PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
+            CCE.Domain.Community.PostType? postType, int? page, int? pageSize,
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId();
+            if (!userId.HasValue) return Results.Unauthorized();
+            var result = await mediator.Send(
+                new ListUserFeedQuery(
+                    userId.Value,
+                    sort ?? PostFeedSort.Newest,
+                    tagIds ?? System.Array.Empty<System.Guid>(),
+                    communityId,
+                    topicId,
+                    postType,
+                    page ?? 1,
+                    pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("ListUserFeed");
 
         // GET /api/me/posts/drafts — the caller's own unpublished drafts
         var me = app.MapGroup("/api/me/posts").WithTags("Community").RequireAuthorization();

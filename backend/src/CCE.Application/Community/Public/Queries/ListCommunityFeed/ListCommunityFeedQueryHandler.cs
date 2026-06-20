@@ -13,8 +13,10 @@ namespace CCE.Application.Community.Public.Queries.ListCommunityFeed;
 /// <summary>
 /// Reads the community home feed. Ordering is taken from the Redis fan-out read-model
 /// (<see cref="IRedisFeedStore"/>) for community-scoped Hot/Newest queries with no tag filter,
-/// and from SQL for global, tag-filtered, top-voted, or Redis-miss queries. SQL is always the
-/// source of truth for the hydrated post data and the visibility guard.
+/// and from SQL for global, tag-filtered, top-voted, or Redis-miss queries. When a topicId is
+/// specified, a wider window is fetched from Redis and filtered inside
+/// <see cref="FeedHydratorService"/> — pages that exceed the window fall through to SQL.
+/// SQL is always the source of truth for hydrated post data and the visibility guard.
 /// </summary>
 public sealed class ListCommunityFeedQueryHandler
     : IRequestHandler<ListCommunityFeedQuery, Response<PagedResult<CommunityFeedItemDto>>>
@@ -22,12 +24,18 @@ public sealed class ListCommunityFeedQueryHandler
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
     private readonly MessageFactory _msg;
+    private readonly FeedHydratorService _hydratorService;
 
-    public ListCommunityFeedQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, MessageFactory msg)
+    public ListCommunityFeedQueryHandler(
+        ICceDbContext db,
+        IRedisFeedStore feedStore,
+        MessageFactory msg,
+        FeedHydratorService hydratorService)
     {
         _db = db;
         _feedStore = feedStore;
         _msg = msg;
+        _hydratorService = hydratorService;
     }
 
     public async Task<Response<PagedResult<CommunityFeedItemDto>>> Handle(
@@ -37,7 +45,9 @@ public sealed class ListCommunityFeedQueryHandler
         var pageSize = System.Math.Clamp(request.PageSize, 1, PaginationExtensions.MaxPageSize);
         var tagIds = request.TagIds ?? System.Array.Empty<System.Guid>();
 
-        // ─── Redis fast-path: community-scoped Hot/Newest, no tag filter, no post-type filter ───
+        // ─── Redis fast-path: community-scoped Hot/Newest, no tag filter, no post-type filter.
+        //     TopicId is handled by over-fetching a wider window and applying the filter inside
+        //     FeedHydratorService. Pages beyond the window fall through to SQL.
         var canUseRedis = tagIds.Count == 0
             && request.CommunityId.HasValue
             && request.PostType is null
@@ -46,11 +56,17 @@ public sealed class ListCommunityFeedQueryHandler
         if (canUseRedis)
         {
             var communityId = request.CommunityId!.Value;
+            var hasTopic = request.TopicId.HasValue;
+
+            // Over-fetch when topicId is active: a 5× window handles topics covering ≥20% of
+            // the community. Capped at 500 to bound the SQL IN-clause size. Narrower topics
+            // fall through to SQL for accurate pagination.
+            var fetchPage = hasTopic ? 1 : page;
+            var fetchSize = hasTopic ? System.Math.Min(page * pageSize * 5, 500) : pageSize;
+
             var ids = request.Sort == PostFeedSort.Hot
-                ? (await _feedStore.GetHotPostsAsync(communityId, page * pageSize, cancellationToken).ConfigureAwait(false))
-                    .Skip((page - 1) * pageSize).Take(pageSize).ToList()
-                : (await _feedStore.GetCommunityFeedAsync(communityId, page, pageSize, cancellationToken).ConfigureAwait(false))
-                    .ToList();
+                ? (await _feedStore.GetHotPostsAsync(communityId, fetchPage, fetchSize, cancellationToken).ConfigureAwait(false)).ToList()
+                : (await _feedStore.GetCommunityFeedAsync(communityId, fetchPage, fetchSize, cancellationToken).ConfigureAwait(false)).ToList();
 
             if (ids.Count > 0)
             {
@@ -61,24 +77,46 @@ public sealed class ListCommunityFeedQueryHandler
                 var total = request.Sort == PostFeedSort.Hot
                     ? await _feedStore.GetHotLeaderboardCountAsync(communityId, cancellationToken).ConfigureAwait(false)
                     : await _feedStore.GetCommunityFeedCountAsync(communityId, cancellationToken).ConfigureAwait(false);
-                var hydrated = await HydrateAsync(ids, request.UserId, cancellationToken).ConfigureAwait(false);
-                return _msg.Ok(
-                    new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, (int)total),
-                    "ITEMS_LISTED");
+
+                var hydrated = await _hydratorService
+                    .HydrateAsync(ids, request.UserId, request.TopicId, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (!hasTopic)
+                {
+                    return _msg.Ok(
+                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, (int)total),
+                        "ITEMS_LISTED");
+                }
+
+                // topicId active: page the in-memory filtered result.
+                var skip = (page - 1) * pageSize;
+                if (skip < hydrated.Count)
+                {
+                    return _msg.Ok(
+                        new PagedResult<CommunityFeedItemDto>(
+                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, (int)total),
+                        "ITEMS_LISTED");
+                }
+                // Window exhausted for this page — fall through to SQL.
             }
-            // Redis cold/unavailable — fall through to SQL.
+            // Redis cold/unavailable or window exhausted — fall through to SQL.
         }
 
         // ─── SQL path: global, tag-filtered, top-voted, or Redis miss ───
         var communityFilter = request.CommunityId;
         var topicFilter = request.TopicId;
-
         var postTypeFilter = request.PostType;
 
-        var query = _db.Posts
-            .Where(p => p.Status == PostStatus.Published)
-            .Where(p => _db.Communities.Any(c =>
-                c.Id == p.CommunityId && c.IsActive && c.Visibility == CommunityVisibility.Public))
+        // JOIN replaces the correlated Communities.Any subquery that was evaluated once
+        // per post row — a single hash-join is cheaper on any page size.
+        var query = (
+            from p in _db.Posts
+            join c in _db.Communities on p.CommunityId equals c.Id
+            where p.Status == PostStatus.Published
+                && c.IsActive
+                && c.Visibility == CommunityVisibility.Public
+            select p)
             .WhereIf(communityFilter.HasValue, p => p.CommunityId == communityFilter!.Value)
             .WhereIf(topicFilter.HasValue, p => p.TopicId == topicFilter!.Value)
             .WhereIf(tagIds.Count > 0, p => p.Tags.Any(t => tagIds.Contains(t.Id)))
@@ -103,134 +141,11 @@ public sealed class ListCommunityFeedQueryHandler
             .ToPagedResultAsync(page, pageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        var items = await HydrateAsync(pagedIds.Items, request.UserId, cancellationToken).ConfigureAwait(false);
+        var items = await _hydratorService
+            .HydrateAsync(pagedIds.Items, request.UserId, null, cancellationToken)
+            .ConfigureAwait(false);
         return _msg.Ok(
             new PagedResult<CommunityFeedItemDto>(items, page, pageSize, pagedIds.Total),
             "ITEMS_LISTED");
-    }
-
-    /// <summary>
-    /// Loads the posts for <paramref name="orderedIds"/> (preserving that order), re-applying the
-    /// published + public-and-active-community guard so stale/private/deleted IDs from Redis drop
-    /// out, then batch-enriches author names, attachment IDs, and tag IDs.
-    /// </summary>
-    private async Task<IReadOnlyList<CommunityFeedItemDto>> HydrateAsync(
-        IReadOnlyList<System.Guid> orderedIds, System.Guid? userId, CancellationToken ct)
-    {
-        if (orderedIds.Count == 0)
-        {
-            return System.Array.Empty<CommunityFeedItemDto>();
-        }
-
-        var posts = await _db.Posts
-            .Where(p => orderedIds.Contains(p.Id) && p.Status == PostStatus.Published)
-            .Where(p => _db.Communities.Any(c =>
-                c.Id == p.CommunityId && c.IsActive && c.Visibility == CommunityVisibility.Public))
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false);
-
-        if (posts.Count == 0)
-        {
-            return System.Array.Empty<CommunityFeedItemDto>();
-        }
-
-        var postIds = posts.Select(p => p.Id).ToList();
-        var authorIds = posts.Select(p => p.AuthorId).Distinct().ToList();
-
-        var authorNames = (await _db.Users
-            .Where(u => authorIds.Contains(u.Id))
-            .Select(u => new { u.Id, u.FirstName, u.LastName, u.UserName })
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false))
-            .ToDictionary(a => a.Id, a =>
-            {
-                var fullName = $"{a.FirstName} {a.LastName}".Trim();
-                return string.IsNullOrEmpty(fullName) ? a.UserName ?? string.Empty : fullName;
-            });
-
-        var attachmentsByPost = (await _db.PostAttachments
-            .Where(a => postIds.Contains(a.PostId))
-            .Select(a => new { a.PostId, a.AssetFileId })
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false))
-            .GroupBy(a => a.PostId)
-            .ToDictionary(
-                g => g.Key,
-                g => (IReadOnlyList<System.Guid>)g.Select(a => a.AssetFileId).ToList());
-
-        var tagsByPost = (await _db.Posts
-            .Where(p => postIds.Contains(p.Id))
-            .Select(p => new { p.Id, TagIds = p.Tags.Select(t => t.Id).ToList() })
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false))
-            .ToDictionary(x => x.Id, x => (IReadOnlyList<System.Guid>)x.TagIds);
-
-        var topicIds = posts.Select(p => p.TopicId).Distinct().ToList();
-        var topicNames = (await _db.Topics
-            .Where(t => topicIds.Contains(t.Id))
-            .Select(t => new { t.Id, t.NameAr, t.NameEn })
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false))
-            .ToDictionary(t => t.Id, t => (t.NameAr, t.NameEn));
-
-        var expertAuthorIds = new System.Collections.Generic.HashSet<System.Guid>(
-            await _db.ExpertProfiles
-                .Where(e => authorIds.Contains(e.UserId))
-                .Select(e => e.UserId)
-                .ToListAsyncEither(ct)
-                .ConfigureAwait(false));
-
-        var watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>();
-        if (userId.HasValue)
-        {
-            watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>(
-                await _db.PostFollows
-                    .Where(pf => postIds.Contains(pf.PostId) && pf.UserId == userId.Value)
-                    .Select(pf => pf.PostId)
-                    .ToListAsyncEither(ct)
-                    .ConfigureAwait(false));
-        }
-
-        var voteByPost = new System.Collections.Generic.Dictionary<System.Guid, int>();
-        if (userId.HasValue)
-        {
-            voteByPost = (await _db.PostVotes
-                .Where(pv => postIds.Contains(pv.PostId) && pv.UserId == userId.Value)
-                .Select(pv => new { pv.PostId, pv.Value })
-                .ToListAsyncEither(ct)
-                .ConfigureAwait(false))
-                .ToDictionary(v => v.PostId, v => v.Value);
-        }
-
-        var byId = posts.ToDictionary(p => p.Id);
-        var empty = (IReadOnlyList<System.Guid>)System.Array.Empty<System.Guid>();
-
-        return orderedIds
-            .Where(byId.ContainsKey)
-            .Select(id => byId[id])
-            .Select(p => new CommunityFeedItemDto(
-                p.Id,
-                p.CommunityId,
-                p.TopicId,
-                p.AuthorId,
-                authorNames.GetValueOrDefault(p.AuthorId),
-                p.Type,
-                p.Title,
-                p.Content,
-                p.Locale,
-                p.IsAnswerable,
-                p.AnsweredReplyId,
-                p.UpvoteCount,
-                p.DownvoteCount,
-                p.CommentsCount,
-                attachmentsByPost.GetValueOrDefault(p.Id, empty),
-                tagsByPost.GetValueOrDefault(p.Id, empty),
-                p.CreatedOn,
-                topicNames.GetValueOrDefault(p.TopicId).NameAr ?? string.Empty,
-                topicNames.GetValueOrDefault(p.TopicId).NameEn ?? string.Empty,
-                expertAuthorIds.Contains(p.AuthorId),
-                watchlistedPostIds.Contains(p.Id),
-                voteByPost.GetValueOrDefault(p.Id, 0)))
-            .ToList();
     }
 }

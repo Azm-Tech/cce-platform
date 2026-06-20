@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Community;
 using CCE.Application.Messages;
 using CCE.Application.Notifications.Public;
 using CCE.Domain.Common;
@@ -11,17 +12,20 @@ public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNot
 {
     private readonly IUserNotificationRepository _repo;
     private readonly ICceDbContext _db;
+    private readonly IRedisFeedStore _feedStore;
     private readonly MessageFactory _msg;
     private readonly ISystemClock _clock;
 
     public MarkNotificationReadCommandHandler(
         IUserNotificationRepository repo,
         ICceDbContext db,
+        IRedisFeedStore feedStore,
         MessageFactory msg,
         ISystemClock clock)
     {
         _repo = repo;
         _db = db;
+        _feedStore = feedStore;
         _msg = msg;
         _clock = clock;
     }
@@ -35,6 +39,11 @@ public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNot
 
         notif.MarkRead(_clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Decrement the badge counter by 1. RedisFeedStore clamps at 0 so this is safe
+        // even if the counter is already stale or missing.
+        await _feedStore.IncrementNotificationCountAsync(notif.UserId, delta: -1, cancellationToken)
+            .ConfigureAwait(false);
 
         return _msg.NotificationMarkedRead();
     }

@@ -15,19 +15,22 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly ICommunityRealtimePublisher _realtime;
+    private readonly IRedisFeedStore _feedStore;
 
     public SoftDeletePostCommandHandler(
         ICommunityModerationService service,
         ICceDbContext db,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
-        ICommunityRealtimePublisher realtime)
+        ICommunityRealtimePublisher realtime,
+        IRedisFeedStore feedStore)
     {
         _service = service;
         _db = db;
         _currentUser = currentUser;
         _clock = clock;
         _realtime = realtime;
+        _feedStore = feedStore;
     }
 
     public async Task<Unit> Handle(SoftDeletePostCommand request, CancellationToken cancellationToken)
@@ -53,6 +56,14 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
         }
 
         await _service.UpdatePostAsync(post, cancellationToken).ConfigureAwait(false);
+
+        // Remove the deleted post from Redis immediately so pagination totals stay accurate.
+        // Personal feed:user:{*} keys self-heal at 24h TTL — there is no reverse index to enumerate them.
+        if (wasPublished)
+        {
+            await _feedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         // Tell the post + community rooms the post was removed, and the moderation room who did it.
         await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.PostModerated,

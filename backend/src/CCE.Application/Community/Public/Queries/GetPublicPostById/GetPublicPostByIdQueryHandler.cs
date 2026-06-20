@@ -1,6 +1,8 @@
 using CCE.Application.Common;
+using CCE.Application.Community;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
@@ -13,11 +15,13 @@ public sealed class GetPublicPostByIdQueryHandler
     : IRequestHandler<GetPublicPostByIdQuery, Response<PostDetailDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly IRedisFeedStore _feedStore;
     private readonly MessageFactory _msg;
 
-    public GetPublicPostByIdQueryHandler(ICceDbContext db, MessageFactory msg)
+    public GetPublicPostByIdQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, MessageFactory msg)
     {
         _db = db;
+        _feedStore = feedStore;
         _msg = msg;
     }
 
@@ -27,48 +31,81 @@ public sealed class GetPublicPostByIdQueryHandler
     {
         var userId = request.UserId;
 
-        var dto = await (
+        // Single JOIN query — post + author + topic + expert status (LEFT JOIN).
+        // The original had three correlated subqueries embedded in the SELECT projection
+        // (ExpertProfiles.Any, PostFollows.Any, PostVotes.FirstOrDefault); this replaces them
+        // with one clean SQL statement and two tiny indexed lookups below.
+        var raw = await (
             from p in _db.Posts.AsNoTracking()
             join u in _db.Users.AsNoTracking() on p.AuthorId equals u.Id
             join t in _db.Topics.AsNoTracking() on p.TopicId equals t.Id
+            join ep in _db.ExpertProfiles.AsNoTracking() on u.Id equals ep.UserId into epGroup
+            from ep in epGroup.DefaultIfEmpty()
             where p.Id == request.Id && p.Status == PostStatus.Published
-            select new PostDetailDto(
-                p.Id,
-                p.CommunityId,
-                p.TopicId,
-                new PostAuthorDto(
-                    u.Id,
-                    u.FirstName + " " + u.LastName,
-                    u.AvatarUrl,
-                    _db.ExpertProfiles.Any(e => e.UserId == u.Id),
-                    u.PostsCount,
-                    u.FollowerCount),
-                p.Type,
-                p.Title,
-                p.Content,
-                p.Locale,
-                p.IsAnswerable,
-                p.AnsweredReplyId,
-                p.UpvoteCount,
-                p.DownvoteCount,
-                p.CommentsCount,
-                p.Attachments.Select(a => a.AssetFileId).ToList(),
+            select new
+            {
+                p.Id, p.CommunityId, p.TopicId,
+                AuthorId      = u.Id,
+                AuthorFirst   = u.FirstName,
+                AuthorLast    = u.LastName,
+                u.AvatarUrl, u.PostsCount, u.FollowerCount,
+                p.Type, p.Title, p.Content, p.Locale,
+                p.IsAnswerable, p.AnsweredReplyId,
+                p.UpvoteCount, p.DownvoteCount, p.CommentsCount,
                 p.CreatedOn,
-                t.NameAr,
-                t.NameEn,
-                userId.HasValue && _db.PostFollows.Any(pf =>
-                    pf.PostId == p.Id && pf.UserId == userId.Value),
-                userId.HasValue
-                    ? _db.PostVotes
-                        .Where(pv => pv.PostId == p.Id && pv.UserId == userId.Value)
-                        .Select(pv => pv.Value)
-                        .FirstOrDefault()
-                    : 0))
+                TopicNameAr = t.NameAr,
+                TopicNameEn = t.NameEn,
+                IsExpert = ep != null,
+            })
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return dto is null
-            ? _msg.NotFound<PostDetailDto>(ApplicationErrors.Community.POST_NOT_FOUND)
-            : _msg.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
+        if (raw is null)
+            return _msg.NotFound<PostDetailDto>(ApplicationErrors.Community.POST_NOT_FOUND);
+
+        // Attachments — separate query to avoid cartesian explosion with the JOIN above.
+        var attachmentIds = await _db.PostAttachments.AsNoTracking()
+            .Where(a => a.PostId == raw.Id)
+            .Select(a => a.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+
+        // Redis meta — fired before the user-specific EF queries so it runs concurrently.
+        var metaTask = _feedStore.GetPostMetaAsync(raw.Id, cancellationToken);
+
+        // User-specific point lookups — two tiny indexed queries, sequential (same DbContext).
+        var isFollowing = userId.HasValue
+            && await _db.PostFollows.AsNoTracking()
+                .AnyAsync(pf => pf.PostId == raw.Id && pf.UserId == userId.Value, cancellationToken)
+                .ConfigureAwait(false);
+
+        var vote = userId.HasValue
+            ? await _db.PostVotes.AsNoTracking()
+                .Where(pv => pv.PostId == raw.Id && pv.UserId == userId.Value)
+                .Select(pv => (int?)pv.Value)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false) ?? 0
+            : 0;
+
+        var meta = await metaTask.ConfigureAwait(false);
+
+        var authorName = $"{raw.AuthorFirst} {raw.AuthorLast}".Trim();
+        var dto = new PostDetailDto(
+            raw.Id, raw.CommunityId, raw.TopicId,
+            new PostAuthorDto(raw.AuthorId, authorName, raw.AvatarUrl, raw.IsExpert,
+                raw.PostsCount, raw.FollowerCount),
+            raw.Type, raw.Title, raw.Content, raw.Locale,
+            raw.IsAnswerable, raw.AnsweredReplyId,
+            meta?.Upvotes   ?? raw.UpvoteCount,
+            meta?.Downvotes ?? raw.DownvoteCount,
+            meta?.ReplyCount ?? raw.CommentsCount,
+            attachmentIds,
+            raw.CreatedOn,
+            raw.TopicNameAr ?? string.Empty,
+            raw.TopicNameEn ?? string.Empty,
+            isFollowing,
+            vote);
+
+        return _msg.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
     }
 }

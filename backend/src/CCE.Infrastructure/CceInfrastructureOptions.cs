@@ -65,4 +65,11 @@ public sealed class CceInfrastructureOptions
     /// Tune upward if subscriber lists are large and bus throughput allows it. Default 10.
     /// </summary>
     public int NewsletterFanOutConcurrency { get; init; } = 10;
+
+    /// <summary>
+    /// FollowerCount above which an author is treated as a celebrity and personal feed fan-out is
+    /// skipped. Their posts are merged dynamically at read time instead. Default 10 000.
+    /// Override via <c>Infrastructure:CelebrityFollowerThreshold</c> in appsettings without redeploy.
+    /// </summary>
+    public int CelebrityFollowerThreshold { get; init; } = 10_000;
 }
