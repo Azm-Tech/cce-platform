@@ -48,10 +48,16 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
             (await harness.GetConsumerHarness<VoteConsumer>().Consumed.Any<VoteCreatedIntegrationEvent>())
                 .Should().BeTrue();
 
-            // The consumer keeps the Redis hot counter warm and updates the hot leaderboard score.
+            // The consumer writes authoritative counts (idempotent absolute set) and updates the leaderboard.
             // The realtime VoteChanged push is owned by the API handler.
-            await feedStore.Received(1).IncrementPostVotesAsync(
-                postId, 1, 0, Arg.Any<CancellationToken>());
+            // NSubstitute rule: all args of the same type must use matchers when any one does.
+            await feedStore.Received(1).SetPostMetaAsync(
+                postId,
+                Arg.Is<int>(v => v == 1),   // upvotes
+                Arg.Is<int>(v => v == 0),   // downvotes
+                1.0,
+                Arg.Any<int>(),             // replyCount preserved from existing meta
+                Arg.Any<CancellationToken>());
             await feedStore.Received(1).AddToHotLeaderboardAsync(
                 communityId, postId, 1.0, Arg.Any<CancellationToken>());
         }
@@ -93,7 +99,6 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
                 TopicId: System.Guid.NewGuid(),
                 AuthorId: System.Guid.NewGuid(),
                 PublishedOn: System.DateTimeOffset.UtcNow,
-                IsExpert: false,
                 Locale: "ar"));
 
             (await harness.GetConsumerHarness<NotificationConsumer>().Consumed.Any<PostCreatedIntegrationEvent>())
@@ -140,7 +145,6 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
                 TopicId: topicId,
                 AuthorId: System.Guid.NewGuid(),
                 PublishedOn: System.DateTimeOffset.UtcNow,
-                IsExpert: false,
                 Locale: "en"));
 
             (await harness.GetConsumerHarness<SignalRConsumer>().Consumed.Any<PostCreatedIntegrationEvent>())

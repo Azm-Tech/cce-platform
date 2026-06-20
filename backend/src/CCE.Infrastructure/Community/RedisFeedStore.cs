@@ -122,7 +122,7 @@ public sealed class RedisFeedStore : IRedisFeedStore
         }
     }
 
-    public async Task RemoveFromFeedAsync(Guid userId, Guid postId, CancellationToken ct = default)
+    public async Task RemoveFromUserFeedAsync(Guid userId, Guid postId, CancellationToken ct = default)
     {
         try
         {
@@ -130,7 +130,48 @@ public sealed class RedisFeedStore : IRedisFeedStore
         }
         catch (RedisException ex)
         {
-            _logger.LogWarning(ex, "Redis unavailable for RemoveFromFeedAsync(user={UserId}, post={PostId}).", userId, postId);
+            _logger.LogWarning(ex, "Redis unavailable for RemoveFromUserFeedAsync(user={UserId}, post={PostId}).", userId, postId);
+        }
+    }
+
+    public async Task RemovePostFromAllFeedsAsync(Guid communityId, Guid postId, CancellationToken ct = default)
+    {
+        try
+        {
+            var db = Db;
+            var member = postId.ToString();
+            await db.SortedSetRemoveAsync($"feed:community:{communityId}", member).ConfigureAwait(false);
+            await db.SortedSetRemoveAsync($"hot:{communityId}", member).ConfigureAwait(false);
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for RemovePostFromAllFeedsAsync(community={CommunityId}, post={PostId}).", communityId, postId);
+        }
+    }
+
+    public async Task AddToUserFeedBatchAsync(
+        IReadOnlyCollection<Guid> userIds, Guid postId, DateTimeOffset publishedOn, CancellationToken ct = default)
+    {
+        if (userIds.Count == 0) return;
+        try
+        {
+            var db = Db;
+            var score = publishedOn.ToUnixTimeSeconds();
+            var member = postId.ToString();
+            var batch = db.CreateBatch();
+            var tasks = new List<Task>(userIds.Count * 2);
+            foreach (var userId in userIds)
+            {
+                var key = $"feed:user:{userId}";
+                tasks.Add(batch.SortedSetAddAsync(key, member, score));
+                tasks.Add(batch.KeyExpireAsync(key, FeedTtl));
+            }
+            batch.Execute();
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for AddToUserFeedBatchAsync(post={PostId}, users={Count}).", postId, userIds.Count);
         }
     }
 
@@ -216,6 +257,72 @@ public sealed class RedisFeedStore : IRedisFeedStore
         }
     }
 
+    public async Task<long> GetUserFeedCountAsync(Guid userId, CancellationToken ct = default)
+    {
+        try
+        {
+            return await Db.SortedSetLengthAsync($"feed:user:{userId}").ConfigureAwait(false);
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for GetUserFeedCountAsync(user={UserId}).", userId);
+            return 0;
+        }
+    }
+
+    public async Task<IReadOnlyList<(Guid PostId, DateTimeOffset PublishedOn)>> GetUserFeedWithScoresAsync(
+        Guid userId, int limit, CancellationToken ct = default)
+    {
+        try
+        {
+            var entries = await Db
+                .SortedSetRangeByRankWithScoresAsync($"feed:user:{userId}", 0, limit - 1, Order.Descending)
+                .ConfigureAwait(false);
+            return entries
+                .Select(e => (Guid.Parse(e.Element.ToString()), DateTimeOffset.FromUnixTimeSeconds((long)e.Score)))
+                .ToList();
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for GetUserFeedWithScoresAsync(user={UserId}).", userId);
+            return Array.Empty<(Guid, DateTimeOffset)>();
+        }
+    }
+
+    public async Task<IReadOnlyDictionary<Guid, PostMeta>> GetPostsMetaBatchAsync(
+        IReadOnlyCollection<Guid> postIds, CancellationToken ct = default)
+    {
+        if (postIds.Count == 0) return new Dictionary<Guid, PostMeta>();
+        try
+        {
+            var db = Db;
+            var batch = db.CreateBatch();
+            var tasks = postIds.ToDictionary(
+                id => id,
+                id => batch.HashGetAllAsync($"post:{id}:meta"));
+            batch.Execute();
+
+            var result = new Dictionary<Guid, PostMeta>(postIds.Count);
+            foreach (var (id, task) in tasks)
+            {
+                var entries = await task.ConfigureAwait(false);
+                if (entries.Length == 0) continue;
+                var dict = entries.ToDictionary(e => e.Name.ToString(), e => e.Value.ToString());
+                result[id] = new PostMeta(
+                    dict.TryGetValue("upvotes", out var u) && int.TryParse(u, out var up) ? up : 0,
+                    dict.TryGetValue("downvotes", out var d) && int.TryParse(d, out var dn) ? dn : 0,
+                    dict.TryGetValue("score", out var s) && double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var sc) ? sc : 0,
+                    dict.TryGetValue("replyCount", out var r) && int.TryParse(r, out var rc) ? rc : 0);
+            }
+            return result;
+        }
+        catch (RedisException ex)
+        {
+            _logger.LogWarning(ex, "Redis unavailable for GetPostsMetaBatchAsync({Count} posts).", postIds.Count);
+            return new Dictionary<Guid, PostMeta>();
+        }
+    }
+
     // ─── Hot leaderboards ───
 
     public async Task AddToHotLeaderboardAsync(Guid communityId, Guid postId, double score, CancellationToken ct = default)
@@ -249,11 +356,15 @@ public sealed class RedisFeedStore : IRedisFeedStore
         }
     }
 
-    public async Task<IReadOnlyList<Guid>> GetHotPostsAsync(Guid communityId, int topN, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Guid>> GetHotPostsAsync(Guid communityId, int page, int pageSize, CancellationToken ct = default)
     {
         try
         {
-            var entries = await Db.SortedSetRangeByRankAsync($"hot:{communityId}", 0, topN - 1, Order.Descending).ConfigureAwait(false);
+            var start = (page - 1) * pageSize;
+            var stop  = start + pageSize - 1;
+            var entries = await Db
+                .SortedSetRangeByRankAsync($"hot:{communityId}", start, stop, Order.Descending)
+                .ConfigureAwait(false);
             return entries.Select(e => Guid.Parse(e.ToString())).ToList();
         }
         catch (RedisException ex)
@@ -270,8 +381,11 @@ public sealed class RedisFeedStore : IRedisFeedStore
         try
         {
             var key = $"notif:{userId}:count";
-            await Db.StringIncrementAsync(key, delta).ConfigureAwait(false);
-            await Db.KeyExpireAsync(key, NotifTtl).ConfigureAwait(false);
+            var newVal = await Db.StringIncrementAsync(key, delta).ConfigureAwait(false);
+            if (newVal <= 0)
+                await Db.KeyDeleteAsync(key).ConfigureAwait(false);
+            else
+                await Db.KeyExpireAsync(key, NotifTtl).ConfigureAwait(false);
         }
         catch (RedisException ex)
         {

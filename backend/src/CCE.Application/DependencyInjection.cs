@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<MessageFactory>();
+        services.AddScoped<CCE.Application.Community.Public.FeedHydratorService>();
         services.AddScoped<CCE.Application.Identity.Public.Commands.ContactChangeOtpService>();
         services.AddScoped<CCE.Application.Content.IUserContentInterestResolver, CCE.Application.Content.UserContentInterestResolver>();
 
