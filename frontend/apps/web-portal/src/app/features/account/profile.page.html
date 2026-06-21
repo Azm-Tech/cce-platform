@@ -188,14 +188,14 @@
             </dl>
           </section>
 
-          <!-- Expertise -->
-          @if (p.knowledgeLevel || (p.interests && p.interests.length)) {
-            <section class="cce-profile__section-card">
-              <h2 class="cce-profile__section-title">
-                <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>workspace_premium</mat-icon></span>
-                {{ 'account.profile.section.expertise' | transloco }}
-              </h2>
+          <!-- Expertise & interests -->
+        <!--   <section class="cce-profile__section-card">
+            <h2 class="cce-profile__section-title">
+              <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>workspace_premium</mat-icon></span>
+              {{ 'account.profile.section.expertise' | transloco }}
+            </h2>
 
+            @if (p.knowledgeLevel || (p.interests && p.interests.length)) {
               @if (p.knowledgeLevel) {
                 <div class="cce-profile__expertise-row">
                   <span class="cce-profile__expertise-label">{{ 'account.profile.field.knowledgeLevel' | transloco }}</span>
@@ -222,8 +222,17 @@
                   </div>
                 </div>
               }
-            </section>
-          }
+            } @else {
+              <div class="cce-profile__expertise-empty">
+                <mat-icon aria-hidden="true">interests</mat-icon>
+                <p>{{ 'account.profile.expertise.empty' | transloco }}</p>
+                <button type="button" mat-stroked-button (click)="openPreferences()">
+                  <mat-icon>tune</mat-icon>
+                  {{ 'account.profile.expertise.addButton' | transloco }}
+                </button>
+              </div>
+            }
+          </section>-->
 
           <!-- Expert request status -->
           @if (expertStatus(); as es) {

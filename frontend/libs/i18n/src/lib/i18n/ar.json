@@ -1800,6 +1800,10 @@
       },
       "expertRequest": {
         "viewDetails": "عرض التفاصيل"
+      },
+      "expertise": {
+        "empty": "لم تقم بإضافة اهتماماتك بعد.",
+        "addButton": "خصّص تجربتك"
       }
     },
     "logout": {

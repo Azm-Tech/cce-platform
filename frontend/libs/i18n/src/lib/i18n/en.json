@@ -1800,6 +1800,10 @@
       },
       "expertRequest": {
         "viewDetails": "View Details"
+      },
+      "expertise": {
+        "empty": "You haven’t added your interests yet.",
+        "addButton": "Personalize your experience"
       }
     },
     "logout": {
