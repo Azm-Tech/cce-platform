@@ -17,6 +17,7 @@ import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { CommunityApiService } from '../community/community-api.service';
 import type { PublicTopic } from '../community/community.types';
 import { MediaApiService } from '../../core/media/media-api.service';
+import { AccountApiService } from '../account/account-api.service';
 import { CountriesApiService } from './countries-api.service';
 import { ContentType, type CountryContentRequest } from './country.types';
 
@@ -80,6 +81,7 @@ interface EventRequestForm {
 export class EventRequestFormDialogComponent {
   private readonly api = inject(CountriesApiService);
   private readonly communityApi = inject(CommunityApiService);
+  private readonly accountApi = inject(AccountApiService);
   private readonly media = inject(MediaApiService);
 
   /** Inline-image uploader for the rich-text editor — uploads to the
@@ -102,7 +104,9 @@ export class EventRequestFormDialogComponent {
   readonly errorKey = signal<string | null>(null);
   readonly hourOptions = HOUR_OPTIONS;
   readonly minuteOptions = MINUTE_OPTIONS;
-  private featuredImageUrl: string | null = null;
+  private featuredImageAssetId: string | null = null;
+  private knowledgeLevelId: string | null = null;
+  private jobSectorId: string | null = null;
 
   readonly topicSearch = new FormControl('');
   private readonly topicSearchValue = toSignal(this.topicSearch.valueChanges, { initialValue: '' });
@@ -169,11 +173,19 @@ export class EventRequestFormDialogComponent {
 
   constructor() {
     void this.loadTopics();
+    void this.loadUserInterests();
   }
 
   private async loadTopics(): Promise<void> {
     const res = await this.communityApi.listTopics();
     if (res.ok) this.topics.set(res.value);
+  }
+
+  private async loadUserInterests(): Promise<void> {
+    const res = await this.accountApi.getMyInterests();
+    if (!res.ok) return;
+    this.knowledgeLevelId = res.value.knowledgeAssessmentTopic?.id ?? null;
+    this.jobSectorId = res.value.jobSectorTopic?.id ?? null;
   }
 
   async onImagePicked(event: Event): Promise<void> {
@@ -186,10 +198,10 @@ export class EventRequestFormDialogComponent {
       return;
     }
     this.uploadingImage.set(true);
-    const res = await this.media.uploadFile(file);
+    const res = await this.media.uploadAsset(file);
     this.uploadingImage.set(false);
     if (res.ok) {
-      this.featuredImageUrl = res.value.url;
+      this.featuredImageAssetId = res.value.id;
       this.imagePreviewUrl.set(res.value.url);
     } else {
       this.toast.error('errors.ERR027');
@@ -219,7 +231,9 @@ export class EventRequestFormDialogComponent {
         locationEn: v.locationEn || null,
         onlineMeetingUrl: v.onlineMeetingUrl || null,
         topicId: v.topicId || null,
-        featuredImageUrl: this.featuredImageUrl,
+        featuredImageAssetId: this.featuredImageAssetId,
+        knowledgeLevelId: this.knowledgeLevelId,
+        jobSectorId: this.jobSectorId,
       },
     });
     this.saving.set(false);

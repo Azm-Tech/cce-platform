@@ -108,6 +108,7 @@ export interface SubmitRequestContent {
   resourceType?: number | null;
   categoryId?: string | null;
   assetFileId?: string | null;
+  countryIds?: string[] | null;
   startsOn?: string | null;
   endsOn?: string | null;
   locationAr?: string | null;
@@ -115,8 +116,10 @@ export interface SubmitRequestContent {
   onlineMeetingUrl?: string | null;
   contentAr?: string | null;
   contentEn?: string | null;
-  featuredImageUrl?: string | null;
+  featuredImageAssetId?: string | null;
   topicId?: string | null;
+  knowledgeLevelId?: string | null;
+  jobSectorId?: string | null;
 }
 
 /** Body for POST /api/state/requests */

@@ -62,6 +62,29 @@
       }
     </mat-form-field>
 
+    <!-- Topic -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'resourceRequest.form.topic' | transloco }}</mat-label>
+      <input matInput [formControl]="topicSearch" [matAutocomplete]="topicAuto" autocomplete="off" />
+      <mat-autocomplete #topicAuto (optionSelected)="onTopicSelected($event.option.value, $event.option.viewValue)">
+        @for (topic of filteredTopics(); track topic.id) {
+          <mat-option [value]="topic.id">{{ locale() === 'ar' ? topic.nameAr : topic.nameEn }}</mat-option>
+        } @empty {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- Covered countries -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'resourceRequest.form.countries' | transloco }}</mat-label>
+      <mat-select formControlName="countryIds" multiple>
+        @for (country of countries(); track country.id) {
+          <mat-option [value]="country.id">{{ locale() === 'ar' ? country.nameAr : country.nameEn }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
     <!-- File upload -->
     <div class="cce-resource-request-form__file">
       <span class="cce-resource-request-form__file-label">{{ 'resourceRequest.form.file' | transloco }}</span>

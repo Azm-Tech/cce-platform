@@ -14,8 +14,12 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
+import { AccountApiService } from '../account/account-api.service';
+import { CommunityApiService } from '../community/community-api.service';
+import type { PublicTopic } from '../community/community.types';
 import { RESOURCE_TYPE_VALUE, RESOURCE_TYPES, type ResourceCategory } from '../knowledge-center/knowledge.types';
 import { CountriesApiService } from './countries-api.service';
+import type { Country } from './country.types';
 import { ContentType, type CountryContentRequest } from './country.types';
 
 const ALLOWED_TYPES = ['application/pdf', 'application/msword',
@@ -28,6 +32,8 @@ interface ResourceRequestForm {
   descriptionEn: FormControl<string>;
   resourceType: FormControl<string>;
   categoryId: FormControl<string>;
+  topicId: FormControl<string>;
+  countryIds: FormControl<string[]>;
 }
 
 @Component({
@@ -52,6 +58,8 @@ interface ResourceRequestForm {
 })
 export class ResourceRequestFormDialogComponent implements OnInit {
   private readonly api = inject(CountriesApiService);
+  private readonly communityApi = inject(CommunityApiService);
+  private readonly accountApi = inject(AccountApiService);
   private readonly media = inject(MediaApiService);
 
   /** Inline-image uploader for the rich-text editor — uploads to the
@@ -68,7 +76,11 @@ export class ResourceRequestFormDialogComponent implements OnInit {
 
   readonly resourceTypes = RESOURCE_TYPES;
   readonly categories = signal<ResourceCategory[]>([]);
+  readonly topics = signal<PublicTopic[]>([]);
+  readonly countries = signal<Country[]>([]);
   readonly locale = this.localeService.locale;
+  private knowledgeLevelId: string | null = null;
+  private jobSectorId: string | null = null;
 
   readonly resourceTypeSearch = new FormControl('');
   private readonly resourceTypeSearchValue = toSignal(this.resourceTypeSearch.valueChanges, { initialValue: '' });
@@ -78,6 +90,17 @@ export class ResourceRequestFormDialogComponent implements OnInit {
     return this.resourceTypes.filter(t => t.toLowerCase().includes(q));
   });
 
+  readonly topicSearch = new FormControl('');
+  private readonly topicSearchValue = toSignal(this.topicSearch.valueChanges, { initialValue: '' });
+  readonly filteredTopics = computed(() => {
+    const q = (this.topicSearchValue() ?? '').trim().toLowerCase();
+    const all = this.topics();
+    if (!q) return all;
+    return all.filter(t =>
+      (t.nameAr ?? '').toLowerCase().includes(q) || (t.nameEn ?? '').toLowerCase().includes(q)
+    );
+  });
+
   readonly form = new FormGroup<ResourceRequestForm>({
     titleAr: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
     titleEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -85,6 +108,8 @@ export class ResourceRequestFormDialogComponent implements OnInit {
     descriptionEn: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] }),
     resourceType: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     categoryId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    topicId: new FormControl('', { nonNullable: true }),
+    countryIds: new FormControl<string[]>([], { nonNullable: true }),
   });
 
   readonly selectedFile = signal<File | null>(null);
@@ -94,11 +119,36 @@ export class ResourceRequestFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     void this.loadCategories();
+    void this.loadTopics();
+    void this.loadCountries();
+    void this.loadUserInterests();
   }
 
   private async loadCategories(): Promise<void> {
     const res = await this.api.listResourceCategories();
     if (res.ok) this.categories.set(res.value);
+  }
+
+  private async loadTopics(): Promise<void> {
+    const res = await this.communityApi.listTopics();
+    if (res.ok) this.topics.set(res.value);
+  }
+
+  private async loadCountries(): Promise<void> {
+    const res = await this.api.listCountries();
+    if (res.ok) this.countries.set(res.value);
+  }
+
+  private async loadUserInterests(): Promise<void> {
+    const res = await this.accountApi.getMyInterests();
+    if (!res.ok) return;
+    this.knowledgeLevelId = res.value.knowledgeAssessmentTopic?.id ?? null;
+    this.jobSectorId = res.value.jobSectorTopic?.id ?? null;
+  }
+
+  onTopicSelected(id: string, displayText: string): void {
+    this.form.controls.topicId.setValue(id);
+    this.topicSearch.setValue(id ? displayText : '', { emitEvent: false });
   }
 
   onFileChange(event: Event): void {
@@ -146,6 +196,10 @@ export class ResourceRequestFormDialogComponent implements OnInit {
         resourceType: RESOURCE_TYPE_VALUE[v.resourceType as keyof typeof RESOURCE_TYPE_VALUE] ?? 0,
         categoryId: v.categoryId || null,
         assetFileId: uploadRes.value.id,
+        topicId: v.topicId || null,
+        countryIds: v.countryIds.length ? v.countryIds : null,
+        knowledgeLevelId: this.knowledgeLevelId,
+        jobSectorId: this.jobSectorId,
       },
     });
 
