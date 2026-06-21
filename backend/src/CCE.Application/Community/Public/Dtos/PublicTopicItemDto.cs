@@ -4,4 +4,5 @@ public sealed record PublicTopicItemDto(
     System.Guid Id,
     string NameAr,
     string NameEn,
-    int PostsCount);
+    int PostsCount,
+    bool IsWatchlisted);
