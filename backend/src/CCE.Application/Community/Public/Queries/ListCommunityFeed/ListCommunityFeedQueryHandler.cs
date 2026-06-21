@@ -51,6 +51,7 @@ public sealed class ListCommunityFeedQueryHandler
         var canUseRedis = tagIds.Count == 0
             && request.CommunityId.HasValue
             && request.PostType is null
+            && !request.AuthorId.HasValue
             && (request.Sort == PostFeedSort.Hot || request.Sort == PostFeedSort.Newest);
 
         if (canUseRedis)
@@ -120,7 +121,8 @@ public sealed class ListCommunityFeedQueryHandler
             .WhereIf(communityFilter.HasValue, p => p.CommunityId == communityFilter!.Value)
             .WhereIf(topicFilter.HasValue, p => p.TopicId == topicFilter!.Value)
             .WhereIf(tagIds.Count > 0, p => p.Tags.Any(t => tagIds.Contains(t.Id)))
-            .WhereIf(postTypeFilter.HasValue, p => p.Type == postTypeFilter!.Value);
+            .WhereIf(postTypeFilter.HasValue, p => p.Type == postTypeFilter!.Value)
+            .WhereIf(request.AuthorId.HasValue, p => p.AuthorId == request.AuthorId!.Value);
 
         query = request.Sort switch
         {

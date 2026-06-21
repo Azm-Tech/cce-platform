@@ -14,7 +14,6 @@ public sealed class SubmitEvaluationCommandValidator : AbstractValidator<SubmitE
         RuleFor(x => x.ContentSuitability)
             .NotEqual(EvaluationRating.None).WithErrorCode("REQUIRED_FIELD");
         RuleFor(x => x.Feedback)
-            .NotEmpty().WithErrorCode("REQUIRED_FIELD")
             .MaximumLength(500).WithErrorCode("MAX_LENGTH");
     }
 }

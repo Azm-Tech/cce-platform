@@ -40,7 +40,7 @@ public sealed class ServiceEvaluation : AuditableEntity<System.Guid>
             throw new DomainException("EaseOfUse is required.");
         if (contentSuitability == EvaluationRating.None)
             throw new DomainException("ContentSuitability is required.");
-        if (string.IsNullOrWhiteSpace(feedback))
+        if (feedback is null)
             throw new DomainException("Feedback is required.");
 
         var entity = new ServiceEvaluation(

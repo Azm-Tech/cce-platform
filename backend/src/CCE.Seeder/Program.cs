@@ -83,6 +83,7 @@ builder.Services.AddScoped<ISeeder, DemoUsersSeeder>();
 builder.Services.AddScoped<ISeeder, PlatformSettingsSeeder>();
 builder.Services.AddScoped<ISeeder, NotificationTemplateSeeder>();
 builder.Services.AddScoped<ISeeder, DemoDataSeeder>();
+builder.Services.AddScoped<ISeeder, DemoTopicDataSeeder>();
 builder.Services.AddScoped<ISeeder, BulkPostSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
