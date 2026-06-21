@@ -263,7 +263,7 @@
                 {{ locale() === 'ar' ? es.requestedBioAr : es.requestedBioEn }}
               </div>
 
-              @if (es.requestedTags?.length) {
+              @if (es.requestedTags.length) {
                 <div class="cce-profile__interests" style="margin-top: 0.75rem">
                   @for (tag of es.requestedTags; track tag) {
                     <span class="cce-profile__interest-chip">{{ tag }}</span>

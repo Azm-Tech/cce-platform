@@ -78,11 +78,15 @@
             [class.cce-topic-detail__follow--active]="topicFollow.isFollowing()"
           >
             @if (topicFollow.isFollowing()) {
-              <mat-icon>star</mat-icon>
-              {{ 'community.followingTopic' | transloco }}
+              <ng-container>
+                <mat-icon>star</mat-icon>
+                {{ 'community.followingTopic' | transloco }}
+              </ng-container>
             } @else {
-              <mat-icon>star_outline</mat-icon>
-              {{ 'community.followTopic' | transloco }}
+              <ng-container>
+                <mat-icon>star_outline</mat-icon>
+                {{ 'community.followTopic' | transloco }}
+              </ng-container>
             }
           </button>
           <button
