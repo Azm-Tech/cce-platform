@@ -13,6 +13,7 @@
 // ============================================================
 
 @use "sass:color";
+@use "sass:map";
 
 // ── Figma design system scales ──────────────────────────────
 $primary: (
@@ -55,15 +56,15 @@ $black: #000000;
 // ── Semantic brand tokens (current app identity = blue) ─────
 // Change these to rebrand. They reference the scales above so a
 // scale edit cascades automatically.
-$brand:        map-get($primary, 500);   // canonical brand
-$brand-mid:    map-get($primary, 600);   // gradient mid stop
-$brand-accent: map-get($primary, 700);   // gradient deep stop
-$brand-dark:   map-get($primary, 900);   // deep navy surfaces
-$brand-darker: map-get($primary, 800);
+$brand:        map.get($primary, 500);   // canonical brand
+$brand-mid:    map.get($primary, 600);   // gradient mid stop
+$brand-accent: map.get($primary, 700);   // gradient deep stop
+$brand-dark:   map.get($primary, 900);   // deep navy surfaces
+$brand-darker: map.get($primary, 800);
 
 // Secondary accent — sky blue (no gold)
-$accent:       map-get($tertiary, 700);
-$accent-light: map-get($tertiary, 600);
+$accent:       map.get($tertiary, 700);
+$accent-light: map.get($tertiary, 600);
 
 // Text
 $text-primary: #1c2724;
