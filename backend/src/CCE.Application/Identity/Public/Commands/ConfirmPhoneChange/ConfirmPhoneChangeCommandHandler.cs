@@ -73,18 +73,19 @@ internal sealed class ConfirmPhoneChangeCommandHandler
         if (user is null)
             return _msg.UserNotFound<VoidData>();
 
-        // Read CountryCodeId stored at request-time — client does not need to re-send it
-        System.Guid? countryCodeId = null;
+        // Read CountryId stored at request-time — client does not need to re-send it
+        System.Guid? countryId = null;
         if (otp.ExtraData is not null)
         {
             var extra = System.Text.Json.JsonSerializer.Deserialize<PhoneChangeExtra>(otp.ExtraData);
-            countryCodeId = extra?.CountryCodeId;
+            countryId = extra?.CountryId;
         }
 
         // domain methods
         otp.MarkVerified();
         otp.Invalidate();
-        user.UpdatePhoneNumber(otp.Contact, countryCodeId);
+        user.UpdatePhoneNumber(otp.Contact);
+        if (countryId.HasValue) user.AssignCountry(countryId.Value);
 
         _otpRepo.Update(otp);
         _userRepo.Update(user);

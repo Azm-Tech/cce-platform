@@ -1,6 +1,4 @@
 using CCE.Domain.Common;
-using CCE.Domain.Lookups;
-using CCE.Domain.PlatformSettings.ValueObjects;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,20 +6,18 @@ using Microsoft.Extensions.Logging;
 namespace CCE.Seeder.Seeders;
 
 /// <summary>
-/// Idempotent seeder for the <see cref="CountryCode"/> lookup table.
-/// Seeds all real-world countries with dial codes. Israel is excluded;
-/// Palestine is included with the +972 dial code.
+/// Idempotent seeder for world-country lookup entries in the <c>countries</c> table
+/// (<c>is_cce_country = false</c>). Seeds all real-world countries with dial codes.
+/// Israel is excluded; Palestine is included with the +970 dial code.
 /// </summary>
 public sealed class CountryCodeSeeder : ISeeder
 {
     private readonly CceDbContext _ctx;
-    private readonly ISystemClock _clock;
     private readonly ILogger<CountryCodeSeeder> _logger;
 
-    public CountryCodeSeeder(CceDbContext ctx, ISystemClock clock, ILogger<CountryCodeSeeder> logger)
+    public CountryCodeSeeder(CceDbContext ctx, ILogger<CountryCodeSeeder> logger)
     {
         _ctx = ctx;
-        _clock = clock;
         _logger = logger;
     }
 
@@ -29,25 +25,25 @@ public sealed class CountryCodeSeeder : ISeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var systemUser = DeterministicGuid.From("country_code:seeder");
         var seeded = 0;
         var updated = 0;
         var skipped = 0;
 
         foreach (var c in CountryCodes)
         {
-            var id = DeterministicGuid.From($"country_code:{c.NameEn}");
             var flagUrl = $"https://flagcdn.com/w640/{c.IsoAlpha2.ToLowerInvariant()}.png";
 
-            var existing = await _ctx.CountryCodes.IgnoreQueryFilters()
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+            // Look up by name (not ID) so the seeder is idempotent even when the
+            // migration already copied country_codes rows with their old GUIDs.
+            var existing = await _ctx.Countries.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => !x.IsCceCountry && x.NameEn == c.NameEn, cancellationToken)
                 .ConfigureAwait(false);
+
             if (existing is not null)
             {
-                if (existing.FlagUrl != flagUrl)
+                if (existing.FlagUrl != flagUrl || existing.DialCode != c.DialCode)
                 {
-                    var currentName = LocalizedText.Create(existing.Name.Ar, existing.Name.En);
-                    existing.Update(currentName, existing.DialCode, flagUrl, existing.IsActive, systemUser, _clock);
+                    existing.UpdateLookup(existing.NameAr, existing.NameEn, c.DialCode, flagUrl, existing.IsActive);
                     updated++;
                 }
                 else
@@ -57,10 +53,13 @@ public sealed class CountryCodeSeeder : ISeeder
                 continue;
             }
 
-            var name = LocalizedText.Create(c.NameAr, c.NameEn);
-            var entity = CountryCode.Create(name, c.DialCode, flagUrl, systemUser, _clock);
-            typeof(CountryCode).GetProperty(nameof(entity.Id))!.SetValue(entity, id);
-            _ctx.CountryCodes.Add(entity);
+            var id = DeterministicGuid.From($"country_code:{c.NameEn}");
+            var entity = CCE.Domain.Country.Country.RegisterLookup(
+                c.NameAr, c.NameEn, c.DialCode, flagUrl, c.IsoAlpha2);
+
+            // Force the deterministic GUID so future runs on fresh environments stay idempotent.
+            typeof(CCE.Domain.Country.Country).GetProperty(nameof(entity.Id))!.SetValue(entity, id);
+            _ctx.Countries.Add(entity);
             seeded++;
         }
 
@@ -70,7 +69,7 @@ public sealed class CountryCodeSeeder : ISeeder
     }
 
     // Data: (NameAr, NameEn, DialCode, IsoAlpha2)
-    // Israel is intentionally omitted. Palestine uses +972.
+    // Israel is intentionally omitted. Palestine uses +970.
     private static readonly (string NameAr, string NameEn, string DialCode, string IsoAlpha2)[] CountryCodes =
     {
         ("أفغانستان", "Afghanistan", "+93", "AF"),

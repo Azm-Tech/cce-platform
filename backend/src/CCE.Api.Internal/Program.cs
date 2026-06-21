@@ -94,7 +94,6 @@ app.MapPoliciesSettingsEndpoints();
         app.MapInteractiveMapEndpoints();
         app.MapMediaEndpoints();
         app.MapCountryCodeEndpoints();
-        app.MapCountryCodesPublicEndpoints();
         app.MapEvaluationEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,

@@ -22,6 +22,7 @@ public sealed class CountryProfilesReportService : ICountryProfilesReportService
     {
         var query = _db.Countries
             .WithoutSoftDeleteFilter()
+            .Where(c => c.IsCceCountry)
             .GroupJoin(
                 _db.CountryProfiles,
                 c => c.Id,
@@ -45,11 +46,11 @@ public sealed class CountryProfilesReportService : ICountryProfilesReportService
             yield return new CountryProfileReportRow
             {
                 CountryId = row.Id,
-                IsoAlpha3 = row.IsoAlpha3,
-                IsoAlpha2 = row.IsoAlpha2,
+                IsoAlpha3 = row.IsoAlpha3 ?? string.Empty,
+                IsoAlpha2 = row.IsoAlpha2 ?? string.Empty,
                 NameEn = row.NameEn,
                 NameAr = row.NameAr,
-                RegionEn = row.RegionEn,
+                RegionEn = row.RegionEn ?? string.Empty,
                 CountryIsActive = row.CountryIsActive,
                 HasProfile = row.HasProfile,
                 LastProfileUpdatedOn = row.LastProfileUpdatedOn,

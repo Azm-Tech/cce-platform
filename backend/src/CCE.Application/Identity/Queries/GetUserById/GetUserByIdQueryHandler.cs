@@ -63,7 +63,6 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.CountryCodeId,
             user.AvatarUrl,
             roles,
             isActive), "SUCCESS_OPERATION");

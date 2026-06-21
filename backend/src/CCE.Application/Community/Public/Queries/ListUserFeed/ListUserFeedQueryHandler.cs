@@ -4,6 +4,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using Microsoft.EntityFrameworkCore;
 using CCE.Application.Community.Public.Queries.ListCommunityFeed;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
@@ -92,9 +93,11 @@ public sealed class ListUserFeedQueryHandler
 
             if (ids.Count > 0)
             {
-                var total = request.Sort == PostFeedSort.Hot
-                    ? await _feedStore.GetHotLeaderboardCountAsync(communityId, cancellationToken).ConfigureAwait(false)
-                    : await _feedStore.GetCommunityFeedCountAsync(communityId, cancellationToken).ConfigureAwait(false);
+                var total = await _db.Communities
+                    .Where(c => c.Id == communityId)
+                    .Select(c => c.PostCount)
+                    .SingleAsync(cancellationToken)
+                    .ConfigureAwait(false);
 
                 var hydrated = await _hydratorService
                     .HydrateAsync(ids, userId, request.TopicId, cancellationToken)

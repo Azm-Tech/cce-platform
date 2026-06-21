@@ -3,7 +3,6 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
 using CCE.Application.PlatformSettings.Dtos;
-using CCE.Domain.Lookups;
 using MediatR;
 
 namespace CCE.Application.Lookups.Queries.ListCountryCodes;
@@ -24,20 +23,21 @@ public sealed class ListCountryCodesQueryHandler
         ListCountryCodesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<CountryCode> query = _db.CountryCodes;
+        // Countries that have a dial code — covers both CCE members and world lookup entries.
+        IQueryable<CCE.Domain.Country.Country> query = _db.Countries.Where(c => c.DialCode != null);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var term = request.Search.Trim();
             query = query.Where(c =>
-                c.Name.Ar.Contains(term) ||
-                c.Name.En.Contains(term) ||
-                c.DialCode.Contains(term));
+                c.NameAr.Contains(term) ||
+                c.NameEn.Contains(term) ||
+                (c.DialCode != null && c.DialCode.Contains(term)));
         }
 
         query = query
             .WhereIf(request.IsActive.HasValue, c => c.IsActive == request.IsActive!.Value)
-            .OrderBy(c => c.Name.En);
+            .OrderBy(c => c.NameEn);
 
         var items = await query
             .ToListAsyncEither(cancellationToken)
@@ -47,6 +47,6 @@ public sealed class ListCountryCodesQueryHandler
         return _msg.Ok(dtos, "ITEMS_LISTED");
     }
 
-    internal static CountryCodeDto MapToDto(CountryCode c) =>
-        new(c.Id, new LocalizedTextDto(c.Name.Ar, c.Name.En), c.DialCode, c.FlagUrl, c.IsActive);
+    internal static CountryCodeDto MapToDto(CCE.Domain.Country.Country c) =>
+        new(c.Id, new LocalizedTextDto(c.NameAr, c.NameEn), c.DialCode!, c.FlagUrl, c.IsActive);
 }

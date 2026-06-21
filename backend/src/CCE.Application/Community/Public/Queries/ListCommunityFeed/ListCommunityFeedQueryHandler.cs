@@ -4,6 +4,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using Microsoft.EntityFrameworkCore;
 using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
@@ -71,13 +72,11 @@ public sealed class ListCommunityFeedQueryHandler
 
             if (ids.Count > 0)
             {
-                // Use the Redis sorted-set cardinality as the total so the pagination count is
-                // consistent with the items source. Using SQL total here caused phantom pages:
-                // deleted/unpublished posts stay in Redis until TTL, so HydrateAsync silently
-                // drops stale IDs and each page appears shorter than pageSize while total stays high.
-                var total = request.Sort == PostFeedSort.Hot
-                    ? await _feedStore.GetHotLeaderboardCountAsync(communityId, cancellationToken).ConfigureAwait(false)
-                    : await _feedStore.GetCommunityFeedCountAsync(communityId, cancellationToken).ConfigureAwait(false);
+                var total = await _db.Communities
+                    .Where(c => c.Id == communityId)
+                    .Select(c => c.PostCount)
+                    .SingleAsync(cancellationToken)
+                    .ConfigureAwait(false);
 
                 var hydrated = await _hydratorService
                     .HydrateAsync(ids, request.UserId, request.TopicId, cancellationToken)

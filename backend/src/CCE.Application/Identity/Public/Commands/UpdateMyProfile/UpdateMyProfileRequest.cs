@@ -8,5 +8,4 @@ public sealed record UpdateMyProfileRequest(
     string LocalePreference,
     Domain.Identity.KnowledgeLevel KnowledgeLevel,
     string? AvatarUrl,
-    System.Guid? CountryId,
-    System.Guid? CountryCodeId);
+    System.Guid? CountryId);

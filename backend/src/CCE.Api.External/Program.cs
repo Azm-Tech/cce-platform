@@ -130,7 +130,6 @@ app.MapMediaPublicEndpoints();
 app.MapVerificationEndpoints();
 app.MapNewsletterEndpoints();
 app.MapStateRepresentativeEndpoints();
-app.MapCountryCodesPublicEndpoints();
 app.MapRedisAdminEndpoints();
 app.MapUserInterestEndpoints();
 app.MapInterestTopicPublicEndpoints();

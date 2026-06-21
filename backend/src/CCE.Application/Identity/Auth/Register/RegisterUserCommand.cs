@@ -13,5 +13,5 @@ public sealed record RegisterUserCommand(
     string PhoneNumber,
     string Password,
     string ConfirmPassword,
-    System.Guid? CountryCodeId = null)
+    System.Guid? CountryId = null)
     : IRequest<Response<AuthUserDto>>;

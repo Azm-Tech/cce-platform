@@ -89,6 +89,7 @@ public sealed class BulkPostSeeder : ISeeder
 
         var types = new[] { PostType.Info, PostType.Question };
         var saved = 0;
+        var communityPostCounts = new Dictionary<Guid, int>();
 
         for (var i = 0; i < PostCount; i++)
         {
@@ -113,6 +114,7 @@ public sealed class BulkPostSeeder : ISeeder
             typeof(Post).GetProperty(nameof(post.Id))!.SetValue(post, postId);
             _ctx.Posts.Add(post);
             saved++;
+            communityPostCounts[communityId] = communityPostCounts.GetValueOrDefault(communityId) + 1;
 
             if (saved % BatchSize == 0)
             {
@@ -124,6 +126,16 @@ public sealed class BulkPostSeeder : ISeeder
 
         if (saved % BatchSize != 0)
             await _ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Bulk-update PostCount for all affected communities in one round-trip per community.
+        foreach (var (cid, count) in communityPostCounts)
+        {
+            await _ctx.Communities
+                .Where(c => c.Id == cid)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.PostCount, c => c.PostCount + count),
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         _logger.LogInformation("BulkPostSeeder: complete -- {Saved} posts seeded.", saved);
     }

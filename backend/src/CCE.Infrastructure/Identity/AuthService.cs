@@ -131,13 +131,13 @@ public sealed class AuthService : IAuthService
         }
     }
 
-    public async Task<RegisterResult> RegisterAsync(string firstName, string lastName, string email, string password, string? jobTitle, string? orgName, string? phone, System.Guid? countryCodeId, CancellationToken ct)
+    public async Task<RegisterResult> RegisterAsync(string firstName, string lastName, string email, string password, string? jobTitle, string? orgName, string? phone, System.Guid? countryId, CancellationToken ct)
     {
         var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
         if (existing is not null) return new RegisterResult(null, true);
 
         var user = User.RegisterLocal(firstName, lastName, email, jobTitle ?? "", orgName ?? "", phone ?? "");
-        if (countryCodeId.HasValue) user.AssignCountryCode(countryCodeId.Value);
+        if (countryId.HasValue) user.AssignCountry(countryId.Value);
 
         var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
         if (!createResult.Succeeded) return new RegisterResult(null, false);
@@ -156,14 +156,13 @@ public sealed class AuthService : IAuthService
 
     public async Task<AdminCreateResult> AdminCreateUserAsync(
         string firstName, string lastName, string email,
-        string phone, System.Guid? countryId, System.Guid? countryCodeId, string role, CancellationToken ct)
+        string phone, System.Guid? countryId, string role, CancellationToken ct)
     {
         var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
         if (existing is not null) return new AdminCreateResult(null, true, false, false);
 
         var user = User.CreateByAdmin(firstName, lastName, email, phone);
         if (countryId.HasValue) user.AssignCountry(countryId.Value);
-        if (countryCodeId.HasValue) user.AssignCountryCode(countryCodeId.Value);
 
         var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
         if (!createResult.Succeeded) return new AdminCreateResult(null, false, true, false);

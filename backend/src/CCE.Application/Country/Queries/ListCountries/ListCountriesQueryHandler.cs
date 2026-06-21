@@ -19,7 +19,8 @@ public sealed class ListCountriesQueryHandler
         ListCountriesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<CCE.Domain.Country.Country> query = _db.Countries;
+        // Only CCE geographic countries appear in the admin country list.
+        IQueryable<CCE.Domain.Country.Country> query = _db.Countries.Where(c => c.IsCceCountry);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -27,8 +28,8 @@ public sealed class ListCountriesQueryHandler
             query = query.Where(c =>
                 c.NameAr.Contains(term) ||
                 c.NameEn.Contains(term) ||
-                c.IsoAlpha3.Contains(term) ||
-                c.IsoAlpha2.Contains(term));
+                (c.IsoAlpha3 != null && c.IsoAlpha3.Contains(term)) ||
+                (c.IsoAlpha2 != null && c.IsoAlpha2.Contains(term)));
         }
 
         if (request.IsActive is { } isActive)
@@ -47,12 +48,12 @@ public sealed class ListCountriesQueryHandler
 
     internal static CountryDto MapToDto(CCE.Domain.Country.Country c) => new(
         c.Id,
-        c.IsoAlpha3,
-        c.IsoAlpha2,
+        c.IsoAlpha3!,
+        c.IsoAlpha2!,
         c.NameAr,
         c.NameEn,
-        c.RegionAr,
-        c.RegionEn,
+        c.RegionAr!,
+        c.RegionEn!,
         c.FlagUrl,
         c.IsActive);
 }

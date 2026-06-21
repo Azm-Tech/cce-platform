@@ -1694,13 +1694,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnName("is_deleted");
 
                     b.Property<string>("IsoAlpha2")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("nvarchar(2)")
                         .HasColumnName("iso_alpha2");
 
                     b.Property<string>("IsoAlpha3")
-                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)")
                         .HasColumnName("iso_alpha3");
@@ -1730,16 +1728,24 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnName("name_en");
 
                     b.Property<string>("RegionAr")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)")
                         .HasColumnName("region_ar");
 
                     b.Property<string>("RegionEn")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)")
                         .HasColumnName("region_en");
+
+                    b.Property<string>("DialCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
+                        .HasColumnName("dial_code");
+
+                    b.Property<bool>("IsCceCountry")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_cce_country");
 
                     b.HasKey("Id")
                         .HasName("pk_countries");
@@ -1750,7 +1756,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasIndex("IsoAlpha3")
                         .IsUnique()
                         .HasDatabaseName("ux_country_iso_alpha3_active")
-                        .HasFilter("[is_deleted] = 0");
+                        .HasFilter("[is_deleted] = 0 AND [is_cce_country] = 1");
+
+                    b.HasIndex("DialCode")
+                        .HasDatabaseName("ix_country_dial_code")
+                        .HasFilter("[dial_code] IS NOT NULL");
 
                     b.ToTable("countries", (string)null);
                 });
@@ -2538,10 +2548,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("concurrency_stamp");
 
-                    b.Property<Guid?>("CountryCodeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("country_code_id");
-
                     b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("country_id");
@@ -2672,9 +2678,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_asp_net_users");
-
-                    b.HasIndex("CountryCodeId")
-                        .HasDatabaseName("ix_users_country_code_id");
 
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_users_country_id");
@@ -3221,64 +3224,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_km_node_map_order");
 
                     b.ToTable("knowledge_map_nodes", (string)null);
-                });
-
-            modelBuilder.Entity("CCE.Domain.Lookups.CountryCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("created_on");
-
-                    b.Property<Guid?>("DeletedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<DateTimeOffset?>("DeletedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("deleted_on");
-
-                    b.Property<string>("DialCode")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)")
-                        .HasColumnName("dial_code");
-
-                    b.Property<string>("FlagUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)")
-                        .HasColumnName("flag_url");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<Guid?>("LastModifiedById")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("last_modified_by_id");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOn")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnName("last_modified_on");
-
-                    b.HasKey("Id")
-                        .HasName("pk_country_codes");
-
-                    b.HasIndex("DialCode")
-                        .HasDatabaseName("ix_country_code_dial_code");
-
-                    b.ToTable("country_codes", (string)null);
                 });
 
             modelBuilder.Entity("CCE.Domain.Media.MediaFile", b =>
@@ -4692,39 +4637,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Navigation("InterestTopic");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CCE.Domain.Lookups.CountryCode", b =>
-                {
-                    b.OwnsOne("CCE.Domain.PlatformSettings.ValueObjects.LocalizedText", "Name", b1 =>
-                        {
-                            b1.Property<Guid>("CountryCodeId")
-                                .HasColumnType("uniqueidentifier")
-                                .HasColumnName("id");
-
-                            b1.Property<string>("Ar")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("name_ar");
-
-                            b1.Property<string>("En")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("name_en");
-
-                            b1.HasKey("CountryCodeId");
-
-                            b1.ToTable("country_codes");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CountryCodeId")
-                                .HasConstraintName("fk_country_codes_country_codes_id");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CCE.Domain.PlatformSettings.AboutSettings", b =>

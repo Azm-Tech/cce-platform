@@ -55,7 +55,6 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.CountryCodeId,
             user.AvatarUrl), "SUCCESS_OPERATION");
     }
 }

@@ -39,7 +39,7 @@ public static class ProfileEndpoints
                 body.PhoneNumber,
                 body.Password,
                 body.ConfirmPassword,
-                body.CountryCodeId), ct).ConfigureAwait(false);
+                body.CountryId), ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()
@@ -86,7 +86,7 @@ public static class ProfileEndpoints
                 userId,
                 body.FirstName, body.LastName, body.JobTitle, body.OrganizationName,
                 body.LocalePreference, body.KnowledgeLevel,
-                body.AvatarUrl, body.CountryId, body.CountryCodeId);
+                body.AvatarUrl, body.CountryId);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
@@ -137,7 +137,7 @@ public static class ProfileEndpoints
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
             if (userId == System.Guid.Empty) return Results.Unauthorized();
             var result = await mediator.Send(
-                new RequestPhoneChangeCommand(userId, body.NewPhone, body.CountryCodeId), ct).ConfigureAwait(false);
+                new RequestPhoneChangeCommand(userId, body.NewPhone, body.CountryId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
         .WithName("RequestPhoneChange");

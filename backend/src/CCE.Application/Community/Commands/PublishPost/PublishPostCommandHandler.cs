@@ -44,6 +44,11 @@ public sealed class PublishPostCommandHandler
             .ConfigureAwait(false);
         author?.IncrementPostsCount();
 
+        var community = await _db.Communities
+            .FirstOrDefaultAsyncEither(c => c.Id == post.CommunityId, cancellationToken)
+            .ConfigureAwait(false);
+        community?.IncrementPosts();
+
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return _msg.Ok(ApplicationErrors.Community.POST_PUBLISHED);
     }

@@ -36,7 +36,7 @@ public sealed class GetPublicHomepageQueryHandler
             join c in _db.Countries on hc.CountryId equals c.Id
             where hc.HomepageSettingsId == settings.Id
             orderby hc.OrderIndex
-            select new PublicHomepageCountryDto(c.Id, c.IsoAlpha3, c.NameAr, c.NameEn, c.FlagUrl, hc.OrderIndex)
+            select new PublicHomepageCountryDto(c.Id, c.IsoAlpha3!, c.NameAr, c.NameEn, c.FlagUrl, hc.OrderIndex)
         ).ToListAsyncEither(cancellationToken).ConfigureAwait(false);
 
         var sections = await _db.HomepageSections

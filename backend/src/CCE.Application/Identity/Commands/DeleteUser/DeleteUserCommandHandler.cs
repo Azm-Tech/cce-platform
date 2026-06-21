@@ -53,7 +53,6 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
                 .Select(u => new InterestTopicDto(u.InterestTopicId, string.Empty, string.Empty, string.Empty, false))
                 .ToList(),
             user.CountryId,
-            user.CountryCodeId,
             user.AvatarUrl,
             System.Array.Empty<string>(),
             user.Status == Domain.Identity.UserStatus.Active), "USER_DELETED");

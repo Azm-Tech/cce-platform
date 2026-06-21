@@ -21,7 +21,7 @@ internal sealed class RegisterUserCommandHandler
     {
         var result = await _auth.RegisterAsync(request.FirstName, request.LastName,
             request.EmailAddress, request.Password, request.JobTitle,
-            request.OrganizationName, request.PhoneNumber, request.CountryCodeId, ct).ConfigureAwait(false);
+            request.OrganizationName, request.PhoneNumber, request.CountryId, ct).ConfigureAwait(false);
 
         if (result.EmailTaken) return _msg.EmailExists<AuthUserDto>();
         if (result.User is null) return _msg.BusinessRule<AuthUserDto>("REGISTRATION_FAILED");

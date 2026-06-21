@@ -14,5 +14,4 @@ public sealed record UpdateMyProfileCommand(
     string LocalePreference,
     KnowledgeLevel KnowledgeLevel,
     string? AvatarUrl,
-    System.Guid? CountryId,
-    System.Guid? CountryCodeId) : IRequest<Response<UserProfileDto>>;
+    System.Guid? CountryId) : IRequest<Response<UserProfileDto>>;
