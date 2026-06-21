@@ -98,41 +98,26 @@
 
       <div class="cp-sidebar-divider"></div>
 
-      <!-- ── Community rules collapsible ─────────────────────────── -->
-      <div class="cp-sidebar-rules">
-        <details class="cp-sidebar-rules__details">
-          <summary class="cp-sidebar-rules__summary">
-            <span>{{ 'community.rules.title' | transloco }}</span>
-            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
-          </summary>
-          <ul class="cp-sidebar-rules__list">
-            <li class="cp-sidebar-rules__item">{{ 'community.rules.rule1.title' | transloco }}</li>
-            <li class="cp-sidebar-rules__item">{{ 'community.rules.rule2.title' | transloco }}</li>
-            <li class="cp-sidebar-rules__item">{{ 'community.rules.rule3.title' | transloco }}</li>
-            <li class="cp-sidebar-rules__item">{{ 'community.rules.rule4.title' | transloco }}</li>
-          </ul>
-        </details>
-      </div>
-
-      <!-- ── Community roles collapsible (GET /api/community/roles) ── -->
+      <!-- ── Community roles accordion (Figma 40003381-80373) ─────── -->
       @if (roles().length > 0) {
-        <div class="cp-sidebar-roles">
-          <details class="cp-sidebar-rules__details">
-            <summary class="cp-sidebar-rules__summary">
-              <span>{{ 'community.roles.title' | transloco }}</span>
-              <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
-            </summary>
-            <ul class="cp-sidebar-roles__list">
-              @for (role of roles(); track role.key) {
-                <li class="cp-sidebar-roles__item">
-                  <span class="cp-sidebar-roles__name">{{ roleName(role) }}</span>
-                  @if (roleDescription(role)) {
-                    <span class="cp-sidebar-roles__desc">{{ roleDescription(role) }}</span>
-                  }
-                </li>
+        <div class="cp-roles">
+          <h3 class="cp-roles__title">{{ 'community.rules.title' | transloco }}</h3>
+          @for (role of roles(); track role.key) {
+            <div class="cp-roles__item" [class.cp-roles__item--open]="expandedRoleKeys().has(role.key)">
+              <button
+                type="button"
+                class="cp-roles__trigger"
+                [attr.aria-expanded]="expandedRoleKeys().has(role.key)"
+                (click)="toggleRole(role.key)"
+              >
+                <span class="cp-roles__name">{{ roleName(role) }}</span>
+                <mat-icon svgIcon="chevron-down" class="cp-roles__chevron" aria-hidden="true"></mat-icon>
+              </button>
+              @if (expandedRoleKeys().has(role.key) && roleDescription(role)) {
+                <p class="cp-roles__desc">{{ roleDescription(role) }}</p>
               }
-            </ul>
-          </details>
+            </div>
+          }
         </div>
       }
 

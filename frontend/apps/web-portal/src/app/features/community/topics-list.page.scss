@@ -277,119 +277,79 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   }
 }
 
-// ── Sidebar rules collapsible ────────────────────────────────────────────────
-.cp-sidebar-rules {
-  padding: 24px 16px;
+// ── Community roles accordion (Figma 40003381-80373) ─────────────────────────
+.cp-roles {
+  padding: 24px 24px 0;
   border-top: 1px solid $n-200;
 
-  &__details {
-    border: 1px solid $n-200;
-    border-radius: 8px;
-    background: $n-50;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+  &__title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 32px;
+    color: $n-900;
+    font-family: $font;
+    margin: 0 0 24px;
+    text-align: start;
+  }
 
-    &[open] {
-      background: var(--white);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  &__item {
+    border-top: 1px solid $n-200;
 
-      .cp-sidebar-rules__summary mat-icon {
-        transform: rotate(180deg);
-      }
+    &:last-child {
+      border-bottom: 1px solid $n-200;
     }
   }
 
-  &__summary {
+  &__trigger {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
-    font-size: 16px;
-    font-weight: 700;
-    color: $n-900;
+    width: 100%;
+    padding: 18px 0;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    list-style: none;
-    user-select: none;
     font-family: $font;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      color: $n-500;
-      transition: transform 0.2s ease;
-    }
-  }
-
-  &__list {
-    list-style: none;
-    margin: 0;
-    padding: 0 16px 16px;
-    display: flex;
-    flex-direction: column;
     gap: 12px;
-  }
-
-  &__item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 14px;
-    line-height: 20px;
-    color: $n-600;
-    font-family: $font;
     text-align: start;
 
-    &::before {
-      content: "";
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: $p-500;
-      margin-top: 7px;
-      flex-shrink: 0;
+    &:hover .cp-roles__name {
+      color: $p-600;
     }
-  }
-}
-
-// ── Sidebar roles ───────────────────────────────────────────────────────────────
-.cp-sidebar-roles {
-  padding: 0 16px 24px;
-
-  &__list {
-    list-style: none;
-    margin: 0;
-    padding: 0 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  &__item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    text-align: start;
   }
 
   &__name {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 20px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
     color: $n-900;
     font-family: $font;
+    text-align: start;
+    flex: 1;
+  }
+
+  &__chevron {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: $n-500;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  &__item--open &__chevron {
+    transform: rotate(180deg);
   }
 
   &__desc {
-    font-size: 13px;
-    line-height: 19px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
     color: $n-600;
     font-family: $font;
+    text-align: start;
+    margin: 0;
+    padding-bottom: 18px;
   }
 }
 

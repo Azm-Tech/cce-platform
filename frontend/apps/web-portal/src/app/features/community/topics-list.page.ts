@@ -45,6 +45,7 @@ export class TopicsListPage implements OnInit {
   readonly posts = signal<PublicPost[]>([]);
   readonly topicsMap = signal<Map<string, PublicTopic>>(new Map());
   readonly roles = signal<CommunityRole[]>([]);
+  readonly expandedRoleKeys = signal<Set<string>>(new Set());
   readonly userProfile = signal<CommunityUserProfile | null>(null);
   readonly topicsLoading = signal(true);
   readonly postsLoading = signal(true);
@@ -134,6 +135,15 @@ export class TopicsListPage implements OnInit {
   private async loadRoles(): Promise<void> {
     const res = await this.api.listRoles();
     if (res.ok) this.roles.set(res.value);
+  }
+
+  toggleRole(key: string): void {
+    this.expandedRoleKeys.update((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   }
 
   roleName(role: CommunityRole): string {

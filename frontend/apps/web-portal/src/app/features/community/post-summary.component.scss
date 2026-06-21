@@ -10,6 +10,7 @@ $n-50:  var(--neutrals--50);
 $n-100: var(--neutrals--100);
 $n-200: var(--neutrals--200);
 $n-300: var(--neutrals--300);
+$n-400: var(--neutrals--400);
 $n-500: var(--neutrals--500);
 $n-600: var(--neutrals--600);
 $n-900: var(--neutrals--900);
@@ -24,15 +25,17 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   box-shadow: 0 1px 2px 0 rgba(var(--neutrals--dark-rgb), 0.05);
   padding: 24px;
   font-family: $font;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 290px;
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
 .pc__header {
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 // header actions: chips (RTL end = left)
@@ -70,11 +73,11 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     color: var(--success--600);
   }
 
-  // Post type: question
+  // Post type: question — yellow per Figma (#FFFBEB / #FDE68A / #B45309)
   &--question {
-    background: $p-50;
-    border: 1px solid $p-200;
-    color: $p-800;
+    background: var(--warning--50);
+    border: 1px solid var(--warning--200);
+    color: var(--warning--600);
   }
 
   // Post type: poll
@@ -119,9 +122,9 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 .pc__author-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 28px;
+  line-height: 24px;
   color: $n-900;
   white-space: nowrap;
   font-family: $font;
@@ -129,31 +132,37 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 .pc__time {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 22px;
   color: $n-500;
   white-space: nowrap;
   font-family: $font;
 }
 
+.pc__time-sep {
+  color: $n-400;
+  margin-inline: 4px;
+}
+
 .pc__avatar {
-  width: 32px;
-  height: 32px;
+  width: 33px;
+  height: 33px;
   border-radius: 9999px;
   background: $p-100;
-  border: 1px solid $p-50;
+  border: 2px solid $p-50;
   color: $p-900;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 28px;
+  font-size: 16px;
+  font-weight: 700;
   font-family: $font;
   flex-shrink: 0;
   user-select: none;
-  padding-bottom: 8px;
 }
 
 // ── Body ──────────────────────────────────────────────────────────────────────
@@ -166,24 +175,23 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 .pc__title {
   margin: 0 0 8px;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
-  line-height: 36px;
+  line-height: 34px;
   color: $n-900;
   font-family: $font;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-align: start; // direction-aware: right in RTL, left in LTR
+  text-align: start;
 }
 
 .pc__excerpt {
   margin: 0;
-  padding-inline-end: 24px; // indent from the end side (left in RTL, right in LTR)
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 28px;
+  line-height: 26px;
   color: $n-600;
   font-family: $font;
   display: -webkit-box;
@@ -191,29 +199,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: start; // direction-aware: right in RTL, left in LTR
-}
-
-// ── Read more ───────────────────────────────────────────────────────────────
-.pc__read-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  align-self: flex-start;
-  margin-bottom: 16px;
-  font-size: 15px;
-  font-weight: 700;
-  color: $p-500;
-  font-family: $font;
-  text-decoration: none;
-  transition: color 0.13s;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-  &:hover {
-    color: $p-600;
-    text-decoration: underline;
-  }
+  text-align: start;
 }
 
 // ── Attachment ────────────────────────────────────────────────────────────────
@@ -262,7 +248,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 .pc__divider {
   border: none;
   border-top: 1px solid $n-200;
-  margin: 0 0 16px;
+  margin: 16px 0;
 }
 
 // ── Footer ────────────────────────────────────────────────────────────────────
@@ -278,18 +264,18 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 46px;
-  padding: 10px 12px;
+  height: 45px;
+  padding: 10px 14px;
   border: 1px solid $n-300;
   background: transparent;
   color: $n-500;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 28px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
   font-family: $font;
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 0.13s;
+  transition: border-color 0.13s, color 0.13s;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
   &:hover { border-color: $n-500; }
@@ -307,43 +293,38 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 46px;
   padding: 10px 12px;
-  border: 1px solid $n-300;
+  border: 1px solid $n-400;
   background: transparent;
   color: $n-500;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   line-height: 24px;
   font-family: $font;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: border-color 0.13s;
+  outline: none;
+  transition: border-color 0.13s, color 0.13s;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
   &:hover { border-color: $n-500; }
+  &:focus-visible { outline: 2px solid $p-500; outline-offset: 2px; }
 }
 
 .pc__action-count {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: $n-900;
-}
-
-.pc__action-label {
-  font-size: 18px;
-  font-weight: 700;
-  color: $n-500;
 }
 
 // Vote control (always LTR — Figma shows ↓ count ↑)
 .pc__vote {
   display: inline-flex;
   align-items: center;
-  height: 46px;
+  height: 45px;
   border: 1px solid $n-300;
-  gap: 4px;
+  gap: 0;
   padding: 1px;
 }
 
@@ -351,8 +332,8 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 44px;
+  width: 44px;
+  height: 43px;
   border: none;
   background: transparent;
   color: $n-500;
@@ -362,28 +343,27 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
   mat-icon { font-size: 22px; width: 22px; height: 22px; }
   &:hover { background: $n-100; }
-  &--up:hover { background: var(--success--50); color: var(--success--600); }
+  &--up:hover { color: $p-500; }
   &--active { color: $n-600; }
   &--up.pc__vote-btn--active { color: $p-500; }
 }
 
 .pc__vote-count {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 28px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
   color: $n-500;
   font-family: $font;
   white-space: nowrap;
   text-align: center;
-  padding-bottom: 4px;
-  min-width: 24px;
+  min-width: 28px;
+  padding-inline: 4px;
 }
 
 @media (max-width: 600px) {
   .pc { padding: 16px; }
-  .pc__title { font-size: 20px; line-height: 28px; }
-  .pc__excerpt { font-size: 16px; }
+  .pc__title { font-size: 18px; line-height: 26px; }
+  .pc__excerpt { font-size: 14px; }
   .pc__save-btn span { display: none; }
-  .pc__action-label { display: none; }
   .pc__actions { gap: 8px; }
 }

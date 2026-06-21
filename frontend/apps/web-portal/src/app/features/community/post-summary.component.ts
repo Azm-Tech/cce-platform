@@ -55,16 +55,22 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
               <span class="pc__author-name">
                 {{ post().authorName || ('community.anonymousAuthor' | transloco) }}
               </span>
-              <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+              @if (post().isExpert) {
+                <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+              }
             </div>
-            <span class="pc__time">{{ time() }}</span>
+            <span class="pc__time">
+              {{ time() }}
+              <span class="pc__time-sep" aria-hidden="true"> • </span>
+              {{ readTime() }}
+            </span>
           </div>
         </div>
 
         <!-- Chips: inline-end -->
         <div class="pc__chips">
-          @if (topicName()) {
-            <span class="pc__chip pc__chip--topic">{{ topicName() }}</span>
+          @if (topicDisplay()) {
+            <span class="pc__chip pc__chip--topic">{{ topicDisplay() }}</span>
           }
           <span class="pc__chip" [ngClass]="postTypeClass()">
             {{ postTypeLabelKey() | transloco }}
@@ -79,12 +85,6 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
         @if (excerpt()) {
           <p class="pc__excerpt" dir="auto">{{ excerpt() }}</p>
         }
-      </a>
-
-      <!-- ── Read more ─────────────────────────────────────────────────── -->
-      <a class="pc__read-more" [routerLink]="['/community', 'posts', post().id]">
-        <span>{{ 'community.readMore' | transloco }}</span>
-        <mat-icon [svgIcon]="locale() === 'ar' ? 'chevron-left' : 'chevron-right'" aria-hidden="true"></mat-icon>
       </a>
 
       <!-- ── Optional attachment chip ─────────────────────────────────── -->
@@ -132,17 +132,16 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
             </button>
           </div>
 
-          <!-- Replies -->
-          <a class="pc__action" [routerLink]="['/community', 'posts', post().id]" fragment="replies">
-            <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+          <!-- Replies — count + icon only (no label, matches Figma 74px width) -->
+          <a class="pc__action" [routerLink]="['/community', 'posts', post().id]" fragment="replies"
+             [attr.aria-label]="('community.comment' | transloco) + ' ' + post().commentsCount">
             <span class="pc__action-count">{{ post().commentsCount }}</span>
-            <span class="pc__action-label">{{ 'community.comment' | transloco }}</span>
+            <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
           </a>
 
-          <!-- Share -->
+          <!-- Share — icon only (matches Figma 47px width) -->
           <button type="button" class="pc__action" [attr.aria-label]="'community.share' | transloco">
             <mat-icon svgIcon="share-2" aria-hidden="true"></mat-icon>
-            <span class="pc__action-label">{{ 'community.share' | transloco }}</span>
           </button>
 
         </div>
@@ -156,7 +155,7 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
             (click)="toggleFollow()"
           >
             {{ isFollowed() ? ('community.followingPost' | transloco) : ('community.followPost' | transloco) }}
-            <mat-icon [svgIcon]="isFollowed() ? 'bookmark-check' : 'bookmark'" aria-hidden="true"></mat-icon>
+            <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
           </button>
         } @else {
           <button type="button" class="pc__save-btn" disabled>
@@ -300,5 +299,17 @@ export class PostSummaryComponent {
       'Poll': 'pc__chip--poll',
     };
     return map[this.post().type] ?? 'pc__chip--info';
+  });
+
+  readonly readTime = computed(() => {
+    const text = (this.post().content ?? '').replace(/<[^>]*>/g, '').trim();
+    const words = text.split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.round(words / 200));
+    return this.locale() === 'ar' ? `${mins} دقيقة قراءة` : `${mins} min read`;
+  });
+
+  readonly topicDisplay = computed(() => {
+    if (this.topicName()) return this.topicName();
+    return this.locale() === 'ar' ? this.post().topicNameAr : this.post().topicNameEn;
   });
 }
