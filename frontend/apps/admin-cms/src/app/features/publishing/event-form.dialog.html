@@ -109,6 +109,14 @@
         }
       </mat-form-field>
     </div>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'events.field.tags' | transloco }}</mat-label>
+      <mat-select formControlName="tagIds" multiple>
+        @for (tag of tags(); track tag.id) {
+          <mat-option [value]="tag.id">{{ locale() === 'ar' ? tag.nameAr : tag.nameEn }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
     @if (form.hasError('venueRequired') && (form.controls.locationAr.touched || form.controls.locationEn.touched || form.controls.onlineMeetingUrl.touched)) {
       <div class="cce-event-form__error" role="alert">
         {{ 'events.validation.venueRequired' | transloco }}

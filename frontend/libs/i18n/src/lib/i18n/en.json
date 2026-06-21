@@ -1060,7 +1060,8 @@
       "uploadingImage": "Uploading…",
       "imageHint": "PNG, JPG, or WebP. Max 5 MB.",
       "imageInvalidType": "Please choose a PNG, JPG, or WebP image.",
-      "topic": "Topic"
+      "topic": "Topic",
+      "tags": "Tags"
     },
     "create": {
       "openButton": "New article",
@@ -1177,6 +1178,7 @@
       "onlineMeetingUrl": "Online meeting URL",
       "featuredImageUrl": "Featured image URL",
       "topic": "Topic",
+      "tags": "Tags",
       "startDate": "Start date",
       "startHour": "Start hour",
       "startMinute": "Start minute",

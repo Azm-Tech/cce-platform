@@ -24,6 +24,7 @@ import type {
   PolicySectionBody,
   RescheduleEventBody,
   ReorderHomepageSectionsBody,
+  TagDto,
   Topic,
   UpdateAboutSettingsBody,
   UpdateEventBody,
@@ -51,6 +52,11 @@ export class PublishingApiService {
       const items = Array.isArray(res) ? res : (res.items ?? []);
       return [...items].sort((a, b) => a.orderIndex - b.orderIndex);
     });
+  }
+
+  // ---- Tags ----
+  async listTags(): Promise<Result<TagDto[]>> {
+    return this.run(() => firstValueFrom(this.http.get<TagDto[]>('/api/admin/tags')));
   }
 
   // ---- News ----

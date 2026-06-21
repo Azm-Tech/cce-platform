@@ -30,6 +30,13 @@ export interface News {
   rowVersion: string;
 }
 
+export interface TagDto {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  color: string | null;
+}
+
 export interface CreateNewsBody {
   titleAr: string;
   titleEn: string;
@@ -37,6 +44,7 @@ export interface CreateNewsBody {
   contentEn: string;
   featuredImageUrl?: string | null;
   topicId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface UpdateNewsBody extends CreateNewsBody {
@@ -87,6 +95,7 @@ export interface CreateEventBody {
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
   topicId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface UpdateEventBody {
@@ -99,6 +108,7 @@ export interface UpdateEventBody {
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
   topicId?: string | null;
+  tagIds?: string[] | null;
   rowVersion: string;
 }
 

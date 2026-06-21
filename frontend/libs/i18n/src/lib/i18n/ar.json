@@ -1060,7 +1060,8 @@
       "uploadingImage": "جارٍ الرفع…",
       "imageHint": "PNG أو JPG أو WebP. الحد الأقصى 5 ميجابايت.",
       "imageInvalidType": "يرجى اختيار صورة بصيغة PNG أو JPG أو WebP.",
-      "topic": "الموضوع"
+      "topic": "الموضوع",
+      "tags": "الوسوم"
     },
     "create": {
       "openButton": "خبر جديد",
@@ -1177,6 +1178,7 @@
       "onlineMeetingUrl": "رابط الاجتماع الإلكتروني",
       "featuredImageUrl": "رابط الصورة المميزة",
       "topic": "الموضوع",
+      "tags": "الوسوم",
       "startDate": "تاريخ البداية",
       "startHour": "ساعة البداية",
       "startMinute": "دقيقة البداية",

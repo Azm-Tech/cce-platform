@@ -13,7 +13,7 @@ import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
-import type { News, Topic } from './publishing.types';
+import type { News, TagDto, Topic } from './publishing.types';
 
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -33,6 +33,7 @@ interface NewsForm {
   contentEn: FormControl<string>;
   featuredImageUrl: FormControl<string>;
   topicId: FormControl<string>;
+  tagIds: FormControl<string[]>;
 }
 
 @Component({
@@ -89,6 +90,7 @@ export class NewsFormDialogComponent {
   readonly errorKind = signal<string | null>(null);
   readonly missingRequired = signal(false);
   readonly topics = signal<Topic[]>([]);
+  readonly tags = signal<TagDto[]>([]);
   readonly locale = this.localeService.locale;
   readonly isEdit: boolean;
   readonly isView: boolean;
@@ -124,14 +126,21 @@ export class NewsFormDialogComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
+      tagIds: new FormControl<string[]>([], { nonNullable: true }),
     });
     if (this.isView) this.form.disable();
     void this.loadTopics();
+    void this.loadTags();
   }
 
   private async loadTopics(): Promise<void> {
     const res = await this.api.listTopics({ onlyActive: true });
     if (res.ok) this.topics.set(res.value);
+  }
+
+  private async loadTags(): Promise<void> {
+    const res = await this.api.listTags();
+    if (res.ok) this.tags.set(res.value);
   }
 
   async onImagePicked(event: globalThis.Event): Promise<void> {
@@ -168,9 +177,13 @@ export class NewsFormDialogComponent {
     this.errorKind.set(null);
     const v = this.form.getRawValue();
     const body = {
-      ...v,
+      titleAr: v.titleAr,
+      titleEn: v.titleEn,
+      contentAr: v.contentAr,
+      contentEn: v.contentEn,
       featuredImageUrl: v.featuredImageUrl || null,
       topicId: v.topicId || null,
+      tagIds: v.tagIds.length ? v.tagIds : null,
     };
     const res = this.isEdit && this.data.news
       ? await this.api.updateNews(this.data.news.id, { ...body, rowVersion: this.data.news.rowVersion })

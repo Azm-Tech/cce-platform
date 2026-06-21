@@ -15,7 +15,7 @@ import { LocaleService } from '@frontend/i18n';
 import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
-import type { Event, Topic } from './publishing.types';
+import type { Event, TagDto, Topic } from './publishing.types';
 
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -87,6 +87,7 @@ interface EventForm {
   onlineMeetingUrl: FormControl<string>;
   featuredImageUrl: FormControl<string>;
   topicId: FormControl<string>;
+  tagIds: FormControl<string[]>;
 }
 
 @Component({
@@ -154,6 +155,7 @@ export class EventFormDialogComponent {
   readonly errorKind = signal<string | null>(null);
   readonly missingRequired = signal(false);
   readonly topics = signal<Topic[]>([]);
+  readonly tags = signal<TagDto[]>([]);
   readonly locale = this.localeService.locale;
   readonly isEdit: boolean;
   readonly isView: boolean;
@@ -226,14 +228,21 @@ export class EventFormDialogComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
+      tagIds: new FormControl<string[]>([], { nonNullable: true }),
     }, { validators: venueRequiredValidator });
     if (this.isView) this.form.disable();
     void this.loadTopics();
+    void this.loadTags();
   }
 
   private async loadTopics(): Promise<void> {
     const res = await this.api.listTopics({ onlyActive: true });
     if (res.ok) this.topics.set(res.value);
+  }
+
+  private async loadTags(): Promise<void> {
+    const res = await this.api.listTags();
+    if (res.ok) this.tags.set(res.value);
   }
 
   async onImagePicked(event: globalThis.Event): Promise<void> {
@@ -269,6 +278,7 @@ export class EventFormDialogComponent {
     const startsOn = combineDateTime(v.startDate, v.startHour, v.startMinute);
     const endsOn = combineDateTime(v.endDate, v.endHour, v.endMinute);
 
+    const tagIds = v.tagIds.length ? v.tagIds : null;
     if (this.isEdit && this.data.event) {
       const res = await this.api.updateEvent(this.data.event.id, {
         titleAr: v.titleAr,
@@ -280,6 +290,7 @@ export class EventFormDialogComponent {
         onlineMeetingUrl: nullify(v.onlineMeetingUrl),
         featuredImageUrl: nullify(v.featuredImageUrl),
         topicId: nullify(v.topicId),
+        tagIds,
         rowVersion: this.data.event.rowVersion,
       });
       this.saving.set(false);
@@ -298,6 +309,7 @@ export class EventFormDialogComponent {
         onlineMeetingUrl: nullify(v.onlineMeetingUrl),
         featuredImageUrl: nullify(v.featuredImageUrl),
         topicId: nullify(v.topicId),
+        tagIds,
       });
       this.saving.set(false);
       if (res.ok) this.ref.close(res.value);
