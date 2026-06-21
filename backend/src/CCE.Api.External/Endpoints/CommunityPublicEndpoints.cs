@@ -17,6 +17,7 @@ using CCE.Application.Community.Public.Queries.ListMyMentions;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
+using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -85,7 +86,7 @@ public static class CommunityPublicEndpoints
 
         // GET /api/community/topics — global topics discovery (paginated, searchable, sortable)
         community.MapGet("/topics", async (
-            string? search, string? sortBy, int? page, int? pageSize,
+            string? search, TopicsSortBy? sortBy, int? page, int? pageSize,
             IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(

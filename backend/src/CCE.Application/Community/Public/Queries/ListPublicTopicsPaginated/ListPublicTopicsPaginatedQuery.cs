@@ -7,7 +7,7 @@ namespace CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
 
 public sealed record ListPublicTopicsPaginatedQuery(
     string? Search,
-    string? SortBy,
+    TopicsSortBy? SortBy,
     int Page,
     int PageSize
 ) : IRequest<Response<PagedResult<PublicTopicItemDto>>>;

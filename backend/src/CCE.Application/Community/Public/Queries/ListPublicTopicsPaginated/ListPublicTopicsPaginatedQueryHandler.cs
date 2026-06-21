@@ -17,39 +17,111 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
         ListPublicTopicsPaginatedQuery request, CancellationToken ct)
     {
         var search = request.Search;
-        var query = _db.Topics
+
+        var baseQuery = _db.Topics
             .Where(t => t.IsActive)
             .WhereIf(!string.IsNullOrWhiteSpace(search), t =>
                 t.NameAr.Contains(search!) ||
                 t.NameEn.Contains(search!) ||
                 t.Slug.Contains(search!));
 
-        if (request.SortBy == "postsCount")
+        if (request.SortBy == TopicsSortBy.PostsCount)
         {
-            var paged = await query
-                .Select(t => new PublicTopicItemDto(
-                    t.Id, t.NameAr, t.NameEn, t.Slug,
-                    _db.Posts.Count(p => p.TopicId == t.Id && p.Status == PostStatus.Published)))
-                .OrderByDescending(t => t.PostsCount)
-                .ToPagedResultAsync(request.Page, request.PageSize, ct)
+            var postCounts = await _db.Posts
+                .Where(p => p.Status == PostStatus.Published)
+                .GroupBy(p => p.TopicId)
+                .Select(g => new { TopicId = g.Key, Count = g.Count() })
+                .ToListAsyncEither(ct)
                 .ConfigureAwait(false);
 
-            return _messages.Ok(paged, "TOPICS_LISTED");
+            var countMap = postCounts.ToDictionary(x => x.TopicId, x => x.Count);
+
+            var allTopicIds = await baseQuery
+                .Select(t => t.Id)
+                .ToListAsyncEither(ct)
+                .ConfigureAwait(false);
+
+            var total = allTopicIds.Count;
+
+            var pagedIds = allTopicIds
+                .OrderByDescending(id => countMap.GetValueOrDefault(id, 0))
+                .ThenBy(id => id)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+            if (pagedIds.Count == 0)
+                return _messages.Ok(
+                    new PagedResult<PublicTopicItemDto>([], request.Page, request.PageSize, total),
+                    "TOPICS_LISTED");
+
+            var topics = await _db.Topics
+                .Where(t => pagedIds.Contains(t.Id))
+                .Select(t => new { t.Id, t.NameAr, t.NameEn })
+                .ToListAsyncEither(ct)
+                .ConfigureAwait(false);
+
+            var topicMap = topics.ToDictionary(t => t.Id);
+
+            var sortedItems = pagedIds
+                .Where(id => topicMap.ContainsKey(id))
+                .Select(id => new PublicTopicItemDto(
+                    id,
+                    topicMap[id].NameAr,
+                    topicMap[id].NameEn,
+                    countMap.GetValueOrDefault(id, 0)))
+                .ToList();
+
+            return _messages.Ok(
+                new PagedResult<PublicTopicItemDto>(sortedItems, request.Page, request.PageSize, total),
+                "TOPICS_LISTED");
         }
 
-        query = request.SortBy switch
-        {
-            "name" => query.OrderBy(t => t.NameAr),
-            _ => query.OrderBy(t => t.OrderIndex),
-        };
+        IQueryable<Topic> sortedQuery;
+        if (request.SortBy == TopicsSortBy.Name)
+            sortedQuery = baseQuery.OrderBy(t => t.NameAr);
+        else
+            sortedQuery = baseQuery.OrderBy(t => t.OrderIndex);
 
-        var result = await query
-            .Select(t => new PublicTopicItemDto(
-                t.Id, t.NameAr, t.NameEn, t.Slug,
-                _db.Posts.Count(p => p.TopicId == t.Id && p.Status == PostStatus.Published)))
+        var pagedIdsResult = await sortedQuery
+            .Select(t => t.Id)
             .ToPagedResultAsync(request.Page, request.PageSize, ct)
             .ConfigureAwait(false);
 
-        return _messages.Ok(result, "TOPICS_LISTED");
+        var topicIds = pagedIdsResult.Items.ToList();
+        if (topicIds.Count == 0)
+            return _messages.Ok(
+                new PagedResult<PublicTopicItemDto>([], pagedIdsResult.Page, pagedIdsResult.PageSize, pagedIdsResult.Total),
+                "TOPICS_LISTED");
+
+        var pagedTopics = await _db.Topics
+            .Where(t => topicIds.Contains(t.Id))
+            .Select(t => new { t.Id, t.NameAr, t.NameEn })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+
+        var pagedTopicMap = pagedTopics.ToDictionary(t => t.Id);
+
+        var pagedPostCounts = await _db.Posts
+            .Where(p => topicIds.Contains(p.TopicId) && p.Status == PostStatus.Published)
+            .GroupBy(p => p.TopicId)
+            .Select(g => new { TopicId = g.Key, Count = g.Count() })
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+
+        var pagedCountMap = pagedPostCounts.ToDictionary(x => x.TopicId, x => x.Count);
+
+        var items = pagedIdsResult.Items
+            .Where(id => pagedTopicMap.ContainsKey(id))
+            .Select(id => new PublicTopicItemDto(
+                id,
+                pagedTopicMap[id].NameAr,
+                pagedTopicMap[id].NameEn,
+                pagedCountMap.GetValueOrDefault(id, 0)))
+            .ToList();
+
+        return _messages.Ok(
+            new PagedResult<PublicTopicItemDto>(items, pagedIdsResult.Page, pagedIdsResult.PageSize, pagedIdsResult.Total),
+            "TOPICS_LISTED");
     }
 }
