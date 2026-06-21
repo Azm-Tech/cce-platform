@@ -1,173 +1,259 @@
+// ── Design tokens ─────────────────────────────────────────────────────────────
 $p-50:  var(--primary--50);
 $p-100: var(--primary--100);
+$p-200: var(--primary--200);
 $p-500: var(--primary--500);
 $p-600: var(--primary--600);
+$p-800: var(--primary--800);
 $p-900: var(--primary--900);
 $n-50:  var(--neutrals--50);
 $n-100: var(--neutrals--100);
 $n-200: var(--neutrals--200);
 $n-300: var(--neutrals--300);
 $n-500: var(--neutrals--500);
-$n-800: var(--neutrals--800);
+$n-600: var(--neutrals--600);
 $n-900: var(--neutrals--900);
-$font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
+$font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 :host {
   display: block;
   font-family: $font;
-  background: $n-50;
-  min-height: 100vh;
 }
 
-.cup-page {
-  max-width: 560px;
-  margin-inline: auto;
-  padding: 3rem clamp(1rem, 4vw, 2rem);
-}
-
-.cup-card {
+.cup {
   background: var(--white);
-  border: 1px solid $n-100;
+  border: 1px solid $n-200;
+}
+
+// ── Header: info col + bio card ───────────────────────────────────────────────
+.cup__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 32px;
+}
+
+// Info column — inline-start (right in RTL)
+.cup__info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+// Hero row: avatar (rightmost in RTL) + expert badge (to its left)
+.cup__hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cup__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 9999px;
+  background: $p-100;
+  color: $p-900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 400;
+  font-family: $font;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.cup__expert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--success--600);
+  font-family: $font;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.cup__name {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__subtitle {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: $p-800;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__org {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: $p-800;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: $n-500;
+  font-family: $font;
+}
+
+.cup__meta-sep {
+  color: $n-300;
+}
+
+// Bio card — inline-end (left in RTL)
+.cup__bio-card {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--success--50);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-self: stretch;
+}
+
+.cup__bio-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: var(--success--600); flex-shrink: 0; }
+}
+
+.cup__bio-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 26px;
+  color: $p-800;
+  font-family: $font;
+  text-align: start;
+}
+
+// ── Stats + follow bar ────────────────────────────────────────────────────────
+.cup__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 32px;
+  border-top: 1px solid $n-200;
+}
+
+// Stats group — inline-start (right in RTL)
+.cup__stats {
+  display: flex;
+  align-items: center;
+}
+
+.cup__stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 40px 24px 32px;
+  gap: 4px;
+  padding-inline: 28px;
   text-align: center;
 
-  &__avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 9999px;
-    background: $p-100;
-    border: 1px solid $p-50;
-    color: $p-900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: 400;
-    font-family: $font;
-  }
+  &:first-child { padding-inline-start: 0; }
+  &:last-child  { padding-inline-end: 0; }
+}
 
-  &__info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
+.cup__stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: $n-900;
+  font-family: $font;
+}
 
-  &__name {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    color: $n-900;
-    font-family: $font;
-  }
+.cup__stat-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: $n-500;
+  font-family: $font;
+  white-space: nowrap;
+}
 
-  &__expert {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    color: var(--success--600);
-    font-family: $font;
+.cup__stat-sep {
+  width: 1px;
+  height: 36px;
+  background: $n-200;
+  flex-shrink: 0;
+}
 
-    mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  }
+// Follow button — inline-end (left in RTL)
+.cup__follow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 45px;
+  padding: 0 18px;
+  border: 1px solid $n-300;
+  background: var(--white);
+  color: $n-900;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.13s, color 0.13s;
 
-  &__job, &__org {
-    font-size: 14px;
-    color: $n-500;
-    font-family: $font;
-  }
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
 
-  &__stats {
-    display: flex;
-    width: 100%;
-    border-top: 1px solid $n-200;
-    border-bottom: 1px solid $n-200;
-    padding: 16px 0;
-    text-align: center;
-  }
+  &:hover { border-color: $n-500; }
+  &:focus-visible { outline: 2px solid $p-500; outline-offset: 2px; }
 
-  &__stat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-
-    strong {
-      font-size: 24px;
-      font-weight: 700;
-      color: $n-900;
-      font-family: $font;
-    }
-
-    span {
-      font-size: 13px;
-      color: $n-500;
-      font-family: $font;
-    }
-  }
-
-  &__stat-divider {
-    width: 1px;
-    background: $n-200;
-    align-self: stretch;
-    flex-shrink: 0;
-  }
-
-  &__follow-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 40px;
-    padding: 0 16px;
-    border: 1px solid $n-300;
-    background: var(--white);
-    color: $n-800;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: $font;
-    cursor: pointer;
-    transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
-
-    mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-    &:hover { border-color: $p-500; color: $p-500; }
-
-    &--active {
-      background: $p-50;
-      border-color: $p-500;
-      color: $p-600;
-    }
-  }
-
-  &__back {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    font-weight: 700;
+  &--active {
     color: $p-500;
-    text-decoration: none;
-
-    mat-icon { font-size: 18px; width: 18px; height: 18px; }
-    &:hover { color: $p-600; }
+    border-color: $p-200;
   }
 }
 
-// Skeleton
-.cup-skeleton {
-  background: var(--white);
-  border: 1px solid $n-100;
-  padding: 40px 24px 32px;
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+.cup__skel-wrap { padding: 0; }
+
+.cup__skel-header {
+  display: flex;
+  gap: 32px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+.cup__skel-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .cup-skel {
@@ -176,10 +262,12 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   animation: cup-shimmer 1.6s ease-in-out infinite;
   border-radius: 4px;
 
-  &--avatar { width: 72px; height: 72px; border-radius: 9999px; }
-  &--name   { width: 160px; height: 20px; }
-  &--line   { width: 100px; height: 14px; }
-  &--stats  { width: 100%; height: 60px; }
+  &--avatar { width: 80px; height: 80px; border-radius: 9999px; }
+  &--name   { width: 220px; height: 24px; }
+  &--line   { width: 180px; height: 16px; }
+  &--short  { width: 120px; }
+  &--bio    { width: 280px; height: 180px; flex-shrink: 0; }
+  &--bar    { width: 100%; height: 85px; border-radius: 0; }
 }
 
 @keyframes cup-shimmer {
@@ -187,18 +275,19 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   100% { background-position: -200% 0; }
 }
 
-.cup-error {
+// ── Error ─────────────────────────────────────────────────────────────────────
+.cup__error {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 16px 32px;
   background: var(--danger--50);
-  border: 1px solid var(--danger--200);
+  border-bottom: 1px solid var(--danger--200);
   color: var(--danger--600);
   font-size: 15px;
   font-family: $font;
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
 
   button {
     margin-inline-start: auto;
@@ -210,6 +299,16 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     font-weight: 700;
     font-family: $font;
     cursor: pointer;
+
     &:hover { background: var(--danger--100); }
   }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .cup__header { flex-direction: column; padding: 20px; }
+  .cup__bio-card { width: 100%; }
+  .cup__bar { padding: 16px 20px; flex-wrap: wrap; }
+  .cup__stat { padding-inline: 16px; }
+  .cup__stat-num { font-size: 22px; }
 }

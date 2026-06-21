@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService } from './community-api.service';
+import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
 import type { PublicPost } from './community.types';
 
 function timeAgo(dateStr: string | null | undefined, locale: string): string {
@@ -140,7 +142,7 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
           </a>
 
           <!-- Share — icon only (matches Figma 47px width) -->
-          <button type="button" class="pc__action" [attr.aria-label]="'community.share' | transloco">
+          <button type="button" class="pc__action" [attr.aria-label]="'community.share' | transloco" (click)="openShare()">
             <mat-icon svgIcon="share-2" aria-hidden="true"></mat-icon>
           </button>
 
@@ -176,6 +178,7 @@ export class PostSummaryComponent {
   private readonly auth = inject(AuthService);
   private readonly communityApi = inject(CommunityApiService);
   private readonly toast = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
 
   readonly post = input.required<PublicPost>();
   readonly topicName = input<string | null>(null);
@@ -312,4 +315,17 @@ export class PostSummaryComponent {
     if (this.topicName()) return this.topicName();
     return this.locale() === 'ar' ? this.post().topicNameAr : this.post().topicNameEn;
   });
+
+  openShare(): void {
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { postId: this.post().id, postTitle: this.title() },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      }
+    );
+  }
 }

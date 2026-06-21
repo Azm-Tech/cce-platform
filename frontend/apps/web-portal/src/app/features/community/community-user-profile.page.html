@@ -1,0 +1,131 @@
+<div class="cup">
+
+  <!-- ── Skeleton ──────────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="cup__skel-wrap" aria-busy="true" aria-label="loading">
+      <div class="cup__skel-header">
+        <div class="cup__skel-info">
+          <div class="cup-skel cup-skel--avatar"></div>
+          <div class="cup-skel cup-skel--name"></div>
+          <div class="cup-skel cup-skel--line"></div>
+          <div class="cup-skel cup-skel--line cup-skel--short"></div>
+        </div>
+        <div class="cup-skel cup-skel--bio"></div>
+      </div>
+      <div class="cup-skel cup-skel--bar"></div>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────────────────────── -->
+  @if (errorKind()) {
+    <div class="cup__error" role="alert">
+      <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      <button type="button" (click)="load()">{{ 'errors.retry' | transloco }}</button>
+    </div>
+  }
+
+  <!-- ── Profile ────────────────────────────────────────────────────────────── -->
+  @if (profile(); as prof) {
+
+    <!-- Header: two-column (info | bio card) -->
+    <div class="cup__header">
+
+      <!-- Info column — inline-start (RIGHT in RTL) -->
+      <div class="cup__info-col">
+
+        <!-- Avatar + expert badge row -->
+        <div class="cup__hero">
+          <!-- In RTL flex: first child = rightmost → avatar on right, badge to its left -->
+          <div class="cup__avatar" aria-hidden="true">{{ initial() }}</div>
+          @if (prof.isExpert) {
+            <span class="cup__expert">
+              <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+              {{ 'community.profile.expertBadge' | transloco }}
+            </span>
+          }
+        </div>
+
+        <h1 class="cup__name">{{ displayName() }}</h1>
+
+        @if (prof.jobTitle) {
+          <p class="cup__subtitle">{{ prof.jobTitle }}</p>
+        }
+
+        @if (prof.organizationName) {
+          <p class="cup__org">{{ prof.organizationName }}</p>
+        }
+
+        @if (prof.location || joinedOnFormatted()) {
+          <div class="cup__meta">
+            @if (prof.location) {
+              <span>{{ prof.location }}</span>
+            }
+            @if (prof.location && joinedOnFormatted()) {
+              <span class="cup__meta-sep" aria-hidden="true">•</span>
+            }
+            @if (joinedOnFormatted()) {
+              <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <!-- Bio card — inline-end (LEFT in RTL) -->
+      @if (prof.bio) {
+        <aside class="cup__bio-card">
+          <div class="cup__bio-header">
+            <mat-icon svgIcon="square-user" aria-hidden="true"></mat-icon>
+            <strong>{{ 'community.profile.bio' | transloco }}</strong>
+          </div>
+          <p class="cup__bio-text">{{ prof.bio }}</p>
+        </aside>
+      }
+
+    </div>
+
+    <!-- Stats + follow bar -->
+    <div class="cup__bar">
+
+      <!-- Stats — inline-start (RIGHT in RTL) -->
+      <div class="cup__stats">
+        <div class="cup__stat">
+          <strong class="cup__stat-num">{{ prof.replyCount }}</strong>
+          <span class="cup__stat-label">{{ 'community.profile.replies' | transloco }}</span>
+        </div>
+        <div class="cup__stat-sep" aria-hidden="true"></div>
+        <div class="cup__stat">
+          <strong class="cup__stat-num">{{ prof.postCount }}</strong>
+          <span class="cup__stat-label">{{ 'community.profile.posts' | transloco }}</span>
+        </div>
+        @if (prof.followerCount != null) {
+          <div class="cup__stat-sep" aria-hidden="true"></div>
+          <div class="cup__stat">
+            <strong class="cup__stat-num">{{ prof.followerCount }}</strong>
+            <span class="cup__stat-label">{{ 'community.profile.followers' | transloco }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Follow button — inline-end (LEFT in RTL) -->
+      @if (isAuthenticated() && !isOwnProfile() && userId()) {
+        <button
+          type="button"
+          class="cup__follow-btn"
+          [class.cup__follow-btn--active]="followRef.isFollowing()"
+          cceFollow
+          entityType="user"
+          [entityId]="userId()!"
+          #followRef="cceFollow"
+        >
+          <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
+          {{ (followRef.isFollowing() ? 'community.profile.followingUser' : 'community.profile.followUser') | transloco }}
+        </button>
+      }
+
+    </div>
+
+  }
+
+</div>

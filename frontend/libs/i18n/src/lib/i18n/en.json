@@ -2083,10 +2083,20 @@
       "empty": "You haven't posted anything yet.",
       "emptyDesc": "Create your first post to contribute to the community.",
       "expertBadge": "Verified expert",
-      "replies": "Replies"
+      "replies": "Replies",
+      "bio": "Bio",
+      "joinedIn": "Joined",
+      "followUser": "Follow",
+      "followingUser": "Following"
     },
     "anonymousAuthor": "Anonymous",
     "share": "Share",
+    "shareDialog": {
+      "title": "Share Post",
+      "copyLink": "Copy Link",
+      "copied": "Copied",
+      "close": "Close"
+    },
     "comment": "Comment",
     "readMore": "Read more",
     "membersLabel": "Members",

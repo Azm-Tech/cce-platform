@@ -2083,10 +2083,20 @@
       "empty": "لم تنشر شيئاً بعد.",
       "emptyDesc": "أنشئ منشورك الأول للمساهمة في المجتمع.",
       "expertBadge": "خبير موثق",
-      "replies": "رد"
+      "replies": "رد",
+      "bio": "السيرة الذاتية",
+      "joinedIn": "انضم في",
+      "followUser": "متابعة الحساب",
+      "followingUser": "تمت المتابعة"
     },
     "anonymousAuthor": "مستخدم مجهول",
     "share": "شارك",
+    "shareDialog": {
+      "title": "مشاركة المنشور",
+      "copyLink": "نسخ الرابط",
+      "copied": "تم النسخ",
+      "close": "إغلاق"
+    },
     "comment": "تعليق",
     "readMore": "اقرأ المزيد",
     "membersLabel": "أعضاء",

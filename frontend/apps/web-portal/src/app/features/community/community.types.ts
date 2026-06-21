@@ -144,6 +144,10 @@ export interface CommunityUserProfile {
   isExpert: boolean;
   postCount: number;
   replyCount: number;
+  bio?: string | null;
+  location?: string | null;
+  joinedOn?: string | null;
+  followerCount?: number | null;
 }
 
 // ── Featured Post ─────────────────────────────────────────────────────────────
