@@ -10,5 +10,4 @@ public sealed record CreateUserCommand(
     string Email,
     string PhoneNumber,
     System.Guid? CountryId,
-    System.Guid? CountryCodeId,
     string Role) : IRequest<Response<UserDetailDto>>;

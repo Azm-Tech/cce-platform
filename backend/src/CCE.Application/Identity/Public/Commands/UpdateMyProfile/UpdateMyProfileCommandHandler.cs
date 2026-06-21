@@ -38,11 +38,6 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
         else
             user.AssignCountry(request.CountryId.Value);
 
-        if (request.CountryCodeId is null)
-            user.ClearCountryCode();
-        else
-            user.AssignCountryCode(request.CountryCodeId.Value);
-
         _service.Update(user);
         // ICceDbContext as unit of work
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -69,7 +64,6 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.CountryCodeId,
             user.AvatarUrl), "PROFILE_UPDATED");
     }
 }

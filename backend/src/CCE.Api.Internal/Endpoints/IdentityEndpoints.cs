@@ -58,7 +58,7 @@ public static class IdentityEndpoints
         {
             var cmd = new CreateUserCommand(
                 body.FirstName, body.LastName, body.Email,
-                body.PhoneNumber, body.CountryId, body.CountryCodeId, body.Role);
+                body.PhoneNumber, body.CountryId, body.Role);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         })
@@ -165,5 +165,4 @@ public sealed record CreateUserRequest(
     string Email,
     string PhoneNumber,
     System.Guid? CountryId,
-    System.Guid? CountryCodeId,
     string Role);

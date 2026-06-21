@@ -72,7 +72,7 @@ public sealed class GetPublicCountryProfileQueryHandler
         CountryKapsarcSnapshot? snapshot,
         NdcDocumentDto? ndcDocument) => new(
             country.Id,
-            country.IsoAlpha3,
+            country.IsoAlpha3!,
             country.NameAr,
             country.NameEn,
             country.FlagUrl,

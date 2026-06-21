@@ -30,7 +30,7 @@ public static class AuthEndpoints
                 body.PhoneNumber,
                 body.Password,
                 body.ConfirmPassword,
-                body.CountryCodeId), ct).ConfigureAwait(false);
+                body.CountryId), ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()

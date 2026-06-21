@@ -22,8 +22,8 @@ public sealed class GetCountryCodeByIdQueryHandler
         GetCountryCodeByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await _db.CountryCodes
-            .Where(c => c.Id == request.Id)
+        var list = await _db.Countries
+            .Where(c => c.Id == request.Id && c.DialCode != null)
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
         var entity = list.SingleOrDefault();

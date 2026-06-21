@@ -24,12 +24,13 @@ public static class CountriesPublicEndpoints
         // US014 AC3 — browsable country list for profile selection
         countries.MapGet("", async (
             string? search, int? page, int? pageSize,
-            PublicCountrySortBy? sortBy, SortOrder? sortOrder,
+            PublicCountrySortBy? sortBy, SortOrder? sortOrder, bool? isCceCountry,
             IMediator mediator, CancellationToken ct) =>
             (await mediator.Send(new ListPublicCountriesQuery(
                 search, page ?? 1, pageSize ?? 20,
-                sortBy ?? PublicCountrySortBy.TotalIndex,
-                sortOrder ?? SortOrder.Descending), ct)
+                sortBy ?? PublicCountrySortBy.NameEn,
+                sortOrder ?? SortOrder.Ascending,
+                isCceCountry), ct)
                 .ConfigureAwait(false)).ToHttpResult())
         .AllowAnonymous()
         .WithName("ListPublicCountries");

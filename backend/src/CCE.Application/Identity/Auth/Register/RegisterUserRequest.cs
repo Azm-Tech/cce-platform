@@ -9,4 +9,4 @@ public sealed record RegisterUserRequest(
     string PhoneNumber,
     string Password,
     string ConfirmPassword,
-    System.Guid? CountryCodeId = null);
+    System.Guid? CountryId = null);

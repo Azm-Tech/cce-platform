@@ -45,7 +45,7 @@ public sealed class RefreshKapsarcSnapshotCommandHandler
 
         // Live retrieval from KAPSARC (inputs per BRD §6.5.1: ISO code + country name)
         var result = await _kapsarc
-            .GetClassificationAsync(country.IsoAlpha3, country.NameEn, cancellationToken)
+            .GetClassificationAsync(country.IsoAlpha3!, country.NameEn, cancellationToken)
             .ConfigureAwait(false);
 
         if (!result.Success || result.Classification is null

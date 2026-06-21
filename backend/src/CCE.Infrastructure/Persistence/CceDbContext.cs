@@ -11,7 +11,6 @@ using CCE.Domain.Identity;
 using CCE.Domain.InteractiveCity;
 using CCE.Domain.InteractiveMaps;
 using CCE.Domain.KnowledgeMaps;
-using CCE.Domain.Lookups;
 using CCE.Domain.Media;
 using CCE.Domain.Notifications;
 using CCE.Domain.PlatformSettings;
@@ -126,9 +125,6 @@ public sealed class CceDbContext
     public DbSet<KnowledgePartner> KnowledgePartners => Set<KnowledgePartner>();
     public DbSet<PolicySection> PolicySections => Set<PolicySection>();
 
-    // ─── Lookups ───
-    public DbSet<CountryCode> CountryCodes => Set<CountryCode>();
-
     // ─── ICceDbContext (read-only queryables — no tracking) ───
     IQueryable<User> ICceDbContext.Users => Users.AsNoTracking();
     IQueryable<Role> ICceDbContext.Roles => Roles.AsNoTracking();
@@ -190,7 +186,6 @@ public sealed class CceDbContext
     IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
     IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
     IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
-    IQueryable<CountryCode> ICceDbContext.CountryCodes => CountryCodes.AsNoTracking();
     IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
     IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
     IQueryable<ServiceEvaluation> ICceDbContext.ServiceEvaluations => ServiceEvaluations.AsNoTracking();

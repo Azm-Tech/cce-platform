@@ -17,7 +17,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.KnowledgeLevel).HasConversion<int>();
         builder.Property(u => u.Status).HasConversion<int>();
         builder.HasIndex(u => u.CountryId).HasDatabaseName("ix_users_country_id");
-        builder.HasIndex(u => u.CountryCodeId).HasDatabaseName("ix_users_country_code_id");
 
         // Enforce unique email at the database level to prevent duplicate accounts.
         // Filtered index: only non-null values (Identity allows null emails historically).

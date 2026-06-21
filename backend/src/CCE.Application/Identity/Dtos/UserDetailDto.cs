@@ -14,7 +14,6 @@ public sealed record UserDetailDto(
     KnowledgeLevel KnowledgeLevel,
     IReadOnlyList<InterestTopicDto> InterestTopics,
     System.Guid? CountryId,
-    System.Guid? CountryCodeId,
     string? AvatarUrl,
     IReadOnlyList<string> Roles,
     bool IsActive);

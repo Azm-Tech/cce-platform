@@ -11,5 +11,6 @@ public sealed record ListPublicCountriesQuery(
     string? Search = null,
     int Page = 1,
     int PageSize = 20,
-    PublicCountrySortBy SortBy = PublicCountrySortBy.TotalIndex,
-    SortOrder SortOrder = SortOrder.Descending) : IRequest<Response<PagedResult<PublicCountryDto>>>;
+    PublicCountrySortBy SortBy = PublicCountrySortBy.NameEn,
+    SortOrder SortOrder = SortOrder.Ascending,
+    bool? IsCceCountry = null) : IRequest<Response<PagedResult<PublicCountryDto>>>;

@@ -30,9 +30,6 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Optional user country (FK to <c>Country</c>); only set for state-rep / community users with a profile.</summary>
     public System.Guid? CountryId { get; set; }
 
-    /// <summary>Optional country code / nationality (FK to <c>CountryCode</c> lookup); used for phone dial-code and nationality.</summary>
-    public System.Guid? CountryCodeId { get; set; }
-
     /// <summary>Optional avatar URL (CDN-served).</summary>
     public string? AvatarUrl { get; private set; }
 
@@ -214,10 +211,6 @@ public class User : IdentityUser<System.Guid>
 
     public void ClearCountry() => CountryId = null;
 
-    public void AssignCountryCode(System.Guid countryCodeId) => CountryCodeId = countryCodeId;
-
-    public void ClearCountryCode() => CountryCodeId = null;
-
     /// <summary>
     /// Sets the avatar URL. Must be HTTPS or null. Pass null to clear.
     /// </summary>
@@ -246,12 +239,11 @@ public class User : IdentityUser<System.Guid>
         EmailConfirmed = true;
     }
 
-    public void UpdatePhoneNumber(string newPhone, System.Guid? countryCodeId)
+    public void UpdatePhoneNumber(string newPhone)
     {
         if (string.IsNullOrWhiteSpace(newPhone)) throw new DomainException("Phone number is required.");
         PhoneNumber = NormalizePhone(newPhone);
         PhoneNumberConfirmed = true;
-        CountryCodeId = countryCodeId;
     }
 
     public static string NormalizePhone(string phone)

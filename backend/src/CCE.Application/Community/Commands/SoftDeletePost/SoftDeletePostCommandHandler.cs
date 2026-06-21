@@ -53,6 +53,11 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
                 .FirstOrDefaultAsyncEither(u => u.Id == post.AuthorId, cancellationToken)
                 .ConfigureAwait(false);
             author?.DecrementPostsCount();
+
+            var community = await _db.Communities
+                .FirstOrDefaultAsyncEither(c => c.Id == post.CommunityId, cancellationToken)
+                .ConfigureAwait(false);
+            community?.DecrementPosts();
         }
 
         await _service.UpdatePostAsync(post, cancellationToken).ConfigureAwait(false);

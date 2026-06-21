@@ -7,4 +7,4 @@ namespace CCE.Application.Identity.Public.Commands.RequestPhoneChange;
 public sealed record RequestPhoneChangeCommand(
     System.Guid UserId,
     string NewPhone,
-    System.Guid? CountryCodeId) : IRequest<Response<RequestVerificationResponseDto>>;
+    System.Guid? CountryId) : IRequest<Response<RequestVerificationResponseDto>>;

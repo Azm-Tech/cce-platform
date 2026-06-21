@@ -46,9 +46,9 @@ internal sealed class RequestPhoneChangeCommandHandler
         if (taken)
             return _msg.ContactAlreadyTaken<RequestVerificationResponseDto>();
 
-        // Serialize CountryCodeId into ExtraData so it survives to confirm-time without client round-trip
-        var extraData = request.CountryCodeId.HasValue
-            ? System.Text.Json.JsonSerializer.Serialize(new PhoneChangeExtra(request.CountryCodeId.Value))
+        // Serialize CountryId into ExtraData so it survives to confirm-time without client round-trip
+        var extraData = request.CountryId.HasValue
+            ? System.Text.Json.JsonSerializer.Serialize(new PhoneChangeExtra(request.CountryId.Value))
             : null;
 
         var (entity, fail) = await _otpService.PrepareAsync(
@@ -69,4 +69,4 @@ internal sealed class RequestPhoneChangeCommandHandler
     }
 }
 
-internal sealed record PhoneChangeExtra(System.Guid CountryCodeId);
+internal sealed record PhoneChangeExtra(System.Guid CountryId);
