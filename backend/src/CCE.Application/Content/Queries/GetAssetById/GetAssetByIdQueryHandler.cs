@@ -10,11 +10,13 @@ namespace CCE.Application.Content.Queries.GetAssetById;
 public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery, Response<AssetFileDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly IFileStorage _storage;
     private readonly MessageFactory _msg;
 
-    public GetAssetByIdQueryHandler(ICceDbContext db, MessageFactory msg)
+    public GetAssetByIdQueryHandler(ICceDbContext db, IFileStorage storage, MessageFactory msg)
     {
         _db = db;
+        _storage = storage;
         _msg = msg;
     }
 
@@ -29,9 +31,13 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
         if (asset is null)
             return _msg.AssetNotFound<AssetFileDto>();
 
+        var publicUrl = asset.Url.StartsWith("http", System.StringComparison.OrdinalIgnoreCase)
+            ? asset.Url
+            : _storage.GetPublicUrl(asset.Url).ToString();
+
         return _msg.Ok(new AssetFileDto(
             asset.Id,
-            asset.Url,
+            publicUrl,
             asset.OriginalFileName,
             asset.SizeBytes,
             asset.MimeType,

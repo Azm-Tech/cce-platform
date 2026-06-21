@@ -74,7 +74,7 @@ internal sealed class DownloadFileQueryHandler
         }
         catch (FileNotFoundException)
         {
-            return _msg.MediaFileNotFound<DownloadFilePayload>();
+            return _msg.AssetNotFound<DownloadFilePayload>();
         }
 
         var assetPayload = new DownloadFilePayload(assetStream, asset.MimeType, asset.OriginalFileName);

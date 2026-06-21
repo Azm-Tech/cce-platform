@@ -56,7 +56,22 @@ public sealed class CreatePostCommandHandler
             return _msg.NotAuthenticated<Guid>();
 
         if (!await _accessGuard.CanPostAsync(request.CommunityId, authorId.Value, cancellationToken).ConfigureAwait(false))
-            return _msg.Forbidden<Guid>(ApplicationErrors.General.FORBIDDEN);
+        {
+            if (request.CommunityId == CommunitySeedIds.GeneralCommunityId)
+            {
+                var membership = CommunityMembership.Join(
+                    request.CommunityId, authorId.Value, CommunityRole.Member, _clock);
+                _communityRepo.AddMembership(membership);
+                var community = await _communityRepo.GetAsync(
+                    request.CommunityId, cancellationToken).ConfigureAwait(false);
+                community?.IncrementMembers();
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                return _msg.Forbidden<Guid>(ApplicationErrors.General.FORBIDDEN);
+            }
+        }
 
         if (!await _repo.TopicExistsAsync(request.TopicId, cancellationToken).ConfigureAwait(false))
             return _msg.TopicNotFound<Guid>();

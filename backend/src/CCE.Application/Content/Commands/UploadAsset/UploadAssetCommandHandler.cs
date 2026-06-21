@@ -51,13 +51,12 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
         buffer.Position = 0;
 
         var storageKey = await _storage.SaveAsync(buffer, request.OriginalFileName, cancellationToken).ConfigureAwait(false);
-        var publicUrl = _storage.GetPublicUrl(storageKey).ToString();
 
         buffer.Position = 0;
         var scanResult = await _scanner.ScanAsync(buffer, cancellationToken).ConfigureAwait(false);
 
         var asset = AssetFile.Register(
-            url: publicUrl,
+            url: storageKey,
             originalFileName: request.OriginalFileName,
             sizeBytes: request.SizeBytes,
             mimeType: request.MimeType,

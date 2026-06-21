@@ -57,14 +57,32 @@ public sealed class S3FileStorage : IFileStorage, IDisposable
 
     public async Task<System.IO.Stream> OpenReadAsync(string storageKey, CancellationToken ct)
     {
+        // Support both storage-key format (2026/06/xxx.pdf) and full URL format
+        // (https://.../object/public/uploads/2026/06/xxx.pdf) for backward compatibility
+        // with assets that were stored before the key-only migration.
+        var key = storageKey;
+        if (key.StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
+        {
+            var prefix = $"{_publicBaseUrl.TrimEnd('/')}/{_bucket}/";
+            if (key.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase))
+                key = key[prefix.Length..];
+        }
+
         var req = new GetObjectRequest
         {
             BucketName = _bucket,
-            Key = storageKey,
+            Key = key,
         };
 
-        var response = await _client.GetObjectAsync(req, ct).ConfigureAwait(false);
-        return response.ResponseStream;
+        try
+        {
+            var response = await _client.GetObjectAsync(req, ct).ConfigureAwait(false);
+            return response.ResponseStream;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            throw new System.IO.FileNotFoundException("Asset not found in storage", storageKey);
+        }
     }
 
     public async Task DeleteAsync(string storageKey, CancellationToken ct)
