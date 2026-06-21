@@ -49,20 +49,9 @@ public static class AssetEndpoints
         .DisableAntiforgery()
         .WithMetadata(new RequestSizeLimitMetadataImpl(20L * 1024L * 1024L));
 
-        assets.MapGet("{id:guid}", async (
-            System.Guid id,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
+        assets.MapGet("{id:guid}", async (System.Guid id, IMediator mediator, CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-
             var result = await mediator.Send(new GetAssetByIdQuery(id), ct).ConfigureAwait(false);
-
-            if (!result.Success || result.Data!.UploadedById != userId)
-                return Results.NotFound();
-
             return result.ToHttpResult();
         })
         .WithName("GetAssetById");
