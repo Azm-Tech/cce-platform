@@ -13,12 +13,14 @@ public interface IRedisFeedStore
 {
     // ─── Feed (merged timeline) ───
     Task AddToUserFeedAsync(Guid userId, Guid postId, DateTimeOffset publishedOn, CancellationToken ct = default);
+    Task AddToUserFeedBatchAsync(IReadOnlyCollection<Guid> userIds, Guid postId, DateTimeOffset publishedOn, CancellationToken ct = default);
     Task AddToCommunityFeedAsync(Guid communityId, Guid postId, DateTimeOffset publishedOn, CancellationToken ct = default);
     Task<IReadOnlyList<Guid>> GetUserFeedAsync(Guid userId, int page, int pageSize, CancellationToken ct = default);
     Task<IReadOnlyList<Guid>> GetCommunityFeedAsync(Guid communityId, int page, int pageSize, CancellationToken ct = default);
     Task<long> GetCommunityFeedCountAsync(Guid communityId, CancellationToken ct = default);
     Task<long> GetHotLeaderboardCountAsync(Guid communityId, CancellationToken ct = default);
-    Task RemoveFromFeedAsync(Guid userId, Guid postId, CancellationToken ct = default);
+    Task RemoveFromUserFeedAsync(Guid userId, Guid postId, CancellationToken ct = default);
+    Task RemovePostFromAllFeedsAsync(Guid communityId, Guid postId, CancellationToken ct = default);
 
     // ─── Post hot counters ───
     Task IncrementPostVotesAsync(Guid postId, int upDelta, int downDelta, CancellationToken ct = default);
@@ -26,10 +28,22 @@ public interface IRedisFeedStore
     Task SetPostMetaAsync(Guid postId, int upvotes, int downvotes, double score, int replyCount, CancellationToken ct = default);
     Task<PostMeta?> GetPostMetaAsync(Guid postId, CancellationToken ct = default);
 
+    Task<long> GetUserFeedCountAsync(Guid userId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns up to <paramref name="limit"/> entries from <c>feed:user:{userId}</c> starting at
+    /// position 0, newest-first, paired with the publish timestamp stored as the sorted-set score.
+    /// Used to merge and page the personal feed by timestamp before hydrating, avoiding loading
+    /// more post rows than the returned page requires.
+    /// </summary>
+    Task<IReadOnlyList<(Guid PostId, DateTimeOffset PublishedOn)>> GetUserFeedWithScoresAsync(
+        Guid userId, int limit, CancellationToken ct = default);
+    Task<IReadOnlyDictionary<Guid, PostMeta>> GetPostsMetaBatchAsync(IReadOnlyCollection<Guid> postIds, CancellationToken ct = default);
+
     // ─── Hot leaderboards ───
     Task AddToHotLeaderboardAsync(Guid communityId, Guid postId, double score, CancellationToken ct = default);
     Task RemoveFromHotLeaderboardAsync(Guid communityId, Guid postId, CancellationToken ct = default);
-    Task<IReadOnlyList<Guid>> GetHotPostsAsync(Guid communityId, int topN, CancellationToken ct = default);
+    Task<IReadOnlyList<Guid>> GetHotPostsAsync(Guid communityId, int page, int pageSize, CancellationToken ct = default);
 
     // ─── Notifications ───
     Task IncrementNotificationCountAsync(Guid userId, int delta = 1, CancellationToken ct = default);

@@ -32,7 +32,6 @@ public sealed class PostCreatedBusPublisher : INotificationHandler<PostCreatedEv
             notification.TopicId,
             notification.AuthorId,
             notification.OccurredOn,
-            IsExpert: false, // Worker will resolve IsExpert from ExpertProfile if needed
             notification.Locale);
 
         return _publisher.PublishAsync(evt, cancellationToken);
