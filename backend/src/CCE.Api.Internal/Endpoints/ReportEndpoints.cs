@@ -1,5 +1,6 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
+using CCE.Application.Reports.Queries.GetExpertReport;
 using CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
 using CCE.Application.Reports.Queries.GetUserPreferenceReport;
 using CCE.Application.Reports.Queries.GetUserRegistrationReport;
@@ -176,6 +177,14 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_UserPreferences)
         .WithName("UserPreferenceReport");
+
+        reports.MapGet("/experts", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetExpertReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_Experts)
+        .WithName("ExpertReport");
 
         return app;
     }
