@@ -50,12 +50,14 @@ export interface PublicTopic {
   orderIndex: number;
 }
 
-/** Lightweight topic shape from GET /api/community/topics (includes post counts). */
+/** Lightweight topic shape from GET /api/community/topics (includes post counts + follow state). */
 export interface CommunityTopicSummary {
   id: string;
   nameAr: string | null;
   nameEn: string | null;
   postsCount: number;
+  /** Whether the current user follows this topic (authenticated responses). */
+  isFollowed?: boolean;
 }
 
 // ── Post ──────────────────────────────────────────────────────────────────────

@@ -42,7 +42,11 @@ export interface AdminPostRow {
   topicNameEn: string;
   topicNameAr: string;
   authorId: string;
+  /** Post title (preferred for the table). */
+  title?: string | null;
   content: string;
+  /** Post type: 'Info' | 'Question' | 'Poll'. */
+  type?: string;
   locale: 'ar' | 'en';
   isAnswerable: boolean;
   isAnswered: boolean;
@@ -52,14 +56,19 @@ export interface AdminPostRow {
   replyCount: number;
 }
 
-/** Status filter values for the admin posts list. */
-export type AdminPostStatus =
-  | 'all'
-  | 'active'
-  | 'deleted'
-  | 'question'
-  | 'answered';
+/** Post-type filter values — mirrors the web-portal feed type filter. */
+export type AdminPostTypeFilter = 'all' | 'info' | 'question' | 'poll';
 
-export const ADMIN_POST_STATUSES: readonly AdminPostStatus[] = [
-  'all', 'active', 'question', 'answered', 'deleted',
+export const ADMIN_POST_TYPE_FILTERS: readonly AdminPostTypeFilter[] = [
+  'all', 'info', 'question', 'poll',
 ] as const;
+
+/** Maps a type filter to the backend `postType` enum (Info=0, Question=1, Poll=2). */
+export const POST_TYPE_PARAM: Record<Exclude<AdminPostTypeFilter, 'all'>, 0 | 1 | 2> = {
+  info: 0,
+  question: 1,
+  poll: 2,
+};
+
+/** Normalized post type kind for chip rendering. */
+export type PostTypeKind = 'info' | 'question' | 'poll';

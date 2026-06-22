@@ -262,6 +262,17 @@
     background: rgba(var(--color-text-primary-rgb), 0.06);
     border-color: rgba(var(--color-text-primary-rgb), 0.12);
   }
+  // Post-type chips
+  &--info {
+    color: rgba(var(--color-text-primary-rgb), 0.72);
+    background: rgba(var(--color-text-primary-rgb), 0.06);
+    border-color: rgba(var(--color-text-primary-rgb), 0.12);
+  }
+  &--poll {
+    color: var(--success--700);
+    background: rgba(var(--color-brand-accent-rgb), 0.12);
+    border-color: rgba(var(--color-brand-accent-rgb), 0.32);
+  }
   &--deleted {
     color: var(--danger--800);
     background: rgba(var(--danger--600-rgb), 0.08);

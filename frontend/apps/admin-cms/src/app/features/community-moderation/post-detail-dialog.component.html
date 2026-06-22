@@ -1,25 +1,20 @@
 <!-- ─── Dialog title ─────────────────────────────────────────── -->
 <div mat-dialog-title class="cce-pd__header">
   <div class="cce-pd__header-chips">
-    @if (row.isDeleted) {
-      <span class="cce-pd__chip cce-pd__chip--deleted">
-        <mat-icon aria-hidden="true">delete</mat-icon>
-        {{ 'communityModeration.chip.deleted' | transloco }}
-      </span>
-    } @else if (row.isAnswered) {
+    <span class="cce-pd__chip cce-pd__chip--{{ postTypeKind() }}">
+      <mat-icon aria-hidden="true">{{ postTypeIcon(postTypeKind()) }}</mat-icon>
+      {{ ('communityModeration.typeChip.' + postTypeKind()) | transloco }}
+    </span>
+    @if (row.isAnswered) {
       <span class="cce-pd__chip cce-pd__chip--answered">
         <mat-icon aria-hidden="true">check_circle</mat-icon>
         {{ 'communityModeration.chip.answered' | transloco }}
       </span>
-    } @else if (row.isAnswerable) {
-      <span class="cce-pd__chip cce-pd__chip--question">
-        <mat-icon aria-hidden="true">help_outline</mat-icon>
-        {{ 'communityModeration.chip.question' | transloco }}
-      </span>
-    } @else {
-      <span class="cce-pd__chip cce-pd__chip--discussion">
-        <mat-icon aria-hidden="true">forum</mat-icon>
-        {{ 'communityModeration.chip.discussion' | transloco }}
+    }
+    @if (row.isDeleted) {
+      <span class="cce-pd__chip cce-pd__chip--deleted">
+        <mat-icon aria-hidden="true">delete</mat-icon>
+        {{ 'communityModeration.chip.deleted' | transloco }}
       </span>
     }
     <span class="cce-pd__topic">{{ topicName() }}</span>

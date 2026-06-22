@@ -1475,6 +1475,7 @@
     "filter": {
       "search": "ابحث في المحتوى",
       "status": "الحالة",
+      "type": "النوع",
       "topic": "الموضوع",
       "allTopics": "كل المواضيع",
       "locale": "اللغة",
@@ -1488,9 +1489,22 @@
       "question": "أسئلة مفتوحة",
       "answered": "تمّت الإجابة"
     },
+    "typeOption": {
+      "all": "كل الأنواع",
+      "info": "معلومة",
+      "question": "سؤال",
+      "poll": "استطلاع"
+    },
+    "typeChip": {
+      "info": "معلومة",
+      "question": "سؤال",
+      "poll": "استطلاع"
+    },
     "col": {
       "status": "الحالة",
+      "type": "النوع",
       "content": "المحتوى",
+      "title": "العنوان",
       "topic": "الموضوع",
       "replies": "الردود",
       "locale": "اللغة",

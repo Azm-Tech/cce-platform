@@ -22,9 +22,11 @@ import {
   type PostDetailDialogResult,
 } from './post-detail-dialog.component';
 import {
-  ADMIN_POST_STATUSES,
+  ADMIN_POST_TYPE_FILTERS,
+  POST_TYPE_PARAM,
   type AdminPostRow,
-  type AdminPostStatus,
+  type AdminPostTypeFilter,
+  type PostTypeKind,
 } from './admin-post.types';
 
 const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -62,7 +64,7 @@ export class CommunityModerationPage implements OnInit {
   private readonly envService = inject(EnvService);
   private readonly dialog = inject(MatDialog);
 
-  readonly statuses = ADMIN_POST_STATUSES;
+  readonly typeFilters = ADMIN_POST_TYPE_FILTERS;
   readonly locale = this.localeService.locale;
 
   // ─── List state ──────────────────────────────────────────
@@ -74,7 +76,7 @@ export class CommunityModerationPage implements OnInit {
 
   // ─── Filters ─────────────────────────────────────────────
   readonly search = signal('');
-  readonly status = signal<AdminPostStatus>('all');
+  readonly typeFilter = signal<AdminPostTypeFilter>('all');
   readonly localeFilter = signal<'' | 'ar' | 'en'>('');
   readonly topicId = signal<string>('');
   readonly page = signal(1);
@@ -101,11 +103,35 @@ export class CommunityModerationPage implements OnInit {
     return this.locale() === 'ar' ? row.topicNameAr : row.topicNameEn;
   }
 
-  /** First 140 chars of `content` for the table cell — full content
-   *  is shown in the row tooltip. */
+  /** Post title for the table cell, falling back to a content excerpt
+   *  when the row carries no title (e.g. plain discussion posts). */
+  titleOf(row: AdminPostRow): string {
+    const title = row.title?.trim();
+    if (title) return title;
+    return this.excerptOf(row);
+  }
+
+  /** First 140 chars of `content` — used as a fallback title and the row tooltip. */
   excerptOf(row: AdminPostRow): string {
-    const stripped = row.content.replace(/\s+/g, ' ').trim();
+    const stripped = (row.content ?? '').replace(/\s+/g, ' ').trim();
     return stripped.length > 140 ? stripped.slice(0, 140) + '…' : stripped;
+  }
+
+  /** Normalized post type for chip rendering — derived from `type`,
+   *  falling back to the answerable heuristic when the field is absent. */
+  postTypeKind(row: AdminPostRow): PostTypeKind {
+    const t = (row.type ?? '').toLowerCase();
+    if (t.includes('poll')) return 'poll';
+    if (t.includes('quest') || (!t && (row.isAnswerable || row.isAnswered))) return 'question';
+    return 'info';
+  }
+
+  postTypeIcon(kind: PostTypeKind): string {
+    switch (kind) {
+      case 'question': return 'help_outline';
+      case 'poll': return 'bar_chart';
+      default: return 'info';
+    }
   }
 
   /**
@@ -174,12 +200,13 @@ export class CommunityModerationPage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
+    const type = this.typeFilter();
     const res = await this.api.listPosts({
       page: this.page(),
       pageSize: this.pageSize(),
       topicId: this.topicId() || undefined,
       search: this.search().trim() || undefined,
-      status: this.status(),
+      postType: type === 'all' ? undefined : POST_TYPE_PARAM[type],
       locale: this.localeFilter() || undefined,
     });
     this.loading.set(false);
@@ -197,8 +224,8 @@ export class CommunityModerationPage implements OnInit {
     this.page.set(1);
     void this.load();
   }
-  onStatus(value: AdminPostStatus): void {
-    this.status.set(value);
+  onType(value: AdminPostTypeFilter): void {
+    this.typeFilter.set(value);
     this.page.set(1);
     void this.load();
   }
@@ -219,7 +246,7 @@ export class CommunityModerationPage implements OnInit {
   }
   clearFilters(): void {
     this.search.set('');
-    this.status.set('all');
+    this.typeFilter.set('all');
     this.localeFilter.set('');
     this.topicId.set('');
     this.page.set(1);

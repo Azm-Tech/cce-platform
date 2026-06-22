@@ -34,6 +34,8 @@
   mat-icon { font-size: 14px; width: 14px; height: 14px; }
 
   &--question  { background: var(--primary--50);  color: var(--primary--700); }
+  &--info      { background: var(--neutrals--100); color: var(--neutrals--700); }
+  &--poll      { background: var(--secondary--50); color: var(--secondary--800); }
   &--answered  { background: var(--success--50);  color: var(--success--700); }
   &--discussion{ background: var(--neutrals--100); color: var(--neutrals--700); }
   &--deleted   { background: var(--danger--50);   color: var(--danger--700);  }

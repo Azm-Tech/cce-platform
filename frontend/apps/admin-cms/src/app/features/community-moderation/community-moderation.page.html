@@ -15,11 +15,11 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-cm__filter">
-    <mat-label>{{ 'communityModeration.filter.status' | transloco }}</mat-label>
-    <mat-select [ngModel]="status()" (ngModelChange)="onStatus($event)">
-      @for (s of statuses; track s) {
-        <mat-option [value]="s">
-          {{ ('communityModeration.statusOption.' + s) | transloco }}
+    <mat-label>{{ 'communityModeration.filter.type' | transloco }}</mat-label>
+    <mat-select [ngModel]="typeFilter()" (ngModelChange)="onType($event)">
+      @for (t of typeFilters; track t) {
+        <mat-option [value]="t">
+          {{ ('communityModeration.typeOption.' + t) | transloco }}
         </mat-option>
       }
     </mat-select>
@@ -82,8 +82,8 @@
     <table class="cce-cm__table">
       <thead>
         <tr>
-          <th>{{ 'communityModeration.col.status' | transloco }}</th>
-          <th>{{ 'communityModeration.col.content' | transloco }}</th>
+          <th>{{ 'communityModeration.col.type' | transloco }}</th>
+          <th>{{ 'communityModeration.col.title' | transloco }}</th>
           <th>{{ 'communityModeration.col.topic' | transloco }}</th>
           <th>{{ 'communityModeration.col.replies' | transloco }}</th>
           <th>{{ 'communityModeration.col.locale' | transloco }}</th>
@@ -96,25 +96,14 @@
           <tr [class.cce-cm__row--deleted]="row.isDeleted">
             <td>
               <span class="cce-cm__chips">
+                <span class="cce-cm__chip cce-cm__chip--{{ postTypeKind(row) }}">
+                  <mat-icon aria-hidden="true">{{ postTypeIcon(postTypeKind(row)) }}</mat-icon>
+                  {{ ('communityModeration.typeChip.' + postTypeKind(row)) | transloco }}
+                </span>
                 @if (row.isDeleted) {
                   <span class="cce-cm__chip cce-cm__chip--deleted">
                     <mat-icon aria-hidden="true">delete</mat-icon>
                     {{ 'communityModeration.chip.deleted' | transloco }}
-                  </span>
-                } @else if (row.isAnswered) {
-                  <span class="cce-cm__chip cce-cm__chip--answered">
-                    <mat-icon aria-hidden="true">check_circle</mat-icon>
-                    {{ 'communityModeration.chip.answered' | transloco }}
-                  </span>
-                } @else if (row.isAnswerable) {
-                  <span class="cce-cm__chip cce-cm__chip--question">
-                    <mat-icon aria-hidden="true">help_outline</mat-icon>
-                    {{ 'communityModeration.chip.question' | transloco }}
-                  </span>
-                } @else {
-                  <span class="cce-cm__chip cce-cm__chip--discussion">
-                    <mat-icon aria-hidden="true">forum</mat-icon>
-                    {{ 'communityModeration.chip.discussion' | transloco }}
                   </span>
                 }
               </span>
@@ -130,12 +119,12 @@
                   matTooltipPosition="below"
                   (click)="openInPortal(row, $event)"
                 >
-                  {{ excerptOf(row) }}
+                  {{ titleOf(row) }}
                   <mat-icon class="cce-cm__excerpt-icon" aria-hidden="true">open_in_new</mat-icon>
                 </a>
               } @else {
                 <span class="cce-cm__excerpt" [matTooltip]="row.content" matTooltipPosition="below">
-                  {{ excerptOf(row) }}
+                  {{ titleOf(row) }}
                 </span>
               }
               <span class="cce-cm__id" [matTooltip]="row.id">{{ row.id.slice(0, 8) }}</span>

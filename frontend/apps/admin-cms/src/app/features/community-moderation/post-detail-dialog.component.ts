@@ -20,7 +20,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { CommunityModerationApiService } from './community-moderation-api.service';
-import type { AdminPostDetail, AdminPostReply, AdminPostRow } from './admin-post.types';
+import type { AdminPostDetail, AdminPostReply, AdminPostRow, PostTypeKind } from './admin-post.types';
 
 export interface PostDetailDialogData {
   row: AdminPostRow;
@@ -83,6 +83,24 @@ export class PostDetailDialogComponent implements OnInit {
     const isAr = this.locale() === 'ar';
     if (p) return isAr ? (p.topicNameAr ?? '') : (p.topicNameEn ?? '');
     return isAr ? this.row.topicNameAr : this.row.topicNameEn;
+  }
+
+  /** Normalized post type (from the detail, falling back to the row). */
+  postTypeKind(): PostTypeKind {
+    const type = (this.post()?.type ?? this.row.type ?? '').toLowerCase();
+    if (type.includes('poll')) return 'poll';
+    if (type.includes('quest') || (!type && (this.row.isAnswerable || this.row.isAnswered))) {
+      return 'question';
+    }
+    return 'info';
+  }
+
+  postTypeIcon(kind: PostTypeKind): string {
+    switch (kind) {
+      case 'question': return 'help_outline';
+      case 'poll': return 'bar_chart';
+      default: return 'info';
+    }
   }
 
   async deletePost(): Promise<void> {

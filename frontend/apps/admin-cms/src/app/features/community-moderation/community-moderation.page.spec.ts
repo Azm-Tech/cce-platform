@@ -133,12 +133,12 @@ describe('CommunityModerationPage', () => {
     expect(toast.success).toHaveBeenCalledWith('communityModeration.reply.toast');
   });
 
-  it('filter handlers re-trigger list load', () => {
+  it('filter handlers re-trigger list load with the post type', () => {
     api.listPosts.mockClear();
-    page.onStatus('deleted');
+    page.onType('question');
     expect(api.listPosts).toHaveBeenCalled();
     const lastCall = api.listPosts.mock.calls.at(-1)?.[0];
-    expect(lastCall?.status).toBe('deleted');
+    expect(lastCall?.postType).toBe(1);
   });
 
   it('publicPostUrl returns the deep-link to the web-portal', () => {

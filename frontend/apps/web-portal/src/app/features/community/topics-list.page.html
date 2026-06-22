@@ -66,29 +66,26 @@
           </ul>
         } @else {
           <ul class="cp-topics-list" role="list">
-            <li>
-              <button
-                type="button"
-                class="cp-topic-item"
-                [class.cp-topic-item--active]="!topicFilter()"
-                (click)="setTopicFilter(null)"
-              >
+            <li class="cp-topic-item" [class.cp-topic-item--active]="!topicFilter()">
+              <button type="button" class="cp-topic-item__main" (click)="setTopicFilter(null)">
                 <span class="cp-topic-item__label">{{ 'community.filter.allCategories' | transloco }}</span>
-                <span class="cp-topic-item__badge">{{ totalItems() }}</span>
+                <span class="cp-topic-item__badge">{{ allTopicsCount() }}</span>
               </button>
             </li>
-            @for (topic of topicsList(); track topic.id) {
-              <li>
+            @for (topic of topicSummaries(); track topic.id) {
+              <li class="cp-topic-item" [class.cp-topic-item--active]="topicFilter() === topic.id">
+                <button type="button" class="cp-topic-item__main" (click)="setTopicFilter(topic.id)">
+                  <span class="cp-topic-item__label">{{ topicSummaryName(topic) }}</span>
+                  <span class="cp-topic-item__badge">{{ topic.postsCount }}</span>
+                </button>
                 <button
                   type="button"
-                  class="cp-topic-item"
-                  [class.cp-topic-item--active]="topicFilter() === topic.id"
-                  (click)="setTopicFilter(topic.id)"
+                  class="cp-topic-item__follow"
+                  [class.cp-topic-item__follow--active]="isTopicFollowed(topic.id)"
+                  [attr.aria-label]="(isTopicFollowed(topic.id) ? 'community.unfollowTopic' : 'community.followTopic') | transloco"
+                  (click)="toggleTopicFollow(topic.id)"
                 >
-                  <span class="cp-topic-item__label">
-                    {{ locale() === 'ar' ? (topic.nameAr ?? topic.nameEn) : (topic.nameEn ?? topic.nameAr) }}
-                  </span>
-                  <span class="cp-topic-item__badge">{{ getTopicPostCount(topic.id, $index) }}</span>
+                  <mat-icon svgIcon="{{ isTopicFollowed(topic.id) ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
                 </button>
               </li>
             }

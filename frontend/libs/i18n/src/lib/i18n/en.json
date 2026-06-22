@@ -1475,6 +1475,7 @@
     "filter": {
       "search": "Search content",
       "status": "Status",
+      "type": "Type",
       "topic": "Topic",
       "allTopics": "All topics",
       "locale": "Locale",
@@ -1488,9 +1489,22 @@
       "question": "Open questions",
       "answered": "Answered"
     },
+    "typeOption": {
+      "all": "All types",
+      "info": "Informational",
+      "question": "Question",
+      "poll": "Poll"
+    },
+    "typeChip": {
+      "info": "Info",
+      "question": "Question",
+      "poll": "Poll"
+    },
     "col": {
       "status": "Status",
+      "type": "Type",
       "content": "Content",
+      "title": "Title",
       "topic": "Topic",
       "replies": "Replies",
       "locale": "Locale",

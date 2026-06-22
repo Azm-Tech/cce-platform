@@ -13,7 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
+import { ToastService } from '@frontend/ui-kit';
 import { AuthService } from '../../core/auth/auth.service';
+import { FollowsApiService } from '../follows/follows-api.service';
 import { CommunityApiService } from './community-api.service';
 import { CommunityStateService } from './community-state.service';
 import { PostSummaryComponent } from './post-summary.component';
@@ -22,7 +24,7 @@ import {
   type ComposePostDialogData,
   type ComposePostDialogResult,
 } from './compose-post-dialog.component';
-import type { CommunityRole, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
+import type { CommunityRole, CommunityTopicSummary, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
 
 /** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
 type FeedSort = 0 | 1 | 2 | 3;
@@ -39,6 +41,8 @@ export class TopicsListPage implements OnInit {
   private readonly api = inject(CommunityApiService);
   private readonly auth = inject(AuthService);
   private readonly communityState = inject(CommunityStateService);
+  private readonly followsApi = inject(FollowsApiService);
+  private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
   readonly locale = inject(LocaleService).locale;
 
@@ -102,9 +106,45 @@ export class TopicsListPage implements OnInit {
     return opt?.labelKey ?? 'community.filter.allTypes';
   });
 
-  getTopicPostCount(topicId: string, index: number): number {
-    const mockCounts = [40, 30, 25, 20, 15, 12, 10, 8, 5, 2];
-    return mockCounts[index % mockCounts.length];
+  /** Community topics with post counts (sidebar list with follow toggles). */
+  readonly topicSummaries = signal<CommunityTopicSummary[]>([]);
+  /** Followed topic ids — seeded from `isFollowed` on GET /api/community/topics. */
+  readonly followedTopicIds = signal<Set<string>>(new Set());
+  /** Total posts across all topics — shown on the "All" entry. */
+  readonly allTopicsCount = computed(() =>
+    this.topicSummaries().reduce((sum, t) => sum + (t.postsCount ?? 0), 0),
+  );
+
+  topicSummaryName(t: CommunityTopicSummary): string {
+    return (this.locale() === 'ar' ? t.nameAr ?? t.nameEn : t.nameEn ?? t.nameAr) ?? '';
+  }
+
+  isTopicFollowed(id: string): boolean {
+    return this.followedTopicIds().has(id);
+  }
+
+  /** Optimistic follow/unfollow for a sidebar topic (writes via /api/me/follows). */
+  async toggleTopicFollow(id: string): Promise<void> {
+    if (!this.auth.isAuthenticated()) return;
+    const wasFollowing = this.isTopicFollowed(id);
+    this.setTopicFollowed(id, !wasFollowing);
+    const res = wasFollowing
+      ? await this.followsApi.unfollow('topic', id)
+      : await this.followsApi.follow('topic', id);
+    if (!res.ok) {
+      this.setTopicFollowed(id, wasFollowing); // revert
+      this.toast.error('errors.ERR012');
+    } else if (!wasFollowing) {
+      this.toast.success('confirmations.CON010');
+    }
+  }
+
+  private setTopicFollowed(id: string, value: boolean): void {
+    this.followedTopicIds.update((s) => {
+      const next = new Set(s);
+      value ? next.add(id) : next.delete(id);
+      return next;
+    });
   }
 
   // ── Sort + skeleton config ────────────────────────────────────────────────
@@ -165,11 +205,20 @@ export class TopicsListPage implements OnInit {
 
   private async loadTopics(): Promise<void> {
     this.topicsLoading.set(true);
-    const res = await this.api.listTopics();
-    if (res.ok) {
+    const [topicsRes, summariesRes] = await Promise.all([
+      this.api.listTopics(),
+      this.api.listCommunityTopics({ pageSize: 100 }),
+    ]);
+    if (topicsRes.ok) {
       const m = new Map<string, PublicTopic>();
-      for (const t of res.value) m.set(t.id, t);
+      for (const t of topicsRes.value) m.set(t.id, t);
       this.topicsMap.set(m);
+    }
+    if (summariesRes.ok) {
+      this.topicSummaries.set(summariesRes.value.items);
+      this.followedTopicIds.set(
+        new Set(summariesRes.value.items.filter((t) => t.isFollowed).map((t) => t.id)),
+      );
     }
     this.topicsLoading.set(false);
   }
