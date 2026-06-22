@@ -24,8 +24,8 @@ import {
 } from './compose-post-dialog.component';
 import type { CommunityRole, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
 
-/** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2 */
-type FeedSort = 0 | 1 | 2;
+/** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
+type FeedSort = 0 | 1 | 2 | 3;
 
 @Component({
   selector: 'cce-topics-list-page',
@@ -112,15 +112,17 @@ export class TopicsListPage implements OnInit {
   readonly topicSkeletons = Array.from({ length: 7 });
 
   readonly sortOptions: { key: FeedSort; labelKey: string }[] = [
+    { key: 0, labelKey: 'community.filter.sortHot' },
     { key: 1, labelKey: 'community.filter.sortNewest' },
     { key: 2, labelKey: 'community.filter.sortTop' },
-    { key: 0, labelKey: 'community.filter.sortMostReplied' },
+    { key: 3, labelKey: 'community.filter.sortMostReplied' },
   ];
 
   readonly sortIcons: Record<FeedSort, string> = {
-    0: 'messages-square',
+    0: 'flame',
     1: 'calendar',
     2: 'chevron-up',
+    3: 'messages-square',
   };
 
   readonly topicsList = computed(() => Array.from(this.topicsMap().values()).slice(0, 10));

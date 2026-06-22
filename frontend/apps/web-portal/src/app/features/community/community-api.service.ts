@@ -380,7 +380,7 @@ export class CommunityApiService {
 
   async listFeedPosts(
     communityId: string,
-    opts: { page?: number; pageSize?: number; sort?: string; topicId?: string; type?: PostType; search?: string; authorId?: string } = {},
+    opts: { page?: number; pageSize?: number; sort?: string; topicId?: string; type?: PostType; search?: string; authorId?: string; isWatchlisted?: boolean } = {},
   ): Promise<Result<PagedResult<PublicPost>>> {
     let params = new HttpParams();
     if (communityId) params = params.set('communityId', communityId);
@@ -391,6 +391,7 @@ export class CommunityApiService {
     if (opts.type !== undefined && opts.type !== null) params = params.set('postType', opts.type);
     if (opts.search?.trim()) params = params.set('search', opts.search.trim());
     if (opts.authorId) params = params.set('authorId', opts.authorId);
+    if (opts.isWatchlisted !== undefined) params = params.set('isWatchlisted', opts.isWatchlisted);
     return this.run(async () =>
       unwrapPaged<PublicPost>(
         await firstValueFrom(

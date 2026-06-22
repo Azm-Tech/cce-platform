@@ -67,16 +67,16 @@
             </div>
           </div>
 
-          @if (prof.location || joinedOnFormatted()) {
+          @if (country() || joinedOnFormatted()) {
             <div class="cup__meta">
-              @if (joinedOnFormatted()) {
-                <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
+              @if (country()) {
+                <span>{{ country() }}</span>
               }
-              @if (prof.location && joinedOnFormatted()) {
+              @if (country() && joinedOnFormatted()) {
                 <span class="cup__meta-sep" aria-hidden="true">•</span>
               }
-              @if (prof.location) {
-                <span>{{ prof.location }}</span>
+              @if (joinedOnFormatted()) {
+                <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
               }
             </div>
           }
@@ -84,13 +84,13 @@
         </div>
 
         <!-- Bio card — inline-end (LEFT in RTL) -->
-        @if (prof.bio) {
+        @if (expertBio(); as bio) {
           <aside class="cup__bio-card">
             <div class="cup__bio-header">
               <mat-icon svgIcon="square-user" aria-hidden="true"></mat-icon>
               <strong>{{ 'community.profile.bio' | transloco }}</strong>
             </div>
-            <p class="cup__bio-text">{{ prof.bio }}</p>
+            <p class="cup__bio-text">{{ bio }}</p>
           </aside>
         }
 

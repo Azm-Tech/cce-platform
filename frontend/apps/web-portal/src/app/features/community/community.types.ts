@@ -177,9 +177,16 @@ export interface CommunityUserProfile {
   replyCount: number;
   followerCount: number;
   followingCount: number;
+  /** Localized expert biography ("السيرة الذاتية"). */
+  expertBioAr?: string | null;
+  expertBioEn?: string | null;
+  isFollowed?: boolean;
+  countryNameAr?: string | null;
+  countryNameEn?: string | null;
   bio?: string | null;
   location?: string | null;
   joinedOn?: string | null;
+  joinedDate?: string | null;
 }
 
 // ── Featured Post ─────────────────────────────────────────────────────────────

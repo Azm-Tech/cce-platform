@@ -1,0 +1,183 @@
+// ── Design tokens ─────────────────────────────────────────────────────────────
+$p-50:  var(--primary--50);
+$p-100: var(--primary--100);
+$p-500: var(--primary--500);
+$p-600: var(--primary--600);
+$p-800: var(--primary--800);
+$p-900: var(--primary--900);
+$n-100: var(--neutrals--100);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-900: var(--neutrals--900);
+$font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
+
+:host {
+  display: block;
+  font-family: $font;
+}
+
+// ── Header (RTL): title at start (right), close at end (left) ──────────────────
+.cfd__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid $n-100;
+}
+
+.cfd__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: $n-900;
+  font-family: $font;
+}
+
+.cfd__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border: 1px solid $n-300;
+  background: transparent;
+  color: $n-900;
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s;
+
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  &:hover { border-color: $p-500; color: $p-500; }
+}
+
+// ── Body ───────────────────────────────────────────────────────────────────────
+.cfd__body {
+  padding: 8px 24px 24px;
+  overflow-y: auto;
+}
+
+// One member per row: avatar + name (start/right) | follow toggle (end/left)
+.cfd__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid $n-100;
+
+  &:last-child { border-bottom: none; }
+}
+
+.cfd__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: $p-100;
+  border: 1px solid $p-50;
+  color: $p-900;
+  font-size: 18px;
+  font-weight: 400;
+  font-family: $font;
+}
+
+.cfd__name {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $n-900;
+  font-family: $font;
+}
+
+.cfd__expert {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--success--600);
+}
+
+// Follow toggle: solid blue when following
+.cfd__follow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid $n-300;
+  background: transparent;
+  color: $n-500;
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s, background-color 0.13s;
+
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  &:hover { border-color: $p-500; color: $p-500; }
+
+  &--active {
+    border-color: $p-500;
+    background: $p-500;
+    color: var(--white);
+
+    &:hover { border-color: $p-600; background: $p-600; color: var(--white); }
+  }
+}
+
+// ── Empty / error / skeleton ────────────────────────────────────────────────────
+.cfd__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 16px;
+  text-align: center;
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; color: $n-300; }
+  p { margin: 0; font-size: 16px; color: $n-500; font-family: $font; }
+}
+
+.cfd__error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--danger--600);
+  font-size: 14px;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  button {
+    margin-inline-start: auto;
+    border: 1px solid var(--danger--300);
+    background: transparent;
+    color: var(--danger--600);
+    padding: 4px 12px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+  }
+}
+
+.cfd__row--skel {
+  pointer-events: none;
+
+  .cfd__avatar { background: $n-100; border-color: $n-100; }
+}
+
+.cfd__skel-name {
+  flex: 1;
+  height: 18px;
+  max-width: 220px;
+  border-radius: 4px;
+  background: $n-100;
+}

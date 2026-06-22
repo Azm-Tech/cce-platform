@@ -2070,6 +2070,11 @@
       "closesOn": "Closes",
       "anonymous": "Anonymous poll"
     },
+    "following": {
+      "title": "Members I follow",
+      "empty": "You don't follow any members yet.",
+      "close": "Close"
+    },
     "rate": {
       "toast": "Rated."
     },

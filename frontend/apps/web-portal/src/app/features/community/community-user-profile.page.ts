@@ -20,8 +20,8 @@ import { CommunityStateService } from './community-state.service';
 import { PostSummaryComponent } from './post-summary.component';
 import type { CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
 
-/** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2 */
-type FeedSort = 0 | 1 | 2;
+/** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
+type FeedSort = 0 | 1 | 2 | 3;
 
 @Component({
   selector: 'cce-community-user-profile-page',
@@ -65,8 +65,24 @@ export class CommunityUserProfilePage implements OnInit {
     this.displayName().charAt(0).toUpperCase() || '؟',
   );
 
+  /** Expert biography in the active language ("السيرة الذاتية"). */
+  readonly expertBio = computed(() => {
+    const p = this.profile();
+    if (!p) return null;
+    const bio = this.locale() === 'ar' ? p.expertBioAr : p.expertBioEn;
+    return bio?.trim() || null;
+  });
+
+  /** Country name in the active language. */
+  readonly country = computed(() => {
+    const p = this.profile();
+    if (!p) return null;
+    const c = this.locale() === 'ar' ? p.countryNameAr : p.countryNameEn;
+    return c?.trim() || p.location?.trim() || null;
+  });
+
   readonly joinedOnFormatted = computed(() => {
-    const d = this.profile()?.joinedOn;
+    const d = this.profile()?.joinedOn ?? this.profile()?.joinedDate;
     if (!d) return null;
     try {
       const loc = this.locale() === 'ar' ? 'ar-SA' : 'en-US';
@@ -107,15 +123,17 @@ export class CommunityUserProfilePage implements OnInit {
   readonly postSkeletons = Array.from({ length: 4 });
 
   readonly sortOptions: { key: FeedSort; labelKey: string }[] = [
+    { key: 0, labelKey: 'community.filter.sortHot' },
     { key: 1, labelKey: 'community.filter.sortNewest' },
     { key: 2, labelKey: 'community.filter.sortTop' },
-    { key: 0, labelKey: 'community.filter.sortMostReplied' },
+    { key: 3, labelKey: 'community.filter.sortMostReplied' },
   ];
 
   readonly sortIcons: Record<FeedSort, string> = {
-    0: 'messages-square',
+    0: 'flame',
     1: 'calendar',
     2: 'chevron-up',
+    3: 'messages-square',
   };
 
   readonly typeOptions: { value: PostType | null; labelKey: string }[] = [

@@ -67,16 +67,16 @@
             </div>
           </div>
 
-          @if (prof.location || joinedOnFormatted()) {
+          @if (country() || joinedOnFormatted()) {
             <div class="cmp__meta">
-              @if (joinedOnFormatted()) {
-                <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
+              @if (country()) {
+                <span>{{ country() }}</span>
               }
-              @if (prof.location && joinedOnFormatted()) {
+              @if (country() && joinedOnFormatted()) {
                 <span class="cmp__meta-sep" aria-hidden="true">•</span>
               }
-              @if (prof.location) {
-                <span>{{ prof.location }}</span>
+              @if (joinedOnFormatted()) {
+                <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
               }
             </div>
           }
@@ -84,13 +84,13 @@
         </div>
 
         <!-- Bio card — inline-end (LEFT in RTL) -->
-        @if (prof.bio) {
+        @if (expertBio(); as bio) {
           <aside class="cmp__bio-card">
             <div class="cmp__bio-header">
               <mat-icon svgIcon="square-user" aria-hidden="true"></mat-icon>
               <strong>{{ 'community.profile.bio' | transloco }}</strong>
             </div>
-            <p class="cmp__bio-text">{{ prof.bio }}</p>
+            <p class="cmp__bio-text">{{ bio }}</p>
           </aside>
         }
 
@@ -106,10 +106,10 @@
             <span class="cmp__stat-label">{{ 'community.profile.followers' | transloco }}</span>
           </div>
           <div class="cmp__stat-sep" aria-hidden="true"></div>
-          <div class="cmp__stat">
+          <button type="button" class="cmp__stat cmp__stat--clickable" (click)="openFollowing()">
             <strong class="cmp__stat-num">{{ prof.followingCount }}</strong>
             <span class="cmp__stat-label">{{ 'community.profile.following' | transloco }}</span>
-          </div>
+          </button>
           <div class="cmp__stat-sep" aria-hidden="true"></div>
           <div class="cmp__stat">
             <strong class="cmp__stat-num">{{ prof.postCount }}</strong>
