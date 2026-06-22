@@ -6,6 +6,8 @@ import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { CommunityApiService, type Result } from './community-api.service';
+import { CommunityStateService } from './community-state.service';
+import { ComposePostFormComponent } from './compose-post-form.component';
 import {
   ComposePostDialogComponent,
   type ComposePostDialogData,
@@ -32,42 +34,39 @@ function ok<T>(value: T): Result<T> {
   return { ok: true, value };
 }
 
-describe('ComposePostDialogComponent', () => {
-  let fixture: ComponentFixture<ComposePostDialogComponent>;
-  let component: ComposePostDialogComponent;
+// ── Form component tests (all logic lives here) ────────────────────────────────
+describe('ComposePostFormComponent', () => {
+  let fixture: ComponentFixture<ComposePostFormComponent>;
+  let component: ComposePostFormComponent;
   let createPost: jest.Mock;
-  let dialogClose: jest.Mock;
   let toastSuccess: jest.Mock;
 
   async function setup(localeStart: 'ar' | 'en' = 'en') {
     createPost = jest.fn().mockResolvedValue(ok({ id: 'p2' }));
-    dialogClose = jest.fn();
     toastSuccess = jest.fn();
     const localeSig = signal<'ar' | 'en'>(localeStart);
 
     await TestBed.configureTestingModule({
-      imports: [ComposePostDialogComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
+      imports: [
+        ComposePostFormComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {}, ar: {} },
+          translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityApiService, useValue: { createPost } },
+        { provide: CommunityStateService, useValue: { communityId: signal('c1') } },
         { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
         { provide: ToastService, useValue: { success: toastSuccess, error: jest.fn() } },
-        {
-          provide: MatDialogRef,
-          useValue: { close: dialogClose } as Partial<MatDialogRef<ComposePostDialogComponent, ComposePostDialogResult>>,
-        },
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: {
-            topics: [MOCK_TOPIC],
-            preselectedTopicId: 't1',
-          } satisfies ComposePostDialogData,
-        },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ComposePostDialogComponent);
+    fixture = TestBed.createComponent(ComposePostFormComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('topics', [MOCK_TOPIC]);
+    fixture.componentRef.setInput('preselectedTopicId', 't1');
     fixture.detectChanges();
   }
 
@@ -79,7 +78,7 @@ describe('ComposePostDialogComponent', () => {
       locale: 'en',
       isAnswerable: false,
     });
-    await component.submit();
+    await component.triggerSubmit();
     expect(createPost).toHaveBeenCalledWith(
       expect.objectContaining({
         topicId: 't1',
@@ -97,7 +96,7 @@ describe('ComposePostDialogComponent', () => {
     component.form.patchValue({ title: VALID_TITLE, content: 'too short' });
     expect(component.form.invalid).toBe(true);
     createPost.mockClear();
-    await component.submit();
+    await component.triggerSubmit();
     expect(createPost).not.toHaveBeenCalled();
   });
 
@@ -106,39 +105,81 @@ describe('ComposePostDialogComponent', () => {
     component.form.patchValue({ title: '', content: VALID_CONTENT });
     expect(component.form.invalid).toBe(true);
     createPost.mockClear();
-    await component.submit();
+    await component.triggerSubmit();
     expect(createPost).not.toHaveBeenCalled();
   });
 
-  it('locale defaults to LocaleService.locale() at construction time', async () => {
+  it('post locale is derived from LocaleService.locale() (not a form input)', async () => {
     await setup('ar');
-    expect(component.form.controls.locale.value).toBe('ar');
+    expect(component.postLocale()).toBe('ar');
   });
 
-  it('on success: toast.success + dialogRef.close({ submitted: true, postId })', async () => {
+  it('on success: toast.success + submitted event emitted with postId', async () => {
     await setup('en');
+    const submittedSpy = jest.fn();
+    component.submitted.subscribe(submittedSpy);
     component.form.patchValue({
       title: VALID_TITLE,
       content: VALID_CONTENT,
       locale: 'en',
       isAnswerable: true,
     });
-    await component.submit();
+    await component.triggerSubmit();
     expect(toastSuccess).toHaveBeenCalledWith('community.compose.toast');
-    expect(dialogClose).toHaveBeenCalledWith({ submitted: true, postId: 'p2' });
+    expect(submittedSpy).toHaveBeenCalledWith({ postId: 'p2' });
   });
 
-  it('on error: dialog stays open, errorKind signal set, no close call', async () => {
+  it('on error: errorKind signal set, submitted not emitted', async () => {
     await setup('en');
     createPost.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
+    const submittedSpy = jest.fn();
+    component.submitted.subscribe(submittedSpy);
     component.form.patchValue({
       title: VALID_TITLE,
       content: VALID_CONTENT,
       locale: 'en',
       isAnswerable: true,
     });
-    await component.submit();
+    await component.triggerSubmit();
     expect(component.errorKind()).toBe('server');
-    expect(dialogClose).not.toHaveBeenCalled();
+    expect(submittedSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ── Dialog shell smoke test ────────────────────────────────────────────────────
+describe('ComposePostDialogComponent', () => {
+  it('renders without error and closes with submitted: false on cancel', async () => {
+    const dialogClose = jest.fn();
+    const localeSig = signal<'ar' | 'en'>('en');
+
+    await TestBed.configureTestingModule({
+      imports: [
+        ComposePostDialogComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {}, ar: {} },
+          translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+        }),
+      ],
+      providers: [
+        provideNoopAnimations(),
+        { provide: CommunityApiService, useValue: { createPost: jest.fn() } },
+        { provide: CommunityStateService, useValue: { communityId: signal('c1') } },
+        { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
+        { provide: ToastService, useValue: { success: jest.fn(), error: jest.fn() } },
+        {
+          provide: MatDialogRef,
+          useValue: { close: dialogClose } as Partial<MatDialogRef<ComposePostDialogComponent, ComposePostDialogResult>>,
+        },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { topics: [MOCK_TOPIC], preselectedTopicId: 't1' } satisfies ComposePostDialogData,
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ComposePostDialogComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.cancel();
+    expect(dialogClose).toHaveBeenCalledWith({ submitted: false });
   });
 });

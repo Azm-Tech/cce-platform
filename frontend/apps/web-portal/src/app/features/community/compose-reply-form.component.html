@@ -9,21 +9,6 @@
     <mat-icon svgIcon="message-square-plus" aria-hidden="true" class="cce-compose-reply__hd-icon"></mat-icon>
   </div>
 
-  @if (parentReplyId() && parentHandle(); as h) {
-    <div class="cce-compose-reply__parent" role="status">
-      <mat-icon svgIcon="reply" aria-hidden="true"></mat-icon>
-      <span>{{ 'community.detail.replyToReply' | transloco:{ handle: h } }}</span>
-      <button
-        type="button"
-        class="cce-compose-reply__cancel"
-        [attr.aria-label]="'community.detail.cancelReply' | transloco"
-        (click)="cancelReply.emit()"
-      >
-        <mat-icon svgIcon="x"></mat-icon>
-      </button>
-    </div>
-  }
-
   @if (errorKind()) {
     <div class="cce-compose-reply__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
@@ -40,6 +25,7 @@
       maxlength="500"
       rows="5"
       dir="auto"
+      (focus)="onFieldFocus($event)"
     ></textarea>
     <span class="cce-compose-reply__char-count">{{ form.controls.content.value.length }} / 500</span>
   </div>

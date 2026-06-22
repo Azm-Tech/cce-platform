@@ -56,7 +56,7 @@ export class TopicCardComponent {
   readonly description = computed(() => {
     const t = this.topic();
     const raw = this.locale() === 'ar' ? t.descriptionAr : t.descriptionEn;
-    const stripped = raw.replace(/<[^>]*>/g, '').trim();
+    const stripped = (raw ?? '').replace(/<[^>]*>/g, '').trim();
     return stripped.length > 180 ? stripped.slice(0, 180) + '…' : stripped;
   });
 }

@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { CountriesApiService } from '../countries/countries-api.service';
-import type { CountryCode } from '../countries/country.types';
+import type { Country } from '../countries/country.types';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 
 type PageState = 'sending' | 'idle' | 'verifying' | 'error';
@@ -56,10 +56,10 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
   readonly errorKey = signal<string>('');
   readonly countdown = signal<number>(0);
   readonly phoneNumber = signal<string>('');
-  readonly countryCodes = signal<CountryCode[]>([]);
+  readonly countryCodes = signal<Country[]>([]);
 
   // Dial-code autocomplete
-  readonly phoneCodeControl = new FormControl<CountryCode | null>(null, [Validators.required]);
+  readonly phoneCodeControl = new FormControl<Country | null>(null, [Validators.required]);
   private readonly phoneCodeInput = toSignal(
     this.phoneCodeControl.valueChanges.pipe(map(v => (typeof v === 'string' ? v : ''))),
     { initialValue: '' },
@@ -70,14 +70,14 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
     if (!q) return all;
     return all.filter(
       cc =>
-        cc.name.ar.toLowerCase().includes(q) ||
-        cc.name.en.toLowerCase().includes(q) ||
+        cc.nameAr.toLowerCase().includes(q) ||
+        cc.nameEn.toLowerCase().includes(q) ||
         cc.dialCode.includes(q),
     );
   });
-  readonly displayPhoneCode = (cc: CountryCode | null): string => {
+  readonly displayPhoneCode = (cc: Country | null): string => {
     if (!cc) return '';
-    const name = this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    const name = this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
     return `${name} (${cc.dialCode})`;
   };
 
@@ -109,7 +109,7 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
     if (this.step() === 'verify') {
       this.sendOtp();
     } else {
-      void this.countriesApi.listCountryCodes({ isActive: true }).then(res => {
+      void this.countriesApi.listCountries({ isCceCountry: false }).then(res => {
         if (res.ok) this.countryCodes.set(res.value);
       });
     }
@@ -162,7 +162,7 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
     this.phoneCodeControl.markAllAsTouched();
     this.localPhoneControl.markAllAsTouched();
     if (this.phoneCodeControl.invalid || this.localPhoneControl.invalid || this.state() === 'sending') return;
-    const phoneCode = this.phoneCodeControl.value as CountryCode;
+    const phoneCode = this.phoneCodeControl.value as Country;
     const dial = phoneCode.dialCode.replace(/^\+/, '');
     const local = this.localPhoneControl.value!.replace(/\s/g, '');
     this.phoneNumber.set(`${dial}${local}`);

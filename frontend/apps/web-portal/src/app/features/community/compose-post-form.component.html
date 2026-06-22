@@ -1,0 +1,94 @@
+@if (errorKind()) {
+  <div class="cpf__error" role="alert">
+    <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+    {{ ('errors.' + errorKind()) | transloco }}
+  </div>
+}
+
+<form [formGroup]="form" class="cpf__form">
+
+  <!-- Post type selector -->
+  <div class="cpf__field">
+    <span class="cpf__label">{{ 'community.compose.typeLabel' | transloco }}</span>
+    <div class="cpf__type-row" role="group">
+      @for (opt of typeOptions; track opt.value) {
+        <button
+          type="button"
+          class="cpf__type-btn"
+          [class.cpf__type-btn--active]="form.controls.type.value === opt.value"
+          (click)="setType(opt.value)"
+        >
+          <mat-icon [svgIcon]="opt.icon" aria-hidden="true"></mat-icon>
+          {{ opt.labelKey | transloco }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Topic -->
+  <div class="cpf__field">
+    <label class="cpf__label" for="cpf-topic">
+      {{ 'community.compose.topicLabel' | transloco }}
+    </label>
+    <mat-form-field appearance="outline" class="cpf__mat-field">
+      <mat-select formControlName="topicId" id="cpf-topic">
+        <mat-option value="" disabled>
+          {{ 'community.compose.selectTopic' | transloco }}
+        </mat-option>
+        @for (topic of topics(); track topic.id) {
+          <mat-option [value]="topic.id">{{ topicLabel(topic) }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Title -->
+  <div class="cpf__field">
+    <label class="cpf__label" for="cpf-title">
+      {{ 'community.compose.titleLabel' | transloco }}
+    </label>
+    <mat-form-field appearance="outline" class="cpf__mat-field">
+      <input
+        matInput
+        id="cpf-title"
+        formControlName="title"
+        maxlength="150"
+        [dir]="postLocale() === 'ar' ? 'rtl' : 'ltr'"
+      />
+      <mat-hint align="end">{{ form.controls.title.value.length }}/150</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- Content -->
+  <div class="cpf__field">
+    <label class="cpf__label" for="cpf-content">
+      {{ 'community.compose.content' | transloco }}
+    </label>
+    <mat-form-field appearance="outline" class="cpf__mat-field">
+      <textarea
+        matInput
+        id="cpf-content"
+        formControlName="content"
+        rows="6"
+        maxlength="5000"
+        [dir]="postLocale() === 'ar' ? 'rtl' : 'ltr'"
+      ></textarea>
+      <mat-hint align="end">{{ contentLength }}/5000</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- Answerable toggle (question type only) -->
+  @if (form.controls.type.value === 1) {
+    <div class="cpf__field cpf__field--row">
+      <label class="cpf__answerable-label">
+        <input
+          type="checkbox"
+          class="cpf__answerable-check"
+          formControlName="isAnswerable"
+        />
+        {{ 'community.compose.isAnswerable' | transloco }}
+      </label>
+    </div>
+  }
+
+</form>

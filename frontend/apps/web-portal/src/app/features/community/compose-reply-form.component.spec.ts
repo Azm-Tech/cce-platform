@@ -4,7 +4,9 @@ import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
+import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
 
 const TRANSLOCO = TranslocoTestingModule.forRoot({
@@ -36,6 +38,8 @@ describe('ComposeReplyFormComponent', () => {
         { provide: CommunityApiService, useValue: { createReply } },
         { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
         { provide: ToastService, useValue: { success: toastSuccess, error: jest.fn() } },
+        { provide: AuthService, useValue: { isAuthenticated: () => true } },
+        { provide: CommunityAuthPromptService, useValue: { requireAuth: () => true } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ComposeReplyFormComponent);

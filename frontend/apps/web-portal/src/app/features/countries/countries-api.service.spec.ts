@@ -46,7 +46,7 @@ describe('CountriesApiService', () => {
     const req = http.expectOne((r) => r.url === '/api/countries');
     expect(req.request.method).toBe('GET');
     expect(req.request.params.keys()).toEqual([]);
-    req.flush([SAMPLE_COUNTRY]);
+    req.flush({ data: { items: [SAMPLE_COUNTRY] } });
     const res = await promise;
     expect(res.ok).toBe(true);
     if (res.ok) expect(res.value).toEqual([SAMPLE_COUNTRY]);
@@ -56,9 +56,19 @@ describe('CountriesApiService', () => {
     const promise = sut.listCountries({ search: 'jo' });
     const req = http.expectOne((r) => r.url === '/api/countries');
     expect(req.request.params.get('search')).toBe('jo');
-    req.flush([SAMPLE_COUNTRY]);
+    req.flush({ data: { items: [SAMPLE_COUNTRY] } });
     const res = await promise;
     expect(res.ok).toBe(true);
+  });
+
+  it('listCountries supports new filter params', async () => {
+    const promise = sut.listCountries({ page: 1, pageSize: 10, sortBy: 0, sortOrder: 1, isCceCountry: true });
+    const req = http.expectOne((r) => r.url === '/api/countries');
+    expect(req.request.params.get('sortBy')).toBe('0');
+    expect(req.request.params.get('sortOrder')).toBe('1');
+    expect(req.request.params.get('isCceCountry')).toBe('true');
+    req.flush({ data: { items: [] } });
+    await promise;
   });
 
   it('getProfile GETs /api/countries/{id}/profile', async () => {

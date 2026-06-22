@@ -132,13 +132,25 @@
     </button>
 
     <button type="button" [matMenuTriggerFor]="userMenu" class="cce-header__user">
-      <div class="cce-header__avatar">{{ userInitials() }}</div>
+      <div class="cce-header__avatar">
+        @if (userAvatarUrl(); as avatar) {
+          <img class="cce-header__avatar-img" [src]="avatar" alt="" referrerpolicy="no-referrer" />
+        } @else {
+          {{ userInitials() }}
+        }
+      </div>
     </button>
 
     <mat-menu #userMenu="matMenu" panelClass="cce-user-menu" xPosition="before">
       <!-- ── Profile card header ── -->
       <div class="cce-user-card">
-        <div class="cce-user-card__avatar">{{ userInitials() }}</div>
+        <div class="cce-user-card__avatar">
+          @if (userAvatarUrl(); as avatar) {
+            <img class="cce-user-card__avatar-img" [src]="avatar" alt="" referrerpolicy="no-referrer" />
+          } @else {
+            {{ userInitials() }}
+          }
+        </div>
         <div class="cce-user-card__info">
           <span class="cce-user-card__name">{{ userLabel() }}</span>
           <span class="cce-user-card__email">{{ userEmail() }}</span>

@@ -2,6 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +16,11 @@ import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { EnvService } from '../../core/env.service';
 import { CommunityModerationApiService, type TopicLite } from './community-moderation-api.service';
+import {
+  PostDetailDialogComponent,
+  type PostDetailDialogData,
+  type PostDetailDialogResult,
+} from './post-detail-dialog.component';
 import {
   ADMIN_POST_STATUSES,
   type AdminPostRow,
@@ -54,6 +60,7 @@ export class CommunityModerationPage implements OnInit {
   private readonly confirm = inject(ConfirmDialogService);
   private readonly localeService = inject(LocaleService);
   private readonly envService = inject(EnvService);
+  private readonly dialog = inject(MatDialog);
 
   readonly statuses = ADMIN_POST_STATUSES;
   readonly locale = this.localeService.locale;
@@ -262,6 +269,24 @@ export class CommunityModerationPage implements OnInit {
     } else {
       this.toast.error(`errors.${res.error.kind}`);
     }
+  }
+
+  openDetail(row: AdminPostRow): void {
+    const ref = this.dialog.open<
+      PostDetailDialogComponent,
+      PostDetailDialogData,
+      PostDetailDialogResult
+    >(PostDetailDialogComponent, {
+      data: { row },
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      panelClass: 'cce-post-detail-dialog',
+    });
+    ref.afterClosed().subscribe((result) => {
+      if (result?.postDeleted) void this.load();
+    });
   }
 
   retry(): void { void this.load(); }

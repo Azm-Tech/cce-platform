@@ -90,6 +90,8 @@ export interface PublicPost {
   downvoteCount: number;
   commentsCount: number;
   attachmentIds: string[];
+  /** Full attachment objects — populated by the post detail endpoint. */
+  attachments?: PostAttachment[] | null;
   tagIds?: string[];
   createdOn: string;
   topicNameAr: string | null;
@@ -144,10 +146,11 @@ export interface CommunityUserProfile {
   isExpert: boolean;
   postCount: number;
   replyCount: number;
+  followerCount: number;
+  followingCount: number;
   bio?: string | null;
   location?: string | null;
   joinedOn?: string | null;
-  followerCount?: number | null;
 }
 
 // ── Featured Post ─────────────────────────────────────────────────────────────

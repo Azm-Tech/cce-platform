@@ -91,7 +91,7 @@ export class PreferencesDialogComponent implements OnInit {
     const [questionsRes, interestsRes, countriesRes] = await Promise.all([
       this.api.getInterestQuestions(),
       this.api.getMyInterests(),
-      this.countriesApi.listCountries(),
+      this.countriesApi.listCountries({ isCceCountry: false }),
     ]);
     this.loading.set(false);
 

@@ -135,7 +135,7 @@ export class ResourceRequestFormDialogComponent implements OnInit {
   }
 
   private async loadCountries(): Promise<void> {
-    const res = await this.api.listCountries();
+    const res = await this.api.listCountries({ isCceCountry: false });
     if (res.ok) this.countries.set(res.value);
   }
 

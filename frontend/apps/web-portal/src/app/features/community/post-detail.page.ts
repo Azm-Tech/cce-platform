@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -20,10 +21,11 @@ import { ToastService } from '@frontend/ui-kit';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
+import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
+import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
 import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
 import { ReplyComponent } from './reply.component';
-import { SignInCtaComponent } from './sign-in-cta.component';
 import type {
   CommunityUserProfile,
   PublicPost,
@@ -42,7 +44,6 @@ import type {
     FollowDirective,
     ComposeReplyFormComponent,
     ReplyComponent,
-    SignInCtaComponent,
   ],
   templateUrl: './post-detail.page.html',
   styleUrl: './post-detail.page.scss',
@@ -53,7 +54,9 @@ export class PostDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly localeService = inject(LocaleService);
   private readonly auth = inject(AuthService);
+  private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
 
   readonly post = signal<PublicPost | null>(null);
   readonly replies = signal<PublicPostReply[]>([]);
@@ -134,62 +137,20 @@ export class PostDetailPage implements OnInit {
     return !!p && p.locale !== this.localeService.locale();
   });
 
-  readonly topLevelReplies = computed(() => {
+  /** Replies are flat (no reply-on-reply); the accepted answer is hoisted first. */
+  readonly orderedReplies = computed(() => {
     const p = this.post();
     const rs = this.replies();
-    const tops = rs.filter((r) => !r.parentReplyId);
-    if (!p?.answeredReplyId) return tops;
-    const accepted = tops.find((r) => r.id === p.answeredReplyId);
-    if (!accepted) return tops;
-    return [accepted, ...tops.filter((r) => r.id !== accepted.id)];
-  });
-
-  readonly childrenByParent = computed(() => {
-    const map = new Map<string, PublicPostReply[]>();
-    for (const r of this.replies()) {
-      if (!r.parentReplyId) continue;
-      const list = map.get(r.parentReplyId) ?? [];
-      list.push(r);
-      map.set(r.parentReplyId, list);
-    }
-    return map;
-  });
-
-  readonly replyingToReplyId = signal<string | null>(null);
-  readonly replyingToReply = computed<PublicPostReply | null>(() => {
-    const id = this.replyingToReplyId();
-    if (!id) return null;
-    return this.replies().find((r) => r.id === id) ?? null;
-  });
-  readonly replyingToHandle = computed<string | null>(() => {
-    const r = this.replyingToReply();
-    if (!r) return null;
-    return authorHandle(r.authorId);
+    if (!p?.answeredReplyId) return rs;
+    const accepted = rs.find((r) => r.id === p.answeredReplyId);
+    if (!accepted) return rs;
+    return [accepted, ...rs.filter((r) => r.id !== accepted.id)];
   });
 
   readonly authorFollowerCount = computed(() => this.post()?.author?.followerCount ?? 0);
 
   readonly authorJobTitle = computed(() => this.authorProfile()?.jobTitle ?? null);
   readonly authorOrganization = computed(() => this.authorProfile()?.organizationName ?? null);
-
-  childrenOf(id: string): PublicPostReply[] {
-    return this.childrenByParent().get(id) ?? [];
-  }
-
-  descendantsOf(rootId: string): PublicPostReply[] {
-    const map = this.childrenByParent();
-    const out: PublicPostReply[] = [];
-    const queue: string[] = [rootId];
-    while (queue.length > 0) {
-      const id = queue.shift()!;
-      const kids = map.get(id) ?? [];
-      for (const k of kids) {
-        out.push(k);
-        queue.push(k.id);
-      }
-    }
-    return out;
-  }
 
   @ViewChild('composer') composer?: ElementRef<HTMLElement>;
 
@@ -292,7 +253,6 @@ export class PostDetailPage implements OnInit {
   }
 
   async onReplyCreated(): Promise<void> {
-    this.replyingToReplyId.set(null);
     const p = this.post();
     if (!p) return;
     this.page.set(1);
@@ -303,25 +263,19 @@ export class PostDetailPage implements OnInit {
     }
   }
 
-  onReplyToReply(target: PublicPostReply): void {
-    this.replyingToReplyId.set(target.id);
-  }
-
-  cancelThreadReply(): void {
-    this.replyingToReplyId.set(null);
-  }
-
   async onAnswerMarked(): Promise<void> {
     const p = this.post();
     if (!p) return;
     await this.load(p.id);
   }
 
+  /** Opens the login/register dialog for an anonymous visitor (e.g. the follow button). */
+  promptSignIn(messageKey = 'community.authDialog.message'): void {
+    this.authPrompt.requireAuth(messageKey);
+  }
+
   async onVote(dir: VoteDirection): Promise<void> {
-    if (!this.auth.isAuthenticated()) {
-      this.toast.error('community.signInToRate');
-      return;
-    }
+    if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
     const p = this.post();
     if (!p || this.voting()) return;
 
@@ -358,13 +312,18 @@ export class PostDetailPage implements OnInit {
     }
   }
 
-  async copyLink(): Promise<void> {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      this.toast.success('community.detail.shareCopiedToast');
-    } catch {
-      window.prompt('Copy link', url);
-    }
+  openShare(): void {
+    const p = this.post();
+    if (!p) return;
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { postId: p.id, postTitle: p.title },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      },
+    );
   }
 }

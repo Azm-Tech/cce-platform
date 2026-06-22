@@ -37,6 +37,8 @@ export interface AuthUser {
   firstName: string;
   lastName: string;
   roles: CcePortalRole[];
+  /** Avatar image URL from the auth token user payload; null/absent → fall back to initials. */
+  avatarUrl?: string | null;
 }
 
 export interface TokenPair {

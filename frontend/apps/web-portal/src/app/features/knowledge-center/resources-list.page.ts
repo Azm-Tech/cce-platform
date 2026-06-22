@@ -155,7 +155,7 @@ export class ResourcesListPage implements OnInit {
   }
 
   async loadCountries(): Promise<void> {
-    const res = await this.countriesApi.listCountries({});
+    const res = await this.countriesApi.listCountries({ isCceCountry: false });
     // Guard the shape — a non-array here would throw inside computed()s
     // during change detection and freeze the whole page.
     if (res.ok && Array.isArray(res.value)) {

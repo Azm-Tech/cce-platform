@@ -121,7 +121,7 @@ describe('PostDetailPage', () => {
     getPost.mockResolvedValueOnce(ok({ ...POST, answeredReplyId: 'r2' }));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(page.topLevelReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
+    expect(page.orderedReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
   });
 
   it('canMarkAnswer is true when current user is the post author and post is answerable', async () => {

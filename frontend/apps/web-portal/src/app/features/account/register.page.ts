@@ -21,7 +21,7 @@ import { LocaleService } from '@frontend/i18n';
 import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { CountriesApiService } from '../countries/countries-api.service';
-import type { CountryCode } from '../countries/country.types';
+import type { Country } from '../countries/country.types';
 
 function passwordsMatch(group: AbstractControl) {
   const p = group.get('password')?.value as string;
@@ -63,7 +63,7 @@ export class RegisterPage implements OnInit {
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
   readonly showPassword = signal(false);
-  readonly countryCodes = signal<CountryCode[]>([]);
+  readonly countryCodes = signal<Country[]>([]);
 
   readonly form = new FormGroup(
     {
@@ -84,8 +84,8 @@ export class RegisterPage implements OnInit {
       ]),
       jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
       organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
-      countryCodeId: new FormControl<CountryCode | null>(null, [Validators.required]),
-      phoneCountryCodeId: new FormControl<CountryCode | null>(null, [Validators.required]),
+      countryCodeId: new FormControl<Country | null>(null, [Validators.required]),
+      phoneCountryId: new FormControl<Country | null>(null, [Validators.required]),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.maxLength(15),
@@ -97,7 +97,7 @@ export class RegisterPage implements OnInit {
     { validators: passwordsMatch },
   );
 
-  // Track typed text to drive filtering (string while typing, CountryCode once selected)
+  // Track typed text to drive filtering (string while typing, Country once selected)
   private readonly nationalityInput = toSignal(
     this.form.get('countryCodeId')!.valueChanges.pipe(
       map((v) => (typeof v === 'string' ? v : '')),
@@ -105,7 +105,7 @@ export class RegisterPage implements OnInit {
     { initialValue: '' },
   );
   private readonly phoneCodeInput = toSignal(
-    this.form.get('phoneCountryCodeId')!.valueChanges.pipe(
+    this.form.get('phoneCountryId')!.valueChanges.pipe(
       map((v) => (typeof v === 'string' ? v : '')),
     ),
     { initialValue: '' },
@@ -116,7 +116,7 @@ export class RegisterPage implements OnInit {
     const all = this.countryCodes();
     if (!q) return all;
     return all.filter(
-      (cc) => cc.name.ar.toLowerCase().includes(q) || cc.name.en.toLowerCase().includes(q),
+      (cc) => cc.nameAr.toLowerCase().includes(q) || cc.nameEn.toLowerCase().includes(q),
     );
   });
 
@@ -126,25 +126,25 @@ export class RegisterPage implements OnInit {
     if (!q) return all;
     return all.filter(
       (cc) =>
-        cc.name.ar.toLowerCase().includes(q) ||
-        cc.name.en.toLowerCase().includes(q) ||
+        cc.nameAr.toLowerCase().includes(q) ||
+        cc.nameEn.toLowerCase().includes(q) ||
         cc.dialCode.includes(q),
     );
   });
 
-  readonly displayNationality = (cc: CountryCode | null): string => {
+  readonly displayNationality = (cc: Country | null): string => {
     if (!cc) return '';
-    return this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    return this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
   };
 
-  readonly displayPhoneCode = (cc: CountryCode | null): string => {
+  readonly displayPhoneCode = (cc: Country | null): string => {
     if (!cc) return '';
-    const name = this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    const name = this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
     return `${name} (${cc.dialCode})`;
   };
 
   async ngOnInit(): Promise<void> {
-    const res = await this.countriesApi.listCountryCodes({ isActive: true });
+    const res = await this.countriesApi.listCountries({ isCceCountry: false });
     if (res.ok) this.countryCodes.set(res.value);
 
     // Auto-set phone code to the same country when nationality is selected
@@ -152,7 +152,7 @@ export class RegisterPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((val) => {
         if (!val || typeof val === 'string') return;
-        this.form.get('phoneCountryCodeId')!.setValue(val, { emitEvent: false });
+        this.form.get('phoneCountryId')!.setValue(val, { emitEvent: false });
       });
   }
 
@@ -176,7 +176,7 @@ export class RegisterPage implements OnInit {
     if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
     const v = this.form.value;
-    const phoneCode = v.phoneCountryCodeId as CountryCode | null;
+    const phoneCode = v.phoneCountryId as Country | null;
     const dial = phoneCode?.dialCode?.replace(/^\+/, '') ?? '';
     const localPhone = (v.phoneNumber ?? '').replace(/\s/g, '');
     const fullPhone = phoneCode ? `${dial}${localPhone}` : localPhone;
@@ -187,7 +187,7 @@ export class RegisterPage implements OnInit {
         emailAddress: v.emailAddress!,
         jobTitle: v.jobTitle!,
         organizationName: v.organizationName!,
-        countryCodeId: (v.countryCodeId as CountryCode).id,
+        countryCodeId: (v.countryCodeId as Country).id,
         phoneNumber: fullPhone,
         password: v.password!,
         confirmPassword: v.confirmPassword!,

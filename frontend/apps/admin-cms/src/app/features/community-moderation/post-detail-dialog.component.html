@@ -1,0 +1,164 @@
+<!-- ─── Dialog title ─────────────────────────────────────────── -->
+<div mat-dialog-title class="cce-pd__header">
+  <div class="cce-pd__header-chips">
+    @if (row.isDeleted) {
+      <span class="cce-pd__chip cce-pd__chip--deleted">
+        <mat-icon aria-hidden="true">delete</mat-icon>
+        {{ 'communityModeration.chip.deleted' | transloco }}
+      </span>
+    } @else if (row.isAnswered) {
+      <span class="cce-pd__chip cce-pd__chip--answered">
+        <mat-icon aria-hidden="true">check_circle</mat-icon>
+        {{ 'communityModeration.chip.answered' | transloco }}
+      </span>
+    } @else if (row.isAnswerable) {
+      <span class="cce-pd__chip cce-pd__chip--question">
+        <mat-icon aria-hidden="true">help_outline</mat-icon>
+        {{ 'communityModeration.chip.question' | transloco }}
+      </span>
+    } @else {
+      <span class="cce-pd__chip cce-pd__chip--discussion">
+        <mat-icon aria-hidden="true">forum</mat-icon>
+        {{ 'communityModeration.chip.discussion' | transloco }}
+      </span>
+    }
+    <span class="cce-pd__topic">{{ topicName() }}</span>
+    <span class="cce-pd__locale-chip">{{ row.locale }}</span>
+  </div>
+  <button mat-icon-button class="cce-pd__close-btn" (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- ─── Dialog body ──────────────────────────────────────────── -->
+<mat-dialog-content class="cce-pd__body">
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-pd__progress" />
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-pd__error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+    </div>
+  }
+
+  @if (post(); as p) {
+    <!-- Meta row: author · date · votes -->
+    <div class="cce-pd__meta">
+      <span class="cce-pd__meta-item">
+        <mat-icon aria-hidden="true">person</mat-icon>
+        {{ p.authorName || p.authorId }}
+      </span>
+      <span class="cce-pd__meta-item">
+        <mat-icon aria-hidden="true">schedule</mat-icon>
+        {{ p.createdOn | date:'mediumDate' }}
+      </span>
+      <span class="cce-pd__meta-item">
+        <mat-icon aria-hidden="true">thumb_up_off_alt</mat-icon>
+        {{ p.upvoteCount }}
+      </span>
+      <span class="cce-pd__meta-item">
+        <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
+        {{ p.commentsCount }}
+      </span>
+    </div>
+
+    <!-- Title (questions only) -->
+    @if (p.title) {
+      <h3 class="cce-pd__post-title" [attr.dir]="p.locale === 'ar' ? 'rtl' : 'ltr'">
+        {{ p.title }}
+      </h3>
+    }
+
+    <!-- Full content -->
+    <div class="cce-pd__content" [attr.dir]="p.locale === 'ar' ? 'rtl' : 'ltr'">
+      {{ p.content }}
+    </div>
+  }
+
+  <!-- ─── Replies ────────────────────────────────────────── -->
+  <div class="cce-pd__replies-hd">
+    <mat-icon aria-hidden="true">forum</mat-icon>
+    <span>{{ 'communityModeration.dialog.replies' | transloco }}
+      @if (!loading()) { ({{ replies().length }}) }
+    </span>
+  </div>
+
+  @if (!loading() && replies().length === 0) {
+    <p class="cce-pd__no-replies">{{ 'communityModeration.dialog.noReplies' | transloco }}</p>
+  }
+
+  @for (r of replies(); track r.id) {
+    <div
+      class="cce-pd__reply"
+      [class.cce-pd__reply--accepted]="post()?.answeredReplyId === r.id"
+    >
+      <!-- Reply header -->
+      <div class="cce-pd__reply-header">
+        <span class="cce-pd__reply-author">
+          @if (r.isByExpert) {
+            <mat-icon class="cce-pd__expert-icon" aria-hidden="true">verified</mat-icon>
+          }
+          {{ r.authorName || r.authorId }}
+        </span>
+        <span class="cce-pd__reply-date">{{ r.createdOn | date:'mediumDate' }}</span>
+        <span class="cce-pd__reply-votes">
+          <mat-icon aria-hidden="true">thumb_up_off_alt</mat-icon>
+          {{ r.upvoteCount }}
+        </span>
+        @if (post()?.answeredReplyId === r.id) {
+          <span class="cce-pd__accepted-badge">
+            <mat-icon aria-hidden="true">check_circle</mat-icon>
+            {{ 'communityModeration.chip.answered' | transloco }}
+          </span>
+        }
+        <button
+          type="button"
+          mat-icon-button
+          color="warn"
+          class="cce-pd__reply-delete"
+          [disabled]="deletingReplyId() === r.id"
+          [attr.aria-label]="'communityModeration.dialog.deleteReply' | transloco"
+          [matTooltip]="'communityModeration.dialog.deleteReply' | transloco"
+          (click)="deleteReply(r)"
+        >
+          @if (deletingReplyId() === r.id) {
+            <mat-spinner diameter="18" />
+          } @else {
+            <ng-container><mat-icon>delete</mat-icon></ng-container>
+          }
+        </button>
+      </div>
+      <!-- Reply content -->
+      <p class="cce-pd__reply-content" [attr.dir]="r.locale === 'ar' ? 'rtl' : 'ltr'">
+        {{ r.content }}
+      </p>
+    </div>
+  }
+
+</mat-dialog-content>
+
+<!-- ─── Dialog actions ───────────────────────────────────────── -->
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="close()">
+    {{ 'common.actions.close' | transloco }}
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="warn"
+    [disabled]="row.isDeleted || deleting()"
+    (click)="deletePost()"
+  >
+    @if (deleting()) {
+      <mat-spinner diameter="18" />
+    } @else {
+      <ng-container>
+        <mat-icon>delete</mat-icon>
+        {{ 'communityModeration.action.delete' | transloco }}
+      </ng-container>
+    }
+  </button>
+</mat-dialog-actions>

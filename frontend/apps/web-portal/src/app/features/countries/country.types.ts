@@ -155,14 +155,6 @@ export interface CountryAchievement {
   date: string;
 }
 
-export interface CountryCode {
-  id: string;
-  dialCode: string;
-  name: { ar: string; en: string };
-  flagUrl?: string;
-  isActive: boolean;
-}
-
 export interface Country {
   id: string;
   isoAlpha3: string;
@@ -172,6 +164,11 @@ export interface Country {
   regionAr: string;
   regionEn: string;
   flagUrl: string;
+  dialCode: string;
+  isCceCountry: boolean;
+  cceClassification: string | null;
+  ccePerformanceScore: number | null;
+  cceTotalIndex: number | null;
 }
 
 export interface CountryProfile {

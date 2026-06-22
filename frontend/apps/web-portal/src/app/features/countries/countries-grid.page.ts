@@ -143,7 +143,7 @@ export class CountriesGridPage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
-    const res = await this.api.listCountries({});
+    const res = await this.api.listCountries({ isCceCountry: false });
     this.loading.set(false);
     if (res.ok) {
       this.rows.set(res.value);

@@ -9,8 +9,14 @@ export interface Country {
   regionAr: string;
   regionEn: string;
   flagUrl: string;
+  dialCode: string;
   isActive: boolean;
+  isCceCountry: boolean;
+  cceClassification: string | null;
+  ccePerformanceScore: number | null;
+  cceTotalIndex: number | null;
 }
+
 
 export interface UpdateCountryBody {
   nameAr: string;

@@ -93,7 +93,7 @@
         >
           @for (cc of filteredPhoneCodes(); track cc.id) {
             <mat-option [value]="cc">
-              <span>{{ locale() === 'ar' ? cc.name.ar : cc.name.en }}</span>
+              <span>{{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}</span>
               <span class="cce-user-create__dial-badge">{{ cc.dialCode }}</span>
             </mat-option>
           } @empty {

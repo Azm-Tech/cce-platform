@@ -1507,11 +1507,18 @@
       "delete": "Soft-delete post",
       "viewOnPortal": "Open post on the public portal",
       "viewReplies": "Open replies on portal",
+      "viewDetails": "View post details",
       "copyId": "Copy post ID",
       "copyLink": "Copy public link",
       "copyIdToast": "Post ID copied to clipboard.",
       "copyLinkToast": "Public link copied to clipboard.",
       "moreActions": "More actions"
+    },
+    "dialog": {
+      "title": "Post details",
+      "replies": "Replies",
+      "noReplies": "No replies yet.",
+      "deleteReply": "Soft-delete reply"
     },
     "quick": {
       "title": "Quick action — delete a reply by ID",
@@ -2004,6 +2011,16 @@
     "signInToReply": "Sign in to reply.",
     "signInToRate": "Sign in to rate.",
     "signInButton": "Sign in",
+    "authDialog": {
+      "title": "Sign in required",
+      "message": "Sign in or create an account to interact with the community.",
+      "messageVote": "Sign in or create an account to vote on posts.",
+      "messageReply": "Sign in or create an account to reply.",
+      "messageFollow": "Sign in or create an account to follow.",
+      "login": "Sign in",
+      "register": "Create an account",
+      "close": "Close"
+    },
     "acceptedAnswer": "Accepted answer",
     "languageBadge": "in {{locale}}",
     "notFound": "Topic / post not found.",
@@ -2087,7 +2104,9 @@
       "bio": "Bio",
       "joinedIn": "Joined",
       "followUser": "Follow",
-      "followingUser": "Following"
+      "followingUser": "Following",
+      "searchPostsPlaceholder": "Search posts...",
+      "noPosts": "No posts yet"
     },
     "anonymousAuthor": "Anonymous",
     "share": "Share",

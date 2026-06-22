@@ -153,6 +153,15 @@
             <td class="cce-cm__col-date">{{ row.createdOn | date:'mediumDate' }}</td>
             <td class="cce-cm__col-actions">
               <div class="cce-cm__row-actions">
+                <button
+                  type="button"
+                  mat-icon-button
+                  [matTooltip]="'communityModeration.action.viewDetails' | transloco"
+                  [attr.aria-label]="'communityModeration.action.viewDetails' | transloco"
+                  (click)="openDetail(row)"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
                 @if (publicPostUrl(row); as url) {
                   <a
                     mat-icon-button

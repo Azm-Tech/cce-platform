@@ -1,8 +1,6 @@
 // ── Design tokens ─────────────────────────────────────────────────────────────
-$p-50:  var(--primary--50);
 $p-500: var(--primary--500);
 $p-600: var(--primary--600);
-$p-800: var(--primary--800);
 $n-100: var(--neutrals--100);
 $n-200: var(--neutrals--200);
 $n-300: var(--neutrals--300);
@@ -62,141 +60,6 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   margin: 0 !important;
 }
 
-.cpd__error {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--danger--50);
-  border: 1px solid var(--danger--200);
-  border-radius: 8px;
-  color: var(--danger--500);
-  font-size: 14px;
-  font-family: $font;
-  margin-bottom: 16px;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
-}
-
-// ── Form layout ───────────────────────────────────────────────────────────────
-.cpd__form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.cpd__field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  &--row {
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-}
-
-.cpd__label {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 20px;
-  color: $n-800;
-  font-family: $font;
-  flex-shrink: 0;
-}
-
-.cpd__mat-field {
-  width: 100%;
-
-  ::ng-deep .mat-mdc-text-field-wrapper {
-    font-family: $font;
-  }
-}
-
-// ── Post type selector ────────────────────────────────────────────────────────
-.cpd__type-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.cpd__type-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 16px;
-  border: 1px solid $n-200;
-  border-radius: 9999px;
-  background: var(--white);
-  color: $n-600;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: $font;
-  cursor: pointer;
-  transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-  &:hover { border-color: $p-500; color: $p-600; }
-
-  &--active {
-    background: $p-50;
-    border-color: $p-600;
-    color: $p-800;
-    font-weight: 700;
-  }
-}
-
-// ── Answerable toggle ─────────────────────────────────────────────────────────
-.cpd__answerable-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: $font;
-  color: $n-600;
-  cursor: pointer;
-  user-select: none;
-}
-
-.cpd__answerable-check {
-  width: 16px;
-  height: 16px;
-  accent-color: $p-500;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-// ── Language toggle ───────────────────────────────────────────────────────────
-.cpd__locale-tabs {
-  display: flex;
-  border: 1px solid $n-200;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.cpd__locale-btn {
-  padding: 6px 16px;
-  border: none;
-  background: transparent;
-  color: $n-500;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: $font;
-  cursor: pointer;
-  transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s, background-color 0.13s, color 0.13s, opacity 0.13s, filter 0.13s;
-
-  &--active {
-    background: $p-50;
-    color: $p-800;
-    font-weight: 700;
-  }
-}
-
 // ── Footer ────────────────────────────────────────────────────────────────────
 .cpd__footer {
   display: flex !important;
@@ -220,7 +83,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   font-weight: 700;
   font-family: $font;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, filter 0.15s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s;
 
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 

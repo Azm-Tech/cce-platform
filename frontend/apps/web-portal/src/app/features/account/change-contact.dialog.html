@@ -46,7 +46,7 @@
             <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
               @for (cc of filteredPhoneCodes(); track cc.id) {
                 <mat-option [value]="cc">
-                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
                   <span class="cce-cc__dial-badge">{{ cc.dialCode }}</span>
                 </mat-option>
               } @empty {

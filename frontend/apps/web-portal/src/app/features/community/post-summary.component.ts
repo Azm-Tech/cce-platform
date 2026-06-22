@@ -8,6 +8,7 @@ import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService } from './community-api.service';
+import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
 import type { PublicPost } from './community.types';
 
@@ -115,7 +116,6 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
               type="button"
               class="pc__vote-btn"
               [class.pc__vote-btn--active]="voteStatus() === -1"
-              [disabled]="!isAuthenticated()"
               aria-label="downvote"
               (click)="vote(-1)"
             >
@@ -126,7 +126,6 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
               type="button"
               class="pc__vote-btn pc__vote-btn--up"
               [class.pc__vote-btn--active]="voteStatus() === 1"
-              [disabled]="!isAuthenticated()"
               aria-label="upvote"
               (click)="vote(1)"
             >
@@ -149,22 +148,15 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
         </div>
 
         <!-- Follow / bookmark — inline-end (LEFT in RTL) -->
-        @if (isAuthenticated()) {
-          <button
-            type="button"
-            class="pc__save-btn"
-            [class.pc__save-btn--active]="isFollowed()"
-            (click)="toggleFollow()"
-          >
-            {{ isFollowed() ? ('community.followingPost' | transloco) : ('community.followPost' | transloco) }}
-            <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
-          </button>
-        } @else {
-          <button type="button" class="pc__save-btn" disabled>
-            {{ 'community.followPost' | transloco }}
-            <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
-          </button>
-        }
+        <button
+          type="button"
+          class="pc__save-btn"
+          [class.pc__save-btn--active]="isAuthenticated() && isFollowed()"
+          (click)="toggleFollow()"
+        >
+          {{ (isAuthenticated() && isFollowed()) ? ('community.followingPost' | transloco) : ('community.followPost' | transloco) }}
+          <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
+        </button>
 
       </div>
 
@@ -177,6 +169,7 @@ export class PostSummaryComponent {
   private readonly localeService = inject(LocaleService);
   private readonly auth = inject(AuthService);
   private readonly communityApi = inject(CommunityApiService);
+  private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
 
@@ -198,7 +191,7 @@ export class PostSummaryComponent {
   });
 
   async vote(dir: 1 | -1): Promise<void> {
-    if (!this.isAuthenticated()) return;
+    if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
     const current = this.voteStatus();
     const newDir = current === dir ? 0 : dir;
     const delta = newDir - current;
@@ -217,7 +210,7 @@ export class PostSummaryComponent {
   readonly isFollowed = computed(() => this._followed() ?? this.post().isWatchlisted);
 
   async toggleFollow(): Promise<void> {
-    if (!this.isAuthenticated()) return;
+    if (!this.authPrompt.requireAuth('community.authDialog.messageFollow')) return;
     const current = this.isFollowed();
     this._followed.set(!current);
     const res = current

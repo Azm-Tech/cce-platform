@@ -54,15 +54,6 @@
         </button>
       </div>
 
-      <button
-        type="button"
-        class="cce-reply__reply-btn"
-        (click)="onReplyClick()"
-      >
-        <mat-icon svgIcon="reply" aria-hidden="true"></mat-icon>
-        <span>{{ 'community.detail.replyToCommentLabel' | transloco }}</span>
-      </button>
-
       @if (markableForPostId(); as postId) {
         <cce-mark-answer-button
           [postId]="postId"
@@ -71,42 +62,6 @@
         />
       }
     </div>
-
-    <!-- Inline composer (thread reply) -->
-    @if (isHighlighted() && postId() && isAuthenticated()) {
-      <div class="cce-reply__composer">
-        <cce-compose-reply-form
-          [postId]="postId()!"
-          [parentReplyId]="reply().id"
-          [parentHandle]="displayName()"
-          (replyCreated)="replyCreated.emit()"
-          (cancelReply)="cancelReply.emit()"
-        />
-      </div>
-    }
-
-    <!-- Nested children -->
-    @if (children().length > 0) {
-      <div class="cce-reply__children">
-        @for (child of children(); track child.id) {
-          <cce-reply
-            [reply]="child"
-            [isAccepted]="acceptedReplyId() === child.id"
-            [acceptedReplyId]="acceptedReplyId()"
-            [canMarkAnswer]="canMarkAnswer()"
-            [postId]="postId()"
-            [replyingToId]="replyingToId()"
-            [isAuthenticated]="isAuthenticated()"
-            [markableForPostId]="canMarkAnswer() && acceptedReplyId() !== child.id ? postId() : null"
-            [children]="[]"
-            (answerMarked)="answerMarked.emit()"
-            (replyClicked)="replyClicked.emit($event)"
-            (replyCreated)="replyCreated.emit()"
-            (cancelReply)="cancelReply.emit()"
-          />
-        }
-      </div>
-    }
 
   </div>
 </article>

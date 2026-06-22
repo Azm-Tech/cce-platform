@@ -56,6 +56,7 @@ export class CountriesListPage implements OnInit {
       page: this.page(),
       pageSize: this.pageSize(),
       search: this.searchInput() || undefined,
+      isCceCountry: false,
     });
     this.loading.set(false);
     if (res.ok) {

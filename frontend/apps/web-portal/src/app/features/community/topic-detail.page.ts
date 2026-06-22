@@ -11,11 +11,7 @@ import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
-import {
-  ComposePostDialogComponent,
-  type ComposePostDialogData,
-  type ComposePostDialogResult,
-} from './compose-post-dialog.component';
+import { ComposePostDialogComponent } from './compose-post-dialog.component';
 import { PostSummaryComponent } from './post-summary.component';
 import { SignInCtaComponent } from './sign-in-cta.component';
 import type { PublicPost, PublicTopic } from './community.types';
@@ -119,13 +115,9 @@ export class TopicDetailPage implements OnInit {
   openComposeDialog(): void {
     const t = this.topic();
     if (!t) return;
-    const ref = this.dialog.open<
-      ComposePostDialogComponent,
-      ComposePostDialogData,
-      ComposePostDialogResult
-    >(ComposePostDialogComponent, {
-      data: { topics: [t], preselectedTopicId: t.id },
-      autoFocus: 'first-tabbable',
+    const ref = ComposePostDialogComponent.open(this.dialog, {
+      topics: [t],
+      preselectedTopicId: t.id,
     });
     ref.afterClosed().subscribe((result) => {
       if (result?.submitted) {

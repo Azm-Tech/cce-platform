@@ -200,7 +200,7 @@ export class ResourceFormDialogComponent {
   private async loadDropdowns(): Promise<void> {
     const [catRes, countryRes] = await Promise.all([
       this.taxonomy.listCategories({ isActive: true, pageSize: 200 }),
-      this.countryApi.listCountries({ pageSize: 500 }),
+      this.countryApi.listCountries({ pageSize: 500, isCceCountry: false }),
     ]);
     if (catRes.ok) this.categories.set(catRes.value.items);
     if (countryRes.ok) this.countries.set(countryRes.value.items);

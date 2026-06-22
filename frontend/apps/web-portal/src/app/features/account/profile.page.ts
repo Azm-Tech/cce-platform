@@ -16,7 +16,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CountriesApiService } from '../countries/countries-api.service';
-import type { CountryCode } from '../countries/country.types';
+import type { Country } from '../countries/country.types';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
 import { type ExpertRegistrationStatus, type ExpertRequestStatus, type UpdateMyProfilePayload, type UserProfile } from './account.types';
@@ -60,7 +60,7 @@ export class ProfilePage implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly profile = signal<UserProfile | null>(null);
-  readonly countryCodes = signal<CountryCode[]>([]);
+  readonly countryCodes = signal<Country[]>([]);
   readonly expertStatus = signal<ExpertRequestStatus | null>(null);
   readonly expertStatusLoaded = signal(false);
   readonly loading = signal(false);
@@ -79,7 +79,7 @@ export class ProfilePage implements OnInit {
     const all = this.countryCodes();
     if (!q) return all;
     return all.filter(cc =>
-      cc.name.ar.includes(q) || cc.name.en.toLowerCase().includes(q)
+      cc.nameAr.toLowerCase().includes(q) || cc.nameEn.toLowerCase().includes(q)
     );
   });
 
@@ -123,7 +123,7 @@ export class ProfilePage implements OnInit {
     if (!p?.countryCodeId) return '—';
     const match = this.countryCodes().find((c) => c.id === p.countryCodeId);
     if (!match) return '—';
-    return this.locale() === 'ar' ? match.name.ar : match.name.en;
+    return this.locale() === 'ar' ? match.nameAr : match.nameEn;
   });
 
   readonly form: FormGroup<ProfileFormShape> = this.fb.nonNullable.group({
@@ -147,7 +147,7 @@ export class ProfilePage implements OnInit {
       this.api.getProfile(),
       // All country codes (no isActive filter) so a saved countryCodeId
       // always resolves to its nationality label — same source as registration.
-      this.countriesApi.listCountryCodes(),
+      this.countriesApi.listCountries({ isCceCountry: false }),
       this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
@@ -162,7 +162,7 @@ export class ProfilePage implements OnInit {
     } else {
       this.errorKind.set(profileRes.error.kind);
     }
-    if (countryCodesRes.ok && Array.isArray(countryCodesRes.value)) this.countryCodes.set(countryCodesRes.value);
+    if (countryCodesRes.ok) this.countryCodes.set(countryCodesRes.value);
     if (expertRes.ok) this.expertStatus.set(expertRes.value);
     this.expertStatusLoaded.set(true);
   }
@@ -181,7 +181,7 @@ export class ProfilePage implements OnInit {
     });
     const ccMatch = this.countryCodes().find(cc => cc.id === p.countryCodeId);
     this.countryCodeSearch.setValue(
-      ccMatch ? (this.locale() === 'ar' ? ccMatch.name.ar : ccMatch.name.en) : '',
+      ccMatch ? (this.locale() === 'ar' ? ccMatch.nameAr : ccMatch.nameEn) : '',
       { emitEvent: false }
     );
     const localeMatch = this.localeOptions.find(o => o.value === p.localePreference);
@@ -189,8 +189,8 @@ export class ProfilePage implements OnInit {
     this.saveErrorKind.set(null);
     this.mode.set('edit');
     if (!this.countryCodes().length) {
-      void this.countriesApi.listCountryCodes().then((res) => {
-        if (res.ok && Array.isArray(res.value)) this.countryCodes.set(res.value);
+      void this.countriesApi.listCountries({ isCceCountry: false }).then((res) => {
+        if (res.ok) this.countryCodes.set(res.value);
       });
     }
   }

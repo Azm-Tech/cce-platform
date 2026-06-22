@@ -1507,11 +1507,18 @@
       "delete": "حذف المنشور",
       "viewOnPortal": "فتح المنشور في البوابة العامة",
       "viewReplies": "فتح الردود في البوابة",
+      "viewDetails": "عرض تفاصيل المنشور",
       "copyId": "نسخ معرّف المنشور",
       "copyLink": "نسخ الرابط العام",
       "copyIdToast": "تم نسخ معرّف المنشور.",
       "copyLinkToast": "تم نسخ الرابط العام.",
       "moreActions": "المزيد من الإجراءات"
+    },
+    "dialog": {
+      "title": "تفاصيل المنشور",
+      "replies": "الردود",
+      "noReplies": "لا توجد ردود بعد.",
+      "deleteReply": "حذف الرد"
     },
     "quick": {
       "title": "إجراء سريع — حذف رد عبر المعرّف",
@@ -2004,6 +2011,16 @@
     "signInToReply": "سجّل الدخول للرد.",
     "signInToRate": "سجّل الدخول للتقييم.",
     "signInButton": "تسجيل الدخول",
+    "authDialog": {
+      "title": "تسجيل الدخول مطلوب",
+      "message": "سجّل الدخول أو أنشئ حسابًا للتفاعل مع المجتمع.",
+      "messageVote": "سجّل الدخول أو أنشئ حسابًا للتصويت على المنشورات.",
+      "messageReply": "سجّل الدخول أو أنشئ حسابًا للرد.",
+      "messageFollow": "سجّل الدخول أو أنشئ حسابًا للمتابعة.",
+      "login": "تسجيل الدخول",
+      "register": "إنشاء حساب",
+      "close": "إغلاق"
+    },
     "acceptedAnswer": "الإجابة المقبولة",
     "languageBadge": "بـ {{locale}}",
     "notFound": "الموضوع / المنشور غير موجود.",
@@ -2087,7 +2104,9 @@
       "bio": "السيرة الذاتية",
       "joinedIn": "انضم في",
       "followUser": "متابعة الحساب",
-      "followingUser": "تمت المتابعة"
+      "followingUser": "تمت المتابعة",
+      "searchPostsPlaceholder": "ابحث في المنشورات...",
+      "noPosts": "لا توجد منشورات"
     },
     "anonymousAuthor": "مستخدم مجهول",
     "share": "شارك",

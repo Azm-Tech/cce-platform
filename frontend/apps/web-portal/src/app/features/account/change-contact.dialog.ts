@@ -21,7 +21,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { map } from 'rxjs/operators';
 import { LocaleService } from '@frontend/i18n';
 import { CountriesApiService } from '../countries/countries-api.service';
-import type { CountryCode } from '../countries/country.types';
+import type { Country } from '../countries/country.types';
 import { AccountApiService } from './account-api.service';
 
 export interface ChangeContactDialogData {
@@ -58,7 +58,7 @@ export class ChangeContactDialogComponent implements OnInit {
   readonly sending = signal(false);
   readonly confirming = signal(false);
   readonly errorKind = signal<string | null>(null);
-  readonly countryCodes = signal<CountryCode[]>([]);
+  readonly countryCodes = signal<Country[]>([]);
 
   private verificationId = '';
 
@@ -66,7 +66,7 @@ export class ChangeContactDialogComponent implements OnInit {
   readonly newValueControl = new FormControl('', [Validators.required, Validators.email]);
 
   // ── Phone: dial-code autocomplete ────────────────────────────
-  readonly phoneCodeControl = new FormControl<CountryCode | null>(null, [Validators.required]);
+  readonly phoneCodeControl = new FormControl<Country | null>(null, [Validators.required]);
   private readonly phoneCodeInput = toSignal(
     this.phoneCodeControl.valueChanges.pipe(map(v => (typeof v === 'string' ? v : ''))),
     { initialValue: '' },
@@ -77,14 +77,14 @@ export class ChangeContactDialogComponent implements OnInit {
     if (!q) return all;
     return all.filter(
       cc =>
-        cc.name.ar.toLowerCase().includes(q) ||
-        cc.name.en.toLowerCase().includes(q) ||
+        cc.nameAr.toLowerCase().includes(q) ||
+        cc.nameEn.toLowerCase().includes(q) ||
         cc.dialCode.includes(q),
     );
   });
-  readonly displayPhoneCode = (cc: CountryCode | null): string => {
+  readonly displayPhoneCode = (cc: Country | null): string => {
     if (!cc) return '';
-    const name = this.locale() === 'ar' ? cc.name.ar : cc.name.en;
+    const name = this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
     return `${name} (${cc.dialCode})`;
   };
 
@@ -96,7 +96,7 @@ export class ChangeContactDialogComponent implements OnInit {
   ]);
 
   readonly phoneDisplay = computed(() => {
-    const cc = this.phoneCodeControl.value as CountryCode | null;
+    const cc = this.phoneCodeControl.value as Country | null;
     const local = this.localPhoneControl.value ?? '';
     if (!cc) return local;
     return `${cc.dialCode} ${local}`;
@@ -116,7 +116,7 @@ export class ChangeContactDialogComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data.type !== 'phone') return;
-    void this.countriesApi.listCountryCodes({ isActive: true }).then(res => {
+    void this.countriesApi.listCountries({ isCceCountry: false }).then(res => {
       if (!res.ok) return;
       this.countryCodes.set(res.value);
       if (this.data.currentPhone) {
@@ -206,13 +206,13 @@ export class ChangeContactDialogComponent implements OnInit {
   }
 
   private buildPhoneValue(): string {
-    const cc = this.phoneCodeControl.value as CountryCode;
+    const cc = this.phoneCodeControl.value as Country;
     const dial = cc.dialCode.replace(/^\+/, '');
     const local = this.localPhoneControl.value!.replace(/\s/g, '');
     return `${dial}${local}`;
   }
 
-  private prefillPhone(phone: string, codes: CountryCode[]): void {
+  private prefillPhone(phone: string, codes: Country[]): void {
     const stripped = phone.replace(/^\+/, '');
     const sorted = [...codes].sort((a, b) => b.dialCode.length - a.dialCode.length);
     const match = sorted.find(cc => stripped.startsWith(cc.dialCode.replace(/^\+/, '')));

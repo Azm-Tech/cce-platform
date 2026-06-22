@@ -335,6 +335,8 @@ export class CountryDetailPage implements OnInit {
         nameAr: p.nameAr, nameEn: p.nameEn,
         regionAr: '', regionEn: '',
         flagUrl: p.flagUrl ?? '',
+        dialCode: '', isCceCountry: false,
+        cceClassification: null, ccePerformanceScore: null, cceTotalIndex: null,
       });
     } else {
       this.errorKind.set(profileRes.error.kind);

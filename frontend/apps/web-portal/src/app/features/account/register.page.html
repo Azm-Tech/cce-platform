@@ -68,7 +68,7 @@
                   @if (cc.flagUrl) {
                     <img class="cce-register__cc-flag" [src]="cc.flagUrl" [alt]="" aria-hidden="true" />
                   }
-                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
                 </span>
               </mat-option>
             } @empty {
@@ -93,7 +93,7 @@
             <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
               @for (cc of filteredPhoneCodes(); track cc.id) {
                 <mat-option [value]="cc">
-                  {{ locale() === 'ar' ? cc.name.ar : cc.name.en }}
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
                   <span class="cce-register__dial-badge">{{ cc.dialCode }}</span>
                 </mat-option>
               } @empty {

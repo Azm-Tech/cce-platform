@@ -1,0 +1,484 @@
+<div class="cmp">
+
+  <!-- ── Skeleton ──────────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="cmp__card">
+      <div class="cmp__skel-header">
+        <div class="cmp__skel-info">
+          <div class="cmp-skel cmp-skel--avatar"></div>
+          <div class="cmp-skel cmp-skel--name"></div>
+          <div class="cmp-skel cmp-skel--line"></div>
+          <div class="cmp-skel cmp-skel--line cmp-skel--short"></div>
+        </div>
+        <div class="cmp-skel cmp-skel--bio"></div>
+      </div>
+      <div class="cmp-skel cmp-skel--bar"></div>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────────────────────── -->
+  @if (errorKind()) {
+    <div class="cmp__error" role="alert">
+      <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      <button type="button" (click)="load()">{{ 'errors.retry' | transloco }}</button>
+    </div>
+  }
+
+  <!-- ── Profile card ───────────────────────────────────────────────────────── -->
+  @if (profile(); as prof) {
+
+    <div class="cmp__card">
+
+      <!-- Header: two-column (info | bio card) -->
+      <div class="cmp__header">
+
+        <!-- Info column — inline-start (RIGHT in RTL) -->
+        <div class="cmp__info-col">
+
+          <!-- Hero row: avatar (rightmost in RTL) + text column to its left -->
+          <div class="cmp__hero">
+            <!-- In RTL flex: first child = rightmost → avatar on right -->
+            <div class="cmp__avatar" aria-hidden="true">{{ initial() }}</div>
+
+            <!-- Text column: badge → name → job → org -->
+            <div class="cmp__hero-text">
+              @if (prof.isExpert) {
+                <span class="cmp__expert">
+                  {{ 'community.profile.expertBadge' | transloco }}
+                  <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+                </span>
+              }
+              <h1 class="cmp__name">{{ displayName() }}</h1>
+              @if (prof.jobTitle) {
+                <p class="cmp__subtitle">{{ prof.jobTitle }}</p>
+              }
+              @if (prof.organizationName) {
+                <p class="cmp__org">{{ prof.organizationName }}</p>
+              }
+            </div>
+          </div>
+
+          @if (prof.location || joinedOnFormatted()) {
+            <div class="cmp__meta">
+              @if (joinedOnFormatted()) {
+                <span>{{ 'community.profile.joinedIn' | transloco }} {{ joinedOnFormatted() }}</span>
+              }
+              @if (prof.location && joinedOnFormatted()) {
+                <span class="cmp__meta-sep" aria-hidden="true">•</span>
+              }
+              @if (prof.location) {
+                <span>{{ prof.location }}</span>
+              }
+            </div>
+          }
+
+        </div>
+
+        <!-- Bio card — inline-end (LEFT in RTL) -->
+        @if (prof.bio) {
+          <aside class="cmp__bio-card">
+            <div class="cmp__bio-header">
+              <mat-icon svgIcon="square-user" aria-hidden="true"></mat-icon>
+              <strong>{{ 'community.profile.bio' | transloco }}</strong>
+            </div>
+            <p class="cmp__bio-text">{{ prof.bio }}</p>
+          </aside>
+        }
+
+      </div>
+
+      <!-- Stats + create-post bar -->
+      <div class="cmp__bar">
+
+        <!-- 4 Stats — inline-start (RIGHT in RTL). DOM order: followers→following→posts→replies -->
+        <div class="cmp__stats">
+          <div class="cmp__stat">
+            <strong class="cmp__stat-num">{{ prof.followerCount }}</strong>
+            <span class="cmp__stat-label">{{ 'community.profile.followers' | transloco }}</span>
+          </div>
+          <div class="cmp__stat-sep" aria-hidden="true"></div>
+          <div class="cmp__stat">
+            <strong class="cmp__stat-num">{{ prof.followingCount }}</strong>
+            <span class="cmp__stat-label">{{ 'community.profile.following' | transloco }}</span>
+          </div>
+          <div class="cmp__stat-sep" aria-hidden="true"></div>
+          <div class="cmp__stat">
+            <strong class="cmp__stat-num">{{ prof.postCount }}</strong>
+            <span class="cmp__stat-label">{{ 'community.profile.posts' | transloco }}</span>
+          </div>
+          <div class="cmp__stat-sep" aria-hidden="true"></div>
+          <div class="cmp__stat">
+            <strong class="cmp__stat-num">{{ prof.replyCount }}</strong>
+            <span class="cmp__stat-label">{{ 'community.profile.replies' | transloco }}</span>
+          </div>
+        </div>
+
+        <!-- Create post button — inline-end (LEFT in RTL) -->
+        <button type="button" class="cmp__create-btn" (click)="openCreatePost()">
+          <mat-icon svgIcon="plus" aria-hidden="true"></mat-icon>
+          {{ 'community.profile.newPost' | transloco }}
+        </button>
+
+      </div>
+
+    </div><!-- /cmp__card -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         TABS — between the profile card and the feed
+    ════════════════════════════════════════════════════════════════════════ -->
+    <nav class="cmp__tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="cmp__tab"
+        [class.cmp__tab--active]="activeTab() === 'posts'"
+        [attr.aria-selected]="activeTab() === 'posts'"
+        (click)="setTab('posts')"
+      >
+        {{ 'community.profile.myPosts' | transloco }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="cmp__tab"
+        [class.cmp__tab--active]="activeTab() === 'followed-posts'"
+        [attr.aria-selected]="activeTab() === 'followed-posts'"
+        (click)="setTab('followed-posts')"
+      >
+        {{ 'community.profile.followedPosts' | transloco }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="cmp__tab"
+        [class.cmp__tab--active]="activeTab() === 'followed-topics'"
+        [attr.aria-selected]="activeTab() === 'followed-topics'"
+        (click)="setTab('followed-topics')"
+      >
+        {{ 'community.profile.followedTopics' | transloco }}
+      </button>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         TAB CONTENT
+    ════════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ── TAB: My Posts ──────────────────────────────────────────────────── -->
+    @if (activeTab() === 'posts') {
+      <div class="cmp__feed">
+
+        <!-- Search -->
+        <div class="cmp__search">
+          <mat-icon svgIcon="search" class="cmp__search-icon" aria-hidden="true"></mat-icon>
+          <input
+            type="search"
+            class="cmp__search-input"
+            [placeholder]="'community.profile.searchPostsPlaceholder' | transloco"
+            [value]="searchQuery()"
+            (input)="onSearchChange($any($event.target).value)"
+            [attr.aria-label]="'community.profile.searchPostsPlaceholder' | transloco"
+          />
+          @if (searchQuery()) {
+            <button type="button" class="cmp__search-clear" (click)="clearSearch()">
+              <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+            </button>
+          }
+        </div>
+
+        <!-- Filter bar -->
+        <div class="cmp__filter-bar">
+
+          <!-- Sort tabs — inline-start (RIGHT in RTL) -->
+          <nav class="cmp__sort-tabs" role="tablist">
+            @for (opt of sortOptions; track opt.key) {
+              <button
+                type="button"
+                role="tab"
+                class="cmp__sort-tab"
+                [class.cmp__sort-tab--active]="sort() === opt.key"
+                [attr.aria-selected]="sort() === opt.key"
+                (click)="setSort(opt.key)"
+              >
+                {{ opt.labelKey | transloco }}
+                <mat-icon [svgIcon]="sortIcons[opt.key]" aria-hidden="true"></mat-icon>
+              </button>
+            }
+          </nav>
+
+          <!-- Dropdowns — inline-end (LEFT in RTL) -->
+          <div class="cmp__filter-dropdowns">
+
+            <!-- Topics dropdown -->
+            <button type="button" class="cmp__filter-btn" [matMenuTriggerFor]="topicMenu">
+              <span>{{ isTopicFilterAll() ? ('community.filter.allTopics' | transloco) : currentTopicLabel() }}</span>
+              <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+            </button>
+            <mat-menu #topicMenu="matMenu">
+              <button type="button" mat-menu-item (click)="setTopicFilter(null)">
+                {{ 'community.filter.allTopics' | transloco }}
+              </button>
+              @for (t of topicsList(); track t.id) {
+                <button type="button" mat-menu-item (click)="setTopicFilter(t.id)">
+                  {{ topicLabel(t) }}
+                </button>
+              }
+            </mat-menu>
+
+            <!-- Type dropdown -->
+            <button type="button" class="cmp__filter-btn" [matMenuTriggerFor]="typeMenu">
+              <span>{{ currentTypeLabel() | transloco }}</span>
+              <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+            </button>
+            <mat-menu #typeMenu="matMenu">
+              @for (opt of typeOptions; track opt.value) {
+                <button type="button" mat-menu-item (click)="setTypeFilter(opt.value)">
+                  {{ opt.labelKey | transloco }}
+                </button>
+              }
+            </mat-menu>
+
+          </div>
+        </div>
+
+        <!-- Feed error -->
+        @if (postsFeedError(); as kind) {
+          <div class="cmp__feed-error" role="alert">
+            <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
+            <button type="button" (click)="loadMyPosts()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        }
+
+        <!-- Posts skeleton -->
+        @if (postsLoading() && posts().length === 0) {
+          @for (s of postSkeletons; track $index) {
+            <div class="cmp__card-skel" aria-hidden="true">
+              <div class="cmp__card-skel-header">
+                <div class="cmp-skel cmp-skel--avatar-sm"></div>
+                <div class="cmp__card-skel-meta">
+                  <div class="cmp-skel cmp-skel--name"></div>
+                  <div class="cmp-skel cmp-skel--sm"></div>
+                </div>
+                <div class="cmp__card-skel-chips">
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                </div>
+              </div>
+              <div class="cmp-skel cmp-skel--title"></div>
+              <div class="cmp-skel cmp-skel--body"></div>
+              <div class="cmp-skel cmp-skel--body cmp-skel--body-short"></div>
+            </div>
+          }
+        }
+
+        <!-- Progress bar while paginating -->
+        @if (postsLoading() && posts().length > 0) {
+          <div class="cmp__progress" aria-hidden="true">
+            <div class="cmp__progress-bar"></div>
+          </div>
+        }
+
+        <!-- Posts list -->
+        @if (!postsLoading() || posts().length > 0) {
+          @if (posts().length === 0 && !postsLoading()) {
+            <div class="cmp__empty">
+              <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
+              <p>{{ 'community.profile.empty' | transloco }}</p>
+              <p class="cmp__empty-desc">{{ 'community.profile.emptyDesc' | transloco }}</p>
+            </div>
+          } @else {
+            <div class="cmp__posts-list">
+              @for (post of posts(); track post.id) {
+                <cce-post-summary [post]="post" [topicName]="getTopicName(post)" />
+              }
+            </div>
+          }
+        }
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+          <nav class="cmp__pagination" aria-label="pagination">
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="currentPage() === 1"
+              (click)="setPage(currentPage() - 1)"
+              aria-label="previous"
+            >
+              <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+            </button>
+
+            <div class="cmp__pagination-pages">
+              @for (n of pageNumbers(); track n; let i = $index) {
+                @if (i > 0 && n - pageNumbers()[i - 1] > 1) {
+                  <span class="cmp__pagination-ellipsis">…</span>
+                }
+                <button
+                  type="button"
+                  class="cmp__pagination-num"
+                  [class.cmp__pagination-num--active]="n === currentPage()"
+                  (click)="setPage(n)"
+                >{{ n }}</button>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="currentPage() === totalPages()"
+              (click)="setPage(currentPage() + 1)"
+              aria-label="next"
+            >
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+            </button>
+          </nav>
+        }
+
+      </div>
+    }
+
+    <!-- ── TAB: Followed Posts ─────────────────────────────────────────────── -->
+    @if (activeTab() === 'followed-posts') {
+      <div class="cmp__feed">
+
+        <!-- Feed error -->
+        @if (feedError(); as kind) {
+          <div class="cmp__feed-error" role="alert">
+            <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
+            <button type="button" (click)="loadFollowedPosts()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        }
+
+        <!-- Skeleton -->
+        @if (feedLoading() && feedPosts().length === 0) {
+          @for (s of postSkeletons; track $index) {
+            <div class="cmp__card-skel" aria-hidden="true">
+              <div class="cmp__card-skel-header">
+                <div class="cmp-skel cmp-skel--avatar-sm"></div>
+                <div class="cmp__card-skel-meta">
+                  <div class="cmp-skel cmp-skel--name"></div>
+                  <div class="cmp-skel cmp-skel--sm"></div>
+                </div>
+                <div class="cmp__card-skel-chips">
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                </div>
+              </div>
+              <div class="cmp-skel cmp-skel--title"></div>
+              <div class="cmp-skel cmp-skel--body"></div>
+              <div class="cmp-skel cmp-skel--body cmp-skel--body-short"></div>
+            </div>
+          }
+        }
+
+        <!-- Progress bar -->
+        @if (feedLoading() && feedPosts().length > 0) {
+          <div class="cmp__progress" aria-hidden="true">
+            <div class="cmp__progress-bar"></div>
+          </div>
+        }
+
+        <!-- Feed posts list -->
+        @if (!feedLoading() || feedPosts().length > 0) {
+          @if (feedPosts().length === 0 && !feedLoading()) {
+            <div class="cmp__empty">
+              <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
+              <p>{{ 'community.profile.noPosts' | transloco }}</p>
+            </div>
+          } @else {
+            <div class="cmp__posts-list">
+              @for (post of feedPosts(); track post.id) {
+                <cce-post-summary [post]="post" [topicName]="getTopicName(post)" />
+              }
+            </div>
+          }
+        }
+
+        <!-- Pagination -->
+        @if (feedTotalPages() > 1) {
+          <nav class="cmp__pagination" aria-label="pagination">
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="feedPage() === 1"
+              (click)="setFeedPage(feedPage() - 1)"
+              aria-label="previous"
+            >
+              <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+            </button>
+
+            <div class="cmp__pagination-pages">
+              @for (n of feedPageNums(); track n; let i = $index) {
+                @if (i > 0 && n - feedPageNums()[i - 1] > 1) {
+                  <span class="cmp__pagination-ellipsis">…</span>
+                }
+                <button
+                  type="button"
+                  class="cmp__pagination-num"
+                  [class.cmp__pagination-num--active]="n === feedPage()"
+                  (click)="setFeedPage(n)"
+                >{{ n }}</button>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="feedPage() === feedTotalPages()"
+              (click)="setFeedPage(feedPage() + 1)"
+              aria-label="next"
+            >
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+            </button>
+          </nav>
+        }
+
+      </div>
+    }
+
+    <!-- ── TAB: Followed Topics ─────────────────────────────────────────────── -->
+    @if (activeTab() === 'followed-topics') {
+      <div class="cmp__topics-panel">
+
+        <!-- Error -->
+        @if (topicsError(); as kind) {
+          <div class="cmp__feed-error" role="alert">
+            <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
+            <button type="button" (click)="loadFollowedTopics()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        }
+
+        <!-- Skeleton -->
+        @if (topicsLoading()) {
+          <div class="cmp__topics-grid">
+            @for (s of postSkeletons; track $index) {
+              <div class="cmp-skel cmp-skel--topic-card" aria-hidden="true"></div>
+            }
+          </div>
+        }
+
+        <!-- Topics grid -->
+        @if (!topicsLoading()) {
+          @if (followedTopics().length === 0 && !topicsError()) {
+            <div class="cmp__empty">
+              <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
+              <p>{{ 'community.profile.noPosts' | transloco }}</p>
+            </div>
+          } @else {
+            <div class="cmp__topics-grid">
+              @for (topic of followedTopics(); track topic.id) {
+                <cce-topic-card [topic]="topic" />
+              }
+            </div>
+          }
+        }
+
+      </div>
+    }
+
+  }
+
+</div>

@@ -7,7 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
+import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService } from './community-api.service';
+import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import type { CreateReplyPayload } from './community.types';
 
 interface ComposeReplyFormShape {
@@ -29,14 +31,13 @@ interface ComposeReplyFormShape {
 })
 export class ComposeReplyFormComponent implements OnInit {
   private readonly api = inject(CommunityApiService);
+  private readonly auth = inject(AuthService);
+  private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
   private readonly localeService = inject(LocaleService);
   private readonly fb = inject(FormBuilder);
 
   readonly postId = input.required<string>();
-  readonly parentReplyId = input<string | null>(null);
-  readonly parentHandle = input<string | null>(null);
-  readonly cancelReply = output<void>();
   readonly replyCreated = output<string>();
 
   readonly submitting = signal(false);
@@ -55,13 +56,21 @@ export class ComposeReplyFormComponent implements OnInit {
     this.form.controls.locale.setValue(this.localeService.locale());
   }
 
+  /** Anonymous users get the auth dialog the moment they focus the field. */
+  onFieldFocus(event: FocusEvent): void {
+    if (this.auth.isAuthenticated()) return;
+    (event.target as HTMLElement | null)?.blur();
+    this.authPrompt.requireAuth('community.authDialog.messageReply');
+  }
+
   async submit(): Promise<void> {
+    if (!this.authPrompt.requireAuth('community.authDialog.messageReply')) return;
     if (this.form.invalid) return;
     const v = this.form.getRawValue();
     const payload: CreateReplyPayload = {
       content: v.content.trim(),
       locale: v.locale,
-      parentReplyId: this.parentReplyId() ?? null,
+      parentReplyId: null,
     };
     this.submitting.set(true);
     this.errorKind.set(null);

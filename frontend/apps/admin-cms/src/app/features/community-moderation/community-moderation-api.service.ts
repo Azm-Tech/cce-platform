@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type { AdminPostRow, AdminPostStatus } from './admin-post.types';
+import type { AdminPostDetail, AdminPostReply, AdminPostRow, AdminPostStatus } from './admin-post.types';
 
 interface PagedResult<T> {
   items: T[];
@@ -68,6 +68,33 @@ export class CommunityModerationApiService {
   async softDeleteReply(id: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(this.http.delete<void>(`/api/admin/community/replies/${id}`));
+    });
+  }
+
+  /** Full post detail from the public community API (not /api/admin,
+   *  so no envelope unwrap — we access `.data` manually). */
+  async getPostDetail(id: string): Promise<Result<AdminPostDetail>> {
+    return this.run(async () => {
+      const raw = await firstValueFrom(
+        this.http.get<{ data?: AdminPostDetail }>(`/api/community/posts/${encodeURIComponent(id)}`),
+      );
+      if (!raw.data) throw new Error('not-found');
+      return raw.data;
+    });
+  }
+
+  /** Replies for a post from the public community API.
+   *  Returns up to 100 replies (sufficient for moderation purposes). */
+  async listPostReplies(postId: string): Promise<Result<AdminPostReply[]>> {
+    const params = new HttpParams().set('page', 1).set('pageSize', 100);
+    return this.run(async () => {
+      const raw = await firstValueFrom(
+        this.http.get<{ data?: { items: AdminPostReply[]; total: number } }>(
+          `/api/community/posts/${encodeURIComponent(postId)}/replies`,
+          { params },
+        ),
+      );
+      return raw.data?.items ?? [];
     });
   }
 

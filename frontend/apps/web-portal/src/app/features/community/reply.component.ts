@@ -4,10 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { ComposeReplyFormComponent } from './compose-reply-form.component';
 import { timeAgo } from './lib/social-helpers';
 import { MarkAnswerButtonComponent } from './mark-answer-button.component';
 import { CommunityApiService } from './community-api.service';
+import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import type { PublicPostReply, VoteDirection } from './community.types';
 
 @Component({
@@ -17,7 +17,6 @@ import type { PublicPostReply, VoteDirection } from './community.types';
     DatePipe,
     MatIconModule,
     TranslocoModule,
-    ComposeReplyFormComponent,
     MarkAnswerButtonComponent,
   ],
   templateUrl: './reply.component.html',
@@ -27,26 +26,16 @@ import type { PublicPostReply, VoteDirection } from './community.types';
 export class ReplyComponent {
   private readonly localeService = inject(LocaleService);
   private readonly api = inject(CommunityApiService);
+  private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
 
   readonly reply = input.required<PublicPostReply>();
   readonly isAccepted = input<boolean>(false);
   readonly markableForPostId = input<string | null>(null);
-  readonly children = input<readonly PublicPostReply[]>([]);
-  readonly replyingToId = input<string | null>(null);
-  readonly acceptedReplyId = input<string | null>(null);
-  readonly canMarkAnswer = input<boolean>(false);
-  readonly postId = input<string | null>(null);
-  readonly isAuthenticated = input<boolean>(false);
 
   readonly answerMarked = output<void>();
-  readonly replyClicked = output<PublicPostReply>();
-  readonly replyCreated = output<void>();
-  readonly cancelReply = output<void>();
 
   readonly locale = this.localeService.locale;
-
-  readonly isHighlighted = computed(() => this.replyingToId() === this.reply().id);
 
   readonly displayName = computed(() => this.reply().authorName?.trim() || 'عضو');
   readonly avatarInitial = computed(() => {
@@ -62,15 +51,8 @@ export class ReplyComponent {
 
   timeAgo(iso: string): string { return timeAgo(iso, this.locale()); }
 
-  onReplyClick(): void {
-    this.replyClicked.emit(this.reply());
-  }
-
   async onVote(): Promise<void> {
-    if (!this.isAuthenticated()) {
-      this.toast.error('community.signInToRate');
-      return;
-    }
+    if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
     if (this.voting()) return;
 
     const prev = this.myVote();

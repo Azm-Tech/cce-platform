@@ -119,15 +119,20 @@ $layout-gap:   32px;
 .cce-post-detail__sidebar {
   position: sticky;
   top: 0;
-  background: $bg;
-  border: 1px solid $border;
+  padding-block: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.cce-post-detail__sidebar-card {
+  background: $white;
+  border: 1px solid $border-light;
   padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding-top: 32px;
-  padding-bottom: 32px;
 }
 
 .cce-post-detail__sb-avatar {
@@ -169,13 +174,13 @@ $layout-gap:   32px;
   gap: 6px;
   color: $text-muted;
   font-size: 1rem;      // 16px
+}
 
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: $blue;
-  }
+.cce-post-detail__sb-expert-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--success--600);
 }
 
 .cce-post-detail__sb-job-title {
@@ -341,26 +346,55 @@ $layout-gap:   32px;
   padding-bottom: 80px;
 }
 
-/* Back row: text inline-start (RIGHT in RTL), button inline-end (LEFT in RTL) */
-.cce-post-detail__back-row {
+/* Back: full-width flex row; icon-box at inline-start (right in RTL), plain label follows */
+.cce-post-detail__back-btn {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 16px;
+  text-decoration: none;
+  color: $text-muted;
+
+  &:hover .cce-post-detail__back-icon-box {
+    border-color: $blue;
+    color: $blue;
+  }
+
+  &:hover .cce-post-detail__back-label {
+    color: $blue;
+  }
 }
 
-.cce-post-detail__back-link {
+.cce-post-detail__back-icon-box {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+  justify-content: center;
+  height: 46px;
+  width: 46px;
+  border: 1px solid $border;
+  color: $text-body;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+}
+
+.cce-post-detail__back-label {
+  font-size: 1.25rem;   // 20px Body XL/Regular
+  font-weight: 400;
+  line-height: 2;       // 32px
   color: $text-muted;
-  text-decoration: none;
   white-space: nowrap;
   transition: color 0.15s;
+}
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
-  &:hover { color: $blue; }
+/* ─── Directional icons ─────────────────────────────────────────
+   Base glyphs are tuned for RTL (Arabic is the default language):
+   the back arrow points → and the "go to profile" chevron points ←.
+   Mirror them under LTR so they read correctly in English. */
+:host-context([dir="ltr"]) .cce-post-detail__back-btn mat-icon,
+:host-context([dir="ltr"]) .cce-post-detail__sb-profile-link mat-icon,
+:host-context([dir="ltr"]) .cce-post-detail__notfound a mat-icon {
+  transform: scaleX(-1);
 }
 
 .cce-post-detail__progress {
@@ -393,12 +427,12 @@ $layout-gap:   32px;
   }
 }
 
-/* Post header row: chips inline-start (RIGHT in RTL) | save inline-end (LEFT in RTL) */
+/* Post header row: chips at inline-start (right in RTL) */
 .cce-post-detail__post-header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -455,26 +489,6 @@ $layout-gap:   32px;
   color: var(--warning--700);
 }
 
-/* Save button: icon-only, no text */
-.cce-post-detail__post-save {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  color: $text-muted;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  overflow: hidden;
-
-  mat-icon { font-size: 24px; width: 24px; height: 24px; }
-  &:hover { color: $blue; }
-  &--active { color: $blue; }
-}
-
 /* Title */
 .cce-post-detail__title {
   margin: 0;
@@ -505,115 +519,75 @@ $layout-gap:   32px;
   width: 100%;
 }
 
-/* ─── Attachments ────────────────────────────────────────────── */
-.cce-post-detail__attachments {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cce-post-detail__attachments-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: $text-body;
-  line-height: 1.5;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: $text-muted;
-  }
-}
-
-.cce-post-detail__attachments-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cce-post-detail__attachment-item {
-  display: flex;
-}
-
-.cce-post-detail__attachment-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px 16px;
+/* ─── Attachment card ────────────────────────────────────────── */
+.cce-post-detail__attachment-card {
+  background: $bg;
   border: 1px solid $border-mid;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 0.15s, background 0.15s;
-
-  &:hover:not(&--disabled) {
-    border-color: $blue;
-    background: $blue-light;
-  }
-
-  &--disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
 }
 
-.cce-post-detail__attachment-icon {
+.cce-post-detail__attachment-icon-wrap {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 9.6px;
+  background: var(--info--100);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: $blue-light;
-  color: $blue;
-  flex-shrink: 0;
+  color: var(--info--500);
 
-  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  mat-icon { font-size: 26px; width: 26px; height: 26px; }
 }
 
 .cce-post-detail__attachment-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  flex: 1;
-  min-width: 0;
+  text-align: inherit;
 }
 
-.cce-post-detail__attachment-name {
-  font-size: 0.9375rem;
-  font-weight: 700;
+.cce-post-detail__attachment-filename {
+  font-size: 1rem;      // 16px Body M
+  font-weight: 400;
   color: $text-dark;
-  line-height: 1.4;
+  line-height: 1.5;     // 24px
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-height: 48px;
 }
 
 .cce-post-detail__attachment-size {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;  // 14px Body S
   color: $text-muted;
-  line-height: 1.3;
+  line-height: 1.25;    // 20px
 }
 
 .cce-post-detail__attachment-dl {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: $blue;
-  flex-shrink: 0;
+  justify-content: center;
+  height: 28px;
+  width: 28px;
+  color: $text-muted;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transition: color 0.13s;
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+
+  &:not(&--inactive):hover { color: $blue; }
+  &--inactive { opacity: 0.4; cursor: default; }
 }
 
 /* Post footer: timestamp inline-start | actions inline-end */
@@ -834,6 +808,10 @@ $layout-gap:   32px;
 
   .cce-post-detail__sidebar {
     position: static;
+    padding-block: 0;
+  }
+
+  .cce-post-detail__sidebar-card {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -858,6 +836,8 @@ $layout-gap:   32px;
 
 @media (prefers-reduced-motion: reduce) {
   .cce-post-detail__skel-block { animation: none; }
-  .cce-post-detail__back-link,
-  .cce-post-detail__share-btn { transition: none; }
+  .cce-post-detail__back-icon-box,
+  .cce-post-detail__back-label,
+  .cce-post-detail__share-btn,
+  .cce-post-detail__attachment-dl { transition: none; }
 }

@@ -1,31 +1,17 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type { PublicCountryDto } from '@frontend/api-client';
 import {
   CONTENT_TYPE_API_VALUE,
   ContentRequestStatus,
   ContentType,
   contentTypeFromApiValue,
   type ContentRequestStatusValue,
-  type Country, type CountryCode, type CountryContentRequest, type CountryProfile,
+  type Country, type CountryContentRequest, type CountryProfile,
   type StateProfile, type SubmitRequestBody, type UpdateStateProfileBody,
 } from './country.types';
 import type { ResourceCategory } from '../knowledge-center/knowledge.types';
-
-/**
- * Compile-time contract tripwire: every field this feature reads must
- * exist on the generated OpenAPI DTO. If the backend renames/removes a
- * field, regenerating types (pnpm nx run api-client:generate-types)
- * turns the drift into a build error here instead of a runtime blank page.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time assertion only
-type _CountryContractCheck = keyof Pick<
-  PublicCountryDto,
-  'id' | 'nameAr' | 'nameEn' | 'regionAr' | 'regionEn' | 'flagUrl' | 'isoAlpha2' | 'isoAlpha3'
->;
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
@@ -33,43 +19,26 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class CountriesApiService {
   private readonly http = inject(HttpClient);
 
-  private activeCountryCodesCache: Promise<Result<CountryCode[]>> | null = null;
-
-  async listCountryCodes(opts: { search?: string; isActive?: boolean } = {}): Promise<Result<CountryCode[]>> {
-    if (opts.isActive === true && !opts.search) {
-      this.activeCountryCodesCache ??= this.fetchCountryCodes(opts);
-      const result = await this.activeCountryCodesCache;
-      if (!result.ok) this.activeCountryCodesCache = null;
-      return result;
-    }
-    return this.fetchCountryCodes(opts);
-  }
-
-  private fetchCountryCodes(opts: { search?: string; isActive?: boolean }): Promise<Result<CountryCode[]>> {
+  async listCountries(opts: {
+    search?: string;
+    page?: number;
+    pageSize?: number;
+    sortBy?: 0 | 1 | 2;
+    sortOrder?: 0 | 1;
+    isCceCountry?: boolean;
+  } = {}): Promise<Result<Country[]>> {
     let params = new HttpParams();
     if (opts.search) params = params.set('search', opts.search);
-    if (opts.isActive !== undefined) params = params.set('isActive', String(opts.isActive));
-    return this.run(() =>
-      firstValueFrom(
-        this.http
-          .get<{ data: CountryCode[] }>('/api/country-codes', { params })
-          .pipe(map((res) => res.data)),
-      ),
-    );
-  }
-
-  async listCountries(opts: { search?: string } = {}): Promise<Result<Country[]>> {
-    let params = new HttpParams();
-    if (opts.search) params = params.set('search', opts.search);
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    if (opts.sortBy !== undefined) params = params.set('sortBy', opts.sortBy);
+    if (opts.sortOrder !== undefined) params = params.set('sortOrder', opts.sortOrder);
+    if (opts.isCceCountry !== undefined) params = params.set('isCceCountry', String(opts.isCceCountry));
     return this.run(async () => {
-      // Live API wraps the list in an envelope: { data: { items: Country[] } }.
       const res = await firstValueFrom(
-        this.http.get<Country[] | { data: Country[] | { items: Country[] } }>('/api/countries', { params }),
+        this.http.get<{ data: { items: Country[] } }>('/api/countries', { params }),
       );
-      if (Array.isArray(res)) return res;
-      const data = res.data;
-      if (Array.isArray(data)) return data;
-      return data?.items ?? [];
+      return res.data?.items ?? [];
     });
   }
 

@@ -30,14 +30,16 @@ export class FollowsApiService {
   async follow(type: FollowEntityType, id: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(
-        this.http.put(this.urlFor(type, id), {}),
+        this.http.put(this.urlFor(type, id), { status: 1 }),
       );
     });
   }
 
   async unfollow(type: FollowEntityType, id: string): Promise<Result<void>> {
     return this.run(async () => {
-      await firstValueFrom(this.http.delete(this.urlFor(type, id)));
+      await firstValueFrom(
+        this.http.put(this.urlFor(type, id), { status: 0 }),
+      );
     });
   }
 
