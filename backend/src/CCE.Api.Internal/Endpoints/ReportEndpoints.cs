@@ -1,5 +1,8 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
+using CCE.Application.Reports.Queries.GetUserRegistrationReport;
 using CCE.Domain;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -147,6 +150,14 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_CountryProfiles)
         .WithName("CountryProfilesReport");
+
+        reports.MapGet("/user-registration", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetUserRegistrationReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_UserRegistrations)
+        .WithName("UserRegistrationReport");
 
         return app;
     }
