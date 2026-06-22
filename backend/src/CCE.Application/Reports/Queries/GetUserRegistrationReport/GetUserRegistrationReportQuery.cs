@@ -5,4 +5,4 @@ using MediatR;
 namespace CCE.Application.Reports.Queries.GetUserRegistrationReport;
 
 public sealed record GetUserRegistrationReportQuery()
-    : IRequest<Response<UserRegistrationReportDto>>;
+    : IRequest<Response<List<UserRegistrationReportUserDto>>>;

@@ -10,9 +10,9 @@ namespace CCE.Application.Reports.Queries.GetUserRegistrationReport;
 internal sealed class GetUserRegistrationReportQueryHandler(
     ICceDbContext _db,
     MessageFactory _msg)
-    : IRequestHandler<GetUserRegistrationReportQuery, Response<UserRegistrationReportDto>>
+    : IRequestHandler<GetUserRegistrationReportQuery, Response<List<UserRegistrationReportUserDto>>>
 {
-    public async Task<Response<UserRegistrationReportDto>> Handle(
+    public async Task<Response<List<UserRegistrationReportUserDto>>> Handle(
         GetUserRegistrationReportQuery q, CancellationToken ct)
     {
         var users = await _db.Users
@@ -28,13 +28,6 @@ internal sealed class GetUserRegistrationReportQueryHandler(
             .ToListAsyncEither(ct)
             .ConfigureAwait(false);
 
-        var report = new UserRegistrationReportDto(
-            ReportId: "RP001",
-            ReportTitle: "تقرير تسجيل المستخدمين",
-            GeneratedAt: DateTimeOffset.UtcNow,
-            TotalUsers: users.Count,
-            Users: users);
-
-        return _msg.Ok(report, "ITEMS_LISTED");
+        return _msg.Ok(users, "ITEMS_LISTED");
     }
 }
