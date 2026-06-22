@@ -4,6 +4,7 @@ $p-500: var(--primary--500);
 $p-600: var(--primary--600);
 $p-800: var(--primary--800);
 $n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
 $n-500: var(--neutrals--500);
 $n-600: var(--neutrals--600);
 $n-800: var(--neutrals--800);
@@ -69,42 +70,13 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   }
 }
 
-// ── Post type selector ────────────────────────────────────────────────────────
-.cpf__type-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+// Required-field asterisk
+.cpf__req {
+  color: var(--danger--500);
+  margin-inline-start: 2px;
 }
 
-.cpf__type-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 16px;
-  border: 1px solid $n-200;
-  border-radius: 9999px;
-  background: var(--white);
-  color: $n-600;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: $font;
-  cursor: pointer;
-  transition: border-color 0.13s, background-color 0.13s, color 0.13s;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-  &:hover { border-color: $p-500; color: $p-600; }
-
-  &--active {
-    background: $p-50;
-    border-color: $p-600;
-    color: $p-800;
-    font-weight: 700;
-  }
-}
-
-// ── Answerable toggle ─────────────────────────────────────────────────────────
+// ── Checkbox toggle (answerable + poll flags) ──────────────────────────────────
 .cpf__answerable-label {
   display: inline-flex;
   align-items: center;
@@ -117,10 +89,222 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   user-select: none;
 }
 
-.cpf__answerable-check {
+.cpf__check {
   width: 16px;
   height: 16px;
   accent-color: $p-500;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+// ── Poll builder ───────────────────────────────────────────────────────────────
+.cpf__poll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: var(--neutrals--50);
+}
+
+.cpf__poll-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cpf__poll-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: var(--white);
+  color: $n-900;
+  font-size: 16px;
+  font-family: $font;
+  outline: none;
+
+  &:focus { border-color: $p-500; }
+}
+
+.cpf__poll-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: var(--white);
+  color: $n-500;
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { border-color: var(--danger--500); color: var(--danger--500); }
+}
+
+.cpf__poll-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  color: $p-600;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: $p-800; }
+}
+
+.cpf__poll-flags {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ── Attachments ────────────────────────────────────────────────────────────────
+.cpf__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 24px 16px;
+  border: 1px dashed $n-300;
+  border-radius: 8px;
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.13s, background-color 0.13s;
+
+  &:hover,
+  &--over {
+    border-color: $p-500;
+    background: $p-50;
+  }
+}
+
+.cpf__dropzone-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $p-600;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+.cpf__dropzone-hint {
+  font-size: 14px;
+  color: $n-600;
+  font-family: $font;
+}
+
+.cpf__dropzone-formats {
+  font-size: 13px;
+  color: $n-500;
+  font-family: $font;
+}
+
+.cpf__attachment-error {
+  font-size: 13px;
+  color: var(--danger--500);
+  font-family: $font;
+}
+
+.cpf__attachment-uploading {
+  font-size: 13px;
+  color: $n-500;
+  font-family: $font;
+}
+
+.cpf__attachment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: var(--neutrals--50);
+}
+
+.cpf__attachment-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid $n-200;
+  border-radius: 8px;
+  background: var(--white);
+  color: $p-600;
+
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+}
+
+.cpf__attachment-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cpf__attachment-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: $n-900;
+  font-family: $font;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cpf__attachment-size {
+  font-size: 13px;
+  color: $n-500;
+  font-family: $font;
+}
+
+.cpf__attachment-badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border: 1px solid var(--success--200);
+  border-radius: 9999px;
+  background: var(--success--50);
+  color: var(--success--600);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: $font;
+}
+
+.cpf__attachment-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: $n-500;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+  transition: color 0.13s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: var(--danger--500); }
 }

@@ -28,6 +28,8 @@ import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
 import { ReplyComponent } from './reply.component';
 import type {
   CommunityUserProfile,
+  PollOptionResult,
+  PostPoll,
   PublicPost,
   PublicPostReply,
   PublicTopic,
@@ -71,6 +73,23 @@ export class PostDetailPage implements OnInit {
   readonly topicsMap = signal<Map<string, PublicTopic>>(new Map());
   readonly myVote = signal<VoteDirection>(0);
   readonly voting = signal(false);
+
+  // ── Poll (type === 'Poll') ──────────────────────────────────────────────
+  readonly poll = signal<PostPoll | null>(null);
+  /** Staged option ids for multi-choice polls, before the user submits. */
+  readonly pollSelection = signal<Set<string>>(new Set());
+  readonly pollVoting = signal(false);
+
+  readonly pollHasVoted = computed(() => (this.poll()?.myVotedOptionIds?.length ?? 0) > 0);
+  readonly pollShowResults = computed(() => {
+    const p = this.poll();
+    return !!p && (p.isClosed || this.pollHasVoted() || p.resultsVisible);
+  });
+  readonly pollCanVote = computed(() => {
+    const p = this.poll();
+    return !!p && !p.isClosed && !this.pollHasVoted();
+  });
+  readonly pollClosed = computed(() => !!this.poll()?.isClosed);
 
   // ── Post follow (seeded from post.isFollowed, not FollowsStoreService) ──
   private readonly _postFollowed = signal<boolean | null>(null);
@@ -221,6 +240,8 @@ export class PostDetailPage implements OnInit {
     this.errorKind.set(null);
     this._postFollowed.set(null); // re-seed from fresh post.isWatchlisted
     this.authorProfile.set(null);
+    this.poll.set(null);
+    this.pollSelection.set(new Set());
     try {
       const [postRes, repliesRes, topicsRes] = await Promise.all([
         this.api.getPost(id),
@@ -234,6 +255,7 @@ export class PostDetailPage implements OnInit {
       }
       if (postRes.ok) {
         this.post.set(postRes.value);
+        this.poll.set(postRes.value.poll ?? null);
       } else {
         this.errorKind.set(postRes.error.kind);
       }
@@ -310,6 +332,75 @@ export class PostDetailPage implements OnInit {
       this.toast.error('errors.' + res.error.kind);
     }
   }
+
+  // ── Poll voting ───────────────────────────────────────────────────────────
+  isPollOptionSelected(optionId: string): boolean {
+    if (this.pollHasVoted()) {
+      return this.poll()?.myVotedOptionIds?.includes(optionId) ?? false;
+    }
+    return this.pollSelection().has(optionId);
+  }
+
+  /** Single-choice: votes immediately. Multi-choice: toggles the staged selection. */
+  onPollOptionClick(optionId: string): void {
+    const p = this.poll();
+    if (!p || !this.pollCanVote() || this.pollVoting()) return;
+    if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
+    if (p.allowMultiple) {
+      this.pollSelection.update((s) => {
+        const next = new Set(s);
+        next.has(optionId) ? next.delete(optionId) : next.add(optionId);
+        return next;
+      });
+    } else {
+      void this.castPollVote([optionId]);
+    }
+  }
+
+  /** Submit the staged options for a multi-choice poll. */
+  submitPollVote(): void {
+    if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
+    const ids = Array.from(this.pollSelection());
+    if (ids.length === 0) return;
+    void this.castPollVote(ids);
+  }
+
+  private async castPollVote(optionIds: string[]): Promise<void> {
+    const p = this.poll();
+    if (!p || this.pollVoting()) return;
+    this.pollVoting.set(true);
+    const res = await this.api.votePoll(p.pollId, optionIds);
+    if (!res.ok) {
+      this.pollVoting.set(false);
+      this.toast.error('errors.' + res.error.kind);
+      return;
+    }
+    // Record the user's choice locally, then refresh counts from the server.
+    this.poll.update((cur) => (cur ? { ...cur, myVotedOptionIds: optionIds } : cur));
+    const fresh = await this.api.getPollResults(p.pollId);
+    this.pollVoting.set(false);
+    if (fresh.ok) {
+      const r = fresh.value;
+      this.poll.update((cur) =>
+        cur
+          ? {
+              ...cur,
+              isClosed: r.isClosed,
+              allowMultiple: r.allowMultiple,
+              resultsVisible: r.resultsVisible,
+              totalVotes: r.totalVotes,
+              options: r.options ?? cur.options,
+            }
+          : cur,
+      );
+    }
+  }
+
+  pollDeadlineDate(): string | null {
+    return this.poll()?.deadline ?? null;
+  }
+
+  trackPollOption = (_: number, opt: PollOptionResult): string => opt.id;
 
   retry(): void {
     const id = this.route.snapshot.paramMap.get('id');

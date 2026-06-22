@@ -542,6 +542,135 @@ $layout-gap:   32px;
   padding-inline-end: 24px;
 }
 
+/* ─── Poll ───────────────────────────────────────────────────── */
+.cce-post-detail__poll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Vote view: selectable option */
+.cce-post-detail__poll-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 1px solid $border;
+  background: $white;
+  color: $text-body;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.13s, background-color 0.13s;
+
+  &:hover:not(:disabled) { border-color: $blue; background: $blue-light; }
+  &:disabled { opacity: 0.6; cursor: default; }
+
+  &--selected {
+    border-color: $blue;
+    background: $blue-light;
+    color: $blue-dark;
+  }
+}
+
+.cce-post-detail__poll-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 1.5px solid $border;
+  border-radius: 50%;
+  color: $white;
+
+  &--multi { border-radius: 4px; }
+
+  &--on {
+    border-color: $blue;
+    background: $blue;
+  }
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+}
+
+/* Results view: filled bar + label + percentage */
+.cce-post-detail__poll-result {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 1px solid $border;
+  overflow: hidden;
+
+  &--mine { border-color: $blue; }
+}
+
+.cce-post-detail__poll-result-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: $blue-light;
+  z-index: 0;
+  transition: width 0.3s ease;
+}
+
+.cce-post-detail__poll-result-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  color: $text-dark;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: $blue; flex-shrink: 0; }
+}
+
+.cce-post-detail__poll-result-pct {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text-dark;
+  flex-shrink: 0;
+}
+
+.cce-post-detail__poll-submit {
+  align-self: flex-start;
+  height: 44px;
+  padding: 0 24px;
+  border: none;
+  background: $blue;
+  color: $white;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.13s;
+
+  &:hover:not(:disabled) { background: $blue-dark; }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.cce-post-detail__poll-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: $text-muted;
+}
+
+.cce-post-detail__poll-meta-sep { color: $border; }
+
 /* Horizontal divider inside the post card */
 .cce-post-detail__divider {
   border: none;

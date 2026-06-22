@@ -28,7 +28,7 @@
   <button
     type="button"
     class="cpd__btn cpd__btn--submit"
-    [disabled]="formRef().form.invalid || formRef().submitting()"
+    [disabled]="!formRef().canSubmit() || formRef().submitting()"
     (click)="formRef().triggerSubmit()"
   >
     @if (formRef().submitting()) {

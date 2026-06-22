@@ -2031,20 +2031,44 @@
     },
     "compose": {
       "title": "Compose new post",
-      "typeLabel": "Post type",
-      "topicLabel": "Topic",
+      "typeLabel": "Post category",
+      "topicLabel": "Post topic",
       "selectTopic": "Select a topic",
       "titleLabel": "Post title",
-      "content": "Content",
+      "content": "Post content",
       "locale": "Post language",
       "isAnswerable": "Allow replies to be marked as accepted answer",
-      "submit": "Post",
+      "attachmentsLabel": "Attachments",
+      "attachmentAdd": "Add attachment",
+      "attachmentHint": "Drag the file here or pick from your device",
+      "attachmentFormats": "Allowed formats: JPG, PNG, PDF, DOCX — max size 3MB",
+      "attachmentUploaded": "Uploaded",
+      "attachmentDelete": "Delete",
+      "attachmentUploading": "Uploading…",
+      "attachmentTooLarge": "File exceeds the 3MB limit.",
+      "attachmentBadType": "Unsupported file type.",
+      "pollOptionsLabel": "Poll options",
+      "pollOptionPlaceholder": "Option {{n}}",
+      "pollAddOption": "Add option",
+      "pollRemoveOption": "Remove option",
+      "pollDeadline": "Closing date",
+      "pollAllowMultiple": "Allow multiple choices",
+      "pollAnonymous": "Anonymous voting",
+      "pollShowResults": "Show results before closing",
+      "submit": "Publish",
       "toast": "Post created."
     },
     "reply": {
       "placeholder": "Write a reply…",
       "submit": "Reply",
       "toast": "Reply posted."
+    },
+    "poll": {
+      "vote": "Vote",
+      "totalVotes": "{{count}} votes",
+      "closed": "Voting closed",
+      "closesOn": "Closes",
+      "anonymous": "Anonymous poll"
     },
     "rate": {
       "toast": "Rated."

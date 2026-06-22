@@ -2030,14 +2030,31 @@
       "replies": "لا توجد ردود بعد."
     },
     "compose": {
-      "title": "كتابة منشور جديد",
-      "typeLabel": "نوع المنشور",
-      "topicLabel": "الموضوع",
+      "title": "إنشاء منشور جديد",
+      "typeLabel": "فئة المنشور",
+      "topicLabel": "موضوع المنشور",
       "selectTopic": "اختر موضوعاً",
       "titleLabel": "عنوان المنشور",
-      "content": "المحتوى",
+      "content": "محتوى المنشور",
       "locale": "لغة المنشور",
       "isAnswerable": "السماح بتحديد الردود كإجابة مقبولة",
+      "attachmentsLabel": "المرفقات",
+      "attachmentAdd": "إضافة مرفق",
+      "attachmentHint": "اسحب الملف هنا أو اختر من جهازك",
+      "attachmentFormats": "الصيغ المسموح بها: JPG, PNG, PDF, DOCX — الحجم الأقصى 3MB",
+      "attachmentUploaded": "تم الرفع",
+      "attachmentDelete": "حذف",
+      "attachmentUploading": "جارٍ الرفع…",
+      "attachmentTooLarge": "حجم الملف يتجاوز الحد الأقصى 3MB.",
+      "attachmentBadType": "نوع الملف غير مدعوم.",
+      "pollOptionsLabel": "خيارات التصويت",
+      "pollOptionPlaceholder": "الخيار {{n}}",
+      "pollAddOption": "إضافة خيار",
+      "pollRemoveOption": "حذف الخيار",
+      "pollDeadline": "موعد الإغلاق",
+      "pollAllowMultiple": "السماح باختيار أكثر من إجابة",
+      "pollAnonymous": "تصويت مجهول",
+      "pollShowResults": "إظهار النتائج قبل الإغلاق",
       "submit": "نشر",
       "toast": "تم إنشاء المنشور."
     },
@@ -2045,6 +2062,13 @@
       "placeholder": "اكتب ردًا…",
       "submit": "رد",
       "toast": "تم نشر الرد."
+    },
+    "poll": {
+      "vote": "تصويت",
+      "totalVotes": "{{count}} صوت",
+      "closed": "انتهى التصويت",
+      "closesOn": "ينتهي في",
+      "anonymous": "تصويت مجهول"
     },
     "rate": {
       "toast": "تم التقييم."

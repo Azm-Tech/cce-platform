@@ -112,6 +112,22 @@ export interface PublicPost {
   /** Whether the current user follows this post (post detail endpoint). */
   isFollowed: boolean;
   voteStatus: number;
+  /** Inline poll for `type === 'Poll'` posts — rendered when the API includes it. */
+  poll?: PostPoll | null;
+}
+
+/** Poll embedded in a poll post's detail response. */
+export interface PostPoll {
+  pollId: string;
+  deadline: string | null;
+  isClosed: boolean;
+  allowMultiple: boolean;
+  isAnonymous: boolean;
+  resultsVisible: boolean;
+  totalVotes: number;
+  /** Option ids the current user has already voted for. */
+  myVotedOptionIds: string[] | null;
+  options: PollOptionResult[] | null;
 }
 
 // ── Reply ─────────────────────────────────────────────────────────────────────

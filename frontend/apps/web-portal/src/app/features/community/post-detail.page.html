@@ -269,6 +269,78 @@
             }
           }
 
+          <!-- ── Poll (type === 'Poll') ───────────────────────── -->
+          @if (poll(); as pl) {
+            <div class="cce-post-detail__poll">
+              @for (opt of pl.options ?? []; track trackPollOption($index, opt)) {
+                @if (pollShowResults()) {
+                  <!-- Results view: bar + percentage + count -->
+                  <div
+                    class="cce-post-detail__poll-result"
+                    [class.cce-post-detail__poll-result--mine]="isPollOptionSelected(opt.id)"
+                  >
+                    <div class="cce-post-detail__poll-result-bar" [style.width.%]="opt.percentage"></div>
+                    <span class="cce-post-detail__poll-result-label">
+                      @if (isPollOptionSelected(opt.id)) {
+                        <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+                      }
+                      {{ opt.label }}
+                    </span>
+                    <span class="cce-post-detail__poll-result-pct">{{ opt.percentage }}%</span>
+                  </div>
+                } @else {
+                  <!-- Vote view: selectable option -->
+                  <button
+                    type="button"
+                    class="cce-post-detail__poll-option"
+                    [class.cce-post-detail__poll-option--selected]="isPollOptionSelected(opt.id)"
+                    [disabled]="pollVoting()"
+                    (click)="onPollOptionClick(opt.id)"
+                  >
+                    <span
+                      class="cce-post-detail__poll-marker"
+                      [class.cce-post-detail__poll-marker--multi]="pl.allowMultiple"
+                      [class.cce-post-detail__poll-marker--on]="isPollOptionSelected(opt.id)"
+                    >
+                      @if (isPollOptionSelected(opt.id)) {
+                        <mat-icon svgIcon="check" aria-hidden="true"></mat-icon>
+                      }
+                    </span>
+                    {{ opt.label }}
+                  </button>
+                }
+              }
+
+              <!-- Multi-choice submit -->
+              @if (pollCanVote() && pl.allowMultiple) {
+                <button
+                  type="button"
+                  class="cce-post-detail__poll-submit"
+                  [disabled]="pollSelection().size === 0 || pollVoting()"
+                  (click)="submitPollVote()"
+                >
+                  {{ 'community.poll.vote' | transloco }}
+                </button>
+              }
+
+              <!-- Meta: total votes · status · anonymous -->
+              <div class="cce-post-detail__poll-meta">
+                <span>{{ 'community.poll.totalVotes' | transloco:{ count: pl.totalVotes } }}</span>
+                @if (pl.isClosed) {
+                  <span class="cce-post-detail__poll-meta-sep" aria-hidden="true">·</span>
+                  <span>{{ 'community.poll.closed' | transloco }}</span>
+                } @else if (pl.deadline) {
+                  <span class="cce-post-detail__poll-meta-sep" aria-hidden="true">·</span>
+                  <span>{{ 'community.poll.closesOn' | transloco }} {{ pl.deadline | date:'short' }}</span>
+                }
+                @if (pl.isAnonymous) {
+                  <span class="cce-post-detail__poll-meta-sep" aria-hidden="true">·</span>
+                  <span>{{ 'community.poll.anonymous' | transloco }}</span>
+                }
+              </div>
+            </div>
+          }
+
           <hr class="cce-post-detail__divider" aria-hidden="true" />
 
           <!-- Footer (RTL): actions at inline-start (right) | timestamp at inline-end (left).

@@ -7,28 +7,11 @@
 
 <form [formGroup]="form" class="cpf__form">
 
-  <!-- Post type selector -->
-  <div class="cpf__field">
-    <span class="cpf__label">{{ 'community.compose.typeLabel' | transloco }}</span>
-    <div class="cpf__type-row" role="group">
-      @for (opt of typeOptions; track opt.value) {
-        <button
-          type="button"
-          class="cpf__type-btn"
-          [class.cpf__type-btn--active]="form.controls.type.value === opt.value"
-          (click)="setType(opt.value)"
-        >
-          <mat-icon [svgIcon]="opt.icon" aria-hidden="true"></mat-icon>
-          {{ opt.labelKey | transloco }}
-        </button>
-      }
-    </div>
-  </div>
-
   <!-- Topic -->
   <div class="cpf__field">
     <label class="cpf__label" for="cpf-topic">
       {{ 'community.compose.topicLabel' | transloco }}
+      <span class="cpf__req" aria-hidden="true">*</span>
     </label>
     <mat-form-field appearance="outline" class="cpf__mat-field">
       <mat-select formControlName="topicId" id="cpf-topic">
@@ -42,10 +25,26 @@
     </mat-form-field>
   </div>
 
+  <!-- Post type / category -->
+  <div class="cpf__field">
+    <label class="cpf__label" for="cpf-type">
+      {{ 'community.compose.typeLabel' | transloco }}
+      <span class="cpf__req" aria-hidden="true">*</span>
+    </label>
+    <mat-form-field appearance="outline" class="cpf__mat-field">
+      <mat-select formControlName="type" id="cpf-type">
+        @for (opt of typeOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.labelKey | transloco }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
   <!-- Title -->
   <div class="cpf__field">
     <label class="cpf__label" for="cpf-title">
       {{ 'community.compose.titleLabel' | transloco }}
+      <span class="cpf__req" aria-hidden="true">*</span>
     </label>
     <mat-form-field appearance="outline" class="cpf__mat-field">
       <input
@@ -63,6 +62,7 @@
   <div class="cpf__field">
     <label class="cpf__label" for="cpf-content">
       {{ 'community.compose.content' | transloco }}
+      <span class="cpf__req" aria-hidden="true">*</span>
     </label>
     <mat-form-field appearance="outline" class="cpf__mat-field">
       <textarea
@@ -78,17 +78,145 @@
   </div>
 
   <!-- Answerable toggle (question type only) -->
-  @if (form.controls.type.value === 1) {
+  @if (isQuestion) {
     <div class="cpf__field cpf__field--row">
       <label class="cpf__answerable-label">
         <input
           type="checkbox"
-          class="cpf__answerable-check"
+          class="cpf__check"
           formControlName="isAnswerable"
         />
         {{ 'community.compose.isAnswerable' | transloco }}
       </label>
     </div>
   }
+
+  <!-- Poll builder (poll type only) -->
+  @if (isPoll) {
+    <div class="cpf__poll">
+      <div class="cpf__field">
+        <span class="cpf__label">
+          {{ 'community.compose.pollOptionsLabel' | transloco }}
+          <span class="cpf__req" aria-hidden="true">*</span>
+        </span>
+        @for (opt of pollOptions(); track $index) {
+          <div class="cpf__poll-option">
+            <input
+              type="text"
+              class="cpf__poll-input"
+              [value]="opt"
+              [attr.placeholder]="('community.compose.pollOptionPlaceholder' | transloco:{ n: $index + 1 })"
+              [dir]="postLocale() === 'ar' ? 'rtl' : 'ltr'"
+              (input)="setPollOption($index, $event)"
+            />
+            @if (pollOptions().length > 2) {
+              <button
+                type="button"
+                class="cpf__poll-remove"
+                [attr.aria-label]="'community.compose.pollRemoveOption' | transloco"
+                (click)="removePollOption($index)"
+              >
+                <mat-icon svgIcon="trash-2" aria-hidden="true"></mat-icon>
+              </button>
+            }
+          </div>
+        }
+        <button type="button" class="cpf__poll-add" (click)="addPollOption()">
+          <mat-icon svgIcon="plus" aria-hidden="true"></mat-icon>
+          {{ 'community.compose.pollAddOption' | transloco }}
+        </button>
+      </div>
+
+      <div class="cpf__field">
+        <label class="cpf__label" for="cpf-deadline">
+          {{ 'community.compose.pollDeadline' | transloco }}
+          <span class="cpf__req" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="datetime-local"
+          id="cpf-deadline"
+          class="cpf__poll-input"
+          [value]="pollDeadline()"
+          (input)="setPollDeadline($event)"
+        />
+      </div>
+
+      <div class="cpf__poll-flags">
+        <label class="cpf__answerable-label">
+          <input type="checkbox" class="cpf__check" [checked]="pollAllowMultiple()" (change)="togglePollFlag('allowMultiple', $event)" />
+          {{ 'community.compose.pollAllowMultiple' | transloco }}
+        </label>
+        <label class="cpf__answerable-label">
+          <input type="checkbox" class="cpf__check" [checked]="pollAnonymous()" (change)="togglePollFlag('anonymous', $event)" />
+          {{ 'community.compose.pollAnonymous' | transloco }}
+        </label>
+        <label class="cpf__answerable-label">
+          <input type="checkbox" class="cpf__check" [checked]="pollShowResults()" (change)="togglePollFlag('showResults', $event)" />
+          {{ 'community.compose.pollShowResults' | transloco }}
+        </label>
+      </div>
+    </div>
+  }
+
+  <!-- Attachments (optional, any type) -->
+  <div class="cpf__field">
+    <span class="cpf__label">{{ 'community.compose.attachmentsLabel' | transloco }}</span>
+
+    <button
+      type="button"
+      class="cpf__dropzone"
+      [class.cpf__dropzone--over]="dragOver()"
+      (click)="fileInput.click()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      <span class="cpf__dropzone-cta">
+        <mat-icon svgIcon="upload" aria-hidden="true"></mat-icon>
+        {{ 'community.compose.attachmentAdd' | transloco }}
+      </span>
+      <span class="cpf__dropzone-hint">{{ 'community.compose.attachmentHint' | transloco }}</span>
+      <span class="cpf__dropzone-formats">{{ 'community.compose.attachmentFormats' | transloco }}</span>
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      hidden
+      multiple
+      accept="image/jpeg,image/png,application/pdf,.doc,.docx"
+      (change)="onFilesPicked($event)"
+    />
+
+    @if (attachmentError(); as err) {
+      <span class="cpf__attachment-error">{{ err | transloco }}</span>
+    }
+
+    @if (uploading()) {
+      <span class="cpf__attachment-uploading">{{ 'community.compose.attachmentUploading' | transloco }}</span>
+    }
+
+    @for (att of attachments(); track att.assetFileId) {
+      <div class="cpf__attachment">
+        <span class="cpf__attachment-icon" aria-hidden="true">
+          <mat-icon [svgIcon]="attachmentIcon(att.kind)"></mat-icon>
+        </span>
+        <span class="cpf__attachment-info">
+          <span class="cpf__attachment-name" [title]="att.fileName">{{ att.fileName }}</span>
+          <span class="cpf__attachment-size">{{ formatFileSize(att.sizeBytes) }}</span>
+        </span>
+        <span class="cpf__attachment-badge">{{ 'community.compose.attachmentUploaded' | transloco }}</span>
+        <button
+          type="button"
+          class="cpf__attachment-delete"
+          [attr.aria-label]="'community.compose.attachmentDelete' | transloco"
+          (click)="removeAttachment(att.assetFileId)"
+        >
+          <mat-icon svgIcon="trash-2" aria-hidden="true"></mat-icon>
+          {{ 'community.compose.attachmentDelete' | transloco }}
+        </button>
+      </div>
+    }
+  </div>
 
 </form>
