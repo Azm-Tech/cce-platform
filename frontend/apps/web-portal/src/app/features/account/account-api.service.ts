@@ -1,8 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
+import { SUPPRESS_ERROR_TOAST, toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   EvaluationPayload,
   ExpertRequestStatus,
@@ -44,10 +44,12 @@ export class AccountApiService {
    */
   async getExpertStatus(): Promise<Result<ExpertRequestStatus | null>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<{ data: ExpertRequestStatus }>('/api/me/expert-status').pipe(map((res) => res.data)),
+      const res = await firstValueFrom(
+        this.http.get<{ data: ExpertRequestStatus }>('/api/me/expert-status', {
+          context: new HttpContext().set(SUPPRESS_ERROR_TOAST, [404]),
+        }),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data ?? null };
     } catch (err) {
       const error = err as HttpErrorResponse;
       if (error.status === 404) return { ok: true, value: null };

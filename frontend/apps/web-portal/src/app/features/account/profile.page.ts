@@ -154,7 +154,7 @@ export class ProfilePage implements OnInit {
     if (profileRes.ok) {
       this.profile.set(profileRes.value);
       if (
-        profileRes.value.interests.length === 0 &&
+        (profileRes.value.interests?.length ?? 0) === 0 &&
         !localStorage.getItem('cce_prefs_shown')
       ) {
         this.openPreferences();

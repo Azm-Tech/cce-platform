@@ -118,22 +118,6 @@
               {{ 'account.profile.editButton' | transloco }}
             </button>
 
-            @if (showExpertCta()) {
-              <a
-                mat-stroked-button
-                color="primary"
-                routerLink="/me/expert-request"
-                class="cce-profile__sidebar-expert-btn"
-              >
-                <mat-icon>workspace_premium</mat-icon>
-                @if (expertBadgeStatus() === 'Rejected') {
-                  {{ 'account.profile.expertCta.reapplyButton' | transloco }}
-                } @else {
-                  {{ 'account.profile.expertCta.button' | transloco }}
-                }
-              </a>
-            }
-
           </div>
         </aside>
 
@@ -243,16 +227,17 @@
               </h2>
 
               <div class="cce-profile__expert-status-row">
-                <span class="cce-profile__expert-badge cce-profile__expert-badge--{{ es.status.toLowerCase() }}">
-                  <mat-icon>
-                    @switch (es.status) {
-                      @case ('Pending')  { hourglass_top }
-                      @case ('Approved') { verified }
-                      @case ('Rejected') { cancel }
-                    }
-                  </mat-icon>
-                  {{ ('account.profile.expertStatus.' + es.status) | transloco }}
-                </span>
+                @if (es.status === 'Approved') {
+                  <span class="cce-profile__expert-badge cce-profile__expert-badge--approved">
+                    <mat-icon>verified</mat-icon>
+                    {{ 'account.profile.expertStatus.Approved' | transloco }}
+                  </span>
+                } @else {
+                  <span class="cce-profile__expert-badge cce-profile__expert-badge--{{ es.status.toLowerCase() }}">
+                    <mat-icon>{{ es.status === 'Pending' ? 'hourglass_top' : 'cancel' }}</mat-icon>
+                    {{ ('account.profile.expertStatus.' + es.status) | transloco }}
+                  </span>
+                }
                 <a mat-button routerLink="/me/expert-request" class="cce-profile__expert-details-link">
                   {{ 'account.profile.expertRequest.viewDetails' | transloco }}
                   <mat-icon>chevron_right</mat-icon>
