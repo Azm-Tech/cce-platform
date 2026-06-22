@@ -119,7 +119,7 @@ $layout-gap:   32px;
 .cce-post-detail__sidebar {
   position: sticky;
   top: 0;
-  padding-block: 32px;
+  padding-block: 24px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -148,15 +148,40 @@ $layout-gap:   32px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.cce-post-detail__sb-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Profile group: avatar + identity, 12px apart (card-level gap stays 24px) */
+.cce-post-detail__sb-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
 .cce-post-detail__sb-author {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   width: 100%;
   text-align: center;
+}
+
+.cce-post-detail__sb-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
 }
 
 .cce-post-detail__sb-name {
@@ -184,19 +209,19 @@ $layout-gap:   32px;
 }
 
 .cce-post-detail__sb-job-title {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;   // 14px Body S
   font-weight: 400;
-  color: $text-body;
-  line-height: 1.4;
+  color: $text-muted;
+  line-height: 1.4286;   // 20px
   text-align: center;
   width: 100%;
 }
 
 .cce-post-detail__sb-org {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;   // 14px Body S
   font-weight: 400;
   color: $text-muted;
-  line-height: 1.3;
+  line-height: 1.4286;   // 20px
   text-align: center;
   width: 100%;
 }
@@ -336,17 +361,24 @@ $layout-gap:   32px;
   animation: cce-shimmer 1.6s linear infinite;
 }
 
+/* ─── Top bar (back row above the grid) ─────────────────────── */
+.cce-post-detail__topbar {
+  display: flex;
+  justify-content: flex-start;  /* inline-start = right in RTL */
+  padding: 32px 80px 0;
+}
+
 /* ─── Main column ───────────────────────────────────────────── */
 .cce-post-detail__main {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding-top: 32px;
+  padding-top: 24px;
   padding-bottom: 80px;
 }
 
-/* Back: full-width flex row; icon-box at inline-start (right in RTL), plain label follows */
+/* Back: flex row; icon-box at inline-start (right in RTL), plain label follows */
 .cce-post-detail__back-btn {
   display: flex;
   align-items: center;
@@ -427,14 +459,13 @@ $layout-gap:   32px;
   }
 }
 
-/* Post header row: chips at inline-start (right in RTL) */
+/* Post header row: chips at inline-start (right in RTL), follow-post at inline-end (left) */
 .cce-post-detail__post-header {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .cce-post-detail__chips {
@@ -631,6 +662,34 @@ $layout-gap:   32px;
   &:hover { border-color: $blue; color: $blue; }
 }
 
+/* Follow-post button: bordered icon box; fills solid blue when followed.
+   Lives in the post header at inline-end (left in RTL). */
+.cce-post-detail__follow-post-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 46px;
+  width: 46px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $text-body;
+  cursor: pointer;
+  padding: 10px 12px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+  &:hover { border-color: $blue; color: $blue; }
+
+  &--active {
+    border-color: $blue;
+    background: $blue;
+    color: $white;
+
+    &:hover { border-color: $blue-dark; background: $blue-dark; color: $white; }
+  }
+}
+
 /* Vote widget: downvote | score | upvote */
 .cce-post-detail__vote {
   height: 46px;
@@ -732,7 +791,7 @@ $layout-gap:   32px;
   gap: 8px;
 
   mat-icon {
-    color: $text-muted;
+    color: $blue;
     font-size: 24px;
     width: 24px;
     height: 24px;
@@ -796,6 +855,8 @@ $layout-gap:   32px;
 }
 
 @media (max-width: 900px) {
+  .cce-post-detail__topbar { padding: 24px 24px 0; }
+
   .cce-post-detail__layout {
     grid-template-columns: 1fr;
     padding: 0 24px;
@@ -827,6 +888,7 @@ $layout-gap:   32px;
 }
 
 @media (max-width: 540px) {
+  .cce-post-detail__topbar { padding: 16px 16px 0; }
   .cce-post-detail__layout { padding: 0 16px; }
   .cce-post-detail__post { padding: 16px; }
   .cce-post-detail__replies-card { padding: 16px; }

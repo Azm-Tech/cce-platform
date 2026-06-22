@@ -5,6 +5,7 @@ import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   CommunityDto,
   CommunityRole,
+  CommunityTopicSummary,
   CommunityUserProfile,
   CreatePostPayload,
   CreateReplyPayload,
@@ -111,6 +112,26 @@ export class CommunityApiService {
       );
       return unwrap<PublicTopic[]>(res) ?? [];
     });
+  }
+
+  /**
+   * GET /api/community/topics — community topics with post counts (paged).
+   * Used by the profile "followed topics" tab; follow state is layered on
+   * client-side via the FollowsStoreService.
+   */
+  async listCommunityTopics(
+    opts: { page?: number; pageSize?: number } = {},
+  ): Promise<Result<PagedResult<CommunityTopicSummary>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<CommunityTopicSummary>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<CommunityTopicSummary> }>('/api/community/topics', { params }),
+        ),
+      ),
+    );
   }
 
   async getTopicBySlug(slug: string): Promise<Result<PublicTopic>> {
@@ -227,7 +248,7 @@ export class CommunityApiService {
   async followPost(postId: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(
-        this.http.put(`/api/me/follows/posts/${encodeURIComponent(postId)}`, {}),
+        this.http.put(`/api/me/follows/posts/${encodeURIComponent(postId)}`, { status: 1 }),
       );
     });
   }
@@ -235,7 +256,7 @@ export class CommunityApiService {
   async unfollowPost(postId: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(
-        this.http.delete(`/api/me/follows/posts/${encodeURIComponent(postId)}`),
+        this.http.put(`/api/me/follows/posts/${encodeURIComponent(postId)}`, { status: 0 }),
       );
     });
   }

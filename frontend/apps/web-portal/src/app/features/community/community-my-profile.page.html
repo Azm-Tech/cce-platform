@@ -1,5 +1,13 @@
 <div class="cmp">
 
+  <!-- Back: bordered icon-box at inline-start, plain label follows -->
+  <a routerLink="/community" class="cmp__back-btn">
+    <span class="cmp__back-icon-box">
+      <mat-icon svgIcon="arrow-right" aria-hidden="true"></mat-icon>
+    </span>
+    <span class="cmp__back-label">{{ 'community.detail.backToCommunity' | transloco }}</span>
+  </a>
+
   <!-- ── Skeleton ──────────────────────────────────────────────────────────── -->
   @if (loading()) {
     <div class="cmp__card">
@@ -440,7 +448,13 @@
 
     <!-- ── TAB: Followed Topics ─────────────────────────────────────────────── -->
     @if (activeTab() === 'followed-topics') {
-      <div class="cmp__topics-panel">
+      <div class="cmp__topics-card">
+
+        <!-- Notification notice -->
+        <div class="cmp__topics-notice">
+          <mat-icon svgIcon="bell" class="cmp__topics-notice-icon" aria-hidden="true"></mat-icon>
+          <span class="cmp__topics-notice-text">{{ 'community.profile.topicsNotice' | transloco }}</span>
+        </div>
 
         <!-- Error -->
         @if (topicsError(); as kind) {
@@ -453,26 +467,48 @@
 
         <!-- Skeleton -->
         @if (topicsLoading()) {
-          <div class="cmp__topics-grid">
-            @for (s of postSkeletons; track $index) {
-              <div class="cmp-skel cmp-skel--topic-card" aria-hidden="true"></div>
-            }
-          </div>
+          @for (s of postSkeletons; track $index) {
+            <div class="cmp__topic-row cmp__topic-row--skel" aria-hidden="true">
+              <div class="cmp-skel cmp-skel--name"></div>
+              <div class="cmp-skel cmp-skel--avatar-sm"></div>
+            </div>
+          }
         }
 
-        <!-- Topics grid -->
-        @if (!topicsLoading()) {
-          @if (followedTopics().length === 0 && !topicsError()) {
+        <!-- Topics list -->
+        @if (!topicsLoading() && !topicsError()) {
+          @if (communityTopics().length === 0) {
             <div class="cmp__empty">
               <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
-              <p>{{ 'community.profile.noPosts' | transloco }}</p>
+              <p>{{ 'community.profile.noTopics' | transloco }}</p>
             </div>
           } @else {
-            <div class="cmp__topics-grid">
-              @for (topic of followedTopics(); track topic.id) {
-                <cce-topic-card [topic]="topic" />
-              }
-            </div>
+            @for (topic of communityTopics(); track topic.id) {
+              <div class="cmp__topic-row">
+                <div class="cmp__topic-info">
+                  <span class="cmp__topic-name">{{ topicSummaryName(topic) }}</span>
+                  <span class="cmp__topic-count">
+                    {{ 'community.detail.postsCount' | transloco:{ count: topic.postsCount } }}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="cmp__topic-follow"
+                  [class.cmp__topic-follow--active]="topicFollow.isFollowing()"
+                  cceFollow
+                  [entityType]="'topic'"
+                  [entityId]="topic.id"
+                  #topicFollow="cceFollow"
+                  [attr.aria-pressed]="topicFollow.isFollowing()"
+                  [attr.aria-label]="(topicFollow.isFollowing() ? 'community.unfollowTopic' : 'community.followTopic') | transloco"
+                >
+                  <mat-icon svgIcon="{{ topicFollow.isFollowing() ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
+                  @if (!topicFollow.isFollowing()) {
+                    <span class="cmp__topic-follow-label">{{ 'community.followTopic' | transloco }}</span>
+                  }
+                </button>
+              </div>
+            }
           }
         }
 

@@ -1,5 +1,13 @@
 <div class="cup">
 
+  <!-- Back: bordered icon-box at inline-start, plain label follows -->
+  <a routerLink="/community" class="cup__back-btn">
+    <span class="cup__back-icon-box">
+      <mat-icon svgIcon="arrow-right" aria-hidden="true"></mat-icon>
+    </span>
+    <span class="cup__back-label">{{ 'community.detail.backToCommunity' | transloco }}</span>
+  </a>
+
   <!-- ── Skeleton ──────────────────────────────────────────────────────────── -->
   @if (loading()) {
     <div class="cup__card">

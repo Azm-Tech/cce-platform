@@ -50,6 +50,14 @@ export interface PublicTopic {
   orderIndex: number;
 }
 
+/** Lightweight topic shape from GET /api/community/topics (includes post counts). */
+export interface CommunityTopicSummary {
+  id: string;
+  nameAr: string | null;
+  nameEn: string | null;
+  postsCount: number;
+}
+
 // ── Post ──────────────────────────────────────────────────────────────────────
 export interface PostAttachment {
   id: string;
@@ -69,6 +77,9 @@ export interface PostAuthor {
   isExpert: boolean;
   postsCount: number;
   followerCount: number;
+  /** Optional profile details — rendered when the API includes them. */
+  jobTitle?: string | null;
+  organizationName?: string | null;
 }
 
 export interface PublicPost {
@@ -98,6 +109,8 @@ export interface PublicPost {
   topicNameEn: string | null;
   isExpert: boolean;
   isWatchlisted: boolean;
+  /** Whether the current user follows this post (post detail endpoint). */
+  isFollowed: boolean;
   voteStatus: number;
 }
 

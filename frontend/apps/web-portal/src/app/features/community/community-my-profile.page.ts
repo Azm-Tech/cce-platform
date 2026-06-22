@@ -6,19 +6,19 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
-import { FollowsApiService } from '../follows/follows-api.service';
+import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
 import { CommunityStateService } from './community-state.service';
 import { PostSummaryComponent } from './post-summary.component';
-import { TopicCardComponent } from './topic-card.component';
 import { ComposePostDialogComponent } from './compose-post-dialog.component';
-import type { CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
+import type { CommunityTopicSummary, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
 
 type FeedSort = 0 | 1 | 2;
 type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics';
@@ -26,14 +26,13 @@ type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics';
 @Component({
   selector: 'cce-community-my-profile-page',
   standalone: true,
-  imports: [MatIconModule, MatMenuModule, TranslocoModule, PostSummaryComponent, TopicCardComponent],
+  imports: [RouterLink, MatIconModule, MatMenuModule, TranslocoModule, FollowDirective, PostSummaryComponent],
   templateUrl: './community-my-profile.page.html',
   styleUrl: './community-my-profile.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommunityMyProfilePage implements OnInit {
   private readonly api = inject(CommunityApiService);
-  private readonly followsApi = inject(FollowsApiService);
   private readonly auth = inject(AuthService);
   private readonly communityState = inject(CommunityStateService);
   private readonly localeService = inject(LocaleService);
@@ -92,7 +91,9 @@ export class CommunityMyProfilePage implements OnInit {
   readonly feedPageNums = computed(() => this.buildPageNums(this.feedTotalPages(), this.feedPage()));
 
   // ── Followed Topics tab ───────────────────────────────────────────────────
-  readonly followedTopics = signal<PublicTopic[]>([]);
+  // Lists ALL community topics (with post counts); each row carries a follow
+  // toggle whose state comes from the FollowsStoreService via [cceFollow].
+  readonly communityTopics = signal<CommunityTopicSummary[]>([]);
   readonly topicsLoading = signal(false);
   readonly topicsError = signal<string | null>(null);
 
@@ -174,7 +175,7 @@ export class CommunityMyProfilePage implements OnInit {
     if (tab === 'followed-posts' && this.feedPosts().length === 0 && !this.feedLoading()) {
       void this.loadFollowedPosts();
     }
-    if (tab === 'followed-topics' && this.followedTopics().length === 0 && !this.topicsLoading()) {
+    if (tab === 'followed-topics' && this.communityTopics().length === 0 && !this.topicsLoading()) {
       void this.loadFollowedTopics();
     }
   }
@@ -275,16 +276,17 @@ export class CommunityMyProfilePage implements OnInit {
   async loadFollowedTopics(): Promise<void> {
     this.topicsLoading.set(true);
     this.topicsError.set(null);
-    const res = await this.followsApi.getMyFollows();
+    const res = await this.api.listCommunityTopics({ pageSize: 100 });
     this.topicsLoading.set(false);
     if (res.ok) {
-      const topicIds = new Set(res.value.topicIds);
-      this.followedTopics.set(
-        Array.from(this.topicsMap().values()).filter((t) => topicIds.has(t.id)),
-      );
+      this.communityTopics.set(res.value.items);
     } else {
       this.topicsError.set(res.error.kind);
     }
+  }
+
+  topicSummaryName(t: CommunityTopicSummary): string {
+    return (this.locale() === 'ar' ? t.nameAr ?? t.nameEn : t.nameEn ?? t.nameAr) ?? '';
   }
 
   // ── Shared helpers ────────────────────────────────────────────────────────

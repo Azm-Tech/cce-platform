@@ -47,66 +47,73 @@
 
   <!-- ─── Two-column layout ─────────────────────────────────── -->
   @if (post(); as p) {
+
+    <!-- Back row (above the grid): label + bordered arrow box, aligned to content start -->
+    <div class="cce-post-detail__topbar">
+      <a routerLink="/community" class="cce-post-detail__back-btn">
+        <span class="cce-post-detail__back-icon-box">
+          <mat-icon svgIcon="arrow-right" aria-hidden="true"></mat-icon>
+        </span>
+        <span class="cce-post-detail__back-label">{{ 'community.detail.backToCommunity' | transloco }}</span>
+      </a>
+    </div>
+
     <div class="cce-post-detail__layout">
 
       <!-- ── Sidebar (PHYSICAL LEFT — grid-column:1 forced by RTL override) ── -->
       <aside class="cce-post-detail__sidebar">
         <div class="cce-post-detail__sidebar-card">
 
-          <!-- Avatar -->
-          <div class="cce-post-detail__sb-avatar" aria-hidden="true">
-            {{ authorDisplayInitial() }}
-          </div>
+          <!-- Profile: avatar + identity grouped (gap 12) -->
+          <div class="cce-post-detail__sb-profile">
+            <div class="cce-post-detail__sb-avatar" aria-hidden="true">
+              @if (authorAvatarUrl()) {
+                <img [src]="authorAvatarUrl()" alt="" class="cce-post-detail__sb-avatar-img" />
+              } @else {
+                {{ authorDisplayInitial() }}
+              }
+            </div>
 
-          @if (profileLoading()) {
-            <div class="cce-post-detail__sb-skel-name"></div>
-            <div class="cce-post-detail__sb-skel-line"></div>
-            <div class="cce-post-detail__sb-skel-stats"></div>
-            <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
-            <div class="cce-post-detail__sb-skel-line cce-post-detail__sb-skel-line--short"></div>
-          } @else {
-            <!-- Expert badge + name + title + org -->
             <div class="cce-post-detail__sb-author">
+              <!-- Verified badge (RTL): label at start (right), green check at end (left) -->
               @if (authorIsExpert()) {
                 <span class="cce-post-detail__sb-expert">
-                  <mat-icon svgIcon="badge-check" class="cce-post-detail__sb-expert-icon" aria-hidden="true"></mat-icon>
                   {{ 'community.profile.expertBadge' | transloco }}
+                  <mat-icon svgIcon="badge-check" class="cce-post-detail__sb-expert-icon" aria-hidden="true"></mat-icon>
                 </span>
               }
-              <span class="cce-post-detail__sb-name">
-                {{ authorDisplayName() || ('community.detail.memberHandle' | transloco) }}
-              </span>
-              @if (authorJobTitle()) {
-                <span class="cce-post-detail__sb-job-title">{{ authorJobTitle() }}</span>
-              }
-              @if (authorOrganization()) {
-                <span class="cce-post-detail__sb-org">{{ authorOrganization() }}</span>
-              }
-            </div>
-
-            <!-- Stats: posts first (inline-start/right in RTL), followers second (inline-end/left in RTL) -->
-            <div class="cce-post-detail__sb-stats">
-              <div class="cce-post-detail__sb-stat cce-post-detail__sb-stat--first">
-                <span class="cce-post-detail__sb-stat-val">{{ authorProfile()?.postCount ?? 0 }}</span>
-                <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.posts' | transloco }}</span>
-              </div>
-              <div class="cce-post-detail__sb-stat">
-                <span class="cce-post-detail__sb-stat-val">{{ authorFollowerCount() }}</span>
-                <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.followers' | transloco }}</span>
+              <div class="cce-post-detail__sb-identity">
+                <span class="cce-post-detail__sb-name">
+                  {{ authorDisplayName() || ('community.detail.memberHandle' | transloco) }}
+                </span>
+                @if (authorJobTitle()) {
+                  <span class="cce-post-detail__sb-job-title">{{ authorJobTitle() }}</span>
+                }
+                @if (authorOrganization()) {
+                  <span class="cce-post-detail__sb-org">{{ authorOrganization() }}</span>
+                }
               </div>
             </div>
+          </div>
 
-            <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
+          <!-- Stats: posts first (inline-start/right in RTL), followers second (inline-end/left in RTL) -->
+          <div class="cce-post-detail__sb-stats">
+            <div class="cce-post-detail__sb-stat cce-post-detail__sb-stat--first">
+              <span class="cce-post-detail__sb-stat-val">{{ authorPostsCount() }}</span>
+              <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.posts' | transloco }}</span>
+            </div>
+            <div class="cce-post-detail__sb-stat">
+              <span class="cce-post-detail__sb-stat-val">{{ authorFollowerCount() }}</span>
+              <span class="cce-post-detail__sb-stat-lbl">{{ 'community.profile.followers' | transloco }}</span>
+            </div>
+          </div>
 
-            <!-- Profile link | follow -->
-            <div class="cce-post-detail__sb-bottom">
-              <a [routerLink]="isOwnPost() ? ['/community', 'me'] : ['/community', 'users', authorId()]" class="cce-post-detail__sb-profile-link">
-                <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
-                {{ (isOwnPost() ? 'community.detail.myProfile' : 'community.detail.fullProfile') | transloco }}
-              </a>
+          <hr class="cce-post-detail__sidebar-divider" aria-hidden="true" />
+
+          <!-- Bottom (RTL): follow at start (right), full-profile link at end (left) -->
+          <div class="cce-post-detail__sb-bottom">
               @if (!isOwnPost() && authorId()) {
                 <div class="cce-post-detail__sb-follow-wrap">
-                  <span class="cce-post-detail__sb-follow-lbl">{{ 'community.detail.followAuthor' | transloco }}</span>
                   @if (isAuthenticated()) {
                     <button
                       type="button"
@@ -130,24 +137,20 @@
                       <mat-icon svgIcon="bookmark" aria-hidden="true"></mat-icon>
                     </button>
                   }
+                  <span class="cce-post-detail__sb-follow-lbl">{{ 'community.detail.followAuthor' | transloco }}</span>
                 </div>
               }
+              <a [routerLink]="isOwnPost() ? ['/community', 'me'] : ['/community', 'users', authorId()]" class="cce-post-detail__sb-profile-link">
+                <span>{{ (isOwnPost() ? 'community.detail.myProfile' : 'community.detail.fullProfile') | transloco }}</span>
+                <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+              </a>
             </div>
-          }
 
         </div>
       </aside>
 
       <!-- ── Main content (PHYSICAL RIGHT — grid-column:2 forced by RTL override) ── -->
       <div class="cce-post-detail__main">
-
-        <!-- Back: bordered icon-box at inline-start, plain label follows -->
-        <a routerLink="/community" class="cce-post-detail__back-btn">
-          <span class="cce-post-detail__back-icon-box">
-            <mat-icon svgIcon="arrow-right" aria-hidden="true"></mat-icon>
-          </span>
-          <span class="cce-post-detail__back-label">{{ 'community.detail.backToCommunity' | transloco }}</span>
-        </a>
 
         @if (loading()) {
           <mat-progress-bar mode="indeterminate" class="cce-post-detail__progress" />
@@ -188,6 +191,18 @@
                 </span>
               }
             </div>
+
+            <!-- Follow-post: solid blue when followed, at inline-end (left in RTL) -->
+            <button
+              type="button"
+              class="cce-post-detail__follow-post-btn"
+              [class.cce-post-detail__follow-post-btn--active]="isPostFollowed()"
+              [attr.aria-pressed]="isPostFollowed()"
+              [attr.aria-label]="(isPostFollowed() ? 'community.unfollowPost' : 'community.followPost') | transloco"
+              (click)="isAuthenticated() ? togglePostFollow() : promptSignIn('community.authDialog.messageFollow')"
+            >
+              <mat-icon svgIcon="{{ isPostFollowed() ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
+            </button>
           </header>
 
           <!-- Title -->
@@ -256,23 +271,10 @@
 
           <hr class="cce-post-detail__divider" aria-hidden="true" />
 
-          <!-- Footer: timestamp (inline-start/right) | share + vote (inline-end/left) -->
+          <!-- Footer (RTL): actions at inline-start (right) | timestamp at inline-end (left).
+               Within actions, share sits to the left of the vote widget. -->
           <footer class="cce-post-detail__post-footer">
-            <time
-              class="cce-post-detail__timestamp"
-              [attr.datetime]="p.createdOn"
-              [title]="p.createdOn | date:'medium'"
-            >{{ timeAgo(p.createdOn) }}</time>
-
             <div class="cce-post-detail__post-actions">
-              <button
-                type="button"
-                class="cce-post-detail__share-btn"
-                [attr.aria-label]="'community.detail.actionShare' | transloco"
-                (click)="openShare()"
-              >
-                <mat-icon svgIcon="share-2" aria-hidden="true"></mat-icon>
-              </button>
               <div class="cce-post-detail__vote" dir="ltr">
                 <button
                   type="button"
@@ -295,10 +297,24 @@
                   [disabled]="voting()"
                   (click)="onVote(1)"
                 >
-                  <mat-icon svgIcon="arrow-big-up" aria-hidden="true"></mat-icon>
+                  <mat-icon svgIcon="{{ myVote() === 1 ? 'arrow-big-up-fill' : 'arrow-big-up' }}" aria-hidden="true"></mat-icon>
                 </button>
               </div>
+              <button
+                type="button"
+                class="cce-post-detail__share-btn"
+                [attr.aria-label]="'community.detail.actionShare' | transloco"
+                (click)="openShare()"
+              >
+                <mat-icon svgIcon="share-2" aria-hidden="true"></mat-icon>
+              </button>
             </div>
+
+            <time
+              class="cce-post-detail__timestamp"
+              [attr.datetime]="p.createdOn"
+              [title]="p.createdOn | date:'medium'"
+            >{{ timeAgo(p.createdOn) }}</time>
           </footer>
 
         </article>

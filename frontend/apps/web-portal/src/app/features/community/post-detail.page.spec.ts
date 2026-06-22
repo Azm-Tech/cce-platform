@@ -22,7 +22,7 @@ const POST: PublicPost = {
   answeredReplyId: null, attachmentIds: [],
   createdOn: '2026-04-29T12:00:00Z',
   topicNameAr: null, topicNameEn: null,
-  isWatchlisted: false, voteStatus: 0,
+  isWatchlisted: false, isFollowed: false, voteStatus: 0,
 };
 
 const R1: PublicPostReply = {

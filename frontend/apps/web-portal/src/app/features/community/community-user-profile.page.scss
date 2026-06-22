@@ -26,6 +26,45 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 0;
 }
 
+/* ── Back to community ──────────────────────────────────────────────────────── */
+.cup__back-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: $n-500;
+  margin-bottom: 20px;
+
+  &:hover .cup__back-icon-box { border-color: $p-500; color: $p-500; }
+  &:hover .cup__back-label { color: $p-500; }
+}
+
+.cup__back-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  width: 46px;
+  border: 1px solid $n-300;
+  color: $n-900;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+}
+
+.cup__back-label {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 2;
+  color: $n-500;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+/* Base glyph points → for RTL (Arabic default); mirror under LTR. */
+:host-context([dir="ltr"]) .cup__back-btn mat-icon { transform: scaleX(-1); }
+
 // The white profile card (header + stats only)
 .cup__card {
   background: var(--white);

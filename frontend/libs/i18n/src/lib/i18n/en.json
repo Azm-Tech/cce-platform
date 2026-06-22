@@ -2106,7 +2106,9 @@
       "followUser": "Follow",
       "followingUser": "Following",
       "searchPostsPlaceholder": "Search posts...",
-      "noPosts": "No posts yet"
+      "noPosts": "No posts yet",
+      "topicsNotice": "You'll be notified of new posts in the topics you follow.",
+      "noTopics": "No topics available yet."
     },
     "anonymousAuthor": "Anonymous",
     "share": "Share",

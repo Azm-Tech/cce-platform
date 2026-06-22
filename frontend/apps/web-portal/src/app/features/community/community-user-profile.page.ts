@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -26,7 +26,7 @@ type FeedSort = 0 | 1 | 2;
 @Component({
   selector: 'cce-community-user-profile-page',
   standalone: true,
-  imports: [FormsModule, MatIconModule, MatMenuModule, TranslocoModule, FollowDirective, PostSummaryComponent],
+  imports: [FormsModule, RouterLink, MatIconModule, MatMenuModule, TranslocoModule, FollowDirective, PostSummaryComponent],
   templateUrl: './community-user-profile.page.html',
   styleUrl: './community-user-profile.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

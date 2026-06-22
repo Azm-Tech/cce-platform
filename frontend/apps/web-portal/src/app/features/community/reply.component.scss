@@ -15,7 +15,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 12px;
+  gap: 16px;
   padding-block: 24px;
   border-bottom: 1px solid $n-200;
   font-family: $font;
@@ -32,8 +32,8 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   background: $p-100;
   border: 1px solid $p-50;
   color: $p-900;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 400;
   font-family: $font;
   display: flex;
   align-items: center;
@@ -45,6 +45,15 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 .cce-reply__body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;   /* upvote box hugs inline-end (left in RTL) */
+  gap: 20px;
+}
+
+/* Text block: badge + meta + content */
+.cce-reply__text {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -97,9 +106,10 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 .cce-reply__time {
-  font-size: 14px;
+  font-size: 16px;
   color: $n-500;
   font-family: $font;
+  line-height: 1.5;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -108,13 +118,15 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 .cce-reply__content {
   margin: 0;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: $n-600;
   word-wrap: break-word;
   font-family: $font;
+  width: 100%;
+  text-align: start;
 }
 
-/* Actions row: vote box + reply btn */
+/* Actions row: upvote box, hugged to inline-end (left in RTL) by the body */
 .cce-reply__actions {
   display: flex;
   align-items: center;

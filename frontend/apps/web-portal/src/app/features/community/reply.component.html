@@ -8,36 +8,39 @@
   <!-- Body — inline-end side (left in RTL) -->
   <div class="cce-reply__body">
 
-    @if (isAccepted()) {
-      <span class="cce-reply__accepted-badge">
-        <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
-        {{ 'community.detail.resolvedTag' | transloco }}
-      </span>
-    }
+    <!-- Text block: badge + meta + content (8px apart) -->
+    <div class="cce-reply__text">
+      @if (isAccepted()) {
+        <span class="cce-reply__accepted-badge">
+          <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+          {{ 'community.detail.resolvedTag' | transloco }}
+        </span>
+      }
 
-    <!-- Meta: author + expert badge + timestamp -->
-    <div class="cce-reply__meta">
-      <div class="cce-reply__author-row">
-        <span class="cce-reply__author-name">{{ displayName() }}</span>
-        @if (reply().isByExpert) {
-          <mat-icon
-            class="cce-reply__expert-icon"
-            svgIcon="badge-check"
-            aria-hidden="true"
-          ></mat-icon>
-        }
+      <!-- Meta (RTL): author + expert badge at start (right), timestamp at end (left) -->
+      <div class="cce-reply__meta">
+        <div class="cce-reply__author-row">
+          <span class="cce-reply__author-name">{{ displayName() }}</span>
+          @if (reply().isByExpert) {
+            <mat-icon
+              class="cce-reply__expert-icon"
+              svgIcon="badge-check"
+              aria-hidden="true"
+            ></mat-icon>
+          }
+        </div>
+        <time
+          class="cce-reply__time"
+          [attr.datetime]="reply().createdOn"
+          [title]="reply().createdOn | date:'medium'"
+        >{{ timeAgo(reply().createdOn) }}</time>
       </div>
-      <time
-        class="cce-reply__time"
-        [attr.datetime]="reply().createdOn"
-        [title]="reply().createdOn | date:'medium'"
-      >{{ timeAgo(reply().createdOn) }}</time>
+
+      <!-- Content -->
+      <p class="cce-reply__content" dir="auto">{{ reply().content }}</p>
     </div>
 
-    <!-- Content -->
-    <p class="cce-reply__content" dir="auto">{{ reply().content }}</p>
-
-    <!-- Actions: upvote widget + reply button + mark-answer -->
+    <!-- Actions: upvote widget (count + arrow) + mark-answer, at inline-end (left in RTL) -->
     <div class="cce-reply__actions">
       <div class="cce-reply__vote" dir="ltr">
         <span class="cce-reply__vote-score">{{ voteScore() }}</span>
@@ -50,7 +53,7 @@
           [disabled]="voting()"
           (click)="onVote()"
         >
-          <mat-icon svgIcon="arrow-big-up" aria-hidden="true"></mat-icon>
+          <mat-icon svgIcon="{{ myVote() === 1 ? 'arrow-big-up-fill' : 'arrow-big-up' }}" aria-hidden="true"></mat-icon>
         </button>
       </div>
 

@@ -64,16 +64,19 @@ export class PostDetailPage implements OnInit {
   readonly page = signal(1);
   readonly pageSize = signal(20);
   readonly loading = signal(false);
-  readonly profileLoading = signal(false);
   readonly errorKind = signal<string | null>(null);
+  /** Full author profile from GET /api/community/users/{id} — richer than
+   *  post.author (adds job title / organization). Loaded in the background. */
   readonly authorProfile = signal<CommunityUserProfile | null>(null);
   readonly topicsMap = signal<Map<string, PublicTopic>>(new Map());
   readonly myVote = signal<VoteDirection>(0);
   readonly voting = signal(false);
 
-  // ── Post follow (seeded from post.isWatchlisted, not FollowsStoreService) ──
+  // ── Post follow (seeded from post.isFollowed, not FollowsStoreService) ──
   private readonly _postFollowed = signal<boolean | null>(null);
-  readonly isPostFollowed = computed(() => this._postFollowed() ?? this.post()?.isWatchlisted ?? false);
+  readonly isPostFollowed = computed(
+    () => this._postFollowed() ?? this.post()?.isFollowed ?? this.post()?.isWatchlisted ?? false,
+  );
 
   readonly replySkeletons = Array.from({ length: 3 });
 
@@ -87,7 +90,13 @@ export class PostDetailPage implements OnInit {
    *  or the feed's flat `authorId` as a fallback. */
   readonly authorId = computed(() => this.post()?.author?.id ?? this.post()?.authorId ?? null);
   readonly authorIsExpert = computed(
-    () => this.post()?.author?.isExpert ?? this.authorProfile()?.isExpert ?? this.post()?.isExpert ?? false,
+    () => this.authorProfile()?.isExpert ?? this.post()?.author?.isExpert ?? this.post()?.isExpert ?? false,
+  );
+  readonly authorAvatarUrl = computed(
+    () => this.authorProfile()?.avatarUrl ?? this.post()?.author?.avatarUrl ?? null,
+  );
+  readonly authorPostsCount = computed(
+    () => this.authorProfile()?.postCount ?? this.post()?.author?.postsCount ?? 0,
   );
 
   readonly isOwnPost = computed(() => !!this.currentUserId() && this.currentUserId() === this.authorId());
@@ -101,14 +110,14 @@ export class PostDetailPage implements OnInit {
   });
 
   readonly authorDisplayName = computed(() => {
+    const prof = this.authorProfile();
+    if (prof && (prof.firstName || prof.lastName)) {
+      return [prof.firstName, prof.lastName].filter(Boolean).join(' ').trim();
+    }
     const p = this.post();
     if (!p) return '';
     if (p.author?.name?.trim()) return p.author.name.trim();
     if (p.authorName?.trim()) return p.authorName.trim();
-    const prof = this.authorProfile();
-    if (prof?.firstName || prof?.lastName) {
-      return [prof.firstName, prof.lastName].filter(Boolean).join(' ');
-    }
     return '';
   });
 
@@ -147,10 +156,15 @@ export class PostDetailPage implements OnInit {
     return [accepted, ...rs.filter((r) => r.id !== accepted.id)];
   });
 
-  readonly authorFollowerCount = computed(() => this.post()?.author?.followerCount ?? 0);
-
-  readonly authorJobTitle = computed(() => this.authorProfile()?.jobTitle ?? null);
-  readonly authorOrganization = computed(() => this.authorProfile()?.organizationName ?? null);
+  readonly authorFollowerCount = computed(
+    () => this.authorProfile()?.followerCount ?? this.post()?.author?.followerCount ?? 0,
+  );
+  readonly authorJobTitle = computed(
+    () => this.authorProfile()?.jobTitle ?? this.post()?.author?.jobTitle ?? null,
+  );
+  readonly authorOrganization = computed(
+    () => this.authorProfile()?.organizationName ?? this.post()?.author?.organizationName ?? null,
+  );
 
   @ViewChild('composer') composer?: ElementRef<HTMLElement>;
 
@@ -206,6 +220,7 @@ export class PostDetailPage implements OnInit {
     this.loading.set(true);
     this.errorKind.set(null);
     this._postFollowed.set(null); // re-seed from fresh post.isWatchlisted
+    this.authorProfile.set(null);
     try {
       const [postRes, repliesRes, topicsRes] = await Promise.all([
         this.api.getPost(id),
@@ -231,13 +246,14 @@ export class PostDetailPage implements OnInit {
     } finally {
       this.loading.set(false);
     }
-    // Load author profile in background — sidebar shows post.author data immediately
-    const p = this.post();
-    if (!p) return;
-    const authorId = p.author?.id ?? p.authorId;
-    if (!authorId) return;
-    const profileRes = await this.api.getCommunityUser(authorId);
-    if (profileRes.ok) this.authorProfile.set(profileRes.value);
+
+    // Enrich the sidebar with the full author profile (job title / org / counts).
+    // Loaded in the background — post.author already covers the immediate render.
+    const authorId = this.post()?.author?.id ?? this.post()?.authorId;
+    if (authorId) {
+      const profileRes = await this.api.getCommunityUser(authorId);
+      if (profileRes.ok) this.authorProfile.set(profileRes.value);
+    }
   }
 
   async onPage(e: PageEvent): Promise<void> {
