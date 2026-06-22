@@ -1,6 +1,7 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
 using CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
+using CCE.Application.Reports.Queries.GetUserPreferenceReport;
 using CCE.Application.Reports.Queries.GetUserRegistrationReport;
 using CCE.Domain;
 using MediatR;
@@ -167,6 +168,14 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_SatisfactionSurvey)
         .WithName("SatisfactionSurveyReportJson");
+
+        reports.MapGet("/user-preferences", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetUserPreferenceReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_UserPreferences)
+        .WithName("UserPreferenceReport");
 
         return app;
     }
