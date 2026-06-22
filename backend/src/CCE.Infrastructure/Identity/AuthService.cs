@@ -8,6 +8,7 @@ using CCE.Integration.AdminAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using IPermissionService = CCE.Application.Identity.Auth.Common.IPermissionService;
 
 namespace CCE.Infrastructure.Identity;
 
@@ -24,6 +25,7 @@ public sealed class AuthService : IAuthService
     private readonly INotificationGateway _gateway;
     private readonly IConfiguration _config;
     private readonly IAdminAuthGatewayClient _adGateway;
+    private readonly IPermissionService _permissions;
 
     public AuthService(
         UserManager<User> userManager,
@@ -35,7 +37,8 @@ public sealed class AuthService : IAuthService
         IOptions<LocalAuthOptions> options,
         INotificationGateway gateway,
         IConfiguration config,
-        IAdminAuthGatewayClient adGateway)
+        IAdminAuthGatewayClient adGateway,
+        IPermissionService permissions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -47,6 +50,7 @@ public sealed class AuthService : IAuthService
         _gateway = gateway;
         _config = config;
         _adGateway = adGateway;
+        _permissions = permissions;
     }
 
     public async Task<LoginResult> LoginAsync(string email, string password, LocalAuthApi api, string? ip, string? userAgent, CancellationToken ct)
@@ -117,7 +121,7 @@ public sealed class AuthService : IAuthService
         await _refreshTokens.AddAsync(replacement, ct).ConfigureAwait(false);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return await BuildDtoAsync(user, issued).ConfigureAwait(false);
+        return await BuildDtoAsync(user, issued, ct).ConfigureAwait(false);
     }
 
     public async Task LogoutAsync(string rawRefreshToken, string? ip, CancellationToken ct)
@@ -326,18 +330,24 @@ public sealed class AuthService : IAuthService
             _clock.UtcNow, issued.RefreshTokenExpiresAtUtc, ip, userAgent);
         await _refreshTokens.AddAsync(refreshToken, ct).ConfigureAwait(false);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return await BuildDtoAsync(user, issued).ConfigureAwait(false);
+        return await BuildDtoAsync(user, issued, ct).ConfigureAwait(false);
     }
 
-    private async Task<AuthTokenDto> BuildDtoAsync(User user, TokenIssueResult issued)
+    private async Task<AuthTokenDto> BuildDtoAsync(User user, TokenIssueResult issued, CancellationToken ct = default)
     {
-        var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+        var roles  = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+        var userClaims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false);
+        var claims = userClaims
+            .Where(c => c.Type == "permission")
+            .Select(c => c.Value)
+            .ToArray();
         return new AuthTokenDto(
             issued.AccessToken,
             issued.AccessTokenExpiresAtUtc,
             issued.RefreshToken,
             issued.RefreshTokenExpiresAtUtc,
             "Bearer",
-            new AuthUserDto(user.Id, user.Email ?? string.Empty, user.FirstName, user.LastName, roles.ToArray()));
+            new AuthUserDto(user.Id, user.Email ?? string.Empty, user.FirstName, user.LastName,
+                roles.ToArray(), claims));
     }
 }

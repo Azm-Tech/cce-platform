@@ -137,7 +137,10 @@ public static class DependencyInjection
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
         services.AddScoped<ILocalTokenService, LocalTokenService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<CCE.Application.Identity.Auth.Common.IPermissionService, PermissionService>();
+        services.AddScoped<CCE.Application.Identity.Permissions.IRolePermissionRepository, RolePermissionRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddMemoryCache();
 
         // Sub-11 Phase 01 — Microsoft Graph user-create + CCE-side persist.
         // Factory is singleton (ClientSecretCredential is thread-safe and reusable);

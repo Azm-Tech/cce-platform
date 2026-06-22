@@ -36,7 +36,15 @@ public sealed class CceDbContext
     // ─── Audit (Foundation) ───
     public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
 
+    // ─── Explicit ICceDbContext implementations for Identity-inherited sets ───
+    // IdentityDbContext exposes these as DbSet<T>, but ICceDbContext declares IQueryable<T>.
+    // Explicit interface implementation bridges the gap without touching the inherited DbSet.
+    IQueryable<IdentityRoleClaim<System.Guid>> ICceDbContext.RoleClaims   => Set<IdentityRoleClaim<System.Guid>>();
+    IQueryable<IdentityUserClaim<System.Guid>> ICceDbContext.UserClaims   => Set<IdentityUserClaim<System.Guid>>();
+    IQueryable<PermissionAuditLog>              ICceDbContext.PermissionAuditLogs => Set<PermissionAuditLog>();
+
     // ─── Identity bounded context ───
+    public DbSet<PermissionAuditLog> PermissionAuditLogs => Set<PermissionAuditLog>();
     public DbSet<StateRepresentativeAssignment> StateRepresentativeAssignments => Set<StateRepresentativeAssignment>();
     public DbSet<ExpertProfile> ExpertProfiles => Set<ExpertProfile>();
     public DbSet<ExpertRegistrationRequest> ExpertRegistrationRequests => Set<ExpertRegistrationRequest>();

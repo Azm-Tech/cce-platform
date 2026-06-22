@@ -21,11 +21,11 @@ public sealed record PagedResult<T>(
 
 public static class PaginationExtensions
 {
-    public const int MaxPageSize = 100;
+    public const int MaxPageSize = 1000;
 
     /// <summary>
     /// Materialises an <see cref="IQueryable{T}"/> as a <see cref="PagedResult{T}"/>.
-    /// <c>page</c> is 1-based, clamped to <c>&gt;= 1</c>. <c>pageSize</c> is clamped to <c>[1, 100]</c>.
+    /// <c>page</c> is 1-based, clamped to <c>&gt;= 1</c>. <c>pageSize</c> is clamped to <c>[1, 1000]</c>.
     /// </summary>
     public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query, int page, int pageSize, CancellationToken ct)
@@ -109,4 +109,15 @@ public static class PaginationExtensions
         => query is IAsyncEnumerable<T>
             ? await query.FirstOrDefaultAsync(predicate, ct).ConfigureAwait(false)
             : query.FirstOrDefault(predicate.Compile());
+
+    /// <summary>
+    /// Returns the maximum value of a sequence, dispatching to EF's <c>MaxAsync</c> when the query
+    /// implements <see cref="IAsyncEnumerable{T}"/> and falling back to plain <c>Max</c> for
+    /// in-memory test queryables.
+    /// </summary>
+    public static async Task<T?> MaxAsyncEither<T>(
+        this IQueryable<T> query, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.MaxAsync(ct).ConfigureAwait(false)
+            : query.Max();
 }
