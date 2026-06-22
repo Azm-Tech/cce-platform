@@ -135,7 +135,7 @@ export class UserCreateDialogComponent implements OnInit {
   constructor(private readonly ref: MatDialogRef<UserCreateDialogComponent, UserListItem | null>) {}
 
   async ngOnInit(): Promise<void> {
-    const res = await this.countryApi.listCountries({ pageSize: 200, isCceCountry: false });
+    const res = await this.countryApi.listCountries({ pageSize: 1000, isCceCountry: false });
     if (res.ok) this.countries.set(res.value.items);
     this.cdr.markForCheck();
 

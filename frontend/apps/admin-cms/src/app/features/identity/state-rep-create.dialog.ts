@@ -109,7 +109,7 @@ export class StateRepCreateDialogComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const [usersRes, countriesRes] = await Promise.all([
       this.api.listUsers({ pageSize: 100, role: Role.StateRepresentative }),
-      this.countryApi.listCountries({ pageSize: 300, isCceCountry: false }),
+      this.countryApi.listCountries({ pageSize: 1000, isCceCountry: false }),
     ]);
     if (usersRes.ok) this.users.set(usersRes.value.items);
     if (countriesRes.ok) this.countries.set(countriesRes.value.items);

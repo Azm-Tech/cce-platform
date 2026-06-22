@@ -116,7 +116,7 @@ export class ChangeContactDialogComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data.type !== 'phone') return;
-    void this.countriesApi.listCountries({ isCceCountry: false }).then(res => {
+    void this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }).then(res => {
       if (!res.ok) return;
       this.countryCodes.set(res.value);
       if (this.data.currentPhone) {

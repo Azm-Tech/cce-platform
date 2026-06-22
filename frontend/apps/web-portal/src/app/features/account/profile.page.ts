@@ -147,7 +147,7 @@ export class ProfilePage implements OnInit {
       this.api.getProfile(),
       // All country codes (no isActive filter) so a saved countryCodeId
       // always resolves to its nationality label — same source as registration.
-      this.countriesApi.listCountries({ isCceCountry: false }),
+      this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }),
       this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
@@ -189,7 +189,7 @@ export class ProfilePage implements OnInit {
     this.saveErrorKind.set(null);
     this.mode.set('edit');
     if (!this.countryCodes().length) {
-      void this.countriesApi.listCountries({ isCceCountry: false }).then((res) => {
+      void this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }).then((res) => {
         if (res.ok) this.countryCodes.set(res.value);
       });
     }

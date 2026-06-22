@@ -69,7 +69,7 @@ export class HomepageSettingsPage implements OnInit {
     this.loadError.set(null);
     const [settingsRes, countriesRes] = await Promise.all([
       this.api.getHomepageSettings(),
-      this.countryApi.listCountries({ pageSize: 500, isCceCountry: false }),
+      this.countryApi.listCountries({ pageSize: 1000, isCceCountry: false }),
     ]);
     this.loading.set(false);
     if (countriesRes.ok) {

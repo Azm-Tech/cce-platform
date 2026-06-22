@@ -109,7 +109,7 @@ export class VerifyPhonePage implements OnInit, OnDestroy {
     if (this.step() === 'verify') {
       this.sendOtp();
     } else {
-      void this.countriesApi.listCountries({ isCceCountry: false }).then(res => {
+      void this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }).then(res => {
         if (res.ok) this.countryCodes.set(res.value);
       });
     }

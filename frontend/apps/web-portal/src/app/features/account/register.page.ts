@@ -144,7 +144,7 @@ export class RegisterPage implements OnInit {
   };
 
   async ngOnInit(): Promise<void> {
-    const res = await this.countriesApi.listCountries({ isCceCountry: false });
+    const res = await this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false });
     if (res.ok) this.countryCodes.set(res.value);
 
     // Auto-set phone code to the same country when nationality is selected
