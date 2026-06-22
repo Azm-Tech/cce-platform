@@ -224,6 +224,15 @@ export class CommunityApiService {
     });
   }
 
+  /** Rate a post 1–5 stars (used by the rate-post control). */
+  async ratePost(postId: string, stars: number): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post(`/api/community/posts/${encodeURIComponent(postId)}/rate`, { stars }),
+      );
+    });
+  }
+
   async sharePost(postId: string): Promise<Result<PostShareLink>> {
     return this.run(async () =>
       unwrap<PostShareLink>(

@@ -98,10 +98,21 @@ describe('PostDetailPage', () => {
     page = fixture.componentInstance;
   }
 
-  it('init: getPost + listReplies fired in parallel and bound to DOM', async () => {
-    await setup({ user: USER_AUTHOR });
+  /**
+   * Triggers ngOnInit and runs its floating async `load()` chain to
+   * completion. `whenStable()` can resolve before the ngOnInit promise
+   * settles, so we also drain the macrotask queue, then re-render.
+   */
+  async function flush(): Promise<void> {
     fixture.detectChanges();
     await fixture.whenStable();
+    await new Promise<void>((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+  }
+
+  it('init: getPost + listReplies fired in parallel and bound to DOM', async () => {
+    await setup({ user: USER_AUTHOR });
+    await flush();
     expect(getPost).toHaveBeenCalledWith('p1');
     expect(listReplies).toHaveBeenCalledWith('p1', { page: 1, pageSize: 20 });
     expect(page.post()).toEqual(POST);
@@ -111,38 +122,33 @@ describe('PostDetailPage', () => {
   it('404 on getPost renders not-found block', async () => {
     await setup({ user: USER_AUTHOR });
     getPost.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.notFound()).toBe(true);
   });
 
   it('accepted answer is hoisted to first position in orderedReplies', async () => {
     await setup({ user: USER_AUTHOR });
     getPost.mockResolvedValueOnce(ok({ ...POST, answeredReplyId: 'r2' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.orderedReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
   });
 
   it('canMarkAnswer is true when current user is the post author and post is answerable', async () => {
     await setup({ user: USER_AUTHOR });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.canMarkAnswer()).toBe(true);
   });
 
   it('canMarkAnswer is false for non-author', async () => {
     const otherUser: CurrentUser = { ...USER_AUTHOR, id: 'u-other' };
     await setup({ user: otherUser });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.canMarkAnswer()).toBe(false);
   });
 
   it('paginator change re-fires listReplies', async () => {
     await setup({ user: USER_AUTHOR });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     listReplies.mockClear();
     await page.onPage({ pageIndex: 1, pageSize: 50, length: 2, previousPageIndex: 0 });
     expect(listReplies).toHaveBeenCalledWith('p1', { page: 2, pageSize: 50 });
