@@ -27,23 +27,56 @@ public sealed class GetCommunityUserProfileQueryHandler
     {
         var user = await _db.Users
             .Where(u => u.Id == request.UserId)
-            .Select(u => new { u.Id, u.FirstName, u.LastName, u.JobTitle, u.OrganizationName, u.AvatarUrl, u.FollowerCount, u.FollowingCount })
+            .Select(u => new { u.Id, u.FirstName, u.LastName, u.JobTitle, u.OrganizationName, u.AvatarUrl, u.PostsCount, u.CommentsCount, u.FollowerCount, u.FollowingCount, u.CreatedOn, u.CountryId })
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
         if (user is null) return _msg.UserNotFound<CommunityUserProfileDto>();
 
         var isExpert = await _db.ExpertProfiles.AnyAsync(e => e.UserId == request.UserId, cancellationToken).ConfigureAwait(false);
-        var postCount = await _db.Posts
-            .CountAsync(p => p.AuthorId == request.UserId && p.Status == PostStatus.Published, cancellationToken)
-            .ConfigureAwait(false);
-        var replyCount = await _db.PostReplies
-            .CountAsync(r => r.AuthorId == request.UserId, cancellationToken)
-            .ConfigureAwait(false);
+
+        string? expertBioAr = null;
+        string? expertBioEn = null;
+        if (isExpert)
+        {
+            var expert = await _db.ExpertProfiles.AsNoTracking()
+                .Where(e => e.UserId == request.UserId)
+                .Select(e => new { e.BioAr, e.BioEn })
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (expert is not null)
+            {
+                expertBioAr = expert.BioAr;
+                expertBioEn = expert.BioEn;
+            }
+        }
+
+        string? countryNameAr = null;
+        string? countryNameEn = null;
+        if (user.CountryId.HasValue)
+        {
+            var country = await _db.Countries.AsNoTracking()
+                .Where(c => c.Id == user.CountryId.Value)
+                .Select(c => new { c.NameAr, c.NameEn })
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (country is not null)
+            {
+                countryNameAr = country.NameAr;
+                countryNameEn = country.NameEn;
+            }
+        }
+
+        var isFollowed = request.CurrentUserId.HasValue
+            && await _db.UserFollows.AsNoTracking()
+                .AnyAsync(uf => uf.FollowerId == request.CurrentUserId.Value
+                             && uf.FollowedId == request.UserId, cancellationToken)
+                .ConfigureAwait(false);
 
         var dto = new CommunityUserProfileDto(
             user.Id, user.FirstName, user.LastName, user.JobTitle, user.OrganizationName,
-            user.AvatarUrl, isExpert, postCount, replyCount, user.FollowerCount, user.FollowingCount);
+            user.AvatarUrl, isExpert, user.PostsCount, user.CommentsCount, user.FollowerCount, user.FollowingCount,
+            isFollowed, expertBioAr, expertBioEn, countryNameAr, countryNameEn, user.CreatedOn);
         return _msg.Ok(dto, "ITEMS_LISTED");
     }
 }

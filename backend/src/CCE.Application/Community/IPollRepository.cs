@@ -7,6 +7,6 @@ public interface IPollRepository
 {
     void AddPoll(Poll poll);
     Task<Poll?> GetWithOptionsAsync(Guid pollId, CancellationToken ct);
-    Task<bool> HasVotedAsync(Guid pollId, Guid userId, CancellationToken ct);
     void AddVote(PollVote vote);
+    Task<IReadOnlyList<PollVote>> RemoveVotesAsync(Guid pollId, Guid userId, CancellationToken ct);
 }

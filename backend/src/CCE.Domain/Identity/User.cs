@@ -30,6 +30,18 @@ public class User : IdentityUser<System.Guid>
     /// <summary>Optional user country (FK to <c>Country</c>); only set for state-rep / community users with a profile.</summary>
     public System.Guid? CountryId { get; set; }
 
+    /// <summary>UTC moment this user was created.</summary>
+    public DateTimeOffset CreatedOn { get; private set; }
+
+    /// <summary>Actor that created this user.</summary>
+    public Guid CreatedById { get; private set; }
+
+    /// <summary>UTC moment this user was last modified; null if never modified.</summary>
+    public DateTimeOffset? LastModifiedOn { get; private set; }
+
+    /// <summary>Actor that last modified this user; null if never modified.</summary>
+    public Guid? LastModifiedById { get; private set; }
+
     /// <summary>Optional avatar URL (CDN-served).</summary>
     public string? AvatarUrl { get; private set; }
 
@@ -75,9 +87,9 @@ public class User : IdentityUser<System.Guid>
     /// users who don't have a pre-existing CCE row. Other fields default; user completes
     /// profile in CCE later. Operator/admin must confirm email + assign roles before access.
     /// </summary>
-    public static User CreateStubFromEntraId(System.Guid objectId, string email, string displayName)
+    public static User CreateStubFromEntraId(System.Guid objectId, string email, string displayName, ISystemClock clock)
     {
-        return new User
+        var user = new User
         {
             Id = System.Guid.NewGuid(),
             EntraIdObjectId = objectId,
@@ -87,6 +99,8 @@ public class User : IdentityUser<System.Guid>
             NormalizedUserName = email.ToUpperInvariant(),
             EmailConfirmed = false,
         };
+        user.MarkAsCreated(user.Id, clock);
+        return user;
     }
 
     /// <summary>
@@ -97,9 +111,10 @@ public class User : IdentityUser<System.Guid>
         string email,
         string? firstName,
         string? lastName,
-        string? displayName)
+        string? displayName,
+        ISystemClock clock)
     {
-        return new User
+        var user = new User
         {
             Id = System.Guid.NewGuid(),
             Email = email,
@@ -112,6 +127,8 @@ public class User : IdentityUser<System.Guid>
             JobTitle = string.Empty,
             OrganizationName = string.Empty,
         };
+        user.MarkAsCreated(user.Id, clock);
+        return user;
     }
 
     public static User RegisterLocal(
@@ -120,7 +137,8 @@ public class User : IdentityUser<System.Guid>
         string email,
         string jobTitle,
         string organizationName,
-        string phoneNumber)
+        string phoneNumber,
+        ISystemClock clock)
     {
         var user = new User
         {
@@ -133,12 +151,13 @@ public class User : IdentityUser<System.Guid>
             EmailConfirmed = false,
         };
         user.UpdateProfile(firstName, lastName, jobTitle, organizationName);
+        user.MarkAsCreated(user.Id, clock);
         return user;
     }
 
-    public static User CreateByAdmin(string firstName, string lastName, string email, string phone)
+    public static User CreateByAdmin(string firstName, string lastName, string email, string phone, Guid by, ISystemClock clock)
     {
-        return new User
+        var user = new User
         {
             Id = System.Guid.NewGuid(),
             UserName = email,
@@ -152,6 +171,8 @@ public class User : IdentityUser<System.Guid>
             JobTitle = string.Empty,
             OrganizationName = string.Empty,
         };
+        user.MarkAsCreated(by, clock);
+        return user;
     }
 
     public void UpdateProfile(string firstName, string lastName, string jobTitle, string organizationName)
@@ -199,6 +220,20 @@ public class User : IdentityUser<System.Guid>
     public DateTimeOffset? DeletedOn { get; private set; }
 
     public Guid? DeletedById { get; private set; }
+
+    public void MarkAsCreated(Guid by, ISystemClock clock)
+    {
+        if (by == Guid.Empty) throw new DomainException("CreatedById is required.");
+        CreatedOn = clock.UtcNow;
+        CreatedById = by;
+    }
+
+    public void MarkAsModified(Guid by, ISystemClock clock)
+    {
+        if (by == Guid.Empty) throw new DomainException("ModifiedById is required.");
+        LastModifiedOn = clock.UtcNow;
+        LastModifiedById = by;
+    }
 
     public void SoftDelete(Guid by, DateTimeOffset now)
     {

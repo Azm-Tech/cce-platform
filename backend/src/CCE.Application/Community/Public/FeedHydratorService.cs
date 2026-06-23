@@ -3,6 +3,7 @@ using System.Linq;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using CCE.Domain.Common;
 using CCE.Domain.Community;
 
 namespace CCE.Application.Community.Public;
@@ -26,11 +27,13 @@ public sealed class FeedHydratorService
 {
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
+    private readonly ISystemClock _clock;
 
-    public FeedHydratorService(ICceDbContext db, IRedisFeedStore feedStore)
+    public FeedHydratorService(ICceDbContext db, IRedisFeedStore feedStore, ISystemClock clock)
     {
         _db = db;
         _feedStore = feedStore;
+        _clock = clock;
     }
 
     public async Task<IReadOnlyList<CommunityFeedItemDto>> HydrateAsync(
@@ -127,6 +130,11 @@ public sealed class FeedHydratorService
         // Collect Redis result (has been running concurrently since step 2).
         var hotMeta = await hotMetaTask.ConfigureAwait(false);
 
+        // ── Step 6: Poll data (skipped when no Poll-type posts on this page) ────────────
+        var pollPostIds  = enriched.Where(e => e.Type == PostType.Poll).Select(e => e.Id).ToList();
+        var pollsByPostId = await PollHydrator.FetchAsync(_db, _clock, pollPostIds, userId, ct)
+            .ConfigureAwait(false);
+
         // ── Map in original Redis-sorted order, dropping stale IDs ───────────────────────
         var byId  = enriched.ToDictionary(e => e.Id);
         var empty = (IReadOnlyList<System.Guid>)System.Array.Empty<System.Guid>();
@@ -158,7 +166,8 @@ public sealed class FeedHydratorService
                     e.TopicNameEn ?? string.Empty,
                     e.IsExpert,
                     watchlistedPostIds.Contains(e.Id),
-                    voteByPost.GetValueOrDefault(e.Id, 0));
+                    voteByPost.GetValueOrDefault(e.Id, 0),
+                    pollsByPostId.GetValueOrDefault(e.Id));
             })
             .ToList();
     }

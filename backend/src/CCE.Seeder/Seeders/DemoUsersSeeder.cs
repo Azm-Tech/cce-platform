@@ -1,3 +1,4 @@
+using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -16,11 +17,13 @@ namespace CCE.Seeder.Seeders;
 public sealed class DemoUsersSeeder : ISeeder
 {
     private readonly UserManager<User> _userManager;
+    private readonly ISystemClock _clock;
     private readonly ILogger<DemoUsersSeeder> _logger;
 
-    public DemoUsersSeeder(UserManager<User> userManager, ILogger<DemoUsersSeeder> logger)
+    public DemoUsersSeeder(UserManager<User> userManager, ISystemClock clock, ILogger<DemoUsersSeeder> logger)
     {
         _userManager = userManager;
+        _clock = clock;
         _logger = logger;
     }
 
@@ -49,7 +52,7 @@ public sealed class DemoUsersSeeder : ISeeder
                 continue;
             }
 
-            var user = User.RegisterLocal(firstName, lastName, email, "Demo", "CCE", "");
+            var user = User.RegisterLocal(firstName, lastName, email, "Demo", "CCE", "", _clock);
             user.EmailConfirmed = true;
 
             var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);

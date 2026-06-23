@@ -5,6 +5,8 @@ using CCE.Application.Identity.Commands.CreateStateRepAssignment;
 using CCE.Application.Identity.Commands.CreateUser;
 using CCE.Application.Identity.Commands.DeleteUser;
 using CCE.Application.Identity.Commands.RevokeStateRepAssignment;
+using CCE.Application.Identity.Permissions.Commands;
+using CCE.Application.Identity.Permissions.Queries;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Identity.Queries.ListStateRepAssignments;
 using CCE.Application.Identity.Queries.ListUsers;
@@ -98,6 +100,101 @@ public static class IdentityEndpoints
         })
         .RequireAuthorization(Permissions.User_Update)
         .WithName("ChangeUserStatus");
+
+        users.MapGet("/{id:guid}/claims", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new GetUserClaimsQuery(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Permission_Read)
+        .WithName("GetUserClaims")
+        .WithSummary("List all user-level claims for a user")
+        .WithDescription("Returns every permission claim granted directly to this user (not via role).");
+
+        users.MapPut("/{id:guid}/claims", async (
+            System.Guid id,
+            UpsertUserClaimsRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var claims = (body.Claims ?? [])
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .ToHashSet(StringComparer.Ordinal);
+
+            var cmd = new UpsertUserClaimsCommand(id, claims);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Permission_Manage)
+        .WithName("UpsertUserClaims")
+        .WithSummary("Replace all user-level claims (full upsert)")
+        .WithDescription(
+            """
+            Replaces the complete permission claim set for the given user.
+            Send the FULL desired list — claims absent from the list are revoked.
+
+            Example request body:
+            {
+              "claims": ["news.publish", "community.post.moderate"]
+            }
+
+            To remove all claims from a user, send: { "claims": [] }
+            """);
+
+        users.MapPost("/{id:guid}/claims/grant", async (
+            System.Guid id,
+            GrantUserClaimsRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var claims = (body.Claims ?? [])
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .ToHashSet(StringComparer.Ordinal);
+
+            var cmd = new GrantUserClaimsCommand(id, claims);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Permission_Manage)
+        .WithName("GrantUserClaims")
+        .WithSummary("Grant claims to a user (additive)")
+        .WithDescription(
+            """
+            Adds the specified permission claims to the user's existing set.
+            Claims the user already holds are left unchanged.
+
+            Example request body:
+            {
+              "claims": ["news.publish"]
+            }
+            """);
+
+        users.MapPost("/{id:guid}/claims/revoke", async (
+            System.Guid id,
+            RevokeUserClaimsRequest body,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var claims = (body.Claims ?? [])
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .ToHashSet(StringComparer.Ordinal);
+
+            var cmd = new RevokeUserClaimsCommand(id, claims);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Permission_Manage)
+        .WithName("RevokeUserClaims")
+        .WithSummary("Revoke claims from a user (subtractive)")
+        .WithDescription(
+            """
+            Removes the specified permission claims from the user's existing set.
+            Claims not held by the user are ignored.
+
+            Example request body:
+            {
+              "claims": ["news.publish"]
+            }
+            """);
 
         // Sub-11d Task D — batch UPN→EntraIdObjectId backfill. Admin-only;
         // referenced by docs/runbooks/entra-id-cutover.md step 7. Lazy

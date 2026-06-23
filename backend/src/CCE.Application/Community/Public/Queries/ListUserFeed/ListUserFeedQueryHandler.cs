@@ -93,11 +93,30 @@ public sealed class ListUserFeedQueryHandler
 
             if (ids.Count > 0)
             {
-                var total = await _db.Communities
-                    .Where(c => c.Id == communityId)
-                    .Select(c => c.PostCount)
-                    .SingleAsync(cancellationToken)
-                    .ConfigureAwait(false);
+                // Fix A: use a scoped SQL count when topicId is active — PostCount is the full
+                // community total and ignores the topic filter, causing inflated pagination.
+                long total;
+                if (hasTopic)
+                {
+                    total = await (
+                        from p in _db.Posts
+                        join c in _db.Communities on p.CommunityId equals c.Id
+                        where p.CommunityId == communityId
+                            && p.TopicId == request.TopicId!.Value
+                            && p.Status == PostStatus.Published
+                            && c.IsActive && c.Visibility == CommunityVisibility.Public
+                        select p.Id)
+                        .LongCountAsync(cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    total = await _db.Communities
+                        .Where(c => c.Id == communityId)
+                        .Select(c => c.PostCount)
+                        .SingleAsync(cancellationToken)
+                        .ConfigureAwait(false);
+                }
 
                 var hydrated = await _hydratorService
                     .HydrateAsync(ids, userId, request.TopicId, cancellationToken)
@@ -106,7 +125,7 @@ public sealed class ListUserFeedQueryHandler
                 if (!hasTopic)
                 {
                     return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, (int)total),
+                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
                         "ITEMS_LISTED");
                 }
 
@@ -116,7 +135,7 @@ public sealed class ListUserFeedQueryHandler
                 {
                     return _msg.Ok(
                         new PagedResult<CommunityFeedItemDto>(
-                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, (int)total),
+                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, total),
                         "ITEMS_LISTED");
                 }
                 // Window exhausted for this page — fall through to SQL.
@@ -135,19 +154,36 @@ public sealed class ListUserFeedQueryHandler
         {
             // Fetch IDs+timestamps (Redis scores = publishedOn Unix time) so the ID list can be
             // paged before hydrating, avoiding loading more post rows than the page requires.
-            var redisLimit = System.Math.Min(page * pageSize + pageSize, 1_000);
+            // Fix D: cap raised from 1 000 to 2 000 so pages up to ~199 (pageSize 10) are reachable.
+            var redisLimit = System.Math.Min(page * pageSize + pageSize, 2_000);
             var personalEntries = await _feedStore
                 .GetUserFeedWithScoresAsync(userId, redisLimit, cancellationToken)
                 .ConfigureAwait(false);
 
-            var expertEntries = new System.Collections.Generic.List<(System.Guid Id, System.DateTimeOffset Date)>();
+            // Fix B: pre-load expert user IDs via JOIN rather than a correlated Any() per post row.
+            var expertUserIds = new System.Collections.Generic.List<System.Guid>();
             if (followedCommunityIds.Count > 0 || followedUserIds.Count > 0)
+            {
+                expertUserIds = await (
+                    from ep in _db.ExpertProfiles
+                    join p in _db.Posts on ep.UserId equals p.AuthorId
+                    where p.Status == PostStatus.Published
+                        && (followedCommunityIds.Contains(p.CommunityId)
+                            || followedUserIds.Contains(p.AuthorId))
+                    select ep.UserId)
+                    .Distinct()
+                    .ToListAsyncEither(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            var expertEntries = new System.Collections.Generic.List<(System.Guid Id, System.DateTimeOffset Date)>();
+            if (expertUserIds.Count > 0)
             {
                 expertEntries = (await _db.Posts
                     .Where(p => p.Status == PostStatus.Published
                         && (followedCommunityIds.Contains(p.CommunityId)
                             || followedUserIds.Contains(p.AuthorId))
-                        && _db.ExpertProfiles.Any(e => e.UserId == p.AuthorId))
+                        && expertUserIds.Contains(p.AuthorId))
                     .OrderByDescending(p => p.PublishedOn ?? p.CreatedOn)
                     .Take(pageSize * 3)
                     .Select(p => new { p.Id, Date = p.PublishedOn ?? p.CreatedOn })
@@ -181,12 +217,21 @@ public sealed class ListUserFeedQueryHandler
                     var hydrated = await _hydratorService
                         .HydrateAsync(pagedIds, userId, null, cancellationToken)
                         .ConfigureAwait(false);
+                    // Fix C: expert posts are not fanned into personal Redis feeds, so the two sets
+                    // are disjoint by design — true total is redisTotal + full expert post count.
                     var redisTotal = await _feedStore
                         .GetUserFeedCountAsync(userId, cancellationToken)
                         .ConfigureAwait(false);
-                    var total = (int)System.Math.Max(redisTotal, merged.Count);
+                    var expertTotal = expertUserIds.Count == 0 ? 0L
+                        : await _db.Posts
+                            .Where(p => p.Status == PostStatus.Published
+                                && (followedCommunityIds.Contains(p.CommunityId)
+                                    || followedUserIds.Contains(p.AuthorId))
+                                && expertUserIds.Contains(p.AuthorId))
+                            .LongCountAsync(cancellationToken)
+                            .ConfigureAwait(false);
                     return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
+                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, redisTotal + expertTotal),
                         "ITEMS_LISTED");
                 }
             }
@@ -238,13 +283,18 @@ public sealed class ListUserFeedQueryHandler
                 "ITEMS_LISTED");
         }
 
-        var query = _db.Posts
-            .Where(p => p.Status == PostStatus.Published)
-            .Where(p => _db.Communities.Any(c =>
-                c.Id == p.CommunityId && c.IsActive && c.Visibility == CommunityVisibility.Public))
-            .Where(p => followedCommunityIds.Contains(p.CommunityId)
-                || followedTopicIds.Contains(p.TopicId)
-                || followedUserIds.Contains(p.AuthorId))
+        // Fix E: use JOIN instead of correlated Communities.Any() per post row, matching the
+        // pattern already used in the community feed SQL path.
+        var query = (
+            from p in _db.Posts
+            join c in _db.Communities on p.CommunityId equals c.Id
+            where p.Status == PostStatus.Published
+                && c.IsActive
+                && c.Visibility == CommunityVisibility.Public
+                && (followedCommunityIds.Contains(p.CommunityId)
+                    || followedTopicIds.Contains(p.TopicId)
+                    || followedUserIds.Contains(p.AuthorId))
+            select p)
             .WhereIf(tagIds is { Count: > 0 }, p => p.Tags.Any(t => tagIds.Contains(t.Id)))
             .WhereIf(communityFilter.HasValue, p => p.CommunityId == communityFilter!.Value)
             .WhereIf(topicFilter.HasValue, p => p.TopicId == topicFilter!.Value)

@@ -1,4 +1,5 @@
 using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
@@ -11,20 +12,23 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
 {
     private readonly IAuthService _auth;
     private readonly IMediator _mediator;
+    private readonly ICurrentUserAccessor _currentUser;
     private readonly MessageFactory _msg;
 
-    public CreateUserCommandHandler(IAuthService auth, IMediator mediator, MessageFactory msg)
+    public CreateUserCommandHandler(IAuthService auth, IMediator mediator, ICurrentUserAccessor currentUser, MessageFactory msg)
     {
         _auth = auth;
         _mediator = mediator;
+        _currentUser = currentUser;
         _msg = msg;
     }
 
     public async Task<Response<UserDetailDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        var createdBy = _currentUser.GetUserId() ?? Guid.Empty;
         var result = await _auth.AdminCreateUserAsync(
             request.FirstName, request.LastName, request.Email,
-            request.PhoneNumber, request.CountryId, request.Role, cancellationToken).ConfigureAwait(false);
+            request.PhoneNumber, request.CountryId, request.Role, createdBy, cancellationToken).ConfigureAwait(false);
 
         if (result.EmailTaken) return _msg.EmailExists<UserDetailDto>();
         if (result.Failed || result.User is null) return _msg.BusinessRule<UserDetailDto>("REGISTRATION_FAILED");

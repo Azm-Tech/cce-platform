@@ -7,4 +7,5 @@ public sealed record PostAuthorDto(
     string? AvatarUrl,
     bool IsExpert,
     int PostsCount,
-    int FollowerCount);
+    int FollowerCount,
+    bool IsFollowed);

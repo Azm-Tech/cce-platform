@@ -1679,6 +1679,11 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("deleted_on");
 
+                    b.Property<string>("DialCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
+                        .HasColumnName("dial_code");
+
                     b.Property<string>("FlagUrl")
                         .IsRequired()
                         .HasMaxLength(2048)
@@ -1688,6 +1693,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit")
                         .HasColumnName("is_active");
+
+                    b.Property<bool>("IsCceCountry")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_cce_country");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -1737,18 +1748,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(128)")
                         .HasColumnName("region_en");
 
-                    b.Property<string>("DialCode")
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)")
-                        .HasColumnName("dial_code");
-
-                    b.Property<bool>("IsCceCountry")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_cce_country");
-
                     b.HasKey("Id")
                         .HasName("pk_countries");
+
+                    b.HasIndex("DialCode")
+                        .HasDatabaseName("ix_country_dial_code")
+                        .HasFilter("[dial_code] IS NOT NULL");
 
                     b.HasIndex("IsoAlpha2")
                         .HasDatabaseName("ix_country_iso_alpha2");
@@ -1757,10 +1762,6 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ux_country_iso_alpha3_active")
                         .HasFilter("[is_deleted] = 0 AND [is_cce_country] = 1");
-
-                    b.HasIndex("DialCode")
-                        .HasDatabaseName("ix_country_dial_code")
-                        .HasFilter("[dial_code] IS NOT NULL");
 
                     b.ToTable("countries", (string)null);
                 });
@@ -2345,6 +2346,51 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("interest_topics", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Identity.PermissionAuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int")
+                        .HasColumnName("action");
+
+                    b.Property<DateTimeOffset>("ChangedAtUtc")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("changed_at_utc");
+
+                    b.Property<string>("ChangedByEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("changed_by_email");
+
+                    b.Property<Guid>("ChangedByUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("changed_by_user_id");
+
+                    b.Property<string>("PermissionName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("permission_name");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("role_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_permission_audit_logs");
+
+                    b.ToTable("permission_audit_logs", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Identity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2552,6 +2598,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("country_id");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
                     b.Property<Guid?>("DeletedById")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("deleted_by_id");
@@ -2604,6 +2658,14 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.Property<int>("KnowledgeLevel")
                         .HasColumnType("int")
                         .HasColumnName("knowledge_level");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("last_modified_by_id");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("last_modified_on");
 
                     b.Property<string>("LastName")
                         .IsRequired()

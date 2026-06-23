@@ -323,7 +323,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         {
             var memberName = ToMemberName(e.Name);
             sb.AppendLine($"    /// <summary>The <c>{e.Name}</c> permission.</summary>");
-            sb.AppendLine($"    public const string {memberName} = \"{e.Name}\";");
+            sb.AppendLine($"    public const string {memberName} = \"{e.Name.ToLowerInvariant()}\";");
             sb.AppendLine();
         }
         sb.AppendLine("    /// <summary>Every permission, in YAML declaration order.</summary>");
@@ -366,7 +366,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
                 sb.AppendLine("    {");
                 foreach (var name in matches)
                 {
-                    sb.AppendLine($"        \"{name}\",");
+                    sb.AppendLine($"        \"{name.ToLowerInvariant()}\",");
                 }
                 sb.AppendLine("    };");
             }

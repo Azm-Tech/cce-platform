@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -28,11 +29,13 @@ namespace CCE.Api.Common.Auth;
 public sealed class EntraIdUserResolver
 {
     private readonly CceDbContext _db;
+    private readonly ISystemClock _clock;
     private readonly ILogger<EntraIdUserResolver> _logger;
 
-    public EntraIdUserResolver(CceDbContext db, ILogger<EntraIdUserResolver> logger)
+    public EntraIdUserResolver(CceDbContext db, ISystemClock clock, ILogger<EntraIdUserResolver> logger)
     {
         _db = db;
+        _clock = clock;
         _logger = logger;
     }
 
@@ -68,7 +71,7 @@ public sealed class EntraIdUserResolver
             if (user is null)
             {
                 // External partner-tenant user with no pre-existing CCE row.
-                var stub = User.CreateStubFromEntraId(objectId, upn, principal.Identity?.Name ?? upn);
+                var stub = User.CreateStubFromEntraId(objectId, upn, principal.Identity?.Name ?? upn, _clock);
                 _db.Users.Add(stub);
                 _logger.LogInformation("Created stub CCE User for new Entra ID user oid={Oid} upn={Upn}", objectId, upn);
             }

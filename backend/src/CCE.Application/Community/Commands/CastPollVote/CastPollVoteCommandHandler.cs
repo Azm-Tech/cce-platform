@@ -51,8 +51,12 @@ public sealed class CastPollVoteCommandHandler
         if (!poll.AllowMultiple && optionIds.Count > 1)
             return _msg.BusinessRule<VoidData>(ApplicationErrors.Validation.INVALID_FORMAT);
 
-        if (await _repo.HasVotedAsync(poll.Id, userId.Value, cancellationToken).ConfigureAwait(false))
-            return _msg.Conflict<VoidData>(ApplicationErrors.General.DUPLICATE_VALUE);
+        var existingVotes = await _repo.RemoveVotesAsync(poll.Id, userId.Value, cancellationToken).ConfigureAwait(false);
+        foreach (var oldVote in existingVotes)
+        {
+            var option = poll.FindOption(oldVote.PollOptionId);
+            if (option is not null) option.DecrementVotes();
+        }
 
         foreach (var optionId in optionIds)
         {

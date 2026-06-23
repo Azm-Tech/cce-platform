@@ -26,4 +26,5 @@ public sealed record PostDetailDto(
     string TopicNameAr,
     string TopicNameEn,
     bool IsWatchlisted,
-    int VoteStatus);
+    int VoteStatus,
+    PollSummaryDto? Poll);  // null for Info/Question posts

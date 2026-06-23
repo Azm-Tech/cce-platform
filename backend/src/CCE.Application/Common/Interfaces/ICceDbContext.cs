@@ -30,6 +30,9 @@ public interface ICceDbContext
     IQueryable<User> Users { get; }
     IQueryable<Role> Roles { get; }
     IQueryable<IdentityUserRole<System.Guid>> UserRoles { get; }
+    IQueryable<IdentityRoleClaim<System.Guid>> RoleClaims { get; }
+    IQueryable<IdentityUserClaim<System.Guid>> UserClaims { get; }
+    IQueryable<CCE.Domain.Identity.PermissionAuditLog> PermissionAuditLogs { get; }
     IQueryable<StateRepresentativeAssignment> StateRepresentativeAssignments { get; }
     IQueryable<DomainCountry.Country> Countries { get; }
     IQueryable<ExpertRegistrationRequest> ExpertRegistrationRequests { get; }
