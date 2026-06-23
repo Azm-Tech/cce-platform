@@ -2,6 +2,7 @@ using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
 using CCE.Application.Reports.Queries.GetCommunityPostReport;
 using CCE.Application.Reports.Queries.GetExpertReport;
+using CCE.Application.Reports.Queries.GetNewsReport;
 using CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
 using CCE.Application.Reports.Queries.GetUserPreferenceReport;
 using CCE.Application.Reports.Queries.GetUserRegistrationReport;
@@ -186,6 +187,19 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_Experts)
         .WithName("ExpertReport");
+
+        reports.MapGet("/news", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetNewsReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_News)
+        .WithName("NewsReportJson");
 
         reports.MapGet("/community-posts", async (
             ISender sender,
