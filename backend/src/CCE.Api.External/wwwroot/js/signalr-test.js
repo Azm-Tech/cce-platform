@@ -4,20 +4,44 @@
   let connection = null;
   let eventCount = 0;
 
+  // Phase 1 envelope tracking — eventId for dedup, occurredOn for ordering + Phase 3 since cursor.
+  let lastEventId = null;
+  let lastEventTime = null;
+  let sinceEdited = false;  // user-typed-into-since-field flag (don't auto-overwrite once edited)
+
   const PROD_URL = 'https://cce-external-api.runasp.net';
+  const INTERNAL_URL = 'http://localhost:5002';
 
   const $ = id => document.getElementById(id);
   const logEl = $('log');
   const eventCountEl = $('eventCount');
+  const lastEventEl = $('lastEvent');
+  const catchUpSinceEl = $('catchUpSince');
+
+  // Stop auto-filling the since field once the user manually edits it.
+  catchUpSinceEl.addEventListener('input', function() { sinceEdited = true; });
 
   function toggleMode() {
-    var isProd = document.querySelector('input[name="mode"]:checked').value === 'prod';
-    $('serverUrl').value = isProd ? PROD_URL : '';
-    $('btnDevSignIn').disabled = isProd;
-    $('devRole').disabled = isProd;
+    var mode = document.querySelector('input[name="mode"]:checked').value;
+    $('serverUrl').value = mode === 'prod' ? PROD_URL
+                         : mode === 'internal5002' ? INTERNAL_URL
+                         : '';
+    // Dev sign-in is also available on the Internal API (Auth:DevMode=true).
+    $('btnDevSignIn').disabled = (mode === 'prod');
+    $('devRole').disabled = (mode === 'prod');
   }
 
   window.toggleMode = toggleMode;
+
+  function updateLastEvent() {
+    if (!lastEventId) {
+      lastEventEl.textContent = '(no events yet)';
+      return;
+    }
+    var shortId = lastEventId.slice(0, 8);
+    lastEventEl.textContent = 'last: ' + shortId + ' @ ' + lastEventTime;
+    if (!sinceEdited) catchUpSinceEl.value = lastEventTime || '';
+  }
 
   function log(type, eventName, payload) {
     const now = new Date();
@@ -113,10 +137,22 @@
       .build();
 
     events.forEach(function(evt) {
-      connection.on(evt, function() {
-        var args = Array.prototype.slice.call(arguments);
-        var payload = args.length === 1 ? args[0] : args;
-        log('event', evt, payload);
+      connection.on(evt, function(envelope) {
+        // Phase 1 contract: every push is wrapped in { eventId, occurredOn, payload }.
+        // Unwrap so the log shows the inner payload; record eventId/occurredOn for
+        // dedup + Phase 3 catch-up cursor. Fallback: dump the raw arg if an old
+        // (non-enveloped) server was hit so the harness still works after a rollback.
+        if (envelope && typeof envelope === 'object'
+            && 'eventId' in envelope && 'occurredOn' in envelope && 'payload' in envelope) {
+          lastEventId = envelope.eventId;
+          lastEventTime = envelope.occurredOn;
+          updateLastEvent();
+          var shortId = envelope.eventId.slice(0, 8);
+          log('event', evt + '  [eid ' + shortId + ']', envelope.payload);
+          log('info', '  ↳ eventId=' + envelope.eventId + '  occurredOn=' + envelope.occurredOn);
+        } else {
+          log('event', evt, envelope);
+        }
       });
     });
 
@@ -210,6 +246,33 @@
     if (!connection) { log('error', 'Not connected'); return; }
     try { connection.invoke('StopTyping', getGuid('postId')); log('info', 'StopTyping(' + $('postId').value.trim() + ')'); }
     catch (e) { log('error', 'StopTyping failed', e.message); }
+  });
+
+  // Phase 3 — reconnect catch-up. Calls the GetPostActivity endpoint with the since cursor
+  // (auto-filled from the last enveloped event's occurredOn; user can override). Note the
+  // endpoint is AllowAnonymous, so no Authorization header is needed. When pointing at the
+  // Internal API (port 5002) the fetch is cross-origin — if it fails with a CORS error,
+  // either serve the harness from the Internal API's own wwwroot or open it directly.
+  $('btnCatchUp').addEventListener('click', async function() {
+    var postId = $('postId').value.trim();
+    if (!postId) { log('error', 'Post ID required for catch-up'); return; }
+    var baseUrl = $('serverUrl').value.trim().replace(/\/+$/, '');
+    var since = ($('catchUpSince').value.trim() || lastEventTime || '');
+    if (!since) { log('error', 'No since cursor — connect and receive at least one event first, or type a timestamp'); return; }
+    var url = baseUrl + '/api/community/posts/' + encodeURIComponent(postId)
+            + '/activity?since=' + encodeURIComponent(since);
+    log('info', 'GET ' + url);
+    try {
+      var res = await fetch(url, { credentials: 'same-origin' });
+      var body = await res.text();
+      if (!res.ok) { log('error', 'Catch-up ' + res.status, body); return; }
+      var data = JSON.parse(body);
+      // Standard Response<T> envelope: { success, code, data, errors, ... }
+      var payload = data && data.data ? data.data : data;
+      var newCount = payload && payload.newReplies ? payload.newReplies.length : 0;
+      log('event', 'Catch-up result', payload);
+      log('info', '  ↳ ' + newCount + ' new replies, upvote=' + (payload ? payload.upvoteCount : '?') + ', score=' + (payload ? payload.score : '?'));
+    } catch (err) { log('error', 'Catch-up error', err.message); }
   });
 
   log('info', 'Ready. Enter your connection details and click Connect.');

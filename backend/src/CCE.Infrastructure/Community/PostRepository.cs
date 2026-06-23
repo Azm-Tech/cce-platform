@@ -16,6 +16,12 @@ public sealed class PostRepository : IPostRepository
     public Task<Post?> GetAsync(Guid id, CancellationToken ct)
         => _db.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.Id == id, ct);
 
+    public Task<Guid?> GetCommunityIdAsync(Guid id, CancellationToken ct)
+        => _db.Posts.AsNoTracking()
+            .Where(p => p.Id == id)
+            .Select(p => (Guid?)p.CommunityId)
+            .FirstOrDefaultAsync(ct);
+
     public Task<bool> TopicExistsAsync(Guid topicId, CancellationToken ct)
         => _db.Topics.AnyAsync(t => t.Id == topicId && t.IsActive, ct);
 

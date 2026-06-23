@@ -11,6 +11,9 @@ public sealed class UserRepository : IUserRepository
 
     public UserRepository(CceDbContext db) => _db = db;
 
+    public Task<User?> FindAsync(Guid userId, CancellationToken ct)
+        => _db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
+
     public async Task<Guid?> FindUserIdByContactAsync(string contact, OtpVerificationType type, CancellationToken ct)
     {
         return type switch

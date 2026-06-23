@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CCE.Domain.Common;
 
 namespace CCE.Domain.Notifications;
@@ -10,12 +11,15 @@ public sealed class UserNotification : Entity<System.Guid>
 {
     private UserNotification(System.Guid id, System.Guid userId, System.Guid templateId,
         string renderedSubjectAr, string renderedSubjectEn, string renderedBody,
-        string renderedLocale, NotificationChannel channel) : base(id)
+        string renderedLocale, NotificationChannel channel,
+        System.Guid? actorId, Dictionary<string, string> metaData) : base(id)
     {
         UserId = userId; TemplateId = templateId;
         RenderedSubjectAr = renderedSubjectAr; RenderedSubjectEn = renderedSubjectEn;
         RenderedBody = renderedBody; RenderedLocale = renderedLocale;
         Channel = channel; Status = NotificationStatus.Pending;
+        ActorId = actorId;
+        MetaData = metaData;
     }
 
     public System.Guid UserId { get; private set; }
@@ -29,9 +33,20 @@ public sealed class UserNotification : Entity<System.Guid>
     public System.DateTimeOffset? ReadOn { get; private set; }
     public NotificationStatus Status { get; private set; }
 
+    /// <summary>User who triggered this notification (nullable — system notifications have no actor).</summary>
+    public System.Guid? ActorId { get; private set; }
+
+    /// <summary>
+    /// Key/value context for building deep links (e.g. postId, replyId, communityId).
+    /// EF maps this natively as a JSON column. Empty by default for legacy callers.
+    /// </summary>
+    public Dictionary<string, string> MetaData { get; private set; } = new Dictionary<string, string>();
+
     public static UserNotification Render(System.Guid userId, System.Guid templateId,
         string renderedSubjectAr, string renderedSubjectEn, string renderedBody,
-        string renderedLocale, NotificationChannel channel)
+        string renderedLocale, NotificationChannel channel,
+        System.Guid? actorId = null,
+        IReadOnlyDictionary<string, string>? metaData = null)
     {
         if (userId == System.Guid.Empty) throw new DomainException("UserId is required.");
         if (templateId == System.Guid.Empty) throw new DomainException("TemplateId is required.");
@@ -39,7 +54,9 @@ public sealed class UserNotification : Entity<System.Guid>
         if (renderedLocale != "ar" && renderedLocale != "en")
             throw new DomainException("RenderedLocale must be 'ar' or 'en'.");
         return new UserNotification(System.Guid.NewGuid(), userId, templateId,
-            renderedSubjectAr, renderedSubjectEn, renderedBody, renderedLocale, channel);
+            renderedSubjectAr, renderedSubjectEn, renderedBody, renderedLocale, channel,
+            actorId,
+            metaData is null ? new() : new Dictionary<string, string>(metaData));
     }
 
     public void MarkSent(ISystemClock clock)

@@ -67,7 +67,7 @@ public sealed class VoteReplyCommandHandler
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.VoteChanged,
-            new { replyId = reply.Id, reply.UpvoteCount, reply.Score }, cancellationToken).ConfigureAwait(false);
+            new { replyId = reply.Id, reply.UpvoteCount, reply.DownvoteCount, reply.Score }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.Community.POST_VOTED);
     }

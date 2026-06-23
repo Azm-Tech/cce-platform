@@ -31,7 +31,7 @@ public sealed class SignalRNotificationPublisher : ISignalRNotificationPublisher
             .User(notification.UserId.ToString())
             .SendAsync(
                 RealtimeEvents.ReceiveNotification,
-                new
+                RealtimeEnvelope.Wrap(new
                 {
                     notification.Id,
                     notification.TemplateId,
@@ -40,8 +40,10 @@ public sealed class SignalRNotificationPublisher : ISignalRNotificationPublisher
                     notification.RenderedBody,
                     notification.RenderedLocale,
                     notification.Status,
-                    notification.SentOn
-                },
+                    notification.SentOn,
+                    actorId = notification.ActorId,
+                    metaData = notification.MetaData,
+                }),
                 cancellationToken)
             .ConfigureAwait(false);
     }

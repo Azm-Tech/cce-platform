@@ -3,6 +3,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Queries.GetCommunityBySlug;
 using CCE.Application.Community.Public.Queries.GetCommunityUserProfile;
 using CCE.Application.Community.Public.Queries.GetMyFollows;
+using CCE.Application.Community.Public.Queries.GetPostActivity;
 using CCE.Application.Community.Public.Queries.GetPostShareLink;
 using CCE.Application.Community.Public.Queries.GetPublicPostById;
 using CCE.Application.Community.Public.Queries.GetPollResults;
@@ -164,6 +165,18 @@ public static class CommunityPublicEndpoints
                 new ListPublicPostRepliesQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicPostReplies");
+
+        // GET /api/community/posts/{id}/activity?since={ISO8601} — Phase 3 reconnect catch-up.
+        // Returns current vote counters, replies created since the cursor, and a poll snapshot.
+        // Called by mobile on onreconnected after a SignalR drop.
+        community.MapGet("/posts/{id:guid}/activity", async (
+            System.Guid id, System.DateTimeOffset since,
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new GetPostActivityQuery(id, since, currentUser.GetUserId()), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).AllowAnonymous().WithName("GetPostActivity");
 
         var follows = app.MapGroup("/api/me/follows")
             .WithTags("Community")

@@ -30,23 +30,24 @@ public sealed class SignalRConsumer : IConsumer<PostCreatedIntegrationEvent>
             "SignalRConsumer: PostCreated PostId={PostId} Community={CommunityId} Topic={TopicId}",
             evt.PostId, evt.CommunityId, evt.TopicId);
 
-        var payload = new
+        var envelope = RealtimeEnvelope.Wrap(new
         {
             evt.PostId,
             evt.CommunityId,
             evt.TopicId,
             evt.AuthorId,
             evt.PublishedOn,
-        };
+            evt.Title,
+        });
 
         await _hub.Clients
             .Group(RealtimeGroups.Community(evt.CommunityId))
-            .SendAsync(RealtimeEvents.NewPost, payload, context.CancellationToken)
+            .SendAsync(RealtimeEvents.NewPost, envelope, context.CancellationToken)
             .ConfigureAwait(false);
 
         await _hub.Clients
             .Group(RealtimeGroups.Topic(evt.TopicId))
-            .SendAsync(RealtimeEvents.NewPost, payload, context.CancellationToken)
+            .SendAsync(RealtimeEvents.NewPost, envelope, context.CancellationToken)
             .ConfigureAwait(false);
     }
 }

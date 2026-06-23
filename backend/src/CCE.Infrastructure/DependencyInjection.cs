@@ -237,6 +237,8 @@ public static class DependencyInjection
         services.AddScoped<ICommunityRealtimePublisher, CommunityRealtimePublisher>();
         services.AddSingleton<CCE.Application.Common.Realtime.IRealtimePresenceTracker,
             CCE.Infrastructure.Notifications.RedisRealtimePresenceTracker>();
+        services.AddSingleton<CCE.Application.Common.Realtime.ITypingThrottle,
+            CCE.Infrastructure.Notifications.MemoryCacheTypingThrottle>();
         services.AddScoped<IUserRegistrationsReportService, UserRegistrationsReportService>();
         services.AddScoped<IExpertReportService, ExpertReportService>();
         services.AddScoped<ISatisfactionSurveyReportService, SatisfactionSurveyReportService>();

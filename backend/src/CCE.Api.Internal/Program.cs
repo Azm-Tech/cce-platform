@@ -13,8 +13,10 @@ using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
+using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Search;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.Globalization;
@@ -45,6 +47,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
 builder.Services.AddCceSignalR(builder.Configuration);
+// Option 2: share the same NotificationsHub + Redis backplane with the External API so
+// admin clients on port 5002 receive the same user/post/community/moderation events as
+// public clients on port 5001. Both APIs route user:{id} rooms via the same sub-claim
+// provider. Each API validates its own JWT scheme (LocalAuthApi.External vs .Internal).
+builder.Services.Replace(ServiceDescriptor.Singleton<IUserIdProvider, SubClaimUserIdProvider>());
 
 var app = builder.Build();
 
@@ -62,6 +69,11 @@ app.UseMiddleware<LocalizationMiddleware>();
 app.UseStaticFiles();
 
 app.UseCceOpenApi(apiTag: "internal");
+
+// Option 2: same hub path as the External API — admin/CMS clients connect on port 5002.
+// Shares the Redis SignalR backplane so publishes from either (or the Worker) reach all
+// connected clients on both. Requires authenticated connections; [Authorize] is on the hub.
+app.MapHub<NotificationsHub>("/hubs/notifications");
 
         app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
         app.MapAdminAuthEndpoints();

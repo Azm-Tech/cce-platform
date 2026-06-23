@@ -68,8 +68,22 @@ public sealed class CastPollVoteCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        var totalVotes = poll.Options.Sum(o => o.VoteCount);
         await _realtime.PublishToPostAsync(poll.PostId, RealtimeEvents.PollResultsChanged,
-            new { pollId = poll.Id, poll.PostId }, cancellationToken).ConfigureAwait(false);
+            new
+            {
+                pollId = poll.Id,
+                postId = poll.PostId,
+                totalVotes,
+                options = poll.Options
+                    .OrderBy(o => o.SortOrder)
+                    .Select(o => new
+                    {
+                        id = o.Id,
+                        voteCount = o.VoteCount,
+                        percentage = totalVotes == 0 ? 0d : Math.Round(o.VoteCount * 100d / totalVotes, 1),
+                    }),
+            }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
     }

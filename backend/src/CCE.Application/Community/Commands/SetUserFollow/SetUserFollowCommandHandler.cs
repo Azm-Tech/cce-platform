@@ -1,7 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Common.Pagination;
 using CCE.Application.Errors;
+using CCE.Application.Identity;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
@@ -17,16 +17,18 @@ public sealed class SetUserFollowCommandHandler
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _msg;
+    private readonly IUserRepository _userRepo;
 
     public SetUserFollowCommandHandler(
         ICommunityWriteService service, ICceDbContext db, ICurrentUserAccessor currentUser,
-        ISystemClock clock, MessageFactory msg)
+        ISystemClock clock, MessageFactory msg, IUserRepository userRepo)
     {
         _service = service;
         _db = db;
         _currentUser = currentUser;
         _clock = clock;
         _msg = msg;
+        _userRepo = userRepo;
     }
 
     public async Task<Response<VoidData>> Handle(SetUserFollowCommand request, CancellationToken cancellationToken)
@@ -38,7 +40,7 @@ public sealed class SetUserFollowCommandHandler
         {
             if (followerId.Value == request.UserId) return _msg.CannotFollowSelf<VoidData>();
 
-            var followed = await _db.Users.FirstOrDefaultAsyncEither(u => u.Id == request.UserId, cancellationToken).ConfigureAwait(false);
+            var followed = await _userRepo.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
             if (followed is null) return _msg.UserNotFound<VoidData>();
 
             // Idempotent: only create + bump counts when not already following
@@ -47,7 +49,7 @@ public sealed class SetUserFollowCommandHandler
             {
                 await _service.SaveFollowAsync(UserFollow.Follow(followerId.Value, request.UserId, _clock), cancellationToken).ConfigureAwait(false);
 
-                var follower = await _db.Users.FirstOrDefaultAsyncEither(u => u.Id == followerId.Value, cancellationToken).ConfigureAwait(false);
+                var follower = await _userRepo.FindAsync(followerId.Value, cancellationToken).ConfigureAwait(false);
                 follower?.IncrementFollowing();
                 followed.IncrementFollowers();
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -58,8 +60,8 @@ public sealed class SetUserFollowCommandHandler
             var removed = await _service.RemoveUserFollowAsync(followerId.Value, request.UserId, cancellationToken).ConfigureAwait(false);
             if (removed)
             {
-                var follower = await _db.Users.FirstOrDefaultAsyncEither(u => u.Id == followerId.Value, cancellationToken).ConfigureAwait(false);
-                var followed = await _db.Users.FirstOrDefaultAsyncEither(u => u.Id == request.UserId, cancellationToken).ConfigureAwait(false);
+                var follower = await _userRepo.FindAsync(followerId.Value, cancellationToken).ConfigureAwait(false);
+                var followed = await _userRepo.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
                 follower?.DecrementFollowing();
                 followed?.DecrementFollowers();
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

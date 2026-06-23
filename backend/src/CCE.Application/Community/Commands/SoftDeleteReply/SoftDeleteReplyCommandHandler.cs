@@ -1,7 +1,7 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Common.Pagination;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Community;
+using CCE.Application.Identity;
 using CCE.Domain.Common;
 using MediatR;
 
@@ -14,19 +14,22 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly ICommunityRealtimePublisher _realtime;
+    private readonly IUserRepository _userRepo;
 
     public SoftDeleteReplyCommandHandler(
         ICommunityModerationService service,
         ICceDbContext db,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
-        ICommunityRealtimePublisher realtime)
+        ICommunityRealtimePublisher realtime,
+        IUserRepository userRepo)
     {
         _service = service;
         _db = db;
         _currentUser = currentUser;
         _clock = clock;
         _realtime = realtime;
+        _userRepo = userRepo;
     }
 
     public async Task<Unit> Handle(SoftDeleteReplyCommand request, CancellationToken cancellationToken)
@@ -49,18 +52,18 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
             post.DecrementCommentsCount(_clock);
         }
 
-        var replyAuthor = await _db.Users
-            .FirstOrDefaultAsyncEither(u => u.Id == reply.AuthorId, cancellationToken)
-            .ConfigureAwait(false);
+        var replyAuthor = await _userRepo.FindAsync(reply.AuthorId, cancellationToken).ConfigureAwait(false);
         replyAuthor?.DecrementCommentsCount();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // Notify the post room (a reply was removed) and the moderation room.
-        await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.PostModerated,
-            new PostModeratedRealtime(reply.PostId, reply.Id, "SoftDeleted"), cancellationToken).ConfigureAwait(false);
-        await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated,
-            new ContentModeratedRealtime("Reply", reply.Id, reply.PostId, moderatorId, "SoftDeleted"), cancellationToken).ConfigureAwait(false);
+        // Wrap each envelope once for consistency with the SoftDeletePost handler.
+        var postModerated = RealtimeEnvelope.Wrap(new PostModeratedRealtime(reply.PostId, reply.Id, "SoftDeleted"));
+        await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.PostModerated, postModerated, cancellationToken).ConfigureAwait(false);
+
+        var contentModerated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Reply", reply.Id, reply.PostId, moderatorId, "SoftDeleted"));
+        await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, contentModerated, cancellationToken).ConfigureAwait(false);
 
         return Unit.Value;
     }

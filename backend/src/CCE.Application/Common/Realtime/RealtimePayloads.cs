@@ -3,6 +3,21 @@ namespace CCE.Application.Common.Realtime;
 // Minimal realtime payloads (ids + a little context). Clients refetch full state when needed — mirrors
 // the existing reply/vote payload style.
 
+/// <summary>
+/// Outer wrapper for every server→client push. Gives the client an eventId for dedup,
+/// a timestamp for ordering, and a stable nesting shape so payload schemas can evolve
+/// independently of the envelope. eventId is a random GUID (not monotonic) — order by
+/// OccurredOn; use EventId only to drop duplicates after a reconnect.
+/// </summary>
+public sealed record RealtimeEnvelope(
+    System.Guid EventId,
+    System.DateTimeOffset OccurredOn,
+    object Payload)
+{
+    public static RealtimeEnvelope Wrap(object payload) =>
+        new(System.Guid.NewGuid(), System.DateTimeOffset.UtcNow, payload);
+}
+
 /// <summary>A post was published in a community/topic.</summary>
 public sealed record NewPostRealtime(
     System.Guid PostId, System.Guid CommunityId, System.Guid TopicId, string Title);
