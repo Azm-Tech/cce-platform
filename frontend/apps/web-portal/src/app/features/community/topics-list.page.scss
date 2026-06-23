@@ -529,7 +529,8 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px 16px;
+  flex-wrap: wrap;
 }
 
 // Category dropdown (RTL start = right)
@@ -572,14 +573,20 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 // Sort chips (pill shape matching Figma)
 .cp-sort-tabs {
   display: flex;
-  gap: 16px;
+  gap: 12px 16px;
   align-items: center;
+  // Wrap chips to the next line when the row is too narrow rather than clipping
+  // them or shoving the type dropdown off the page.
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .cp-sort-tab {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
   padding: 1px 15px;
   height: 40px;
   border-radius: 9999px;
@@ -780,7 +787,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
 @media (max-width: 600px) {
   .cp-page-title { font-size: 24px; line-height: 32px; }
-  .cp-sort-tabs { overflow-x: auto; padding-bottom: 2px; gap: 8px; }
+  .cp-sort-tabs { gap: 8px; }
   .cp-filter-bar { flex-direction: column; align-items: stretch; }
   .cp-category-btn { width: 100%; }
 }

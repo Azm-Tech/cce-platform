@@ -262,9 +262,11 @@ export class TopicsListPage implements OnInit, OnDestroy {
 
   private async loadTopics(): Promise<void> {
     this.topicsLoading.set(true);
-    const [topicsRes, summariesRes] = await Promise.all([
+    const [topicsRes, summariesRes, followsRes] = await Promise.all([
       this.api.listTopics(),
       this.api.listCommunityTopics({ pageSize: 100 }),
+      // Authoritative follow state — /api/community/topics does not return `isFollowed`.
+      this.auth.isAuthenticated() ? this.followsApi.getMyFollows() : Promise.resolve(null),
     ]);
     if (topicsRes.ok) {
       const m = new Map<string, PublicTopic>();
@@ -273,6 +275,12 @@ export class TopicsListPage implements OnInit, OnDestroy {
     }
     if (summariesRes.ok) {
       this.topicSummaries.set(summariesRes.value.items);
+    }
+    // Prefer /api/me/follows (what the toggle writes to); fall back to any
+    // `isFollowed` the topics response happens to include.
+    if (followsRes && followsRes.ok) {
+      this.followedTopicIds.set(new Set(followsRes.value.topicIds));
+    } else if (summariesRes.ok) {
       this.followedTopicIds.set(
         new Set(summariesRes.value.items.filter((t) => t.isFollowed).map((t) => t.id)),
       );
