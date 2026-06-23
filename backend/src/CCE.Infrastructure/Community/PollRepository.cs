@@ -16,8 +16,14 @@ public sealed class PollRepository : IPollRepository
     public Task<Poll?> GetWithOptionsAsync(Guid pollId, CancellationToken ct)
         => _db.Polls.Include(p => p.Options).FirstOrDefaultAsync(p => p.Id == pollId, ct);
 
-    public Task<bool> HasVotedAsync(Guid pollId, Guid userId, CancellationToken ct)
-        => _db.PollVotes.AnyAsync(v => v.PollId == pollId && v.UserId == userId, ct);
-
     public void AddVote(PollVote vote) => _db.PollVotes.Add(vote);
+
+    public async Task<IReadOnlyList<PollVote>> RemoveVotesAsync(Guid pollId, Guid userId, CancellationToken ct)
+    {
+        var votes = await _db.PollVotes
+            .Where(v => v.PollId == pollId && v.UserId == userId)
+            .ToListAsync(ct);
+        _db.PollVotes.RemoveRange(votes);
+        return votes;
+    }
 }

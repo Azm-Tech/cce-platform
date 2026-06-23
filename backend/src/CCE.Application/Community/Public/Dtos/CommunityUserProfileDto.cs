@@ -12,4 +12,10 @@ public sealed record CommunityUserProfileDto(
     int PostCount,
     int ReplyCount,
     int FollowerCount,
-    int FollowingCount);
+    int FollowingCount,
+    bool IsFollowed,
+    string? ExpertBioAr,
+    string? ExpertBioEn,
+    string? CountryNameAr,
+    string? CountryNameEn,
+    DateTimeOffset JoinedDate);

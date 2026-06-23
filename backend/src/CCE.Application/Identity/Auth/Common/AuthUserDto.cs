@@ -5,5 +5,6 @@ public sealed record AuthUserDto(
     string EmailAddress,
     string FirstName,
     string LastName,
+    string? AvatarUrl,
     IReadOnlyCollection<string> Roles,
     IReadOnlyCollection<string> Claims);

@@ -18,4 +18,5 @@ public sealed record PublicPostDto(
     int DownvoteCount,
     int CommentsCount,
     System.Collections.Generic.IReadOnlyList<System.Guid> AttachmentIds,
-    System.DateTimeOffset CreatedOn);
+    System.DateTimeOffset CreatedOn,
+    PollSummaryDto? Poll);  // null for Info/Question posts

@@ -5,6 +5,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Errors;
 using CCE.Application.Messages;
+using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,14 @@ public sealed class GetPublicPostByIdQueryHandler
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
     private readonly MessageFactory _msg;
+    private readonly ISystemClock _clock;
 
-    public GetPublicPostByIdQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, MessageFactory msg)
+    public GetPublicPostByIdQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, MessageFactory msg, ISystemClock clock)
     {
         _db = db;
         _feedStore = feedStore;
         _msg = msg;
+        _clock = clock;
     }
 
     public async Task<Response<PostDetailDto>> Handle(
@@ -73,10 +76,15 @@ public sealed class GetPublicPostByIdQueryHandler
         // Redis meta — fired before the user-specific EF queries so it runs concurrently.
         var metaTask = _feedStore.GetPostMetaAsync(raw.Id, cancellationToken);
 
-        // User-specific point lookups — two tiny indexed queries, sequential (same DbContext).
+        // User-specific point lookups — three tiny indexed queries, sequential (same DbContext).
         var isFollowing = userId.HasValue
             && await _db.PostFollows.AsNoTracking()
                 .AnyAsync(pf => pf.PostId == raw.Id && pf.UserId == userId.Value, cancellationToken)
+                .ConfigureAwait(false);
+
+        var isAuthorFollowed = userId.HasValue
+            && await _db.UserFollows.AsNoTracking()
+                .AnyAsync(uf => uf.FollowerId == userId.Value && uf.FollowedId == raw.AuthorId, cancellationToken)
                 .ConfigureAwait(false);
 
         var vote = userId.HasValue
@@ -89,11 +97,18 @@ public sealed class GetPublicPostByIdQueryHandler
 
         var meta = await metaTask.ConfigureAwait(false);
 
+        // Poll data — only fetched for Poll-type posts.
+        var pollsByPost = raw.Type == PostType.Poll
+            ? await PollHydrator.FetchAsync(_db, _clock, new[] { raw.Id }, userId, cancellationToken)
+                .ConfigureAwait(false)
+            : new System.Collections.Generic.Dictionary<System.Guid, PollSummaryDto>();
+        var pollSummary = pollsByPost.GetValueOrDefault(raw.Id);
+
         var authorName = $"{raw.AuthorFirst} {raw.AuthorLast}".Trim();
         var dto = new PostDetailDto(
             raw.Id, raw.CommunityId, raw.TopicId,
             new PostAuthorDto(raw.AuthorId, authorName, raw.AvatarUrl, raw.IsExpert,
-                raw.PostsCount, raw.FollowerCount),
+                raw.PostsCount, raw.FollowerCount, isAuthorFollowed),
             raw.Type, raw.Title, raw.Content, raw.Locale,
             raw.IsAnswerable, raw.AnsweredReplyId,
             meta?.Upvotes   ?? raw.UpvoteCount,
@@ -104,7 +119,8 @@ public sealed class GetPublicPostByIdQueryHandler
             raw.TopicNameAr ?? string.Empty,
             raw.TopicNameEn ?? string.Empty,
             isFollowing,
-            vote);
+            vote,
+            pollSummary);
 
         return _msg.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
     }

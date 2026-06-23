@@ -53,6 +53,7 @@ public sealed class ListCommunityFeedQueryHandler
             && request.CommunityId.HasValue
             && request.PostType is null
             && !request.AuthorId.HasValue
+            && !request.IsWatchlisted.HasValue
             && (request.Sort == PostFeedSort.Hot || request.Sort == PostFeedSort.Newest);
 
         if (canUseRedis)
@@ -72,11 +73,30 @@ public sealed class ListCommunityFeedQueryHandler
 
             if (ids.Count > 0)
             {
-                var total = await _db.Communities
-                    .Where(c => c.Id == communityId)
-                    .Select(c => c.PostCount)
-                    .SingleAsync(cancellationToken)
-                    .ConfigureAwait(false);
+                // Fix A: use a scoped SQL count when topicId is active — PostCount is the full
+                // community total and ignores the topic filter, causing inflated pagination.
+                long total;
+                if (hasTopic)
+                {
+                    total = await (
+                        from p in _db.Posts
+                        join c in _db.Communities on p.CommunityId equals c.Id
+                        where p.CommunityId == communityId
+                            && p.TopicId == request.TopicId!.Value
+                            && p.Status == PostStatus.Published
+                            && c.IsActive && c.Visibility == CommunityVisibility.Public
+                        select p.Id)
+                        .LongCountAsync(cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    total = await _db.Communities
+                        .Where(c => c.Id == communityId)
+                        .Select(c => c.PostCount)
+                        .SingleAsync(cancellationToken)
+                        .ConfigureAwait(false);
+                }
 
                 var hydrated = await _hydratorService
                     .HydrateAsync(ids, request.UserId, request.TopicId, cancellationToken)
@@ -85,7 +105,7 @@ public sealed class ListCommunityFeedQueryHandler
                 if (!hasTopic)
                 {
                     return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, (int)total),
+                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
                         "ITEMS_LISTED");
                 }
 
@@ -95,7 +115,7 @@ public sealed class ListCommunityFeedQueryHandler
                 {
                     return _msg.Ok(
                         new PagedResult<CommunityFeedItemDto>(
-                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, (int)total),
+                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, total),
                         "ITEMS_LISTED");
                 }
                 // Window exhausted for this page — fall through to SQL.
@@ -122,6 +142,16 @@ public sealed class ListCommunityFeedQueryHandler
             .WhereIf(tagIds.Count > 0, p => p.Tags.Any(t => tagIds.Contains(t.Id)))
             .WhereIf(postTypeFilter.HasValue, p => p.Type == postTypeFilter!.Value)
             .WhereIf(request.AuthorId.HasValue, p => p.AuthorId == request.AuthorId!.Value);
+
+        if (request.IsWatchlisted == true && request.UserId.HasValue)
+        {
+            var watchlistedIds = await _db.PostFollows.AsNoTracking()
+                .Where(pf => pf.UserId == request.UserId.Value)
+                .Select(pf => pf.PostId)
+                .ToListAsyncEither(cancellationToken)
+                .ConfigureAwait(false);
+            query = query.Where(p => watchlistedIds.Contains(p.Id));
+        }
 
         query = request.Sort switch
         {

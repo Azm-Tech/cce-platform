@@ -29,4 +29,5 @@ public sealed record CommunityFeedItemDto(
     string TopicNameEn,
     bool IsExpert,
     bool IsWatchlisted,
-    int VoteStatus);
+    int VoteStatus,
+    PollSummaryDto? Poll);  // null for Info/Question posts

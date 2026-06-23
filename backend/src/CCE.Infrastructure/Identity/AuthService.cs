@@ -140,7 +140,7 @@ public sealed class AuthService : IAuthService
         var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
         if (existing is not null) return new RegisterResult(null, true);
 
-        var user = User.RegisterLocal(firstName, lastName, email, jobTitle ?? "", orgName ?? "", phone ?? "");
+        var user = User.RegisterLocal(firstName, lastName, email, jobTitle ?? "", orgName ?? "", phone ?? "", _clock);
         if (countryId.HasValue) user.AssignCountry(countryId.Value);
 
         var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
@@ -160,12 +160,12 @@ public sealed class AuthService : IAuthService
 
     public async Task<AdminCreateResult> AdminCreateUserAsync(
         string firstName, string lastName, string email,
-        string phone, System.Guid? countryId, string role, CancellationToken ct)
+        string phone, System.Guid? countryId, string role, System.Guid createdBy, CancellationToken ct)
     {
         var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
         if (existing is not null) return new AdminCreateResult(null, true, false, false);
 
-        var user = User.CreateByAdmin(firstName, lastName, email, phone);
+        var user = User.CreateByAdmin(firstName, lastName, email, phone, createdBy, _clock);
         if (countryId.HasValue) user.AssignCountry(countryId.Value);
 
         var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
@@ -271,7 +271,8 @@ public sealed class AuthService : IAuthService
                 email,
                 gatewayResponse.FirstName,
                 gatewayResponse.LastName,
-                gatewayResponse.DisplayName);
+                gatewayResponse.DisplayName,
+                _clock);
 
             var createResult = await _userManager.CreateAsync(user).ConfigureAwait(false);
             if (!createResult.Succeeded)
@@ -348,6 +349,6 @@ public sealed class AuthService : IAuthService
             issued.RefreshTokenExpiresAtUtc,
             "Bearer",
             new AuthUserDto(user.Id, user.Email ?? string.Empty, user.FirstName, user.LastName,
-                roles.ToArray(), claims));
+                user.AvatarUrl, roles.ToArray(), claims));
     }
 }

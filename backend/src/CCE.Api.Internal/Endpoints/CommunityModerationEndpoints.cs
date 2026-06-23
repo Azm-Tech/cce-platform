@@ -1,4 +1,5 @@
 using CCE.Api.Common.Extensions;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Commands.ApproveJoinRequest;
 using CCE.Application.Community.Commands.ChangeCommunityVisibility;
 using CCE.Application.Community.Commands.CreateCommunity;
@@ -6,6 +7,8 @@ using CCE.Application.Community.Commands.RejectJoinRequest;
 using CCE.Application.Community.Commands.SoftDeletePost;
 using CCE.Application.Community.Commands.SoftDeleteReply;
 using CCE.Application.Community.Commands.UpdateCommunity;
+using CCE.Application.Community.Public.Queries.GetPublicPostById;
+using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Queries.ListAdminPosts;
 using CCE.Application.Community.Queries.ListJoinRequests;
 using CCE.Domain;
@@ -113,6 +116,25 @@ public static class CommunityModerationEndpoints
             var result = await mediator.Send(new RejectJoinRequestCommand(id), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).RequireAuthorization(Permissions.Community_Community_Moderate).WithName("RejectJoinRequest");
+
+        // GET /api/admin/community/posts/{id} — post detail (read-only)
+        moderation.MapGet("/posts/{id:guid}", async (
+            System.Guid id, ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new GetPublicPostByIdQuery(id, currentUser.GetUserId()), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization().WithName("AdminGetPostById");
+
+        // GET /api/admin/community/posts/{id}/replies — list top-level replies
+        moderation.MapGet("/posts/{id:guid}/replies", async (
+            System.Guid id, int? page, int? pageSize,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListPublicPostRepliesQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization().WithName("AdminListPostReplies");
 
         return app;
     }

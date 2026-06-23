@@ -1,3 +1,4 @@
+using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ public sealed class DevUsersSeeder : IHostedService
     {
         using var scope = _services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<CceDbContext>();
+        var clock = scope.ServiceProvider.GetRequiredService<ISystemClock>();
 
         try
         {
@@ -45,7 +47,7 @@ public sealed class DevUsersSeeder : IHostedService
                 }
 
                 var email = $"{role}@cce.local";
-                db.Users.Add(new User
+                var u = new User
                 {
                     Id = userId,
                     UserName = email,
@@ -53,10 +55,40 @@ public sealed class DevUsersSeeder : IHostedService
                     Email = email,
                     NormalizedEmail = email.ToUpperInvariant(),
                     EmailConfirmed = true,
-                });
+                };
+                u.MarkAsCreated(userId, clock);
+                db.Users.Add(u);
                 _logger.LogInformation("DevUsersSeeder: seeded {Role} user {UserId}", role, userId);
             }
             await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // Seed ExpertProfile for the cce-expert dev user so the SQL read-merge path in
+            // ListUserFeedQueryHandler is exercised in dev mode (ExpertProfiles JOIN).
+            var expertUserId = DevAuthHandler.RoleToUserId["cce-expert"];
+            var expertExists = await db.ExpertProfiles
+                .AnyAsync(e => e.UserId == expertUserId, cancellationToken)
+                .ConfigureAwait(false);
+            if (!expertExists)
+            {
+                var now = clock.UtcNow;
+                var adminId = DevAuthHandler.RoleToUserId["cce-admin"];
+                await db.Database.ExecuteSqlRawAsync(
+                    """
+                    INSERT INTO expert_profiles
+                        (id, user_id, bio_ar, bio_en, expertise_tags,
+                         academic_title_ar, academic_title_en,
+                         approved_on, approved_by_id,
+                         created_on, created_by_id, is_deleted)
+                    VALUES
+                        ({0}, {1}, N'', N'', N'[]',
+                         N'Dev Expert', N'Dev Expert',
+                         {2}, {3},
+                         {2}, {3}, 0)
+                    """,
+                    Guid.NewGuid(), expertUserId, now, adminId)
+                    .ConfigureAwait(false);
+                _logger.LogInformation("DevUsersSeeder: seeded ExpertProfile for cce-expert user {UserId}", expertUserId);
+            }
         }
         catch (Exception ex)
         {

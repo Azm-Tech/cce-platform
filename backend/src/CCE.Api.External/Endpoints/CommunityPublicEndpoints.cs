@@ -46,6 +46,7 @@ public static class CommunityPublicEndpoints
         community.MapGet("/feed", async (
             PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
             CCE.Domain.Community.PostType? postType, int? page, int? pageSize,
+            System.Guid? authorId, bool? isWatchlisted,
             ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
             var query = new ListCommunityFeedQuery(
@@ -56,7 +57,9 @@ public static class CommunityPublicEndpoints
                 currentUser.GetUserId(),
                 postType,
                 page ?? 1,
-                pageSize ?? 20);
+                pageSize ?? 20,
+                AuthorId: authorId,
+                IsWatchlisted: isWatchlisted);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListCommunityFeed");
@@ -105,10 +108,10 @@ public static class CommunityPublicEndpoints
 
         community.MapGet("/topics/{id:guid}/posts", async (
             System.Guid id, int? page, int? pageSize,
-            IMediator mediator, CancellationToken ct) =>
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(
-                new ListPublicPostsInTopicQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+                new ListPublicPostsInTopicQuery(id, currentUser.GetUserId(), page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicPostsInTopic");
 
@@ -130,11 +133,11 @@ public static class CommunityPublicEndpoints
 
         // GET /api/community/users/{id} — US030 community user profile
         community.MapGet("/users/{id:guid}", async (
-            System.Guid id, IMediator mediator, CancellationToken ct) =>
+            System.Guid id, ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
-            var result = await mediator.Send(new GetCommunityUserProfileQuery(id), ct).ConfigureAwait(false);
+            var result = await mediator.Send(new GetCommunityUserProfileQuery(id, currentUser.GetUserId()), ct).ConfigureAwait(false);
             return result.ToHttpResult();
-        }).RequireAuthorization().WithName("GetCommunityUserProfile");
+        }).AllowAnonymous().WithName("GetCommunityUserProfile");
 
         // GET /api/community/posts/{id}/share — US025 shareable link
         community.MapGet("/posts/{id:guid}/share", async (

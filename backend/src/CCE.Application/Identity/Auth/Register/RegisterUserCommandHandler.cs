@@ -31,6 +31,7 @@ internal sealed class RegisterUserCommandHandler
             result.User.Email ?? request.EmailAddress,
             result.User.FirstName,
             result.User.LastName,
+            result.User.AvatarUrl,
             ["cce-user"],
             []), "REGISTER_SUCCESS");
     }

@@ -27,4 +27,8 @@ public sealed class PollOption : Entity<System.Guid>
     }
 
     public void IncrementVotes() => VoteCount++;
+    public void DecrementVotes()
+    {
+        if (VoteCount > 0) VoteCount--;
+    }
 }

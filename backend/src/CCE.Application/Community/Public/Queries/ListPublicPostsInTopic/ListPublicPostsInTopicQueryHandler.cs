@@ -3,6 +3,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Messages;
+using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
 
@@ -13,11 +14,13 @@ public sealed class ListPublicPostsInTopicQueryHandler
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
+    private readonly ISystemClock _clock;
 
-    public ListPublicPostsInTopicQueryHandler(ICceDbContext db, MessageFactory msg)
+    public ListPublicPostsInTopicQueryHandler(ICceDbContext db, MessageFactory msg, ISystemClock clock)
     {
         _db = db;
         _msg = msg;
+        _clock = clock;
     }
 
     public async Task<Response<PagedResult<PublicPostDto>>> Handle(
@@ -63,10 +66,16 @@ public sealed class ListPublicPostsInTopicQueryHandler
             .GroupBy(a => a.PostId)
             .ToDictionary(g => g.Key, g => g.Select(a => a.AssetFileId).ToList());
 
+        // Poll data — batch fetch; UserVoted populated when caller is authenticated.
+        var pollPostIds  = items.Where(p => p.Type == PostType.Poll).Select(p => p.Id).ToList();
+        var pollsByPostId = await PollHydrator.FetchAsync(_db, _clock, pollPostIds, request.UserId, cancellationToken)
+            .ConfigureAwait(false);
+
         var dtos = items.Select(p => MapToDto(
             p,
             authorNames.GetValueOrDefault(p.AuthorId),
-            attachmentsByPost.GetValueOrDefault(p.Id, new List<System.Guid>()))).ToList();
+            attachmentsByPost.GetValueOrDefault(p.Id, new List<System.Guid>()),
+            pollsByPostId.GetValueOrDefault(p.Id))).ToList();
 
         return _msg.Ok(
             new PagedResult<PublicPostDto>(dtos, paged.Page, paged.PageSize, paged.Total),
@@ -76,7 +85,8 @@ public sealed class ListPublicPostsInTopicQueryHandler
     internal static PublicPostDto MapToDto(
         Post p,
         string? authorName,
-        System.Collections.Generic.IReadOnlyList<System.Guid> attachmentIds) => new(
+        System.Collections.Generic.IReadOnlyList<System.Guid> attachmentIds,
+        PollSummaryDto? poll = null) => new(
         p.Id,
         p.CommunityId,
         p.TopicId,
@@ -92,5 +102,6 @@ public sealed class ListPublicPostsInTopicQueryHandler
         p.DownvoteCount,
         p.CommentsCount,
         attachmentIds,
-        p.CreatedOn);
+        p.CreatedOn,
+        poll);
 }

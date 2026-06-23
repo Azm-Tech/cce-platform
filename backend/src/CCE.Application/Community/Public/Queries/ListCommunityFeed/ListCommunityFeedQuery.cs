@@ -20,4 +20,5 @@ public sealed record ListCommunityFeedQuery(
     CCE.Domain.Community.PostType? PostType,
     int Page,
     int PageSize,
-    System.Guid? AuthorId = null) : IRequest<Response<PagedResult<CommunityFeedItemDto>>>;
+    System.Guid? AuthorId = null,
+    bool? IsWatchlisted = null) : IRequest<Response<PagedResult<CommunityFeedItemDto>>>;

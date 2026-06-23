@@ -34,7 +34,7 @@ public interface IAuthService
 
     Task<RegisterResult> RegisterAsync(string firstName, string lastName, string email, string password, string? jobTitle, string? orgName, string? phone, System.Guid? countryId, CancellationToken ct);
 
-    Task<AdminCreateResult> AdminCreateUserAsync(string firstName, string lastName, string email, string phone, System.Guid? countryId, string role, CancellationToken ct);
+    Task<AdminCreateResult> AdminCreateUserAsync(string firstName, string lastName, string email, string phone, System.Guid? countryId, string role, System.Guid createdBy, CancellationToken ct);
 
     Task ForgotPasswordAsync(string email, CancellationToken ct);
 
