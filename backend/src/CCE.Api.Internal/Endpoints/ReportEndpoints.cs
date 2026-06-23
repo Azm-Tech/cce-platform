@@ -3,6 +3,7 @@ using CCE.Application.Reports;
 using CCE.Application.Reports.Queries.GetCommunityPostReport;
 using CCE.Application.Reports.Queries.GetEventsReport;
 using CCE.Application.Reports.Queries.GetExpertReport;
+using CCE.Application.Reports.Queries.GetResourcesReport;
 using CCE.Application.Reports.Queries.GetNewsReport;
 using CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
 using CCE.Application.Reports.Queries.GetUserPreferenceReport;
@@ -227,6 +228,19 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_Events)
         .WithName("EventsReportJson");
+
+        reports.MapGet("/resources", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetResourcesReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_Resources)
+        .WithName("ResourcesReportJson");
 
         return app;
     }
