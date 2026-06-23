@@ -1,6 +1,7 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
 using CCE.Application.Reports.Queries.GetCommunityPostReport;
+using CCE.Application.Reports.Queries.GetCountryProfilesReport;
 using CCE.Application.Reports.Queries.GetEventsReport;
 using CCE.Application.Reports.Queries.GetExpertReport;
 using CCE.Application.Reports.Queries.GetResourcesReport;
@@ -241,6 +242,19 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_Resources)
         .WithName("ResourcesReportJson");
+
+        reports.MapGet("/country-profiles", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetCountryProfilesReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_CountryProfiles)
+        .WithName("CountryProfilesReportJson");
 
         return app;
     }
