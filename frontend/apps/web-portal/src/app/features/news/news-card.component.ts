@@ -69,11 +69,6 @@ import type { NewsArticle } from './news.types';
 
       <footer class="cce-news-card__foot">
         <cce-share-menu [title]="title()" [url]="absoluteUrl()" />
-        @if (publisher()) {
-          <span class="cce-news-card__author">
-            {{ 'news.publishedBy' | transloco }}: {{ publisher() }}
-          </span>
-        }
       </footer>
     </article>
   `,
@@ -104,11 +99,6 @@ export class NewsCardComponent {
     el.innerHTML = html;
     return el.value;
   }
-
-  readonly publisher = computed<string | null>(() => {
-    const a = this.article() as NewsArticle & { authorName?: string; publishedBy?: string };
-    return a.authorName ?? a.publishedBy ?? null;
-  });
 
   readonly topicLabel = computed<string | null>(() => {
     const a = this.article();

@@ -155,23 +155,15 @@
 
       <div class="cce-news-detail__widget">
         <h3 class="cce-news-detail__widget-title">{{ 'news.detail.shareTitle' | transloco }}</h3>
-        <div class="cce-news-detail__share">
-          <button type="button" class="cce-news-detail__share-btn" aria-label="WhatsApp" (click)="openShare(shareUrls().whatsapp)">
-            <mat-icon>chat</mat-icon>
-          </button>
-          <button type="button" class="cce-news-detail__share-btn" aria-label="X (Twitter)" (click)="openShare(shareUrls().twitter)">
-            <mat-icon>tag</mat-icon>
-          </button>
-          <button type="button" class="cce-news-detail__share-btn" aria-label="Facebook" (click)="openShare(shareUrls().facebook)">
-            <mat-icon>thumb_up</mat-icon>
-          </button>
-          <button type="button" class="cce-news-detail__share-btn" aria-label="LinkedIn" (click)="openShare(shareUrls().linkedin)">
-            <mat-icon>work</mat-icon>
-          </button>
-          <button type="button" class="cce-news-detail__share-btn" aria-label="Copy link" (click)="copyLink()">
-            <mat-icon>link</mat-icon>
-          </button>
-        </div>
+        <button
+          type="button"
+          mat-stroked-button
+          class="cce-news-detail__share-cta"
+          (click)="openShareDialog()"
+        >
+          <mat-icon>share</mat-icon>
+          {{ 'share.button' | transloco }}
+        </button>
       </div>
 
       <div class="cce-news-detail__widget cce-news-detail__widget--newsletter">

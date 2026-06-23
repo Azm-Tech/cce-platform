@@ -3,12 +3,14 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { KnowledgeApiService } from './knowledge-api.service';
+import { SharePostDialogComponent, type SharePostDialogData } from '../community/share-post-dialog.component';
 import type { Resource, ResourceListItem } from './knowledge.types';
 
 @Component({
@@ -30,6 +32,7 @@ export class ResourceDetailPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
 
   @ViewChild('relatedTrack') relatedTrack?: ElementRef<HTMLElement>;
 
@@ -105,6 +108,10 @@ export class ResourceDetailPage implements OnInit {
     return ext && ext.length <= 5 ? ext : '';
   });
 
+  /** Countries this resource applies to (captured in the admin form as
+   *  countryIds; the API returns the localized names). */
+  readonly countries = computed<string[]>(() => this.resource()?.countryNames ?? []);
+
   /** "العربية، الإنجليزية" — localized via the common.locale.* i18n keys,
    *  listing only the languages the resource actually has titles for. */
   readonly languages = computed<string>(() => {
@@ -135,24 +142,18 @@ export class ResourceDetailPage implements OnInit {
     return this.locale() === 'ar' ? item.titleAr : item.titleEn;
   }
 
-  /** Share the current page via Web Share API (mobile) or clipboard fallback. */
-  async share(): Promise<void> {
-    try {
-      const url = window.location.href;
-      const navAny = navigator as Navigator & { share?: (data: { title?: string; url?: string }) => Promise<void> };
-      if (typeof navAny.share === 'function') {
-        await navAny.share({ title: this.title(), url });
-        this.toast.success('confirmations.CON002');
-      } else {
-        await navigator.clipboard.writeText(url);
-        this.toast.success('confirmations.CON002');
-      }
-    } catch (err) {
-      // AbortError = user cancelled the native share sheet — silent.
-      if (err instanceof Error && err.name !== 'AbortError') {
-        this.toast.error('errors.ERR004');
-      }
-    }
+  /** Share the current page via the shared share dialog (same as community posts). */
+  share(): void {
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { url: window.location.href, title: this.title() },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      },
+    );
   }
 
   ngOnInit(): void {

@@ -1,7 +1,7 @@
 /* News card — vertical layout (image header → content → footer).
    Matches the unified News & Events design mockup. */
 
-:host { display: block; height: 100%; content-visibility: auto; contain-intrinsic-size: auto 360px; }
+:host { display: block; height: 100%; }
 
 .cce-news-card {
   display: flex;
@@ -11,6 +11,10 @@
   border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
   border-radius: 14px;
   overflow: hidden;
+  // Containment on the card itself (not the host) so its border — including
+  // the bottom edge — isn't clipped by the host's paint containment.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
   transition:
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),

@@ -1,8 +1,6 @@
 :host {
   display: block;
   height: 100%;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 360px;
   --type-color: var(--color-brand);
   --type-tint: rgba(var(--color-brand-rgb), 0.08);
 }
@@ -28,6 +26,10 @@
   border-radius: 12px;
   overflow: hidden;
   height: 100%;
+  // Perf containment lives here (not the host) so the card's own border —
+  // notably the bottom edge — isn't clipped by the host's paint containment.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
   transition: box-shadow 0.18s ease, border-color 0.18s ease;
 
   &:hover {

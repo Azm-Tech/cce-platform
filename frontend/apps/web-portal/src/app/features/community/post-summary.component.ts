@@ -313,7 +313,7 @@ export class PostSummaryComponent {
     this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
       SharePostDialogComponent,
       {
-        data: { postId: this.post().id, postTitle: this.title() },
+        data: { url: `${window.location.origin}/community/posts/${this.post().id}`, title: this.title() },
         width: '480px',
         maxWidth: '95vw',
         autoFocus: false,

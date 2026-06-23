@@ -2,6 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -10,6 +11,7 @@ import { ToastService } from '@frontend/ui-kit';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { CalendarMenuComponent, type CalendarEventInput } from '../../shared/calendar-menu/calendar-menu.component';
 import { EventsApiService } from './events-api.service';
+import { SharePostDialogComponent, type SharePostDialogData } from '../community/share-post-dialog.component';
 import type { Event } from './event.types';
 
 type TimeBucket = 'upcoming' | 'today' | 'live' | 'past';
@@ -43,6 +45,7 @@ export class EventDetailPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly t = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
 
   readonly event = signal<Event | null>(null);
   readonly loading = signal(false);
@@ -80,6 +83,16 @@ export class EventDetailPage implements OnInit {
 
   readonly isOnline = computed(() => !!this.event()?.onlineMeetingUrl);
 
+  /** Locale-aware topic name (captured in the admin form as topicId). */
+  readonly topicLabel = computed<string | null>(() => {
+    const e = this.event();
+    if (!e) return null;
+    return (this.locale() === 'ar' ? e.topicNameAr : e.topicNameEn) ?? null;
+  });
+
+  /** Event tags (captured in the admin form as tagIds). */
+  readonly tags = computed<string[]>(() => this.event()?.tags ?? []);
+
   /** Locale-aware speakers list. Empty until the backend sends `speakers` —
    *  the template hides the whole section when empty. */
   readonly speakers = computed(() => {
@@ -116,19 +129,19 @@ export class EventDetailPage implements OnInit {
     );
   });
 
-  /** Social share targets for the sidebar row. Brand names are proper
-   *  nouns — not translated. */
-  readonly shareLinks = computed(() => {
-    const url = typeof window !== 'undefined' ? window.location.href : '';
-    const u = encodeURIComponent(url);
-    const t = encodeURIComponent(this.title());
-    return [
-      { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${t}%20${u}` },
-      { id: 'x', label: 'X', href: `https://twitter.com/intent/tweet?text=${t}&url=${u}` },
-      { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
-      { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
-    ];
-  });
+  /** Open the shared share dialog (same as community posts). */
+  openShareDialog(): void {
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { url: window.location.href, title: this.title() },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      },
+    );
+  }
 
   /** Payload handed to <cce-calendar-menu>. Returns a stub when the event
    *  isn't loaded yet so the menu can render without flicker. */
@@ -295,16 +308,6 @@ export class EventDetailPage implements OnInit {
     if (!loc) return;
     const q = encodeURIComponent(loc);
     window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener,noreferrer');
-  }
-
-  async copyLink(): Promise<void> {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      this.toast.success('events.detail.shareCopiedToast');
-    } catch {
-      window.prompt('Copy link', url);
-    }
   }
 
   private filenameFor(e: Event): string {

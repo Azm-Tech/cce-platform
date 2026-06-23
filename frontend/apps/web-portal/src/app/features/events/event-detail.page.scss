@@ -192,6 +192,28 @@
   background: rgba(var(--color-text-primary-rgb), 0.07);
   border-color: rgba(var(--color-text-primary-rgb), 0.14);
 }
+.cce-event-detail__chip--topic {
+  color: var(--neutrals--700);
+  background: var(--neutrals--100);
+  border-color: var(--neutrals--200);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.cce-event-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+.cce-event-detail__tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-brand);
+  background: rgba(var(--color-brand-rgb), 0.08);
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+}
 
 @keyframes cceEventPulse {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -447,6 +469,9 @@
   display: flex;
   gap: 0.55rem;
   flex-wrap: wrap;
+}
+.cce-event-detail__share-cta {
+  width: 100%;
 }
 .cce-event-detail__share-btn {
   appearance: none;

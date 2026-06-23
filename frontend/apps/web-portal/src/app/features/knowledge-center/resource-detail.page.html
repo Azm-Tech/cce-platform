@@ -121,6 +121,12 @@
                 <dd>{{ languages() }}</dd>
               </div>
             }
+            @if (countries().length > 0) {
+              <div class="cce-resource-detail__fact">
+                <dt>{{ 'resources.detail.factCountries' | transloco }}</dt>
+                <dd>{{ countries().join(locale() === 'ar' ? '، ' : ', ') }}</dd>
+              </div>
+            }
             @if (r.publishedOn) {
               <div class="cce-resource-detail__fact">
                 <dt>{{ 'resources.detail.factPublished' | transloco }}</dt>

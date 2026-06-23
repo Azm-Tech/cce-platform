@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +11,7 @@ import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { NewsApiService } from './news-api.service';
+import { SharePostDialogComponent, type SharePostDialogData } from '../community/share-post-dialog.component';
 import type { NewsArticle } from './news.types';
 
 interface TocItem {
@@ -36,6 +38,7 @@ export class NewsDetailPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
 
   readonly article = signal<NewsArticle | null>(null);
   readonly loading = signal(false);
@@ -77,12 +80,14 @@ export class NewsDetailPage implements OnInit {
     return `${minutes} ${this.transloco.translate('news.detail.minRead')}`;
   });
 
-  /** Tags derived from the topic name. Backend currently exposes a single
-   *  topic per article — when `tags: string[]` lands on the API we can swap
-   *  this to read `a.tags` directly. */
+  /** Chips: the article's topic followed by its tags (both captured in the
+   *  admin form). De-duplicated, falsy values dropped. */
   readonly tags = computed<string[]>(() => {
-    const t = this.topicLabel();
-    return t ? [t] : [];
+    const a = this.article();
+    if (!a) return [];
+    const topic = this.topicLabel();
+    const list = [...(topic ? [topic] : []), ...(a.tags ?? [])];
+    return Array.from(new Set(list.filter((t): t is string => !!t)));
   });
 
   /** Table of contents. Includes both the static section anchors we render
@@ -117,17 +122,19 @@ export class NewsDetailPage implements OnInit {
     return new URL(this.router.createUrlTree(['/news', a.id]).toString(), window.location.origin).toString();
   });
 
-  /** Social platform share URLs. */
-  readonly shareUrls = computed(() => {
-    const url = encodeURIComponent(this.absoluteUrl());
-    const text = encodeURIComponent(this.title());
-    return {
-      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-      whatsapp: `https://wa.me/?text=${text}%20${url}`,
-    };
-  });
+  /** Open the shared share dialog (same as community posts). */
+  openShareDialog(): void {
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { url: this.absoluteUrl(), title: this.title() },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      },
+    );
+  }
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -159,20 +166,6 @@ export class NewsDetailPage implements OnInit {
     if (typeof document === 'undefined') return;
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  openShare(href: string): void {
-    if (typeof window === 'undefined') return;
-    window.open(href, '_blank', 'noopener,noreferrer');
-  }
-
-  async copyLink(): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(this.absoluteUrl());
-      this.toast.success('confirmations.CON003');
-    } catch {
-      this.toast.error('errors.ERR004');
-    }
   }
 
   excerpt(article: NewsArticle): string {

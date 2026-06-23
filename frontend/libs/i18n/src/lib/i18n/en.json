@@ -931,6 +931,7 @@
       "resultsTitle": "Key Results",
       "factFormat": "Format",
       "factLanguage": "Language",
+      "factCountries": "Countries",
       "factFile": "File",
       "downloadCta": "Download report",
       "shareCta": "Share report"

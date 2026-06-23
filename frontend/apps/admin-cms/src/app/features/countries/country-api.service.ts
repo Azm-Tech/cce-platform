@@ -31,12 +31,10 @@ export class CountryApiService {
     if (opts.sortBy !== undefined) params = params.set('sortBy', opts.sortBy);
     if (opts.sortOrder !== undefined) params = params.set('sortOrder', opts.sortOrder);
     if (opts.isCceCountry !== undefined) params = params.set('isCceCountry', String(opts.isCceCountry));
-    return this.run(async () => {
-      const res = await firstValueFrom(
-        this.http.get<{ data: PagedResult<Country> }>('/api/countries', { params }),
-      );
-      return res.data;
-    });
+    // /api/admin/* responses are auto-unwrapped by the envelope interceptor.
+    return this.run(() =>
+      firstValueFrom(this.http.get<PagedResult<Country>>('/api/admin/countries', { params })),
+    );
   }
 
   async getCountry(id: string): Promise<Result<Country>> {

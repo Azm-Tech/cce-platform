@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ToastService } from '@frontend/ui-kit';
+import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,7 @@ import { LocaleService } from '@frontend/i18n';
 import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService } from './countries-api.service';
 import { MediaApiService } from '../../core/media/media-api.service';
+import { SharePostDialogComponent, type SharePostDialogData } from '../community/share-post-dialog.component';
 import { getMockAchievements, getMockCardStats, getMockCountryMeta, getMockKapsarc } from './testing/countries-mock';
 import { flagEmojiFor, flagUrlFor } from './flag-helpers';
 import type { Country, CountryAchievement, CountryMeta, CountryProfile, KapsarcSnapshot } from './country.types';
@@ -58,6 +60,7 @@ export class CountryDetailPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
   private readonly media = inject(MediaApiService);
+  private readonly dialog = inject(MatDialog);
 
   /** Open the country's NDC document (by asset id) in a new tab. */
   async viewNdc(assetId: string): Promise<void> {
@@ -291,21 +294,17 @@ export class CountryDetailPage implements OnInit {
     this.flagFailed.set(true);
   }
 
-  async share(): Promise<void> {
-    try {
-      const url = window.location.href;
-      const nav = navigator as Navigator & { share?: (d: { title?: string; url?: string }) => Promise<void> };
-      if (typeof nav.share === 'function') {
-        await nav.share({ title: this.headerName(), url });
-      } else {
-        await navigator.clipboard.writeText(url);
-      }
-      this.toast.success('confirmations.CON002');
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        this.toast.error('errors.ERR004');
-      }
-    }
+  share(): void {
+    this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
+      SharePostDialogComponent,
+      {
+        data: { url: window.location.href, title: this.headerName() },
+        width: '480px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        panelClass: 'cce-share-dialog',
+      },
+    );
   }
 
   setTab(tab: Tab): void {

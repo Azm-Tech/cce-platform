@@ -4,8 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 
 export interface SharePostDialogData {
-  postId: string;
-  postTitle: string | null;
+  /** Absolute URL to share. */
+  url: string;
+  /** Title used as the share text / email subject. */
+  title: string | null;
 }
 
 @Component({
@@ -67,7 +69,7 @@ export interface SharePostDialogData {
       </div>
 
       <div class="spd__copy-row">
-        <span class="spd__url" dir="ltr">{{ postUrl }}</span>
+        <span class="spd__url" dir="ltr">{{ shareUrl }}</span>
         <button type="button" class="spd__copy-btn" (click)="copyLink()">
           @if (copied()) {
             <mat-icon svgIcon="check" aria-hidden="true"></mat-icon>
@@ -86,12 +88,12 @@ export class SharePostDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<SharePostDialogComponent>);
   readonly data = inject<SharePostDialogData>(MAT_DIALOG_DATA);
 
-  readonly postUrl = `${window.location.origin}/community/posts/${this.data.postId}`;
+  readonly shareUrl = this.data.url;
   readonly copied = signal(false);
 
   open(platform: 'twitter' | 'linkedin' | 'whatsapp' | 'email'): void {
-    const url = encodeURIComponent(this.postUrl);
-    const text = encodeURIComponent(this.data.postTitle ?? '');
+    const url = encodeURIComponent(this.shareUrl);
+    const text = encodeURIComponent(this.data.title ?? '');
     const links: Record<string, string> = {
       twitter:  `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
@@ -107,7 +109,7 @@ export class SharePostDialogComponent {
 
   async copyLink(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(this.postUrl);
+      await navigator.clipboard.writeText(this.shareUrl);
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2000);
     } catch { /* clipboard unavailable */ }

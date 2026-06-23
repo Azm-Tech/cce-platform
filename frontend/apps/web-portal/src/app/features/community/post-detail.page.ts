@@ -533,7 +533,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
     this.dialog.open<SharePostDialogComponent, SharePostDialogData>(
       SharePostDialogComponent,
       {
-        data: { postId: p.id, postTitle: p.title },
+        data: { url: `${window.location.origin}/community/posts/${p.id}`, title: p.title },
         width: '480px',
         maxWidth: '95vw',
         autoFocus: false,
