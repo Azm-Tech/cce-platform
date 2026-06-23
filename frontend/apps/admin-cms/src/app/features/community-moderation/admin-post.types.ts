@@ -21,6 +21,26 @@ export interface AdminPostDetail {
   downvoteCount: number;
   commentsCount: number;
   createdOn: string;
+  /** Inline poll for `type === 'Poll'` posts (read-only results in admin). */
+  poll?: AdminPostPoll | null;
+}
+
+export interface AdminPollOption {
+  id: string;
+  label: string | null;
+  voteCount: number;
+  percentage: number;
+}
+
+export interface AdminPostPoll {
+  pollId?: string;
+  deadline: string | null;
+  isClosed: boolean;
+  allowMultiple: boolean;
+  isAnonymous: boolean;
+  resultsVisible: boolean;
+  totalVotes: number;
+  options: AdminPollOption[] | null;
 }
 
 /** Reply fetched from the public community API for a given post. */

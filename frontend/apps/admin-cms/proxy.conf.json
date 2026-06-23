@@ -4,5 +4,12 @@
     "secure": true,
     "changeOrigin": true,
     "logLevel": "warn"
+  },
+  "/hubs": {
+    "target": "https://cce-external-api.runasp.net",
+    "secure": true,
+    "changeOrigin": true,
+    "ws": true,
+    "logLevel": "warn"
   }
 }

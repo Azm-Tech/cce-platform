@@ -12,6 +12,7 @@ import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
+import { provideRealtime } from '@frontend/real-time';
 import { appRoutes } from './app.routes';
 import { EnvService } from './core/env.service';
 import { TranslocoHttpLoader } from '@frontend/i18n';
@@ -45,6 +46,17 @@ export const appConfig: ApplicationConfig = {
       translate.setActiveLang(lang);
       await firstValueFrom(translate.load(lang));
       await auth.refresh();
+    }),
+    provideRealtime(() => {
+      const auth = inject(AuthService);
+      return {
+        // Relative path, same-origin — routed to the backend by the dev proxy
+        // (and the reverse proxy in prod), exactly like the /api/* calls.
+        hubUrlFactory: () => '/hubs/notifications',
+        accessToken: auth.accessToken,
+        isAuthenticated: auth.isAuthenticated,
+        debug: isDevMode(),
+      };
     }),
   ],
 };

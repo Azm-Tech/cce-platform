@@ -71,6 +71,33 @@
     <div class="cce-pd__content" [attr.dir]="p.locale === 'ar' ? 'rtl' : 'ltr'">
       {{ p.content }}
     </div>
+
+    <!-- Poll results (read-only) -->
+    @if (p.poll; as poll) {
+      <div class="cce-pd__poll">
+        @for (opt of poll.options ?? []; track opt.id) {
+          <div class="cce-pd__poll-row">
+            <div class="cce-pd__poll-bar" [style.width.%]="opt.percentage"></div>
+            <span class="cce-pd__poll-label">{{ opt.label }}</span>
+            <span class="cce-pd__poll-pct">{{ opt.percentage }}% · {{ opt.voteCount }}</span>
+          </div>
+        }
+        <div class="cce-pd__poll-meta">
+          <span>{{ 'community.poll.totalVotes' | transloco:{ count: poll.totalVotes } }}</span>
+          @if (poll.isClosed) {
+            <span class="cce-pd__poll-meta-sep" aria-hidden="true">·</span>
+            <span>{{ 'community.poll.closed' | transloco }}</span>
+          } @else if (poll.deadline) {
+            <span class="cce-pd__poll-meta-sep" aria-hidden="true">·</span>
+            <span>{{ 'community.poll.closesOn' | transloco }} {{ poll.deadline | date:'short' }}</span>
+          }
+          @if (poll.isAnonymous) {
+            <span class="cce-pd__poll-meta-sep" aria-hidden="true">·</span>
+            <span>{{ 'community.poll.anonymous' | transloco }}</span>
+          }
+        </div>
+      </div>
+    }
   }
 
   <!-- ─── Replies ────────────────────────────────────────── -->

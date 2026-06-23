@@ -273,8 +273,35 @@
           @if (poll(); as pl) {
             <div class="cce-post-detail__poll">
               @for (opt of pl.options ?? []; track trackPollOption($index, opt)) {
-                @if (pollShowResults()) {
-                  <!-- Results view: bar + percentage + count -->
+                @if (pollCanVote()) {
+                  <!-- Vote view: selectable option (with live results when visible) -->
+                  <button
+                    type="button"
+                    class="cce-post-detail__poll-option"
+                    [class.cce-post-detail__poll-option--selected]="isPollOptionSelected(opt.id)"
+                    [class.cce-post-detail__poll-option--results]="pl.resultsVisible"
+                    [disabled]="pollVoting()"
+                    (click)="onPollOptionClick(opt.id)"
+                  >
+                    @if (pl.resultsVisible) {
+                      <div class="cce-post-detail__poll-option-bar" [style.width.%]="opt.percentage"></div>
+                    }
+                    <span
+                      class="cce-post-detail__poll-marker"
+                      [class.cce-post-detail__poll-marker--multi]="pl.allowMultiple"
+                      [class.cce-post-detail__poll-marker--on]="isPollOptionSelected(opt.id)"
+                    >
+                      @if (isPollOptionSelected(opt.id)) {
+                        <mat-icon svgIcon="check" aria-hidden="true"></mat-icon>
+                      }
+                    </span>
+                    <span class="cce-post-detail__poll-option-text">{{ opt.label }}</span>
+                    @if (pl.resultsVisible) {
+                      <span class="cce-post-detail__poll-option-pct">{{ opt.percentage }}%</span>
+                    }
+                  </button>
+                } @else {
+                  <!-- Results view (closed or already voted): bar + percentage -->
                   <div
                     class="cce-post-detail__poll-result"
                     [class.cce-post-detail__poll-result--mine]="isPollOptionSelected(opt.id)"
@@ -288,26 +315,6 @@
                     </span>
                     <span class="cce-post-detail__poll-result-pct">{{ opt.percentage }}%</span>
                   </div>
-                } @else {
-                  <!-- Vote view: selectable option -->
-                  <button
-                    type="button"
-                    class="cce-post-detail__poll-option"
-                    [class.cce-post-detail__poll-option--selected]="isPollOptionSelected(opt.id)"
-                    [disabled]="pollVoting()"
-                    (click)="onPollOptionClick(opt.id)"
-                  >
-                    <span
-                      class="cce-post-detail__poll-marker"
-                      [class.cce-post-detail__poll-marker--multi]="pl.allowMultiple"
-                      [class.cce-post-detail__poll-marker--on]="isPollOptionSelected(opt.id)"
-                    >
-                      @if (isPollOptionSelected(opt.id)) {
-                        <mat-icon svgIcon="check" aria-hidden="true"></mat-icon>
-                      }
-                    </span>
-                    {{ opt.label }}
-                  </button>
                 }
               }
 

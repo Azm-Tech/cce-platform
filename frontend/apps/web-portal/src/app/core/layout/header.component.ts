@@ -1,23 +1,30 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, OnDestroy, computed, effect, inject, isDevMode, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { CcePortalRole } from '@frontend/contracts';
+import { RealtimeEvent, RealtimeHubService, type NewPostPayload, type ReceiveNotificationPayload } from '@frontend/real-time';
 import { AuthService } from '../auth/auth.service';
 import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { NotificationsApiService } from '../../features/notifications/notifications-api.service';
 import { NotificationsDrawerComponent } from '../../features/notifications/notifications-drawer.component';
+import { NotificationToastService } from '../../features/notifications/notification-toast.service';
 import { SearchBoxComponent } from './search-box.component';
 import { PRIMARY_NAV, type NavGroup, type NavLink, type PrimaryNavItem } from './nav-config';
 
-const UNREAD_POLL_MS = 60_000;
+/**
+ * Slow reconciliation poll. Live `ReceiveNotification` pushes keep the badge
+ * current; this is only a safety net for events missed while disconnected.
+ */
+const UNREAD_RECONCILE_MS = 300_000;
 
 @Component({
   selector: 'cce-header',
@@ -43,6 +50,9 @@ export class HeaderComponent implements OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly notificationsApi = inject(NotificationsApiService);
   private readonly router = inject(Router);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly notificationToast = inject(NotificationToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly nav = PRIMARY_NAV;
   readonly mobileMenuOpen = signal(false);
@@ -141,10 +151,16 @@ export class HeaderComponent implements OnDestroy {
   readonly unreadCount = signal(0);
   readonly badgeHidden = computed(() => this.unreadCount() === 0);
 
+  /** Dev-only realtime connection indicator. */
+  readonly isDev = isDevMode();
+  readonly connectionState = this.hub.connectionState;
+
   private pollTimer: ReturnType<typeof setInterval> | null = null;
+  /** Open notifications drawer, so live pushes can refresh it in place. */
+  private drawerRef: MatDialogRef<NotificationsDrawerComponent, void> | null = null;
 
   constructor() {
-    // Start / stop the unread-count poll based on auth state.
+    // Start / stop the unread-count reconciliation poll based on auth state.
     effect(() => {
       if (this.isAuthenticated()) {
         void this.refreshUnreadCount();
@@ -154,6 +170,26 @@ export class HeaderComponent implements OnDestroy {
         this.unreadCount.set(0);
       }
     });
+
+    // Live personal notifications. The push payload is opaque, so refetch the
+    // count, refresh the open drawer, and show a toast built from the freshest
+    // notification's real subject/body.
+    this.hub
+      .on<ReceiveNotificationPayload>(RealtimeEvent.ReceiveNotification)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.onLiveNotification());
+
+    // On community/topic pages the backend sends `NewPost` to the group instead of
+    // a personal `ReceiveNotification`, so toast on it too — this makes the toast
+    // appear everywhere. (The two events are mutually exclusive per push.)
+    this.hub
+      .on<NewPostPayload>(RealtimeEvent.NewPost)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) =>
+        this.notificationToast.showNewPost(() =>
+          void this.router.navigate(['/community/posts', ev.postId]),
+        ),
+      );
 
     // Auto-close mobile menu AND any open mega-menu after every
     // successful navigation. Covers nav-link clicks, programmatic
@@ -228,6 +264,10 @@ export class HeaderComponent implements OnDestroy {
       },
     );
     ref.componentInstance.unreadCountChange.subscribe((n) => this.unreadCount.set(n));
+    this.drawerRef = ref;
+    ref.afterClosed().subscribe(() => {
+      if (this.drawerRef === ref) this.drawerRef = null;
+    });
     void ref.componentInstance.refresh();
   }
 
@@ -236,9 +276,25 @@ export class HeaderComponent implements OnDestroy {
     if (res.ok) this.unreadCount.set(res.value);
   }
 
+  /** Handle a live `ReceiveNotification` push: refresh state + show a rich toast. */
+  private async onLiveNotification(): Promise<void> {
+    await this.refreshUnreadCount();
+    void this.drawerRef?.componentInstance.refresh();
+    const res = await this.notificationsApi.list({ page: 1, pageSize: 1 });
+    const latest = res.ok ? res.value.items[0] : undefined;
+    if (this.isDev) {
+      console.debug('[realtime] notification push → opening toast', { listOk: res.ok, latest });
+    }
+    if (latest) {
+      this.notificationToast.show(latest, () => this.openNotifications());
+    } else {
+      this.notificationToast.showGeneric(() => this.openNotifications());
+    }
+  }
+
   private startPoll(): void {
     if (this.pollTimer) return;
-    this.pollTimer = setInterval(() => void this.refreshUnreadCount(), UNREAD_POLL_MS);
+    this.pollTimer = setInterval(() => void this.refreshUnreadCount(), UNREAD_RECONCILE_MS);
   }
 
   private stopPoll(): void {

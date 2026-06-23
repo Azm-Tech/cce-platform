@@ -551,6 +551,8 @@ $layout-gap:   32px;
 
 /* Vote view: selectable option */
 .cce-post-detail__poll-option {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -566,17 +568,48 @@ $layout-gap:   32px;
   cursor: pointer;
   transition: border-color 0.13s, background-color 0.13s;
 
-  &:hover:not(:disabled) { border-color: $blue; background: $blue-light; }
-  &:disabled { opacity: 0.6; cursor: default; }
+  &:hover:not(:disabled) { border-color: $blue; }
+  &:disabled { cursor: default; }
 
   &--selected {
     border-color: $blue;
-    background: $blue-light;
     color: $blue-dark;
   }
+
+  /* When results are visible the option doubles as a progress row;
+     the bar sits behind, content above. Keep hover from masking it. */
+  &:not(.cce-post-detail__poll-option--results):hover:not(:disabled) { background: $blue-light; }
+  &--selected:not(.cce-post-detail__poll-option--results) { background: $blue-light; }
+}
+
+/* Live-results bar behind a still-votable option */
+.cce-post-detail__poll-option-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: $blue-light;
+  z-index: 0;
+  transition: width 0.3s ease;
+}
+
+.cce-post-detail__poll-option-text {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.cce-post-detail__poll-option-pct {
+  position: relative;
+  z-index: 1;
+  font-weight: 700;
+  color: $text-dark;
+  flex-shrink: 0;
 }
 
 .cce-post-detail__poll-marker {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;

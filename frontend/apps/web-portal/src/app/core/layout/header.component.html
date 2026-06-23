@@ -117,6 +117,13 @@
   <cce-search-box class="cce-header__search" />
 
   @if (isAuthenticated()) {
+    @if (isDev) {
+      <span
+        class="cce-header__rt-dot cce-header__rt-dot--{{ connectionState() }}"
+        [title]="'Realtime: ' + connectionState()"
+        aria-hidden="true"
+      ></span>
+    }
     <button
       type="button"
       mat-icon-button

@@ -411,6 +411,29 @@
   }
 }
 
+/* Dev-only realtime connection indicator */
+.cce-header__rt-dot {
+  flex-shrink: 0;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 999px;
+  background: var(--neutrals--400);
+  margin-inline-end: 4px;
+
+  &--connected { background: var(--success--500); }
+  &--connecting { background: var(--warning--400); }
+  &--reconnecting {
+    background: var(--warning--500);
+    animation: cce-rt-pulse 1s ease-in-out infinite;
+  }
+  &--disconnected { background: var(--danger--500); }
+}
+
+@keyframes cce-rt-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 .cce-header__bell {
   flex-shrink: 0;
   position: relative;

@@ -138,6 +138,20 @@
       </div>
     }
 
+    <!-- ─── New-posts pill (live) ─────────────────────────── -->
+    @if (newPostCount() > 0) {
+      <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        class="cce-topic-detail__newposts"
+        (click)="showNewPosts()"
+      >
+        <mat-icon>arrow_upward</mat-icon>
+        {{ 'community.newPostsPill' | transloco:{ count: newPostCount() } }}
+      </button>
+    }
+
     <!-- ─── Posts ─────────────────────────────────────────── -->
     @if (posts().length > 0) {
       <div class="cce-topic-detail__posts">

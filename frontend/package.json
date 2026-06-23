@@ -20,6 +20,7 @@
     "@angular/router": "21.2.9",
     "@hey-api/client-fetch": "0.13.1",
     "@jsverse/transloco": "^8.3.0",
+    "@microsoft/signalr": "^10.0.0",
     "angular-auth-oidc-client": "18",
     "cytoscape": "^3.30.0",
     "cytoscape-svg": "^0.4.0",

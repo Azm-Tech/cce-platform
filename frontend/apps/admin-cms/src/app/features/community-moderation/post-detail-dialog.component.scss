@@ -129,6 +129,64 @@
   border-radius: 4px;
 }
 
+/* ─── Poll results (read-only) ───────────────────────────────── */
+.cce-pd__poll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cce-pd__poll-row {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--neutrals--200);
+  border-radius: 6px;
+}
+
+.cce-pd__poll-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: var(--primary--50);
+  z-index: 0;
+  transition: width 0.3s ease;
+}
+
+.cce-pd__poll-label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  color: var(--neutrals--900);
+}
+
+.cce-pd__poll-pct {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--neutrals--700);
+}
+
+.cce-pd__poll-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--neutrals--500);
+}
+
+.cce-pd__poll-meta-sep { color: var(--neutrals--300); }
+
 /* ─── Replies section ────────────────────────────────────────── */
 .cce-pd__replies-hd {
   display: flex;

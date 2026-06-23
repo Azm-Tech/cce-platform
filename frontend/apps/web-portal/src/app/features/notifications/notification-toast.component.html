@@ -1,0 +1,40 @@
+<div class="cce-ntoast" role="alert">
+  <span class="cce-ntoast__accent" aria-hidden="true"></span>
+
+  <div class="cce-ntoast__icon">
+    <mat-icon aria-hidden="true">{{ data.icon }}</mat-icon>
+    <span class="cce-ntoast__live" aria-hidden="true"></span>
+  </div>
+
+  <div class="cce-ntoast__main">
+    <div class="cce-ntoast__top">
+      <span class="cce-ntoast__title" [title]="data.title">{{ data.title }}</span>
+      <span class="cce-ntoast__time">{{ data.time }}</span>
+      <button
+        type="button"
+        mat-icon-button
+        class="cce-ntoast__close"
+        [attr.aria-label]="data.dismissLabel"
+        (click)="close()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    @if (data.body) {
+      <p class="cce-ntoast__body">{{ data.body }}</p>
+    }
+
+    <div class="cce-ntoast__actions">
+      <button type="button" mat-button class="cce-ntoast__view" (click)="view()">
+        {{ data.actionLabel }}
+      </button>
+    </div>
+  </div>
+
+  <span
+    class="cce-ntoast__progress"
+    aria-hidden="true"
+    [style.animation-duration.ms]="data.durationMs"
+  ></span>
+</div>

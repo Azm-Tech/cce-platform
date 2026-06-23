@@ -245,6 +245,20 @@
         </div>
       }
 
+      <!-- ── New-posts pill (live) ──────────────────────────────── -->
+      @if (newPostCount() > 0) {
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          class="cp-newposts"
+          (click)="showNewPosts()"
+        >
+          <mat-icon svgIcon="chevron-up" aria-hidden="true"></mat-icon>
+          {{ 'community.newPostsPill' | transloco:{ count: newPostCount() } }}
+        </button>
+      }
+
       <!-- ── Post cards ─────────────────────────────────────────── -->
       @if (filteredPosts().length > 0) {
         <div class="cp-feed__list">

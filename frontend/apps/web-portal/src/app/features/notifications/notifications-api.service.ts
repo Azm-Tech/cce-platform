@@ -6,6 +6,23 @@ import type { NotificationStatus, PagedResult, UserNotification } from './notifi
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
+/** Web-portal responses are wrapped in `{ data: T }`. This unwraps them. */
+function unwrap<T>(res: { data?: T } | T | null | undefined): T {
+  if (res && typeof res === 'object' && 'data' in (res as object)) {
+    const inner = (res as { data?: T }).data;
+    if (inner !== undefined && inner !== null) return inner;
+  }
+  return res as T;
+}
+
+function unwrapPaged<T>(
+  res: { data?: PagedResult<T> } | PagedResult<T> | null | undefined,
+): PagedResult<T> {
+  const inner = unwrap<PagedResult<T>>(res);
+  if (inner && Array.isArray((inner as PagedResult<T>).items)) return inner as PagedResult<T>;
+  return { items: [], total: 0, page: 1, pageSize: 0 };
+}
+
 @Injectable({ providedIn: 'root' })
 export class NotificationsApiService {
   private readonly http = inject(HttpClient);
@@ -19,19 +36,25 @@ export class NotificationsApiService {
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
     if (opts.status) params = params.set('status', opts.status);
-    return this.run(() =>
-      firstValueFrom(
-        this.http.get<PagedResult<UserNotification>>('/api/me/notifications', { params }),
-      ),
-    );
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<{ data?: PagedResult<UserNotification> } | PagedResult<UserNotification>>(
+          '/api/me/notifications',
+          { params },
+        ),
+      );
+      return unwrapPaged<UserNotification>(res);
+    });
   }
 
   async getUnreadCount(): Promise<Result<number>> {
     return this.run(async () => {
       const res = await firstValueFrom(
-        this.http.get<{ count: number }>('/api/me/notifications/unread-count'),
+        this.http.get<{ data?: { count: number } } | { count: number }>(
+          '/api/me/notifications/unread-count',
+        ),
       );
-      return res.count;
+      return unwrap<{ count: number }>(res)?.count ?? 0;
     });
   }
 
@@ -46,9 +69,12 @@ export class NotificationsApiService {
   async markAllRead(): Promise<Result<number>> {
     return this.run(async () => {
       const res = await firstValueFrom(
-        this.http.post<{ marked: number }>('/api/me/notifications/mark-all-read', {}),
+        this.http.post<{ data?: { marked: number } } | { marked: number }>(
+          '/api/me/notifications/mark-all-read',
+          {},
+        ),
       );
-      return res.marked;
+      return unwrap<{ marked: number }>(res)?.marked ?? 0;
     });
   }
 

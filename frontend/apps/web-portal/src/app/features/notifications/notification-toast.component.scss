@@ -1,0 +1,192 @@
+/* Live notification toast — branded card shown in a snackbar overlay. */
+.cce-ntoast {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  inline-size: min(360px, 90vw);
+  padding: 14px 14px 15px 18px;
+  background: var(--white);
+  border: 1px solid var(--neutrals--100);
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(var(--color-brand-shadow-rgb), 0.20);
+  overflow: hidden;
+  animation: cce-ntoast-in 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Signature accent rail on the leading edge */
+.cce-ntoast__accent {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 4px;
+  background: linear-gradient(var(--color-brand), var(--color-brand-accent));
+}
+
+/* Icon chip with a live presence dot */
+.cce-ntoast__icon {
+  position: relative;
+  flex-shrink: 0;
+  inline-size: 40px;
+  block-size: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(var(--color-brand-rgb), 0.10);
+  color: var(--color-brand);
+
+  mat-icon {
+    font-size: 22px;
+    inline-size: 22px;
+    block-size: 22px;
+  }
+}
+
+.cce-ntoast__live {
+  position: absolute;
+  inset-block-start: -2px;
+  inset-inline-end: -2px;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--success--500);
+  border: 2px solid var(--white);
+  animation: cce-ntoast-pulse 1.6s ease-in-out infinite;
+}
+
+.cce-ntoast__main {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cce-ntoast__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cce-ntoast__title {
+  flex: 1;
+  min-inline-size: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: var(--neutrals--900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cce-ntoast__time {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--neutrals--500);
+}
+
+.cce-ntoast__close {
+  flex-shrink: 0;
+  inline-size: 28px !important;
+  block-size: 28px !important;
+  padding: 0 !important;
+  color: var(--neutrals--400);
+
+  mat-icon {
+    font-size: 18px;
+    inline-size: 18px;
+    block-size: 18px;
+  }
+
+  &:hover {
+    color: var(--neutrals--700);
+  }
+}
+
+.cce-ntoast__body {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--neutrals--600);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cce-ntoast__actions {
+  margin-block-start: 2px;
+}
+
+.cce-ntoast__view {
+  min-inline-size: 0 !important;
+  padding: 2px 10px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: var(--color-brand) !important;
+
+  &:hover {
+    background: rgba(var(--color-brand-rgb), 0.08) !important;
+  }
+}
+
+/* Depleting time bar — visualizes the auto-dismiss countdown */
+.cce-ntoast__progress {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 2px;
+  background: linear-gradient(90deg, var(--color-brand), var(--color-brand-accent));
+  transform-origin: left center;
+  animation-name: cce-ntoast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+:host-context([dir='rtl']) .cce-ntoast__progress {
+  transform-origin: right center;
+}
+
+@keyframes cce-ntoast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cce-ntoast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes cce-ntoast-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cce-ntoast {
+    animation: none;
+  }
+  .cce-ntoast__live {
+    animation: none;
+  }
+  .cce-ntoast__progress {
+    display: none;
+  }
+}

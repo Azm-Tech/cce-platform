@@ -1,19 +1,29 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  OnDestroy,
   OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
+import {
+  RealtimeEvent,
+  RealtimeHubService,
+  type NewPostPayload,
+  type PostModeratedPayload,
+} from '@frontend/real-time';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowsApiService } from '../follows/follows-api.service';
 import { CommunityApiService } from './community-api.service';
@@ -32,18 +42,23 @@ type FeedSort = 0 | 1 | 2 | 3;
 @Component({
   selector: 'cce-topics-list-page',
   standalone: true,
-  imports: [FormsModule, RouterLink, MatIconModule, MatMenuModule, TranslocoModule, PostSummaryComponent],
+  imports: [FormsModule, RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslocoModule, PostSummaryComponent],
   templateUrl: './topics-list.page.html',
   styleUrl: './topics-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TopicsListPage implements OnInit {
+export class TopicsListPage implements OnInit, OnDestroy {
   private readonly api = inject(CommunityApiService);
   private readonly auth = inject(AuthService);
   private readonly communityState = inject(CommunityStateService);
   private readonly followsApi = inject(FollowsApiService);
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly destroyRef = inject(DestroyRef);
+  private subscribedCommunityId: string | null = null;
+  /** Count of posts published in the community since load (drives the pill). */
+  readonly newPostCount = signal(0);
   readonly locale = inject(LocaleService).locale;
 
   readonly posts = signal<PublicPost[]>([]);
@@ -172,6 +187,48 @@ export class TopicsListPage implements OnInit {
     void this.loadFeed();
     void this.loadUserProfile();
     void this.loadRoles();
+    void this.initRealtime();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscribedCommunityId) this.hub.unsubscribeCommunity(this.subscribedCommunityId);
+  }
+
+  /** Join the community group and react to live posts / moderation. */
+  private async initRealtime(): Promise<void> {
+    await this.communityState.ensureLoaded();
+    const communityId = this.communityState.communityId();
+    if (!communityId) return;
+    this.subscribedCommunityId = communityId;
+
+    this.hub
+      .on<NewPostPayload>(RealtimeEvent.NewPost)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.communityId !== communityId) return;
+        const topicFilter = this.topicFilter();
+        if (topicFilter && ev.topicId !== topicFilter) return;
+        this.newPostCount.update((n) => n + 1);
+      });
+
+    this.hub
+      .on<PostModeratedPayload>(RealtimeEvent.PostModerated)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.replyId) return; // reply deletions don't affect the feed list
+        if (!this.posts().some((p) => p.id === ev.postId)) return;
+        this.posts.update((ps) => ps.filter((p) => p.id !== ev.postId));
+        this.totalItems.update((t) => Math.max(0, t - 1));
+      });
+
+    this.hub.subscribeCommunity(communityId);
+  }
+
+  /** Refresh the feed to surface posts that arrived live since load. */
+  showNewPosts(): void {
+    this.newPostCount.set(0);
+    this.currentPage.set(1);
+    void this.loadFeed();
   }
 
   private async loadRoles(): Promise<void> {

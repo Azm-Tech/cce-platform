@@ -592,6 +592,28 @@ label:not(.mat-mdc-checkbox label):not(.mat-mdc-slide-toggle label):not(.mat-mdc
   box-shadow: var(--cce-fancy-shadow-hover) !important;
 }
 
+/* Live notification toast — the component card is the whole visual, so strip
+   all MDC snackbar chrome (surface bg, padding, shadow) for this panel. */
+.mat-mdc-snack-bar-container.cce-notif-toast {
+  --mdc-snackbar-container-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  .mdc-snackbar__surface,
+  .mat-mdc-snackbar-surface {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .mat-mdc-snack-bar-label,
+  .mdc-snackbar__label {
+    padding: 0 !important;
+  }
+}
+
 /* Tooltip — softer, branded edge */
 .mat-mdc-tooltip {
   --mdc-plain-tooltip-container-color: rgba(var(--color-brand-shadow-rgb), 0.94) !important;

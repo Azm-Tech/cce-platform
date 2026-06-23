@@ -617,6 +617,12 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 16px;
 }
 
+.cp-newposts {
+  display: flex;
+  margin-inline: auto;
+  margin-block-end: 1rem;
+}
+
 // ── Error ─────────────────────────────────────────────────────────────────────
 .cp-error {
   display: flex;

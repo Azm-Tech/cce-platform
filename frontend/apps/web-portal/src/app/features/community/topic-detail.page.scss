@@ -348,6 +348,12 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 8px;
 }
 
+.cce-topic-detail__newposts {
+  display: flex;
+  margin-inline: auto;
+  margin-block-end: 1rem;
+}
+
 .cce-topic-detail__paginator {
   margin-top: 16px;
   background: transparent;

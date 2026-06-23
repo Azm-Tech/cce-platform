@@ -2,13 +2,16 @@ import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +21,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
+import {
+  RealtimeEvent,
+  RealtimeHubService,
+  type NewReplyPayload,
+  type PollResultsChangedPayload,
+  type PostModeratedPayload,
+  type VoteChangedPayload,
+} from '@frontend/real-time';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
@@ -51,7 +62,7 @@ import type {
   styleUrl: './post-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PostDetailPage implements OnInit {
+export class PostDetailPage implements OnInit, OnDestroy {
   private readonly api = inject(CommunityApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly localeService = inject(LocaleService);
@@ -59,6 +70,10 @@ export class PostDetailPage implements OnInit {
   private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly destroyRef = inject(DestroyRef);
+  /** Post id this page joined the realtime `post:{id}` group for. */
+  private subscribedPostId: string | null = null;
 
   readonly post = signal<PublicPost | null>(null);
   readonly replies = signal<PublicPostReply[]>([]);
@@ -216,7 +231,100 @@ export class PostDetailPage implements OnInit {
       this.errorKind.set('not-found');
       return;
     }
+    this.subscribedPostId = id;
+    this.listenRealtime(id);
+    this.hub.subscribePost(id);
     await this.load(id);
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscribedPostId) this.hub.unsubscribePost(this.subscribedPostId);
+  }
+
+  /** Wire live `post:{id}` events to the page state. */
+  private listenRealtime(postId: string): void {
+    this.hub
+      .on<NewReplyPayload>(RealtimeEvent.NewReply)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.postId === postId) void this.refreshRepliesCurrentPage();
+      });
+
+    this.hub
+      .on<VoteChangedPayload>(RealtimeEvent.VoteChanged)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => this.applyVoteChanged(ev, postId));
+
+    this.hub
+      .on<PollResultsChangedPayload>(RealtimeEvent.PollResultsChanged)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.postId === postId) void this.refreshPollResults();
+      });
+
+    this.hub
+      .on<PostModeratedPayload>(RealtimeEvent.PostModerated)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => this.applyModeration(ev, postId));
+  }
+
+  /** Re-fetch the visible replies page (a new reply arrived from another user). */
+  private async refreshRepliesCurrentPage(): Promise<void> {
+    const p = this.post();
+    if (!p) return;
+    const res = await this.api.listReplies(p.id, { page: this.page(), pageSize: this.pageSize() });
+    if (res.ok) {
+      this.replies.set(res.value.items);
+      this.total.set(Number(res.value.total));
+    }
+  }
+
+  private applyVoteChanged(ev: VoteChangedPayload, postId: string): void {
+    if (ev.postId === postId) {
+      // The authoritative count already includes the user's own vote, so subtract
+      // the optimistic +1 that `voteScore` adds while `myVote === 1`.
+      const optimistic = this.myVote() === 1 ? 1 : 0;
+      this.post.update((p) =>
+        p ? { ...p, upvoteCount: Math.max(0, ev.upvoteCount - optimistic) } : p,
+      );
+    } else if (ev.replyId) {
+      this.replies.update((rs) =>
+        rs.map((r) => (r.id === ev.replyId ? { ...r, upvoteCount: ev.upvoteCount } : r)),
+      );
+    }
+  }
+
+  /** Re-fetch poll tallies (a vote changed them). Mirrors `castPollVote`'s refresh. */
+  private async refreshPollResults(): Promise<void> {
+    const p = this.poll();
+    if (!p) return;
+    const fresh = await this.api.getPollResults(p.pollId);
+    if (fresh.ok) {
+      const r = fresh.value;
+      this.poll.update((cur) =>
+        cur
+          ? {
+              ...cur,
+              isClosed: r.isClosed,
+              allowMultiple: r.allowMultiple,
+              resultsVisible: r.resultsVisible,
+              totalVotes: r.totalVotes,
+              options: r.options ?? cur.options,
+            }
+          : cur,
+      );
+    }
+  }
+
+  private applyModeration(ev: PostModeratedPayload, postId: string): void {
+    if (ev.postId !== postId) return;
+    if (ev.replyId) {
+      this.replies.update((rs) => rs.filter((r) => r.id !== ev.replyId));
+      this.total.update((t) => Math.max(0, t - 1));
+    } else {
+      // The post itself was moderated — reload to surface the removed state.
+      void this.load(postId);
+    }
   }
 
   async togglePostFollow(): Promise<void> {
