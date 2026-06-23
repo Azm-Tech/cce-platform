@@ -13,4 +13,5 @@ public sealed record PostCreatedIntegrationEvent(
     System.Guid TopicId,
     System.Guid AuthorId,
     System.DateTimeOffset PublishedOn,
-    string Locale);
+    string Locale,
+    string Title);

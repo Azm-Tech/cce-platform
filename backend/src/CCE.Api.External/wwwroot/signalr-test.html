@@ -58,7 +58,10 @@
     <label>Mode
       <span style="display:flex;gap:4px;margin-top:2px">
         <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#e8e8e8">
-          <input type="radio" name="mode" value="dev" checked onchange="toggleMode()" /> Dev
+          <input type="radio" name="mode" value="dev" checked onchange="toggleMode()" /> Dev (5001)
+        </label>
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#fff">
+          <input type="radio" name="mode" value="internal5002" onchange="toggleMode()" /> Internal (5002)
         </label>
         <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#fff">
           <input type="radio" name="mode" value="prod" onchange="toggleMode()" /> Prod
@@ -105,6 +108,17 @@
     <div class="actions">
       <button id="btnStartTyping">StartTyping</button>
       <button id="btnStopTyping">StopTyping</button>
+    </div>
+  </div>
+  <div class="subsection">
+    <div style="font-size:0.8rem; color:#888; margin-bottom:6px">
+      Catch-up (Phase 3) — <span id="lastEvent" style="color:#aaa">(no events yet)</span>
+    </div>
+    <div class="row">
+      <label>Since (ISO 8601)<input id="catchUpSince" placeholder="auto-filled from last occurredOn" /></label>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="btnCatchUp">Fetch /posts/{id}/activity</button>
     </div>
   </div>
 </div>

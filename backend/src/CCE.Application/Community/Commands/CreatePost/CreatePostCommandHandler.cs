@@ -3,6 +3,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Errors;
+using CCE.Application.Identity;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
@@ -26,6 +27,7 @@ public sealed class CreatePostCommandHandler
     private readonly IHtmlSanitizer _sanitizer;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _msg;
+    private readonly IUserRepository _userRepo;
 
     public CreatePostCommandHandler(
         IPostRepository repo,
@@ -36,7 +38,8 @@ public sealed class CreatePostCommandHandler
         ICurrentUserAccessor currentUser,
         IHtmlSanitizer sanitizer,
         ISystemClock clock,
-        MessageFactory msg)
+        MessageFactory msg,
+        IUserRepository userRepo)
     {
         _repo = repo;
         _communityRepo = communityRepo;
@@ -47,6 +50,7 @@ public sealed class CreatePostCommandHandler
         _sanitizer = sanitizer;
         _clock = clock;
         _msg = msg;
+        _userRepo = userRepo;
     }
 
     public async Task<Response<Guid>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -129,6 +133,8 @@ public sealed class CreatePostCommandHandler
             post.Publish(_clock);
             var community = await _communityRepo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
             community?.IncrementPosts();
+            var author = await _userRepo.FindAsync(authorId.Value, cancellationToken).ConfigureAwait(false);
+            author?.IncrementPostsCount();
         }
 
         _repo.Add(post);

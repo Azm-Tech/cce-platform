@@ -1,3 +1,5 @@
+using CCE.Application.Common.Realtime;
+
 namespace CCE.Application.Community;
 
 /// <summary>
@@ -18,4 +20,22 @@ public interface ICommunityRealtimePublisher
 
     /// <summary>Broadcast to the global <c>moderation</c> room (moderators only).</summary>
     Task PublishToModeratorsAsync(string eventName, object payload, CancellationToken ct);
+
+    // ─── Pre-wrapped envelope overloads ────────────────────────────────────────────
+    // Use these when the same event is pushed to multiple rooms: wrap once via
+    // RealtimeEnvelope.Wrap(payload) so every audience sees the same eventId, allowing
+    // client-side seenEventIds dedup. The unwrapped overloads above call Wrap internally.
+    // ───────────────────────────────────────────────────────────────────────────────
+
+    /// <summary>Broadcast a pre-wrapped envelope to the <c>post:{id}</c> room (eventId is reused).</summary>
+    Task PublishToPostAsync(Guid postId, string eventName, RealtimeEnvelope envelope, CancellationToken ct);
+
+    /// <summary>Broadcast a pre-wrapped envelope to the <c>community:{id}</c> room (eventId is reused).</summary>
+    Task PublishToCommunityAsync(Guid communityId, string eventName, RealtimeEnvelope envelope, CancellationToken ct);
+
+    /// <summary>Broadcast a pre-wrapped envelope to the <c>topic:{id}</c> room (eventId is reused).</summary>
+    Task PublishToTopicAsync(Guid topicId, string eventName, RealtimeEnvelope envelope, CancellationToken ct);
+
+    /// <summary>Broadcast a pre-wrapped envelope to the global <c>moderation</c> room (eventId is reused).</summary>
+    Task PublishToModeratorsAsync(string eventName, RealtimeEnvelope envelope, CancellationToken ct);
 }

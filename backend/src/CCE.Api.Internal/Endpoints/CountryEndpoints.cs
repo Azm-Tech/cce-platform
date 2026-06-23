@@ -1,7 +1,10 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Country.Commands.UpdateCountry;
 using CCE.Application.Country.Queries.GetCountryById;
 using CCE.Application.Country.Queries.ListCountries;
 using CCE.Domain;
+using CCE.Domain.Common;
+using CCE.Domain.Country;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,15 +20,19 @@ public static class CountryEndpoints
 
         countries.MapGet("", async (
             int? page, int? pageSize, string? search, bool? isActive,
+            PublicCountrySortBy? sortBy, SortOrder? sortOrder, bool? isCceCountry,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListCountriesQuery(
                 Page: page ?? 1,
                 PageSize: pageSize ?? 20,
                 Search: search,
-                IsActive: isActive);
+                IsActive: isActive,
+                SortBy: sortBy ?? PublicCountrySortBy.NameEn,
+                SortOrder: sortOrder ?? SortOrder.Ascending,
+                IsCceCountry: isCceCountry);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("ListCountries");

@@ -121,7 +121,7 @@ public sealed class Post : AggregateRoot<System.Guid>
 
         Status = PostStatus.Published;
         PublishedOn = clock.UtcNow;
-        RaiseDomainEvent(new PostCreatedEvent(Id, CommunityId, TopicId, AuthorId, Locale, PublishedOn.Value));
+        RaiseDomainEvent(new PostCreatedEvent(Id, CommunityId, TopicId, AuthorId, Locale, Title!, PublishedOn.Value));
     }
 
     /// <summary>Edits a draft's title/content. Rejected once published (use the moderation/edit path).</summary>

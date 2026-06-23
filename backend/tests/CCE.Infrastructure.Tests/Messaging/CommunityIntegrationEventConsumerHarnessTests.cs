@@ -99,7 +99,8 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
                 TopicId: System.Guid.NewGuid(),
                 AuthorId: System.Guid.NewGuid(),
                 PublishedOn: System.DateTimeOffset.UtcNow,
-                Locale: "ar"));
+                Locale: "ar",
+                Title: "test title"));
 
             (await harness.GetConsumerHarness<NotificationConsumer>().Consumed.Any<PostCreatedIntegrationEvent>())
                 .Should().BeTrue();
@@ -145,7 +146,8 @@ public sealed class CommunityIntegrationEventConsumerHarnessTests
                 TopicId: topicId,
                 AuthorId: System.Guid.NewGuid(),
                 PublishedOn: System.DateTimeOffset.UtcNow,
-                Locale: "en"));
+                Locale: "en",
+                Title: "test title"));
 
             (await harness.GetConsumerHarness<SignalRConsumer>().Consumed.Any<PostCreatedIntegrationEvent>())
                 .Should().BeTrue();

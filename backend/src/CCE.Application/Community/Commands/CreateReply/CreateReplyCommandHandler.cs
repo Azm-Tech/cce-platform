@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Common.Pagination;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Errors;
+using CCE.Application.Identity;
 using CCE.Application.Messages;
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Common;
@@ -30,11 +30,13 @@ public sealed class CreateReplyCommandHandler
     private readonly MessageFactory _msg;
     private readonly ICommunityRealtimePublisher _realtime;
     private readonly INotificationMessageDispatcher _dispatcher;
+    private readonly IUserRepository _userRepo;
 
     public CreateReplyCommandHandler(
         IReplyRepository repo, ICceDbContext db, ICurrentUserAccessor currentUser,
         IHtmlSanitizer sanitizer, ISystemClock clock, MessageFactory msg,
-        ICommunityRealtimePublisher realtime, INotificationMessageDispatcher dispatcher)
+        ICommunityRealtimePublisher realtime, INotificationMessageDispatcher dispatcher,
+        IUserRepository userRepo)
     {
         _repo = repo;
         _db = db;
@@ -44,6 +46,7 @@ public sealed class CreateReplyCommandHandler
         _msg = msg;
         _realtime = realtime;
         _dispatcher = dispatcher;
+        _userRepo = userRepo;
     }
 
     public async Task<Response<Guid>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
@@ -83,15 +86,27 @@ public sealed class CreateReplyCommandHandler
         // Increment the denormalized comment count atomically with the reply persistence.
         post.IncrementCommentsCount(_clock);
 
-        var replyAuthor = await _db.Users
-            .FirstOrDefaultAsyncEither(u => u.Id == authorId.Value, cancellationToken)
-            .ConfigureAwait(false);
+        var replyAuthor = await _userRepo.FindAsync(authorId.Value, cancellationToken).ConfigureAwait(false);
         replyAuthor?.IncrementCommentsCount();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.NewReply,
-            new { postId = post.Id, replyId = reply.Id, reply.ParentReplyId, reply.Depth }, cancellationToken)
+            new
+            {
+                replyId = reply.Id,
+                postId = post.Id,
+                parentReplyId = reply.ParentReplyId,
+                depth = reply.Depth,
+                body = reply.Content,
+                createdOn = reply.CreatedOn,
+                author = replyAuthor is null ? null : new
+                {
+                    id = reply.AuthorId,
+                    name = $"{replyAuthor.FirstName} {replyAuthor.LastName}".Trim(),
+                    avatarUrl = replyAuthor.AvatarUrl,
+                },
+            }, cancellationToken)
             .ConfigureAwait(false);
 
         // Notify mentioned users (InApp) after the commit.

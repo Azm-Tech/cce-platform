@@ -32,7 +32,8 @@ public sealed class PostCreatedBusPublisher : INotificationHandler<PostCreatedEv
             notification.TopicId,
             notification.AuthorId,
             notification.OccurredOn,
-            notification.Locale);
+            notification.Locale,
+            notification.Title);
 
         return _publisher.PublishAsync(evt, cancellationToken);
     }

@@ -18,7 +18,9 @@ public static class SignalRRegistration
 {
     public static IServiceCollection AddCceSignalR(this IServiceCollection services, IConfiguration configuration)
     {
-        var builder = services.AddSignalR().AddJsonProtocol();
+        var builder = services.AddSignalR()
+            .AddJsonProtocol(o =>
+                o.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
 
         var redisConnectionString = configuration["Infrastructure:RedisConnectionString"];
         if (!string.IsNullOrWhiteSpace(redisConnectionString))

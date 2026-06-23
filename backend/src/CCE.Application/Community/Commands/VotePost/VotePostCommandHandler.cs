@@ -77,7 +77,7 @@ public sealed class VotePostCommandHandler
         // Direct SignalR for instant user feedback (hybrid realtime — see Spring 9 architecture). The
         // Worker's VoteConsumer no longer pushes VoteChanged, so this is the single source of the push.
         await _realtime.PublishToPostAsync(request.PostId, RealtimeEvents.VoteChanged,
-            new { postId = request.PostId, post.UpvoteCount, post.Score }, cancellationToken).ConfigureAwait(false);
+            new { postId = request.PostId, post.UpvoteCount, post.DownvoteCount, post.Score }, cancellationToken).ConfigureAwait(false);
 
         return _msg.Ok(ApplicationErrors.Community.POST_VOTED);
     }

@@ -11,7 +11,6 @@ using CCE.Api.Common.SignalR;
 using CCE.Api.External.Endpoints;
 using CCE.Api.External.Endpoints.Newsletter;
 using CCE.Api.External.Endpoints.Verification;
-using CCE.Api.External.Hubs;
 using CCE.Application;
 using CCE.Infrastructure.Notifications;
 using CCE.Application.Common.CountryScope;
