@@ -585,17 +585,87 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 80px 20px;
+  justify-content: center;
+  gap: 32px;
+  padding: 40px;
+  background: var(--neutrals--50);
+  border: 1px solid var(--neutrals--200);
   text-align: center;
+}
 
-  mat-icon { font-size: 48px; width: 48px; height: 48px; color: $n-300; }
-  p { margin: 0; font-size: 18px; color: $n-500; font-family: $font; }
+.cmp__empty-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.cmp__empty-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--color-brand);
+}
+
+.cmp__empty-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.cmp__empty-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: var(--neutrals--900);
+  font-family: $font;
 }
 
 .cmp__empty-desc {
-  font-size: 15px !important;
-  color: $n-500 !important;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  font-weight: 400;
+  color: var(--neutrals--700);
+  font-family: $font;
+}
+
+.cmp__empty-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 64px;
+  padding: 14px 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: $font;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--color-brand);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  mat-icon { font-size: 32px; width: 32px; height: 32px; flex-shrink: 0; }
+}
+
+.cmp__empty-cta--solid {
+  background: var(--color-brand);
+  color: var(--white);
+
+  &:hover { background: var(--primary--600); border-color: var(--primary--600); }
+}
+
+.cmp__empty-cta--outline {
+  background: transparent;
+  color: var(--color-brand);
+
+  &:hover { background: rgba(var(--color-brand-rgb), 0.08); }
 }
 
 // Progress bar (paginating with existing posts)

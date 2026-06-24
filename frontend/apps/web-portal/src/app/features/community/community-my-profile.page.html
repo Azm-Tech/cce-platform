@@ -291,9 +291,17 @@
         @if (!postsLoading() || posts().length > 0) {
           @if (posts().length === 0 && !postsLoading()) {
             <div class="cmp__empty">
-              <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
-              <p>{{ 'community.profile.empty' | transloco }}</p>
-              <p class="cmp__empty-desc">{{ 'community.profile.emptyDesc' | transloco }}</p>
+              <div class="cmp__empty-head">
+                <mat-icon class="cmp__empty-icon" svgIcon="file-plus" aria-hidden="true"></mat-icon>
+                <div class="cmp__empty-text">
+                  <p class="cmp__empty-title">{{ 'community.profile.empty' | transloco }}</p>
+                  <p class="cmp__empty-desc">{{ 'community.profile.emptyDesc' | transloco }}</p>
+                </div>
+              </div>
+              <button type="button" class="cmp__empty-cta cmp__empty-cta--solid" (click)="openCreatePost()">
+                <span>{{ 'community.profile.newPost' | transloco }}</span>
+                <mat-icon svgIcon="square-plus" aria-hidden="true"></mat-icon>
+              </button>
             </div>
           } @else {
             <div class="cmp__posts-list">
@@ -392,8 +400,16 @@
         @if (!feedLoading() || feedPosts().length > 0) {
           @if (feedPosts().length === 0 && !feedLoading()) {
             <div class="cmp__empty">
-              <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
-              <p>{{ 'community.profile.noPosts' | transloco }}</p>
+              <div class="cmp__empty-head">
+                <mat-icon class="cmp__empty-icon" svgIcon="file-plus" aria-hidden="true"></mat-icon>
+                <div class="cmp__empty-text">
+                  <p class="cmp__empty-title">{{ 'community.profile.noPosts' | transloco }}</p>
+                  <p class="cmp__empty-desc">{{ 'community.profile.noPostsDesc' | transloco }}</p>
+                </div>
+              </div>
+              <a routerLink="/community" class="cmp__empty-cta cmp__empty-cta--outline">
+                {{ 'community.profile.browseCommunity' | transloco }}
+              </a>
             </div>
           } @else {
             <div class="cmp__posts-list">
