@@ -307,7 +307,6 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: flex;
   justify-content: space-around;
   border-bottom: 1px solid $n-200;
-  background: var(--white);
   margin-top: 32px;
   overflow-x: auto;
 }
@@ -549,7 +548,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 .cmp__posts-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 16px;
 }
 
 // Feed error
