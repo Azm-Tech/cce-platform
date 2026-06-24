@@ -421,7 +421,7 @@
     "pages": "Pages",
     "homepage": "Homepage",
     "taxonomies": "Taxonomies",
-    "community": "Community",
+    "community": "Knowledge Community",
     "communityModeration": "Community moderation",
     "countries": "Countries",
     "notifications": "Notifications",
@@ -2141,7 +2141,7 @@
       "sortMostReplied": "Most Discussed",
       "allTopics": "All topics",
       "allCategories": "All",
-      "allTypes": "All types"
+      "allTypes": "All categories"
     },
     "profile": {
       "followers": "Followers",

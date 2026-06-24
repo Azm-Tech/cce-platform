@@ -421,7 +421,7 @@
     "pages": "الصفحات",
     "homepage": "الصفحة الرئيسية",
     "taxonomies": "التصنيفات",
-    "community": "المجتمع",
+    "community": "مجتمع المعرفة",
     "communityModeration": "إدارة المجتمع",
     "countries": "الدول",
     "notifications": "الإشعارات",
@@ -2141,7 +2141,7 @@
       "sortMostReplied": "الأكثر نقاشًا",
       "allTopics": "كل المواضيع",
       "allCategories": "الكل",
-      "allTypes": "كل الأنواع"
+      "allTypes": "كل الفئات"
     },
     "profile": {
       "followers": "متابعون",
