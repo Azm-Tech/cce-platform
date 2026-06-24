@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Country.Dtos;
@@ -62,6 +62,6 @@ public sealed class GetMyCountryProfileQueryHandler : IRequestHandler<GetMyCount
 
         return _messages.Ok(
             GetCountryProfileQueryHandler.MapToDto(profile, snapshot),
-            CCE.Application.Errors.ApplicationErrors.General.SUCCESS_OPERATION);
+            MessageKeys.General.SUCCESS_OPERATION);
     }
 }

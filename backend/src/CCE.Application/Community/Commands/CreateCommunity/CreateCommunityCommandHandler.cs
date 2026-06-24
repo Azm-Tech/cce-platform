@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -34,7 +34,7 @@ public sealed class CreateCommunityCommandHandler
         if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<Guid>();
 
         if (await _repo.SlugExistsAsync(request.Slug, cancellationToken).ConfigureAwait(false))
-            return _msg.Conflict<Guid>(ApplicationErrors.General.DUPLICATE_VALUE);
+            return _msg.Conflict<Guid>(MessageKeys.General.DUPLICATE_VALUE);
 
         var community = Domain.Community.Community.Create(
             request.NameAr, request.NameEn, request.DescriptionAr, request.DescriptionEn,
@@ -45,6 +45,6 @@ public sealed class CreateCommunityCommandHandler
         community.IncrementMembers();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(community.Id, ApplicationErrors.General.SUCCESS_CREATED);
+        return _msg.Ok(community.Id, MessageKeys.General.SUCCESS_CREATED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -55,6 +55,6 @@ public sealed class GetAboutSettingsQueryHandler
                 p.LogoUrl,
                 p.WebsiteUrl,
                 p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En),
-                p.OrderIndex)).ToList()), "ITEMS_LISTED");
+                p.OrderIndex)).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

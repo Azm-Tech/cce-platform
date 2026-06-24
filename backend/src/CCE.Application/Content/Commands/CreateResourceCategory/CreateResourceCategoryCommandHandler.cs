@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.ListResourceCategories;
@@ -36,6 +36,6 @@ public sealed class CreateResourceCategoryCommandHandler : IRequestHandler<Creat
         await _repo.AddAsync(category, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(ListResourceCategoriesQueryHandler.MapToDto(category), "CONTENT_CREATED");
+        return _messages.Ok(ListResourceCategoriesQueryHandler.MapToDto(category), MessageKeys.Content.CONTENT_CREATED);
     }
 }

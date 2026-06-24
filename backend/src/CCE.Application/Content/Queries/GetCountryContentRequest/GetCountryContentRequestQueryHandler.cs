@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Content.Queries.GetCountryContentRequest;
@@ -53,6 +53,6 @@ public sealed class GetCountryContentRequestQueryHandler
             entity.ProcessedById, entity.ProcessedOn,
             entity.ProposedKnowledgeLevelId, entity.ProposedJobSectorId);
 
-        return _messages.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(dto, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

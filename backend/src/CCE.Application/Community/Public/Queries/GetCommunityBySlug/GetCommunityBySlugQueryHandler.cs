@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +32,7 @@ public sealed class GetCommunityBySlugQueryHandler
             .ConfigureAwait(false);
 
         return dto is null
-            ? _msg.NotFound<CommunityDto>(ApplicationErrors.Community.COMMUNITY_NOT_FOUND)
-            : _msg.Ok(dto, "ITEMS_LISTED");
+            ? _msg.NotFound<CommunityDto>(MessageKeys.Community.COMMUNITY_NOT_FOUND)
+            : _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

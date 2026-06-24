@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Public;
@@ -55,6 +55,6 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
             user.CountryId,
             user.AvatarUrl,
             System.Array.Empty<string>(),
-            user.Status == Domain.Identity.UserStatus.Active), "USER_DELETED");
+            user.Status == Domain.Identity.UserStatus.Active), MessageKeys.Identity.USER_DELETED);
     }
 }

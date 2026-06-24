@@ -20,8 +20,8 @@ public static class CountryProfileEndpoints
         group.MapGet("", async (
             System.Guid countryId, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetCountryProfileQuery(countryId), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetCountryProfileQuery(countryId), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("GetCountryProfile");

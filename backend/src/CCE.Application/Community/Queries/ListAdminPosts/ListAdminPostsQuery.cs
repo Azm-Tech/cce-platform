@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using MediatR;
 
@@ -18,4 +19,4 @@ public sealed record ListAdminPostsQuery(
     System.Guid? TopicId = null,
     string? Search = null,
     string? Status = null,
-    string? Locale = null) : IRequest<PagedResult<AdminPostRow>>;
+    string? Locale = null) : IRequest<Response<PagedResult<AdminPostRow>>>;

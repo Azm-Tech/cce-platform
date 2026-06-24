@@ -1,12 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -45,7 +45,7 @@ public sealed class GetPostActivityQueryHandler
             .ConfigureAwait(false);
 
         if (post is null)
-            return _msg.NotFound<PostActivityDto>(ApplicationErrors.Community.POST_NOT_FOUND);
+            return _msg.NotFound<PostActivityDto>(MessageKeys.Community.POST_NOT_FOUND);
 
         // Replies created since the cursor — fetch the full nodes so mobile can render them
         // without a follow-up GET. Performance note: posts have hot index on (PostId, AuthorId)
@@ -87,6 +87,6 @@ public sealed class GetPostActivityQueryHandler
             post.Score,
             post.CommentsCount,
             newReplies,
-            poll), ApplicationErrors.General.SUCCESS_OPERATION);
+            poll), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

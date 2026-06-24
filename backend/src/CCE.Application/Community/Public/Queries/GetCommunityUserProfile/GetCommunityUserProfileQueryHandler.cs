@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Community;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +77,6 @@ public sealed class GetCommunityUserProfileQueryHandler
             user.Id, user.FirstName, user.LastName, user.JobTitle, user.OrganizationName,
             user.AvatarUrl, isExpert, user.PostsCount, user.CommentsCount, user.FollowerCount, user.FollowingCount,
             isFollowed, expertBioAr, expertBioEn, countryNameAr, countryNameEn, user.CreatedOn);
-        return _msg.Ok(dto, "ITEMS_LISTED");
+        return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

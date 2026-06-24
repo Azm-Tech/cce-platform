@@ -1,18 +1,25 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.ListExpertProfiles;
 
 public sealed class ListExpertProfilesQueryHandler
-    : IRequestHandler<ListExpertProfilesQuery, PagedResult<ExpertProfileDto>>
+    : IRequestHandler<ListExpertProfilesQuery, Response<PagedResult<ExpertProfileDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListExpertProfilesQueryHandler(ICceDbContext db) => _db = db;
+    public ListExpertProfilesQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<PagedResult<ExpertProfileDto>> Handle(
+    public async Task<Response<PagedResult<ExpertProfileDto>>> Handle(
         ListExpertProfilesQuery request,
         CancellationToken cancellationToken)
     {
@@ -34,8 +41,8 @@ public sealed class ListExpertProfilesQueryHandler
 
         if (paged.Items.Count == 0)
         {
-            return new PagedResult<ExpertProfileDto>(
-                Array.Empty<ExpertProfileDto>(), paged.Page, paged.PageSize, paged.Total);
+            return _msg.Ok(new PagedResult<ExpertProfileDto>(
+                Array.Empty<ExpertProfileDto>(), paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
         }
 
         var userIds = paged.Items.Select(p => p.UserId).Distinct().ToList();
@@ -58,7 +65,7 @@ public sealed class ListExpertProfilesQueryHandler
             p.ApprovedOn,
             p.ApprovedById)).ToList();
 
-        return new PagedResult<ExpertProfileDto>(items, paged.Page, paged.PageSize, paged.Total);
+        return _msg.Ok(new PagedResult<ExpertProfileDto>(items, paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
     }
 
     private sealed record UserNameRow(Guid UserId, string? UserName);

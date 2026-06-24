@@ -29,7 +29,7 @@ public static class ExpertEndpoints
                 Status: status,
                 RequestedById: requestedById);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertRequests");
@@ -79,7 +79,7 @@ public static class ExpertEndpoints
                 PageSize: pageSize ?? 20,
                 Search: search);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertProfiles");

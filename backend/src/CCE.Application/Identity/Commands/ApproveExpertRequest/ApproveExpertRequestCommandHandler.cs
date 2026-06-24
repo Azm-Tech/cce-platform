@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -64,6 +64,6 @@ public sealed class ApproveExpertRequestCommandHandler
             profile.AcademicTitleAr,
             profile.AcademicTitleEn,
             profile.ApprovedOn,
-            profile.ApprovedById), "EXPERT_REQUEST_APPROVED");
+            profile.ApprovedById), MessageKeys.Identity.EXPERT_REQUEST_APPROVED);
     }
 }

@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Community;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +28,9 @@ public sealed class GetPostShareLinkQueryHandler
         var exists = await _db.Posts
             .AnyAsync(p => p.Id == request.PostId && p.Status == PostStatus.Published, cancellationToken)
             .ConfigureAwait(false);
-        if (!exists) return _msg.NotFound<PostShareLinkDto>(ApplicationErrors.Community.POST_NOT_FOUND);
+        if (!exists) return _msg.NotFound<PostShareLinkDto>(MessageKeys.Community.POST_NOT_FOUND);
 
         var dto = new PostShareLinkDto(request.PostId, $"/community/posts/{request.PostId}");
-        return _msg.Ok(dto, "ITEMS_LISTED");
+        return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

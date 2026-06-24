@@ -1,6 +1,6 @@
-namespace CCE.Application.Errors;
+﻿namespace CCE.Application.Messages;
 
-public static class ApplicationErrors
+public static class MessageKeys
 {
     public static class General
     {
@@ -8,13 +8,19 @@ public static class ApplicationErrors
         public const string INTERNAL_ERROR = "INTERNAL_ERROR";
         public const string UNAUTHORIZED = "UNAUTHORIZED_ACCESS";
         public const string FORBIDDEN = "FORBIDDEN_ACCESS";
-        public const string NOT_FOUND = "RESOURCE_NOT_FOUND";
+        public const string RESOURCE_NOT_FOUND_GENERIC = "RESOURCE_NOT_FOUND_GENERIC";
         public const string BAD_REQUEST = "BAD_REQUEST";
         public const string SUCCESS_CREATED = "SUCCESS_CREATED";
         public const string SUCCESS_UPDATED = "SUCCESS_UPDATED";
         public const string SUCCESS_DELETED = "SUCCESS_DELETED";
         public const string SUCCESS_OPERATION = "SUCCESS_OPERATION";
         public const string DUPLICATE_VALUE = "DUPLICATE_VALUE";
+        public const string CONCURRENCY_CONFLICT = "CONCURRENCY_CONFLICT";
+        public const string EXTERNAL_API_ERROR = "EXTERNAL_API_ERROR";
+        public const string EXTERNAL_API_NOT_CONFIGURED = "EXTERNAL_API_NOT_CONFIGURED";
+        public const string RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED";
+        public const string BUSINESS_RULE_VIOLATION = "BUSINESS_RULE_VIOLATION";
+        public const string ITEMS_LISTED = "ITEMS_LISTED";
     }
 
     public static class Identity
@@ -31,6 +37,7 @@ public static class ApplicationErrors
         public const string INVALID_CREDENTIALS = "INVALID_CREDENTIALS";
         public const string INVALID_TOKEN = "INVALID_TOKEN";
         public const string INVALID_REFRESH_TOKEN = "INVALID_REFRESH_TOKEN";
+        public const string INVALID_RESET_TOKEN = "INVALID_RESET_TOKEN";
         public const string REGISTRATION_FAILED = "REGISTRATION_FAILED";
         public const string LOGIN_FAILED = "LOGIN_FAILED";
         public const string PASSWORD_RECOVERY_FAILED = "PASSWORD_RECOVERY_FAILED";
@@ -44,12 +51,34 @@ public static class ApplicationErrors
         public const string STATE_REP_ASSIGNMENT_NOT_FOUND = "STATE_REP_ASSIGNMENT_NOT_FOUND";
         public const string STATE_REP_ASSIGNMENT_EXISTS = "STATE_REP_ASSIGNMENT_EXISTS";
         public const string CONTACT_NOT_VERIFIED = "CONTACT_NOT_VERIFIED";
+        public const string LOGIN_SUCCESS = "LOGIN_SUCCESS";
+        public const string AD_LOGIN_SUCCESS = "AD_LOGIN_SUCCESS";
+        public const string REGISTER_SUCCESS = "REGISTER_SUCCESS";
+        public const string PROFILE_UPDATED = "PROFILE_UPDATED";
+        public const string TOKEN_REFRESHED = "TOKEN_REFRESHED";
+        public const string USER_STATUS_CHANGED = "USER_STATUS_CHANGED";
+        public const string EXPERT_REQUEST_SUBMITTED = "EXPERT_REQUEST_SUBMITTED";
+        public const string EXPERT_REQUEST_APPROVED = "EXPERT_REQUEST_APPROVED";
+        public const string EXPERT_REQUEST_REJECTED = "EXPERT_REQUEST_REJECTED";
+        public const string STATE_REP_ASSIGNMENT_CREATED = "STATE_REP_ASSIGNMENT_CREATED";
+        public const string STATE_REP_ASSIGNMENT_REVOKED = "STATE_REP_ASSIGNMENT_REVOKED";
+        public const string INTEREST_UPSERTED = "INTEREST_UPSERTED";
+        public const string ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
+        public const string PERMISSIONS_GRANTED = "PERMISSIONS_GRANTED";
+        public const string PERMISSIONS_REVOKED = "PERMISSIONS_REVOKED";
+        public const string PERMISSIONS_UPDATED = "PERMISSIONS_UPDATED";
+        public const string CLAIMS_GRANTED = "CLAIMS_GRANTED";
+        public const string CLAIMS_REVOKED = "CLAIMS_REVOKED";
+        public const string USER_CLAIMS_UPDATED = "USER_CLAIMS_UPDATED";
+        public const string EMAIL_CHANGE_FAILED = "EMAIL_CHANGE_FAILED";
     }
 
     public static class Content
     {
         public const string RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
         public const string RESOURCE_DUPLICATE = "RESOURCE_DUPLICATE";
+        public const string TAG_NOT_FOUND = "TAG_NOT_FOUND";
+        public const string NEWSLETTER_SUBSCRIBED = "NEWSLETTER_SUBSCRIBED";
         public const string RESOURCE_CREATED = "RESOURCE_CREATED";
         public const string RESOURCE_UPDATED = "RESOURCE_UPDATED";
         public const string RESOURCE_DELETED = "RESOURCE_DELETED";
@@ -75,10 +104,17 @@ public static class ApplicationErrors
         public const string CONTENT_PUBLISHED = "CONTENT_PUBLISHED";
         public const string CONTENT_ARCHIVED = "CONTENT_ARCHIVED";
         public const string ASSET_UPLOADED = "ASSET_UPLOADED";
+        public const string RESOURCE_DOWNLOAD_SUCCESS = "RESOURCE_DOWNLOAD_SUCCESS";
+        public const string RESOURCE_SHARE_SUCCESS = "RESOURCE_SHARE_SUCCESS";
+        public const string RESOURCE_SHARE_FAILED = "RESOURCE_SHARE_FAILED";
+        public const string RESOURCE_DOWNLOAD_FAILED = "RESOURCE_DOWNLOAD_FAILED";
+        public const string RESOURCE_UPLOAD_FAILED = "RESOURCE_UPLOAD_FAILED";
+        public const string RESOURCE_DELETE_FAILED = "RESOURCE_DELETE_FAILED";
     }
 
     public static class Community
     {
+        public const string TOPICS_LISTED = "TOPICS_LISTED";
         public const string TOPIC_NOT_FOUND = "TOPIC_NOT_FOUND";
         public const string TOPIC_DUPLICATE = "TOPIC_DUPLICATE";
         public const string POST_NOT_FOUND = "POST_NOT_FOUND";
@@ -137,6 +173,8 @@ public static class ApplicationErrors
     public static class PlatformSettings
     {
         public const string HOMEPAGE_SETTINGS_NOT_FOUND = "HOMEPAGE_SETTINGS_NOT_FOUND";
+        public const string HOMEPAGE_SECTION_NOT_FOUND = "HOMEPAGE_SECTION_NOT_FOUND";
+        public const string SECTION_REORDERED = "SECTION_REORDERED";
         public const string ABOUT_SETTINGS_NOT_FOUND = "ABOUT_SETTINGS_NOT_FOUND";
         public const string POLICIES_SETTINGS_NOT_FOUND = "POLICIES_SETTINGS_NOT_FOUND";
         public const string GLOSSARY_ENTRY_NOT_FOUND = "GLOSSARY_ENTRY_NOT_FOUND";
@@ -160,6 +198,7 @@ public static class ApplicationErrors
     public static class Verification
     {
         public const string OTP_NOT_FOUND = "OTP_NOT_FOUND";
+        public const string OTP_UNAUTHORIZED = "OTP_UNAUTHORIZED";
         public const string OTP_EXPIRED = "OTP_EXPIRED";
         public const string OTP_INVALID_CODE = "OTP_INVALID_CODE";
         public const string OTP_MAX_ATTEMPTS = "OTP_MAX_ATTEMPTS";
@@ -168,6 +207,8 @@ public static class ApplicationErrors
         public const string CONTACT_ALREADY_TAKEN = "CONTACT_ALREADY_TAKEN";
         public const string EMAIL_UPDATED = "EMAIL_UPDATED";
         public const string PHONE_UPDATED = "PHONE_UPDATED";
+        public const string OTP_SENT = "OTP_SENT";
+        public const string OTP_VERIFIED = "OTP_VERIFIED";
     }
 
     public static class Lookups
@@ -201,13 +242,27 @@ public static class ApplicationErrors
         public const string EVALUATION_SUBMITTED = "EVALUATION_SUBMITTED";
     }
 
+    public static class InterestTopic
+    {
+        public const string INTEREST_TOPIC_NOT_FOUND = "INTEREST_TOPIC_NOT_FOUND";
+        public const string INTEREST_TOPIC_CREATED = "INTEREST_TOPIC_CREATED";
+        public const string INTEREST_TOPIC_UPDATED = "INTEREST_TOPIC_UPDATED";
+        public const string INTEREST_TOPIC_DELETED = "INTEREST_TOPIC_DELETED";
+    }
+
     public static class Validation
     {
         public const string REQUIRED_FIELD = "REQUIRED_FIELD";
         public const string INVALID_EMAIL = "INVALID_EMAIL";
+        public const string INVALID_PHONE = "INVALID_PHONE";
         public const string MIN_LENGTH = "MIN_LENGTH";
         public const string MAX_LENGTH = "MAX_LENGTH";
         public const string INVALID_FORMAT = "INVALID_FORMAT";
         public const string INVALID_ENUM = "INVALID_ENUM";
+        public const string PASSWORD_UPPERCASE = "PASSWORD_UPPERCASE";
+        public const string PASSWORD_LOWERCASE = "PASSWORD_LOWERCASE";
+        public const string PASSWORD_NUMBER = "PASSWORD_NUMBER";
+        public const string PASSWORD_POLICY = "PASSWORD_POLICY";
+        public const string PASSWORDS_MUST_MATCH = "PASSWORDS_MUST_MATCH";
     }
 }

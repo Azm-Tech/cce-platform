@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -51,6 +51,6 @@ public sealed class GetPublicAboutSettingsQueryHandler
                 new LocalizedTextDto(p.Name.Ar, p.Name.En),
                 p.LogoUrl,
                 p.WebsiteUrl,
-                p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En))).ToList()), "ITEMS_LISTED");
+                p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En))).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

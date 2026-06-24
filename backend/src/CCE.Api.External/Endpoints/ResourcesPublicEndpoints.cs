@@ -1,5 +1,6 @@
-using System.IO;
+﻿using System.IO;
 using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Content.Public;
@@ -58,13 +59,13 @@ public static class ResourcesPublicEndpoints
         {
             var resource = await db.Resources.FirstOrDefaultAsync(r => r.Id == id, cancellationToken).ConfigureAwait(false);
             if (resource is null || resource.PublishedOn is null)
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
 
             var asset = await db.AssetFiles.FirstOrDefaultAsync(a => a.Id == resource.AssetFileId, cancellationToken).ConfigureAwait(false);
             if (asset is null)
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
             if (asset.VirusScanStatus != VirusScanStatus.Clean)
-                return Results.StatusCode(StatusCodes.Status403Forbidden);
+                return EnvelopeResults.Forbidden();
 
             httpContext.Response.ContentType = asset.MimeType;
             httpContext.Response.Headers.ContentDisposition =
@@ -78,7 +79,7 @@ public static class ResourcesPublicEndpoints
             }
             catch (FileNotFoundException)
             {
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
             }
 
             await using (fileStream)

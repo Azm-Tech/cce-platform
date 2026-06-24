@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -30,7 +30,7 @@ public sealed class ListPublicTopicsQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        return _messages.Ok((System.Collections.Generic.IReadOnlyList<PublicTopicDto>)list.Select(MapToDto).ToList(), "ITEMS_LISTED");
+        return _messages.Ok((System.Collections.Generic.IReadOnlyList<PublicTopicDto>)list.Select(MapToDto).ToList(), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static PublicTopicDto MapToDto(Topic t) => new(

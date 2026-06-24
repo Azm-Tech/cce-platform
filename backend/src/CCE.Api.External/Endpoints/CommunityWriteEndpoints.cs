@@ -1,4 +1,5 @@
-using CCE.Api.Common.Extensions;
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Commands.CastPollVote;
 using CCE.Application.Community.Commands.CreatePost;
@@ -119,11 +120,11 @@ public static class CommunityWriteEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var cmd = new MarkPostAnsweredCommand(id, body.ReplyId);
-            await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Ok();
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         }).WithName("MarkPostAnswered");
 
         // PUT /api/community/replies/{id}
@@ -135,11 +136,11 @@ public static class CommunityWriteEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var cmd = new EditReplyCommand(id, body.Content);
-            await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Ok();
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         }).WithName("EditReply");
 
         // POST /api/community/polls/{id}/vote — cast a poll vote

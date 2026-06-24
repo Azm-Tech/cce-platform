@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -71,6 +71,6 @@ public sealed class RejectExpertRequestCommandHandler
             registration.ProcessedOn,
             registration.RejectionReasonAr,
             registration.RejectionReasonEn,
-            cvIds.FirstOrDefault()), "EXPERT_REQUEST_REJECTED");
+            cvIds.FirstOrDefault()), MessageKeys.Identity.EXPERT_REQUEST_REJECTED);
     }
 }

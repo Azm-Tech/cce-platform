@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -26,12 +26,12 @@ internal sealed class ResetPasswordCommandHandler
         {
             return errorKey switch
             {
-                "USER_NOT_FOUND" => _msg.UserNotFound<AuthMessageDto>(),
-                "INVALID_RESET_TOKEN" => _msg.Unauthorized<AuthMessageDto>("INVALID_RESET_TOKEN"),
+                MessageKeys.Identity.USER_NOT_FOUND => _msg.UserNotFound<AuthMessageDto>(),
+                MessageKeys.Identity.INVALID_RESET_TOKEN => _msg.Unauthorized<AuthMessageDto>(MessageKeys.Identity.INVALID_RESET_TOKEN),
                 _ => _msg.BusinessRule<AuthMessageDto>(errorKey),
             };
         }
 
-        return _msg.Ok(new AuthMessageDto("PASSWORD_RESET"), "PASSWORD_RESET");
+        return _msg.Ok(new AuthMessageDto(MessageKeys.Identity.PASSWORD_RESET), MessageKeys.Identity.PASSWORD_RESET);
     }
 }

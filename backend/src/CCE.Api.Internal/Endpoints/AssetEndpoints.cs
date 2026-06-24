@@ -1,4 +1,5 @@
-using CCE.Api.Common.Extensions;
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Content;
 using CCE.Application.Content.Commands.UploadAsset;
 using CCE.Application.Content.Queries.DownloadFile;
@@ -28,12 +29,12 @@ public static class AssetEndpoints
             CancellationToken cancellationToken) =>
         {
             if (!httpContext.Request.HasFormContentType)
-                return Results.BadRequest(new { error = "Multipart form-data with a single 'file' field is required." });
+                return EnvelopeResults.BadRequest();
 
             var form = await httpContext.Request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
             var file = form.Files["file"] ?? (form.Files.Count > 0 ? form.Files[0] : null);
             if (file is null || file.Length == 0)
-                return Results.BadRequest(new { error = "Upload requires a non-empty 'file' field." });
+                return EnvelopeResults.BadRequest();
 
             var allowed = infraOpts.Value.AllowedAssetMimeTypes;
             if (!allowed.Contains(file.ContentType, System.StringComparer.OrdinalIgnoreCase))

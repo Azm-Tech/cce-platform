@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
@@ -42,7 +42,7 @@ public sealed class ListExpertLeaderboardQueryHandler
             return _msg.Ok(
                 new PagedResult<ExpertLeaderboardEntryDto>(
                     System.Array.Empty<ExpertLeaderboardEntryDto>(), page, pageSize, 0),
-                "ITEMS_LISTED");
+                MessageKeys.General.ITEMS_LISTED);
         }
 
         var userIds = profiles.Select(p => p.UserId).Distinct().ToList();
@@ -114,6 +114,6 @@ public sealed class ListExpertLeaderboardQueryHandler
 
         return _msg.Ok(
             new PagedResult<ExpertLeaderboardEntryDto>(items, page, pageSize, ranked.Count),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 }

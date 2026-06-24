@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -47,6 +47,6 @@ public sealed class CreatePolicySectionCommandHandler
         var section = settings.AddSection(type, title, content, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(section.Id, "CONTENT_CREATED");
+        return _msg.Ok(section.Id, MessageKeys.Content.CONTENT_CREATED);
     }
 }

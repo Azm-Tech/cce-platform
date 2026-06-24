@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Country.Dtos;
 using CCE.Application.Country.Queries.GetCountryProfile;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Country;
 using MediatR;
@@ -75,6 +75,6 @@ public sealed class UpsertCountryProfileCommandHandler : IRequestHandler<UpsertC
             result = existing;
         }
 
-        return _messages.Ok(GetCountryProfileQueryHandler.MapToDto(result), ApplicationErrors.Country.COUNTRY_PROFILE_UPDATED);
+        return _messages.Ok(GetCountryProfileQueryHandler.MapToDto(result), MessageKeys.Country.COUNTRY_PROFILE_UPDATED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.ListResourceCategories;
@@ -40,6 +40,6 @@ public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<Updat
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(ListResourceCategoriesQueryHandler.MapToDto(category), "SUCCESS_OPERATION");
+        return _messages.Ok(ListResourceCategoriesQueryHandler.MapToDto(category), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

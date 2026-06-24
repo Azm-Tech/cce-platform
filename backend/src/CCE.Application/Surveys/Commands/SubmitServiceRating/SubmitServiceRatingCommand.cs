@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using MediatR;
 
 namespace CCE.Application.Surveys.Commands.SubmitServiceRating;
@@ -7,4 +8,4 @@ public sealed record SubmitServiceRatingCommand(
     string? CommentAr,
     string? CommentEn,
     string Page,
-    string Locale) : IRequest<System.Guid>;
+    string Locale) : IRequest<Response<Guid>>;

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Application.Verification;
@@ -58,7 +58,7 @@ internal sealed class ConfirmEmailChangeCommandHandler
 
         // Ownership validation — OTP must belong to the authenticated user
         if (otp.UserId.HasValue && otp.UserId.Value != request.UserId)
-            return _msg.Unauthorized<VoidData>("OTP_UNAUTHORIZED");
+            return _msg.Unauthorized<VoidData>(MessageKeys.Verification.OTP_UNAUTHORIZED);
 
         otp.IncrementAttempt();
 
@@ -80,12 +80,12 @@ internal sealed class ConfirmEmailChangeCommandHandler
         // Use UserManager to ensure NormalizedEmail and SecurityStamp are properly updated
         var setEmailResult = await _userManager.SetEmailAsync(user, otp.Contact).ConfigureAwait(false);
         if (!setEmailResult.Succeeded)
-            return _msg.BusinessRule<VoidData>("EMAIL_CHANGE_FAILED");
+            return _msg.BusinessRule<VoidData>(MessageKeys.Identity.EMAIL_CHANGE_FAILED);
 
         // Update UserName to match the new email
         var setUserNameResult = await _userManager.SetUserNameAsync(user, otp.Contact).ConfigureAwait(false);
         if (!setUserNameResult.Succeeded)
-            return _msg.BusinessRule<VoidData>("EMAIL_CHANGE_FAILED");
+            return _msg.BusinessRule<VoidData>(MessageKeys.Identity.EMAIL_CHANGE_FAILED);
 
         // domain methods
         otp.MarkVerified();

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -50,6 +50,6 @@ public sealed class UpdateGlossaryEntryCommandHandler
         about.UpdateGlossaryEntry(entry, term, definition, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(entry.Id, "CONTENT_UPDATED");
+        return _msg.Ok(entry.Id, MessageKeys.Content.CONTENT_UPDATED);
     }
 }

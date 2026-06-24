@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CCE.Application.Common;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Messages;
@@ -48,6 +48,6 @@ public sealed class GetCommunityRolesQueryHandler
                 ModeratorCapabilities),
         };
 
-        return Task.FromResult(_msg.Ok(roles, "ITEMS_LISTED"));
+        return Task.FromResult(_msg.Ok(roles, MessageKeys.General.ITEMS_LISTED));
     }
 }

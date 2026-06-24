@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
@@ -51,7 +51,7 @@ internal sealed class DownloadFileQueryHandler
             }
 
             var payload = new DownloadFilePayload(stream, media.MimeType, media.OriginalFileName);
-            return _msg.Ok(payload, "SUCCESS_OPERATION");
+            return _msg.Ok(payload, MessageKeys.General.SUCCESS_OPERATION);
         }
 
         var asset = await _db.AssetFiles
@@ -78,6 +78,6 @@ internal sealed class DownloadFileQueryHandler
         }
 
         var assetPayload = new DownloadFilePayload(assetStream, asset.MimeType, asset.OriginalFileName);
-        return _msg.Ok(assetPayload, "SUCCESS_OPERATION");
+        return _msg.Ok(assetPayload, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

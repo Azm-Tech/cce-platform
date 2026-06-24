@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -38,7 +38,7 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)
-            return _messages.NotFound<EventDto>("TOPIC_NOT_FOUND");
+            return _messages.NotFound<EventDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var expectedRowVersion = ev.RowVersion;
         ev.UpdateContent(
@@ -70,6 +70,6 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
         var tagDtos = ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
-        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, tagDtos), "SUCCESS_OPERATION");
+        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, tagDtos), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

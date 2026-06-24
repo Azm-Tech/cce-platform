@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
@@ -56,7 +56,7 @@ public sealed class GetMyTopicsQueryHandler
         {
             return _msg.Ok(
                 new PagedResult<MyTopicDto>(System.Array.Empty<MyTopicDto>(), pagedIds.Page, pagedIds.PageSize, pagedIds.Total),
-                "ITEMS_LISTED");
+                MessageKeys.General.ITEMS_LISTED);
         }
 
         // Step 2: batch-load topic names
@@ -91,6 +91,6 @@ public sealed class GetMyTopicsQueryHandler
 
         return _msg.Ok(
             new PagedResult<MyTopicDto>(items, pagedIds.Page, pagedIds.PageSize, pagedIds.Total),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 }

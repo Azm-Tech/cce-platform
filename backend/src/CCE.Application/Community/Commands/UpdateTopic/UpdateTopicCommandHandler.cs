@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Dtos;
 using CCE.Application.Community.Queries.ListTopics;
@@ -40,6 +40,6 @@ public sealed class UpdateTopicCommandHandler : IRequestHandler<UpdateTopicComma
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), "SUCCESS_OPERATION");
+        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

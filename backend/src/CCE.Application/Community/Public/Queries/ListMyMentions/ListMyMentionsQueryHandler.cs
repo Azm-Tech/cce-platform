@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -35,6 +35,6 @@ public sealed class ListMyMentionsQueryHandler
             .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _msg.Ok(paged, "ITEMS_LISTED");
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
 }

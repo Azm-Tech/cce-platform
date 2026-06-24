@@ -11,6 +11,10 @@ public sealed record LocalAuthOptions
     public int PasswordResetTokenHours { get; init; } = 2;
     public bool RequireConfirmedEmail { get; init; }
 
-    public LocalAuthJwtProfile GetProfile(LocalAuthApi api)
-        => api == LocalAuthApi.Internal ? Internal : External;
+    public LocalAuthJwtProfile GetProfile(LocalAuthApi api) => api switch
+    {
+        LocalAuthApi.External => External,
+        LocalAuthApi.Internal => Internal,
+        _ => throw new InvalidOperationException($"No JWT profile configured for LocalAuthApi.{api}.")
+    };
 }

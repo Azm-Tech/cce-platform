@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -68,6 +68,6 @@ public sealed class SubmitExpertRequestCommandHandler
             entity.Status,
             entity.ProcessedOn,
             entity.RejectionReasonAr,
-            entity.RejectionReasonEn), "EXPERT_REQUEST_SUBMITTED");
+            entity.RejectionReasonEn), MessageKeys.Identity.EXPERT_REQUEST_SUBMITTED);
     }
 }

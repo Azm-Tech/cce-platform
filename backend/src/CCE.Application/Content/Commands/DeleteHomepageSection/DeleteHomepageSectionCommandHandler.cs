@@ -1,35 +1,42 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.DeleteHomepageSection;
 
-public sealed class DeleteHomepageSectionCommandHandler : IRequestHandler<DeleteHomepageSectionCommand, Unit>
+public sealed class DeleteHomepageSectionCommandHandler : IRequestHandler<DeleteHomepageSectionCommand, Response<VoidData>>
 {
     private readonly IHomepageSectionRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
 
-    public DeleteHomepageSectionCommandHandler(IHomepageSectionRepository service, ICurrentUserAccessor currentUser, ISystemClock clock)
+    public DeleteHomepageSectionCommandHandler(IHomepageSectionRepository service, ICurrentUserAccessor currentUser, ISystemClock clock, MessageFactory msg)
     {
         _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(DeleteHomepageSectionCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(DeleteHomepageSectionCommand request, CancellationToken cancellationToken)
     {
         var section = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (section is null)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"HomepageSection {request.Id} not found.");
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.HOMEPAGE_SECTION_NOT_FOUND);
         }
 
-        var deletedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot delete homepage section from a request without a user identity.");
+        var deletedById = _currentUser.GetUserId();
+        if (deletedById is null)
+        {
+            return _msg.NotAuthenticated<VoidData>();
+        }
 
-        section.SoftDelete(deletedById, _clock);
+        section.SoftDelete(deletedById.Value, _clock);
         await _service.UpdateAsync(section, cancellationToken).ConfigureAwait(false);
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

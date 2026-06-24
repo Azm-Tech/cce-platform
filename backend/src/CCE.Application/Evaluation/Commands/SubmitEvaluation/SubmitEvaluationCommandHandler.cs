@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using DomainEvaluation = CCE.Domain.Evaluation.ServiceEvaluation;
 using MediatR;
@@ -48,6 +48,6 @@ public sealed class SubmitEvaluationCommandHandler
         await _repository.AddAsync(evaluation, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         
-        return _messageFactory.Ok(ApplicationErrors.Evaluation.EVALUATION_SUBMITTED);
+        return _messageFactory.Ok(MessageKeys.Evaluation.EVALUATION_SUBMITTED);
     }
 }

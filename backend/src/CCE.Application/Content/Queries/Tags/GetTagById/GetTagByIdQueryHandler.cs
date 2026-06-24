@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -24,8 +24,8 @@ public sealed class GetTagByIdQueryHandler : IRequestHandler<GetTagByIdQuery, Re
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var tag = tags.FirstOrDefault();
         if (tag is null)
-            return _messages.NotFound<TagDto>("TAG_NOT_FOUND");
+            return _messages.NotFound<TagDto>(MessageKeys.Content.TAG_NOT_FOUND);
 
-        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), "SUCCESS_OPERATION");
+        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

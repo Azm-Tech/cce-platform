@@ -1,4 +1,5 @@
-using CCE.Api.Common.Extensions;
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Queries.GetCommunityBySlug;
 using CCE.Application.Community.Public.Queries.GetCommunityUserProfile;
@@ -187,7 +188,7 @@ public static class CommunityPublicEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(new GetMyFollowsQuery(userId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).WithName("GetMyFollows");
@@ -201,7 +202,7 @@ public static class CommunityPublicEndpoints
             ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId();
-            if (!userId.HasValue) return Results.Unauthorized();
+            if (!userId.HasValue) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(
                 new ListUserFeedQuery(
                     userId.Value,
@@ -224,7 +225,7 @@ public static class CommunityPublicEndpoints
         {
             var userId = currentUser.GetUserId();
             if (userId is null || userId == System.Guid.Empty)
-                return Results.Unauthorized();
+                return EnvelopeResults.Unauthorized();
             var query = new ListCommunityFeedQuery(
                 sort ?? PostFeedSort.Newest,
                 tagIds ?? System.Array.Empty<System.Guid>(),

@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Audit.Queries.ListAuditEvents;
 using CCE.Domain;
 using MediatR;
@@ -25,7 +26,7 @@ public static class AuditEndpoints
                 actor, actionPrefix, resourceType,
                 correlationId, from, to);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Audit_Read)
         .WithName("ListAuditEvents");

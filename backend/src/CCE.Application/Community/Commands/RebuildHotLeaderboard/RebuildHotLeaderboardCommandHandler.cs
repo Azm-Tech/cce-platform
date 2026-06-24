@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -54,6 +54,6 @@ internal sealed class RebuildHotLeaderboardCommandHandler
             }
         }
 
-        return _msg.Ok("SUCCESS_OPERATION");
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

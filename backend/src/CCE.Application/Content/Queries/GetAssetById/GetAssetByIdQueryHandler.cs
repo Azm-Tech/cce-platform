@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -44,6 +44,6 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
             asset.UploadedById,
             asset.UploadedOn,
             asset.VirusScanStatus,
-            asset.ScannedOn), "SUCCESS_OPERATION");
+            asset.ScannedOn), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

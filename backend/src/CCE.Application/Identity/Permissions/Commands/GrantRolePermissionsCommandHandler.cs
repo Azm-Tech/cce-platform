@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
@@ -48,7 +48,7 @@ internal sealed class GrantRolePermissionsCommandHandler
             .ConfigureAwait(false);
 
         return result is null
-            ? _msg.NotFound<RolePermissionsResult>("ROLE_NOT_FOUND")
-            : _msg.Ok(result, "PERMISSIONS_GRANTED");
+            ? _msg.NotFound<RolePermissionsResult>(MessageKeys.Identity.ROLE_NOT_FOUND)
+            : _msg.Ok(result, MessageKeys.Identity.PERMISSIONS_GRANTED);
     }
 }

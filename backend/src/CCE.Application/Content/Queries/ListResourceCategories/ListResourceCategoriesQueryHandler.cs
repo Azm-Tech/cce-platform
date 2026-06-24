@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -30,7 +30,7 @@ public sealed class ListResourceCategoriesQueryHandler
             .OrderBy(c => c.OrderIndex);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
-        return _messages.Ok(result.Map(MapToDto), "ITEMS_LISTED");
+        return _messages.Ok(result.Map(MapToDto), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static ResourceCategoryDto MapToDto(ResourceCategory c) => new(

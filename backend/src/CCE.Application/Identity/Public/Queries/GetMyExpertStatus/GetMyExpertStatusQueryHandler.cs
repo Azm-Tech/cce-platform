@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -47,6 +47,6 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
             entity.Status,
             entity.ProcessedOn,
             entity.RejectionReasonAr,
-            entity.RejectionReasonEn), "SUCCESS_OPERATION");
+            entity.RejectionReasonEn), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
@@ -52,6 +52,6 @@ public sealed class GetPublicHomepageQueryHandler
             settings.CceConceptsEn,
             countries,
             sections.Select(s => new PublicHomepageSectionDto(
-                s.Id, s.SectionType, s.OrderIndex, s.ContentAr, s.ContentEn)).ToList()), "ITEMS_LISTED");
+                s.Id, s.SectionType, s.OrderIndex, s.ContentAr, s.ContentEn)).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

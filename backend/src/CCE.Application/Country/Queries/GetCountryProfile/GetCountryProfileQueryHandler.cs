@@ -1,27 +1,32 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Country.Dtos;
+using CCE.Application.Messages;
+
 using CCE.Domain.Country;
 using MediatR;
 
 namespace CCE.Application.Country.Queries.GetCountryProfile;
 
-public sealed class GetCountryProfileQueryHandler : IRequestHandler<GetCountryProfileQuery, CountryProfileDto?>
+public sealed class GetCountryProfileQueryHandler : IRequestHandler<GetCountryProfileQuery, Response<CountryProfileDto>>
 {
     private readonly ICountryProfileService _service;
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetCountryProfileQueryHandler(ICountryProfileService service, ICceDbContext db)
+    public GetCountryProfileQueryHandler(ICountryProfileService service, ICceDbContext db, MessageFactory msg)
     {
         _service = service;
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<CountryProfileDto?> Handle(GetCountryProfileQuery request, CancellationToken cancellationToken)
+    public async Task<Response<CountryProfileDto>> Handle(GetCountryProfileQuery request, CancellationToken cancellationToken)
     {
         var profile = await _service.FindByCountryIdAsync(request.CountryId, cancellationToken).ConfigureAwait(false);
         if (profile is null)
-            return null;
+            return _msg.NotFound<CountryProfileDto>(MessageKeys.Country.COUNTRY_PROFILE_NOT_FOUND);
 
         CountryKapsarcSnapshot? snapshot = null;
         var countries = await _db.Countries
@@ -36,7 +41,7 @@ public sealed class GetCountryProfileQueryHandler : IRequestHandler<GetCountryPr
             snapshot = snapshots.FirstOrDefault();
         }
 
-        return MapToDto(profile, snapshot);
+        return _msg.Ok(MapToDto(profile, snapshot), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static CountryProfileDto MapToDto(CountryProfile profile, CountryKapsarcSnapshot? snapshot = null) =>

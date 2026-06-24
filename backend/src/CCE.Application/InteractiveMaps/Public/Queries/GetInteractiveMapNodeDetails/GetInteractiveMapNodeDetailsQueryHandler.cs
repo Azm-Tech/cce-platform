@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
@@ -132,6 +132,6 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             Events: events,
             Posts: posts);
 
-        return _msg.Ok(dto, "ITEMS_LISTED");
+        return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

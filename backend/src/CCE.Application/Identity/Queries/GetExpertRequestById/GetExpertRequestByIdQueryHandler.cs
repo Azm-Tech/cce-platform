@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -58,6 +58,6 @@ public sealed class GetExpertRequestByIdQueryHandler
             row.ProcessedOn,
             row.RejectionReasonAr,
             row.RejectionReasonEn,
-            cvAssetFileIds.FirstOrDefault()), "SUCCESS_OPERATION");
+            cvAssetFileIds.FirstOrDefault()), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

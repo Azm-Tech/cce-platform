@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Media.Dtos;
@@ -41,6 +41,6 @@ internal sealed class DeleteMediaCommandHandler
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
-        return _msg.Ok(dto, "MEDIA_DELETED");
+        return _msg.Ok(dto, MessageKeys.Media.MEDIA_DELETED);
     }
 }

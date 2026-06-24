@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -33,7 +33,7 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
     {
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)
-            return _messages.NotFound<EventDto>("TOPIC_NOT_FOUND");
+            return _messages.NotFound<EventDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var ev = Event.Schedule(
             request.TitleAr,
@@ -66,6 +66,6 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(ListEventsQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), "CONTENT_CREATED");
+        return _messages.Ok(ListEventsQueryHandler.MapToDto(ev, topicNameAr, topicNameEn, ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), MessageKeys.Content.CONTENT_CREATED);
     }
 }

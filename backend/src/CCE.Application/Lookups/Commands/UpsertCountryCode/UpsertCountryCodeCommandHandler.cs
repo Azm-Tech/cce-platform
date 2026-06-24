@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -41,7 +41,7 @@ public sealed class UpsertCountryCodeCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
                 CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity),
-                "LOOKUP_CREATED");
+                MessageKeys.Lookups.LOOKUP_CREATED);
         }
         else
         {
@@ -53,7 +53,7 @@ public sealed class UpsertCountryCodeCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
                 CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity),
-                "LOOKUP_UPDATED");
+                MessageKeys.Lookups.LOOKUP_UPDATED);
         }
     }
 }

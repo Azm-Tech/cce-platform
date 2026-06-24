@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -44,7 +44,7 @@ public sealed class ListCountryCodesQueryHandler
             .ConfigureAwait(false);
 
         IReadOnlyList<CountryCodeDto> dtos = items.Select(MapToDto).ToList();
-        return _msg.Ok(dtos, "ITEMS_LISTED");
+        return _msg.Ok(dtos, MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static CountryCodeDto MapToDto(CCE.Domain.Country.Country c) =>

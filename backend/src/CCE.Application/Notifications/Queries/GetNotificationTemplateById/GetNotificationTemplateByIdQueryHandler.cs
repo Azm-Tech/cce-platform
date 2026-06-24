@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -31,6 +31,6 @@ public sealed class GetNotificationTemplateByIdQueryHandler
         var template = list.SingleOrDefault();
         return template is null
             ? _msg.NotificationTemplateNotFound<NotificationTemplateDto>()
-            : _msg.Ok(ListNotificationTemplatesQueryHandler.MapToDto(template), "ITEMS_LISTED");
+            : _msg.Ok(ListNotificationTemplatesQueryHandler.MapToDto(template), MessageKeys.General.ITEMS_LISTED);
     }
 }

@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
@@ -65,6 +65,6 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
             user.CountryId,
             user.AvatarUrl,
             roles,
-            isActive), "SUCCESS_OPERATION");
+            isActive), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

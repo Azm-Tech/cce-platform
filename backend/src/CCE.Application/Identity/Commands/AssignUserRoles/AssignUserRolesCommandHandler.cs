@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Messages;
@@ -36,6 +36,6 @@ public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRo
             return result;
         }
 
-        return _msg.Ok(result.Data!, "ROLES_ASSIGNED");
+        return _msg.Ok(result.Data!, MessageKeys.Identity.ROLES_ASSIGNED);
     }
 }

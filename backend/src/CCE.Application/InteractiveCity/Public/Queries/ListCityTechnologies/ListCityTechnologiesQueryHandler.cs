@@ -1,22 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.InteractiveCity.Public.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.InteractiveCity;
 using MediatR;
 
 namespace CCE.Application.InteractiveCity.Public.Queries.ListCityTechnologies;
 
 public sealed class ListCityTechnologiesQueryHandler
-    : IRequestHandler<ListCityTechnologiesQuery, System.Collections.Generic.IReadOnlyList<CityTechnologyDto>>
+    : IRequestHandler<ListCityTechnologiesQuery, Response<System.Collections.Generic.IReadOnlyList<CityTechnologyDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListCityTechnologiesQueryHandler(ICceDbContext db)
+    public ListCityTechnologiesQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<System.Collections.Generic.IReadOnlyList<CityTechnologyDto>> Handle(
+    public async Task<Response<System.Collections.Generic.IReadOnlyList<CityTechnologyDto>>> Handle(
         ListCityTechnologiesQuery request, CancellationToken cancellationToken)
     {
         var techs = await _db.CityTechnologies
@@ -26,7 +30,8 @@ public sealed class ListCityTechnologiesQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        return techs.Select(MapToDto).ToList();
+        System.Collections.Generic.IReadOnlyList<CityTechnologyDto> list = techs.Select(MapToDto).ToList();
+        return _msg.Ok(list, MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static CityTechnologyDto MapToDto(CityTechnology t) => new(

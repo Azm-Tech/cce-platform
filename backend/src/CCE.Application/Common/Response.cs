@@ -5,7 +5,6 @@ namespace CCE.Application.Common;
 
 /// <summary>
 /// Unified API response envelope. Every endpoint returns this shape.
-/// Replaces <see cref="Result{T}"/> with proper success messages and error arrays.
 /// Code field uses ERR0xx/CON0xx/VAL0xx numbering.
 /// Message is a single string in the language requested via Accept-Language header.
 /// </summary>
@@ -24,6 +23,7 @@ public sealed record Response<T> : IResponse
     [JsonInclude] public T? Data { get; private init; }
     [JsonInclude] public IReadOnlyList<FieldError> Errors { get; private init; } = [];
     [JsonInclude] public string TraceId { get; init; } = string.Empty;
+    [JsonInclude] public string CorrelationId { get; init; } = string.Empty;
     [JsonInclude] public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>Not serialized — used internally to select HTTP status.</summary>

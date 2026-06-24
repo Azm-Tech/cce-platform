@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
@@ -126,7 +126,7 @@ public sealed class ListUserFeedQueryHandler
                 {
                     return _msg.Ok(
                         new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
-                        "ITEMS_LISTED");
+                        MessageKeys.General.ITEMS_LISTED);
                 }
 
                 // topicId active: page the in-memory filtered result.
@@ -136,7 +136,7 @@ public sealed class ListUserFeedQueryHandler
                     return _msg.Ok(
                         new PagedResult<CommunityFeedItemDto>(
                             hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, total),
-                        "ITEMS_LISTED");
+                        MessageKeys.General.ITEMS_LISTED);
                 }
                 // Window exhausted for this page — fall through to SQL.
             }
@@ -232,7 +232,7 @@ public sealed class ListUserFeedQueryHandler
                             .ConfigureAwait(false);
                     return _msg.Ok(
                         new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, redisTotal + expertTotal),
-                        "ITEMS_LISTED");
+                        MessageKeys.General.ITEMS_LISTED);
                 }
             }
         }
@@ -267,7 +267,7 @@ public sealed class ListUserFeedQueryHandler
             return _msg.Ok(
                 new PagedResult<CommunityFeedItemDto>(
                     System.Array.Empty<CommunityFeedItemDto>(), page, pageSize, 0),
-                "ITEMS_LISTED");
+                MessageKeys.General.ITEMS_LISTED);
         }
 
         // The WHERE clause is (followedCommunity OR followedTopic OR followedUser) AND community = X.
@@ -280,7 +280,7 @@ public sealed class ListUserFeedQueryHandler
             return _msg.Ok(
                 new PagedResult<CommunityFeedItemDto>(
                     System.Array.Empty<CommunityFeedItemDto>(), page, pageSize, 0),
-                "ITEMS_LISTED");
+                MessageKeys.General.ITEMS_LISTED);
         }
 
         // Fix E: use JOIN instead of correlated Communities.Any() per post row, matching the
@@ -324,6 +324,6 @@ public sealed class ListUserFeedQueryHandler
             .ConfigureAwait(false);
         return _msg.Ok(
             new PagedResult<CommunityFeedItemDto>(items, page, pageSize, pagedIds.Total),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 }

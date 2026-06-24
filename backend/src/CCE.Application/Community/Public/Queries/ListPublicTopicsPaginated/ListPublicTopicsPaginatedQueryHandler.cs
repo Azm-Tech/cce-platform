@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -53,7 +53,7 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
             if (pagedIds.Count == 0)
                 return _messages.Ok(
                     new PagedResult<PublicTopicItemDto>([], request.Page, request.PageSize, total),
-                    "TOPICS_LISTED");
+                    MessageKeys.Community.TOPICS_LISTED);
 
             var topics = await _db.Topics
                 .Where(t => pagedIds.Contains(t.Id))
@@ -74,7 +74,7 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
             return _messages.Ok(
                 new PagedResult<PublicTopicItemDto>(sortedItems, request.Page, request.PageSize, total),
-                "TOPICS_LISTED");
+                MessageKeys.Community.TOPICS_LISTED);
         }
 
         IQueryable<Topic> sortedQuery;
@@ -92,7 +92,7 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
         if (topicIds.Count == 0)
             return _messages.Ok(
                 new PagedResult<PublicTopicItemDto>([], pagedIdsResult.Page, pagedIdsResult.PageSize, pagedIdsResult.Total),
-                "TOPICS_LISTED");
+                MessageKeys.Community.TOPICS_LISTED);
 
         var pagedTopics = await _db.Topics
             .Where(t => topicIds.Contains(t.Id))
@@ -122,6 +122,6 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
         return _messages.Ok(
             new PagedResult<PublicTopicItemDto>(items, pagedIdsResult.Page, pagedIdsResult.PageSize, pagedIdsResult.Total),
-            "TOPICS_LISTED");
+            MessageKeys.Community.TOPICS_LISTED);
     }
 }

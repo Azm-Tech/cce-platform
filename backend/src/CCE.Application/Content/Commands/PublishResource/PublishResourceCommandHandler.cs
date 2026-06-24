@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -49,6 +49,6 @@ public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResou
         _db.SetExpectedRowVersion(resource, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(resource.Id, "SUCCESS_OPERATION");
+        return _messages.Ok(resource.Id, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

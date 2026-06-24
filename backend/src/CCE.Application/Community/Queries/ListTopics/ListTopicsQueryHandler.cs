@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Dtos;
@@ -50,7 +50,7 @@ public sealed class ListTopicsQueryHandler
         var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _messages.Ok(page.Map(MapToDto), "ITEMS_LISTED");
+        return _messages.Ok(page.Map(MapToDto), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static TopicDto MapToDto(Topic t) => new(

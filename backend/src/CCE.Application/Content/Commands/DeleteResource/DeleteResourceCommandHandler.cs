@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -42,6 +42,6 @@ public sealed class DeleteResourceCommandHandler : IRequestHandler<DeleteResourc
         resource.SoftDelete(userId.Value, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok("RESOURCE_DELETED");
+        return _messages.Ok(MessageKeys.Content.RESOURCE_DELETED);
     }
 }

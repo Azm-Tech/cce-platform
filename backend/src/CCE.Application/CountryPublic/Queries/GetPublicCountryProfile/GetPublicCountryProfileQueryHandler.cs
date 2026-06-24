@@ -1,9 +1,9 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.CountryPublic.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Content;
 using CCE.Domain.Country;
 using MediatR;
@@ -63,7 +63,7 @@ public sealed class GetPublicCountryProfileQueryHandler
                 ndcDocument = new NdcDocumentDto(asset.Id, asset.OriginalFileName);
         }
 
-        return _messages.Ok(MapToDto(country, profile, snapshot, ndcDocument), ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(MapToDto(country, profile, snapshot, ndcDocument), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static PublicCountryProfileDto MapToDto(

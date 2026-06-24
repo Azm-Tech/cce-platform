@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -34,7 +34,7 @@ public sealed class ApproveJoinRequestCommandHandler
         if (by is null || by == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
 
         var joinRequest = await _repo.GetRequestAsync(request.RequestId, cancellationToken).ConfigureAwait(false);
-        if (joinRequest is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.JOIN_REQUEST_NOT_FOUND);
+        if (joinRequest is null) return _msg.NotFound<VoidData>(MessageKeys.Community.JOIN_REQUEST_NOT_FOUND);
 
         joinRequest.Approve(by.Value, _clock);
 
@@ -47,6 +47,6 @@ public sealed class ApproveJoinRequestCommandHandler
         }
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

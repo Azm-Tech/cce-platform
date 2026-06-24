@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -50,6 +50,6 @@ public sealed class UpdatePolicySectionCommandHandler
         settings.UpdateSection(section, title, content, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(section.Id, "CONTENT_UPDATED");
+        return _msg.Ok(section.Id, MessageKeys.Content.CONTENT_UPDATED);
     }
 }

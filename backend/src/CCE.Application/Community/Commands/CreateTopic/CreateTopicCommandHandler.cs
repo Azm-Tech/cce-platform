@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Dtos;
 using CCE.Application.Community.Queries.ListTopics;
@@ -39,6 +39,6 @@ public sealed class CreateTopicCommandHandler : IRequestHandler<CreateTopicComma
         await _repo.AddAsync(topic, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), "CONTENT_CREATED");
+        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), MessageKeys.Content.CONTENT_CREATED);
     }
 }

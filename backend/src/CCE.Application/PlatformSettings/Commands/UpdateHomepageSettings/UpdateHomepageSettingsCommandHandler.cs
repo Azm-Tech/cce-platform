@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -54,6 +54,6 @@ public sealed class UpdateHomepageSettingsCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(settings.Id, "SETTINGS_UPDATED");
+        return _msg.Ok(settings.Id, MessageKeys.PlatformSettings.SETTINGS_UPDATED);
     }
 }

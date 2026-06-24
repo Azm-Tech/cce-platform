@@ -1,27 +1,31 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using MediatR;
 
 namespace CCE.Application.Search.Queries;
 
-public sealed class SearchQueryHandler : IRequestHandler<SearchQuery, PagedResult<SearchHitDto>>
+public sealed class SearchQueryHandler : IRequestHandler<SearchQuery, Response<PagedResult<SearchHitDto>>>
 {
     private readonly ISearchClient _client;
     private readonly ISearchQueryLogger _logger;
     private readonly ICurrentUserAccessor _currentUser;
+    private readonly MessageFactory _msg;
 
-    public SearchQueryHandler(ISearchClient client, ISearchQueryLogger logger, ICurrentUserAccessor currentUser)
+    public SearchQueryHandler(ISearchClient client, ISearchQueryLogger logger, ICurrentUserAccessor currentUser, MessageFactory msg)
     {
         _client = client;
         _logger = logger;
         _currentUser = currentUser;
+        _msg = msg;
     }
 
     [SuppressMessage("Design", "CA1031:Do not catch general exception types",
         Justification = "Defensive double-catch inside fire-and-forget lambda; analytics failure must never propagate to the caller.")]
-    public async Task<PagedResult<SearchHitDto>> Handle(SearchQuery request, CancellationToken cancellationToken)
+    public async Task<Response<PagedResult<SearchHitDto>>> Handle(SearchQuery request, CancellationToken cancellationToken)
     {
         var sw = Stopwatch.StartNew();
         var result = await _client.SearchAsync(request.Q, request.Type, request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
@@ -39,6 +43,6 @@ public sealed class SearchQueryHandler : IRequestHandler<SearchQuery, PagedResul
             catch (Exception) { /* swallowed in logger; defensive double-catch */ }
         }, CancellationToken.None);
 
-        return result;
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 }

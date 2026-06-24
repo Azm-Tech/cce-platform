@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -20,6 +20,6 @@ internal sealed class ForgotPasswordCommandHandler
     public async Task<Response<AuthMessageDto>> Handle(ForgotPasswordCommand request, CancellationToken ct)
     {
         await _auth.ForgotPasswordAsync(request.EmailAddress, ct).ConfigureAwait(false);
-        return _msg.Ok(new AuthMessageDto("PASSWORD_RESET"), "PASSWORD_RESET");
+        return _msg.Ok(new AuthMessageDto(MessageKeys.Identity.PASSWORD_RESET), MessageKeys.Identity.PASSWORD_RESET);
     }
 }

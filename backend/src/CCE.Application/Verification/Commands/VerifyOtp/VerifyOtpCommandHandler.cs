@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Messages;
@@ -84,7 +84,7 @@ internal sealed class VerifyOtpCommandHandler
 
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return _msg.Ok(new VerifyOtpResponseDto(true, resolvedUserId), "OTP_VERIFIED");
+        return _msg.Ok(new VerifyOtpResponseDto(true, resolvedUserId), MessageKeys.Verification.OTP_VERIFIED);
     }
 
     private async Task<Guid?> StampUserConfirmedAsync(OtpVerification entity, CancellationToken ct)

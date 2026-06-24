@@ -51,6 +51,6 @@ public sealed class ListRedisKeysQueryHandler
             infos.Add(new RedisKeyInfo(key, type, value));
         }
 
-        return _messages.Ok<IReadOnlyList<RedisKeyInfo>>(infos, "ITEMS_LISTED");
+        return _messages.Ok<IReadOnlyList<RedisKeyInfo>>(infos, MessageKeys.General.ITEMS_LISTED);
     }
 }

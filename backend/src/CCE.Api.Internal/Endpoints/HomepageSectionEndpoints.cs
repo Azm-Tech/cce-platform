@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Commands.CreateHomepageSection;
 using CCE.Application.Content.Commands.DeleteHomepageSection;
 using CCE.Application.Content.Commands.ReorderHomepageSections;
@@ -20,7 +21,7 @@ public static class HomepageSectionEndpoints
         sections.MapGet("", async (IMediator mediator, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(new ListHomepageSectionsQuery(), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("ListHomepageSections");
@@ -28,8 +29,8 @@ public static class HomepageSectionEndpoints
         sections.MapPost("", async (CreateHomepageSectionRequest body, IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new CreateHomepageSectionCommand(body.SectionType, body.OrderIndex, body.ContentAr, body.ContentEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/homepage-sections/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("CreateHomepageSection");
@@ -40,8 +41,8 @@ public static class HomepageSectionEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new UpdateHomepageSectionCommand(id, body.ContentAr, body.ContentEn, body.IsActive);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("UpdateHomepageSection");
@@ -50,8 +51,8 @@ public static class HomepageSectionEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new DeleteHomepageSectionCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new DeleteHomepageSectionCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("DeleteHomepageSection");
@@ -63,8 +64,8 @@ public static class HomepageSectionEndpoints
             var assignments = body.Assignments
                 .Select(a => new HomepageSectionOrderAssignment(a.Id, a.OrderIndex))
                 .ToList();
-            await mediator.Send(new ReorderHomepageSectionsCommand(assignments), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new ReorderHomepageSectionsCommand(assignments), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("ReorderHomepageSections");

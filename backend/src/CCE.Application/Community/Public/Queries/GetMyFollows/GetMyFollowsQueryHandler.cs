@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -44,6 +44,6 @@ public sealed class GetMyFollowsQueryHandler
             .Select(f => f.PostId)
             .ToList();
 
-        return _msg.Ok(new MyFollowsDto(topicIds, userIds, postIds), "ITEMS_LISTED");
+        return _msg.Ok(new MyFollowsDto(topicIds, userIds, postIds), MessageKeys.General.ITEMS_LISTED);
     }
 }

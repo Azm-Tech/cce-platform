@@ -1,9 +1,9 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Content;
 using MediatR;
 
@@ -38,9 +38,9 @@ public sealed class GetShareLinkQueryHandler
         };
 
         if (dto is null)
-            return _messages.NotFound<ShareLinkDto>(ApplicationErrors.General.NOT_FOUND);
+            return _messages.NotFound<ShareLinkDto>(MessageKeys.General.RESOURCE_NOT_FOUND_GENERIC);
 
-        return _messages.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(dto, MessageKeys.General.SUCCESS_OPERATION);
     }
 
     private async Task<ShareLinkDto?> GetNewsAsync(

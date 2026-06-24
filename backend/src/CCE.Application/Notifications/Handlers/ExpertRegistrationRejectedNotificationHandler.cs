@@ -1,3 +1,4 @@
+﻿using CCE.Application.Messages;
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Identity.Events;
 using CCE.Domain.Notifications;
@@ -20,7 +21,7 @@ public sealed class ExpertRegistrationRejectedNotificationHandler
         CancellationToken cancellationToken)
     {
         await _dispatcher.DispatchAsync(new NotificationMessage(
-            TemplateCode: "EXPERT_REQUEST_REJECTED",
+            TemplateCode: MessageKeys.Identity.EXPERT_REQUEST_REJECTED,
             RecipientUserId: notification.RequestedById,
             EventType: NotificationEventType.ExpertRequestRejected,
             Channels: [NotificationChannel.InApp, NotificationChannel.Email],

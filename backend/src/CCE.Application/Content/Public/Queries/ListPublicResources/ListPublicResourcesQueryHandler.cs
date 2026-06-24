@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
@@ -128,7 +128,7 @@ public sealed class ListPublicResourcesQueryHandler : IRequestHandler<ListPublic
         }).ToList();
 
         var result = new PagedResult<PublicResourceDto>(dtos, paged.Page, paged.PageSize, paged.Total);
-        return _messages.Ok(result, "ITEMS_LISTED");
+        return _messages.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 
 }

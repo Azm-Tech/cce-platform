@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -25,7 +25,7 @@ internal sealed class LoginCommandHandler
         {
             LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
             LoginFailureReason.ContactNotVerified => _msg.ContactNotVerified<AuthTokenDto>(),
-            LoginFailureReason.None => _msg.Ok(result.Token!, "LOGIN_SUCCESS"),
+            LoginFailureReason.None => _msg.Ok(result.Token!, MessageKeys.Identity.LOGIN_SUCCESS),
             _ => _msg.InvalidCredentials<AuthTokenDto>(),
         };
     }

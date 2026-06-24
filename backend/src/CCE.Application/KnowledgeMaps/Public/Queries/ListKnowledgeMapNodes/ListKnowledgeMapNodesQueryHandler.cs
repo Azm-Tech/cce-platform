@@ -1,19 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.KnowledgeMaps.Public.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.KnowledgeMaps;
 using MediatR;
 
 namespace CCE.Application.KnowledgeMaps.Public.Queries.ListKnowledgeMapNodes;
 
 public sealed class ListKnowledgeMapNodesQueryHandler
-    : IRequestHandler<ListKnowledgeMapNodesQuery, IReadOnlyList<PublicKnowledgeMapNodeDto>>
+    : IRequestHandler<ListKnowledgeMapNodesQuery, Response<IReadOnlyList<PublicKnowledgeMapNodeDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListKnowledgeMapNodesQueryHandler(ICceDbContext db) => _db = db;
+    public ListKnowledgeMapNodesQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<IReadOnlyList<PublicKnowledgeMapNodeDto>> Handle(
+    public async Task<Response<IReadOnlyList<PublicKnowledgeMapNodeDto>>> Handle(
         ListKnowledgeMapNodesQuery request, CancellationToken cancellationToken)
     {
         var items = await _db.KnowledgeMapNodes
@@ -22,7 +29,8 @@ public sealed class ListKnowledgeMapNodesQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        return items.Select(MapToDto).ToList();
+        IReadOnlyList<PublicKnowledgeMapNodeDto> list = items.Select(MapToDto).ToList();
+        return _msg.Ok(list, MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static PublicKnowledgeMapNodeDto MapToDto(KnowledgeMapNode n) => new(

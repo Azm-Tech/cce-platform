@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -41,6 +41,6 @@ public sealed class GetHomepageSettingsQueryHandler
             new LocalizedTextDto(settings.Objective.Ar, settings.Objective.En),
             settings.CceConceptsAr,
             settings.CceConceptsEn,
-            countries), "ITEMS_LISTED");
+            countries), MessageKeys.General.ITEMS_LISTED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -42,7 +42,7 @@ public sealed class ListEventsQueryHandler : IRequestHandler<ListEventsQuery, Re
         var eventIds = result.Items.Select(e => e.Id).ToList();
         var tagByEventId = await GetTagDtosByEventIdsAsync(eventIds, cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(result.Map(e => MapToDto(e, topicById, tagByEventId)), "ITEMS_LISTED");
+        return _messages.Ok(result.Map(e => MapToDto(e, topicById, tagByEventId)), MessageKeys.General.ITEMS_LISTED);
     }
 
     private async Task<Dictionary<System.Guid, List<TagDto>>> GetTagDtosByEventIdsAsync(

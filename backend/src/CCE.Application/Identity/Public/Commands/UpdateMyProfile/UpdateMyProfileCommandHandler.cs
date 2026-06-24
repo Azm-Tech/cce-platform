@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Dtos;
 using CCE.Application.InterestManagement.Dtos;
@@ -64,6 +64,6 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.AvatarUrl), "PROFILE_UPDATED");
+            user.AvatarUrl), MessageKeys.Identity.PROFILE_UPDATED);
     }
 }

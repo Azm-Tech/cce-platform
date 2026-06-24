@@ -1,14 +1,16 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Community;
 using CCE.Application.Identity;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.SoftDeletePost;
 
-public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePostCommand, Unit>
+public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePostCommand, Response<VoidData>>
 {
     private readonly ICommunityModerationService _service;
     private readonly ICommunityRepository _communityRepo;
@@ -18,6 +20,7 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
     private readonly ICommunityRealtimePublisher _realtime;
     private readonly IRedisFeedStore _feedStore;
     private readonly IUserRepository _userRepo;
+    private readonly MessageFactory _msg;
 
     public SoftDeletePostCommandHandler(
         ICommunityModerationService service,
@@ -27,7 +30,8 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
         ISystemClock clock,
         ICommunityRealtimePublisher realtime,
         IRedisFeedStore feedStore,
-        IUserRepository userRepo)
+        IUserRepository userRepo,
+        MessageFactory msg)
     {
         _service = service;
         _communityRepo = communityRepo;
@@ -37,9 +41,10 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
         _realtime = realtime;
         _feedStore = feedStore;
         _userRepo = userRepo;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(SoftDeletePostCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(SoftDeletePostCommand request, CancellationToken cancellationToken)
     {
         var post = await _service.FindPostAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (post is null)
@@ -82,6 +87,6 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
         var contentModerated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Post", post.Id, post.Id, moderatorId, "SoftDeleted"));
         await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, contentModerated, cancellationToken).ConfigureAwait(false);
 
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

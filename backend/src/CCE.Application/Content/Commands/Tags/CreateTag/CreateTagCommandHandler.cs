@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
@@ -22,6 +22,6 @@ public sealed class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, 
     {
         var tag = Tag.Create(request.NameAr, request.NameEn, request.Color);
         await _repo.AddAsync(tag, cancellationToken).ConfigureAwait(false);
-        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), "CONTENT_CREATED");
+        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), MessageKeys.Content.CONTENT_CREATED);
     }
 }

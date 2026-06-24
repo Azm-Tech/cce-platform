@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Community;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -64,7 +64,7 @@ public sealed class GetPublicPostByIdQueryHandler
             .ConfigureAwait(false);
 
         if (raw is null)
-            return _msg.NotFound<PostDetailDto>(ApplicationErrors.Community.POST_NOT_FOUND);
+            return _msg.NotFound<PostDetailDto>(MessageKeys.Community.POST_NOT_FOUND);
 
         // Attachments — separate query to avoid cartesian explosion with the JOIN above.
         var attachmentIds = await _db.PostAttachments.AsNoTracking()
@@ -122,6 +122,6 @@ public sealed class GetPublicPostByIdQueryHandler
             vote,
             pollSummary);
 
-        return _msg.Ok(dto, ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(dto, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

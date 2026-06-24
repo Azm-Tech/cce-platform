@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -40,6 +40,6 @@ public sealed class GetPoliciesSettingsQueryHandler
                 s.Id, (int)s.Type,
                 new LocalizedTextDto(s.Title.Ar, s.Title.En),
                 new LocalizedTextDto(s.Content.Ar, s.Content.En),
-                s.OrderIndex)).ToList()), "ITEMS_LISTED");
+                s.OrderIndex)).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

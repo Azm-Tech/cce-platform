@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -55,6 +55,6 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.AvatarUrl), "SUCCESS_OPERATION");
+            user.AvatarUrl), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

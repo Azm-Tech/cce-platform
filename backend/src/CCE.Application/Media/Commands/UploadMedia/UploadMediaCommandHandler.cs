@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Media.Dtos;
@@ -83,6 +83,6 @@ internal sealed class UploadMediaCommandHandler
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
-        return _msg.Ok(dto, "MEDIA_UPLOADED");
+        return _msg.Ok(dto, MessageKeys.Media.MEDIA_UPLOADED);
     }
 }

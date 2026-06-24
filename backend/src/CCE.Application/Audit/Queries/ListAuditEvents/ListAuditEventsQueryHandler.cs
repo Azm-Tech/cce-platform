@@ -1,22 +1,26 @@
-using CCE.Application.Audit.Dtos;
+﻿using CCE.Application.Audit.Dtos;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Domain.Audit;
 using MediatR;
 
 namespace CCE.Application.Audit.Queries.ListAuditEvents;
 
 public sealed class ListAuditEventsQueryHandler
-    : IRequestHandler<ListAuditEventsQuery, PagedResult<AuditEventDto>>
+    : IRequestHandler<ListAuditEventsQuery, Response<PagedResult<AuditEventDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListAuditEventsQueryHandler(ICceDbContext db)
+    public ListAuditEventsQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<AuditEventDto>> Handle(
+    public async Task<Response<PagedResult<AuditEventDto>>> Handle(
         ListAuditEventsQuery request,
         CancellationToken cancellationToken)
     {
@@ -48,7 +52,7 @@ public sealed class ListAuditEventsQueryHandler
 
         var items = page.Items.Select(MapToDto).ToList();
 
-        return new PagedResult<AuditEventDto>(items, page.Page, page.PageSize, page.Total);
+        return _msg.Ok(new PagedResult<AuditEventDto>(items, page.Page, page.PageSize, page.Total), MessageKeys.General.ITEMS_LISTED);
     }
 
     private static AuditEventDto MapToDto(AuditEvent e) =>

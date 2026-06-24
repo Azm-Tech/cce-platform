@@ -9,7 +9,8 @@ namespace CCE.Domain.Common;
 /// <remarks>
 /// Sub-projects derive concrete types per bounded context, e.g.,
 /// <c>DuplicateException</c>, <c>InvalidStatusTransitionException</c>.
-/// Phase 08 middleware translates these to RFC 7807 ProblemDetails.
+/// The API middleware (<c>ExceptionHandlingMiddleware</c>) translates these
+/// to a 422 response with the <c>BUSINESS_RULE_VIOLATION</c> error envelope.
 /// </remarks>
 public class DomainException : Exception
 {

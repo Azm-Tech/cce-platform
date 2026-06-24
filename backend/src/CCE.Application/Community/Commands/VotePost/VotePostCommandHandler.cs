@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -48,7 +48,7 @@ public sealed class VotePostCommandHandler
 
         var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
         if (post is null)
-            return _msg.NotFound<VoidData>(ApplicationErrors.Community.POST_NOT_FOUND);
+            return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);
 
         var existing = await _repo.FindPostVoteAsync(request.PostId, userId.Value, cancellationToken).ConfigureAwait(false);
         var oldValue = existing?.Value ?? 0;
@@ -79,6 +79,6 @@ public sealed class VotePostCommandHandler
         await _realtime.PublishToPostAsync(request.PostId, RealtimeEvents.VoteChanged,
             new { postId = request.PostId, post.UpvoteCount, post.DownvoteCount, post.Score }, cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(ApplicationErrors.Community.POST_VOTED);
+        return _msg.Ok(MessageKeys.Community.POST_VOTED);
     }
 }

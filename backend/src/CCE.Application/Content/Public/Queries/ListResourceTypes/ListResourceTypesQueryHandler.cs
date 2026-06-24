@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Content.Public.Dtos;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
@@ -18,7 +18,7 @@ internal sealed class ListResourceTypesQueryHandler(MessageFactory _messages)
                 NameEn: e.ToString()))
             .ToList();
 
-        return Task.FromResult(_messages.Ok(types, "ITEMS_LISTED"));
+        return Task.FromResult(_messages.Ok(types, MessageKeys.General.ITEMS_LISTED));
     }
 
     private static string GetArabicName(ResourceType type) => type switch

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
@@ -93,6 +93,6 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
             asset.UploadedById,
             asset.UploadedOn,
             asset.VirusScanStatus,
-            asset.ScannedOn), "ASSET_UPLOADED");
+            asset.ScannedOn), MessageKeys.Content.ASSET_UPLOADED);
     }
 }

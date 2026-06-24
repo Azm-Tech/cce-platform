@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Community.Commands.LeaveCommunity;
@@ -37,6 +37,6 @@ public sealed class LeaveCommunityCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

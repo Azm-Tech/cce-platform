@@ -41,8 +41,8 @@ public static class CountryEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetCountryByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetCountryByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("GetCountryById");
@@ -57,8 +57,8 @@ public static class CountryEndpoints
                 body.NameAr, body.NameEn,
                 body.RegionAr, body.RegionEn,
                 body.IsActive);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("UpdateCountry");

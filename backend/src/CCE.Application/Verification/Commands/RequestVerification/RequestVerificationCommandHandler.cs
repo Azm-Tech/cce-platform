@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Application.Notifications;
@@ -75,6 +75,6 @@ internal sealed class RequestVerificationCommandHandler
 
         return _msg.Ok(
             new RequestVerificationResponseDto(entity.Id, entity.ExpiresAt),
-            "OTP_SENT");
+            MessageKeys.Verification.OTP_SENT);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -31,7 +31,7 @@ public sealed class GetResourceByIdQueryHandler : IRequestHandler<GetResourceByI
         var resource = list.SingleOrDefault();
         return resource is null
             ? _messages.ResourceNotFound<ResourceDto>()
-            : _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), "SUCCESS_OPERATION");
+            : _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     private async Task<ResourceDto> MapToDtoAsync(Resource r, CancellationToken ct)

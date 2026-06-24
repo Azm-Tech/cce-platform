@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
-using CCE.Application.Identity;
 using CCE.Application.Messages;
+using CCE.Application.Identity;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -68,6 +68,6 @@ public sealed class SetUserFollowCommandHandler
             }
         }
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

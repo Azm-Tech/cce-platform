@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -54,6 +54,6 @@ public sealed class UpdateKnowledgePartnerCommandHandler
         about.UpdateKnowledgePartner(partner, name, description, request.LogoUrl, request.WebsiteUrl, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(partner.Id, "CONTENT_UPDATED");
+        return _msg.Ok(partner.Id, MessageKeys.Content.CONTENT_UPDATED);
     }
 }

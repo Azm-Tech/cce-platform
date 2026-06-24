@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.InteractiveCity.Public.Dtos;
 using CCE.Domain.InteractiveCity;
 using MediatR;
@@ -10,4 +11,4 @@ public sealed record SaveScenarioCommand(
     string NameEn,
     CityType CityType,
     int TargetYear,
-    string ConfigurationJson) : IRequest<CityScenarioDto>;
+    string ConfigurationJson) : IRequest<Response<CityScenarioDto>>;

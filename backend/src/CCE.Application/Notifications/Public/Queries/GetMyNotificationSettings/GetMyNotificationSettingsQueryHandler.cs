@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -44,6 +44,6 @@ public sealed class GetMyNotificationSettingsQueryHandler
             }
         }
 
-        return _msg.Ok<IReadOnlyCollection<NotificationSettingsDto>>(dtos, "ITEMS_LISTED");
+        return _msg.Ok<IReadOnlyCollection<NotificationSettingsDto>>(dtos, MessageKeys.General.ITEMS_LISTED);
     }
 }

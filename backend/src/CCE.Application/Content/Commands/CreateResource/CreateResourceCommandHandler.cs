@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -56,7 +56,7 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
                 .CountAsyncEither(cancellationToken)
                 .ConfigureAwait(false);
             if (existingCountryCount != countryIds.Count)
-                return _messages.NotFound<System.Guid>("COUNTRY_NOT_FOUND");
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
         var uploadedById = _currentUser.GetUserId();
@@ -81,7 +81,7 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
         await _repo.AddAsync(resource, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(resource.Id, "RESOURCE_CREATED");
+        return _messages.Ok(resource.Id, MessageKeys.Content.RESOURCE_CREATED);
     }
 
     private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)

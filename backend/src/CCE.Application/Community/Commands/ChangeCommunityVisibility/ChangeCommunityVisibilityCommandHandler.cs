@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Community.Commands.ChangeCommunityVisibility;
@@ -23,10 +23,10 @@ public sealed class ChangeCommunityVisibilityCommandHandler
     public async Task<Response<VoidData>> Handle(ChangeCommunityVisibilityCommand request, CancellationToken cancellationToken)
     {
         var community = await _repo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
-        if (community is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.COMMUNITY_NOT_FOUND);
+        if (community is null) return _msg.NotFound<VoidData>(MessageKeys.Community.COMMUNITY_NOT_FOUND);
 
         community.ChangeVisibility(request.Visibility);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_UPDATED);
+        return _msg.Ok(MessageKeys.General.SUCCESS_UPDATED);
     }
 }

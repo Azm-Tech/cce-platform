@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.PlatformSettings;
@@ -37,6 +37,6 @@ public sealed class DeletePolicySectionCommandHandler
         settings.RemoveSection(section);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok("CONTENT_DELETED");
+        return _msg.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

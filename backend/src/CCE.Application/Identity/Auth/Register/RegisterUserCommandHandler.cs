@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -24,7 +24,7 @@ internal sealed class RegisterUserCommandHandler
             request.OrganizationName, request.PhoneNumber, request.CountryId, ct).ConfigureAwait(false);
 
         if (result.EmailTaken) return _msg.EmailExists<AuthUserDto>();
-        if (result.User is null) return _msg.BusinessRule<AuthUserDto>("REGISTRATION_FAILED");
+        if (result.User is null) return _msg.BusinessRule<AuthUserDto>(MessageKeys.Identity.REGISTRATION_FAILED);
 
         return _msg.Ok(new AuthUserDto(
             result.User.Id,
@@ -33,6 +33,6 @@ internal sealed class RegisterUserCommandHandler
             result.User.LastName,
             result.User.AvatarUrl,
             ["cce-user"],
-            []), "REGISTER_SUCCESS");
+            []), MessageKeys.Identity.REGISTER_SUCCESS);
     }
 }

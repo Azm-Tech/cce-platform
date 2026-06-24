@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Identity.Dtos;
@@ -31,11 +31,11 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
             request.PhoneNumber, request.CountryId, request.Role, createdBy, cancellationToken).ConfigureAwait(false);
 
         if (result.EmailTaken) return _msg.EmailExists<UserDetailDto>();
-        if (result.Failed || result.User is null) return _msg.BusinessRule<UserDetailDto>("REGISTRATION_FAILED");
+        if (result.Failed || result.User is null) return _msg.BusinessRule<UserDetailDto>(MessageKeys.Identity.REGISTRATION_FAILED);
 
         var detail = await _mediator.Send(new GetUserByIdQuery(result.User.Id), cancellationToken).ConfigureAwait(false);
         if (!detail.Success) return detail;
 
-        return _msg.Ok(detail.Data!, result.PasswordResetSent ? "USER_CREATED" : "REGISTER_SUCCESS");
+        return _msg.Ok(detail.Data!, result.PasswordResetSent ? MessageKeys.Identity.USER_CREATED : MessageKeys.Identity.REGISTER_SUCCESS);
     }
 }

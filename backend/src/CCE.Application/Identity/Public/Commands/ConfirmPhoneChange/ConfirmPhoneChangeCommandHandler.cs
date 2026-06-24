@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Commands.RequestPhoneChange;
 using CCE.Application.Messages;
@@ -54,7 +54,7 @@ internal sealed class ConfirmPhoneChangeCommandHandler
 
         // Ownership validation — OTP must belong to the authenticated user
         if (otp.UserId.HasValue && otp.UserId.Value != request.UserId)
-            return _msg.Unauthorized<VoidData>("OTP_UNAUTHORIZED");
+            return _msg.Unauthorized<VoidData>(MessageKeys.Verification.OTP_UNAUTHORIZED);
 
         otp.IncrementAttempt();
 

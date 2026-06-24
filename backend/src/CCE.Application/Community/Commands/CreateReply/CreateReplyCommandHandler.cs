@@ -1,12 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
-using CCE.Application.Errors;
-using CCE.Application.Identity;
 using CCE.Application.Messages;
+using CCE.Application.Identity;
+
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
@@ -55,7 +55,7 @@ public sealed class CreateReplyCommandHandler
         if (authorId is null || authorId == Guid.Empty) return _msg.NotAuthenticated<Guid>();
 
         var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
-        if (post is null) return _msg.NotFound<Guid>(ApplicationErrors.Community.POST_NOT_FOUND);
+        if (post is null) return _msg.NotFound<Guid>(MessageKeys.Community.POST_NOT_FOUND);
 
         var content = _sanitizer.Sanitize(request.Content);
 
@@ -64,7 +64,7 @@ public sealed class CreateReplyCommandHandler
         {
             var parent = await _repo.GetParentAsync(parentId, cancellationToken).ConfigureAwait(false);
             if (parent is null || parent.PostId != post.Id)
-                return _msg.NotFound<Guid>(ApplicationErrors.Community.REPLY_NOT_FOUND);
+                return _msg.NotFound<Guid>(MessageKeys.Community.REPLY_NOT_FOUND);
             reply = PostReply.CreateChild(parent, authorId.Value, content, request.Locale, isByExpert: false, _clock);
         }
         else
@@ -121,7 +121,7 @@ public sealed class CreateReplyCommandHandler
                 Locale: request.Locale), cancellationToken).ConfigureAwait(false);
         }
 
-        return _msg.Ok(reply.Id, ApplicationErrors.General.SUCCESS_CREATED);
+        return _msg.Ok(reply.Id, MessageKeys.General.SUCCESS_CREATED);
     }
 
     private async Task<IReadOnlyList<Guid>> PersistMentionsAsync(

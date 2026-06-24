@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Caching;
 using CCE.Application.Messages;
 using MediatR;
@@ -21,6 +21,6 @@ public sealed class GetCacheRegionsQueryHandler
         GetCacheRegionsQuery request, CancellationToken cancellationToken)
     {
         var status = await _cache.GetStatusAsync(cancellationToken).ConfigureAwait(false);
-        return _messages.Ok(status, "ITEMS_LISTED");
+        return _messages.Ok(status, MessageKeys.General.ITEMS_LISTED);
     }
 }

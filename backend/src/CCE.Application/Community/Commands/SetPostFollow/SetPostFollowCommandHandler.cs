@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -38,7 +38,7 @@ public sealed class SetPostFollowCommandHandler
         {
             var exists = await _db.Posts
                 .AnyAsyncEither(p => p.Id == request.PostId, cancellationToken).ConfigureAwait(false);
-            if (!exists) return _msg.NotFound<VoidData>(ApplicationErrors.Community.POST_NOT_FOUND);
+            if (!exists) return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);
 
             // Idempotent: only create when not already following
             var existing = await _service.FindPostFollowAsync(request.PostId, userId.Value, cancellationToken).ConfigureAwait(false);
@@ -51,6 +51,6 @@ public sealed class SetPostFollowCommandHandler
             await _service.RemovePostFollowAsync(request.PostId, userId.Value, cancellationToken).ConfigureAwait(false);
         }
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

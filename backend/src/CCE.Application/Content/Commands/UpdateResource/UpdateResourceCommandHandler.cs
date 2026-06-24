@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -46,7 +46,7 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
                 .CountAsyncEither(cancellationToken)
                 .ConfigureAwait(false);
             if (existingCountryCount != countryIds.Count)
-                return _messages.NotFound<System.Guid>("COUNTRY_NOT_FOUND");
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
         var expectedRowVersion = resource.RowVersion;
@@ -64,7 +64,7 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
         _db.SetExpectedRowVersion(resource, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(resource.Id, "SUCCESS_OPERATION");
+        return _messages.Ok(resource.Id, MessageKeys.General.SUCCESS_OPERATION);
     }
 
     private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)

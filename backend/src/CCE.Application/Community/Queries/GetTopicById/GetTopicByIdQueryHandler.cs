@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Dtos;
@@ -29,6 +29,6 @@ public sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQuery
         if (topic is null)
             return _messages.TopicNotFound<TopicDto>();
 
-        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), "SUCCESS_OPERATION");
+        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

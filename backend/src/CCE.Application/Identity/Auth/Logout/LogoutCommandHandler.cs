@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -20,6 +20,6 @@ internal sealed class LogoutCommandHandler
     public async Task<Response<AuthMessageDto>> Handle(LogoutCommand request, CancellationToken ct)
     {
         await _auth.LogoutAsync(request.RefreshToken, request.IpAddress, ct).ConfigureAwait(false);
-        return _msg.Ok(new AuthMessageDto("LOGOUT_SUCCESS"), "LOGOUT_SUCCESS");
+        return _msg.Ok(new AuthMessageDto(MessageKeys.Identity.LOGOUT_SUCCESS), MessageKeys.Identity.LOGOUT_SUCCESS);
     }
 }

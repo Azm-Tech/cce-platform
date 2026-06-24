@@ -1,13 +1,15 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Community;
 using CCE.Application.Identity;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.SoftDeleteReply;
 
-public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteReplyCommand, Unit>
+public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteReplyCommand, Response<VoidData>>
 {
     private readonly ICommunityModerationService _service;
     private readonly ICceDbContext _db;
@@ -15,6 +17,7 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
     private readonly ISystemClock _clock;
     private readonly ICommunityRealtimePublisher _realtime;
     private readonly IUserRepository _userRepo;
+    private readonly MessageFactory _msg;
 
     public SoftDeleteReplyCommandHandler(
         ICommunityModerationService service,
@@ -22,7 +25,8 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
         ICommunityRealtimePublisher realtime,
-        IUserRepository userRepo)
+        IUserRepository userRepo,
+        MessageFactory msg)
     {
         _service = service;
         _db = db;
@@ -30,9 +34,10 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
         _clock = clock;
         _realtime = realtime;
         _userRepo = userRepo;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(SoftDeleteReplyCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(SoftDeleteReplyCommand request, CancellationToken cancellationToken)
     {
         var reply = await _service.FindReplyAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (reply is null)
@@ -65,6 +70,6 @@ public sealed class SoftDeleteReplyCommandHandler : IRequestHandler<SoftDeleteRe
         var contentModerated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Reply", reply.Id, reply.PostId, moderatorId, "SoftDeleted"));
         await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, contentModerated, cancellationToken).ConfigureAwait(false);
 
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

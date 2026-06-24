@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.PlatformSettings;
@@ -37,6 +37,6 @@ public sealed class ReorderPolicySectionCommandHandler
         settings.ReorderSection(section, request.OrderIndex);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(section.Id, "SECTION_REORDERED");
+        return _msg.Ok(section.Id, MessageKeys.PlatformSettings.SECTION_REORDERED);
     }
 }

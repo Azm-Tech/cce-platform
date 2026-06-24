@@ -11,14 +11,15 @@ public class ListExpertProfilesQueryHandlerTests
     public async Task Returns_empty_paged_result_when_no_profiles_exist()
     {
         var db = BuildDb(System.Array.Empty<ExpertProfile>(), System.Array.Empty<User>());
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListExpertProfilesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(20);
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
+        result.Data.Page.Should().Be(1);
+        result.Data.PageSize.Should().Be(20);
     }
 
     [Fact]
@@ -36,14 +37,15 @@ public class ListExpertProfilesQueryHandlerTests
         };
 
         var db = BuildDb(new[] { aliceProfile }, users);
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListExpertProfilesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Should().HaveCount(1);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Should().HaveCount(1);
 
-        var item = result.Items.Single();
+        var item = result.Data.Items.Single();
         item.UserId.Should().Be(aliceId);
         item.UserName.Should().Be("alice");
         item.BioEn.Should().Be("Alice Bio");
@@ -70,14 +72,15 @@ public class ListExpertProfilesQueryHandlerTests
         };
 
         var db = BuildDb(new[] { aliceProfile, bobProfile }, users);
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(
             new ListExpertProfilesQuery(Search: "alice"),
             CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().UserId.Should().Be(aliceId);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().UserId.Should().Be(aliceId);
     }
 
     private static ExpertProfile BuildProfile(

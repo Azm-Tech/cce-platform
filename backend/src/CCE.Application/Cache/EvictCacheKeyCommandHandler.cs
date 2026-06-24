@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Caching;
 using CCE.Application.Messages;
 using MediatR;
@@ -21,6 +21,6 @@ public sealed class EvictCacheKeyCommandHandler
         EvictCacheKeyCommand request, CancellationToken cancellationToken)
     {
         await _cache.EvictKeyAsync(request.Key, cancellationToken).ConfigureAwait(false);
-        return _messages.Ok("SUCCESS_DELETED");
+        return _messages.Ok(MessageKeys.General.SUCCESS_DELETED);
     }
 }

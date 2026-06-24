@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -33,7 +33,7 @@ public sealed class RevokeStateRepAssignmentCommandHandler : IRequestHandler<Rev
         var assignment = await _service.FindIncludingRevokedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (assignment is null)
         {
-            return _msg.NotFound<VoidData>("STATE_REP_ASSIGNMENT_NOT_FOUND");
+            return _msg.NotFound<VoidData>(MessageKeys.Identity.STATE_REP_ASSIGNMENT_NOT_FOUND);
         }
 
         var revokedById = _currentUser.GetUserId();
@@ -46,6 +46,6 @@ public sealed class RevokeStateRepAssignmentCommandHandler : IRequestHandler<Rev
         _service.Update(assignment);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok("STATE_REP_ASSIGNMENT_REVOKED");
+        return _msg.Ok(MessageKeys.Identity.STATE_REP_ASSIGNMENT_REVOKED);
     }
 }

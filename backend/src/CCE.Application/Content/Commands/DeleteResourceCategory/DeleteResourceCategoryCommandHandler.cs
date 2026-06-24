@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
@@ -31,6 +31,6 @@ public sealed class DeleteResourceCategoryCommandHandler : IRequestHandler<Delet
         category.Deactivate();
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok("CONTENT_DELETED");
+        return _messages.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

@@ -1,14 +1,13 @@
-using CCE.Application.Common;
+﻿using CCE.Api.Common.Results;
 using CCE.Application.Localization;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace CCE.Api.Common.Middleware;
 
@@ -29,109 +28,72 @@ public sealed class ExceptionHandlingMiddleware
         {
             await _next(context).ConfigureAwait(false);
         }
+        catch (OperationCanceledException)
+        {
+            // Client disconnected — not a server error.
+        }
         catch (ValidationException ex)
         {
             await WriteValidationResultAsync(context, ex).ConfigureAwait(false);
         }
         catch (ConcurrencyException ex)
         {
-            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
-                "CONCURRENCY_CONFLICT", MessageType.Conflict, ex.Message).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status409Conflict,
+                MessageKeys.General.CONCURRENCY_CONFLICT, ex.Message).ConfigureAwait(false);
         }
         catch (DuplicateException ex)
         {
-            await WriteErrorAsync(context, StatusCodes.Status409Conflict,
-                "DUPLICATE_VALUE", MessageType.Conflict, ex.Message).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status409Conflict,
+                MessageKeys.General.DUPLICATE_VALUE, ex.Message).ConfigureAwait(false);
         }
         catch (DomainException ex)
         {
-            await WriteErrorAsync(context, StatusCodes.Status400BadRequest,
-                "BAD_REQUEST", MessageType.BusinessRule, ex.Message).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status422UnprocessableEntity,
+                MessageKeys.General.BUSINESS_RULE_VIOLATION, ex.Message).ConfigureAwait(false);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogInformation(ex, "Unauthorized access");
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status401Unauthorized,
+                MessageKeys.General.UNAUTHORIZED).ConfigureAwait(false);
         }
         catch (System.Collections.Generic.KeyNotFoundException ex)
         {
-            await WriteErrorAsync(context, StatusCodes.Status404NotFound,
-                "RESOURCE_NOT_FOUND_GENERIC", MessageType.NotFound, ex.Message).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status404NotFound,
+                MessageKeys.General.RESOURCE_NOT_FOUND_GENERIC, ex.Message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
-            await WriteErrorAsync(context, StatusCodes.Status500InternalServerError,
-                "INTERNAL_ERROR", MessageType.Internal, null).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status500InternalServerError,
+                MessageKeys.General.INTERNAL_ERROR).ConfigureAwait(false);
         }
-    }
-
-    private static async Task WriteErrorAsync(
-        HttpContext ctx, int statusCode, string domainKey, MessageType type, string? fallbackMessage)
-    {
-        var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var msg = l?.GetString(domainKey) ?? fallbackMessage ?? "خطأ";
-        var code = SystemCodeMap.ToSystemCode(domainKey);
-
-        var envelope = new
-        {
-            success = false,
-            code,
-            message = msg,
-            data = (object?)null,
-            errors = Array.Empty<object>(),
-            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
-            timestamp = DateTimeOffset.UtcNow,
-        };
-
-        ctx.Response.StatusCode = statusCode;
-        ctx.Response.ContentType = "application/json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, envelope, JsonOptions)
-            .ConfigureAwait(false);
     }
 
     private static async Task WriteValidationResultAsync(HttpContext ctx, ValidationException ex)
     {
         var l = ctx.RequestServices.GetService<ILocalizationService>();
-        var headerMsg = l?.GetString("VALIDATION_ERROR") ?? "عذرًا، البيانات المدخلة غير صحيحة";
-        var headerCode = SystemCodeMap.ToSystemCode("VALIDATION_ERROR");
+        var config = ctx.RequestServices.GetService<IConfiguration>();
+        var supported = config?.GetSection("Localization:Supported").Get<string[]>();
+        var defaultLocale = config?.GetValue<string>("Localization:Default");
+        var locale = LocalizationMiddleware.PickLocale(
+            ctx.Request.Headers.AcceptLanguage.ToString(), supported, defaultLocale);
 
         var fieldErrors = ex.Errors.Select(e =>
         {
             var domainKey = e.ErrorCode;
             var valCode = SystemCodeMap.ToSystemCode(domainKey);
-            var valMsg = l?.GetString(domainKey) ?? domainKey;
+            var valMsg = l?.GetString(domainKey, locale) ?? domainKey;
             if (valMsg == domainKey) valMsg = e.ErrorMessage;
             return new
             {
-                field = ToCamelCase(e.PropertyName),
+                field = JsonNamingPolicy.CamelCase.ConvertName(e.PropertyName ?? string.Empty),
                 code = valCode,
                 message = valMsg
             };
-        }).ToList();
+        }).ToList<object>();
 
-        var envelope = new
-        {
-            success = false,
-            code = headerCode,
-            message = headerMsg,
-            data = (object?)null,
-            errors = fieldErrors,
-            traceId = Activity.Current?.Id ?? ctx.TraceIdentifier,
-            timestamp = DateTimeOffset.UtcNow,
-        };
-
-        ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
-        ctx.Response.ContentType = "application/json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, envelope, JsonOptions)
-            .ConfigureAwait(false);
+        await EnvelopeWriter.WriteAsync(ctx, StatusCodes.Status400BadRequest,
+            MessageKeys.General.VALIDATION_ERROR, errors: fieldErrors).ConfigureAwait(false);
     }
-
-    private static string ToCamelCase(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return name;
-        return char.ToLowerInvariant(name[0]) + name[1..];
-    }
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-    };
 }
