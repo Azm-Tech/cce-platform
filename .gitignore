@@ -12,6 +12,8 @@
 !.env.preprod.example
 !.env.prod.example
 !.env.dr.example
+**/appsettings.Development.json
+**/appsettings.Production.json
 *.pem
 *.key
 *.crt

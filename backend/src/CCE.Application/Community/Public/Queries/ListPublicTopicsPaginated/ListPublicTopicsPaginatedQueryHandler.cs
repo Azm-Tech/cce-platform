@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
@@ -10,13 +12,15 @@ namespace CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
 
 internal sealed class ListPublicTopicsPaginatedQueryHandler(
     ICceDbContext _db,
-    MessageFactory _messages)
+    MessageFactory _messages,
+    ICurrentUserAccessor _currentUser)
     : IRequestHandler<ListPublicTopicsPaginatedQuery, Response<PagedResult<PublicTopicItemDto>>>
 {
     public async Task<Response<PagedResult<PublicTopicItemDto>>> Handle(
         ListPublicTopicsPaginatedQuery request, CancellationToken ct)
     {
         var search = request.Search;
+        var userId = _currentUser.GetUserId();
 
         var baseQuery = _db.Topics
             .Where(t => t.IsActive)
@@ -63,13 +67,16 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
             var topicMap = topics.ToDictionary(t => t.Id);
 
+            var followed = await GetFollowedTopicIdsAsync(pagedIds, userId, ct);
+
             var sortedItems = pagedIds
                 .Where(id => topicMap.ContainsKey(id))
                 .Select(id => new PublicTopicItemDto(
                     id,
                     topicMap[id].NameAr,
                     topicMap[id].NameEn,
-                    countMap.GetValueOrDefault(id, 0)))
+                    countMap.GetValueOrDefault(id, 0),
+                    followed?.Contains(id) ?? false))
                 .ToList();
 
             return _messages.Ok(
@@ -111,17 +118,35 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
         var pagedCountMap = pagedPostCounts.ToDictionary(x => x.TopicId, x => x.Count);
 
+        var pagedFollowed = await GetFollowedTopicIdsAsync(topicIds, userId, ct);
+
         var items = pagedIdsResult.Items
             .Where(id => pagedTopicMap.ContainsKey(id))
             .Select(id => new PublicTopicItemDto(
                 id,
                 pagedTopicMap[id].NameAr,
                 pagedTopicMap[id].NameEn,
-                pagedCountMap.GetValueOrDefault(id, 0)))
+                pagedCountMap.GetValueOrDefault(id, 0),
+                pagedFollowed?.Contains(id) ?? false))
             .ToList();
 
         return _messages.Ok(
             new PagedResult<PublicTopicItemDto>(items, pagedIdsResult.Page, pagedIdsResult.PageSize, pagedIdsResult.Total),
             "TOPICS_LISTED");
+    }
+
+    private async Task<HashSet<System.Guid>?> GetFollowedTopicIdsAsync(
+        List<System.Guid> topicIds, System.Guid? userId, CancellationToken ct)
+    {
+        if (userId is null || topicIds.Count == 0)
+            return null;
+
+        var ids = await _db.TopicFollows
+            .Where(f => f.UserId == userId.Value && topicIds.Contains(f.TopicId))
+            .Select(f => f.TopicId)
+            .ToListAsyncEither(ct)
+            .ConfigureAwait(false);
+
+        return new HashSet<System.Guid>(ids);
     }
 }
