@@ -274,9 +274,14 @@
                     {{ 'community.detail.unnamedFile' | transloco }}
                   </span>
                 </div>
-                <span class="cce-post-detail__attachment-dl cce-post-detail__attachment-dl--inactive" aria-hidden="true">
-                  <mat-icon svgIcon="download"></mat-icon>
-                </span>
+                <button
+                  type="button"
+                  class="cce-post-detail__attachment-dl"
+                  (click)="downloadAttachment({ assetFileId: attId, fileName: null })"
+                  [attr.aria-label]="'community.detail.attachments' | transloco"
+                >
+                  <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
+                </button>
               </div>
             }
           }
