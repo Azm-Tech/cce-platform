@@ -56,9 +56,15 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
           <div class="pc__avatar" aria-hidden="true">{{ avatarInitial() }}</div>
           <div class="pc__author-meta">
             <div class="pc__author-name-row">
-              <span class="pc__author-name">
-                {{ post().authorName || ('community.anonymousAuthor' | transloco) }}
-              </span>
+              @if (authorId(); as aid) {
+                <a class="pc__author-name pc__author-name--link" [routerLink]="['/community', 'users', aid]">
+                  {{ post().authorName || ('community.anonymousAuthor' | transloco) }}
+                </a>
+              } @else {
+                <span class="pc__author-name">
+                  {{ post().authorName || ('community.anonymousAuthor' | transloco) }}
+                </span>
+              }
               @if (post().isExpert) {
                 <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
               }
@@ -180,6 +186,9 @@ export class PostSummaryComponent {
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly locale = this.localeService.locale;
+
+  /** Author id for the profile link (null when anonymous → name not linked). */
+  readonly authorId = computed(() => this.post().authorId ?? this.post().author?.id ?? null);
 
   // ── Vote state ────────────────────────────────────────────────────────────
   private readonly _voteStatus = signal<number | null>(null);

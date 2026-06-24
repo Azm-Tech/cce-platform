@@ -131,6 +131,15 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   text-decoration: none;
 }
 
+.pc__author-name--link {
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-brand);
+    text-decoration: underline;
+  }
+}
+
 .pc__time {
   display: flex;
   align-items: center;
