@@ -45,6 +45,7 @@ public sealed class ExceptionHandlingMiddleware
         }
         catch (DomainException ex)
         {
+            _logger.LogWarning(ex, "Domain exception: {DomainMessage}", ex.Message); 
             await WriteErrorAsync(context, StatusCodes.Status400BadRequest,
                 "BAD_REQUEST", MessageType.BusinessRule, ex.Message).ConfigureAwait(false);
         }

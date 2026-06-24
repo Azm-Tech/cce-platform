@@ -27,10 +27,14 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
         if (request.SortBy == TopicsSortBy.PostsCount)
         {
-            var postCounts = await _db.Posts
-                .Where(p => p.Status == PostStatus.Published)
-                .GroupBy(p => p.TopicId)
-                .Select(g => new { TopicId = g.Key, Count = g.Count() })
+            var postCounts = await (
+                from p in _db.Posts
+                join c in _db.Communities on p.CommunityId equals c.Id
+                where p.Status == PostStatus.Published
+                    && c.IsActive
+                    && c.Visibility == CommunityVisibility.Public
+                group p by p.TopicId into g
+                select new { TopicId = g.Key, Count = g.Count() })
                 .ToListAsyncEither(ct)
                 .ConfigureAwait(false);
 
@@ -102,10 +106,15 @@ internal sealed class ListPublicTopicsPaginatedQueryHandler(
 
         var pagedTopicMap = pagedTopics.ToDictionary(t => t.Id);
 
-        var pagedPostCounts = await _db.Posts
-            .Where(p => topicIds.Contains(p.TopicId) && p.Status == PostStatus.Published)
-            .GroupBy(p => p.TopicId)
-            .Select(g => new { TopicId = g.Key, Count = g.Count() })
+        var pagedPostCounts = await (
+            from p in _db.Posts
+            join c in _db.Communities on p.CommunityId equals c.Id
+            where topicIds.Contains(p.TopicId)
+                && p.Status == PostStatus.Published
+                && c.IsActive
+                && c.Visibility == CommunityVisibility.Public
+            group p by p.TopicId into g
+            select new { TopicId = g.Key, Count = g.Count() })
             .ToListAsyncEither(ct)
             .ConfigureAwait(false);
 
