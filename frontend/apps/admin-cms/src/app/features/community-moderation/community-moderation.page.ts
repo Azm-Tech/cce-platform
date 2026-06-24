@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +15,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { RealtimeEvent, RealtimeHubService, type ContentModeratedPayload } from '@frontend/real-time';
+import { AuthService } from '../../core/auth/auth.service';
 import { EnvService } from '../../core/env.service';
 import { CommunityModerationApiService, type TopicLite } from './community-moderation-api.service';
 import {
@@ -63,6 +66,9 @@ export class CommunityModerationPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   private readonly envService = inject(EnvService);
   private readonly dialog = inject(MatDialog);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly auth = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly typeFilters = ADMIN_POST_TYPE_FILTERS;
   readonly locale = this.localeService.locale;
@@ -96,7 +102,22 @@ export class CommunityModerationPage implements OnInit {
     void this.api.listTopicsLite().then((res) => {
       if (res.ok) this.topics.set(res.value);
     });
+    this.listenForModeration();
     await this.load();
+  }
+
+  /** Live moderation channel: another moderator acted → toast + refresh the list.
+   *  (The hub auto-joins the `moderation` room for users with the moderator claim.) */
+  private listenForModeration(): void {
+    this.hub
+      .on<ContentModeratedPayload>(RealtimeEvent.ContentModerated)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        // Skip our own action — the local delete flow already toasted + reloaded.
+        if (ev.moderatorId && ev.moderatorId === this.auth.currentUser()?.id) return;
+        this.toast.success('communityModeration.toastModerated');
+        void this.load();
+      });
   }
 
   topicNameOf(row: AdminPostRow): string {

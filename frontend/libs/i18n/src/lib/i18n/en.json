@@ -1454,6 +1454,7 @@
   },
   "communityModeration": {
     "title": "Community moderation",
+    "toastModerated": "Another moderator acted — list refreshed.",
     "byIdNote": "The Internal API exposes only soft-delete endpoints; enter the GUID of the post or reply to remove. A flag-queue UI lands in v0.2.0.",
     "invalidGuid": "Enter a valid GUID.",
     "post": {
