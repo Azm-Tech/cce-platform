@@ -410,6 +410,16 @@
             />
           </div>
 
+          @if (typingCount() > 0) {
+            <p class="cce-post-detail__typing" aria-live="polite">
+              <span class="cce-post-detail__typing-dots" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </span>
+              {{ (typingCount() === 1 ? 'community.typing.one' : 'community.typing.many')
+                  | transloco:{ count: typingCount() } }}
+            </p>
+          }
+
           <hr class="cce-post-detail__replies-divider" aria-hidden="true" />
 
           <!-- Replies header -->
@@ -420,6 +430,11 @@
                   : 'community.detail.repliesCount') | transloco:{ count: total() } }}
             </span>
             <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+            @if (viewers() > 1) {
+              <span class="cce-post-detail__viewers">
+                {{ 'community.presence.viewing' | transloco:{ count: viewers() } }}
+              </span>
+            }
           </div>
 
           @if (!loading() && replies().length === 0) {

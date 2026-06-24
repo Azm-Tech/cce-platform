@@ -2113,6 +2113,8 @@
     "followTopic": "Follow topic",
     "followingTopic": "Following",
     "newPostsPill": "{{count}} new posts — Refresh",
+    "presence": { "viewing": "{{count}} viewing" },
+    "typing": { "one": "Someone is typing…", "many": "{{count}} people are typing…" },
     "unfollowTopic": "Unfollow topic",
     "followPost": "Follow post",
     "followingPost": "Following",

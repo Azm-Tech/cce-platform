@@ -2113,6 +2113,8 @@
     "followTopic": "متابعة الموضوع",
     "followingTopic": "متابَع",
     "newPostsPill": "{{count}} منشورات جديدة — تحديث",
+    "presence": { "viewing": "{{count}} يشاهدون" },
+    "typing": { "one": "شخص ما يكتب…", "many": "{{count}} أشخاص يكتبون…" },
     "unfollowTopic": "إلغاء متابعة الموضوع",
     "followPost": "متابعة المنشور",
     "followingPost": "متابَع",

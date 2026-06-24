@@ -27,6 +27,8 @@ import {
   type NewReplyPayload,
   type PollResultsChangedPayload,
   type PostModeratedPayload,
+  type PresenceChangedPayload,
+  type TypingChangedPayload,
   type VoteChangedPayload,
 } from '@frontend/real-time';
 import { AuthService } from '../../core/auth/auth.service';
@@ -74,6 +76,14 @@ export class PostDetailPage implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   /** Post id this page joined the realtime `post:{id}` group for. */
   private subscribedPostId: string | null = null;
+
+  // ── Presence & typing (realtime) ────────────────────────────────────────
+  /** Live distinct-viewer count for this post (includes the current user). */
+  readonly viewers = signal(0);
+  private readonly typingUserIds = signal<Set<string>>(new Set());
+  private readonly typingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  readonly typingCount = computed(() => this.typingUserIds().size);
+  private static readonly TYPING_EXPIRY_MS = 6000;
 
   readonly post = signal<PublicPost | null>(null);
   readonly replies = signal<PublicPostReply[]>([]);
@@ -239,6 +249,8 @@ export class PostDetailPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.subscribedPostId) this.hub.unsubscribePost(this.subscribedPostId);
+    for (const timer of this.typingTimers.values()) clearTimeout(timer);
+    this.typingTimers.clear();
   }
 
   /** Wire live `post:{id}` events to the page state. */
@@ -267,10 +279,52 @@ export class PostDetailPage implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((ev) => this.applyModeration(ev, postId));
 
+    this.hub
+      .on<PresenceChangedPayload>(RealtimeEvent.PresenceChanged)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.postId === postId) this.viewers.set(ev.viewers);
+      });
+
+    this.hub
+      .on<TypingChangedPayload>(RealtimeEvent.TypingChanged)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        if (ev.postId === postId) this.applyTyping(ev);
+      });
+
     // After a reconnect, catch up on events missed while disconnected.
     this.hub.reconnected$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.catchUp());
+  }
+
+  /** Track which other users are typing; each entry auto-expires as a safety net. */
+  private applyTyping(ev: TypingChangedPayload): void {
+    if (!ev.userId || ev.userId === this.currentUserId()) return; // server doesn't echo self; guard anyway
+    const timer = this.typingTimers.get(ev.userId);
+    if (timer) clearTimeout(timer);
+    if (ev.isTyping) {
+      this.typingTimers.set(
+        ev.userId,
+        setTimeout(() => this.clearTyping(ev.userId), PostDetailPage.TYPING_EXPIRY_MS),
+      );
+      this.typingUserIds.update((s) => (s.has(ev.userId) ? s : new Set(s).add(ev.userId)));
+    } else {
+      this.clearTyping(ev.userId);
+    }
+  }
+
+  private clearTyping(userId: string): void {
+    const timer = this.typingTimers.get(userId);
+    if (timer) clearTimeout(timer);
+    this.typingTimers.delete(userId);
+    this.typingUserIds.update((s) => {
+      if (!s.has(userId)) return s;
+      const next = new Set(s);
+      next.delete(userId);
+      return next;
+    });
   }
 
   /** Reconnect catch-up: fetch the delta since `lastEventTime` and apply it. */

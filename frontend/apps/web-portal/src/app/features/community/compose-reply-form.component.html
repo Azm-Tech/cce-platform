@@ -26,6 +26,8 @@
       rows="5"
       dir="auto"
       (focus)="onFieldFocus($event)"
+      (input)="onType()"
+      (blur)="endTyping()"
     ></textarea>
     <span class="cce-compose-reply__char-count">{{ form.controls.content.value.length }} / 500</span>
   </div>
