@@ -6,7 +6,7 @@
     "logLevel": "warn"
   },
   "/hubs": {
-    "target": "https://cce-external-api.runasp.net",
+    "target": "https://cce-internal-api.runasp.net",
     "secure": true,
     "changeOrigin": true,
     "ws": true,

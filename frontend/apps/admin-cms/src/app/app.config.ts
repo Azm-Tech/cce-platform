@@ -44,8 +44,8 @@ export const appConfig: ApplicationConfig = {
     provideRealtime(() => {
       const auth = inject(AuthService);
       return {
-        // Relative path, same-origin — the proxy routes /hubs to the External API
-        // (where the hub lives), even though /api goes to the Internal API.
+        // Relative path, same-origin — proxied to the Internal API hub (admin/
+        // internal JWTs); the External hub only accepts external JWTs.
         hubUrlFactory: () => '/hubs/notifications',
         accessToken: auth.accessToken,
         isAuthenticated: auth.isAuthenticated,

@@ -8,7 +8,7 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { REALTIME_CONFIG } from './realtime.config';
 import { normalizePayload } from './realtime-normalize';
-import type { RealtimeConnectionState, RealtimeEventName } from './realtime.types';
+import type { RealtimeConnectionState, RealtimeEnvelope, RealtimeEventName } from './realtime.types';
 
 type GroupKind = 'post' | 'topic' | 'community';
 
@@ -41,12 +41,23 @@ export class RealtimeHubService {
   private readonly streams = new Map<string, Subject<unknown>>();
   /** Token captured at the last successful connect; used to detect rotation. */
   private connectedToken: string | null = null;
+  /** Recent envelope eventIds (ring buffer) — dedup duplicates after reconnects. */
+  private readonly seenEventIds: string[] = [];
+  private readonly seenEventIdSet = new Set<string>();
+  /** occurredOn of the last processed envelope — reconnect catch-up cursor. */
+  private lastOccurredOn: string | null = null;
   /** Serializes connect/disconnect/reconnect so they never overlap. */
   private lifecycle: Promise<void> = Promise.resolve();
 
   private readonly _state = signal<RealtimeConnectionState>('disconnected');
   readonly connectionState = this._state.asReadonly();
   readonly isConnected = computed(() => this._state() === 'connected');
+
+  /** ISO timestamp of the last processed event — use as the `since` cursor for
+   *  reconnect catch-up (`GET …/activity?since=`). */
+  get lastEventTime(): string | null {
+    return this.lastOccurredOn;
+  }
 
   private setState(state: RealtimeConnectionState): void {
     this._state.set(state);
@@ -196,10 +207,32 @@ export class RealtimeHubService {
 
   private attachHandler(connection: HubConnection, event: string): void {
     connection.on(event, (raw: unknown) => {
-      const payload = normalizePayload(raw);
-      if (this.config?.debug) console.debug(`[realtime] ◀ ${event}`, payload, '(raw:', raw, ')');
-      this.streams.get(event)?.next(payload);
+      // Pushes are wrapped in a RealtimeEnvelope { eventId, occurredOn, payload }.
+      // Unwrap it, dedup on eventId (reconnects can replay), and track the cursor.
+      // Tolerate an un-enveloped payload too (defensive during rollout).
+      let payload: unknown = raw;
+      if (raw && typeof raw === 'object' && 'payload' in (raw as Record<string, unknown>)) {
+        const env = raw as Partial<RealtimeEnvelope>;
+        if (typeof env.eventId === 'string' && !this.rememberEvent(env.eventId)) return;
+        if (typeof env.occurredOn === 'string') this.lastOccurredOn = env.occurredOn;
+        payload = env.payload;
+      }
+      const normalized = normalizePayload(payload);
+      if (this.config?.debug) console.debug(`[realtime] ◀ ${event}`, normalized);
+      this.streams.get(event)?.next(normalized);
     });
+  }
+
+  /** Records an eventId; returns false if it was already seen (duplicate). */
+  private rememberEvent(id: string): boolean {
+    if (this.seenEventIdSet.has(id)) return false;
+    this.seenEventIdSet.add(id);
+    this.seenEventIds.push(id);
+    if (this.seenEventIds.length > 200) {
+      const oldest = this.seenEventIds.shift();
+      if (oldest) this.seenEventIdSet.delete(oldest);
+    }
+    return true;
   }
 
   private async invoke(method: string, ...args: unknown[]): Promise<void> {

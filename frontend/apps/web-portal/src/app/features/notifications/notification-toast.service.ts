@@ -3,14 +3,21 @@ import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { NotificationToastComponent, type NotificationToastData } from './notification-toast.component';
-import type { UserNotification } from './notification.types';
 
 const TOAST_DURATION_MS = 10000;
 
+/** Minimal localized-content source a toast renders from — satisfied by both a
+ *  `UserNotification` and a realtime `ReceiveNotification` payload. */
+export interface NotificationToastSource {
+  renderedSubjectAr: string | null;
+  renderedSubjectEn: string | null;
+  renderedBody: string | null;
+}
+
 /**
- * Opens the branded live-notification toast. The realtime `ReceiveNotification`
- * payload is opaque, so callers pass the freshest `UserNotification` fetched from
- * the API (or call `showGeneric` if none is available).
+ * Opens the branded live-notification toast. Callers pass the notification
+ * content (the realtime `ReceiveNotification` payload carries it directly), or
+ * call `showGeneric` when none is available.
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationToastService {
@@ -22,7 +29,7 @@ export class NotificationToastService {
   private activeRef: MatSnackBarRef<NotificationToastComponent> | null = null;
 
   /** Show a toast for a concrete notification. `onView` runs if the user taps "View". */
-  show(notification: UserNotification, onView: () => void): void {
+  show(notification: NotificationToastSource, onView: () => void): void {
     this.open(this.buildData(notification), onView);
   }
 
@@ -31,13 +38,13 @@ export class NotificationToastService {
     this.open(this.genericData(), onView);
   }
 
-  /** Toast for a live new post (community/topic feed event — no per-user payload). */
-  showNewPost(onView: () => void): void {
+  /** Toast for a live new post (community/topic feed event). `title` from the payload. */
+  showNewPost(title: string | null, onView: () => void): void {
     this.open(
       {
         ...this.commonLabels(),
         icon: 'article',
-        title: this.translate.translate('notifications.newPostTitle'),
+        title: title?.trim() || this.translate.translate('notifications.newPostTitle'),
         body: this.translate.translate('notifications.newPostBody'),
       },
       onView,
@@ -64,7 +71,7 @@ export class NotificationToastService {
     ref.onAction().subscribe(() => onView());
   }
 
-  private buildData(n: UserNotification): NotificationToastData {
+  private buildData(n: NotificationToastSource): NotificationToastData {
     const subject = (this.localeService.locale() === 'ar' ? n.renderedSubjectAr : n.renderedSubjectEn)?.trim();
     return {
       ...this.commonLabels(),

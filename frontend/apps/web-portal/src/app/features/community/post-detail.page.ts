@@ -259,7 +259,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
       .on<PollResultsChangedPayload>(RealtimeEvent.PollResultsChanged)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((ev) => {
-        if (ev.postId === postId) void this.refreshPollResults();
+        if (ev.postId === postId) this.applyPollResults(ev);
       });
 
     this.hub
@@ -294,26 +294,17 @@ export class PostDetailPage implements OnInit, OnDestroy {
     }
   }
 
-  /** Re-fetch poll tallies (a vote changed them). Mirrors `castPollVote`'s refresh. */
-  private async refreshPollResults(): Promise<void> {
-    const p = this.poll();
-    if (!p) return;
-    const fresh = await this.api.getPollResults(p.pollId);
-    if (fresh.ok) {
-      const r = fresh.value;
-      this.poll.update((cur) =>
-        cur
-          ? {
-              ...cur,
-              isClosed: r.isClosed,
-              allowMultiple: r.allowMultiple,
-              resultsVisible: r.resultsVisible,
-              totalVotes: r.totalVotes,
-              options: r.options ?? cur.options,
-            }
-          : cur,
-      );
-    }
+  /** Update poll tallies in-place from the push — results are inline, no refetch. */
+  private applyPollResults(ev: PollResultsChangedPayload): void {
+    const updates = new Map((ev.options ?? []).map((o) => [o.id, o]));
+    this.poll.update((cur) => {
+      if (!cur) return cur;
+      const options = (cur.options ?? []).map((o) => {
+        const u = updates.get(o.id);
+        return u ? { ...o, voteCount: u.voteCount, percentage: u.percentage } : o;
+      });
+      return { ...cur, totalVotes: ev.totalVotes, options };
+    });
   }
 
   private applyModeration(ev: PostModeratedPayload, postId: string): void {

@@ -171,13 +171,13 @@ export class HeaderComponent implements OnDestroy {
       }
     });
 
-    // Live personal notifications. The push payload is opaque, so refetch the
-    // count, refresh the open drawer, and show a toast built from the freshest
-    // notification's real subject/body.
+    // Live personal notifications. The push carries the rendered subject/body,
+    // so toast directly from it (the full list loads only when the drawer opens)
+    // and deep-link via metaData.postId.
     this.hub
       .on<ReceiveNotificationPayload>(RealtimeEvent.ReceiveNotification)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => void this.onLiveNotification());
+      .subscribe((n) => this.onLiveNotification(n));
 
     // On community/topic pages the backend sends `NewPost` to the group instead of
     // a personal `ReceiveNotification`, so toast on it too — this makes the toast
@@ -186,7 +186,7 @@ export class HeaderComponent implements OnDestroy {
       .on<NewPostPayload>(RealtimeEvent.NewPost)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((ev) =>
-        this.notificationToast.showNewPost(() =>
+        this.notificationToast.showNewPost(ev.title, () =>
           void this.router.navigate(['/community/posts', ev.postId]),
         ),
       );
@@ -276,20 +276,18 @@ export class HeaderComponent implements OnDestroy {
     if (res.ok) this.unreadCount.set(res.value);
   }
 
-  /** Handle a live `ReceiveNotification` push: refresh state + show a rich toast. */
-  private async onLiveNotification(): Promise<void> {
-    await this.refreshUnreadCount();
+  /** Handle a live `ReceiveNotification` push: bump the badge, refresh the open
+   *  drawer, and toast from the pushed payload (deep-linking to the post if any). */
+  private onLiveNotification(n: ReceiveNotificationPayload): void {
+    void this.refreshUnreadCount();
     void this.drawerRef?.componentInstance.refresh();
-    const res = await this.notificationsApi.list({ page: 1, pageSize: 1 });
-    const latest = res.ok ? res.value.items[0] : undefined;
-    if (this.isDev) {
-      console.debug('[realtime] notification push → opening toast', { listOk: res.ok, latest });
-    }
-    if (latest) {
-      this.notificationToast.show(latest, () => this.openNotifications());
-    } else {
-      this.notificationToast.showGeneric(() => this.openNotifications());
-    }
+    const postId = n.metaData?.postId ?? null;
+    this.notificationToast.show(
+      n,
+      postId
+        ? () => void this.router.navigate(['/community/posts', postId])
+        : () => this.openNotifications(),
+    );
   }
 
   private startPoll(): void {
