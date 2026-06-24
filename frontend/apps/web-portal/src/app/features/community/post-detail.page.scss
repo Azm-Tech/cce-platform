@@ -723,6 +723,21 @@ $layout-gap:   32px;
   gap: 16px;
 }
 
+/* Media attachment (kind 0) — rendered inline. */
+.cce-post-detail__attachment-media {
+  display: block;
+  border: 1px solid $border-mid;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    display: block;
+    inline-size: 100%;
+    max-block-size: 420px;
+    object-fit: cover;
+  }
+}
+
 .cce-post-detail__attachment-icon-wrap {
   flex-shrink: 0;
   width: 48px;
@@ -775,9 +790,12 @@ $layout-gap:   32px;
   background: transparent;
   border: none;
   padding: 0;
+  cursor: pointer;
   transition: color 0.13s;
 
   mat-icon { font-size: 24px; width: 24px; height: 24px; }
+
+  &--inactive { cursor: default; }
 
   &:not(&--inactive):hover { color: $blue; }
   &--inactive { opacity: 0.4; cursor: default; }

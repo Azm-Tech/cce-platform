@@ -219,7 +219,9 @@ export class ComposePostFormComponent implements OnInit {
       const res = await this.media.uploadAsset(file);
       this.uploading.set(false);
       if (res.ok) {
-        const kind: AttachmentKind = file.type.startsWith('image/') ? 1 : 0;
+        // kind: 0 = Media (inline image/video), 1 = Document (downloadable).
+        const isMedia = file.type.startsWith('image/') || file.type.startsWith('video/');
+        const kind: AttachmentKind = isMedia ? 0 : 1;
         this.attachments.update((a) => [
           ...a,
           { assetFileId: res.value.id, fileName: file.name, sizeBytes: file.size, kind },
@@ -235,7 +237,7 @@ export class ComposePostFormComponent implements OnInit {
   }
 
   attachmentIcon(kind: AttachmentKind): string {
-    return kind === 1 ? 'image' : 'file-text';
+    return kind === 0 ? 'image' : 'file-text';
   }
 
   formatFileSize(bytes: number): string {

@@ -32,6 +32,7 @@ import {
   type VoteChangedPayload,
 } from '@frontend/real-time';
 import { AuthService } from '../../core/auth/auth.service';
+import { MediaApiService } from '../../core/media/media-api.service';
 import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
 import { CommunityAuthPromptService } from './community-auth-prompt.service';
@@ -73,6 +74,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
   private readonly hub = inject(RealtimeHubService);
+  private readonly media = inject(MediaApiService);
   private readonly destroyRef = inject(DestroyRef);
   /** Post id this page joined the realtime `post:{id}` group for. */
   private subscribedPostId: string | null = null;
@@ -232,7 +234,14 @@ export class PostDetailPage implements OnInit, OnDestroy {
   }
 
   attachmentIcon(kind: number): string {
-    return kind === 1 ? 'image' : 'description';
+    return kind === 0 ? 'image' : 'description';
+  }
+
+  /** Download via the asset endpoint (blob → save) — direct `url` links fail for
+   *  cross-origin / auth-gated assets. */
+  async downloadAttachment(att: { assetFileId: string; fileName: string | null }): Promise<void> {
+    const res = await this.media.downloadAsset(att.assetFileId, att.fileName ?? undefined);
+    if (!res.ok) this.toast.error('errors.' + res.error.kind);
   }
 
   async ngOnInit(): Promise<void> {

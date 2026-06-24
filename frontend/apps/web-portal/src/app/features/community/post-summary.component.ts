@@ -7,6 +7,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
+import { MediaApiService } from '../../core/media/media-api.service';
 import { CommunityApiService } from './community-api.service';
 import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
@@ -96,7 +97,7 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
           <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
           <span class="pc__attachment-name">{{ attachmentName() }}</span>
           <span class="pc__attachment-size">{{ attachmentSize() }}</span>
-          <button type="button" class="pc__attachment-dl" aria-label="download">
+          <button type="button" class="pc__attachment-dl" aria-label="download" (click)="downloadAttachment()">
             <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
           </button>
         </div>
@@ -172,6 +173,7 @@ export class PostSummaryComponent {
   private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
+  private readonly media = inject(MediaApiService);
 
   readonly post = input.required<PublicPost>();
   readonly topicName = input<string | null>(null);
@@ -278,6 +280,14 @@ export class PostSummaryComponent {
 
   readonly attachmentName = computed(() => this.attachmentMeta().name);
   readonly attachmentSize = computed(() => this.attachmentMeta().size);
+
+  /** Download the first attachment via the asset endpoint (blob → save). */
+  async downloadAttachment(): Promise<void> {
+    const id = this.post().attachmentIds?.[0];
+    if (!id) return;
+    const res = await this.media.downloadAsset(id, this.attachmentName() || undefined);
+    if (!res.ok) this.toast.error('errors.' + res.error.kind);
+  }
 
   readonly postTypeLabelKey = computed(() => {
     const map: Record<string, string> = {
