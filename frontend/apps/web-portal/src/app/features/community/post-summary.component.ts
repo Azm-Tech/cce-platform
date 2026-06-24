@@ -53,7 +53,16 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
 
         <!-- Author: avatar inline-start, meta fills remainder -->
         <div class="pc__author">
-          <div class="pc__avatar" aria-hidden="true">{{ avatarInitial() }}</div>
+          @if (authorId(); as aid) {
+            <a
+              class="pc__avatar pc__avatar--link"
+              [routerLink]="['/community', 'users', aid]"
+              tabindex="-1"
+              aria-hidden="true"
+            >{{ avatarInitial() }}</a>
+          } @else {
+            <div class="pc__avatar" aria-hidden="true">{{ avatarInitial() }}</div>
+          }
           <div class="pc__author-meta">
             <div class="pc__author-name-row">
               @if (authorId(); as aid) {
