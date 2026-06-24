@@ -283,6 +283,7 @@ export class PostSummaryComponent {
 
   /** Download the first attachment via the asset endpoint (blob → save). */
   async downloadAttachment(): Promise<void> {
+    if (!this.authPrompt.requireAuth('community.authDialog.messageDownload')) return;
     const id = this.post().attachmentIds?.[0];
     if (!id) return;
     const res = await this.media.downloadAsset(id, this.attachmentName() || undefined);

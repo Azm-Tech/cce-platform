@@ -240,6 +240,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
   /** Download via the asset endpoint (blob → save) — direct `url` links fail for
    *  cross-origin / auth-gated assets. */
   async downloadAttachment(att: { assetFileId: string; fileName: string | null }): Promise<void> {
+    if (!this.authPrompt.requireAuth('community.authDialog.messageDownload')) return;
     const res = await this.media.downloadAsset(att.assetFileId, att.fileName ?? undefined);
     if (!res.ok) this.toast.error('errors.' + res.error.kind);
   }

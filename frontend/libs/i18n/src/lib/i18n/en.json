@@ -2040,6 +2040,7 @@
       "messageVote": "Sign in or create an account to vote on posts.",
       "messageReply": "Sign in or create an account to reply.",
       "messageFollow": "Sign in or create an account to follow.",
+      "messageDownload": "Sign in or create an account to download attachments.",
       "login": "Sign in",
       "register": "Create an account",
       "close": "Close"
