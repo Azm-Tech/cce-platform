@@ -48,10 +48,19 @@ export class RealtimeHubService {
   private lastOccurredOn: string | null = null;
   /** Serializes connect/disconnect/reconnect so they never overlap. */
   private lifecycle: Promise<void> = Promise.resolve();
+  /** Fires after a RE-connect (network recovery or token rotation), not initial connect. */
+  private readonly _reconnected = new Subject<void>();
 
   private readonly _state = signal<RealtimeConnectionState>('disconnected');
   readonly connectionState = this._state.asReadonly();
   readonly isConnected = computed(() => this._state() === 'connected');
+
+  /**
+   * Emits after the connection is RE-established (auto-reconnect or token-rotation
+   * reconnect) — pages use it to run catch-up (`GET …/activity?since=lastEventTime`)
+   * for events missed while disconnected. Does NOT emit on the initial connect.
+   */
+  readonly reconnected$ = this._reconnected.asObservable();
 
   /** ISO timestamp of the last processed event — use as the `since` cursor for
    *  reconnect catch-up (`GET …/activity?since=`). */
@@ -139,6 +148,7 @@ export class RealtimeHubService {
     connection.onreconnected(() => {
       this.setState('connected');
       void this.replayGroups();
+      this._reconnected.next();
     });
     connection.onclose(() => this.setState('disconnected'));
 
@@ -173,6 +183,8 @@ export class RealtimeHubService {
   private async reconnect(): Promise<void> {
     await this.closeConnection();
     await this.openConnection();
+    // Token-rotation reconnect also may have missed events during the brief gap.
+    if (this.isConnected()) this._reconnected.next();
   }
 
   // ── Groups & events ──────────────────────────────────────────────────────────

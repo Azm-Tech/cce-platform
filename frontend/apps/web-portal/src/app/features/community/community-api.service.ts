@@ -15,6 +15,7 @@ import type {
   PagedResult,
   PollInputPayload,
   PollResults,
+  PostActivity,
   PostShareLink,
   PostType,
   PublicPost,
@@ -347,6 +348,22 @@ export class CommunityApiService {
       unwrap<PollResults>(
         await firstValueFrom(
           this.http.get<{ data?: PollResults }>(`/api/community/polls/${encodeURIComponent(pollId)}/results`),
+        ),
+      ),
+    );
+  }
+
+  /** Reconnect catch-up delta — events missed on a post since `since` (AllowAnonymous). */
+  async getPostActivity(postId: string, since: string | null): Promise<Result<PostActivity>> {
+    let params = new HttpParams();
+    if (since) params = params.set('since', since);
+    return this.run(async () =>
+      unwrap<PostActivity>(
+        await firstValueFrom(
+          this.http.get<{ data?: PostActivity }>(
+            `/api/community/posts/${encodeURIComponent(postId)}/activity`,
+            { params },
+          ),
         ),
       ),
     );

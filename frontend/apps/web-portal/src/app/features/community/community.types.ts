@@ -166,6 +166,16 @@ export interface PollResults {
   options: PollOptionResult[] | null;
 }
 
+/** Reconnect catch-up delta for a post — `GET /api/community/posts/{id}/activity?since=`. */
+export interface PostActivity {
+  upvoteCount: number;
+  downvoteCount: number;
+  score: number;
+  replyCount: number;
+  newReplies: PublicPostReply[] | null;
+  poll: PollResults | null;
+}
+
 // ── Community User ────────────────────────────────────────────────────────────
 export interface CommunityUserProfile {
   userId: string;

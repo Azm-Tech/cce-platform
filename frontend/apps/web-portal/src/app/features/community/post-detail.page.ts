@@ -266,6 +266,29 @@ export class PostDetailPage implements OnInit, OnDestroy {
       .on<PostModeratedPayload>(RealtimeEvent.PostModerated)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((ev) => this.applyModeration(ev, postId));
+
+    // After a reconnect, catch up on events missed while disconnected.
+    this.hub.reconnected$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.catchUp());
+  }
+
+  /** Reconnect catch-up: fetch the delta since `lastEventTime` and apply it. */
+  private async catchUp(): Promise<void> {
+    const p = this.post();
+    if (!p) return;
+    const res = await this.api.getPostActivity(p.id, this.hub.lastEventTime);
+    if (!res.ok) return;
+    const a = res.value;
+    // Authoritative count includes the user's own vote — drop the optimistic +1.
+    const optimistic = this.myVote() === 1 ? 1 : 0;
+    this.post.update((cur) =>
+      cur ? { ...cur, upvoteCount: Math.max(0, a.upvoteCount - optimistic) } : cur,
+    );
+    if (a.poll) this.applyPollResults(a.poll);
+    if ((a.newReplies?.length ?? 0) > 0 || a.replyCount !== this.total()) {
+      await this.refreshRepliesCurrentPage();
+    }
   }
 
   /** Re-fetch the visible replies page (a new reply arrived from another user). */
@@ -294,16 +317,20 @@ export class PostDetailPage implements OnInit, OnDestroy {
     }
   }
 
-  /** Update poll tallies in-place from the push — results are inline, no refetch. */
-  private applyPollResults(ev: PollResultsChangedPayload): void {
-    const updates = new Map((ev.options ?? []).map((o) => [o.id, o]));
+  /** Update poll tallies in-place — from the `PollResultsChanged` push or a
+   *  catch-up activity delta (both carry `totalVotes` + `options`). No refetch. */
+  private applyPollResults(data: {
+    totalVotes: number;
+    options: { id: string; voteCount: number; percentage: number }[] | null;
+  }): void {
+    const updates = new Map((data.options ?? []).map((o) => [o.id, o]));
     this.poll.update((cur) => {
       if (!cur) return cur;
       const options = (cur.options ?? []).map((o) => {
         const u = updates.get(o.id);
         return u ? { ...o, voteCount: u.voteCount, percentage: u.percentage } : o;
       });
-      return { ...cur, totalVotes: ev.totalVotes, options };
+      return { ...cur, totalVotes: data.totalVotes, options };
     });
   }
 
