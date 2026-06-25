@@ -58,6 +58,6 @@ internal sealed class GetResourcesReportQueryHandler(
         )).ToList();
 
         var paged = new PagedResult<ResourcesReportDto>(dtos, page, pageSize, total);
-        return _msg.Ok(paged, "ITEMS_LISTED");
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
 }

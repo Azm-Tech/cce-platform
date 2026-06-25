@@ -36,6 +36,6 @@ internal sealed class GetCommunityPostReportQueryHandler(
             ct)
             .ConfigureAwait(false);
 
-        return _msg.Ok(paged, "ITEMS_LISTED");
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
 }

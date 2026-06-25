@@ -62,7 +62,7 @@ internal sealed class GetExpertReportQueryHandler(
             x.SubmittedOn
         )).ToList();
 
-        return _msg.Ok(result, "ITEMS_LISTED");
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 
     private static string DeriveFileFormat(string? mimeType)

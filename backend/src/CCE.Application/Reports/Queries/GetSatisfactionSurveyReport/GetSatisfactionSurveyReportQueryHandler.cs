@@ -28,6 +28,6 @@ internal sealed class GetSatisfactionSurveyReportQueryHandler(
             .ToListAsyncEither(ct)
             .ConfigureAwait(false);
 
-        return _msg.Ok(items, "ITEMS_LISTED");
+        return _msg.Ok(items, MessageKeys.General.ITEMS_LISTED);
     }
 }

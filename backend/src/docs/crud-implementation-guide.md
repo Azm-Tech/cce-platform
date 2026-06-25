@@ -13,7 +13,7 @@ This document captures the **architectural patterns and conventions** used in th
 | **Unit of Work** | Repository tracks, handler commits (`ICceDbContext.SaveChangesAsync`) |
 | **Reads → ICceDbContext** | All read operations inject `ICceDbContext` directly, no repository |
 | **Writes → Repository** | Write operations use repository interface + domain factory |
-| **Response Envelope** | Every endpoint returns `Response<T>` via `MessageFactory` |
+| **Response Envelope** | Every endpoint returns `Response<T>` via `MessageFactory` + `MessageKeys` constants |
 | **No validation in endpoints** | All validation is in FluentValidation validators only |
 
 ---
@@ -30,7 +30,7 @@ This document captures the **architectural patterns and conventions** used in th
 8. [Pattern: Pagination with PagedResult\<T\>](#pattern-pagination-with-pagedresultt)
 9. [Pattern: Enum Handling (int Request, String Response)](#pattern-enum-handling-int-request-string-response)
 10. [Pattern: Anonymous Users + Nullable CreatedById](#pattern-anonymous-users--nullable-createdbyid)
-11. [Pattern: Error/Success Codes (SystemCode, ApplicationErrors, Resources.yaml)](#pattern-errorsuccess-codes)
+11. [Pattern: Message Keys, System Codes & Localization](#step-6--message-keys-system-codes--localization)
 12. [Pattern: LocalizedText Value Object](#pattern-localizedtext-value-object)
 13. [Pattern: SuperAdmin Authorization](#pattern-superadmin-authorization)
 14. [Pattern: Domain Factory + Mutation Methods](#pattern-domain-factory--mutation-methods)
@@ -163,13 +163,13 @@ internal sealed class CreateYourEntityCommandHandler(
         // For endpoints with [AllowAnonymous], userId may be null
         // Domain factory requires non-null, so handle accordingly:
         if (userId is null)
-            return _msg.Unauthorized<VoidData>("NOT_AUTHENTICATED");
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var entity = YourEntity.Create(cmd.Name, cmd.Order, userId.Value, _clock);
         await _repo.AddAsync(entity, ct);
         await _db.SaveChangesAsync(ct);  // Unit of Work — single commit point
 
-        return _msg.Ok("YOUR_ENTITY_CREATED");
+        return _msg.Ok(MessageKeys.YourEntity.YOUR_ENTITY_CREATED);
     }
 }
 ```
@@ -188,7 +188,7 @@ public async Task<Response<VoidData>> Handle(CreateYourEntityCommand cmd, Cancel
     await _repo.AddAsync(entity, ct);
     await _db.SaveChangesAsync(ct);
 
-    return _msg.Ok("YOUR_ENTITY_CREATED");
+    return _msg.Ok(MessageKeys.YourEntity.YOUR_ENTITY_CREATED);
 }
 ```
 
@@ -242,18 +242,18 @@ internal sealed class UpdateYourEntityCommandHandler(
     {
         var entity = await _repo.GetByIdAsync(cmd.Id, ct);
         if (entity is null)
-            return _msg.NotFound<VoidData>("YOUR_ENTITY_NOT_FOUND");
+            return _msg.NotFound<VoidData>(MessageKeys.YourEntity.YOUR_ENTITY_NOT_FOUND);
 
         var userId = _currentUser.GetUserId();
         if (userId is null)
-            return _msg.Unauthorized<VoidData>("NOT_AUTHENTICATED");
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         entity.Update(cmd.Name, cmd.Order, userId.Value, _clock);
         // No need to call _repo.Update() — EF tracks changes automatically
         // when the entity was fetched via GetByIdAsync (same DbContext)
         await _db.SaveChangesAsync(ct);
 
-        return _msg.Ok("YOUR_ENTITY_UPDATED");
+        return _msg.Ok(MessageKeys.YourEntity.YOUR_ENTITY_UPDATED);
     }
 }
 ```
@@ -270,12 +270,12 @@ internal sealed class DeleteYourEntityCommandHandler(
     {
         var entity = await _repo.GetByIdAsync(cmd.Id, ct);
         if (entity is null)
-            return _msg.NotFound<VoidData>("YOUR_ENTITY_NOT_FOUND");
+            return _msg.NotFound<VoidData>(MessageKeys.YourEntity.YOUR_ENTITY_NOT_FOUND);
 
         _repo.Delete(entity);    // Marks for deletion
         await _db.SaveChangesAsync(ct);  // Unit of Work commit
 
-        return _msg.Ok("YOUR_ENTITY_DELETED");
+        return _msg.Ok(MessageKeys.YourEntity.YOUR_ENTITY_DELETED);
     }
 }
 ```
@@ -318,9 +318,9 @@ internal sealed class GetYourEntityByIdQueryHandler(
             .FirstOrDefaultAsync(ct);
 
         if (entity is null)
-            return _msg.NotFound<YourEntityDto>("YOUR_ENTITY_NOT_FOUND");
+            return _msg.NotFound<YourEntityDto>(MessageKeys.YourEntity.YOUR_ENTITY_NOT_FOUND);
 
-        return _msg.Ok(entity, "ITEMS_LISTED");
+        return _msg.Ok(entity, MessageKeys.General.ITEMS_LISTED);
     }
 }
 ```
@@ -348,7 +348,7 @@ internal sealed class GetAllYourEntitiesQueryHandler(
                 e.Id, e.Name, e.Order, e.CreatedOn, e.CreatedById))
             .ToPagedResultAsync(q.Page, q.PageSize, ct);
 
-        return _msg.Ok(result, "ITEMS_LISTED");
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 }
 ```
@@ -366,7 +366,7 @@ public async Task<Response<List<YourEntityDto>>> Handle(
             e.Id, e.Name, e.Order, e.CreatedOn, e.CreatedById))
         .ToListAsync(ct);
 
-    return _msg.Ok(items, "ITEMS_LISTED");
+    return _msg.Ok(items, MessageKeys.General.ITEMS_LISTED);
 }
 ```
 
@@ -453,17 +453,18 @@ dotnet ef migrations add AddYourEntity --context CceDbContext --startup-project 
 
 ---
 
-### Step 6 — Error/Success Codes & Localization
+### Step 6 — Message Keys, System Codes & Localization
 
-**ApplicationErrors.cs — constant domain keys:**
+**MessageKeys.cs — add domain key constants:**
 ```csharp
-// CCE.Application\Errors\ApplicationErrors.cs
+// CCE.Application\Messages\MessageKeys.cs
+// Add a new nested class inside the existing public static class MessageKeys:
 public static class YourEntity
 {
     public const string YOUR_ENTITY_NOT_FOUND = "YOUR_ENTITY_NOT_FOUND";
-    public const string YOUR_ENTITY_CREATED  = "YOUR_ENTITY_CREATED";
-    public const string YOUR_ENTITY_UPDATED  = "YOUR_ENTITY_UPDATED";
-    public const string YOUR_ENTITY_DELETED  = "YOUR_ENTITY_DELETED";
+    public const string YOUR_ENTITY_CREATED   = "YOUR_ENTITY_CREATED";
+    public const string YOUR_ENTITY_UPDATED   = "YOUR_ENTITY_UPDATED";
+    public const string YOUR_ENTITY_DELETED   = "YOUR_ENTITY_DELETED";
 }
 ```
 
@@ -485,15 +486,40 @@ public const string CON999 = "CON999"; // YourEntity created/updated/deleted
 ["YOUR_ENTITY_DELETED"]   = SystemCode.CON999,
 ```
 
-**MessageFactory.cs — convenience shortcuts:**
+**Usage in handlers — call `MessageFactory` methods directly with `MessageKeys` constants:**
 ```csharp
-// CCE.Application\Messages\MessageFactory.cs
-// ─── Convenience shortcuts (YourEntity) ───
-public Response<VoidData> YourEntityCreated()   => Ok(ApplicationErrors.YourEntity.YOUR_ENTITY_CREATED);
-public Response<VoidData> YourEntityUpdated()   => Ok(ApplicationErrors.YourEntity.YOUR_ENTITY_UPDATED);
-public Response<VoidData> YourEntityDeleted()   => Ok(ApplicationErrors.YourEntity.YOUR_ENTITY_DELETED);
-public Response<T> YourEntityNotFound<T>()      => NotFound<T>(ApplicationErrors.YourEntity.YOUR_ENTITY_NOT_FOUND);
+// ✅ Use MessageKeys constants directly — no convenience shortcuts on MessageFactory
+// _msg is injected MessageFactory
+
+// Success (no data):
+return _msg.Ok(MessageKeys.YourEntity.YOUR_ENTITY_CREATED);
+
+// Success (with data):
+return _msg.Ok(entity, MessageKeys.General.ITEMS_LISTED);
+
+// Not found:
+return _msg.NotFound<VoidData>(MessageKeys.YourEntity.YOUR_ENTITY_NOT_FOUND);
+
+// Unauthorized:
+return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
+
+// Conflict:
+return _msg.Conflict<VoidData>(MessageKeys.General.DUPLICATE_VALUE);
+
+// Forbidden:
+return _msg.Forbidden<VoidData>(MessageKeys.General.FORBIDDEN_ACCESS);
+
+// Business rule violation:
+return _msg.BusinessRule<VoidData>(MessageKeys.General.BUSINESS_RULE_VIOLATION);
+
+// Validation with field errors:
+return _msg.ValidationError<VoidData>(MessageKeys.General.VALIDATION_ERROR, new[]
+{
+    _msg.Field("fieldName", MessageKeys.Validation.REQUIRED_FIELD)
+});
 ```
+
+> **Note:** Do NOT add convenience shortcut methods to `MessageFactory` (e.g., `YourEntityCreated()`). Always call the base `_msg.Ok()`, `_msg.NotFound<T>()`, etc. directly. This keeps intent explicit in the handler and avoids hidden behavior.
 
 **Resources.yaml — bilingual messages:**
 ```yaml
@@ -688,7 +714,7 @@ app.MapYourEntityEndpoints();
 │  .FirstOrDefaultAsync / .ToListAsync                  │
 │  .ToPagedResultAsync(...) — pagination                │
 │                                                       │
-│  Returns _msg.Ok(data, "ITEMS_LISTED")                │
+│  Returns _msg.Ok(data, MessageKeys.General.ITEMS_LISTED)│
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -733,7 +759,7 @@ app.MapYourEntityEndpoints();
 | `_msg.ValidationError<T>(domainKey, errors)` | 400 | Validation errors |
 
 ### How it works:
-1. Handler passes a **domain key** (e.g., `"YOUR_ENTITY_CREATED"`)
+1. Handler passes a **domain key** (e.g., `MessageKeys.YourEntity.YOUR_ENTITY_CREATED`)
 2. `MessageFactory` calls `SystemCodeMap.ToSystemCode(key)` → e.g., `"CON999"`
 3. `MessageFactory` calls `ILocalizationService.GetString(key)` → localized message
 4. Returns `Response<T>` with code + message
@@ -838,7 +864,7 @@ public async Task<Response<PagedResult<YourEntityDto>>> Handle(
         .Select(e => new YourEntityDto(e.Id, e.Name, e.CreatedOn))
         .ToPagedResultAsync(q.Page, q.PageSize, ct);
 
-    return _msg.Ok(result, "ITEMS_LISTED");
+    return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
 }
 ```
 
@@ -1120,10 +1146,10 @@ Use this checklist when creating a new CRUD feature.
 - [ ] `DTOs\YourEntityDto.cs`
 
 ### Application Layer — Error/Success Codes
-- [ ] `Errors\ApplicationErrors.cs` — add `YourEntity` static class with constants
+- [ ] `Messages\MessageKeys.cs` — add `YourEntity` nested class with domain key constants
 - [ ] `Messages\SystemCode.cs` — add ERR/CON constants
 - [ ] `Messages\SystemCodeMap.cs` — map domain keys to codes
-- [ ] `Messages\MessageFactory.cs` — add convenience shortcut methods
+- [ ] (No shortcut methods on `MessageFactory` — call `_msg.Ok(MessageKeys.X)` directly)
 
 ### Infrastructure Layer
 - [ ] `Persistence\Configurations\YourDomain\YourEntityConfiguration.cs` — EF Core config
@@ -1156,7 +1182,7 @@ Use this checklist when creating a new CRUD feature.
 | Using `None=0` enum as valid value | Validator must reject `None` via `.NotEqual(None)` |
 | Not updating `created_by_id` to nullable for anonymous entities | `CreatedById` is `Guid?` — migration must reflect that |
 | Forgetting to add `MapYourEntityEndpoints()` to Program.cs | Both External and Internal Program.cs need it |
-| Using `Result<T>` instead of `Response<T>` | Use `Response<T>` everywhere — `Result<T>` is legacy |
+| Adding convenience shortcuts to `MessageFactory` | Call `_msg.Ok(MessageKeys.X)` directly — don't add `YourEntityCreated()` wrappers |
 | `.WithErrorCode("REQUIRED_FIELD")` vs `.WithMessage("...")` | Use `.WithErrorCode()` with domain keys, not inline messages |
 | Not adding `ISystemClock` to handler DI | Domain factory methods need `ISystemClock` for audit timestamps |
 | `IRepository` import from wrong namespace | Import from `CCE.Application.Common.Interfaces` |

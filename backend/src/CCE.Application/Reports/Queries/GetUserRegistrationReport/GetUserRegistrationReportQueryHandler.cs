@@ -28,6 +28,6 @@ internal sealed class GetUserRegistrationReportQueryHandler(
             .ToListAsyncEither(ct)
             .ConfigureAwait(false);
 
-        return _msg.Ok(users, "ITEMS_LISTED");
+        return _msg.Ok(users, MessageKeys.General.ITEMS_LISTED);
     }
 }
