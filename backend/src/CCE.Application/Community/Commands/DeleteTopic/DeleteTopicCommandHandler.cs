@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -33,15 +33,15 @@ public sealed class DeleteTopicCommandHandler : IRequestHandler<DeleteTopicComma
     {
         var topic = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (topic is null)
-            return _messages.TopicNotFound<VoidData>();
+            return _messages.NotFound<VoidData>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var deletedById = _currentUser.GetUserId();
         if (deletedById is null)
-            return _messages.NotAuthenticated<VoidData>();
+            return _messages.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         topic.SoftDelete(deletedById.Value, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok("CONTENT_DELETED");
+        return _messages.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

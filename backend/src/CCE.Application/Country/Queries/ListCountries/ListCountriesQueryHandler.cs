@@ -1,9 +1,9 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Country.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Country;
 using MediatR;
@@ -71,7 +71,7 @@ public sealed class ListCountriesQueryHandler
                     request.Page, request.PageSize, cancellationToken)
                 .ConfigureAwait(false);
 
-            return _messages.Ok(ccePage, ApplicationErrors.General.SUCCESS_OPERATION);
+            return _messages.Ok(ccePage, MessageKeys.General.SUCCESS_OPERATION);
         }
 
         // Simple flat list — no KAPSARC join needed.
@@ -90,7 +90,7 @@ public sealed class ListCountriesQueryHandler
                 request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _messages.Ok(page, ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(page, MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static CountryDto MapToDto(CCE.Domain.Country.Country c) => new(

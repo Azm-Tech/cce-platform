@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -40,13 +40,13 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
         var asset = assets.SingleOrDefault();
 
         if (asset is null)
-            return _messages.AssetNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _messages.AssetNotClean<System.Guid>();
+            return _messages.BusinessRule<System.Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         var categoryExists = await ExistsAsync(_db.ResourceCategories.Where(c => c.Id == request.CategoryId), cancellationToken).ConfigureAwait(false);
         if (!categoryExists)
-            return _messages.CategoryNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         var countryIds = request.CountryIds.Distinct().ToList();
         if (countryIds.Count > 0)
@@ -56,12 +56,12 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
                 .CountAsyncEither(cancellationToken)
                 .ConfigureAwait(false);
             if (existingCountryCount != countryIds.Count)
-                return _messages.NotFound<System.Guid>("COUNTRY_NOT_FOUND");
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
         var uploadedById = _currentUser.GetUserId();
         if (uploadedById is null)
-            return _messages.NotAuthenticated<System.Guid>();
+            return _messages.Unauthorized<System.Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var resource = Resource.Draft(
             request.TitleAr,
@@ -81,7 +81,7 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
         await _repo.AddAsync(resource, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(resource.Id, "RESOURCE_CREATED");
+        return _messages.Ok(resource.Id, MessageKeys.Content.RESOURCE_CREATED);
     }
 
     private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)

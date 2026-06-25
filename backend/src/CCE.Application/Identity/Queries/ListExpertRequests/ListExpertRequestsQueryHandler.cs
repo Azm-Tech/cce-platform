@@ -1,19 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.ListExpertRequests;
 
 public sealed class ListExpertRequestsQueryHandler
-    : IRequestHandler<ListExpertRequestsQuery, PagedResult<ExpertRequestDto>>
+    : IRequestHandler<ListExpertRequestsQuery, Response<PagedResult<ExpertRequestDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListExpertRequestsQueryHandler(ICceDbContext db) => _db = db;
+    public ListExpertRequestsQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<PagedResult<ExpertRequestDto>> Handle(
+    public async Task<Response<PagedResult<ExpertRequestDto>>> Handle(
         ListExpertRequestsQuery request,
         CancellationToken cancellationToken)
     {
@@ -32,8 +39,8 @@ public sealed class ListExpertRequestsQueryHandler
 
         if (paged.Items.Count == 0)
         {
-            return new PagedResult<ExpertRequestDto>(
-                Array.Empty<ExpertRequestDto>(), paged.Page, paged.PageSize, paged.Total);
+            return _msg.Ok(new PagedResult<ExpertRequestDto>(
+                Array.Empty<ExpertRequestDto>(), paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
         }
 
         var requesterIds = paged.Items.Select(r => r.RequestedById).Distinct().ToList();
@@ -67,7 +74,7 @@ public sealed class ListExpertRequestsQueryHandler
             r.RejectionReasonEn,
             cvByRequestId.TryGetValue(r.Id, out var cvAssetFileId) ? cvAssetFileId : null)).ToList();
 
-        return new PagedResult<ExpertRequestDto>(items, paged.Page, paged.PageSize, paged.Total);
+        return _msg.Ok(new PagedResult<ExpertRequestDto>(items, paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
     }
 
     private sealed record UserNameRow(Guid UserId, string? UserName);

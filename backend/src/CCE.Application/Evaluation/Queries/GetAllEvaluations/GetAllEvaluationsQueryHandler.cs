@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Evaluation.DTOs;
 using CCE.Application.Messages;
@@ -39,6 +39,6 @@ public sealed class GetAllEvaluationsQueryHandler
             e.UserId,
             e.CreatedOn,
             e.CreatedById));
-        return _msg.Ok(result, "ITEMS_LISTED");
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 }

@@ -1,20 +1,25 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
 namespace CCE.Api.Common.Middleware;
 
 public sealed class LocalizationMiddleware
 {
-    private static readonly string[] Supported = ["ar", "en"];
-    private const string DefaultLocale = "ar";
-
+    private readonly string[] _supported;
+    private readonly string _defaultLocale;
     private readonly RequestDelegate _next;
 
-    public LocalizationMiddleware(RequestDelegate next) => _next = next;
+    public LocalizationMiddleware(RequestDelegate next, IConfiguration? configuration = null)
+    {
+        _next = next;
+        _supported = configuration?.GetSection("Localization:Supported").Get<string[]>() ?? ["ar", "en"];
+        _defaultLocale = configuration?.GetValue<string>("Localization:Default") ?? "ar";
+    }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var locale = PickLocale(context.Request.Headers.AcceptLanguage.ToString());
+        var locale = PickLocale(context.Request.Headers.AcceptLanguage.ToString(), _supported, _defaultLocale);
         var culture = CultureInfo.GetCultureInfo(locale);
 
         var prevCulture = CultureInfo.CurrentCulture;
@@ -32,23 +37,24 @@ public sealed class LocalizationMiddleware
         }
     }
 
-    private static string PickLocale(string acceptLanguage)
+    internal static string PickLocale(string acceptLanguage, string[]? supported = null, string? defaultLocale = null)
     {
+        supported ??= ["ar", "en"];
+        defaultLocale ??= "ar";
+
         if (string.IsNullOrWhiteSpace(acceptLanguage))
         {
-            return DefaultLocale;
+            return defaultLocale;
         }
-        // Parse comma-separated entries, trim quality factors, take first matching supported tag.
         foreach (var entry in acceptLanguage.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             var tag = entry.Split(';', 2)[0].Trim();
-            // "en-US" -> "en"
             var primary = tag.Split('-', 2)[0].ToLowerInvariant();
-            if (Array.IndexOf(Supported, primary) >= 0)
+            if (Array.IndexOf(supported, primary) >= 0)
             {
                 return primary;
             }
         }
-        return DefaultLocale;
+        return defaultLocale;
     }
 }

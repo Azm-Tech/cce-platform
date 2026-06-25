@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
@@ -43,6 +43,6 @@ internal sealed class ListInteractiveMapsQueryHandler
             PublicInteractiveMapDto.FromEntity(m, nodesByMapId.GetValueOrDefault(m.Id) ?? [])
         ).ToList();
 
-        return _msg.Ok(dtos as IReadOnlyList<PublicInteractiveMapDto>, "ITEMS_LISTED");
+        return _msg.Ok(dtos as IReadOnlyList<PublicInteractiveMapDto>, MessageKeys.General.ITEMS_LISTED);
     }
 }

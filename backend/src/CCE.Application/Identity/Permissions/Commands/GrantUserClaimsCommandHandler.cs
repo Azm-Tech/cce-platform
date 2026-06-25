@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Auth.Common;
@@ -41,7 +41,7 @@ internal sealed class GrantUserClaimsCommandHandler
             .ConfigureAwait(false);
 
         if (!userExists)
-            return _msg.NotFound<UserClaimsResult>("USER_NOT_FOUND");
+            return _msg.NotFound<UserClaimsResult>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var actorId = _currentUser.GetUserId() ?? Guid.Empty;
         var actorEmail = _currentUser.GetActor();
@@ -81,6 +81,6 @@ internal sealed class GrantUserClaimsCommandHandler
             all.OrderBy(c => c).ToArray(),
             toAdd.Count,
             0,
-            all.Count), "CLAIMS_GRANTED");
+            all.Count), MessageKeys.Identity.CLAIMS_GRANTED);
     }
 }

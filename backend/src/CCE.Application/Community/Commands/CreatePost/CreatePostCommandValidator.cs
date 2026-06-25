@@ -1,4 +1,4 @@
-using CCE.Application.Errors;
+﻿using CCE.Application.Messages;
 using CCE.Domain.Community;
 using FluentValidation;
 
@@ -8,15 +8,15 @@ public sealed class CreatePostCommandValidator : AbstractValidator<CreatePostCom
 {
     public CreatePostCommandValidator()
     {
-        RuleFor(x => x.CommunityId).NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD);
-        RuleFor(x => x.TopicId).NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD);
-        RuleFor(x => x.Type).IsInEnum().WithErrorCode(ApplicationErrors.Validation.INVALID_ENUM);
+        RuleFor(x => x.CommunityId).NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD);
+        RuleFor(x => x.TopicId).NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD);
+        RuleFor(x => x.Type).IsInEnum().WithErrorCode(MessageKeys.Validation.INVALID_ENUM);
         RuleFor(x => x.Title)
-            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD)
-            .MaximumLength(Post.MaxTitleLength).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(Post.MaxTitleLength).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
         RuleFor(x => x.Content)
-            .MaximumLength(Post.MaxContentLength).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .MaximumLength(Post.MaxContentLength).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
         RuleFor(x => x.Locale)
-            .Must(l => l is "ar" or "en").WithErrorCode(ApplicationErrors.Validation.INVALID_ENUM);
+            .Must(l => l is "ar" or "en").WithErrorCode(MessageKeys.Validation.INVALID_ENUM);
     }
 }

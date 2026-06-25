@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -44,7 +44,7 @@ public sealed class ListNewsQueryHandler : IRequestHandler<ListNewsQuery, Respon
         var newsIds = result.Items.Select(n => n.Id).ToList();
         var tagByNewsId = await GetTagDtosByNewsIdsAsync(newsIds, cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(result.Map(n => MapToDto(n, topicById, tagByNewsId)), "ITEMS_LISTED");
+        return _messages.Ok(result.Map(n => MapToDto(n, topicById, tagByNewsId)), MessageKeys.General.ITEMS_LISTED);
     }
 
     private async Task<Dictionary<System.Guid, List<TagDto>>> GetTagDtosByNewsIdsAsync(

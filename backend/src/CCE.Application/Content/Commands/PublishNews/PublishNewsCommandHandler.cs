@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.GetNewsById;
@@ -32,7 +32,7 @@ public sealed class PublishNewsCommandHandler : IRequestHandler<PublishNewsComma
     {
         var news = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (news is null)
-            return _messages.NewsNotFound<NewsDto>();
+            return _messages.NotFound<NewsDto>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var expectedRowVersion = news.RowVersion;
         news.Publish(_clock);
@@ -40,6 +40,6 @@ public sealed class PublishNewsCommandHandler : IRequestHandler<PublishNewsComma
         _db.SetExpectedRowVersion(news, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news), "SUCCESS_OPERATION");
+        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

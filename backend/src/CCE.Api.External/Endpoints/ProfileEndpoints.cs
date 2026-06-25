@@ -1,5 +1,6 @@
-using CCE.Api.Common.Auth;
+﻿using CCE.Api.Common.Auth;
 using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Auth.Register;
 using CCE.Application.Identity.Public.Commands.ConfirmEmailChange;
@@ -52,7 +53,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var cmd = new SubmitExpertRequestCommand(
                 userId, body.RequestedBioAr, body.RequestedBioEn,
                 body.RequestedTags ?? System.Array.Empty<string>(),
@@ -69,7 +70,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(new GetMyProfileQuery(userId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
@@ -81,7 +82,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var cmd = new UpdateMyProfileCommand(
                 userId,
                 body.FirstName, body.LastName, body.JobTitle, body.OrganizationName,
@@ -97,7 +98,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(new GetMyExpertStatusQuery(userId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         })
@@ -109,7 +110,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(
                 new RequestEmailChangeCommand(userId, body.NewEmail), ct).ConfigureAwait(false);
             return result.ToHttpResult();
@@ -122,7 +123,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(
                 new ConfirmEmailChangeCommand(userId, body.VerificationId, body.Code), ct).ConfigureAwait(false);
             return result.ToHttpResult();
@@ -135,7 +136,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(
                 new RequestPhoneChangeCommand(userId, body.NewPhone, body.CountryId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
@@ -148,7 +149,7 @@ public static class ProfileEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var result = await mediator.Send(
                 new ConfirmPhoneChangeCommand(userId, body.VerificationId, body.Code), ct).ConfigureAwait(false);
             return result.ToHttpResult();

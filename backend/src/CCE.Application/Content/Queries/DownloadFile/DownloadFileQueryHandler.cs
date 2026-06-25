@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
@@ -35,7 +35,7 @@ internal sealed class DownloadFileQueryHandler
                 .ConfigureAwait(false);
 
             if (media is null)
-                return _msg.MediaFileNotFound<DownloadFilePayload>();
+                return _msg.NotFound<DownloadFilePayload>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
             var storage = _storageFactory.GetStorage(DownloadFileType.Media);
             Stream stream;
@@ -47,11 +47,11 @@ internal sealed class DownloadFileQueryHandler
             }
             catch (FileNotFoundException)
             {
-                return _msg.MediaFileNotFound<DownloadFilePayload>();
+                return _msg.NotFound<DownloadFilePayload>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
             }
 
             var payload = new DownloadFilePayload(stream, media.MimeType, media.OriginalFileName);
-            return _msg.Ok(payload, "SUCCESS_OPERATION");
+            return _msg.Ok(payload, MessageKeys.General.SUCCESS_OPERATION);
         }
 
         var asset = await _db.AssetFiles
@@ -59,10 +59,10 @@ internal sealed class DownloadFileQueryHandler
             .ConfigureAwait(false);
 
         if (asset is null)
-            return _msg.AssetNotFound<DownloadFilePayload>();
+            return _msg.NotFound<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_FOUND);
 
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _msg.AssetNotClean<DownloadFilePayload>();
+            return _msg.BusinessRule<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         var assetStorage = _storageFactory.GetStorage(DownloadFileType.Asset);
         Stream assetStream;
@@ -74,10 +74,10 @@ internal sealed class DownloadFileQueryHandler
         }
         catch (FileNotFoundException)
         {
-            return _msg.AssetNotFound<DownloadFilePayload>();
+            return _msg.NotFound<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_FOUND);
         }
 
         var assetPayload = new DownloadFilePayload(assetStream, asset.MimeType, asset.OriginalFileName);
-        return _msg.Ok(assetPayload, "SUCCESS_OPERATION");
+        return _msg.Ok(assetPayload, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

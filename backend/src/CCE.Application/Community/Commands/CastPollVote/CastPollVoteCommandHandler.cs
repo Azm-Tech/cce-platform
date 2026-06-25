@@ -1,9 +1,9 @@
-using System.Linq;
+﻿using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -39,17 +39,17 @@ public sealed class CastPollVoteCommandHandler
     public async Task<Response<VoidData>> Handle(CastPollVoteCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var optionIds = request.OptionIds.Distinct().ToList();
         if (optionIds.Count == 0)
-            return _msg.BusinessRule<VoidData>(ApplicationErrors.Validation.REQUIRED_FIELD);
+            return _msg.BusinessRule<VoidData>(MessageKeys.Validation.REQUIRED_FIELD);
 
         var poll = await _repo.GetWithOptionsAsync(request.PollId, cancellationToken).ConfigureAwait(false);
-        if (poll is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.POLL_NOT_FOUND);
-        if (poll.IsClosed(_clock)) return _msg.BusinessRule<VoidData>(ApplicationErrors.Community.POLL_CLOSED);
+        if (poll is null) return _msg.NotFound<VoidData>(MessageKeys.Community.POLL_NOT_FOUND);
+        if (poll.IsClosed(_clock)) return _msg.BusinessRule<VoidData>(MessageKeys.Community.POLL_CLOSED);
         if (!poll.AllowMultiple && optionIds.Count > 1)
-            return _msg.BusinessRule<VoidData>(ApplicationErrors.Validation.INVALID_FORMAT);
+            return _msg.BusinessRule<VoidData>(MessageKeys.Validation.INVALID_FORMAT);
 
         var existingVotes = await _repo.RemoveVotesAsync(poll.Id, userId.Value, cancellationToken).ConfigureAwait(false);
         foreach (var oldVote in existingVotes)
@@ -61,7 +61,7 @@ public sealed class CastPollVoteCommandHandler
         foreach (var optionId in optionIds)
         {
             var option = poll.FindOption(optionId);
-            if (option is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.POLL_NOT_FOUND);
+            if (option is null) return _msg.NotFound<VoidData>(MessageKeys.Community.POLL_NOT_FOUND);
             _repo.AddVote(PollVote.Cast(poll.Id, option.Id, userId.Value, _clock));
             option.IncrementVotes();
         }
@@ -85,6 +85,6 @@ public sealed class CastPollVoteCommandHandler
                     }),
             }, cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

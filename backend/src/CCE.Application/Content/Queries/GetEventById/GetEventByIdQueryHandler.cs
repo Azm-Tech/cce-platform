@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -25,7 +25,7 @@ public sealed class GetEventByIdQueryHandler : IRequestHandler<GetEventByIdQuery
         var list = await _db.Events.Where(e => e.Id == request.Id).ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var ev = list.SingleOrDefault();
         if (ev is null)
-            return _messages.EventNotFound<EventDto>();
+            return _messages.NotFound<EventDto>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var topics = await _db.Topics.Where(t => t.Id == ev.TopicId)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
@@ -33,7 +33,7 @@ public sealed class GetEventByIdQueryHandler : IRequestHandler<GetEventByIdQuery
 
         var tagDtos = ev.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
 
-        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), "SUCCESS_OPERATION");
+        return _messages.Ok(MapToDto(ev, topic?.NameAr ?? string.Empty, topic?.NameEn ?? string.Empty, tagDtos), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static EventDto MapToDto(Event e, string topicNameAr = "", string topicNameEn = "", System.Collections.Generic.IReadOnlyList<TagDto>? tags = null) => new(

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Messages;
@@ -45,16 +45,16 @@ internal sealed class VerifyOtpCommandHandler
             .ConfigureAwait(false);
 
         if (entity is null)
-            return _msg.OtpNotFound<VerifyOtpResponseDto>();
+            return _msg.NotFound<VerifyOtpResponseDto>(MessageKeys.Verification.OTP_NOT_FOUND);
 
         if (entity.IsExpired(now))
-            return _msg.OtpExpired<VerifyOtpResponseDto>();
+            return _msg.BusinessRule<VerifyOtpResponseDto>(MessageKeys.Verification.OTP_EXPIRED);
 
         if (entity.IsInvalidated)
-            return _msg.OtpInvalidated<VerifyOtpResponseDto>();
+            return _msg.BusinessRule<VerifyOtpResponseDto>(MessageKeys.Verification.OTP_INVALIDATED);
 
         if (entity.HasExceededMaxAttempts())
-            return _msg.OtpMaxAttempts<VerifyOtpResponseDto>();
+            return _msg.BusinessRule<VerifyOtpResponseDto>(MessageKeys.Verification.OTP_MAX_ATTEMPTS);
 
         entity.IncrementAttempt();
 
@@ -62,7 +62,7 @@ internal sealed class VerifyOtpCommandHandler
         {
             _otpRepo.Update(entity);
             await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-            return _msg.OtpInvalidCode<VerifyOtpResponseDto>();
+            return _msg.BusinessRule<VerifyOtpResponseDto>(MessageKeys.Verification.OTP_INVALID_CODE);
         }
 
         entity.MarkVerified();
@@ -84,7 +84,7 @@ internal sealed class VerifyOtpCommandHandler
 
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return _msg.Ok(new VerifyOtpResponseDto(true, resolvedUserId), "OTP_VERIFIED");
+        return _msg.Ok(new VerifyOtpResponseDto(true, resolvedUserId), MessageKeys.Verification.OTP_VERIFIED);
     }
 
     private async Task<Guid?> StampUserConfirmedAsync(OtpVerification entity, CancellationToken ct)

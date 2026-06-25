@@ -1,4 +1,5 @@
 using CCE.Application.Audit.Dtos;
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using MediatR;
 
@@ -12,4 +13,4 @@ public sealed record ListAuditEventsQuery(
     string? ResourceType = null,
     System.Guid? CorrelationId = null,
     System.DateTimeOffset? From = null,
-    System.DateTimeOffset? To = null) : IRequest<PagedResult<AuditEventDto>>;
+    System.DateTimeOffset? To = null) : IRequest<Response<PagedResult<AuditEventDto>>>;

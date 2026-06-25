@@ -1,4 +1,4 @@
-using CCE.Application.Errors;
+﻿using CCE.Application.Messages;
 using FluentValidation;
 
 namespace CCE.Application.InteractiveMaps.Commands.CreateInteractiveMap;
@@ -8,14 +8,14 @@ internal sealed class CreateInteractiveMapCommandValidator : AbstractValidator<C
     public CreateInteractiveMapCommandValidator()
     {
         RuleFor(x => x.NameAr)
-            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD)
-            .MaximumLength(256).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(256).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
         RuleFor(x => x.NameEn)
-            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.REQUIRED_FIELD)
-            .MaximumLength(256).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(256).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
         RuleFor(x => x.DescriptionAr)
-            .MaximumLength(512).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .MaximumLength(512).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
         RuleFor(x => x.DescriptionEn)
-            .MaximumLength(512).WithErrorCode(ApplicationErrors.Validation.MAX_LENGTH);
+            .MaximumLength(512).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
     }
 }

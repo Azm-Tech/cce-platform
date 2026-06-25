@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -47,7 +47,7 @@ public sealed class ListNotificationLogsQueryHandler
 
         var items = page.Items.Select(MapToDto).ToList();
         var result = new PagedResult<NotificationLogListItemDto>(items, page.Page, page.PageSize, page.Total);
-        return _msg.Ok(result, "ITEMS_LISTED");
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static NotificationLogListItemDto MapToDto(NotificationLog l) => new(

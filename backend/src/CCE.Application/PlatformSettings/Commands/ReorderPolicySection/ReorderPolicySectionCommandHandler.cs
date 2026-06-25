@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.PlatformSettings;
@@ -28,15 +28,15 @@ public sealed class ReorderPolicySectionCommandHandler
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.POLICIES_SETTINGS_NOT_FOUND);
 
         var section = settings.Sections.FirstOrDefault(s => s.Id == request.Id);
         if (section is null)
-            return _msg.PolicySectionNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.POLICY_SECTION_NOT_FOUND);
 
         settings.ReorderSection(section, request.OrderIndex);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(section.Id, "SECTION_REORDERED");
+        return _msg.Ok(section.Id, MessageKeys.PlatformSettings.SECTION_REORDERED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -27,7 +27,7 @@ public sealed class GetPublicPoliciesSettingsQueryHandler
         var list = await _db.PoliciesSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = list.FirstOrDefault();
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<PublicPoliciesSettingsDto>();
+            return _msg.NotFound<PublicPoliciesSettingsDto>(MessageKeys.PlatformSettings.POLICIES_SETTINGS_NOT_FOUND);
 
         var sections = await _db.PolicySections
             .Where(s => s.PoliciesSettingsId == settings.Id)
@@ -39,6 +39,6 @@ public sealed class GetPublicPoliciesSettingsQueryHandler
             sections.Select(s => new PublicPolicySectionDto(
                 (int)s.Type,
                 new LocalizedTextDto(s.Title.Ar, s.Title.En),
-                new LocalizedTextDto(s.Content.Ar, s.Content.En))).ToList()), "ITEMS_LISTED");
+                new LocalizedTextDto(s.Content.Ar, s.Content.En))).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

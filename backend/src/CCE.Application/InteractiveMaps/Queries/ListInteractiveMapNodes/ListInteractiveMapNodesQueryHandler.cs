@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.InteractiveMaps.Dtos;
@@ -33,7 +33,7 @@ internal sealed class ListInteractiveMapNodesQueryHandler
             .ThenBy(n => n.Level);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(result.Map(MapToDto), "ITEMS_LISTED");
+        return _msg.Ok(result.Map(MapToDto), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static InteractiveMapNodeDto MapToDto(InteractiveMapNode n) => new(

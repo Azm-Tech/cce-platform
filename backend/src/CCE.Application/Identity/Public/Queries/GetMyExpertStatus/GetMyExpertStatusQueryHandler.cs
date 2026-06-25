@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -29,7 +29,7 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
 
         var entity = rows.FirstOrDefault();
         if (entity is null)
-            return _msg.ExpertRequestNotFound<ExpertRequestStatusDto>();
+            return _msg.NotFound<ExpertRequestStatusDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var attachments = await _db.ExpertRequestAttachments
             .Where(a => a.ExpertRequestId == entity.Id)
@@ -47,6 +47,6 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
             entity.Status,
             entity.ProcessedOn,
             entity.RejectionReasonAr,
-            entity.RejectionReasonEn), "SUCCESS_OPERATION");
+            entity.RejectionReasonEn), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

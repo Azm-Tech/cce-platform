@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -34,13 +34,13 @@ public sealed class UpdateDraftCommandHandler
     public async Task<Response<VoidData>> Handle(UpdateDraftCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetAsync(request.PostId, cancellationToken).ConfigureAwait(false);
-        if (post is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.POST_NOT_FOUND);
-        if (post.AuthorId != userId.Value) return _msg.Forbidden<VoidData>(ApplicationErrors.General.FORBIDDEN);
+        if (post is null) return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);
+        if (post.AuthorId != userId.Value) return _msg.Forbidden<VoidData>(MessageKeys.General.FORBIDDEN);
         if (post.Status != PostStatus.Draft)
-            return _msg.BusinessRule<VoidData>(ApplicationErrors.Community.POST_ALREADY_PUBLISHED);
+            return _msg.BusinessRule<VoidData>(MessageKeys.Community.POST_ALREADY_PUBLISHED);
 
         var sanitized = request.Content is null ? null : _sanitizer.Sanitize(request.Content);
         post.UpdateDraft(request.Title, sanitized, userId.Value, _clock);
@@ -49,6 +49,6 @@ public sealed class UpdateDraftCommandHandler
         post.SetTags(tags);
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(ApplicationErrors.Community.POST_DRAFT_SAVED);
+        return _msg.Ok(MessageKeys.Community.POST_DRAFT_SAVED);
     }
 }

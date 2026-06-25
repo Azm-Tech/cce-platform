@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -41,7 +41,7 @@ public sealed class ListPublicPostsInTopicQueryHandler
             return _msg.Ok(
                 new PagedResult<PublicPostDto>(
                     System.Array.Empty<PublicPostDto>(), paged.Page, paged.PageSize, paged.Total),
-                "ITEMS_LISTED");
+                MessageKeys.General.ITEMS_LISTED);
         }
 
         var authorIds = items.Select(p => p.AuthorId).Distinct().ToList();
@@ -79,7 +79,7 @@ public sealed class ListPublicPostsInTopicQueryHandler
 
         return _msg.Ok(
             new PagedResult<PublicPostDto>(dtos, paged.Page, paged.PageSize, paged.Total),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static PublicPostDto MapToDto(

@@ -1,3 +1,4 @@
+using CCE.Application.Messages;
 using FluentValidation;
 
 namespace CCE.Application.Identity.Commands.CreateUser;
@@ -13,13 +14,23 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
 
     public CreateUserCommandValidator()
     {
-        RuleFor(c => c.FirstName).NotEmpty().MaximumLength(50)
-            .Matches(@"^\p{L}+$").WithMessage("First name must contain letters only.");
-        RuleFor(c => c.LastName).NotEmpty().MaximumLength(50)
-            .Matches(@"^\p{L}+$").WithMessage("Last name must contain letters only.");
-        RuleFor(c => c.Email).NotEmpty().MaximumLength(100).EmailAddress();
-        RuleFor(c => c.PhoneNumber).NotEmpty().MaximumLength(15);
-        RuleFor(c => c.Role).NotEmpty().Must(r => AllowedRoles.Contains(r))
-            .WithMessage($"Role must be one of: {string.Join(", ", AllowedRoles)}.");
+        RuleFor(c => c.FirstName)
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(50).WithErrorCode(MessageKeys.Validation.MAX_LENGTH)
+            .Matches(@"^\p{L}+$").WithErrorCode(MessageKeys.Validation.INVALID_FORMAT);
+        RuleFor(c => c.LastName)
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(50).WithErrorCode(MessageKeys.Validation.MAX_LENGTH)
+            .Matches(@"^\p{L}+$").WithErrorCode(MessageKeys.Validation.INVALID_FORMAT);
+        RuleFor(c => c.Email)
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(100).WithErrorCode(MessageKeys.Validation.MAX_LENGTH)
+            .EmailAddress().WithErrorCode(MessageKeys.Validation.INVALID_EMAIL);
+        RuleFor(c => c.PhoneNumber)
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .MaximumLength(15).WithErrorCode(MessageKeys.Validation.MAX_LENGTH);
+        RuleFor(c => c.Role)
+            .NotEmpty().WithErrorCode(MessageKeys.Validation.REQUIRED_FIELD)
+            .Must(r => AllowedRoles.Contains(r)).WithErrorCode(MessageKeys.Validation.INVALID_ENUM);
     }
 }

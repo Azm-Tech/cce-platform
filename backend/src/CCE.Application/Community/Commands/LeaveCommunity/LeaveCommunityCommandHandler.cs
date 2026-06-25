@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Community.Commands.LeaveCommunity;
@@ -26,7 +26,7 @@ public sealed class LeaveCommunityCommandHandler
     public async Task<Response<VoidData>> Handle(LeaveCommunityCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var membership = await _repo.FindMembershipAsync(request.CommunityId, userId.Value, cancellationToken).ConfigureAwait(false);
         if (membership is not null)
@@ -37,6 +37,6 @@ public sealed class LeaveCommunityCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

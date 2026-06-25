@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -7,4 +8,4 @@ public sealed record UpdateHomepageSectionCommand(
     System.Guid Id,
     string ContentAr,
     string ContentEn,
-    bool IsActive) : IRequest<HomepageSectionDto?>;
+    bool IsActive) : IRequest<Response<HomepageSectionDto>>;

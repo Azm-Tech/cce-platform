@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +45,7 @@ public sealed class GetPollResultsQueryHandler
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if (poll is null) return _msg.NotFound<PollResultsDto>(ApplicationErrors.Community.POLL_NOT_FOUND);
+        if (poll is null) return _msg.NotFound<PollResultsDto>(MessageKeys.Community.POLL_NOT_FOUND);
 
         var isClosed = _clock.UtcNow >= poll.Deadline;
         var resultsVisible = isClosed || poll.ShowResultsBeforeClose;
@@ -60,6 +60,6 @@ public sealed class GetPollResultsQueryHandler
 
         var dto = new PollResultsDto(poll.Id, poll.Deadline, isClosed, poll.AllowMultiple,
             resultsVisible, resultsVisible ? total : 0, options);
-        return _msg.Ok(dto, "ITEMS_LISTED");
+        return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

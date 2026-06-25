@@ -1,5 +1,6 @@
-using CCE.Api.Common.Auth;
+﻿using CCE.Api.Common.Auth;
 using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Content.Commands.UploadAsset;
@@ -27,10 +28,10 @@ public static class AssetEndpoints
             IOptions<CceInfrastructureOptions> infraOpts,
             CancellationToken ct) =>
         {
-            if (currentUser.GetUserId() is null) return Results.Unauthorized();
+            if (currentUser.GetUserId() is null) return EnvelopeResults.Unauthorized();
 
             if (file is null || file.Length == 0)
-                return Results.BadRequest(new { error = "Upload requires a non-empty file." });
+                return EnvelopeResults.BadRequest();
 
             var allowed = infraOpts.Value.AllowedAssetMimeTypes;
             if (!allowed.Contains(file.ContentType, System.StringComparer.OrdinalIgnoreCase))

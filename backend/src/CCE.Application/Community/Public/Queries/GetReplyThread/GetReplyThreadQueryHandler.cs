@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +32,7 @@ public sealed class GetReplyThreadQueryHandler
             .ConfigureAwait(false);
 
         if (prefix is null)
-            return _msg.NotFound<PagedResult<PublicPostReplyDto>>(ApplicationErrors.Community.REPLY_NOT_FOUND);
+            return _msg.NotFound<PagedResult<PublicPostReplyDto>>(MessageKeys.Community.REPLY_NOT_FOUND);
 
         var paged = await _db.PostReplies
             .Where(r => r.ThreadPath.StartsWith(prefix) && r.Id != request.ReplyId)
@@ -47,6 +47,6 @@ public sealed class GetReplyThreadQueryHandler
 
         return _msg.Ok(
             new PagedResult<PublicPostReplyDto>(dtos, paged.Page, paged.PageSize, paged.Total),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 }

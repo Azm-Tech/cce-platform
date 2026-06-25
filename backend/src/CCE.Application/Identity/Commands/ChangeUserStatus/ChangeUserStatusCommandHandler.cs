@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Public;
@@ -33,7 +33,7 @@ public sealed class ChangeUserStatusCommandHandler : IRequestHandler<ChangeUserS
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var newStatus = request.IsActive ? UserStatus.Active : UserStatus.Inactive;
@@ -48,6 +48,6 @@ public sealed class ChangeUserStatusCommandHandler : IRequestHandler<ChangeUserS
             return result;
         }
 
-        return _msg.Ok(result.Data!, "USER_STATUS_CHANGED");
+        return _msg.Ok(result.Data!, MessageKeys.Identity.USER_STATUS_CHANGED);
     }
 }

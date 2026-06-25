@@ -1,8 +1,11 @@
-using System.Text;
+﻿using System.Text;
+using CCE.Api.Common.Results;
 using CCE.Application.Identity.Auth.Common;
+using CCE.Application.Messages;
 using CCE.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -65,6 +68,8 @@ public static class CceJwtAuthRegistration
                 };
                 // SignalR browser WebSocket clients can't set the Authorization header — they pass the JWT
                 // via ?access_token=. Accept it for hub requests so the hub authenticates over WebSockets.
+                // OnChallenge/OnForbidden write the standard CCE error envelope instead of the default
+                // empty 401/403 body, keeping the WWW-Authenticate header on 401 (RFC 6750).
                 jwt.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -76,6 +81,23 @@ public static class CceJwtAuthRegistration
                             context.Token = accessToken;
                         }
                         return Task.CompletedTask;
+                    },
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.Headers.WWWAuthenticate = "Bearer";
+                        await EnvelopeWriter.WriteAsync(
+                            context.HttpContext,
+                            StatusCodes.Status401Unauthorized,
+                            MessageKeys.General.UNAUTHORIZED,
+                            context.AuthenticateFailure?.Message).ConfigureAwait(false);
+                    },
+                    OnForbidden = async context =>
+                    {
+                        await EnvelopeWriter.WriteAsync(
+                            context.HttpContext,
+                            StatusCodes.Status403Forbidden,
+                            MessageKeys.General.FORBIDDEN).ConfigureAwait(false);
                     }
                 };
             });

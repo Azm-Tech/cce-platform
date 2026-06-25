@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Media.Dtos;
@@ -41,13 +41,13 @@ internal sealed class UploadMediaCommandHandler
         UploadMediaCommand request, CancellationToken ct)
     {
         if (request.FileSize == 0)
-            return _msg.EmptyFile<MediaFileBriefDto>();
+            return _msg.BusinessRule<MediaFileBriefDto>(MessageKeys.Media.EMPTY_FILE);
 
         if (request.FileSize > _opts.MaxSizeBytes)
-            return _msg.FileTooLarge<MediaFileBriefDto>();
+            return _msg.BusinessRule<MediaFileBriefDto>(MessageKeys.Media.FILE_TOO_LARGE);
 
         if (!_opts.AllowedMimeTypes.Contains(request.ContentType))
-            return _msg.InvalidFileType<MediaFileBriefDto>();
+            return _msg.BusinessRule<MediaFileBriefDto>(MessageKeys.Media.INVALID_FILE_TYPE);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Authenticated user required.");
@@ -83,6 +83,6 @@ internal sealed class UploadMediaCommandHandler
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
-        return _msg.Ok(dto, "MEDIA_UPLOADED");
+        return _msg.Ok(dto, MessageKeys.Media.MEDIA_UPLOADED);
     }
 }

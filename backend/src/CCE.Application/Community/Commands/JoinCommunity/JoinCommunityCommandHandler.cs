@@ -1,7 +1,7 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -31,14 +31,14 @@ public sealed class JoinCommunityCommandHandler
     public async Task<Response<VoidData>> Handle(JoinCommunityCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var community = await _repo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
         if (community is null || !community.IsActive)
-            return _msg.NotFound<VoidData>(ApplicationErrors.Community.COMMUNITY_NOT_FOUND);
+            return _msg.NotFound<VoidData>(MessageKeys.Community.COMMUNITY_NOT_FOUND);
 
         if (await _repo.HasMembershipAsync(request.CommunityId, userId.Value, cancellationToken).ConfigureAwait(false))
-            return _msg.Conflict<VoidData>(ApplicationErrors.General.DUPLICATE_VALUE);
+            return _msg.Conflict<VoidData>(MessageKeys.General.DUPLICATE_VALUE);
 
         if (community.IsPublic)
         {
@@ -48,7 +48,7 @@ public sealed class JoinCommunityCommandHandler
         else
         {
             if (await _repo.HasPendingRequestAsync(request.CommunityId, userId.Value, cancellationToken).ConfigureAwait(false))
-                return _msg.Conflict<VoidData>(ApplicationErrors.General.DUPLICATE_VALUE);
+                return _msg.Conflict<VoidData>(MessageKeys.General.DUPLICATE_VALUE);
             var joinRequest = CommunityJoinRequest.Submit(community.Id, userId.Value, _clock);
             _repo.AddJoinRequest(joinRequest);
 
@@ -60,6 +60,6 @@ public sealed class JoinCommunityCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

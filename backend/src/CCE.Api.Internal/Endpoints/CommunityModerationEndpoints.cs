@@ -45,7 +45,7 @@ public static class CommunityModerationEndpoints
                 Search: search,
                 Status: status,
                 Locale: locale), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("ListAdminPosts");
@@ -53,8 +53,8 @@ public static class CommunityModerationEndpoints
         moderation.MapDelete("/posts/{id:guid}", async (
             System.Guid id, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new SoftDeletePostCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new SoftDeletePostCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("SoftDeletePost");
@@ -62,8 +62,8 @@ public static class CommunityModerationEndpoints
         moderation.MapDelete("/replies/{id:guid}", async (
             System.Guid id, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new SoftDeleteReplyCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new SoftDeleteReplyCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("SoftDeleteReply");

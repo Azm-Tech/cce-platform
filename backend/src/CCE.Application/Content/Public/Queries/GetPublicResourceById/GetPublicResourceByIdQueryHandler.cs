@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
@@ -30,8 +30,8 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
             .ConfigureAwait(false);
         var resource = list.SingleOrDefault();
         if (resource is null || resource.PublishedOn is null)
-            return _messages.ResourceNotFound<PublicResourceDto>();
-        return _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), "SUCCESS_OPERATION");
+            return _messages.NotFound<PublicResourceDto>(MessageKeys.Content.RESOURCE_NOT_FOUND);
+        return _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     private async Task<PublicResourceDto> MapToDtoAsync(Resource r, CancellationToken ct)

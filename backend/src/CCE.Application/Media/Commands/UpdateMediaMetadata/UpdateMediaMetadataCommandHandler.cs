@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Media.Dtos;
 using CCE.Application.Messages;
@@ -28,7 +28,7 @@ internal sealed class UpdateMediaMetadataCommandHandler
     {
         var mediaFile = await _repo.FindAsync(request.Id, ct).ConfigureAwait(false);
         if (mediaFile is null)
-            return _msg.MediaFileNotFound<MediaFileBriefDto>();
+            return _msg.NotFound<MediaFileBriefDto>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
         mediaFile.UpdateMetadata(
             request.TitleAr,
@@ -41,6 +41,6 @@ internal sealed class UpdateMediaMetadataCommandHandler
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
-        return _msg.Ok(dto, "MEDIA_UPDATED");
+        return _msg.Ok(dto, MessageKeys.Media.MEDIA_UPDATED);
     }
 }

@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
 using MediatR;
@@ -14,4 +15,4 @@ public sealed record ListStateRepAssignmentsQuery(
     int PageSize = 20,
     System.Guid? UserId = null,
     System.Guid? CountryId = null,
-    bool Active = true) : IRequest<PagedResult<StateRepAssignmentDto>>;
+    bool Active = true) : IRequest<Response<PagedResult<StateRepAssignmentDto>>>;

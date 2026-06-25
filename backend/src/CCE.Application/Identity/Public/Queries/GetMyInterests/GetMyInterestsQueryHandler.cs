@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Dtos;
 using CCE.Application.InterestManagement.Dtos;
@@ -31,7 +31,7 @@ public sealed class GetMyInterestsQueryHandler
     {
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
-            return _msg.UserNotFound<UserInterestsDto>();
+            return _msg.NotFound<UserInterestsDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var currentTopics = await _db.InterestTopics
             .Where(t => t.IsActive)
@@ -56,6 +56,6 @@ public sealed class GetMyInterestsQueryHandler
             jobSectorTopic is not null
                 ? new InterestTopicDto(jobSectorTopic.Id, jobSectorTopic.NameAr, jobSectorTopic.NameEn, jobSectorTopic.Category, jobSectorTopic.IsActive)
                 : null,
-            user.CountryId), "SUCCESS_OPERATION");
+            user.CountryId), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

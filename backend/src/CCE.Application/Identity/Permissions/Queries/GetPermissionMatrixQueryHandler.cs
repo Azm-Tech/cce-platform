@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -77,7 +77,7 @@ internal sealed class GetPermissionMatrixQueryHandler
                 }).ToArray()))
             .ToArray();
 
-        return _msg.Ok(new PermissionMatrixDto(roles, entities, updatedAt), "ITEMS_LISTED");
+        return _msg.Ok(new PermissionMatrixDto(roles, entities, updatedAt), MessageKeys.General.ITEMS_LISTED);
     }
 
     private static string ToTitle(string segment)

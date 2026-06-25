@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Public.Queries.ListPublicHomepageSections;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +16,7 @@ public static class HomepageSectionsPublicEndpoints
         sections.MapGet("", async (IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(new ListPublicHomepageSectionsQuery(), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicHomepageSections");

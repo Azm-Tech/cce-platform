@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -31,7 +31,7 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
 
         var user = users.FirstOrDefault();
         if (user is null)
-            return _msg.UserNotFound<UserProfileDto>();
+            return _msg.NotFound<UserProfileDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var interestTopics = user.UserInterestTopics
             .Select(uit => new InterestTopicDto(
@@ -55,6 +55,6 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
             user.KnowledgeLevel,
             interestTopics,
             user.CountryId,
-            user.AvatarUrl), "SUCCESS_OPERATION");
+            user.AvatarUrl), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

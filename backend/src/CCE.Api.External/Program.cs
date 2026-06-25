@@ -60,7 +60,9 @@ builder.Services.AddCceSignalR(builder.Configuration);
 
 var app = builder.Build();
 
-// Middleware order (spec §7.1): correlation → exception → security headers → rate → auth → output-cache → authz → locale
+// Middleware order (spec §7.1): correlation → exception → security headers → rate → output-cache → auth → authz → locale
+// Output-cache is before auth so public endpoints can be cached without authentication.
+// Authorized endpoints opt out via vary-by-user or explicit Cache-Control headers.
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();

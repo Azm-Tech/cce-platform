@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
@@ -43,7 +43,7 @@ internal sealed class GetPermissionsQueryHandler
                 g.Select(claim => new PermissionItemDto(claim, DeriveDisplayName(claim))).ToArray()))
             .ToArray();
 
-        return _msg.Ok(new PermissionsListDto(groups, updatedAt), "ITEMS_LISTED");
+        return _msg.Ok(new PermissionsListDto(groups, updatedAt), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static string FirstSegment(string claim)

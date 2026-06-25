@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
@@ -35,7 +35,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ConfigureAwait(false);
 
         if (node is null)
-            return _msg.NodeNotFound<MapNodeDetailsDto>();
+            return _msg.NotFound<MapNodeDetailsDto>(MessageKeys.InteractiveMaps.NODE_NOT_FOUND);
 
         // ─── 1b. Resolve node tag IDs for tag-based matching ───
         var nodeTagIds = await _db.InteractiveMapNodes
@@ -56,7 +56,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ConfigureAwait(false);
 
         if (topic is null)
-            return _msg.MapNotFound<MapNodeDetailsDto>();
+            return _msg.NotFound<MapNodeDetailsDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         // ─── 3. News — top N by topic or tags, newest first ───
         var news = await _db.News
@@ -132,6 +132,6 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             Events: events,
             Posts: posts);
 
-        return _msg.Ok(dto, "ITEMS_LISTED");
+        return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }
 }

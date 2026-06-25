@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using HttpResults = Microsoft.AspNetCore.Http.Results;
 
 namespace CCE.Api.Common.Auth;
 
@@ -28,7 +29,7 @@ public static class DevAuthEndpoints
             var roleValue = role ?? "cce-admin";
             if (!DevAuthHandler.RoleToUserId.ContainsKey(roleValue))
             {
-                return Results.BadRequest(new
+                return HttpResults.BadRequest(new
                 {
                     error = $"Unknown dev role '{roleValue}'.",
                     validRoles = DevAuthHandler.RoleToUserId.Keys,
@@ -47,15 +48,15 @@ public static class DevAuthEndpoints
             // Redirect to returnUrl if relative + safe; else home.
             if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith('/'))
             {
-                return Results.Redirect(returnUrl);
+                return HttpResults.Redirect(returnUrl);
             }
-            return Results.Redirect("/");
+            return HttpResults.Redirect("/");
         }).AllowAnonymous().WithName("DevSignIn");
 
         dev.MapPost("/sign-out", (HttpContext ctx) =>
         {
             ctx.Response.Cookies.Delete(DevAuthHandler.DevCookieName);
-            return Results.Ok(new { signedOut = true });
+            return HttpResults.Ok(new { signedOut = true });
         }).AllowAnonymous().WithName("DevSignOut");
 
         dev.MapGet("/whoami", (HttpContext ctx) =>
@@ -63,7 +64,7 @@ public static class DevAuthEndpoints
             var name = ctx.User.Identity?.Name ?? "(anonymous)";
             var roles = ctx.User.FindAll("roles").Select(c => c.Value).ToArray();
             var sub = ctx.User.FindFirst("sub")?.Value ?? "(none)";
-            return Results.Ok(new { name, sub, roles });
+            return HttpResults.Ok(new { name, sub, roles });
         }).AllowAnonymous().WithName("DevWhoAmI");
 
         // ─── Frontend-compat shims at /auth/* ───────────────────────────
@@ -82,13 +83,13 @@ public static class DevAuthEndpoints
             }
             var rurl = string.IsNullOrEmpty(returnUrl) || !returnUrl.StartsWith('/') ? "/" : returnUrl;
             var target = $"/dev/sign-in?role={Uri.EscapeDataString(defaultRole)}&returnUrl={Uri.EscapeDataString(rurl)}";
-            return Results.Redirect(target);
+            return HttpResults.Redirect(target);
         }).AllowAnonymous().WithName("AuthLoginShim");
 
         app.MapPost("/auth/logout", (HttpContext ctx) =>
         {
             ctx.Response.Cookies.Delete(DevAuthHandler.DevCookieName);
-            return Results.Ok(new { signedOut = true });
+            return HttpResults.Ok(new { signedOut = true });
         }).AllowAnonymous().WithName("AuthLogoutShim");
 
         return app;

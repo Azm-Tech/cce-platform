@@ -1,19 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Queries.ListStateRepAssignments;
 
 public sealed class ListStateRepAssignmentsQueryHandler
-    : IRequestHandler<ListStateRepAssignmentsQuery, PagedResult<StateRepAssignmentDto>>
+    : IRequestHandler<ListStateRepAssignmentsQuery, Response<PagedResult<StateRepAssignmentDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListStateRepAssignmentsQueryHandler(ICceDbContext db) => _db = db;
+    public ListStateRepAssignmentsQueryHandler(ICceDbContext db, MessageFactory msg)
+    {
+        _db = db;
+        _msg = msg;
+    }
 
-    public async Task<PagedResult<StateRepAssignmentDto>> Handle(
+    public async Task<Response<PagedResult<StateRepAssignmentDto>>> Handle(
         ListStateRepAssignmentsQuery request,
         CancellationToken cancellationToken)
     {
@@ -36,8 +43,8 @@ public sealed class ListStateRepAssignmentsQueryHandler
 
         if (paged.Items.Count == 0)
         {
-            return new PagedResult<StateRepAssignmentDto>(
-                Array.Empty<StateRepAssignmentDto>(), paged.Page, paged.PageSize, paged.Total);
+            return _msg.Ok(new PagedResult<StateRepAssignmentDto>(
+                Array.Empty<StateRepAssignmentDto>(), paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
         }
 
         var userIds = paged.Items.Select(a => a.UserId).Distinct().ToList();
@@ -59,7 +66,7 @@ public sealed class ListStateRepAssignmentsQueryHandler
             a.RevokedById,
             IsActive: a.RevokedOn is null && !a.IsDeleted)).ToList();
 
-        return new PagedResult<StateRepAssignmentDto>(items, paged.Page, paged.PageSize, paged.Total);
+        return _msg.Ok(new PagedResult<StateRepAssignmentDto>(items, paged.Page, paged.PageSize, paged.Total), MessageKeys.General.ITEMS_LISTED);
     }
 
     private sealed record UserNameRow(Guid UserId, string? UserName);

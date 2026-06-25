@@ -1,6 +1,7 @@
+using CCE.Application.Common;
 using CCE.Application.Country.Dtos;
 using MediatR;
 
 namespace CCE.Application.Country.Queries.GetCountryProfile;
 
-public sealed record GetCountryProfileQuery(System.Guid CountryId) : IRequest<CountryProfileDto?>;
+public sealed record GetCountryProfileQuery(System.Guid CountryId) : IRequest<Response<CountryProfileDto>>;

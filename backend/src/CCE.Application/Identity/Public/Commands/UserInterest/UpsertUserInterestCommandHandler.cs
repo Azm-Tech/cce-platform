@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InterestManagement.Dtos;
 using CCE.Application.Messages;
@@ -31,7 +31,7 @@ public sealed class UpsertUserInterestCommandHandler
     {
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
-            return _msg.UserNotFound<UpsertUserInterestResult>();
+            return _msg.NotFound<UpsertUserInterestResult>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var errors = new List<FieldError>();
 
@@ -74,11 +74,11 @@ public sealed class UpsertUserInterestCommandHandler
                 .AnyAsync(c => c.Id == request.TargetCountryId.Value, cancellationToken)
                 .ConfigureAwait(false);
             if (!countryExists)
-                errors.Add(_msg.Field("targetCountryId", "COUNTRY_NOT_FOUND"));
+                errors.Add(_msg.Field("targetCountryId", MessageKeys.Country.COUNTRY_NOT_FOUND));
         }
 
         if (errors.Count > 0)
-            return _msg.ValidationError<UpsertUserInterestResult>("VALIDATION_ERROR", errors);
+            return _msg.ValidationError<UpsertUserInterestResult>(MessageKeys.General.VALIDATION_ERROR, errors);
 
         // Load category mapping for all interest topics (for filtering by category)
         var topicCategoryMap = validTopics
@@ -117,11 +117,11 @@ public sealed class UpsertUserInterestCommandHandler
         var jobSectorTopic = currentTopics
             .FirstOrDefault(t => t.Category == "job_sector" && user.UserInterestTopics.Any(uit => uit.InterestTopicId == t.Id));
 
-        return _msg.InterestUpserted(new UpsertUserInterestResult(
+        return _msg.Ok(new UpsertUserInterestResult(
             carbonAreaTopics,
             knowledgeAssessmentTopic is not null ? new InterestTopicDto(knowledgeAssessmentTopic.Id, knowledgeAssessmentTopic.NameAr, knowledgeAssessmentTopic.NameEn, knowledgeAssessmentTopic.Category, knowledgeAssessmentTopic.IsActive) : null,
             jobSectorTopic is not null ? new InterestTopicDto(jobSectorTopic.Id, jobSectorTopic.NameAr, jobSectorTopic.NameEn, jobSectorTopic.Category, jobSectorTopic.IsActive) : null,
-            user.CountryId));
+            user.CountryId), MessageKeys.Identity.INTEREST_UPSERTED);
     }
 
     private static void UpsertCategory(

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -43,19 +43,19 @@ public sealed class CreateStateRepAssignmentCommandHandler
         var userExists = await ExistsAsync(_db.Users.Where(u => u.Id == request.UserId), cancellationToken).ConfigureAwait(false);
         if (!userExists)
         {
-            return _msg.UserNotFound<StateRepAssignmentDto>();
+            return _msg.NotFound<StateRepAssignmentDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var countryExists = await ExistsAsync(_db.Countries.Where(c => c.Id == request.CountryId), cancellationToken).ConfigureAwait(false);
         if (!countryExists)
         {
-            return _msg.NotFound<StateRepAssignmentDto>("COUNTRY_NOT_FOUND");
+            return _msg.NotFound<StateRepAssignmentDto>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
         var assignedById = _currentUser.GetUserId();
         if (assignedById is null)
         {
-            return _msg.NotAuthenticated<StateRepAssignmentDto>();
+            return _msg.Unauthorized<StateRepAssignmentDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         var assignment = StateRepresentativeAssignment.Assign(request.UserId, request.CountryId, assignedById.Value, _clock);
@@ -90,7 +90,7 @@ public sealed class CreateStateRepAssignmentCommandHandler
             assignment.AssignedById,
             assignment.RevokedOn,
             assignment.RevokedById,
-            IsActive: true), "STATE_REP_ASSIGNMENT_CREATED");
+            IsActive: true), MessageKeys.Identity.STATE_REP_ASSIGNMENT_CREATED);
     }
 
     private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)

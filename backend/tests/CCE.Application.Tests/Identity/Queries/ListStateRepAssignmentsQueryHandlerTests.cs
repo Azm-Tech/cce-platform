@@ -11,12 +11,13 @@ public class ListStateRepAssignmentsQueryHandlerTests
     public async Task Returns_empty_paged_result_when_no_assignments()
     {
         var db = BuildDb(System.Array.Empty<StateRepresentativeAssignment>(), System.Array.Empty<User>());
-        var sut = new ListStateRepAssignmentsQueryHandler(db);
+        var sut = new ListStateRepAssignmentsQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListStateRepAssignmentsQuery(), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
     }
 
     [Fact]
@@ -38,12 +39,13 @@ public class ListStateRepAssignmentsQueryHandlerTests
         };
 
         var db = BuildDb(new[] { aliceA, bobA }, users);
-        var sut = new ListStateRepAssignmentsQueryHandler(db);
+        var sut = new ListStateRepAssignmentsQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListStateRepAssignmentsQuery(), CancellationToken.None);
 
-        result.Total.Should().Be(2);
-        var aliceItem = result.Items.Single(i => i.UserId == aliceId);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(2);
+        var aliceItem = result.Data.Items.Single(i => i.UserId == aliceId);
         aliceItem.UserName.Should().Be("alice");
         aliceItem.IsActive.Should().BeTrue();
         aliceItem.RevokedOn.Should().BeNull();
@@ -66,12 +68,13 @@ public class ListStateRepAssignmentsQueryHandlerTests
             BuildUser(bobId, "bob@cce.local", "bob"),
         };
         var db = BuildDb(new[] { aliceA, bobA }, users);
-        var sut = new ListStateRepAssignmentsQueryHandler(db);
+        var sut = new ListStateRepAssignmentsQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListStateRepAssignmentsQuery(UserId: aliceId), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().UserId.Should().Be(aliceId);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().UserId.Should().Be(aliceId);
     }
 
     [Fact]
@@ -87,12 +90,13 @@ public class ListStateRepAssignmentsQueryHandlerTests
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
 
         var db = BuildDb(new[] { assignment1, assignment2 }, users);
-        var sut = new ListStateRepAssignmentsQueryHandler(db);
+        var sut = new ListStateRepAssignmentsQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListStateRepAssignmentsQuery(CountryId: country1), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().CountryId.Should().Be(country1);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().CountryId.Should().Be(country1);
     }
 
     [Fact]
@@ -109,13 +113,14 @@ public class ListStateRepAssignmentsQueryHandlerTests
 
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
         var db = BuildDb(new[] { assignment }, users);
-        var sut = new ListStateRepAssignmentsQueryHandler(db);
+        var sut = new ListStateRepAssignmentsQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListStateRepAssignmentsQuery(Active: false), CancellationToken.None);
 
-        result.Items.Should().HaveCount(1);
-        result.Items.Single().IsActive.Should().BeFalse();
-        result.Items.Single().RevokedOn.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().HaveCount(1);
+        result.Data.Items.Single().IsActive.Should().BeFalse();
+        result.Data.Items.Single().RevokedOn.Should().NotBeNull();
     }
 
     private static ICceDbContext BuildDb(

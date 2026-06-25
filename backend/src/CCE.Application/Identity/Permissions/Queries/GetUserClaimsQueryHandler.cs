@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -27,7 +27,7 @@ internal sealed class GetUserClaimsQueryHandler
             .ConfigureAwait(false);
 
         if (!userExists)
-            return _msg.NotFound<UserClaimsListDto>("USER_NOT_FOUND");
+            return _msg.NotFound<UserClaimsListDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var claims = await _db.UserClaims
             .Where(uc => uc.UserId == request.UserId && uc.ClaimValue != null)
@@ -46,6 +46,6 @@ internal sealed class GetUserClaimsQueryHandler
             .Select(c => new UserClaimItemDto(c, GetPermissionsQueryHandler.DeriveDisplayName(c)))
             .ToArray();
 
-        return _msg.Ok(new UserClaimsListDto(request.UserId, items, updatedAt), "ITEMS_LISTED");
+        return _msg.Ok(new UserClaimsListDto(request.UserId, items, updatedAt), MessageKeys.General.ITEMS_LISTED);
     }
 }

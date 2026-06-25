@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -29,7 +29,7 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
 
         var asset = list.SingleOrDefault();
         if (asset is null)
-            return _msg.AssetNotFound<AssetFileDto>();
+            return _msg.NotFound<AssetFileDto>(MessageKeys.Content.ASSET_NOT_FOUND);
 
         var publicUrl = asset.Url.StartsWith("http", System.StringComparison.OrdinalIgnoreCase)
             ? asset.Url
@@ -44,6 +44,6 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
             asset.UploadedById,
             asset.UploadedOn,
             asset.VirusScanStatus,
-            asset.ScannedOn), "SUCCESS_OPERATION");
+            asset.ScannedOn), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

@@ -1,3 +1,5 @@
+﻿using CCE.Api.Common.Results;
+using CCE.Application.Messages;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -36,6 +38,17 @@ public static class CceRateLimiterRegistration
         services.AddRateLimiter(opts =>
         {
             opts.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            opts.OnRejected = async (context, ct) =>
+            {
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                await EnvelopeWriter.WriteAsync(
+                    context.HttpContext,
+                    StatusCodes.Status429TooManyRequests,
+                    MessageKeys.General.RATE_LIMIT_EXCEEDED).ConfigureAwait(false);
+            };
             opts.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",

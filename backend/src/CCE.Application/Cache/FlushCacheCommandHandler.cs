@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Caching;
 using CCE.Application.Messages;
 using MediatR;
@@ -21,6 +21,6 @@ public sealed class FlushCacheCommandHandler
         FlushCacheCommand request, CancellationToken cancellationToken)
     {
         await _cache.FlushAllAsync(cancellationToken).ConfigureAwait(false);
-        return _messages.Ok("SUCCESS_OPERATION");
+        return _messages.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Application.Verification;
@@ -45,20 +45,20 @@ internal sealed class ConfirmEmailChangeCommandHandler
             .ConfigureAwait(false);
 
         if (otp is null)
-            return _msg.OtpNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Verification.OTP_NOT_FOUND);
 
         if (otp.IsInvalidated)
-            return _msg.OtpInvalidated<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_INVALIDATED);
 
         if (otp.IsExpired(now))
-            return _msg.OtpExpired<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_EXPIRED);
 
         if (otp.HasExceededMaxAttempts())
-            return _msg.OtpMaxAttempts<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_MAX_ATTEMPTS);
 
         // Ownership validation — OTP must belong to the authenticated user
         if (otp.UserId.HasValue && otp.UserId.Value != request.UserId)
-            return _msg.Unauthorized<VoidData>("OTP_UNAUTHORIZED");
+            return _msg.Unauthorized<VoidData>(MessageKeys.Verification.OTP_UNAUTHORIZED);
 
         otp.IncrementAttempt();
 
@@ -66,7 +66,7 @@ internal sealed class ConfirmEmailChangeCommandHandler
         {
             _otpRepo.Update(otp);
             await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-            return _msg.OtpInvalidCode<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_INVALID_CODE);
         }
 
         // WRITE — fetch user via repository
@@ -75,17 +75,17 @@ internal sealed class ConfirmEmailChangeCommandHandler
             .ConfigureAwait(false);
 
         if (user is null)
-            return _msg.UserNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Identity.USER_NOT_FOUND);
 
         // Use UserManager to ensure NormalizedEmail and SecurityStamp are properly updated
         var setEmailResult = await _userManager.SetEmailAsync(user, otp.Contact).ConfigureAwait(false);
         if (!setEmailResult.Succeeded)
-            return _msg.BusinessRule<VoidData>("EMAIL_CHANGE_FAILED");
+            return _msg.BusinessRule<VoidData>(MessageKeys.Identity.EMAIL_CHANGE_FAILED);
 
         // Update UserName to match the new email
         var setUserNameResult = await _userManager.SetUserNameAsync(user, otp.Contact).ConfigureAwait(false);
         if (!setUserNameResult.Succeeded)
-            return _msg.BusinessRule<VoidData>("EMAIL_CHANGE_FAILED");
+            return _msg.BusinessRule<VoidData>(MessageKeys.Identity.EMAIL_CHANGE_FAILED);
 
         // domain methods
         otp.MarkVerified();
@@ -96,6 +96,6 @@ internal sealed class ConfirmEmailChangeCommandHandler
         // ICceDbContext as unit of work
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return _msg.EmailUpdated();
+        return _msg.Ok(MessageKeys.Verification.EMAIL_UPDATED);
     }
 }

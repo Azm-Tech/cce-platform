@@ -1,3 +1,5 @@
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveCity.Public.Commands.DeleteMyScenario;
 using CCE.Application.InteractiveCity.Public.Commands.RunScenario;
@@ -24,7 +26,7 @@ public static class InteractiveCityEndpoints
         {
             var result = await mediator.Send(new ListCityTechnologiesQuery(), cancellationToken)
                 .ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListCityTechnologies");
@@ -35,7 +37,7 @@ public static class InteractiveCityEndpoints
         {
             var cmd = new RunScenarioCommand(body.CityType, body.TargetYear, body.ConfigurationJson);
             var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("RunScenario");
@@ -52,8 +54,8 @@ public static class InteractiveCityEndpoints
                 ?? throw new System.InvalidOperationException("User identity required.");
             var cmd = new SaveScenarioCommand(
                 userId, body.NameAr, body.NameEn, body.CityType, body.TargetYear, body.ConfigurationJson);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/me/interactive-city/scenarios/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization()
         .WithName("SaveMyScenario");
@@ -66,7 +68,7 @@ public static class InteractiveCityEndpoints
                 ?? throw new System.InvalidOperationException("User identity required.");
             var result = await mediator.Send(new ListMyScenariosQuery(userId), cancellationToken)
                 .ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization()
         .WithName("ListMyScenarios");
@@ -80,13 +82,13 @@ public static class InteractiveCityEndpoints
                 ?? throw new System.InvalidOperationException("User identity required.");
             try
             {
-                await mediator.Send(new DeleteMyScenarioCommand(id, userId), cancellationToken)
+                var result = await mediator.Send(new DeleteMyScenarioCommand(id, userId), cancellationToken)
                     .ConfigureAwait(false);
-                return Results.NoContent();
+                return result.ToNoContentHttpResult();
             }
             catch (System.Collections.Generic.KeyNotFoundException)
             {
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
             }
         })
         .RequireAuthorization()

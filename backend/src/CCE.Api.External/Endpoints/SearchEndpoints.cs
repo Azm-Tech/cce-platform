@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Search;
 using CCE.Application.Search.Queries;
 using MediatR;
@@ -19,7 +20,7 @@ public static class SearchEndpoints
         {
             var query = new SearchQuery(q ?? string.Empty, type, page ?? 1, pageSize ?? 20);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("Search");

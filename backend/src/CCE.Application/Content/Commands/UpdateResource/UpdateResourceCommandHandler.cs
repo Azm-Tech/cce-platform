@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -32,11 +32,11 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
             q => q.Include(r => r.Countries),
             cancellationToken).ConfigureAwait(false);
         if (resource is null)
-            return _messages.ResourceNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.RESOURCE_NOT_FOUND);
 
         var categoryExists = await ExistsAsync(_db.ResourceCategories.Where(c => c.Id == request.CategoryId), cancellationToken).ConfigureAwait(false);
         if (!categoryExists)
-            return _messages.CategoryNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         var countryIds = request.CountryIds.Distinct().ToList();
         if (countryIds.Count > 0)
@@ -46,7 +46,7 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
                 .CountAsyncEither(cancellationToken)
                 .ConfigureAwait(false);
             if (existingCountryCount != countryIds.Count)
-                return _messages.NotFound<System.Guid>("COUNTRY_NOT_FOUND");
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
         var expectedRowVersion = resource.RowVersion;
@@ -64,7 +64,7 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
         _db.SetExpectedRowVersion(resource, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(resource.Id, "SUCCESS_OPERATION");
+        return _messages.Ok(resource.Id, MessageKeys.General.SUCCESS_OPERATION);
     }
 
     private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)

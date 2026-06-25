@@ -75,7 +75,7 @@ public static class StateRepresentativeEndpoints
         group.MapGet("/resource-categories", async (IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(new ListPublicResourceCategoriesQuery(), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_View)
         .WithName("ListStateRepResourceCategories");

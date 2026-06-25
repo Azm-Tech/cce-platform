@@ -1,9 +1,9 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.CountryPublic.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Content;
 using CCE.Domain.Country;
 using MediatR;
@@ -32,7 +32,7 @@ public sealed class GetPublicCountryProfileQueryHandler
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var country = countries.FirstOrDefault();
         if (country is null)
-            return _messages.CountryNotFound<PublicCountryProfileDto>();
+            return _messages.NotFound<PublicCountryProfileDto>(MessageKeys.Country.COUNTRY_NOT_FOUND);
 
         // Editorial profile is optional — return country + KAPSARC data even when absent
         var profiles = await _db.CountryProfiles
@@ -63,7 +63,7 @@ public sealed class GetPublicCountryProfileQueryHandler
                 ndcDocument = new NdcDocumentDto(asset.Id, asset.OriginalFileName);
         }
 
-        return _messages.Ok(MapToDto(country, profile, snapshot, ndcDocument), ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(MapToDto(country, profile, snapshot, ndcDocument), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static PublicCountryProfileDto MapToDto(

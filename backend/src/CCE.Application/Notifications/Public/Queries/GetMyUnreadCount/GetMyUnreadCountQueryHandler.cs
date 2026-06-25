@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -25,6 +25,6 @@ public sealed class GetMyUnreadCountQueryHandler : IRequestHandler<GetMyUnreadCo
             .Where(n => n.UserId == userId && n.Status == NotificationStatus.Sent)
             .CountAsyncEither(cancellationToken)
             .ConfigureAwait(false);
-        return _msg.Ok(count, "ITEMS_LISTED");
+        return _msg.Ok(count, MessageKeys.General.ITEMS_LISTED);
     }
 }

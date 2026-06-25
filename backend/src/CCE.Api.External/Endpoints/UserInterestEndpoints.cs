@@ -1,4 +1,5 @@
-using CCE.Api.Common.Extensions;
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Commands.UserInterest;
 using CCE.Application.Identity.Public.Dtos;
@@ -22,7 +23,7 @@ public static class UserInterestEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var result = await mediator.Send(new GetMyInterestsQuery(userId), ct).ConfigureAwait(false);
             return result.ToHttpResult();
@@ -36,7 +37,7 @@ public static class UserInterestEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var result = await mediator.Send(
                 new UpsertUserInterestCommand(

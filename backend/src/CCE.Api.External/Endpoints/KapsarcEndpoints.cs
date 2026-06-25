@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Kapsarc.Queries.GetLatestKapsarcSnapshot;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -18,8 +19,8 @@ public static class KapsarcEndpoints
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetLatestKapsarcSnapshotQuery(countryId), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetLatestKapsarcSnapshotQuery(countryId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("GetLatestKapsarcSnapshot");

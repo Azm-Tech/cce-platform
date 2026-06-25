@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Content.Queries.ListCountryContentRequests;
@@ -36,7 +36,7 @@ public sealed class ListCountryContentRequestsQueryHandler
         if (authorizedIds is not null && authorizedIds.Count == 0)
             return _messages.Ok(
                 new PagedResult<CountryContentRequestDto>([], request.Page, request.PageSize, 0),
-                ApplicationErrors.General.SUCCESS_OPERATION);
+                MessageKeys.General.SUCCESS_OPERATION);
 
         var query = _db.CountryContentRequests
             // Scope filter: null = admin bypass, list = state-rep restricted to own countries
@@ -63,6 +63,6 @@ public sealed class ListCountryContentRequestsQueryHandler
                 request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _messages.Ok(page, ApplicationErrors.General.SUCCESS_OPERATION);
+        return _messages.Ok(page, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

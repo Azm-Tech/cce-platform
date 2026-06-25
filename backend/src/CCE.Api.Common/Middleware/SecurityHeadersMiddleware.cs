@@ -20,12 +20,14 @@ public sealed class SecurityHeadersMiddleware
         {
             var h = context.Response.Headers;
             h["X-Content-Type-Options"] = "nosniff";
+            h["X-Frame-Options"] = "DENY";
             h["Referrer-Policy"] = "strict-origin-when-cross-origin";
             h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()";
             h["Cross-Origin-Opener-Policy"] = "same-origin";
             h["Content-Security-Policy"] =
                 "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
-                "img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';";
+                "img-src 'self' data:; connect-src 'self'; " +
+                "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none';";
             if (_hstsEnabled)
             {
                 h["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";

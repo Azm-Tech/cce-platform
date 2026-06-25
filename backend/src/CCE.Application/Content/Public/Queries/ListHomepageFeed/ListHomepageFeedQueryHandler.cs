@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
@@ -91,7 +91,7 @@ public sealed class ListHomepageFeedQueryHandler
                 return string.IsNullOrEmpty(fullName) ? u.UserName ?? string.Empty : fullName;
             });
 
-        return _messages.Ok(result.Map(r => MapToDto(r, topicById, authorById)), "ITEMS_LISTED");
+        return _messages.Ok(result.Map(r => MapToDto(r, topicById, authorById)), MessageKeys.General.ITEMS_LISTED);
     }
 
     private static IQueryable<FeedRow> ApplySort(

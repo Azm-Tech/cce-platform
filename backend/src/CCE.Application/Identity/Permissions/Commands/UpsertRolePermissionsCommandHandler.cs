@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -41,7 +41,7 @@ internal sealed class UpsertRolePermissionsCommandHandler
             cancellationToken).ConfigureAwait(false);
 
         return result is null
-            ? _msg.NotFound<RolePermissionsResult>("ROLE_NOT_FOUND")
-            : _msg.Ok(result, "PERMISSIONS_UPDATED");
+            ? _msg.NotFound<RolePermissionsResult>(MessageKeys.Identity.ROLE_NOT_FOUND)
+            : _msg.Ok(result, MessageKeys.Identity.PERMISSIONS_UPDATED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -27,9 +27,9 @@ public sealed class GetResourceCategoryByIdQueryHandler : IRequestHandler<GetRes
             .ConfigureAwait(false);
         var category = list.SingleOrDefault();
         if (category is null)
-            return _messages.CategoryNotFound<ResourceCategoryDto>();
+            return _messages.NotFound<ResourceCategoryDto>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
-        return _messages.Ok(MapToDto(category), "SUCCESS_OPERATION");
+        return _messages.Ok(MapToDto(category), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static ResourceCategoryDto MapToDto(ResourceCategory c) => new(

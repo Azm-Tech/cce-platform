@@ -16,10 +16,7 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
-            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ResponseValidationBehavior<,>));
-            cfg.AddOpenBehavior(typeof(ResultValidationBehavior<,>));
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             // Last: runs after the handler commits; evicts cache regions for ICacheInvalidatingRequest.
             cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
         });

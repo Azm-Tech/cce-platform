@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Kapsarc.Dtos;
 using CCE.Application.Kapsarc.Queries.GetLatestKapsarcSnapshot;
@@ -41,7 +41,7 @@ public sealed class RefreshKapsarcSnapshotCommandHandler
     {
         var country = await _countries.GetByIdAsync(request.CountryId, cancellationToken).ConfigureAwait(false);
         if (country is null)
-            return _messages.CountryNotFound<KapsarcSnapshotDto>();
+            return _messages.NotFound<KapsarcSnapshotDto>(MessageKeys.Country.COUNTRY_NOT_FOUND);
 
         // Live retrieval from KAPSARC (inputs per BRD §6.5.1: ISO code + country name)
         var result = await _kapsarc
@@ -52,7 +52,7 @@ public sealed class RefreshKapsarcSnapshotCommandHandler
             || result.PerformanceScore is null || result.TotalIndex is null)
         {
             // BRD ER001 — no KAPSARC output / data unavailable
-            return _messages.KapsarcDataUnavailable<KapsarcSnapshotDto>();
+            return _messages.BusinessRule<KapsarcSnapshotDto>(MessageKeys.Country.KAPSARC_DATA_UNAVAILABLE);
         }
 
         CountryKapsarcSnapshot snapshot;
@@ -69,7 +69,7 @@ public sealed class RefreshKapsarcSnapshotCommandHandler
         catch (DomainException)
         {
             // Out-of-range / invalid payload from the gateway → treat as unavailable
-            return _messages.KapsarcDataUnavailable<KapsarcSnapshotDto>();
+            return _messages.BusinessRule<KapsarcSnapshotDto>(MessageKeys.Country.KAPSARC_DATA_UNAVAILABLE);
         }
 
         await _snapshots.AddAsync(snapshot, cancellationToken).ConfigureAwait(false);
@@ -77,7 +77,7 @@ public sealed class RefreshKapsarcSnapshotCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.KapsarcSnapshotRefreshed(
-            GetLatestKapsarcSnapshotQueryHandler.MapToDto(snapshot));
+        return _messages.Ok(
+            GetLatestKapsarcSnapshotQueryHandler.MapToDto(snapshot), MessageKeys.Country.KAPSARC_SNAPSHOT_REFRESHED);
     }
 }

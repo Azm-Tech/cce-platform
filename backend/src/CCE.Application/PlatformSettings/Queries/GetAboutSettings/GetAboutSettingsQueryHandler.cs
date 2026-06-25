@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -26,7 +26,7 @@ public sealed class GetAboutSettingsQueryHandler
         var list = await _db.AboutSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = list.FirstOrDefault();
         if (settings is null)
-            return _msg.AboutSettingsNotFound<AboutSettingsDto>();
+            return _msg.NotFound<AboutSettingsDto>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var glossary = await _db.GlossaryEntries
             .Where(e => e.AboutSettingsId == settings.Id)
@@ -55,6 +55,6 @@ public sealed class GetAboutSettingsQueryHandler
                 p.LogoUrl,
                 p.WebsiteUrl,
                 p.Description is null ? null : new LocalizedTextDto(p.Description.Ar, p.Description.En),
-                p.OrderIndex)).ToList()), "ITEMS_LISTED");
+                p.OrderIndex)).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Dtos;
 using CCE.Application.Identity.Queries.GetUserById;
 using CCE.Application.Messages;
@@ -27,7 +27,7 @@ public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRo
         var ok = await _service.ReplaceRolesAsync(request.Id, request.Roles, cancellationToken).ConfigureAwait(false);
         if (!ok)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var result = await _mediator.Send(new GetUserByIdQuery(request.Id), cancellationToken).ConfigureAwait(false);
@@ -36,6 +36,6 @@ public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRo
             return result;
         }
 
-        return _msg.Ok(result.Data!, "ROLES_ASSIGNED");
+        return _msg.Ok(result.Data!, MessageKeys.Identity.ROLES_ASSIGNED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Public.Dtos;
@@ -29,7 +29,7 @@ public sealed class GetPublicHomepageQueryHandler
         var settingsList = await _db.HomepageSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = settingsList.FirstOrDefault();
         if (settings is null)
-            return _msg.HomepageSettingsNotFound<PublicHomepageDto>();
+            return _msg.NotFound<PublicHomepageDto>(MessageKeys.PlatformSettings.HOMEPAGE_SETTINGS_NOT_FOUND);
 
         var countries = await (
             from hc in _db.HomepageCountries
@@ -52,6 +52,6 @@ public sealed class GetPublicHomepageQueryHandler
             settings.CceConceptsEn,
             countries,
             sections.Select(s => new PublicHomepageSectionDto(
-                s.Id, s.SectionType, s.OrderIndex, s.ContentAr, s.ContentEn)).ToList()), "ITEMS_LISTED");
+                s.Id, s.SectionType, s.OrderIndex, s.ContentAr, s.ContentEn)).ToList()), MessageKeys.General.ITEMS_LISTED);
     }
 }

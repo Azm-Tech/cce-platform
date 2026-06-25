@@ -1,4 +1,5 @@
-using CCE.Api.Common.Extensions;
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
@@ -55,20 +56,20 @@ public static class CountriesPublicEndpoints
             var country = await db.Countries
                 .FirstOrDefaultAsync(c => c.Id == id && c.IsActive, ct).ConfigureAwait(false);
             if (country is null)
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
 
             var profile = await db.CountryProfiles
                 .FirstOrDefaultAsync(p => p.CountryId == id, ct).ConfigureAwait(false);
             if (profile?.NationallyDeterminedContributionAssetId is null)
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
 
             var asset = await db.AssetFiles
                 .FirstOrDefaultAsync(a => a.Id == profile.NationallyDeterminedContributionAssetId.Value, ct)
                 .ConfigureAwait(false);
             if (asset is null)
-                return Results.NotFound();
+                return EnvelopeResults.NotFound();
             if (asset.VirusScanStatus != VirusScanStatus.Clean)
-                return Results.StatusCode(StatusCodes.Status403Forbidden);
+                return EnvelopeResults.Forbidden();
 
             httpContext.Response.ContentType = asset.MimeType;
             httpContext.Response.Headers.ContentDisposition =

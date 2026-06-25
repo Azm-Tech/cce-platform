@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -36,7 +36,7 @@ public sealed class UpdateHomepageSettingsCommandHandler
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.HomepageSettingsNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.HOMEPAGE_SETTINGS_NOT_FOUND);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("User identity required.");
@@ -54,6 +54,6 @@ public sealed class UpdateHomepageSettingsCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(settings.Id, "SETTINGS_UPDATED");
+        return _msg.Ok(settings.Id, MessageKeys.PlatformSettings.SETTINGS_UPDATED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -36,11 +36,11 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
     {
         var authorId = _currentUser.GetUserId();
         if (authorId is null)
-            return _messages.NotAuthenticated<NewsDto>();
+            return _messages.Unauthorized<NewsDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)
-            return _messages.NotFound<NewsDto>("TOPIC_NOT_FOUND");
+            return _messages.NotFound<NewsDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var news = News.Draft(
             request.TitleAr,
@@ -69,6 +69,6 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
         var topicNameAr = topic.FirstOrDefault()?.NameAr ?? string.Empty;
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
-        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn, news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), "CONTENT_CREATED");
+        return _messages.Ok(ListNewsQueryHandler.MapToDto(news, topicNameAr, topicNameEn, news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList()), MessageKeys.Content.CONTENT_CREATED);
     }
 }

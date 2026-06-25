@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -33,15 +33,15 @@ public sealed class DeleteEventCommandHandler : IRequestHandler<DeleteEventComma
     {
         var ev = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (ev is null)
-            return _messages.EventNotFound<VoidData>();
+            return _messages.NotFound<VoidData>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var userId = _currentUser.GetUserId();
         if (userId is null)
-            return _messages.NotAuthenticated<VoidData>();
+            return _messages.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         ev.SoftDelete(userId.Value, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok("CONTENT_DELETED");
+        return _messages.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

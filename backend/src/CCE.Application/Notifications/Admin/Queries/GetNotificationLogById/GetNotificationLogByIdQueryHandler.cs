@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -31,7 +31,7 @@ public sealed class GetNotificationLogByIdQueryHandler
 
         return log is null
             ? _msg.NotificationLogNotFound<NotificationLogDto>()
-            : _msg.Ok(MapToDto(log), "ITEMS_LISTED");
+            : _msg.Ok(MapToDto(log), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static NotificationLogDto MapToDto(NotificationLog l) => new(

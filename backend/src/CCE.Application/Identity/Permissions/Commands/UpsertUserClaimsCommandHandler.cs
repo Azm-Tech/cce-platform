@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Auth.Common;
@@ -41,7 +41,7 @@ internal sealed class UpsertUserClaimsCommandHandler
             .ConfigureAwait(false);
 
         if (!userExists)
-            return _msg.NotFound<UserClaimsResult>("USER_NOT_FOUND");
+            return _msg.NotFound<UserClaimsResult>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var actorId = _currentUser.GetUserId() ?? Guid.Empty;
         var actorEmail = _currentUser.GetActor();
@@ -92,6 +92,6 @@ internal sealed class UpsertUserClaimsCommandHandler
             desired.OrderBy(c => c).ToArray(),
             toAdd.Count,
             toRemove.Count,
-            desired.Count), "USER_CLAIMS_UPDATED");
+            desired.Count), MessageKeys.Identity.USER_CLAIMS_UPDATED);
     }
 }

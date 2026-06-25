@@ -125,8 +125,8 @@ INTERNAL_ERROR:
   en: "An unexpected error occurred"
 
 BAD_REQUEST:
-  ar: "عذرًا، البيانات المدخلة غير صحيحة"
-  en: "Sorry, the entered data is invalid"
+  ar: "تعذر معالجة الطلب"
+  en: "The request could not be processed"
 
 RESOURCE_NOT_FOUND_GENERIC:
   ar: "المورد غير موجود"
@@ -139,6 +139,14 @@ CONCURRENCY_CONFLICT:
 DUPLICATE_VALUE:
   ar: "القيمة موجودة بالفعل"
   en: "Value already exists"
+
+RATE_LIMIT_EXCEEDED:
+  ar: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة مرة أخرى لاحقًا"
+  en: "Too many requests. Please try again later."
+
+BUSINESS_RULE_VIOLATION:
+  ar: "تعذر إتمام العملية بسبب مخالفة قاعدة العمل"
+  en: "The operation could not be completed due to a business rule violation."
 
 SCENARIO_NOT_FOUND:
   ar: "السيناريو غير موجود"
@@ -256,6 +264,18 @@ NOTIFICATION_TEMPLATE_CREATED:
 NOTIFICATION_TEMPLATE_UPDATED:
   ar: "تم تحديث قالب الإشعار بنجاح"
   en: "Notification template updated successfully"
+
+DEVICE_TOKEN_REGISTERED:
+  ar: "تم تسجيل الجهاز بنجاح"
+  en: "Device registered successfully"
+
+DEVICE_TOKEN_DELETED:
+  ar: "تم إلغاء تسجيل الجهاز بنجاح"
+  en: "Device unregistered successfully"
+
+DEVICE_TOKEN_NOT_FOUND:
+  ar: "رمز الجهاز غير موجود"
+  en: "Device token not found"
 
 EVALUATION_NOT_FOUND:
   ar: "التقييم غير موجود"
@@ -658,6 +678,14 @@ PASSWORD_NUMBER:
   ar: "يجب أن تحتوي كلمة المرور على رقم على الأقل"
   en: "Password must contain at least one number"
 
+PASSWORD_POLICY:
+  ar: "كلمة المرور يجب أن تتراوح بين 12 و20 حرفاً وتحتوي على أحرف كبيرة وصغيرة وأرقام"
+  en: "Password must be 12-20 characters and contain uppercase, lowercase, and numbers"
+
+PASSWORDS_MUST_MATCH:
+  ar: "كلمتا المرور غير متطابقتين"
+  en: "Passwords do not match"
+
 # ─── General Errors ───
 
 EXTERNAL_API_ERROR:
@@ -724,4 +752,70 @@ INTERACTIVE_MAP_NODE_UPDATED:
 INTERACTIVE_MAP_NODE_DELETED:
   ar: "تم حذف العنصر من الخريطة التفاعلية بنجاح"
   en: "Interactive map node deleted successfully"
+
+# ─── Identity / Permissions / Claims ───
+
+ROLE_NOT_FOUND:
+  ar: "الدور غير موجود"
+  en: "Role not found"
+
+INVALID_RESET_TOKEN:
+  ar: "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية"
+  en: "Password reset token is invalid or expired"
+
+EMAIL_CHANGE_FAILED:
+  ar: "حدث خطأ أثناء تغيير البريد الإلكتروني"
+  en: "An error occurred while changing the email address"
+
+AD_LOGIN_SUCCESS:
+  ar: "تم تسجيل الدخول عبر Active Directory بنجاح"
+  en: "Logged in via Active Directory successfully"
+
+PERMISSIONS_GRANTED:
+  ar: "تم منح الصلاحيات للدور بنجاح"
+  en: "Permissions granted to role successfully"
+
+PERMISSIONS_REVOKED:
+  ar: "تم سحب الصلاحيات من الدور بنجاح"
+  en: "Permissions revoked from role successfully"
+
+PERMISSIONS_UPDATED:
+  ar: "تم تحديث صلاحيات الدور بنجاح"
+  en: "Role permissions updated successfully"
+
+CLAIMS_GRANTED:
+  ar: "تم منح المطالبات للمستخدم بنجاح"
+  en: "Claims granted to user successfully"
+
+CLAIMS_REVOKED:
+  ar: "تم سحب المطالبات من المستخدم بنجاح"
+  en: "Claims revoked from user successfully"
+
+USER_CLAIMS_UPDATED:
+  ar: "تم تحديث مطالبات المستخدم بنجاح"
+  en: "User claims updated successfully"
+
+# ─── Verification ───
+
+OTP_UNAUTHORIZED:
+  ar: "غير مصرح لك بالتحقق من هذا الرمز"
+  en: "You are not authorized to verify this code"
+
+# ─── Content / Community / Platform Settings ───
+
+TAG_NOT_FOUND:
+  ar: "الوسم غير موجود"
+  en: "Tag not found"
+
+NEWSLETTER_SUBSCRIBED:
+  ar: "تم الاشتراك في النشرة البريدية بنجاح"
+  en: "Subscribed to newsletter successfully"
+
+TOPICS_LISTED:
+  ar: "تم جلب الموضوعات بنجاح"
+  en: "Topics listed successfully"
+
+SECTION_REORDERED:
+  ar: "تم إعادة ترتيب الأقسام بنجاح"
+  en: "Sections reordered successfully"
 

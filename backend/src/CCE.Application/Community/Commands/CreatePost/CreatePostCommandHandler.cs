@@ -1,10 +1,10 @@
-using System.Linq;
+﻿using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
-using CCE.Application.Errors;
-using CCE.Application.Identity;
 using CCE.Application.Messages;
+using CCE.Application.Identity;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -57,7 +57,7 @@ public sealed class CreatePostCommandHandler
     {
         var authorId = _currentUser.GetUserId();
         if (authorId is null || authorId == Guid.Empty)
-            return _msg.NotAuthenticated<Guid>();
+            return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (!await _accessGuard.CanPostAsync(request.CommunityId, authorId.Value, cancellationToken).ConfigureAwait(false))
         {
@@ -73,12 +73,12 @@ public sealed class CreatePostCommandHandler
             }
             else
             {
-                return _msg.Forbidden<Guid>(ApplicationErrors.General.FORBIDDEN);
+                return _msg.Forbidden<Guid>(MessageKeys.General.FORBIDDEN);
             }
         }
 
         if (!await _repo.TopicExistsAsync(request.TopicId, cancellationToken).ConfigureAwait(false))
-            return _msg.TopicNotFound<Guid>();
+            return _msg.NotFound<Guid>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var sanitized = request.Content is null ? null : _sanitizer.Sanitize(request.Content);
         var post = Post.CreateDraft(request.CommunityId, request.TopicId, authorId.Value, request.Type,
@@ -93,7 +93,7 @@ public sealed class CreatePostCommandHandler
         if (request.Attachments.Count > 0)
         {
             if (request.Attachments.Count > Post.MaxAttachments)
-                return _msg.BusinessRule<Guid>(ApplicationErrors.Media.FILE_TOO_LARGE);
+                return _msg.BusinessRule<Guid>(MessageKeys.Media.FILE_TOO_LARGE);
 
             var assetIds = request.Attachments.Select(a => a.AssetFileId).Distinct().ToList();
             var assets = (await _repo.GetAssetsAsync(assetIds, cancellationToken).ConfigureAwait(false))
@@ -102,18 +102,18 @@ public sealed class CreatePostCommandHandler
             foreach (var att in request.Attachments)
             {
                 if (!assets.TryGetValue(att.AssetFileId, out var asset))
-                    return _msg.AssetNotFound<Guid>();
+                    return _msg.NotFound<Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
                 if (asset.VirusScanStatus != Domain.Content.VirusScanStatus.Clean)
-                    return _msg.AssetNotClean<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
                 var allowed = att.Kind == Domain.Community.AttachmentKind.Media
                     ? PostAttachmentPolicy.MediaMimeTypes
                     : PostAttachmentPolicy.DocumentMimeTypes;
                 if (!allowed.Contains(asset.MimeType))
-                    return _msg.InvalidFileType<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Media.INVALID_FILE_TYPE);
                 if (att.Kind == Domain.Community.AttachmentKind.Document
                     && asset.SizeBytes > PostAttachmentPolicy.MaxDocumentSizeBytes)
-                    return _msg.FileTooLarge<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Media.FILE_TOO_LARGE);
 
                 post.AddAttachment(att.AssetFileId, att.Kind, att.SortOrder, att.MetadataJson);
             }
@@ -122,7 +122,7 @@ public sealed class CreatePostCommandHandler
         if (request.Type == PostType.Poll)
         {
             if (request.Poll is null)
-                return _msg.BusinessRule<Guid>(ApplicationErrors.Validation.REQUIRED_FIELD);
+                return _msg.BusinessRule<Guid>(MessageKeys.Validation.REQUIRED_FIELD);
             var poll = Poll.Create(post.Id, request.Poll.Deadline, request.Poll.AllowMultiple,
                 request.Poll.IsAnonymous, request.Poll.ShowResultsBeforeClose, request.Poll.OptionLabels, _clock);
             _pollRepo.AddPoll(poll);
@@ -144,7 +144,7 @@ public sealed class CreatePostCommandHandler
         // Worker: Post.Publish raises PostCreatedEvent → PostCreatedBusPublisher → SignalRConsumer. The
         // API stays publish-only here (no direct SignalR push).
         return _msg.Ok(post.Id, request.SaveAsDraft
-            ? ApplicationErrors.Community.POST_DRAFT_SAVED
-            : ApplicationErrors.Community.POST_CREATED);
+            ? MessageKeys.Community.POST_DRAFT_SAVED
+            : MessageKeys.Community.POST_CREATED);
     }
 }

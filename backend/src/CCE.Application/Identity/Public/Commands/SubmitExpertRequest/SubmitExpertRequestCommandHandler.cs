@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Public.Dtos;
@@ -40,9 +40,9 @@ public sealed class SubmitExpertRequestCommandHandler
 
         var asset = assets.FirstOrDefault();
         if (asset is null)
-            return _msg.AssetNotFound<ExpertRequestStatusDto>();
+            return _msg.NotFound<ExpertRequestStatusDto>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _msg.AssetNotClean<ExpertRequestStatusDto>();
+            return _msg.BusinessRule<ExpertRequestStatusDto>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         // WRITE: create aggregate via domain factory
         var entity = ExpertRegistrationRequest.Submit(
@@ -68,6 +68,6 @@ public sealed class SubmitExpertRequestCommandHandler
             entity.Status,
             entity.ProcessedOn,
             entity.RejectionReasonAr,
-            entity.RejectionReasonEn), "EXPERT_REQUEST_SUBMITTED");
+            entity.RejectionReasonEn), MessageKeys.Identity.EXPERT_REQUEST_SUBMITTED);
     }
 }

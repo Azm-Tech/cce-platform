@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
@@ -31,7 +31,7 @@ public sealed class GetExpertRequestByIdQueryHandler
 
         var row = rows.FirstOrDefault();
         if (row is null)
-            return _msg.ExpertRequestNotFound<ExpertRequestDto>();
+            return _msg.NotFound<ExpertRequestDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var userNames = await _db.Users
             .Where(u => u.Id == row.RequestedById)
@@ -58,6 +58,6 @@ public sealed class GetExpertRequestByIdQueryHandler
             row.ProcessedOn,
             row.RejectionReasonAr,
             row.RejectionReasonEn,
-            cvAssetFileIds.FirstOrDefault()), "SUCCESS_OPERATION");
+            cvAssetFileIds.FirstOrDefault()), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

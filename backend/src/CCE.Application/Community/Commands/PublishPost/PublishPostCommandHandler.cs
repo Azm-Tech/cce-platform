@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Errors;
-using CCE.Application.Identity;
 using CCE.Application.Messages;
+using CCE.Application.Identity;
+
 using CCE.Domain.Common;
 using MediatR;
 
@@ -36,11 +36,11 @@ public sealed class PublishPostCommandHandler
     public async Task<Response<VoidData>> Handle(PublishPostCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetAsync(request.PostId, cancellationToken).ConfigureAwait(false);
-        if (post is null) return _msg.NotFound<VoidData>(ApplicationErrors.Community.POST_NOT_FOUND);
-        if (post.AuthorId != userId.Value) return _msg.Forbidden<VoidData>(ApplicationErrors.General.FORBIDDEN);
+        if (post is null) return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);
+        if (post.AuthorId != userId.Value) return _msg.Forbidden<VoidData>(MessageKeys.General.FORBIDDEN);
 
         post.Publish(_clock);
 
@@ -51,6 +51,6 @@ public sealed class PublishPostCommandHandler
         community?.IncrementPosts();
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return _msg.Ok(ApplicationErrors.Community.POST_PUBLISHED);
+        return _msg.Ok(MessageKeys.Community.POST_PUBLISHED);
     }
 }

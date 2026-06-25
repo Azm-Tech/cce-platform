@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Surveys.Commands.SubmitServiceRating;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -24,8 +25,8 @@ public static class SurveysEndpoints
                 body.CommentEn,
                 body.Page,
                 body.Locale);
-            var id = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Created($"/api/surveys/service-rating/{id}", new { id });
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .AllowAnonymous()
         .WithName("SubmitServiceRating");

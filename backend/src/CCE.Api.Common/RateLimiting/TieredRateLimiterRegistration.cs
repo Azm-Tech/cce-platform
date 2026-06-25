@@ -1,5 +1,7 @@
-using System.Threading.RateLimiting;
+﻿using System.Threading.RateLimiting;
 using CCE.Api.Common.Auth;
+using CCE.Application.Messages;
+using CCE.Api.Common.Results;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -30,8 +32,10 @@ public static class TieredRateLimiterRegistration
                 {
                     context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
-                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                await context.HttpContext.Response.WriteAsync("Too many requests", ct).ConfigureAwait(false);
+                await EnvelopeWriter.WriteAsync(
+                    context.HttpContext,
+                    StatusCodes.Status429TooManyRequests,
+                    MessageKeys.General.RATE_LIMIT_EXCEEDED).ConfigureAwait(false);
             };
 
             o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Messages;
@@ -40,7 +40,7 @@ internal sealed class RequestEmailChangeCommandHandler
             .ConfigureAwait(false);
 
         if (taken)
-            return _msg.ContactAlreadyTaken<RequestVerificationResponseDto>();
+            return _msg.Conflict<RequestVerificationResponseDto>(MessageKeys.Verification.CONTACT_ALREADY_TAKEN);
 
         var (entity, fail) = await _otpService.PrepareAsync(
             request.NewEmail,
@@ -56,6 +56,6 @@ internal sealed class RequestEmailChangeCommandHandler
         // ICceDbContext as unit of work
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return _msg.Ok(new RequestVerificationResponseDto(entity!.Id, entity.ExpiresAt), "OTP_SENT");
+        return _msg.Ok(new RequestVerificationResponseDto(entity!.Id, entity.ExpiresAt), MessageKeys.Verification.OTP_SENT);
     }
 }

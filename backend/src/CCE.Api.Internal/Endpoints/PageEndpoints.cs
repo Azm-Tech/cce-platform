@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Commands.CreatePage;
 using CCE.Application.Content.Commands.DeletePage;
 using CCE.Application.Content.Commands.UpdatePage;
@@ -24,15 +25,15 @@ public static class PageEndpoints
         {
             var query = new ListPagesQuery(page ?? 1, pageSize ?? 20, search, pageType);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("ListPages");
 
         pages.MapGet("/{id:guid}", async (System.Guid id, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetPageByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetPageByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("GetPageById");
@@ -40,8 +41,8 @@ public static class PageEndpoints
         pages.MapPost("", async (CreatePageRequest body, IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new CreatePageCommand(body.Slug, body.PageType, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/pages/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("CreatePage");
@@ -53,8 +54,8 @@ public static class PageEndpoints
         {
             var rowVersion = string.IsNullOrEmpty(body.RowVersion) ? System.Array.Empty<byte>() : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpdatePageCommand(id, body.TitleAr, body.TitleEn, body.ContentAr, body.ContentEn, rowVersion);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("UpdatePage");
@@ -63,8 +64,8 @@ public static class PageEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new DeletePageCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new DeletePageCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Page_Edit)
         .WithName("DeletePage");

@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Public.Queries.ListPublicResourceCategories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +16,7 @@ public static class CategoriesPublicEndpoints
         categories.MapGet("", async (IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(new ListPublicResourceCategoriesQuery(), ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicCategories");

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -28,6 +28,6 @@ public sealed class ListPublicTagsQueryHandler : IRequestHandler<ListPublicTagsQ
             .ConfigureAwait(false);
 
         var dtos = tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
-        return _messages.Ok(dtos, "ITEMS_LISTED");
+        return _messages.Ok(dtos, MessageKeys.General.ITEMS_LISTED);
     }
 }

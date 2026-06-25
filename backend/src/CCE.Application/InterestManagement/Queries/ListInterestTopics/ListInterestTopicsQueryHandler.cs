@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.InterestManagement.Dtos;
@@ -28,6 +28,6 @@ public sealed class ListInterestTopicsQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        return _msg.Ok<IReadOnlyList<InterestTopicDto>>(topics, "SUCCESS_OPERATION");
+        return _msg.Ok<IReadOnlyList<InterestTopicDto>>(topics, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

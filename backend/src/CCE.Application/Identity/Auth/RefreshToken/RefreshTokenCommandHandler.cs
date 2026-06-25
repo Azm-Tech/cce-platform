@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Identity.Auth.Common;
 using CCE.Application.Messages;
 using MediatR;
@@ -21,7 +21,7 @@ internal sealed class RefreshTokenCommandHandler
     {
         var dto = await _auth.RefreshTokenAsync(request.RefreshToken, request.Api,
             request.IpAddress, request.UserAgent, ct).ConfigureAwait(false);
-        if (dto is null) return _msg.Unauthorized<AuthTokenDto>("INVALID_REFRESH_TOKEN");
-        return _msg.Ok(dto, "TOKEN_REFRESHED");
+        if (dto is null) return _msg.Unauthorized<AuthTokenDto>(MessageKeys.Identity.INVALID_REFRESH_TOKEN);
+        return _msg.Ok(dto, MessageKeys.Identity.TOKEN_REFRESHED);
     }
 }

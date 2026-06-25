@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Dtos;
 using CCE.Application.Community.Queries.ListTopics;
@@ -28,7 +28,7 @@ public sealed class UpdateTopicCommandHandler : IRequestHandler<UpdateTopicComma
     {
         var topic = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (topic is null)
-            return _messages.TopicNotFound<TopicDto>();
+            return _messages.NotFound<TopicDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         topic.UpdateContent(request.NameAr, request.NameEn, request.DescriptionAr, request.DescriptionEn);
         topic.Reorder(request.OrderIndex);
@@ -40,6 +40,6 @@ public sealed class UpdateTopicCommandHandler : IRequestHandler<UpdateTopicComma
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), "SUCCESS_OPERATION");
+        return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

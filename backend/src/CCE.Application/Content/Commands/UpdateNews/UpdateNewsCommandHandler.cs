@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
@@ -34,11 +34,11 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
             q => q.Include(n => n.Tags),
             cancellationToken).ConfigureAwait(false);
         if (news is null)
-            return _messages.NewsNotFound<NewsDto>();
+            return _messages.NotFound<NewsDto>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)
-            return _messages.NotFound<NewsDto>("TOPIC_NOT_FOUND");
+            return _messages.NotFound<NewsDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var expectedRowVersion = news.RowVersion;
         news.UpdateContent(
@@ -67,6 +67,6 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
         var topicNameEn = topic.FirstOrDefault()?.NameEn ?? string.Empty;
 
         var tagDtos = news.Tags.Select(t => new TagDto(t.Id, t.NameAr, t.NameEn, t.Color)).ToList();
-        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news, topicNameAr, topicNameEn, tagDtos), "SUCCESS_OPERATION");
+        return _messages.Ok(GetNewsByIdQueryHandler.MapToDto(news, topicNameAr, topicNameEn, tagDtos), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

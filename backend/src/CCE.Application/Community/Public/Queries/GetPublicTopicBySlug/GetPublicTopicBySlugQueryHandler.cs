@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -31,8 +31,8 @@ public sealed class GetPublicTopicBySlugQueryHandler
             .FirstOrDefault();
 
         if (topic is null)
-            return _messages.TopicNotFound<PublicTopicDto>();
+            return _messages.NotFound<PublicTopicDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
-        return _messages.Ok(ListPublicTopicsQueryHandler.MapToDto(topic), "SUCCESS_OPERATION");
+        return _messages.Ok(ListPublicTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

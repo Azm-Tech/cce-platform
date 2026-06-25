@@ -1,10 +1,10 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Country.Dtos;
 using CCE.Application.Country.Queries.GetCountryProfile;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Country;
 using MediatR;
@@ -38,7 +38,7 @@ public sealed class UpsertCountryProfileCommandHandler : IRequestHandler<UpsertC
         // State reps may only edit their own assigned country; null scope = admin bypass
         var authorizedIds = await _scope.GetAuthorizedCountryIdsAsync(cancellationToken).ConfigureAwait(false);
         if (authorizedIds is not null && !authorizedIds.Contains(request.CountryId))
-            return _messages.CountryScopeForbidden<CountryProfileDto>();
+            return _messages.Forbidden<CountryProfileDto>(MessageKeys.Country.COUNTRY_SCOPE_FORBIDDEN);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot upsert country profile from a request without a user identity.");
@@ -75,6 +75,6 @@ public sealed class UpsertCountryProfileCommandHandler : IRequestHandler<UpsertC
             result = existing;
         }
 
-        return _messages.Ok(GetCountryProfileQueryHandler.MapToDto(result), ApplicationErrors.Country.COUNTRY_PROFILE_UPDATED);
+        return _messages.Ok(GetCountryProfileQueryHandler.MapToDto(result), MessageKeys.Country.COUNTRY_PROFILE_UPDATED);
     }
 }

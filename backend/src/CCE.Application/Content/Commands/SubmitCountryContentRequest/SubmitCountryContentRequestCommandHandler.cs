@@ -1,9 +1,9 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
@@ -48,7 +48,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
 
         var countryId = await ResolveCountryIdAsync(request.CountryId, cancellationToken).ConfigureAwait(false);
         if (countryId is null)
-            return _messages.CountryScopeForbidden<System.Guid>();
+            return _messages.Forbidden<System.Guid>(MessageKeys.Country.COUNTRY_SCOPE_FORBIDDEN);
 
         CountryContentRequest contentRequest = request.Content switch
         {
@@ -73,7 +73,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
             }),
             cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(contentRequest.Id, ApplicationErrors.Content.COUNTRY_CONTENT_REQUEST_SUBMITTED);
+        return _messages.Ok(contentRequest.Id, MessageKeys.Content.COUNTRY_CONTENT_REQUEST_SUBMITTED);
     }
 
     private async Task<System.Guid?> ResolveCountryIdAsync(

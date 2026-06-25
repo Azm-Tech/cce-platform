@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
@@ -33,7 +33,7 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
         var user = users.SingleOrDefault();
         if (user is null)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var roleNames =
@@ -65,6 +65,6 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
             user.CountryId,
             user.AvatarUrl,
             roles,
-            isActive), "SUCCESS_OPERATION");
+            isActive), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

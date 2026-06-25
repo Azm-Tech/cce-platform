@@ -28,7 +28,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
     <PackageReference Include="StackExchange.Redis" />
-    <PackageReference Include="Hellang.Middleware.ProblemDetails" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />

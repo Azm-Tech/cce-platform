@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Messages;
 using CCE.Application.Notifications;
 using CCE.Application.Verification;
@@ -52,7 +52,7 @@ internal sealed class ContactChangeOtpService
             .ConfigureAwait(false);
 
         if (existing is not null && !existing.CanResend(now))
-            return (null, _msg.OtpCooldownActive<RequestVerificationResponseDto>());
+            return (null, _msg.BusinessRule<RequestVerificationResponseDto>(MessageKeys.Verification.OTP_COOLDOWN_ACTIVE));
 
         var (plainCode, codeHash) = _codeGenerator.Generate();
 

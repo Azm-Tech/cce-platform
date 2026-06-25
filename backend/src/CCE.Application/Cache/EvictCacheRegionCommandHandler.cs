@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Caching;
 using CCE.Application.Messages;
 using MediatR;
@@ -21,6 +21,6 @@ public sealed class EvictCacheRegionCommandHandler
         EvictCacheRegionCommand request, CancellationToken cancellationToken)
     {
         await _cache.EvictRegionsAsync([request.Region], cancellationToken).ConfigureAwait(false);
-        return _messages.Ok("SUCCESS_OPERATION");
+        return _messages.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

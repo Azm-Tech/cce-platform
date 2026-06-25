@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Application.Notifications;
@@ -41,7 +41,7 @@ internal sealed class RequestVerificationCommandHandler
             .ConfigureAwait(false);
 
         if (existing is not null && !existing.CanResend(now))
-            return _msg.OtpCooldownActive<RequestVerificationResponseDto>();
+            return _msg.BusinessRule<RequestVerificationResponseDto>(MessageKeys.Verification.OTP_COOLDOWN_ACTIVE);
 
         var (plainCode, codeHash) = _codeGenerator.Generate();
 
@@ -75,6 +75,6 @@ internal sealed class RequestVerificationCommandHandler
 
         return _msg.Ok(
             new RequestVerificationResponseDto(entity.Id, entity.ExpiresAt),
-            "OTP_SENT");
+            MessageKeys.Verification.OTP_SENT);
     }
 }

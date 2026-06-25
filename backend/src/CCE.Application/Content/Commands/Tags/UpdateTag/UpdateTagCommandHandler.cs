@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
@@ -22,9 +22,9 @@ public sealed class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, 
     {
         var tag = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (tag is null)
-            return _messages.NotFound<TagDto>("TAG_NOT_FOUND");
+            return _messages.NotFound<TagDto>(MessageKeys.Content.TAG_NOT_FOUND);
 
         tag.Update(request.NameAr, request.NameEn, request.Color);
-        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), "SUCCESS_OPERATION");
+        return _messages.Ok(new TagDto(tag.Id, tag.NameAr, tag.NameEn, tag.Color), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

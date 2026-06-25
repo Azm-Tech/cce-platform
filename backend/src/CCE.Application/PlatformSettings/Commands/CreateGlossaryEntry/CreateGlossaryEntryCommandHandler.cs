@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -36,7 +36,7 @@ public sealed class CreateGlossaryEntryCommandHandler
     {
         var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("User identity required.");
@@ -46,6 +46,6 @@ public sealed class CreateGlossaryEntryCommandHandler
         var entry = about.AddGlossaryEntry(term, definition, userId, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok(entry.Id, "CONTENT_CREATED");
+        return _msg.Ok(entry.Id, MessageKeys.Content.CONTENT_CREATED);
     }
 }

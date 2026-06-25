@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.InteractiveMaps;
@@ -29,11 +29,11 @@ internal sealed class DeleteInteractiveMapCommandHandler
     {
         var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (entity is null)
-            return _msg.MapNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         entity.Deactivate();
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.MapDeleted();
+        return _msg.Ok(MessageKeys.InteractiveMaps.MAP_DELETED);
     }
 }

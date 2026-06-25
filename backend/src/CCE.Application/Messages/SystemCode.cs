@@ -35,6 +35,7 @@ public static class SystemCode
     public const string ERR028 = "ERR028"; // News/event deletion failure (appendix)
     public const string ERR029 = "ERR029"; // Resource upload failure (appendix)
     public const string ERR030 = "ERR030"; // Resource deletion failure (appendix)
+    public const string ERR032 = "ERR032"; // Login failed
 
     // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
     public const string ERR400 = "ERR400"; // Expert request not found
@@ -47,6 +48,9 @@ public static class SystemCode
     public const string ERR407 = "ERR407"; // Not authenticated
     public const string ERR408 = "ERR408"; // Expert request already exists
     public const string ERR409 = "ERR409"; // State rep assignment already exists
+    public const string ERR410 = "ERR410"; // Role not found
+    public const string ERR411 = "ERR411"; // Invalid password reset token
+    public const string ERR412 = "ERR412"; // Email change failed
 
     // ─── Content Errors ───
     public const string ERR040 = "ERR040"; // News not found
@@ -93,6 +97,7 @@ public static class SystemCode
     public const string ERR080 = "ERR080"; // Template not found
     public const string ERR081 = "ERR081"; // Template duplicate
     public const string ERR082 = "ERR082"; // Notification not found
+    public const string ERR083 = "ERR083"; // Device token not found
 
     // ─── KnowledgeMap Errors ───
     public const string ERR090 = "ERR090"; // Map not found
@@ -135,6 +140,7 @@ public static class SystemCode
     public const string ERR124 = "ERR124"; // OTP cooldown active
     public const string ERR125 = "ERR125"; // OTP invalidated
     public const string ERR126 = "ERR126"; // Contact already taken
+    public const string ERR127 = "ERR127"; // OTP unauthorized (wrong owner)
 
     // ─── Evaluation Errors ───
     public const string ERR009 = "ERR009"; // Evaluation not found
@@ -149,6 +155,8 @@ public static class SystemCode
     public const string ERR906 = "ERR906"; // External API not configured
     public const string ERR907 = "ERR907"; // Concurrency conflict
     public const string ERR908 = "ERR908"; // Duplicate value (generic)
+    public const string ERR909 = "ERR909"; // Rate limit exceeded
+    public const string ERR910 = "ERR910"; // Business rule violation (DomainException)
 
     // ════════════════════════════════════════════════════════════════
     //  CON — Confirmation / Success codes
@@ -242,10 +250,26 @@ public static class SystemCode
     public const string CON045 = "CON045"; // Notifications marked read
     public const string CON046 = "CON046"; // Notification template created
     public const string CON047 = "CON047"; // Notification template updated
+    public const string CON087 = "CON087"; // Device token registered
+    public const string CON088 = "CON088"; // Device token deleted
 
     // ─── Lookups Success ───
     public const string CON070 = "CON070"; // Lookup created
     public const string CON071 = "CON071"; // Lookup updated
+    public const string CON073 = "CON073"; // User created
+    public const string CON074 = "CON074"; // User updated
+    public const string CON075 = "CON075"; // User activated
+    public const string CON076 = "CON076"; // User deactivated
+    public const string CON077 = "CON077"; // Permissions granted to role
+    public const string CON078 = "CON078"; // Permissions revoked from role
+    public const string CON079 = "CON079"; // Role permissions updated
+    public const string CON080 = "CON080"; // Claims granted to user
+    public const string CON081 = "CON081"; // Claims revoked from user
+    public const string CON082 = "CON082"; // User claims updated
+    public const string CON083 = "CON083"; // AD login success
+    public const string CON084 = "CON084"; // Newsletter subscribed
+    public const string CON085 = "CON085"; // Topics listed
+    public const string CON086 = "CON086"; // Homepage section reordered
 
     // ─── InteractiveMap Success ───
     public const string CON150 = "CON150"; // Interactive map created
@@ -277,4 +301,6 @@ public static class SystemCode
     public const string VAL009 = "VAL009"; // Password uppercase required
     public const string VAL010 = "VAL010"; // Password lowercase required
     public const string VAL011 = "VAL011"; // Password number required
+    public const string VAL012 = "VAL012"; // Password policy violated (length + complexity combined)
+    public const string VAL013 = "VAL013"; // Passwords do not match
 }

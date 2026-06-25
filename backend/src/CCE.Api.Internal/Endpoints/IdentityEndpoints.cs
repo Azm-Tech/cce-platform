@@ -224,7 +224,7 @@ public static class IdentityEndpoints
                 CountryId: countryId,
                 Active: active ?? true);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Role_Assign)
         .WithName("ListStateRepAssignments");

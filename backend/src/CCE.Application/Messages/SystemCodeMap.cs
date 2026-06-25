@@ -15,6 +15,7 @@ public static class SystemCodeMap
         ["CONTACT_NOT_VERIFIED"] = SystemCode.ERR004,
         ["PASSWORD_RECOVERY_FAILED"] = SystemCode.ERR023,
         ["LOGOUT_FAILED"] = SystemCode.ERR024,
+        ["LOGIN_FAILED"] = SystemCode.ERR032,
 
         // ─── Backend-only Identity Errors (moved to free appendix numbers) ───
         ["EXPERT_REQUEST_NOT_FOUND"] = SystemCode.ERR400,
@@ -27,6 +28,9 @@ public static class SystemCodeMap
         ["NOT_AUTHENTICATED"] = SystemCode.ERR407,
         ["EXPERT_REQUEST_ALREADY_EXISTS"] = SystemCode.ERR408,
         ["STATE_REP_ASSIGNMENT_EXISTS"] = SystemCode.ERR409,
+        ["ROLE_NOT_FOUND"] = SystemCode.ERR410,
+        ["INVALID_RESET_TOKEN"] = SystemCode.ERR411,
+        ["EMAIL_CHANGE_FAILED"] = SystemCode.ERR412,
 
         // ─── Content Errors ───
         ["NEWS_NOT_FOUND"] = SystemCode.ERR040,
@@ -90,6 +94,7 @@ public static class SystemCodeMap
         ["TEMPLATE_NOT_FOUND"] = SystemCode.ERR080,
         ["TEMPLATE_DUPLICATE"] = SystemCode.ERR081,
         ["NOTIFICATION_NOT_FOUND"] = SystemCode.ERR082,
+        ["DEVICE_TOKEN_NOT_FOUND"] = SystemCode.ERR083,
 
         // ─── KnowledgeMap Errors ───
         ["MAP_NOT_FOUND"] = SystemCode.ERR090,
@@ -132,6 +137,7 @@ public static class SystemCodeMap
         ["OTP_COOLDOWN_ACTIVE"] = SystemCode.ERR124,
         ["OTP_INVALIDATED"] = SystemCode.ERR125,
         ["CONTACT_ALREADY_TAKEN"] = SystemCode.ERR126,
+        ["OTP_UNAUTHORIZED"] = SystemCode.ERR127,
 
         // ─── Evaluation Errors ───
         ["EVALUATION_NOT_FOUND"] = SystemCode.ERR009,
@@ -146,6 +152,8 @@ public static class SystemCodeMap
         ["EXTERNAL_API_NOT_CONFIGURED"] = SystemCode.ERR906,
         ["CONCURRENCY_CONFLICT"] = SystemCode.ERR907,
         ["DUPLICATE_VALUE"] = SystemCode.ERR908,
+        ["RATE_LIMIT_EXCEEDED"] = SystemCode.ERR909,
+        ["BUSINESS_RULE_VIOLATION"] = SystemCode.ERR910,
 
         // ─── Identity Success (appendix-aligned) ───
         ["LOGIN_SUCCESS"] = SystemCode.CON056,
@@ -157,6 +165,19 @@ public static class SystemCodeMap
         ["REGISTER_SUCCESS"] = SystemCode.CON017,
         ["INTEREST_UPSERTED"] = SystemCode.CON019,
         ["USER_DELETED"] = SystemCode.CON018,
+        ["USER_CREATED"] = SystemCode.CON073,
+        ["USER_UPDATED"] = SystemCode.CON074,
+        ["USER_ACTIVATED"] = SystemCode.CON075,
+        ["USER_DEACTIVATED"] = SystemCode.CON076,
+
+        // ─── Claims / Permissions Success ───
+        ["PERMISSIONS_GRANTED"] = SystemCode.CON077,
+        ["PERMISSIONS_REVOKED"] = SystemCode.CON078,
+        ["PERMISSIONS_UPDATED"] = SystemCode.CON079,
+        ["CLAIMS_GRANTED"] = SystemCode.CON080,
+        ["CLAIMS_REVOKED"] = SystemCode.CON081,
+        ["USER_CLAIMS_UPDATED"] = SystemCode.CON082,
+        ["AD_LOGIN_SUCCESS"] = SystemCode.CON083,
 
         // ─── Backend-only Identity Success (appendix numbers already taken) ───
         ["EXPERT_REQUEST_APPROVED"] = SystemCode.CON050,
@@ -210,6 +231,8 @@ public static class SystemCodeMap
         ["NOTIFICATIONS_MARKED_READ"] = SystemCode.CON045,
         ["NOTIFICATION_TEMPLATE_CREATED"] = SystemCode.CON046,
         ["NOTIFICATION_TEMPLATE_UPDATED"] = SystemCode.CON047,
+        ["DEVICE_TOKEN_REGISTERED"] = SystemCode.CON087,
+        ["DEVICE_TOKEN_DELETED"] = SystemCode.CON088,
 
         // ─── Verification Success ───
         ["OTP_SENT"] = SystemCode.CON060,
@@ -227,6 +250,11 @@ public static class SystemCodeMap
         ["INTERACTIVE_MAP_NODE_CREATED"] = SystemCode.CON153,
         ["INTERACTIVE_MAP_NODE_UPDATED"] = SystemCode.CON154,
         ["INTERACTIVE_MAP_NODE_DELETED"] = SystemCode.CON155,
+
+        // ─── Content / Community / Platform Success ───
+        ["NEWSLETTER_SUBSCRIBED"] = SystemCode.CON084,
+        ["TOPICS_LISTED"] = SystemCode.CON085,
+        ["SECTION_REORDERED"] = SystemCode.CON086,
 
         // ─── General Success ───
         ["ITEMS_LISTED"] = SystemCode.CON100,
@@ -247,6 +275,8 @@ public static class SystemCodeMap
         ["PASSWORD_UPPERCASE"] = SystemCode.VAL009,
         ["PASSWORD_LOWERCASE"] = SystemCode.VAL010,
         ["PASSWORD_NUMBER"] = SystemCode.VAL011,
+        ["PASSWORD_POLICY"] = SystemCode.VAL012,
+        ["PASSWORDS_MUST_MATCH"] = SystemCode.VAL013,
     };
 
     private static readonly Dictionary<string, string> CodeToDomain =

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Content;
@@ -21,9 +21,9 @@ public sealed class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, 
     {
         var tag = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (tag is null)
-            return _messages.NotFound<VoidData>("TAG_NOT_FOUND");
+            return _messages.NotFound<VoidData>(MessageKeys.Content.TAG_NOT_FOUND);
 
         _repo.Delete(tag);
-        return _messages.Ok(VoidData.Instance, "SUCCESS_OPERATION");
+        return _messages.Ok(VoidData.Instance, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

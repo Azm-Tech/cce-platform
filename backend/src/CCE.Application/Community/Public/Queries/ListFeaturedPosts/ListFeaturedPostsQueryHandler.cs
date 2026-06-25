@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using MediatR;
 
 namespace CCE.Application.Community.Public.Queries.ListFeaturedPosts;
@@ -39,7 +39,7 @@ public sealed class ListFeaturedPostsQueryHandler
             .ToList();
 
         var result = new PagedResult<FeaturedPostDto>(items, page, pageSize, all.Count);
-        return Task.FromResult(_messages.Ok(result, ApplicationErrors.General.SUCCESS_OPERATION));
+        return Task.FromResult(_messages.Ok(result, MessageKeys.General.SUCCESS_OPERATION));
     }
 
     // ─── Mock data (deterministic ids + fixed timestamps) ─────────────────────

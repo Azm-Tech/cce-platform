@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Lookups.Commands.UpsertCountryCode;
 using CCE.Application.Lookups.Queries.GetCountryCodeById;
 using CCE.Application.Lookups.Queries.ListCountryCodes;
@@ -21,7 +22,7 @@ public static class CountryCodeEndpoints
         {
             var query = new ListCountryCodesQuery(Search: search, IsActive: isActive);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Lookup_Manage)
         .WithName("ListCountryCodes");
@@ -31,7 +32,7 @@ public static class CountryCodeEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(new GetCountryCodeByIdQuery(id), ct).ConfigureAwait(false);
-            return result.Success ? Results.Ok(result) : Results.NotFound(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Lookup_Manage)
         .WithName("GetCountryCodeById");
@@ -48,9 +49,7 @@ public static class CountryCodeEndpoints
                 body.FlagUrl,
                 body.IsActive);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return result.Success
-                ? Results.Ok(result)
-                : Results.BadRequest(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Lookup_Manage)
         .WithName("UpsertCountryCode");

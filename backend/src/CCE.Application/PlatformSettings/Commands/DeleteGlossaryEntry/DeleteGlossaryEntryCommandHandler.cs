@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.PlatformSettings;
@@ -28,15 +28,15 @@ public sealed class DeleteGlossaryEntryCommandHandler
     {
         var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var entry = about.GlossaryEntries.FirstOrDefault(e => e.Id == request.Id);
         if (entry is null)
-            return _msg.GlossaryEntryNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.GLOSSARY_ENTRY_NOT_FOUND);
 
         about.RemoveGlossaryEntry(entry);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.Ok("CONTENT_DELETED");
+        return _msg.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

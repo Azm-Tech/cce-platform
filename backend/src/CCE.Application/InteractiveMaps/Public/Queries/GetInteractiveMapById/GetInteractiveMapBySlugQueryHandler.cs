@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
@@ -29,7 +29,7 @@ internal sealed class GetPublicInteractiveMapByIdQueryHandler
             .ConfigureAwait(false);
 
         if (map is null)
-            return _msg.MapNotFound<PublicInteractiveMapDto>();
+            return _msg.NotFound<PublicInteractiveMapDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         var nodes = await _db.InteractiveMapNodes
             .Include(n => n.Tags)
@@ -43,6 +43,6 @@ internal sealed class GetPublicInteractiveMapByIdQueryHandler
             PublicInteractiveMapDto.FromEntity(
                 map,
                 nodes.Select(PublicInteractiveMapNodeDto.FromEntity).ToList()),
-            "ITEMS_LISTED");
+            MessageKeys.General.ITEMS_LISTED);
     }
 }

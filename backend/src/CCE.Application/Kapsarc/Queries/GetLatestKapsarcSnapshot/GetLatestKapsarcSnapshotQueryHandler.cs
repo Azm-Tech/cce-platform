@@ -1,22 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Kapsarc.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Country;
 using MediatR;
 
 namespace CCE.Application.Kapsarc.Queries.GetLatestKapsarcSnapshot;
 
 public sealed class GetLatestKapsarcSnapshotQueryHandler
-    : IRequestHandler<GetLatestKapsarcSnapshotQuery, KapsarcSnapshotDto?>
+    : IRequestHandler<GetLatestKapsarcSnapshotQuery, Response<KapsarcSnapshotDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetLatestKapsarcSnapshotQueryHandler(ICceDbContext db)
+    public GetLatestKapsarcSnapshotQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<KapsarcSnapshotDto?> Handle(
+    public async Task<Response<KapsarcSnapshotDto>> Handle(
         GetLatestKapsarcSnapshotQuery request,
         CancellationToken cancellationToken)
     {
@@ -29,7 +33,10 @@ public sealed class GetLatestKapsarcSnapshotQueryHandler
             .OrderByDescending(s => s.SnapshotTakenOn)
             .FirstOrDefault();
 
-        return latest is null ? null : MapToDto(latest);
+        if (latest is null)
+            return _msg.NotFound<KapsarcSnapshotDto>(MessageKeys.Country.KAPSARC_DATA_UNAVAILABLE);
+
+        return _msg.Ok(MapToDto(latest), MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static KapsarcSnapshotDto MapToDto(CountryKapsarcSnapshot s) => new(

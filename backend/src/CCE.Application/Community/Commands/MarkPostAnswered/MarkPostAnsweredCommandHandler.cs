@@ -1,23 +1,28 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.MarkPostAnswered;
 
-public sealed class MarkPostAnsweredCommandHandler : IRequestHandler<MarkPostAnsweredCommand, Unit>
+public sealed class MarkPostAnsweredCommandHandler : IRequestHandler<MarkPostAnsweredCommand, Response<VoidData>>
 {
     private readonly ICommunityWriteService _service;
     private readonly ICurrentUserAccessor _currentUser;
+    private readonly MessageFactory _msg;
 
     public MarkPostAnsweredCommandHandler(
         ICommunityWriteService service,
-        ICurrentUserAccessor currentUser)
+        ICurrentUserAccessor currentUser,
+        MessageFactory msg)
     {
         _service = service;
         _currentUser = currentUser;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(MarkPostAnsweredCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(MarkPostAnsweredCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot mark answer without a user identity.");
@@ -42,6 +47,6 @@ public sealed class MarkPostAnsweredCommandHandler : IRequestHandler<MarkPostAns
 
         post.MarkAnswered(request.ReplyId);
         await _service.UpdatePostAsync(post, cancellationToken).ConfigureAwait(false);
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

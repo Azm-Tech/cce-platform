@@ -1,8 +1,8 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Errors;
 using CCE.Application.Messages;
+
 using CCE.Domain.Common;
 using CCE.Domain.Community;
 using MediatR;
@@ -32,13 +32,13 @@ public sealed class SetTopicFollowCommandHandler
     public async Task<Response<VoidData>> Handle(SetTopicFollowCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (request.Status == FollowStatus.Followed)
         {
             var exists = await _db.Topics
                 .AnyAsyncEither(t => t.Id == request.TopicId, cancellationToken).ConfigureAwait(false);
-            if (!exists) return _msg.NotFound<VoidData>(ApplicationErrors.Community.TOPIC_NOT_FOUND);
+            if (!exists) return _msg.NotFound<VoidData>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
             // Idempotent: only create when not already following
             var existing = await _service.FindTopicFollowAsync(request.TopicId, userId.Value, cancellationToken).ConfigureAwait(false);
@@ -51,6 +51,6 @@ public sealed class SetTopicFollowCommandHandler
             await _service.RemoveTopicFollowAsync(request.TopicId, userId.Value, cancellationToken).ConfigureAwait(false);
         }
 
-        return _msg.Ok(ApplicationErrors.General.SUCCESS_OPERATION);
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

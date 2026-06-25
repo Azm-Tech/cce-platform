@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
@@ -28,7 +28,7 @@ public sealed class ListMyDraftsQueryHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == System.Guid.Empty)
-            return _msg.NotAuthenticated<PagedResult<MyDraftDto>>();
+            return _msg.Unauthorized<PagedResult<MyDraftDto>>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var paged = await _db.Posts
             .Where(p => p.AuthorId == userId.Value && p.Status == PostStatus.Draft)
@@ -38,6 +38,6 @@ public sealed class ListMyDraftsQueryHandler
             .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        return _msg.Ok(paged, "ITEMS_LISTED");
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
 }

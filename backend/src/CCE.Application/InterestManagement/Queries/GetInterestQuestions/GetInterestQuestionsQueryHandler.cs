@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.InterestManagement.Dtos;
@@ -56,6 +56,6 @@ public sealed class GetInterestQuestionsQueryHandler
                     .ToList()),
         };
 
-        return _msg.Ok<IReadOnlyList<InterestCategoryInfoDto>>(questions, "SUCCESS_OPERATION");
+        return _msg.Ok<IReadOnlyList<InterestCategoryInfoDto>>(questions, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

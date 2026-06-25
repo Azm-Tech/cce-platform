@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.GetEventById;
@@ -29,7 +29,7 @@ public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEv
     {
         var ev = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (ev is null)
-            return _messages.EventNotFound<EventDto>();
+            return _messages.NotFound<EventDto>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var expectedRowVersion = ev.RowVersion;
         ev.Reschedule(request.StartsOn, request.EndsOn);
@@ -37,6 +37,6 @@ public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEv
         _db.SetExpectedRowVersion(ev, expectedRowVersion);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev), "SUCCESS_OPERATION");
+        return _messages.Ok(GetEventByIdQueryHandler.MapToDto(ev), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

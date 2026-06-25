@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
@@ -41,19 +41,19 @@ public sealed class UpsertCountryCodeCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
                 CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity),
-                "LOOKUP_CREATED");
+                MessageKeys.Lookups.LOOKUP_CREATED);
         }
         else
         {
             var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
             if (entity is null)
-                return _msg.CountryCodeNotFound<CountryCodeDto>();
+                return _msg.NotFound<CountryCodeDto>(MessageKeys.Lookups.COUNTRY_CODE_NOT_FOUND);
 
             entity.UpdateLookup(request.NameAr, request.NameEn, request.DialCode, request.FlagUrl, request.IsActive);
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return _msg.Ok(
                 CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity),
-                "LOOKUP_UPDATED");
+                MessageKeys.Lookups.LOOKUP_UPDATED);
         }
     }
 }
