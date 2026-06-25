@@ -14,7 +14,7 @@ public class MeilisearchClientTests
     [Fact]
     public async Task Round_trips_a_document_via_index_and_search()
     {
-        var sut = NewClient();
+        using var sut = NewClient();
         await sut.EnsureIndexAsync(SearchableType.News, CancellationToken.None);
 
         // Use a unique token in the content so we don't collide with documents accumulated
@@ -47,7 +47,7 @@ public class MeilisearchClientTests
     [Fact]
     public async Task Searching_a_nonexistent_index_returns_empty()
     {
-        var sut = NewClient();
+        using var sut = NewClient();
         // Don't call EnsureIndexAsync — search a fresh type that has no docs.
         // Use Pages which is unlikely to have data this run.
         var result = await sut.SearchAsync("zzz-no-such-content-xyz", SearchableType.Pages, 1, 10, CancellationToken.None);
@@ -58,7 +58,7 @@ public class MeilisearchClientTests
     [Fact]
     public async Task Delete_removes_the_document()
     {
-        var sut = NewClient();
+        using var sut = NewClient();
         await sut.EnsureIndexAsync(SearchableType.Events, CancellationToken.None);
 
         var docId = System.Guid.NewGuid();
