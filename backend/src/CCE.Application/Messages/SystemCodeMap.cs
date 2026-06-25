@@ -94,6 +94,7 @@ public static class SystemCodeMap
         ["TEMPLATE_NOT_FOUND"] = SystemCode.ERR080,
         ["TEMPLATE_DUPLICATE"] = SystemCode.ERR081,
         ["NOTIFICATION_NOT_FOUND"] = SystemCode.ERR082,
+        ["DEVICE_TOKEN_NOT_FOUND"] = SystemCode.ERR083,
 
         // ─── KnowledgeMap Errors ───
         ["MAP_NOT_FOUND"] = SystemCode.ERR090,
@@ -230,6 +231,8 @@ public static class SystemCodeMap
         ["NOTIFICATIONS_MARKED_READ"] = SystemCode.CON045,
         ["NOTIFICATION_TEMPLATE_CREATED"] = SystemCode.CON046,
         ["NOTIFICATION_TEMPLATE_UPDATED"] = SystemCode.CON047,
+        ["DEVICE_TOKEN_REGISTERED"] = SystemCode.CON087,
+        ["DEVICE_TOKEN_DELETED"] = SystemCode.CON088,
 
         // ─── Verification Success ───
         ["OTP_SENT"] = SystemCode.CON060,

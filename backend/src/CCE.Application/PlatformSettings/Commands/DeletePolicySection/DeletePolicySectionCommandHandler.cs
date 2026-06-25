@@ -28,11 +28,11 @@ public sealed class DeletePolicySectionCommandHandler
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.POLICIES_SETTINGS_NOT_FOUND);
 
         var section = settings.Sections.FirstOrDefault(s => s.Id == request.Id);
         if (section is null)
-            return _msg.PolicySectionNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.POLICY_SECTION_NOT_FOUND);
 
         settings.RemoveSection(section);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

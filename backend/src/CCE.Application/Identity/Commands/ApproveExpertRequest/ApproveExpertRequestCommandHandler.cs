@@ -38,12 +38,12 @@ public sealed class ApproveExpertRequestCommandHandler
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
-            return _msg.ExpertRequestNotFound<ExpertProfileDto>();
+            return _msg.NotFound<ExpertProfileDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var approvedById = _currentUser.GetUserId();
         if (approvedById is null)
         {
-            return _msg.NotAuthenticated<ExpertProfileDto>();
+            return _msg.Unauthorized<ExpertProfileDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         registration.Approve(approvedById.Value, _clock);

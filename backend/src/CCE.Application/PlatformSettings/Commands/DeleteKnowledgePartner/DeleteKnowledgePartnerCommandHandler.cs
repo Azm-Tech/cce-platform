@@ -28,11 +28,11 @@ public sealed class DeleteKnowledgePartnerCommandHandler
     {
         var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var partner = about.KnowledgePartners.FirstOrDefault(p => p.Id == request.Id);
         if (partner is null)
-            return _msg.KnowledgePartnerNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.KNOWLEDGE_PARTNER_NOT_FOUND);
 
         about.RemoveKnowledgePartner(partner);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

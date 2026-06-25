@@ -30,7 +30,7 @@ public sealed class GetPublicResourceByIdQueryHandler : IRequestHandler<GetPubli
             .ConfigureAwait(false);
         var resource = list.SingleOrDefault();
         if (resource is null || resource.PublishedOn is null)
-            return _messages.ResourceNotFound<PublicResourceDto>();
+            return _messages.NotFound<PublicResourceDto>(MessageKeys.Content.RESOURCE_NOT_FOUND);
         return _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), MessageKeys.General.SUCCESS_OPERATION);
     }
 

@@ -26,7 +26,7 @@ public sealed class DeleteResourceCategoryCommandHandler : IRequestHandler<Delet
     {
         var category = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (category is null)
-            return _messages.CategoryNotFound<VoidData>();
+            return _messages.NotFound<VoidData>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         category.Deactivate();
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

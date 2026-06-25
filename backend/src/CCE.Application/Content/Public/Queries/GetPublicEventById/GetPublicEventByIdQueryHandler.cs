@@ -28,7 +28,7 @@ public sealed class GetPublicEventByIdQueryHandler : IRequestHandler<GetPublicEv
             .ConfigureAwait(false);
         var ev = list.SingleOrDefault();
         if (ev is null)
-            return _messages.EventNotFound<PublicEventDto>();
+            return _messages.NotFound<PublicEventDto>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var topics = await _db.Topics.Where(t => t.Id == ev.TopicId)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);

@@ -28,7 +28,7 @@ public sealed class ListMyDraftsQueryHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == System.Guid.Empty)
-            return _msg.NotAuthenticated<PagedResult<MyDraftDto>>();
+            return _msg.Unauthorized<PagedResult<MyDraftDto>>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var paged = await _db.Posts
             .Where(p => p.AuthorId == userId.Value && p.Status == PostStatus.Draft)

@@ -28,9 +28,9 @@ internal sealed class AdLoginCommandHandler
 
         return result.Failure switch
         {
-            LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
+            LoginFailureReason.Deactivated => _msg.Forbidden<AuthTokenDto>(MessageKeys.Identity.ACCOUNT_DEACTIVATED),
             LoginFailureReason.None => _msg.Ok(result.Token!, MessageKeys.Identity.AD_LOGIN_SUCCESS),
-            _ => _msg.InvalidCredentials<AuthTokenDto>(),
+            _ => _msg.Unauthorized<AuthTokenDto>(MessageKeys.Identity.INVALID_CREDENTIALS),
         };
     }
 }

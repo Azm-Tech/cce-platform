@@ -40,7 +40,7 @@ internal sealed class RequestEmailChangeCommandHandler
             .ConfigureAwait(false);
 
         if (taken)
-            return _msg.ContactAlreadyTaken<RequestVerificationResponseDto>();
+            return _msg.Conflict<RequestVerificationResponseDto>(MessageKeys.Verification.CONTACT_ALREADY_TAKEN);
 
         var (entity, fail) = await _otpService.PrepareAsync(
             request.NewEmail,

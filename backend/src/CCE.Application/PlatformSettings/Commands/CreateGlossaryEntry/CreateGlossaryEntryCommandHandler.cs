@@ -36,7 +36,7 @@ public sealed class CreateGlossaryEntryCommandHandler
     {
         var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("User identity required.");

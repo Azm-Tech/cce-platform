@@ -24,7 +24,7 @@ internal sealed class GetMediaByIdQueryHandler
     {
         var mediaFile = await _repo.FindAsync(request.Id, ct).ConfigureAwait(false);
         if (mediaFile is null)
-            return _msg.MediaFileNotFound<MediaFileDto>();
+            return _msg.NotFound<MediaFileDto>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
         return _msg.Ok(MediaFileDto.FromEntity(mediaFile), MessageKeys.General.ITEMS_LISTED);
     }

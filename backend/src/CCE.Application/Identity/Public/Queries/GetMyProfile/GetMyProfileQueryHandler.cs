@@ -31,7 +31,7 @@ public sealed class GetMyProfileQueryHandler : IRequestHandler<GetMyProfileQuery
 
         var user = users.FirstOrDefault();
         if (user is null)
-            return _msg.UserNotFound<UserProfileDto>();
+            return _msg.NotFound<UserProfileDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var interestTopics = user.UserInterestTopics
             .Select(uit => new InterestTopicDto(

@@ -26,7 +26,7 @@ public sealed class GetAboutSettingsQueryHandler
         var list = await _db.AboutSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = list.FirstOrDefault();
         if (settings is null)
-            return _msg.AboutSettingsNotFound<AboutSettingsDto>();
+            return _msg.NotFound<AboutSettingsDto>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var glossary = await _db.GlossaryEntries
             .Where(e => e.AboutSettingsId == settings.Id)

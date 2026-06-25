@@ -38,7 +38,7 @@ public sealed class UpsertCountryProfileCommandHandler : IRequestHandler<UpsertC
         // State reps may only edit their own assigned country; null scope = admin bypass
         var authorizedIds = await _scope.GetAuthorizedCountryIdsAsync(cancellationToken).ConfigureAwait(false);
         if (authorizedIds is not null && !authorizedIds.Contains(request.CountryId))
-            return _messages.CountryScopeForbidden<CountryProfileDto>();
+            return _messages.Forbidden<CountryProfileDto>(MessageKeys.Country.COUNTRY_SCOPE_FORBIDDEN);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot upsert country profile from a request without a user identity.");

@@ -52,7 +52,7 @@ public sealed class CreateReplyCommandHandler
     public async Task<Response<Guid>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
     {
         var authorId = _currentUser.GetUserId();
-        if (authorId is null || authorId == Guid.Empty) return _msg.NotAuthenticated<Guid>();
+        if (authorId is null || authorId == Guid.Empty) return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
         if (post is null) return _msg.NotFound<Guid>(MessageKeys.Community.POST_NOT_FOUND);

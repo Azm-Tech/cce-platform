@@ -34,7 +34,7 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
             q => q.Include(n => n.Tags),
             cancellationToken).ConfigureAwait(false);
         if (news is null)
-            return _messages.NewsNotFound<NewsDto>();
+            return _messages.NotFound<NewsDto>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)

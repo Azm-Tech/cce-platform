@@ -27,7 +27,7 @@ public sealed class GetTopicByIdQueryHandler : IRequestHandler<GetTopicByIdQuery
             .ConfigureAwait(false);
         var topic = list.SingleOrDefault();
         if (topic is null)
-            return _messages.TopicNotFound<TopicDto>();
+            return _messages.NotFound<TopicDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         return _messages.Ok(ListTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }

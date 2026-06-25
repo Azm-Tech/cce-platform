@@ -31,7 +31,7 @@ public sealed class SetCommunityFollowCommandHandler
     public async Task<Response<VoidData>> Handle(SetCommunityFollowCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (request.Status == FollowStatus.Followed)
         {

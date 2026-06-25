@@ -39,7 +39,7 @@ public sealed class RevokeStateRepAssignmentCommandHandler : IRequestHandler<Rev
         var revokedById = _currentUser.GetUserId();
         if (revokedById is null)
         {
-            return _msg.NotAuthenticated<VoidData>();
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         assignment.Revoke(revokedById.Value, _clock);

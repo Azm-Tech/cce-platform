@@ -32,7 +32,7 @@ public sealed class PublishNewsCommandHandler : IRequestHandler<PublishNewsComma
     {
         var news = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (news is null)
-            return _messages.NewsNotFound<NewsDto>();
+            return _messages.NotFound<NewsDto>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var expectedRowVersion = news.RowVersion;
         news.Publish(_clock);

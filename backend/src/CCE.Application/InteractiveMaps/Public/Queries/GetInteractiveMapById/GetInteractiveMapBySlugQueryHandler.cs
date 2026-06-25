@@ -29,7 +29,7 @@ internal sealed class GetPublicInteractiveMapByIdQueryHandler
             .ConfigureAwait(false);
 
         if (map is null)
-            return _msg.MapNotFound<PublicInteractiveMapDto>();
+            return _msg.NotFound<PublicInteractiveMapDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         var nodes = await _db.InteractiveMapNodes
             .Include(n => n.Tags)

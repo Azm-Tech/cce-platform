@@ -161,6 +161,9 @@ public static class MessageKeys
         public const string NOTIFICATIONS_MARKED_READ = "NOTIFICATIONS_MARKED_READ";
         public const string NOTIFICATION_TEMPLATE_CREATED = "NOTIFICATION_TEMPLATE_CREATED";
         public const string NOTIFICATION_TEMPLATE_UPDATED = "NOTIFICATION_TEMPLATE_UPDATED";
+        public const string DEVICE_TOKEN_NOT_FOUND = "DEVICE_TOKEN_NOT_FOUND";
+        public const string DEVICE_TOKEN_REGISTERED = "DEVICE_TOKEN_REGISTERED";
+        public const string DEVICE_TOKEN_DELETED = "DEVICE_TOKEN_DELETED";
     }
 
     public static class KnowledgeMap

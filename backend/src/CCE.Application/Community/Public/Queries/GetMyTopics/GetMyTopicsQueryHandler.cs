@@ -32,7 +32,7 @@ public sealed class GetMyTopicsQueryHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == System.Guid.Empty)
-            return _msg.NotAuthenticated<PagedResult<MyTopicDto>>();
+            return _msg.Unauthorized<PagedResult<MyTopicDto>>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         // Step 1: paginate followed topic IDs (with search filter)
         var query = from f in _db.TopicFollows

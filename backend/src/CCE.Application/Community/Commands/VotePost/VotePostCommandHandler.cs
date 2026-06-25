@@ -44,7 +44,7 @@ public sealed class VotePostCommandHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == Guid.Empty)
-            return _msg.NotAuthenticated<VoidData>();
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
         if (post is null)

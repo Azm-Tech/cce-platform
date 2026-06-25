@@ -25,7 +25,7 @@ public sealed class UpdateMyProfileCommandHandler : IRequestHandler<UpdateMyProf
         // fetch via repository
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
-            return _msg.UserNotFound<UserProfileDto>();
+            return _msg.NotFound<UserProfileDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         // domain methods
         user.UpdateProfile(request.FirstName, request.LastName, request.JobTitle, request.OrganizationName);

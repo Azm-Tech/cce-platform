@@ -31,7 +31,7 @@ public sealed class GetExpertRequestByIdQueryHandler
 
         var row = rows.FirstOrDefault();
         if (row is null)
-            return _msg.ExpertRequestNotFound<ExpertRequestDto>();
+            return _msg.NotFound<ExpertRequestDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var userNames = await _db.Users
             .Where(u => u.Id == row.RequestedById)

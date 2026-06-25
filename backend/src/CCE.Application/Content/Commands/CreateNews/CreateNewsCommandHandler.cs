@@ -36,7 +36,7 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
     {
         var authorId = _currentUser.GetUserId();
         if (authorId is null)
-            return _messages.NotAuthenticated<NewsDto>();
+            return _messages.Unauthorized<NewsDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)

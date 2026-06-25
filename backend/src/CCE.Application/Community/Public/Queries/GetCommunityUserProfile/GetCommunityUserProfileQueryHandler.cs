@@ -31,7 +31,7 @@ public sealed class GetCommunityUserProfileQueryHandler
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if (user is null) return _msg.UserNotFound<CommunityUserProfileDto>();
+        if (user is null) return _msg.NotFound<CommunityUserProfileDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var isExpert = await _db.ExpertProfiles.AnyAsync(e => e.UserId == request.UserId, cancellationToken).ConfigureAwait(false);
 

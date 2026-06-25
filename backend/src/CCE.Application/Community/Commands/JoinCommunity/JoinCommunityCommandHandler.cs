@@ -31,7 +31,7 @@ public sealed class JoinCommunityCommandHandler
     public async Task<Response<VoidData>> Handle(JoinCommunityCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var community = await _repo.GetAsync(request.CommunityId, cancellationToken).ConfigureAwait(false);
         if (community is null || !community.IsActive)

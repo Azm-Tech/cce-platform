@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Messages;
@@ -37,7 +37,7 @@ public sealed class ApproveCountryResourceRequestCommandHandler
     {
         var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (entity is null)
-            return _messages.CountryContentRequestNotFound<CountryContentRequestDto>();
+            return _messages.NotFound<CountryContentRequestDto>(MessageKeys.Content.COUNTRY_RESOURCE_REQUEST_NOT_FOUND);
 
         var approvedById = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot approve from a request without a user identity.");
@@ -49,13 +49,13 @@ public sealed class ApproveCountryResourceRequestCommandHandler
         catch (DomainException)
         {
             // ERR031 — request is not in Pending state (already approved or rejected)
-            return _messages.CountryRequestProcessingFailed<CountryContentRequestDto>();
+            return _messages.BusinessRule<CountryContentRequestDto>(MessageKeys.Content.COUNTRY_REQUEST_PROCESSING_FAILED);
         }
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // CON023
-        return _messages.CountryRequestProcessed(MapToDto(entity));
+        return _messages.Ok(MapToDto(entity), MessageKeys.Content.COUNTRY_REQUEST_PROCESSED);
     }
 
     internal static CountryContentRequestDto MapToDto(CountryContentRequest e) => new(

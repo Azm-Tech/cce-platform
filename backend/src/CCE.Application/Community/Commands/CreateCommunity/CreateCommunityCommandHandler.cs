@@ -31,7 +31,7 @@ public sealed class CreateCommunityCommandHandler
     public async Task<Response<Guid>> Handle(CreateCommunityCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<Guid>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (await _repo.SlugExistsAsync(request.Slug, cancellationToken).ConfigureAwait(false))
             return _msg.Conflict<Guid>(MessageKeys.General.DUPLICATE_VALUE);

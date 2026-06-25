@@ -265,6 +265,18 @@ NOTIFICATION_TEMPLATE_UPDATED:
   ar: "تم تحديث قالب الإشعار بنجاح"
   en: "Notification template updated successfully"
 
+DEVICE_TOKEN_REGISTERED:
+  ar: "تم تسجيل الجهاز بنجاح"
+  en: "Device registered successfully"
+
+DEVICE_TOKEN_DELETED:
+  ar: "تم إلغاء تسجيل الجهاز بنجاح"
+  en: "Device unregistered successfully"
+
+DEVICE_TOKEN_NOT_FOUND:
+  ar: "رمز الجهاز غير موجود"
+  en: "Device token not found"
+
 EVALUATION_NOT_FOUND:
   ar: "التقييم غير موجود"
   en: "Evaluation not found"

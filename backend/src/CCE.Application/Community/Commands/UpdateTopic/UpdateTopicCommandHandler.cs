@@ -28,7 +28,7 @@ public sealed class UpdateTopicCommandHandler : IRequestHandler<UpdateTopicComma
     {
         var topic = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (topic is null)
-            return _messages.TopicNotFound<TopicDto>();
+            return _messages.NotFound<TopicDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         topic.UpdateContent(request.NameAr, request.NameEn, request.DescriptionAr, request.DescriptionEn);
         topic.Reorder(request.OrderIndex);

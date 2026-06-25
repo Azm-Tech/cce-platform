@@ -32,7 +32,7 @@ public sealed class DeleteHomepageSectionCommandHandler : IRequestHandler<Delete
         var deletedById = _currentUser.GetUserId();
         if (deletedById is null)
         {
-            return _msg.NotAuthenticated<VoidData>();
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         section.SoftDelete(deletedById.Value, _clock);

@@ -28,6 +28,7 @@
     <PackageReference Include="MediatR" />
 
     <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="FirebaseAdmin" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Meilisearch" />
     <PackageReference Include="StackExchange.Redis" />

@@ -34,7 +34,7 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
             q => q.Include(e => e.Tags),
             cancellationToken).ConfigureAwait(false);
         if (ev is null)
-            return _messages.EventNotFound<EventDto>();
+            return _messages.NotFound<EventDto>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var topicExists = await _db.Topics.Where(t => t.Id == request.TopicId).CountAsyncEither(cancellationToken) > 0;
         if (!topicExists)

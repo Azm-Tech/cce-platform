@@ -33,7 +33,7 @@ public sealed class ChangeUserStatusCommandHandler : IRequestHandler<ChangeUserS
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var newStatus = request.IsActive ? UserStatus.Active : UserStatus.Inactive;

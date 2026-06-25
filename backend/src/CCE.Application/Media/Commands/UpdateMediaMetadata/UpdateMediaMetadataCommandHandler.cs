@@ -28,7 +28,7 @@ internal sealed class UpdateMediaMetadataCommandHandler
     {
         var mediaFile = await _repo.FindAsync(request.Id, ct).ConfigureAwait(false);
         if (mediaFile is null)
-            return _msg.MediaFileNotFound<MediaFileBriefDto>();
+            return _msg.NotFound<MediaFileBriefDto>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
         mediaFile.UpdateMetadata(
             request.TitleAr,

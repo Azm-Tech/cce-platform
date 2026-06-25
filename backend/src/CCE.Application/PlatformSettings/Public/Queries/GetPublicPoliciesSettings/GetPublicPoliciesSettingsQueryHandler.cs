@@ -27,7 +27,7 @@ public sealed class GetPublicPoliciesSettingsQueryHandler
         var list = await _db.PoliciesSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = list.FirstOrDefault();
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<PublicPoliciesSettingsDto>();
+            return _msg.NotFound<PublicPoliciesSettingsDto>(MessageKeys.PlatformSettings.POLICIES_SETTINGS_NOT_FOUND);
 
         var sections = await _db.PolicySections
             .Where(s => s.PoliciesSettingsId == settings.Id)

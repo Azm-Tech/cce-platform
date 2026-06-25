@@ -28,7 +28,7 @@ public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<Updat
     {
         var category = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (category is null)
-            return _messages.CategoryNotFound<ResourceCategoryDto>();
+            return _messages.NotFound<ResourceCategoryDto>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         category.UpdateNames(request.NameAr, request.NameEn);
         category.Reorder(request.OrderIndex);

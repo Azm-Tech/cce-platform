@@ -38,12 +38,12 @@ public sealed class RejectExpertRequestCommandHandler
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
-            return _msg.ExpertRequestNotFound<ExpertRequestDto>();
+            return _msg.NotFound<ExpertRequestDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var rejectedById = _currentUser.GetUserId();
         if (rejectedById is null)
         {
-            return _msg.NotAuthenticated<ExpertRequestDto>();
+            return _msg.Unauthorized<ExpertRequestDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         registration.Reject(rejectedById.Value, request.RejectionReasonAr, request.RejectionReasonEn, _clock);

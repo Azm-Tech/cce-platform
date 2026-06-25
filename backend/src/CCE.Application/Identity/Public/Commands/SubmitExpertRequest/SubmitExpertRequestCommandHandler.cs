@@ -40,9 +40,9 @@ public sealed class SubmitExpertRequestCommandHandler
 
         var asset = assets.FirstOrDefault();
         if (asset is null)
-            return _msg.AssetNotFound<ExpertRequestStatusDto>();
+            return _msg.NotFound<ExpertRequestStatusDto>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _msg.AssetNotClean<ExpertRequestStatusDto>();
+            return _msg.BusinessRule<ExpertRequestStatusDto>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         // WRITE: create aggregate via domain factory
         var entity = ExpertRegistrationRequest.Submit(

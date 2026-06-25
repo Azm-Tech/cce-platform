@@ -36,7 +36,7 @@ public sealed class CreatePolicySectionCommandHandler
     {
         var settings = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (settings is null)
-            return _msg.PoliciesSettingsNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.PlatformSettings.POLICIES_SETTINGS_NOT_FOUND);
 
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("User identity required.");

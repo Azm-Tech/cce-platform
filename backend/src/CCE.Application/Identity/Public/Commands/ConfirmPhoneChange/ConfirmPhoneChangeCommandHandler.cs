@@ -41,16 +41,16 @@ internal sealed class ConfirmPhoneChangeCommandHandler
             .ConfigureAwait(false);
 
         if (otp is null)
-            return _msg.OtpNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Verification.OTP_NOT_FOUND);
 
         if (otp.IsInvalidated)
-            return _msg.OtpInvalidated<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_INVALIDATED);
 
         if (otp.IsExpired(now))
-            return _msg.OtpExpired<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_EXPIRED);
 
         if (otp.HasExceededMaxAttempts())
-            return _msg.OtpMaxAttempts<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_MAX_ATTEMPTS);
 
         // Ownership validation — OTP must belong to the authenticated user
         if (otp.UserId.HasValue && otp.UserId.Value != request.UserId)
@@ -62,7 +62,7 @@ internal sealed class ConfirmPhoneChangeCommandHandler
         {
             _otpRepo.Update(otp);
             await _db.SaveChangesAsync(ct).ConfigureAwait(false);
-            return _msg.OtpInvalidCode<VoidData>();
+            return _msg.BusinessRule<VoidData>(MessageKeys.Verification.OTP_INVALID_CODE);
         }
 
         // WRITE — fetch user via repository
@@ -71,7 +71,7 @@ internal sealed class ConfirmPhoneChangeCommandHandler
             .ConfigureAwait(false);
 
         if (user is null)
-            return _msg.UserNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Identity.USER_NOT_FOUND);
 
         // Read CountryId stored at request-time — client does not need to re-send it
         System.Guid? countryId = null;
@@ -93,6 +93,6 @@ internal sealed class ConfirmPhoneChangeCommandHandler
         // ICceDbContext as unit of work
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return _msg.PhoneUpdated();
+        return _msg.Ok(MessageKeys.Verification.PHONE_UPDATED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.InteractiveMaps;
@@ -42,6 +42,6 @@ internal sealed class CreateInteractiveMapNodeCommandHandler
         await _repo.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NodeCreated();
+        return _msg.Ok(MessageKeys.InteractiveMaps.NODE_CREATED);
     }
 }

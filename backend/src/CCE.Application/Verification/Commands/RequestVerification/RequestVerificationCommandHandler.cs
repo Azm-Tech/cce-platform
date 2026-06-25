@@ -41,7 +41,7 @@ internal sealed class RequestVerificationCommandHandler
             .ConfigureAwait(false);
 
         if (existing is not null && !existing.CanResend(now))
-            return _msg.OtpCooldownActive<RequestVerificationResponseDto>();
+            return _msg.BusinessRule<RequestVerificationResponseDto>(MessageKeys.Verification.OTP_COOLDOWN_ACTIVE);
 
         var (plainCode, codeHash) = _codeGenerator.Generate();
 

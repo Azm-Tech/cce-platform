@@ -33,7 +33,7 @@ internal sealed class DeleteMediaCommandHandler
     {
         var mediaFile = await _repo.FindAsync(request.Id, ct).ConfigureAwait(false);
         if (mediaFile is null)
-            return _msg.MediaFileNotFound<MediaFileBriefDto>();
+            return _msg.NotFound<MediaFileBriefDto>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
         await _fileStorage.DeleteAsync(mediaFile.StorageKey, ct).ConfigureAwait(false);
 

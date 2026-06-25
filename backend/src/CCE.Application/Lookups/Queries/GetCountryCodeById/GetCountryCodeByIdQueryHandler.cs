@@ -28,7 +28,7 @@ public sealed class GetCountryCodeByIdQueryHandler
             .ConfigureAwait(false);
         var entity = list.SingleOrDefault();
         return entity is null
-            ? _msg.CountryCodeNotFound<CountryCodeDto>()
+            ? _msg.NotFound<CountryCodeDto>(MessageKeys.Lookups.COUNTRY_CODE_NOT_FOUND)
             : _msg.Ok(CCE.Application.Lookups.Queries.ListCountryCodes.ListCountryCodesQueryHandler.MapToDto(entity), MessageKeys.General.ITEMS_LISTED);
     }
 }

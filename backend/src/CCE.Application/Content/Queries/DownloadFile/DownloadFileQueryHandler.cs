@@ -35,7 +35,7 @@ internal sealed class DownloadFileQueryHandler
                 .ConfigureAwait(false);
 
             if (media is null)
-                return _msg.MediaFileNotFound<DownloadFilePayload>();
+                return _msg.NotFound<DownloadFilePayload>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
 
             var storage = _storageFactory.GetStorage(DownloadFileType.Media);
             Stream stream;
@@ -47,7 +47,7 @@ internal sealed class DownloadFileQueryHandler
             }
             catch (FileNotFoundException)
             {
-                return _msg.MediaFileNotFound<DownloadFilePayload>();
+                return _msg.NotFound<DownloadFilePayload>(MessageKeys.Media.MEDIA_FILE_NOT_FOUND);
             }
 
             var payload = new DownloadFilePayload(stream, media.MimeType, media.OriginalFileName);
@@ -59,10 +59,10 @@ internal sealed class DownloadFileQueryHandler
             .ConfigureAwait(false);
 
         if (asset is null)
-            return _msg.AssetNotFound<DownloadFilePayload>();
+            return _msg.NotFound<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_FOUND);
 
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _msg.AssetNotClean<DownloadFilePayload>();
+            return _msg.BusinessRule<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         var assetStorage = _storageFactory.GetStorage(DownloadFileType.Asset);
         Stream assetStream;
@@ -74,7 +74,7 @@ internal sealed class DownloadFileQueryHandler
         }
         catch (FileNotFoundException)
         {
-            return _msg.AssetNotFound<DownloadFilePayload>();
+            return _msg.NotFound<DownloadFilePayload>(MessageKeys.Content.ASSET_NOT_FOUND);
         }
 
         var assetPayload = new DownloadFilePayload(assetStream, asset.MimeType, asset.OriginalFileName);

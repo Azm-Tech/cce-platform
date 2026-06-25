@@ -39,7 +39,7 @@ public sealed class CastPollVoteCommandHandler
     public async Task<Response<VoidData>> Handle(CastPollVoteCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var optionIds = request.OptionIds.Distinct().ToList();
         if (optionIds.Count == 0)

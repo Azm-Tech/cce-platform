@@ -36,7 +36,7 @@ internal sealed class GetInteractiveMapByIdQueryHandler
             .ConfigureAwait(false);
 
         if (dto is null)
-            return _msg.MapNotFound<InteractiveMapDto>();
+            return _msg.NotFound<InteractiveMapDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }

@@ -27,7 +27,7 @@ public sealed class GetResourceCategoryByIdQueryHandler : IRequestHandler<GetRes
             .ConfigureAwait(false);
         var category = list.SingleOrDefault();
         if (category is null)
-            return _messages.CategoryNotFound<ResourceCategoryDto>();
+            return _messages.NotFound<ResourceCategoryDto>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         return _messages.Ok(MapToDto(category), MessageKeys.General.SUCCESS_OPERATION);
     }

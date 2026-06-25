@@ -30,7 +30,7 @@ public sealed class GetResourceByIdQueryHandler : IRequestHandler<GetResourceByI
             .ConfigureAwait(false);
         var resource = list.SingleOrDefault();
         return resource is null
-            ? _messages.ResourceNotFound<ResourceDto>()
+            ? _messages.NotFound<ResourceDto>(MessageKeys.Content.RESOURCE_NOT_FOUND)
             : _messages.Ok(await MapToDtoAsync(resource, cancellationToken).ConfigureAwait(false), MessageKeys.General.SUCCESS_OPERATION);
     }
 

@@ -28,7 +28,7 @@ public sealed class GetPublicNewsByIdQueryHandler : IRequestHandler<GetPublicNew
             .ConfigureAwait(false);
         var news = list.SingleOrDefault();
         if (news is null)
-            return _messages.NewsNotFound<PublicNewsDto>();
+            return _messages.NotFound<PublicNewsDto>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var topics = await _db.Topics.Where(t => t.Id == news.TopicId)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);

@@ -27,7 +27,7 @@ public sealed class AssignUserRolesCommandHandler : IRequestHandler<AssignUserRo
         var ok = await _service.ReplaceRolesAsync(request.Id, request.Roles, cancellationToken).ConfigureAwait(false);
         if (!ok)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var result = await _mediator.Send(new GetUserByIdQuery(request.Id), cancellationToken).ConfigureAwait(false);

@@ -27,13 +27,13 @@ public sealed class DeletePageCommandHandler : IRequestHandler<DeletePageCommand
         var page = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (page is null)
         {
-            return _msg.PageNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Content.PAGE_NOT_FOUND);
         }
 
         var deletedById = _currentUser.GetUserId();
         if (deletedById is null)
         {
-            return _msg.NotAuthenticated<VoidData>();
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
         page.SoftDelete(deletedById.Value, _clock);

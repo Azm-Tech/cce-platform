@@ -26,7 +26,7 @@ public sealed class ListMyMentionsQueryHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == System.Guid.Empty)
-            return _msg.NotAuthenticated<PagedResult<MyMentionDto>>();
+            return _msg.Unauthorized<PagedResult<MyMentionDto>>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var paged = await _db.Mentions
             .Where(m => m.MentionedUserId == userId.Value)

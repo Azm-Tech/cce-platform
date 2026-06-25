@@ -33,7 +33,7 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
         var user = users.SingleOrDefault();
         if (user is null)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var roleNames =

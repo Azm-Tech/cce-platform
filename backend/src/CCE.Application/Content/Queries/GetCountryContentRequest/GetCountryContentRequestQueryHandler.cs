@@ -39,7 +39,7 @@ public sealed class GetCountryContentRequestQueryHandler
 
         var entity = items.FirstOrDefault();
         if (entity is null)
-            return _messages.CountryContentRequestNotFound<CountryContentRequestDto>();
+            return _messages.NotFound<CountryContentRequestDto>(MessageKeys.Content.COUNTRY_RESOURCE_REQUEST_NOT_FOUND);
 
         var dto = new CountryContentRequestDto(
             entity.Id, entity.CountryId, entity.RequestedById, entity.Type, entity.Status,

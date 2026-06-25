@@ -31,7 +31,7 @@ public sealed class GetMyInterestsQueryHandler
     {
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
-            return _msg.UserNotFound<UserInterestsDto>();
+            return _msg.NotFound<UserInterestsDto>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var currentTopics = await _db.InterestTopics
             .Where(t => t.IsActive)

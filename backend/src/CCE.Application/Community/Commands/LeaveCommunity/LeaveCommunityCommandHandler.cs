@@ -26,7 +26,7 @@ public sealed class LeaveCommunityCommandHandler
     public async Task<Response<VoidData>> Handle(LeaveCommunityCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var membership = await _repo.FindMembershipAsync(request.CommunityId, userId.Value, cancellationToken).ConfigureAwait(false);
         if (membership is not null)

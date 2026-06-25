@@ -33,11 +33,11 @@ public sealed class DeleteResourceCommandHandler : IRequestHandler<DeleteResourc
     {
         var resource = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (resource is null)
-            return _messages.ResourceNotFound<VoidData>();
+            return _messages.NotFound<VoidData>(MessageKeys.Content.RESOURCE_NOT_FOUND);
 
         var userId = _currentUser.GetUserId();
         if (userId is null)
-            return _messages.NotAuthenticated<VoidData>();
+            return _messages.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         resource.SoftDelete(userId.Value, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

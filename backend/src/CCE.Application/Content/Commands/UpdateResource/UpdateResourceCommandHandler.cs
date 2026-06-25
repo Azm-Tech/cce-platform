@@ -32,11 +32,11 @@ public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourc
             q => q.Include(r => r.Countries),
             cancellationToken).ConfigureAwait(false);
         if (resource is null)
-            return _messages.ResourceNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.RESOURCE_NOT_FOUND);
 
         var categoryExists = await ExistsAsync(_db.ResourceCategories.Where(c => c.Id == request.CategoryId), cancellationToken).ConfigureAwait(false);
         if (!categoryExists)
-            return _messages.CategoryNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         var countryIds = request.CountryIds.Distinct().ToList();
         if (countryIds.Count > 0)

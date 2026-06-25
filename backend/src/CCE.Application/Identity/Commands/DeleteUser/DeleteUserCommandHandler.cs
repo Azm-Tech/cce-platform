@@ -32,7 +32,7 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null || user.IsDeleted)
         {
-            return _msg.UserNotFound<UserDetailDto>();
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var deletedById = _currentUser.GetUserId()

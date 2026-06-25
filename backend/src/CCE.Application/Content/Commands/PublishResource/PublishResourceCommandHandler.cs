@@ -31,7 +31,7 @@ public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResou
     {
         var resource = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (resource is null)
-            return _messages.ResourceNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.RESOURCE_NOT_FOUND);
 
         var assets = await _db.AssetFiles
             .Where(a => a.Id == resource.AssetFileId)
@@ -39,9 +39,9 @@ public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResou
             .ConfigureAwait(false);
         var asset = assets.SingleOrDefault();
         if (asset is null)
-            return _messages.AssetNotFound<System.Guid>();
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            return _messages.AssetNotClean<System.Guid>();
+            return _messages.BusinessRule<System.Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         var expectedRowVersion = resource.RowVersion;
         resource.Publish(_clock);

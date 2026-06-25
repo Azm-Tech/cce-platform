@@ -57,7 +57,7 @@ public sealed class CreatePostCommandHandler
     {
         var authorId = _currentUser.GetUserId();
         if (authorId is null || authorId == Guid.Empty)
-            return _msg.NotAuthenticated<Guid>();
+            return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (!await _accessGuard.CanPostAsync(request.CommunityId, authorId.Value, cancellationToken).ConfigureAwait(false))
         {
@@ -78,7 +78,7 @@ public sealed class CreatePostCommandHandler
         }
 
         if (!await _repo.TopicExistsAsync(request.TopicId, cancellationToken).ConfigureAwait(false))
-            return _msg.TopicNotFound<Guid>();
+            return _msg.NotFound<Guid>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         var sanitized = request.Content is null ? null : _sanitizer.Sanitize(request.Content);
         var post = Post.CreateDraft(request.CommunityId, request.TopicId, authorId.Value, request.Type,
@@ -102,18 +102,18 @@ public sealed class CreatePostCommandHandler
             foreach (var att in request.Attachments)
             {
                 if (!assets.TryGetValue(att.AssetFileId, out var asset))
-                    return _msg.AssetNotFound<Guid>();
+                    return _msg.NotFound<Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
                 if (asset.VirusScanStatus != Domain.Content.VirusScanStatus.Clean)
-                    return _msg.AssetNotClean<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
                 var allowed = att.Kind == Domain.Community.AttachmentKind.Media
                     ? PostAttachmentPolicy.MediaMimeTypes
                     : PostAttachmentPolicy.DocumentMimeTypes;
                 if (!allowed.Contains(asset.MimeType))
-                    return _msg.InvalidFileType<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Media.INVALID_FILE_TYPE);
                 if (att.Kind == Domain.Community.AttachmentKind.Document
                     && asset.SizeBytes > PostAttachmentPolicy.MaxDocumentSizeBytes)
-                    return _msg.FileTooLarge<Guid>();
+                    return _msg.BusinessRule<Guid>(MessageKeys.Media.FILE_TOO_LARGE);
 
                 post.AddAttachment(att.AssetFileId, att.Kind, att.SortOrder, att.MetadataJson);
             }

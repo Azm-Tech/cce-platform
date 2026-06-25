@@ -29,7 +29,7 @@ public sealed class GetPublicHomepageQueryHandler
         var settingsList = await _db.HomepageSettings.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var settings = settingsList.FirstOrDefault();
         if (settings is null)
-            return _msg.HomepageSettingsNotFound<PublicHomepageDto>();
+            return _msg.NotFound<PublicHomepageDto>(MessageKeys.PlatformSettings.HOMEPAGE_SETTINGS_NOT_FOUND);
 
         var countries = await (
             from hc in _db.HomepageCountries

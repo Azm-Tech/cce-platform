@@ -29,7 +29,7 @@ public sealed class GetMyExpertStatusQueryHandler : IRequestHandler<GetMyExpertS
 
         var entity = rows.FirstOrDefault();
         if (entity is null)
-            return _msg.ExpertRequestNotFound<ExpertRequestStatusDto>();
+            return _msg.NotFound<ExpertRequestStatusDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
 
         var attachments = await _db.ExpertRequestAttachments
             .Where(a => a.ExpertRequestId == entity.Id)

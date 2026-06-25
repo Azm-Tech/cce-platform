@@ -23,10 +23,10 @@ internal sealed class LoginCommandHandler
             request.IpAddress, request.UserAgent, ct).ConfigureAwait(false);
         return result.Failure switch
         {
-            LoginFailureReason.Deactivated => _msg.AccountDeactivated<AuthTokenDto>(),
-            LoginFailureReason.ContactNotVerified => _msg.ContactNotVerified<AuthTokenDto>(),
+            LoginFailureReason.Deactivated => _msg.Forbidden<AuthTokenDto>(MessageKeys.Identity.ACCOUNT_DEACTIVATED),
+            LoginFailureReason.ContactNotVerified => _msg.Forbidden<AuthTokenDto>(MessageKeys.Identity.CONTACT_NOT_VERIFIED),
             LoginFailureReason.None => _msg.Ok(result.Token!, MessageKeys.Identity.LOGIN_SUCCESS),
-            _ => _msg.InvalidCredentials<AuthTokenDto>(),
+            _ => _msg.Unauthorized<AuthTokenDto>(MessageKeys.Identity.INVALID_CREDENTIALS),
         };
     }
 }

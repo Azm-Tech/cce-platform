@@ -28,11 +28,11 @@ public sealed class DeleteGlossaryEntryCommandHandler
     {
         var about = await _repo.GetAsync(cancellationToken).ConfigureAwait(false);
         if (about is null)
-            return _msg.AboutSettingsNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.ABOUT_SETTINGS_NOT_FOUND);
 
         var entry = about.GlossaryEntries.FirstOrDefault(e => e.Id == request.Id);
         if (entry is null)
-            return _msg.GlossaryEntryNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.PlatformSettings.GLOSSARY_ENTRY_NOT_FOUND);
 
         about.RemoveGlossaryEntry(entry);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

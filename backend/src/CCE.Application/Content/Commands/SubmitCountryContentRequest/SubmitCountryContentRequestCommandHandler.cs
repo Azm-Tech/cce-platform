@@ -48,7 +48,7 @@ public sealed class SubmitCountryContentRequestCommandHandler
 
         var countryId = await ResolveCountryIdAsync(request.CountryId, cancellationToken).ConfigureAwait(false);
         if (countryId is null)
-            return _messages.CountryScopeForbidden<System.Guid>();
+            return _messages.Forbidden<System.Guid>(MessageKeys.Country.COUNTRY_SCOPE_FORBIDDEN);
 
         CountryContentRequest contentRequest = request.Content switch
         {

@@ -30,7 +30,7 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
             request.FirstName, request.LastName, request.Email,
             request.PhoneNumber, request.CountryId, request.Role, createdBy, cancellationToken).ConfigureAwait(false);
 
-        if (result.EmailTaken) return _msg.EmailExists<UserDetailDto>();
+        if (result.EmailTaken) return _msg.Conflict<UserDetailDto>(MessageKeys.Identity.EMAIL_EXISTS);
         if (result.Failed || result.User is null) return _msg.BusinessRule<UserDetailDto>(MessageKeys.Identity.REGISTRATION_FAILED);
 
         var detail = await _mediator.Send(new GetUserByIdQuery(result.User.Id), cancellationToken).ConfigureAwait(false);

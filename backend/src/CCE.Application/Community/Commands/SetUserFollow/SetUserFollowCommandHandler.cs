@@ -34,14 +34,14 @@ public sealed class SetUserFollowCommandHandler
     public async Task<Response<VoidData>> Handle(SetUserFollowCommand request, CancellationToken cancellationToken)
     {
         var followerId = _currentUser.GetUserId();
-        if (followerId is null || followerId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (followerId is null || followerId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         if (request.Status == FollowStatus.Followed)
         {
-            if (followerId.Value == request.UserId) return _msg.CannotFollowSelf<VoidData>();
+            if (followerId.Value == request.UserId) return _msg.ValidationError<VoidData>(MessageKeys.Community.CANNOT_FOLLOW_SELF, new[] { _msg.Field("userId", MessageKeys.Community.CANNOT_FOLLOW_SELF) });
 
             var followed = await _userRepo.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
-            if (followed is null) return _msg.UserNotFound<VoidData>();
+            if (followed is null) return _msg.NotFound<VoidData>(MessageKeys.Identity.USER_NOT_FOUND);
 
             // Idempotent: only create + bump counts when not already following
             var existing = await _service.FindUserFollowAsync(followerId.Value, request.UserId, cancellationToken).ConfigureAwait(false);

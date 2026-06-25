@@ -31,7 +31,7 @@ public sealed class GetPublicTopicBySlugQueryHandler
             .FirstOrDefault();
 
         if (topic is null)
-            return _messages.TopicNotFound<PublicTopicDto>();
+            return _messages.NotFound<PublicTopicDto>(MessageKeys.Community.TOPIC_NOT_FOUND);
 
         return _messages.Ok(ListPublicTopicsQueryHandler.MapToDto(topic), MessageKeys.General.SUCCESS_OPERATION);
     }

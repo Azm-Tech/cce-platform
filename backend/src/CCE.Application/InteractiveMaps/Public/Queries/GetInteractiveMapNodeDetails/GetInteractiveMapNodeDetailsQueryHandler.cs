@@ -35,7 +35,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ConfigureAwait(false);
 
         if (node is null)
-            return _msg.NodeNotFound<MapNodeDetailsDto>();
+            return _msg.NotFound<MapNodeDetailsDto>(MessageKeys.InteractiveMaps.NODE_NOT_FOUND);
 
         // ─── 1b. Resolve node tag IDs for tag-based matching ───
         var nodeTagIds = await _db.InteractiveMapNodes
@@ -56,7 +56,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ConfigureAwait(false);
 
         if (topic is null)
-            return _msg.MapNotFound<MapNodeDetailsDto>();
+            return _msg.NotFound<MapNodeDetailsDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         // ─── 3. News — top N by topic or tags, newest first ───
         var news = await _db.News

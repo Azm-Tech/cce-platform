@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.InteractiveMaps;
@@ -29,7 +29,7 @@ internal sealed class UpdateInteractiveMapNodeCommandHandler
     {
         var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (entity is null || entity.InteractiveMapId != request.MapId)
-            return _msg.NodeNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.InteractiveMaps.NODE_NOT_FOUND);
 
         entity.UpdateDetails(
             request.NameAr,
@@ -49,6 +49,6 @@ internal sealed class UpdateInteractiveMapNodeCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NodeUpdated();
+        return _msg.Ok(MessageKeys.InteractiveMaps.NODE_UPDATED);
     }
 }

@@ -31,7 +31,7 @@ public sealed class UpsertUserInterestCommandHandler
     {
         var user = await _service.FindAsync(request.UserId, cancellationToken).ConfigureAwait(false);
         if (user is null)
-            return _msg.UserNotFound<UpsertUserInterestResult>();
+            return _msg.NotFound<UpsertUserInterestResult>(MessageKeys.Identity.USER_NOT_FOUND);
 
         var errors = new List<FieldError>();
 
@@ -117,11 +117,11 @@ public sealed class UpsertUserInterestCommandHandler
         var jobSectorTopic = currentTopics
             .FirstOrDefault(t => t.Category == "job_sector" && user.UserInterestTopics.Any(uit => uit.InterestTopicId == t.Id));
 
-        return _msg.InterestUpserted(new UpsertUserInterestResult(
+        return _msg.Ok(new UpsertUserInterestResult(
             carbonAreaTopics,
             knowledgeAssessmentTopic is not null ? new InterestTopicDto(knowledgeAssessmentTopic.Id, knowledgeAssessmentTopic.NameAr, knowledgeAssessmentTopic.NameEn, knowledgeAssessmentTopic.Category, knowledgeAssessmentTopic.IsActive) : null,
             jobSectorTopic is not null ? new InterestTopicDto(jobSectorTopic.Id, jobSectorTopic.NameAr, jobSectorTopic.NameEn, jobSectorTopic.Category, jobSectorTopic.IsActive) : null,
-            user.CountryId));
+            user.CountryId), MessageKeys.Identity.INTEREST_UPSERTED);
     }
 
     private static void UpsertCategory(

@@ -29,7 +29,7 @@ public sealed class RescheduleEventCommandHandler : IRequestHandler<RescheduleEv
     {
         var ev = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (ev is null)
-            return _messages.EventNotFound<EventDto>();
+            return _messages.NotFound<EventDto>(MessageKeys.Content.EVENT_NOT_FOUND);
 
         var expectedRowVersion = ev.RowVersion;
         ev.Reschedule(request.StartsOn, request.EndsOn);

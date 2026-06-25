@@ -27,7 +27,7 @@ public sealed class DeleteDraftCommandHandler
     public async Task<Response<VoidData>> Handle(DeleteDraftCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId();
-        if (userId is null || userId == Guid.Empty) return _msg.NotAuthenticated<VoidData>();
+        if (userId is null || userId == Guid.Empty) return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetAsync(request.PostId, cancellationToken).ConfigureAwait(false);
         if (post is null) return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);

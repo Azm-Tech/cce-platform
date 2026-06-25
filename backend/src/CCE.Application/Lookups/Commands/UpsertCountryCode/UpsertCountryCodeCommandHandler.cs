@@ -47,7 +47,7 @@ public sealed class UpsertCountryCodeCommandHandler
         {
             var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
             if (entity is null)
-                return _msg.CountryCodeNotFound<CountryCodeDto>();
+                return _msg.NotFound<CountryCodeDto>(MessageKeys.Lookups.COUNTRY_CODE_NOT_FOUND);
 
             entity.UpdateLookup(request.NameAr, request.NameEn, request.DialCode, request.FlagUrl, request.IsActive);
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

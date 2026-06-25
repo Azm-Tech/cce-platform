@@ -40,7 +40,7 @@ public sealed class VoteReplyCommandHandler
     {
         var userId = _currentUser.GetUserId();
         if (userId is null || userId == Guid.Empty)
-            return _msg.NotAuthenticated<VoidData>();
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var reply = await _repo.GetReplyAsync(request.ReplyId, cancellationToken).ConfigureAwait(false);
         if (reply is null)

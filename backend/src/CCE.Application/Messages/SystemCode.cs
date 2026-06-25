@@ -97,6 +97,7 @@ public static class SystemCode
     public const string ERR080 = "ERR080"; // Template not found
     public const string ERR081 = "ERR081"; // Template duplicate
     public const string ERR082 = "ERR082"; // Notification not found
+    public const string ERR083 = "ERR083"; // Device token not found
 
     // ─── KnowledgeMap Errors ───
     public const string ERR090 = "ERR090"; // Map not found
@@ -249,6 +250,8 @@ public static class SystemCode
     public const string CON045 = "CON045"; // Notifications marked read
     public const string CON046 = "CON046"; // Notification template created
     public const string CON047 = "CON047"; // Notification template updated
+    public const string CON087 = "CON087"; // Device token registered
+    public const string CON088 = "CON088"; // Device token deleted
 
     // ─── Lookups Success ───
     public const string CON070 = "CON070"; // Lookup created

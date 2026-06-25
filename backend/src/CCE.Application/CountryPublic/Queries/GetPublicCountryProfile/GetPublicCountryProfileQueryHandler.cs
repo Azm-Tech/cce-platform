@@ -32,7 +32,7 @@ public sealed class GetPublicCountryProfileQueryHandler
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
         var country = countries.FirstOrDefault();
         if (country is null)
-            return _messages.CountryNotFound<PublicCountryProfileDto>();
+            return _messages.NotFound<PublicCountryProfileDto>(MessageKeys.Country.COUNTRY_NOT_FOUND);
 
         // Editorial profile is optional — return country + KAPSARC data even when absent
         var profiles = await _db.CountryProfiles

@@ -28,7 +28,7 @@ public sealed class GetEvaluationByIdQueryHandler
             .ConfigureAwait(false);
 
         if (evaluation is null)
-            return _msg.EvaluationNotFound<ServiceEvaluationDto>();
+            return _msg.NotFound<ServiceEvaluationDto>(MessageKeys.Evaluation.EVALUATION_NOT_FOUND);
 
         var dto = new ServiceEvaluationDto(
             evaluation.Id,

@@ -44,7 +44,7 @@ internal sealed class RequestPhoneChangeCommandHandler
             .ConfigureAwait(false);
 
         if (taken)
-            return _msg.ContactAlreadyTaken<RequestVerificationResponseDto>();
+            return _msg.Conflict<RequestVerificationResponseDto>(MessageKeys.Verification.CONTACT_ALREADY_TAKEN);
 
         // Serialize CountryId into ExtraData so it survives to confirm-time without client round-trip
         var extraData = request.CountryId.HasValue

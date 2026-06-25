@@ -23,7 +23,7 @@ internal sealed class RegisterUserCommandHandler
             request.EmailAddress, request.Password, request.JobTitle,
             request.OrganizationName, request.PhoneNumber, request.CountryId, ct).ConfigureAwait(false);
 
-        if (result.EmailTaken) return _msg.EmailExists<AuthUserDto>();
+        if (result.EmailTaken) return _msg.Conflict<AuthUserDto>(MessageKeys.Identity.EMAIL_EXISTS);
         if (result.User is null) return _msg.BusinessRule<AuthUserDto>(MessageKeys.Identity.REGISTRATION_FAILED);
 
         return _msg.Ok(new AuthUserDto(

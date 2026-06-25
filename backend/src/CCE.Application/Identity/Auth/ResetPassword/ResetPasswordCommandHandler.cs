@@ -26,7 +26,7 @@ internal sealed class ResetPasswordCommandHandler
         {
             return errorKey switch
             {
-                MessageKeys.Identity.USER_NOT_FOUND => _msg.UserNotFound<AuthMessageDto>(),
+                MessageKeys.Identity.USER_NOT_FOUND => _msg.NotFound<AuthMessageDto>(MessageKeys.Identity.USER_NOT_FOUND),
                 MessageKeys.Identity.INVALID_RESET_TOKEN => _msg.Unauthorized<AuthMessageDto>(MessageKeys.Identity.INVALID_RESET_TOKEN),
                 _ => _msg.BusinessRule<AuthMessageDto>(errorKey),
             };

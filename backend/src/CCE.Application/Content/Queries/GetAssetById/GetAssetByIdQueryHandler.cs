@@ -29,7 +29,7 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
 
         var asset = list.SingleOrDefault();
         if (asset is null)
-            return _msg.AssetNotFound<AssetFileDto>();
+            return _msg.NotFound<AssetFileDto>(MessageKeys.Content.ASSET_NOT_FOUND);
 
         var publicUrl = asset.Url.StartsWith("http", System.StringComparison.OrdinalIgnoreCase)
             ? asset.Url

@@ -33,11 +33,11 @@ public sealed class DeleteNewsCommandHandler : IRequestHandler<DeleteNewsCommand
     {
         var news = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (news is null)
-            return _messages.NewsNotFound<VoidData>();
+            return _messages.NotFound<VoidData>(MessageKeys.Content.NEWS_NOT_FOUND);
 
         var userId = _currentUser.GetUserId();
         if (userId is null)
-            return _messages.NotAuthenticated<VoidData>();
+            return _messages.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         news.SoftDelete(userId.Value, _clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

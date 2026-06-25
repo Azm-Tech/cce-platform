@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Commands.ApproveCountryResourceRequest;
 using CCE.Application.Content.Dtos;
@@ -38,7 +38,7 @@ public sealed class RejectCountryResourceRequestCommandHandler
     {
         var entity = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (entity is null)
-            return _messages.CountryContentRequestNotFound<CountryContentRequestDto>();
+            return _messages.NotFound<CountryContentRequestDto>(MessageKeys.Content.COUNTRY_RESOURCE_REQUEST_NOT_FOUND);
 
         var rejectedById = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot reject from a request without a user identity.");
@@ -50,12 +50,12 @@ public sealed class RejectCountryResourceRequestCommandHandler
         catch (DomainException)
         {
             // ERR031 — request is not in Pending state (already approved or rejected)
-            return _messages.CountryRequestProcessingFailed<CountryContentRequestDto>();
+            return _messages.BusinessRule<CountryContentRequestDto>(MessageKeys.Content.COUNTRY_REQUEST_PROCESSING_FAILED);
         }
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // CON023
-        return _messages.CountryRequestProcessed(ApproveCountryResourceRequestCommandHandler.MapToDto(entity));
+        return _messages.Ok(ApproveCountryResourceRequestCommandHandler.MapToDto(entity), MessageKeys.Content.COUNTRY_REQUEST_PROCESSED);
     }
 }
