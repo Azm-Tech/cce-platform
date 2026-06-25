@@ -24,7 +24,7 @@ public sealed class ExpertRegistrationRejectedNotificationHandler
             TemplateCode: MessageKeys.Identity.EXPERT_REQUEST_REJECTED,
             RecipientUserId: notification.RequestedById,
             EventType: NotificationEventType.ExpertRequestRejected,
-            Channels: [NotificationChannel.InApp, NotificationChannel.Email],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Email, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>
             {
                 ["Reason"] = notification.RejectionReasonEn ?? ""

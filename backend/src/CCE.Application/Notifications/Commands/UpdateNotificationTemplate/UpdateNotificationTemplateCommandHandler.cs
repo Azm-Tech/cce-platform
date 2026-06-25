@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using MediatR;
@@ -29,7 +29,7 @@ public sealed class UpdateNotificationTemplateCommandHandler
         var template = await _repo.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (template is null)
         {
-            return _msg.NotificationTemplateNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.Notifications.TEMPLATE_NOT_FOUND);
         }
 
         template.UpdateContent(request.SubjectAr, request.SubjectEn, request.BodyAr, request.BodyEn);
@@ -41,6 +41,6 @@ public sealed class UpdateNotificationTemplateCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NotificationTemplateUpdated(template.Id);
+        return _msg.Ok(template.Id, MessageKeys.Notifications.NOTIFICATION_TEMPLATE_UPDATED);
     }
 }

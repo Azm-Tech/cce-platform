@@ -41,7 +41,7 @@ public sealed class NewsPublishedNotificationHandler
             TemplateCode: "NEWS_PUBLISHED",
             RecipientUserId: news.AuthorId,
             EventType: NotificationEventType.NewsPublished,
-            Channels: [NotificationChannel.InApp],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>
             {
                 ["TitleAr"] = news.TitleAr,

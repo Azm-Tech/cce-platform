@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Notifications;
@@ -47,6 +47,6 @@ public sealed class UpdateMyNotificationSettingsCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NotificationSettingsUpdated();
+        return _msg.Ok(MessageKeys.Notifications.NOTIFICATION_SETTINGS_UPDATED);
     }
 }

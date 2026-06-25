@@ -40,7 +40,7 @@ public sealed class ResourcePublishedNotificationHandler
             TemplateCode: "RESOURCE_PUBLISHED",
             RecipientUserId: resource.UploadedById,
             EventType: NotificationEventType.ResourcePublished,
-            Channels: [NotificationChannel.InApp],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>
             {
                 ["TitleAr"] = resource.TitleAr,

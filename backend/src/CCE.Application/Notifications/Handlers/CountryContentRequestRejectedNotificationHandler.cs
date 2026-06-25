@@ -23,7 +23,7 @@ public sealed class CountryContentRequestRejectedNotificationHandler
             TemplateCode: "COUNTRY_CONTENT_REQUEST_REJECTED",
             RecipientUserId: notification.RequestedById,
             EventType: NotificationEventType.CountryResourceRejected,
-            Channels: [NotificationChannel.InApp, NotificationChannel.Email],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Email, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>
             {
                 ["RequestId"] = notification.RequestId.ToString(),

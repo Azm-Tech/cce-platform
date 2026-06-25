@@ -96,6 +96,7 @@ app.MapCommunityModerationEndpoints();
         app.MapCommunityAdminEndpoints();
 app.MapNotificationTemplateEndpoints();
 app.MapNotificationLogEndpoints();
+app.MapNotificationTestEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
         app.MapCacheManagementEndpoints();

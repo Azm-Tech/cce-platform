@@ -13,4 +13,5 @@ public sealed record RenderedNotification(
     NotificationChannel Channel,
     string Locale,
     string? Email = null,
-    string? PhoneNumber = null);
+    string? PhoneNumber = null,
+    System.Collections.Generic.IReadOnlyDictionary<string, string>? MetaData = null);

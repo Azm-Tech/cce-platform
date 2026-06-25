@@ -30,7 +30,7 @@ public sealed class GetNotificationLogByIdQueryHandler
             .FirstOrDefault();
 
         return log is null
-            ? _msg.NotificationLogNotFound<NotificationLogDto>()
+            ? _msg.NotFound<NotificationLogDto>(MessageKeys.Notifications.NOTIFICATION_NOT_FOUND)
             : _msg.Ok(MapToDto(log), MessageKeys.General.ITEMS_LISTED);
     }
 

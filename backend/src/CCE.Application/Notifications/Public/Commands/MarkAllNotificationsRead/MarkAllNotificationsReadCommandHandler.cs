@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Messages;
 using CCE.Application.Notifications.Public;
 using CCE.Domain.Common;
@@ -28,6 +28,6 @@ public sealed class MarkAllNotificationsReadCommandHandler : IRequestHandler<Mar
             request.UserId,
             _clock,
             cancellationToken).ConfigureAwait(false);
-        return _msg.NotificationsMarkedRead(count);
+        return _msg.Ok(count, MessageKeys.Notifications.NOTIFICATIONS_MARKED_READ);
     }
 }
