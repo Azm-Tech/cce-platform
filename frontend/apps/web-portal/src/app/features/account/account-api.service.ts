@@ -17,19 +17,36 @@ import type {
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
 
+// Live API serializes ExpertRegistrationStatus as camelCase ("approved").
+// Normalise to PascalCase ("Approved") at the service boundary so all
+// downstream comparisons and i18n key lookups stay unchanged.
+const EXPERT_STATUS_MAP: Record<string, ExpertRequestStatus['status']> = {
+  pending: 'Pending',
+  approved: 'Approved',
+  rejected: 'Rejected',
+};
+function normalizeExpertStatus(raw: ExpertRequestStatus): ExpertRequestStatus {
+  const normalized = EXPERT_STATUS_MAP[raw.status?.toLowerCase?.()];
+  return normalized ? { ...raw, status: normalized } : raw;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AccountApiService {
   private readonly http = inject(HttpClient);
 
   async getProfile(): Promise<Result<UserProfile>> {
     return this.run(() =>
-      firstValueFrom(this.http.get<UserProfile>('/api/me')),
+      firstValueFrom(
+        this.http.get<{ data: UserProfile }>('/api/me').pipe(map((res) => res.data)),
+      ),
     );
   }
 
   async updateProfile(payload: UpdateMyProfilePayload): Promise<Result<UserProfile>> {
     return this.run(() =>
-      firstValueFrom(this.http.put<UserProfile>('/api/me', payload)),
+      firstValueFrom(
+        this.http.put<{ data: UserProfile }>('/api/me', payload).pipe(map((res) => res.data)),
+      ),
     );
   }
 
@@ -40,12 +57,12 @@ export class AccountApiService {
    */
   async getExpertStatus(): Promise<Result<ExpertRequestStatus | null>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<ExpertRequestStatus>('/api/me/expert-status', {
+      const res = await firstValueFrom(
+        this.http.get<{ data: ExpertRequestStatus }>('/api/me/expert-status', {
           context: new HttpContext().set(SUPPRESS_ERROR_TOAST, [404]),
         }),
       );
-      return { ok: true, value: value ?? null };
+      return { ok: true, value: res.data ? normalizeExpertStatus(res.data) : null };
     } catch (err) {
       const error = err as HttpErrorResponse;
       if (error.status === 404) return { ok: true, value: null };
@@ -58,7 +75,8 @@ export class AccountApiService {
   ): Promise<Result<ExpertRequestStatus>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.post<ExpertRequestStatus>('/api/users/expert-request', payload),
+        this.http.post<{ data: ExpertRequestStatus }>('/api/users/expert-request', payload)
+          .pipe(map((res) => normalizeExpertStatus(res.data))),
       ),
     );
   }
@@ -73,7 +91,9 @@ export class AccountApiService {
 
   async getMyInterests(): Promise<Result<MyInterests>> {
     return this.run(() =>
-      firstValueFrom(this.http.get<MyInterests>('/api/me/interests')),
+      firstValueFrom(
+        this.http.get<{ data: MyInterests }>('/api/me/interests').pipe(map(res => res.data)),
+      ),
     );
   }
 
@@ -100,7 +120,9 @@ export class AccountApiService {
   async requestEmailChange(newEmail: string): Promise<Result<{ verificationId: string }>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.post<{ verificationId: string }>('/api/me/email/request-change', { newEmail }),
+        this.http
+          .post<{ data: { verificationId: string } }>('/api/me/email/request-change', { newEmail })
+          .pipe(map((res) => res.data)),
       ),
     );
   }
@@ -108,7 +130,9 @@ export class AccountApiService {
   async requestPhoneChange(newPhone: string): Promise<Result<{ verificationId: string }>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.post<{ verificationId: string }>('/api/me/phone/request-change', { newPhone }),
+        this.http
+          .post<{ data: { verificationId: string } }>('/api/me/phone/request-change', { newPhone })
+          .pipe(map((res) => res.data)),
       ),
     );
   }

@@ -24,9 +24,9 @@ export interface KnowledgeMapNode {
   nameAr: string;
   nameEn: string;
   nodeType: NodeType;
-  descriptionAr: string | null;
-  descriptionEn: string | null;
-  iconUrl: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
+  iconUrl?: string | null;
   layoutX: number;
   layoutY: number;
   orderIndex: number;

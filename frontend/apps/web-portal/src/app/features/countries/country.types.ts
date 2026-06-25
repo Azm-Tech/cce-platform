@@ -197,7 +197,7 @@ export interface CountryProfile {
 export interface KapsarcSnapshot {
   id: string;
   countryId: string;
-  classification: string;
+  classification: string | null;
   performanceScore: number;
   totalIndex: number;
   snapshotTakenOn: string;

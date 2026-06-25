@@ -12,10 +12,10 @@ export class PagesApiService {
 
   async getBySlug(slug: string): Promise<Result<PublicPage>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<PublicPage>(`/api/pages/${encodeURIComponent(slug)}`),
+      const res = await firstValueFrom(
+        this.http.get<{ data: PublicPage }>(`/api/pages/${encodeURIComponent(slug)}`),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
     }
@@ -72,10 +72,10 @@ export class PagesApiService {
   async getPolicies(): Promise<Result<PoliciesContent>> {
     try {
       const res = await firstValueFrom(
-        this.http.get<{ sections: Array<{ type: number; title: { ar: string; en: string }; content: { ar: string; en: string } }> }>('/api/policies'),
+        this.http.get<{ data: { sections: Array<{ type: number; title: { ar: string; en: string }; content: { ar: string; en: string } }> } }>('/api/policies'),
       );
       const value: PoliciesContent = {
-        sections: (res.sections ?? []).map((s, i) => ({
+        sections: (res.data?.sections ?? []).map((s, i) => ({
           id: String(i),
           type: s.type,
           titleAr: s.title?.ar ?? '',
