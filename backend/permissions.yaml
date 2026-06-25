@@ -229,6 +229,12 @@ groups:
     CountryProfiles:
       description: Generate country profiles report
       roles: [cce-super-admin, cce-admin]
+    UserPreferences:
+      description: Generate user-preference report
+      roles: [cce-super-admin, cce-admin]
+    Experts:
+      description: Generate expert registration report
+      roles: [cce-super-admin, cce-admin]
   InteractiveMap:
     Manage:
       description: Create/update/delete interactive maps
