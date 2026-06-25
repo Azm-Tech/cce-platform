@@ -72,10 +72,10 @@ export class PagesApiService {
   async getPolicies(): Promise<Result<PoliciesContent>> {
     try {
       const res = await firstValueFrom(
-        this.http.get<{ data: { sections: Array<{ type: number; title: { ar: string; en: string }; content: { ar: string; en: string } }> } }>('/api/policies'),
+        this.http.get<{ sections: Array<{ type: number; title: { ar: string; en: string }; content: { ar: string; en: string } }> }>('/api/policies'),
       );
       const value: PoliciesContent = {
-        sections: (res.data?.sections ?? []).map((s, i) => ({
+        sections: (res.sections ?? []).map((s, i) => ({
           id: String(i),
           type: s.type,
           titleAr: s.title?.ar ?? '',

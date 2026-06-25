@@ -23,7 +23,6 @@ const RICH_TOOLBAR: QuillModules = {
   toolbar: [
     [{ header: [1, 2, 3, 4, false] }],
     ['bold', 'italic', 'underline', 'strike'],
-    [{ color: [] }, { background: [] }],
     ['blockquote', 'code-block'],
     [{ list: 'ordered' }, { list: 'bullet' }],
     [{ indent: '-1' }, { indent: '+1' }],

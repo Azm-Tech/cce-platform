@@ -23,17 +23,13 @@ export class AccountApiService {
 
   async getProfile(): Promise<Result<UserProfile>> {
     return this.run(() =>
-      firstValueFrom(
-        this.http.get<{ data: UserProfile }>('/api/me').pipe(map((res) => res.data)),
-      ),
+      firstValueFrom(this.http.get<UserProfile>('/api/me')),
     );
   }
 
   async updateProfile(payload: UpdateMyProfilePayload): Promise<Result<UserProfile>> {
     return this.run(() =>
-      firstValueFrom(
-        this.http.put<{ data: UserProfile }>('/api/me', payload).pipe(map((res) => res.data)),
-      ),
+      firstValueFrom(this.http.put<UserProfile>('/api/me', payload)),
     );
   }
 
@@ -44,12 +40,12 @@ export class AccountApiService {
    */
   async getExpertStatus(): Promise<Result<ExpertRequestStatus | null>> {
     try {
-      const res = await firstValueFrom(
-        this.http.get<{ data: ExpertRequestStatus }>('/api/me/expert-status', {
+      const value = await firstValueFrom(
+        this.http.get<ExpertRequestStatus>('/api/me/expert-status', {
           context: new HttpContext().set(SUPPRESS_ERROR_TOAST, [404]),
         }),
       );
-      return { ok: true, value: res.data ?? null };
+      return { ok: true, value: value ?? null };
     } catch (err) {
       const error = err as HttpErrorResponse;
       if (error.status === 404) return { ok: true, value: null };
@@ -62,7 +58,7 @@ export class AccountApiService {
   ): Promise<Result<ExpertRequestStatus>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.post<{ data: ExpertRequestStatus }>('/api/users/expert-request', payload).pipe(map((res) => res.data)),
+        this.http.post<ExpertRequestStatus>('/api/users/expert-request', payload),
       ),
     );
   }
@@ -77,9 +73,7 @@ export class AccountApiService {
 
   async getMyInterests(): Promise<Result<MyInterests>> {
     return this.run(() =>
-      firstValueFrom(
-        this.http.get<{ data: MyInterests }>('/api/me/interests').pipe(map(res => res.data)),
-      ),
+      firstValueFrom(this.http.get<MyInterests>('/api/me/interests')),
     );
   }
 
@@ -106,9 +100,7 @@ export class AccountApiService {
   async requestEmailChange(newEmail: string): Promise<Result<{ verificationId: string }>> {
     return this.run(() =>
       firstValueFrom(
-        this.http
-          .post<{ data: { verificationId: string } }>('/api/me/email/request-change', { newEmail })
-          .pipe(map((res) => res.data)),
+        this.http.post<{ verificationId: string }>('/api/me/email/request-change', { newEmail }),
       ),
     );
   }
@@ -116,9 +108,7 @@ export class AccountApiService {
   async requestPhoneChange(newPhone: string): Promise<Result<{ verificationId: string }>> {
     return this.run(() =>
       firstValueFrom(
-        this.http
-          .post<{ data: { verificationId: string } }>('/api/me/phone/request-change', { newPhone })
-          .pipe(map((res) => res.data)),
+        this.http.post<{ verificationId: string }>('/api/me/phone/request-change', { newPhone }),
       ),
     );
   }
