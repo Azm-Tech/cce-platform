@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community;
 using CCE.Application.Messages;
@@ -35,7 +35,7 @@ public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNot
         var notif = await _repo.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
         if (notif is null || notif.UserId != request.UserId)
-            return _msg.NotificationLogNotFound<VoidData>();
+            return _msg.NotFound<VoidData>(MessageKeys.Notifications.NOTIFICATION_NOT_FOUND);
 
         notif.MarkRead(_clock);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -45,6 +45,6 @@ public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNot
         await _feedStore.IncrementNotificationCountAsync(notif.UserId, delta: -1, cancellationToken)
             .ConfigureAwait(false);
 
-        return _msg.NotificationMarkedRead();
+        return _msg.Ok(MessageKeys.Notifications.NOTIFICATION_MARKED_READ);
     }
 }

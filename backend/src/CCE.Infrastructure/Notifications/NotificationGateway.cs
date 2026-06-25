@@ -213,7 +213,8 @@ public sealed class NotificationGateway : INotificationGateway
             channel,
             locale,
             email,
-            phone);
+            phone,
+            MetaData: request.Variables);
 
         // Create pending log
         var payloadJson = SerializePayload(variables);

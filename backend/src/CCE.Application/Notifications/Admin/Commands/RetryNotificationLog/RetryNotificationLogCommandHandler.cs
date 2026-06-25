@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Messages;
@@ -41,7 +41,7 @@ public sealed class RetryNotificationLogCommandHandler
         var log = await _logRepository.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
         if (log is null)
-            return _msg.NotificationLogNotFound<System.Guid>();
+            return _msg.NotFound<System.Guid>(MessageKeys.Notifications.NOTIFICATION_NOT_FOUND);
 
         if (log.Status != NotificationDeliveryStatus.Failed && log.Status != NotificationDeliveryStatus.Skipped)
             throw new DomainException($"Cannot retry a log with status {log.Status}.");
@@ -59,7 +59,7 @@ public sealed class RetryNotificationLogCommandHandler
         {
             log.MarkSkipped("Template no longer available.");
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return _msg.NotificationRetried(log.Id);
+            return _msg.Ok(log.Id, MessageKeys.Notifications.NOTIFICATION_RETRIED);
         }
 
         // Resolve recipient data
@@ -110,7 +110,7 @@ public sealed class RetryNotificationLogCommandHandler
         {
             log.MarkSkipped($"No sender registered for channel {log.Channel}.");
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            return _msg.NotificationRetried(log.Id);
+            return _msg.Ok(log.Id, MessageKeys.Notifications.NOTIFICATION_RETRIED);
         }
 
         var sendResult = await sender.SendAsync(rendered, cancellationToken).ConfigureAwait(false);
@@ -126,6 +126,6 @@ public sealed class RetryNotificationLogCommandHandler
 
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NotificationRetried(log.Id);
+        return _msg.Ok(log.Id, MessageKeys.Notifications.NOTIFICATION_RETRIED);
     }
 }

@@ -1,4 +1,4 @@
-using CCE.Application.Common;
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Messages;
 using CCE.Domain.Notifications;
@@ -39,6 +39,6 @@ public sealed class CreateNotificationTemplateCommandHandler
         await _repo.AddAsync(template, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return _msg.NotificationTemplateCreated(template.Id);
+        return _msg.Ok(template.Id, MessageKeys.Notifications.NOTIFICATION_TEMPLATE_CREATED);
     }
 }

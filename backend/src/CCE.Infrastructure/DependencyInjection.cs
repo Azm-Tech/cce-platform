@@ -27,6 +27,7 @@ using CCE.Infrastructure.InterestManagement;
 using CCE.Infrastructure.Media;
 using CCE.Infrastructure.Sanitization;
 using CCE.Infrastructure.Country;
+using CCE.Infrastructure.Firebase;
 using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Notifications.Messaging;
 using CCE.Infrastructure.Reports;
@@ -234,6 +235,17 @@ public static class DependencyInjection
         services.AddScoped<INotificationChannelHandler, SmsNotificationChannelSender>();
         services.AddScoped<INotificationChannelHandler, InAppNotificationChannelSender>();
         services.AddScoped<ISignalRNotificationPublisher, SignalRNotificationPublisher>();
+        services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
+
+        // Firebase push channel — only wired when ProjectId + ServiceAccountJson are configured.
+        services.Configure<FirebaseOptions>(configuration.GetSection(FirebaseOptions.SectionName));
+        var firebaseOpts = configuration.GetSection(FirebaseOptions.SectionName).Get<FirebaseOptions>();
+        if (firebaseOpts?.IsConfigured == true)
+        {
+            services.AddSingleton<IFirebaseMessagingService, FirebaseMessagingService>();
+            services.AddScoped<INotificationChannelHandler, PushNotificationChannelSender>();
+            services.AddScoped<IFirebasePushService, FirebasePushService>();
+        }
         services.AddScoped<ICommunityRealtimePublisher, CommunityRealtimePublisher>();
         services.AddSingleton<CCE.Application.Common.Realtime.IRealtimePresenceTracker,
             CCE.Infrastructure.Notifications.RedisRealtimePresenceTracker>();

@@ -23,7 +23,7 @@ public sealed class CountryContentRequestApprovedNotificationHandler
             TemplateCode: "COUNTRY_CONTENT_REQUEST_APPROVED",
             RecipientUserId: notification.RequestedById,
             EventType: NotificationEventType.CountryResourceApproved,
-            Channels: [NotificationChannel.InApp, NotificationChannel.Email],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Email, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>
             {
                 ["RequestId"] = notification.RequestId.ToString(),

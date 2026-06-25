@@ -24,7 +24,7 @@ public sealed class ExpertRegistrationApprovedNotificationHandler
             TemplateCode: MessageKeys.Identity.EXPERT_REQUEST_APPROVED,
             RecipientUserId: notification.RequestedById,
             EventType: NotificationEventType.ExpertRequestApproved,
-            Channels: [NotificationChannel.InApp, NotificationChannel.Email],
+            Channels: [NotificationChannel.InApp, NotificationChannel.Email, NotificationChannel.Push],
             MetaData: new Dictionary<string, string>(),
             Locale: "en"), cancellationToken).ConfigureAwait(false);
     }

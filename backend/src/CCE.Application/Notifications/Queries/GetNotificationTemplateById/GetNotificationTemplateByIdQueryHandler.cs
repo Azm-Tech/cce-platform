@@ -30,7 +30,7 @@ public sealed class GetNotificationTemplateByIdQueryHandler
             .ConfigureAwait(false);
         var template = list.SingleOrDefault();
         return template is null
-            ? _msg.NotificationTemplateNotFound<NotificationTemplateDto>()
+            ? _msg.NotFound<NotificationTemplateDto>(MessageKeys.Notifications.TEMPLATE_NOT_FOUND)
             : _msg.Ok(ListNotificationTemplatesQueryHandler.MapToDto(template), MessageKeys.General.ITEMS_LISTED);
     }
 }
