@@ -83,8 +83,7 @@ public static class CommunityWriteEndpoints
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var cmd = new CreateReplyCommand(id, body.Content, body.Locale, body.ParentReplyId,
-                body.MentionedUserIds ?? System.Array.Empty<System.Guid>());
+            var cmd = new CreateReplyCommand(id, body.Content, body.Locale, body.ParentReplyId);
             var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
             return result.ToCreatedHttpResult();
         }).RequireAuthorization(Permissions.Community_Post_Reply).WithName("CreateReply");

@@ -11,6 +11,7 @@ public class MentionAndDepthTests
     {
         var clock = new FakeSystemClock();
         var act = () => Mention.Create(MentionSourceType.Reply, System.Guid.Empty,
+            System.Guid.NewGuid(), System.Guid.NewGuid(), "snippet",
             System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
         act.Should().Throw<DomainException>();
     }

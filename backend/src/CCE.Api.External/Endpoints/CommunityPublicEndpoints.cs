@@ -16,12 +16,14 @@ using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
 using CCE.Application.Community.Public.Queries.GetMyTopics;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
+using CCE.Application.Community.Public.Queries.GetMentionableUsers;
 using CCE.Application.Community.Public.Queries.ListUserFeed;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
+using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -89,6 +91,17 @@ public static class CommunityPublicEndpoints
             var result = await mediator.Send(new GetCommunityBySlugQuery(slug), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("GetCommunityBySlug");
+
+        // GET /api/community/communities/{communityId}/mentionable-users?q=rash — @mention autocomplete (2-tier)
+        community.MapGet("/communities/{communityId:guid}/mentionable-users", async (
+            System.Guid communityId, string? q, int? limit,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new GetMentionableUsersQuery(communityId, q ?? string.Empty, limit ?? 10), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Reply).WithName("GetMentionableUsers");
 
         // GET /api/community/topics — global topics discovery (paginated, searchable, sortable)
         community.MapGet("/topics", async (
