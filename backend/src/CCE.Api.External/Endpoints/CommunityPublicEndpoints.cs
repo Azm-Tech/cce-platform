@@ -16,12 +16,16 @@ using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
 using CCE.Application.Community.Public.Queries.GetMyTopics;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
+using CCE.Application.Community.Public.Queries.GetMentionableUsers;
 using CCE.Application.Community.Public.Queries.ListUserFeed;
+using CCE.Application.Community.Public.Queries.SearchCommunityPosts;
 using CCE.Application.Community.Public.Queries.ListPublicCommunities;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Public.Queries.ListPublicPostsInTopic;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Community.Public.Queries.ListPublicTopicsPaginated;
+using CCE.Api.Common.Observability;
+using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -44,13 +48,39 @@ public static class CommunityPublicEndpoints
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("ListPublicCommunities");
 
-        // GET /api/community/feed — community home feed (hot/newest/top-voted/most-commented, tag + type filter)
+        // GET /api/community/feed — community home feed with optional full-text search.
+        // When ?searchTerm= is supplied, dispatches to SearchCommunityPostsQuery (Meilisearch) and returns
+        // the same CommunityFeedItemDto shape, enriched with highlight fields.
+        // When ?searchTerm= is absent, behaves exactly as before (Redis fan-out / SQL path).
         community.MapGet("/feed", async (
+            string? searchTerm,
             PostFeedSort? sort, System.Guid[]? tagIds, System.Guid? communityId, System.Guid? topicId,
             CCE.Domain.Community.PostType? postType, int? page, int? pageSize,
             System.Guid? authorId, bool? isWatchlisted,
             ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
         {
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                var effectiveSort = sort?.ToString() ?? "relevance";
+                var searchQuery = new SearchCommunityPostsQuery(
+                    searchTerm,
+                    sort,
+                    tagIds ?? System.Array.Empty<System.Guid>(),
+                    communityId,
+                    topicId,
+                    currentUser.GetUserId(),
+                    postType,
+                    page ?? 1,
+                    pageSize ?? 20,
+                    AuthorId: authorId);
+                var searchResult = await mediator.Send(searchQuery, ct).ConfigureAwait(false);
+                sw.Stop();
+                PrometheusExtensions.CommunitySearchDurationMs.Observe(sw.Elapsed.TotalMilliseconds);
+                PrometheusExtensions.CommunitySearchHitsTotal.WithLabels(effectiveSort).Inc();
+                return searchResult.ToHttpResult();
+            }
+
             var query = new ListCommunityFeedQuery(
                 sort ?? PostFeedSort.Hot,
                 tagIds ?? System.Array.Empty<System.Guid>(),
@@ -89,6 +119,17 @@ public static class CommunityPublicEndpoints
             var result = await mediator.Send(new GetCommunityBySlugQuery(slug), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).AllowAnonymous().WithName("GetCommunityBySlug");
+
+        // GET /api/community/communities/{communityId}/mentionable-users?q=rash — @mention autocomplete (2-tier)
+        community.MapGet("/communities/{communityId:guid}/mentionable-users", async (
+            System.Guid communityId, string? q, int? limit,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new GetMentionableUsersQuery(communityId, q ?? string.Empty, limit ?? 10), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Reply).WithName("GetMentionableUsers");
 
         // GET /api/community/topics — global topics discovery (paginated, searchable, sortable)
         community.MapGet("/topics", async (

@@ -1,3 +1,4 @@
+using CCE.Application.Community.Public.Dtos;
 using CCE.Domain.Community;
 
 namespace CCE.Application.Community;
@@ -15,4 +16,11 @@ public interface IReplyRepository
     /// community any existing user; for a private community only its members. Drives mention gating.
     /// </summary>
     Task<IReadOnlyList<Guid>> FilterVisibleUsersAsync(Guid communityId, IReadOnlyList<Guid> userIds, CancellationToken ct);
+
+    /// <summary>
+    /// Two-tier @mention autocomplete: Tier 1 = users the caller follows (matched by name),
+    /// Tier 2 = community members not in Tier 1. Short-circuits when <paramref name="q"/> is empty.
+    /// </summary>
+    Task<IReadOnlyList<MentionableUserDto>> SearchMentionableAsync(
+        Guid communityId, Guid currentUserId, string q, int limit, CancellationToken ct);
 }

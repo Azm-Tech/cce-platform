@@ -1,9 +1,10 @@
-﻿using CCE.Application.Common;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Messages;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Community.Public.Queries.ListMyMentions;
 
@@ -31,7 +32,18 @@ public sealed class ListMyMentionsQueryHandler
         var paged = await _db.Mentions
             .Where(m => m.MentionedUserId == userId.Value)
             .OrderByDescending(m => m.CreatedOn)
-            .Select(m => new MyMentionDto(m.Id, m.SourceType, m.SourceId, m.MentionedByUserId, m.CreatedOn))
+            .Join(_db.Users, m => m.MentionedByUserId, u => u.Id,
+                (m, u) => new MyMentionDto(
+                    m.Id,
+                    m.SourceType,
+                    m.SourceId,
+                    m.PostId,
+                    m.CommunityId,
+                    m.MentionedByUserId,
+                    u.FirstName + " " + u.LastName,
+                    u.AvatarUrl,
+                    m.Snippet,
+                    m.CreatedOn))
             .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 

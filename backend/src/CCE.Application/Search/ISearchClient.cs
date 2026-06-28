@@ -16,6 +16,8 @@ public interface ISearchClient
     /// <summary>
     /// Search across one type (or all when <paramref name="type"/> is null).
     /// Returns paged hits with score + excerpts.
+    /// NOTE: CommunityPosts and CommunityReplies are excluded from the "all" path —
+    /// use <see cref="SearchCommunityPostsAsync"/> for community search.
     /// </summary>
     Task<PagedResult<SearchHitDto>> SearchAsync(
         string query,
@@ -23,4 +25,13 @@ public interface ISearchClient
         int page,
         int pageSize,
         CancellationToken ct);
+
+    /// <summary>
+    /// Search the community_posts and community_replies indexes concurrently.
+    /// Returns raw ranked hits that the caller merges, filters by visibility, and hydrates.
+    /// </summary>
+    Task<CommunityRawSearchResult> SearchCommunityPostsAsync(string query, int limit, CancellationToken ct);
+
+    /// <summary>Batch-upsert multiple documents in a single Meilisearch round-trip.</summary>
+    Task UpsertBatchAsync<TDoc>(SearchableType type, System.Collections.Generic.IEnumerable<TDoc> docs, CancellationToken ct) where TDoc : class;
 }

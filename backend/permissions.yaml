@@ -202,18 +202,11 @@ groups:
       roles: [cce-super-admin, cce-admin]
     DeviceToken:
       Register:
-        description: Register a device token for push notifications
-        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
+        description: Register or refresh a device push token for the authenticated user
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-state-representative, cce-reviewer, cce-expert, cce-user]
       Delete:
-        description: Unregister/unlink a device token
-        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
-  Permission:
-    Read:
-      description: List and view available permissions
-      roles: [cce-super-admin, cce-admin]
-    Manage:
-      description: Create/update/delete permissions
-      roles: [cce-super-admin, cce-admin]
+        description: Unregister a device push token for the authenticated user
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-state-representative, cce-reviewer, cce-expert, cce-user]
   Audit:
     Read:
       description: Query the audit-event log
@@ -261,3 +254,10 @@ groups:
     Manage:
       description: Manage community law sections (create/update/delete/reorder)
       roles: [cce-super-admin, cce-admin, cce-content-manager]
+  Permission:
+    Read:
+      description: View permission catalog and role-permission matrix
+      roles: [cce-super-admin]
+    Manage:
+      description: Toggle role-permission assignments
+      roles: [cce-super-admin]

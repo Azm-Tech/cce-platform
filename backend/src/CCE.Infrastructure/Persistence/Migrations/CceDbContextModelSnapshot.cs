@@ -286,6 +286,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("community_id");
+
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("created_on");
@@ -298,6 +302,16 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("mentioned_user_id");
 
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("post_id");
+
+                    b.Property<string>("Snippet")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
+                        .HasColumnName("snippet");
+
                     b.Property<Guid>("SourceId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("source_id");
@@ -308,6 +322,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_mentions");
+
+                    b.HasIndex("CommunityId")
+                        .HasDatabaseName("ix_mention_community");
+
+                    b.HasIndex("PostId")
+                        .HasDatabaseName("ix_mention_post");
 
                     b.HasIndex("MentionedUserId", "CreatedOn")
                         .HasDatabaseName("ix_mention_user_created");
