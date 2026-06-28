@@ -9,9 +9,9 @@ public class UpdateResourceCommandValidatorTests
         System.Guid.NewGuid(),
         "عنوان", "Title",
         "وصف", "Description",
-        ResourceType.Pdf,
+        ResourceType.Paper,
         System.Guid.NewGuid(),
-        new byte[8]);
+        new[] { System.Guid.NewGuid() });
 
     [Fact]
     public void Valid_command_passes()
@@ -35,15 +35,4 @@ public class UpdateResourceCommandValidatorTests
         result.Errors.Should().Contain(e => e.PropertyName == nameof(UpdateResourceCommand.Id));
     }
 
-    [Fact]
-    public void RowVersion_wrong_length_is_rejected()
-    {
-        var sut = new UpdateResourceCommandValidator();
-        var cmd = ValidCmd() with { RowVersion = new byte[4] };
-
-        var result = sut.Validate(cmd);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(UpdateResourceCommand.RowVersion));
-    }
 }

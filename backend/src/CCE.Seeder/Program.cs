@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 // Tiny console runner that bootstraps DI and dispatches based on CLI flags.
 //   (no flag)              → RunSeeders          — existing dev seeder behaviour (no demo)
 //   --demo                 → RunSeedersWithDemo  — seeders + demo data
+//   --bulk                 → RunSeedersWithBulk  — seeders + demo + 10 000 bulk posts (performance testing)
 //   --migrate              → MigrateOnly         — Database.MigrateAsync(), then exit
 //   --migrate --seed-reference → MigrateAndSeedReference — migrate, then idempotent reference seeders
 // Reads the same appsettings as CCE.Api.External so the connection string +
@@ -25,6 +26,7 @@ if (mode.Mode == SeederMode.Kind.Error)
 }
 
 // Walk up from the seeder's source directory to find the External API project's appsettings.
+//   --bulk → RunSeedersWithBulk — reference + demo + 10 000 bulk posts for performance testing
 // We look for a directory that contains both `src/CCE.Api.External/appsettings.json` and `CCE.sln`
 // (or similar marker), starting from AppContext.BaseDirectory and walking up until we find it.
 static string FindApiAppSettingsDir()
@@ -66,11 +68,24 @@ builder.Configuration
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// UserManager (pulled in by AddInfrastructure's AddIdentityCore) requires
+// IDataProtectionProvider for its default token providers. AddDataProtection
+// satisfies this in a non-web host.
+builder.Services.AddDataProtection();
+
 // Register seeders.
-builder.Services.AddScoped<ISeeder, ReferenceDataSeeder>();
 builder.Services.AddScoped<ISeeder, RolesAndPermissionsSeeder>();
-builder.Services.AddScoped<ISeeder, KnowledgeMapSeeder>();
+builder.Services.AddScoped<ISeeder, DemoUsersSeeder>();
+    builder.Services.AddScoped<ISeeder, ReferenceDataSeeder>();
+    builder.Services.AddScoped<ISeeder, CountryCodeSeeder>();
+    builder.Services.AddScoped<ISeeder, KnowledgeMapSeeder>();
+    builder.Services.AddScoped<ISeeder, InteractiveMapSeeder>();
+builder.Services.AddScoped<ISeeder, PlatformSettingsSeeder>();
+builder.Services.AddScoped<ISeeder, NotificationTemplateSeeder>();
+builder.Services.AddScoped<ISeeder, UserClaimsSeeder>();
 builder.Services.AddScoped<ISeeder, DemoDataSeeder>();
+builder.Services.AddScoped<ISeeder, DemoTopicDataSeeder>();
+builder.Services.AddScoped<ISeeder, BulkPostSeeder>();
 builder.Services.AddScoped<SeedRunner>();
 
 using var host = builder.Build();
@@ -108,6 +123,13 @@ switch (mode.Mode)
             var runner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
             await runner.RunAllAsync(includeDemo: false).ConfigureAwait(false);
         }
+        return 0;
+
+    case SeederMode.Kind.RunSeedersWithBulk:
+        logger.LogInformation("Starting seeder (demo=true, bulk=true).");
+        var bulkRunner = scope.ServiceProvider.GetRequiredService<SeedRunner>();
+        await bulkRunner.RunAllAsync(includeDemo: true, includeBulk: true).ConfigureAwait(false);
+        logger.LogInformation("Seeder finished.");
         return 0;
 
     case SeederMode.Kind.RunSeedersWithDemo:

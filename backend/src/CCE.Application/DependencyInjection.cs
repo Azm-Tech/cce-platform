@@ -1,4 +1,5 @@
 using CCE.Application.Common.Behaviors;
+using CCE.Application.Messages;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,18 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
-            // Pipeline behavior order matters — first registered runs outermost.
-            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ResponseValidationBehavior<,>));
+            // Last: runs after the handler commits; evicts cache regions for ICacheInvalidatingRequest.
+            cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(assembly);
+
+        services.AddScoped<MessageFactory>();
+        services.AddScoped<CCE.Application.Community.Services.IMentionService, CCE.Application.Community.Services.MentionService>();
+        services.AddScoped<CCE.Application.Community.Public.FeedHydratorService>();
+        services.AddScoped<CCE.Application.Identity.Public.Commands.ContactChangeOtpService>();
+        services.AddScoped<CCE.Application.Content.IUserContentInterestResolver, CCE.Application.Content.UserContentInterestResolver>();
 
         services.AddSingleton<Reports.ICsvStreamWriter, Reports.CsvStreamWriter>();
 

@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -7,6 +8,8 @@ public sealed record UpdateNewsCommand(
     System.Guid Id,
     string TitleAr, string TitleEn,
     string ContentAr, string ContentEn,
-    string Slug,
+    System.Guid TopicId,
     string? FeaturedImageUrl,
-    byte[] RowVersion) : IRequest<NewsDto?>;
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<NewsDto>>;

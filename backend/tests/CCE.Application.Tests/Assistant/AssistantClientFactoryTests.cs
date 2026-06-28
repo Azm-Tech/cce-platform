@@ -16,7 +16,7 @@ public class AssistantClientFactoryTests
 
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ISmartAssistantClient));
         descriptor.Should().NotBeNull();
-        descriptor!.ImplementationType.Should().Be(typeof(SmartAssistantClient));
+        descriptor!.ImplementationType.Should().Be<SmartAssistantClient>();
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class AssistantClientFactoryTests
             services.AddCceAssistantClient(config);
 
             var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ISmartAssistantClient));
-            descriptor!.ImplementationType.Should().Be(typeof(AnthropicSmartAssistantClient));
+            descriptor!.ImplementationType.Should().Be<AnthropicSmartAssistantClient>();
         }
         finally
         {
@@ -48,7 +48,7 @@ public class AssistantClientFactoryTests
         services.AddCceAssistantClient(config);
 
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ISmartAssistantClient));
-        descriptor!.ImplementationType.Should().Be(typeof(SmartAssistantClient));
+        descriptor!.ImplementationType.Should().Be<SmartAssistantClient>();
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class AssistantClientFactoryTests
         services.AddCceAssistantClient(config);
 
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ISmartAssistantClient));
-        descriptor!.ImplementationType.Should().Be(typeof(SmartAssistantClient));
+        descriptor!.ImplementationType.Should().Be<SmartAssistantClient>();
     }
 
     private static IConfiguration BuildConfig(params (string Key, string Value)[] entries)

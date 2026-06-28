@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using MediatR;
@@ -10,4 +11,4 @@ public sealed record ListResourcesQuery(
     string? Search = null,
     System.Guid? CategoryId = null,
     System.Guid? CountryId = null,
-    bool? IsPublished = null) : IRequest<PagedResult<ResourceDto>>;
+    bool? IsPublished = null) : IRequest<Response<PagedResult<ResourceDto>>>;

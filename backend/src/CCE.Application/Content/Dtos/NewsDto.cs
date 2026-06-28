@@ -6,10 +6,12 @@ public sealed record NewsDto(
     string TitleEn,
     string ContentAr,
     string ContentEn,
-    string Slug,
+    System.Guid TopicId,
+    string TopicNameAr,
+    string TopicNameEn,
     System.Guid AuthorId,
     string? FeaturedImageUrl,
     System.DateTimeOffset? PublishedOn,
     bool IsFeatured,
     bool IsPublished,
-    string RowVersion);
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

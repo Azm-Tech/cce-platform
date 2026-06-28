@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Empty placeholder — real integrations land in sub-project 8 -->
+    <PackageReference Include="Refit" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,6 @@
+﻿using System.IO;
+using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content;
 using CCE.Application.Content.Public;
@@ -19,15 +22,19 @@ public static class ResourcesPublicEndpoints
         var resources = app.MapGroup("/api/resources").WithTags("Resources");
 
         resources.MapGet("", async (
-            int? page, int? pageSize,
+            int? page, int? pageSize, string? search,
             System.Guid? categoryId, System.Guid? countryId, ResourceType? resourceType,
+            System.Guid? knowledgeLevelId, System.Guid? jobSectorId,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var query = new ListPublicResourcesQuery(
                 Page: page ?? 1, PageSize: pageSize ?? 20,
-                CategoryId: categoryId, CountryId: countryId, ResourceType: resourceType);
-            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+                Search: search,
+                CategoryId: categoryId, CountryId: countryId, ResourceType: resourceType,
+                KnowledgeLevelId: knowledgeLevelId,
+                JobSectorId: jobSectorId);
+            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListPublicResources");
@@ -36,8 +43,8 @@ public static class ResourcesPublicEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetPublicResourceByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(new GetPublicResourceByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("GetPublicResourceById");
@@ -46,34 +53,40 @@ public static class ResourcesPublicEndpoints
             System.Guid id,
             HttpContext httpContext,
             ICceDbContext db,
-            IFileStorage storage,
-            IResourceViewCountService viewCounter,
+            IFileStorageFactory storageFactory,
+            IResourceViewCountRepository viewCounter,
             CancellationToken cancellationToken) =>
         {
-            // Load resource + asset metadata in a single round trip.
             var resource = await db.Resources.FirstOrDefaultAsync(r => r.Id == id, cancellationToken).ConfigureAwait(false);
             if (resource is null || resource.PublishedOn is null)
-            {
-                return Results.NotFound();
-            }
+                return EnvelopeResults.NotFound();
+
             var asset = await db.AssetFiles.FirstOrDefaultAsync(a => a.Id == resource.AssetFileId, cancellationToken).ConfigureAwait(false);
             if (asset is null)
-            {
-                return Results.NotFound();
-            }
+                return EnvelopeResults.NotFound();
             if (asset.VirusScanStatus != VirusScanStatus.Clean)
-            {
-                return Results.StatusCode(StatusCodes.Status403Forbidden);
-            }
+                return EnvelopeResults.Forbidden();
 
             httpContext.Response.ContentType = asset.MimeType;
             httpContext.Response.Headers.ContentDisposition =
                 $"inline; filename=\"{System.Net.WebUtility.UrlEncode(asset.OriginalFileName)}\"";
 
-            await using var stream = await storage.OpenReadAsync(asset.Url, cancellationToken).ConfigureAwait(false);
-            await stream.CopyToAsync(httpContext.Response.Body, cancellationToken).ConfigureAwait(false);
+            Stream fileStream;
+            try
+            {
+                var storage = storageFactory.GetStorage(DownloadFileType.Asset);
+                fileStream = await storage.OpenReadAsync(asset.Url, cancellationToken).ConfigureAwait(false);
+            }
+            catch (FileNotFoundException)
+            {
+                return EnvelopeResults.NotFound();
+            }
 
-            // Fire-and-forget view-count bump (don't await; don't propagate exceptions).
+            await using (fileStream)
+            {
+                await fileStream.CopyToAsync(httpContext.Response.Body, cancellationToken).ConfigureAwait(false);
+            }
+
             _ = Task.Run(async () =>
             {
                 try { await viewCounter.IncrementAsync(id, CancellationToken.None).ConfigureAwait(false); }

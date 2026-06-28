@@ -30,9 +30,10 @@ public sealed class UserRegistrationsReportService : IUserRegistrationsReportSer
         // userIds into a hash and fan out: but a streaming join requires a single SQL query.
         // Pragma: build the IAsyncEnumerable<UserRegistrationRow> from a LINQ projection that EF translates.
         var query = from u in _db.Users
+                    where !u.IsDeleted
                     select new
                     {
-                        u.Id, u.Email, u.UserName, u.LockoutEnabled, u.LockoutEnd,
+                        u.Id, u.Email, u.UserName, u.Status,
                         u.LocalePreference, u.CountryId,
                         Roles = (from ur in _db.UserRoles
                                  join r in _db.Roles on ur.RoleId equals r.Id
@@ -40,7 +41,6 @@ public sealed class UserRegistrationsReportService : IUserRegistrationsReportSer
                                  select r.Name).ToList()
                     };
 
-        var now = System.DateTimeOffset.UtcNow;
         await foreach (var row in StreamAsAsyncEnumerable(query).WithCancellation(ct).ConfigureAwait(false))
         {
             yield return new UserRegistrationRow
@@ -49,7 +49,7 @@ public sealed class UserRegistrationsReportService : IUserRegistrationsReportSer
                 Email = row.Email,
                 UserName = row.UserName,
                 Roles = string.Join("; ", row.Roles.Where(r => r != null)),
-                IsActive = !row.LockoutEnabled || row.LockoutEnd is null || row.LockoutEnd < now,
+                IsActive = row.Status == CCE.Domain.Identity.UserStatus.Active,
                 LocalePreference = row.LocalePreference,
                 CountryId = row.CountryId?.ToString(),
             };

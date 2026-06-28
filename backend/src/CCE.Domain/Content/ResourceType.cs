@@ -1,14 +1,19 @@
 namespace CCE.Domain.Content;
 
 /// <summary>
-/// Format of a <c>Resource</c>. Drives both UI rendering (icon + viewer) and
-/// validation rules (e.g., Video resources may require an associated transcript file).
+/// Publication type of a <c>Resource</c>. Drives UI rendering (icon + viewer)
+/// and categorization in the resource center.
 /// </summary>
 public enum ResourceType
 {
-    Pdf = 0,
-    Video = 1,
-    Image = 2,
-    Link = 3,
-    Document = 4,
+    Paper = 0,
+    Article = 1,
+    Study = 2,
+    Presentation = 3,
+    ScientificPaper = 4,
+    Report = 5,
+    Book = 6,
+    Research = 7,
+    CceGuide = 8,
+    Media = 9,
 }

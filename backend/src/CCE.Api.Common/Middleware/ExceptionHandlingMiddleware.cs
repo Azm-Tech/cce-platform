@@ -1,7 +1,11 @@
+﻿using CCE.Api.Common.Results;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -24,100 +28,72 @@ public sealed class ExceptionHandlingMiddleware
         {
             await _next(context).ConfigureAwait(false);
         }
+        catch (OperationCanceledException)
+        {
+            // Client disconnected — not a server error.
+        }
         catch (ValidationException ex)
         {
-            await WriteValidationProblemAsync(context, ex).ConfigureAwait(false);
+            await WriteValidationResultAsync(context, ex).ConfigureAwait(false);
         }
-        // Expected business outcomes — not logged (not server errors).
         catch (ConcurrencyException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
-                title: "Concurrent edit",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/concurrency").ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status409Conflict,
+                MessageKeys.General.CONCURRENCY_CONFLICT, ex.Message).ConfigureAwait(false);
         }
         catch (DuplicateException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
-                title: "Duplicate value",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/duplicate").ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status409Conflict,
+                MessageKeys.General.DUPLICATE_VALUE, ex.Message).ConfigureAwait(false);
         }
         catch (DomainException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
-                title: "Invariant violated",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/invariant").ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status422UnprocessableEntity,
+                MessageKeys.General.BUSINESS_RULE_VIOLATION, ex.Message).ConfigureAwait(false);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogInformation(ex, "Unauthorized access");
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status401Unauthorized,
+                MessageKeys.General.UNAUTHORIZED).ConfigureAwait(false);
         }
         catch (System.Collections.Generic.KeyNotFoundException ex)
         {
-            await WriteProblemAsync(context, StatusCodes.Status404NotFound,
-                title: "Resource not found",
-                detail: ex.Message,
-                type: "https://cce.moenergy.gov.sa/problems/not-found").ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status404NotFound,
+                MessageKeys.General.RESOURCE_NOT_FOUND_GENERIC, ex.Message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
-            await WriteServerErrorAsync(context, ex).ConfigureAwait(false);
+            await EnvelopeWriter.WriteAsync(context, StatusCodes.Status500InternalServerError,
+                MessageKeys.General.INTERNAL_ERROR).ConfigureAwait(false);
         }
     }
 
-    private static string GetCorrelationId(HttpContext ctx) =>
-        ctx.Items[CorrelationIdMiddleware.ItemKey]?.ToString() ?? Guid.NewGuid().ToString();
-
-    private static async Task WriteValidationProblemAsync(HttpContext ctx, ValidationException ex)
+    private static async Task WriteValidationResultAsync(HttpContext ctx, ValidationException ex)
     {
-        var errors = ex.Errors
-            .GroupBy(e => e.PropertyName)
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+        var l = ctx.RequestServices.GetService<ILocalizationService>();
+        var config = ctx.RequestServices.GetService<IConfiguration>();
+        var supported = config?.GetSection("Localization:Supported").Get<string[]>();
+        var defaultLocale = config?.GetValue<string>("Localization:Default");
+        var locale = LocalizationMiddleware.PickLocale(
+            ctx.Request.Headers.AcceptLanguage.ToString(), supported, defaultLocale);
 
-        var problem = new ValidationProblemDetails(errors)
+        var fieldErrors = ex.Errors.Select(e =>
         {
-            Status = StatusCodes.Status400BadRequest,
-            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-            Title = "One or more validation errors occurred."
-        };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
+            var domainKey = e.ErrorCode;
+            var valCode = SystemCodeMap.ToSystemCode(domainKey);
+            var valMsg = l?.GetString(domainKey, locale) ?? domainKey;
+            if (valMsg == domainKey) valMsg = e.ErrorMessage;
+            return new
+            {
+                field = JsonNamingPolicy.CamelCase.ConvertName(e.PropertyName ?? string.Empty),
+                code = valCode,
+                message = valMsg
+            };
+        }).ToList<object>();
 
-        ctx.Response.StatusCode = StatusCodes.Status400BadRequest;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
-    }
-
-    private static async Task WriteProblemAsync(
-        HttpContext ctx, int statusCode, string title, string detail, string type)
-    {
-        var problem = new ProblemDetails
-        {
-            Status = statusCode,
-            Type = type,
-            Title = title,
-            Detail = detail,
-            Instance = ctx.Request.Path,
-        };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
-
-        ctx.Response.StatusCode = statusCode;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
-    }
-
-    private static async Task WriteServerErrorAsync(HttpContext ctx, Exception ex)
-    {
-        _ = ex; // intentionally unused — never expose to clients
-        var problem = new ProblemDetails
-        {
-            Status = StatusCodes.Status500InternalServerError,
-            Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-            Title = "An unexpected error occurred.",
-            Detail = "See server logs by correlation id for details."
-        };
-        problem.Extensions["correlationId"] = GetCorrelationId(ctx);
-
-        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        ctx.Response.ContentType = "application/problem+json";
-        await JsonSerializer.SerializeAsync(ctx.Response.Body, problem).ConfigureAwait(false);
+        await EnvelopeWriter.WriteAsync(ctx, StatusCodes.Status400BadRequest,
+            MessageKeys.General.VALIDATION_ERROR, errors: fieldErrors).ConfigureAwait(false);
     }
 }

@@ -1,26 +1,39 @@
+﻿using System.Linq;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.InterestManagement.Dtos;
+using CCE.Application.Messages;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Identity.Queries.GetUserById;
 
-public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDetailDto?>
+public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Response<UserDetailDto>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public GetUserByIdQueryHandler(ICceDbContext db)
+    public GetUserByIdQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<UserDetailDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Response<UserDetailDto>> Handle(
+    GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = (await _db.Users.Where(u => u.Id == request.Id).ToListAsyncEither(cancellationToken).ConfigureAwait(false))
-            .SingleOrDefault();
+        var users = await _db.Users
+            .Where(u => u.Id == request.Id && !u.IsDeleted)
+            .Include(u => u.UserInterestTopics)
+            .ThenInclude(uit => uit.InterestTopic)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var user = users.SingleOrDefault();
         if (user is null)
         {
-            return null;
+            return _msg.NotFound<UserDetailDto>(MessageKeys.Identity.USER_NOT_FOUND);
         }
 
         var roleNames =
@@ -30,19 +43,28 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
             select r.Name!;
         var roles = await roleNames.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
 
-        var now = System.DateTimeOffset.UtcNow;
+        var now = DateTimeOffset.UtcNow;
         var isActive = !user.LockoutEnabled || user.LockoutEnd is null || user.LockoutEnd < now;
 
-        return new UserDetailDto(
+        var interestTopics = user.UserInterestTopics
+            .Select(uit => new InterestTopicDto(
+                uit.InterestTopic.Id,
+                uit.InterestTopic.NameAr,
+                uit.InterestTopic.NameEn,
+                uit.InterestTopic.Category,
+                uit.InterestTopic.IsActive))
+            .ToList();
+
+        return _msg.Ok(new UserDetailDto(
             user.Id,
             user.Email,
             user.UserName,
             user.LocalePreference,
             user.KnowledgeLevel,
-            user.Interests,
+            interestTopics,
             user.CountryId,
             user.AvatarUrl,
             roles,
-            isActive);
+            isActive), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

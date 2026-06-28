@@ -1,12 +1,14 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Commands.CreateResource;
+using CCE.Application.Content.Commands.DeleteResource;
 using CCE.Application.Content.Commands.PublishResource;
 using CCE.Application.Content.Commands.UpdateResource;
+using CCE.Application.Content.Queries.GetResourceById;
 using CCE.Application.Content.Queries.ListResources;
 using CCE.Domain;
 using CCE.Domain.Content;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace CCE.Api.Internal.Endpoints;
@@ -29,11 +31,21 @@ public static class ResourceEndpoints
                 CategoryId: categoryId,
                 CountryId: countryId,
                 IsPublished: isPublished);
-            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("ListResources");
+
+        resources.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var response = await mediator.Send(new GetResourceByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Upload)
+        .WithName("GetResourceById");
 
         resources.MapPost("", async (
             CreateResourceRequest body,
@@ -42,9 +54,11 @@ public static class ResourceEndpoints
             var cmd = new CreateResourceCommand(
                 body.TitleAr, body.TitleEn,
                 body.DescriptionAr, body.DescriptionEn,
-                body.ResourceType, body.CategoryId, body.CountryId, body.AssetFileId);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/resources/{dto.Id}", dto);
+                body.ResourceType, body.CategoryId, body.CountryId, body.AssetFileId,
+                body.CountryIds,
+                body.KnowledgeLevelId, body.JobSectorId);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("CreateResource");
@@ -54,17 +68,15 @@ public static class ResourceEndpoints
             UpdateResourceRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpdateResourceCommand(
                 id,
                 body.TitleAr, body.TitleEn,
                 body.DescriptionAr, body.DescriptionEn,
                 body.ResourceType, body.CategoryId,
-                rowVersion);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+                body.CountryIds,
+                body.KnowledgeLevelId, body.JobSectorId);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Update)
         .WithName("UpdateResource");
@@ -73,31 +85,24 @@ public static class ResourceEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new PublishResourceCommand(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(new PublishResourceCommand(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Resource_Center_Upload)
         .WithName("PublishResource");
+
+        resources.MapDelete("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var response = await mediator.Send(new DeleteResourceCommand(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Resource_Center_Delete)
+        .WithName("DeleteResource");
 
         return app;
     }
 }
 
-public sealed record CreateResourceRequest(
-    string TitleAr,
-    string TitleEn,
-    string DescriptionAr,
-    string DescriptionEn,
-    CCE.Domain.Content.ResourceType ResourceType,
-    System.Guid CategoryId,
-    System.Guid? CountryId,
-    System.Guid AssetFileId);
 
-public sealed record UpdateResourceRequest(
-    string TitleAr,
-    string TitleEn,
-    string DescriptionAr,
-    string DescriptionEn,
-    CCE.Domain.Content.ResourceType ResourceType,
-    System.Guid CategoryId,
-    string RowVersion);

@@ -2,7 +2,6 @@ using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Queries.ListExpertProfiles;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
-using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Tests.Identity.Queries;
 
@@ -12,14 +11,15 @@ public class ListExpertProfilesQueryHandlerTests
     public async Task Returns_empty_paged_result_when_no_profiles_exist()
     {
         var db = BuildDb(System.Array.Empty<ExpertProfile>(), System.Array.Empty<User>());
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListExpertProfilesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(20);
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
+        result.Data.Page.Should().Be(1);
+        result.Data.PageSize.Should().Be(20);
     }
 
     [Fact]
@@ -37,14 +37,15 @@ public class ListExpertProfilesQueryHandlerTests
         };
 
         var db = BuildDb(new[] { aliceProfile }, users);
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(new ListExpertProfilesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Should().HaveCount(1);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Should().HaveCount(1);
 
-        var item = result.Items.Single();
+        var item = result.Data.Items.Single();
         item.UserId.Should().Be(aliceId);
         item.UserName.Should().Be("alice");
         item.BioEn.Should().Be("Alice Bio");
@@ -71,14 +72,15 @@ public class ListExpertProfilesQueryHandlerTests
         };
 
         var db = BuildDb(new[] { aliceProfile, bobProfile }, users);
-        var sut = new ListExpertProfilesQueryHandler(db);
+        var sut = new ListExpertProfilesQueryHandler(db, IdentityTestHelpers.BuildMsg());
 
         var result = await sut.Handle(
             new ListExpertProfilesQuery(Search: "alice"),
             CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().UserId.Should().Be(aliceId);
+        result.Success.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().UserId.Should().Be(aliceId);
     }
 
     private static ExpertProfile BuildProfile(
@@ -91,7 +93,7 @@ public class ListExpertProfilesQueryHandlerTests
         string titleEn,
         FakeSystemClock clock)
     {
-        var request = ExpertRegistrationRequest.Submit(userId, bioAr, bioEn, tags, clock);
+        var request = ExpertRegistrationRequest.Submit(userId, bioAr, bioEn, tags, System.Guid.NewGuid(), clock);
         request.Approve(adminId, clock);
         return ExpertProfile.CreateFromApprovedRequest(request, titleAr, titleEn, clock);
     }
@@ -103,11 +105,6 @@ public class ListExpertProfilesQueryHandlerTests
         var db = Substitute.For<ICceDbContext>();
         db.ExpertProfiles.Returns(profiles.AsQueryable());
         db.Users.Returns(users.AsQueryable());
-        db.Roles.Returns(System.Array.Empty<Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Countries.Returns(System.Array.Empty<CCE.Domain.Country.Country>().AsQueryable());
-        db.StateRepresentativeAssignments.Returns(System.Array.Empty<CCE.Domain.Identity.StateRepresentativeAssignment>().AsQueryable());
-        db.ExpertRegistrationRequests.Returns(System.Array.Empty<ExpertRegistrationRequest>().AsQueryable());
         return db;
     }
 

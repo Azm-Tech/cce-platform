@@ -8,4 +8,9 @@ public sealed record PublicPostReplyDto(
     string Locale,
     System.Guid? ParentReplyId,
     bool IsByExpert,
-    System.DateTimeOffset CreatedOn);
+    int Depth,
+    int ChildCount,
+    int UpvoteCount,
+    System.DateTimeOffset CreatedOn,
+    string AuthorName,
+    string? AuthorAvatarUrl);

@@ -15,6 +15,7 @@ public sealed record SeederMode(SeederMode.Kind Mode, string? ErrorMessage)
     {
         RunSeeders,
         RunSeedersWithDemo,
+        RunSeedersWithBulk,
         MigrateOnly,
         MigrateAndSeedReference,
         Error,
@@ -23,12 +24,13 @@ public sealed record SeederMode(SeederMode.Kind Mode, string? ErrorMessage)
     public static SeederMode Parse(string[] args)
     {
         var hasDemo = args.Contains("--demo", StringComparer.OrdinalIgnoreCase);
+        var hasBulk = args.Contains("--bulk", StringComparer.OrdinalIgnoreCase);
         var hasMigrate = args.Contains("--migrate", StringComparer.OrdinalIgnoreCase);
         var hasSeedRef = args.Contains("--seed-reference", StringComparer.OrdinalIgnoreCase);
 
-        if (hasMigrate && hasDemo)
+        if (hasMigrate && (hasDemo || hasBulk))
         {
-            return new(Kind.Error, "Demo data is not allowed in migration mode. Use either --migrate or --demo, not both.");
+            return new(Kind.Error, "--migrate cannot be combined with --demo or --bulk.");
         }
         if (hasSeedRef && !hasMigrate)
         {
@@ -36,6 +38,7 @@ public sealed record SeederMode(SeederMode.Kind Mode, string? ErrorMessage)
         }
         if (hasMigrate && hasSeedRef) return new(Kind.MigrateAndSeedReference, null);
         if (hasMigrate)              return new(Kind.MigrateOnly, null);
+        if (hasBulk)                 return new(Kind.RunSeedersWithBulk, null);
         if (hasDemo)                 return new(Kind.RunSeedersWithDemo, null);
         return new(Kind.RunSeeders, null);
     }

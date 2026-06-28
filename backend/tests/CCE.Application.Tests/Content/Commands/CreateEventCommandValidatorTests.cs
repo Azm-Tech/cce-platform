@@ -13,7 +13,8 @@ public class CreateEventCommandValidatorTests
     private static CreateEventCommand ValidCmd() => new(
         "حدث", "Event", "وصف", "Description",
         StartsOn, EndsOn,
-        null, null, null, null);
+        null, null, null, null,
+        System.Guid.NewGuid());
 
     [Fact]
     public void Valid_command_passes()

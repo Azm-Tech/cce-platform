@@ -18,7 +18,7 @@ public class RowVersionContractTests
             System.Reflection.BindingFlags.NonPublic);
 
         prop.Should().NotBeNull(because: $"{type.Name} should expose a RowVersion property");
-        prop!.PropertyType.Should().Be(typeof(byte[]),
+        prop!.PropertyType.Should().Be<byte[]>(
             because: $"{type.Name}.RowVersion must be byte[] for SQL Server rowversion mapping");
     }
 
@@ -26,8 +26,9 @@ public class RowVersionContractTests
     public void Resource_RowVersion_initialised_to_empty_array()
     {
         var clock = new FakeSystemClock();
-        var r = Resource.Draft("ا", "x", "ا", "x", ResourceType.Pdf,
-            System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(), clock);
+        var r = Resource.Draft("ا", "x", "ا", "x", ResourceType.Paper,
+            System.Guid.NewGuid(), null, System.Guid.NewGuid(), System.Guid.NewGuid(),
+            System.Array.Empty<System.Guid>(), clock);
         r.RowVersion.Should().NotBeNull();
         r.RowVersion.Should().BeEmpty();
     }

@@ -10,7 +10,7 @@ namespace CCE.Domain.Identity;
 /// the corresponding <c>ExpertProfile</c>. Soft-deletable for admin recovery flows.
 /// </summary>
 [Audited]
-public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>
 {
     private ExpertRegistrationRequest(
         System.Guid id,
@@ -36,6 +36,8 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
 
     public IList<string> RequestedTags { get; private set; } = new List<string>();
 
+    public ICollection<ExpertRequestAttachment> Attachments { get; private set; } = [];
+
     public System.DateTimeOffset SubmittedOn { get; private set; }
 
     public ExpertRegistrationStatus Status { get; private set; }
@@ -48,12 +50,6 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
 
     public string? RejectionReasonEn { get; private set; }
 
-    public bool IsDeleted { get; private set; }
-
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-
-    public System.Guid? DeletedById { get; private set; }
-
     /// <summary>
     /// Submit a new pending registration request. Validates inputs and records the submission moment.
     /// </summary>
@@ -62,32 +58,35 @@ public sealed class ExpertRegistrationRequest : AggregateRoot<System.Guid>, ISof
         string bioAr,
         string bioEn,
         IEnumerable<string> tags,
+        System.Guid cvAssetFileId,
         ISystemClock clock)
     {
         if (requesterId == System.Guid.Empty)
-        {
             throw new DomainException("RequesterId is required.");
-        }
         if (string.IsNullOrWhiteSpace(bioAr))
-        {
             throw new DomainException("Arabic bio is required.");
-        }
         if (string.IsNullOrWhiteSpace(bioEn))
-        {
             throw new DomainException("English bio is required.");
-        }
+        if (cvAssetFileId == System.Guid.Empty)
+            throw new DomainException("CvAssetFileId is required.");
         var tagList = (tags ?? throw new DomainException("Tags collection is required."))
             .Select(static s => s?.Trim() ?? string.Empty)
             .Where(static s => s.Length > 0)
             .Distinct()
             .ToList();
-        return new ExpertRegistrationRequest(
-            id: System.Guid.NewGuid(),
+        if (tagList.Count == 0)
+            throw new DomainException("At least one expertise tag is required.");
+        var now = clock.UtcNow;
+        var id = System.Guid.NewGuid();
+        var request = new ExpertRegistrationRequest(
+            id: id,
             requestedById: requesterId,
             requestedBioAr: bioAr,
             requestedBioEn: bioEn,
             requestedTags: tagList,
-            submittedOn: clock.UtcNow);
+            submittedOn: now);
+        request.Attachments.Add(ExpertRequestAttachment.Create(id, cvAssetFileId, ExpertRequestAttachmentType.Cv, now));
+        return request;
     }
 
     /// <summary>

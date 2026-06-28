@@ -1,3 +1,4 @@
+using CCE.Application.InterestManagement.Dtos;
 using CCE.Domain.Identity;
 
 namespace CCE.Application.Identity.Dtos;
@@ -11,7 +12,7 @@ public sealed record UserDetailDto(
     string? UserName,
     string LocalePreference,
     KnowledgeLevel KnowledgeLevel,
-    IReadOnlyList<string> Interests,
+    IReadOnlyList<InterestTopicDto> InterestTopics,
     System.Guid? CountryId,
     string? AvatarUrl,
     IReadOnlyList<string> Roles,

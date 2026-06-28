@@ -21,6 +21,7 @@ public class EventTests
             locationEn: "Riyadh",
             onlineMeetingUrl: null,
             featuredImageUrl: null,
+            topicId: System.Guid.NewGuid(),
             clock: clock);
 
     [Fact]
@@ -45,10 +46,11 @@ public class EventTests
     public void EndsOn_must_be_after_StartsOn()
     {
         var clock = NewClock();
+        var topicId = System.Guid.NewGuid();
         var act = () => Event.Schedule("ا", "x", "ا", "x",
             clock.UtcNow.AddDays(7),
             clock.UtcNow.AddDays(7),
-            null, null, null, null, clock);
+            null, null, null, null, topicId, clock);
         act.Should().Throw<DomainException>().WithMessage("*EndsOn*");
     }
 
@@ -56,10 +58,11 @@ public class EventTests
     public void EndsOn_before_StartsOn_throws()
     {
         var clock = NewClock();
+        var topicId = System.Guid.NewGuid();
         var act = () => Event.Schedule("ا", "x", "ا", "x",
             clock.UtcNow.AddDays(7),
             clock.UtcNow.AddDays(6),
-            null, null, null, null, clock);
+            null, null, null, null, topicId, clock);
         act.Should().Throw<DomainException>();
     }
 
@@ -67,10 +70,11 @@ public class EventTests
     public void OnlineMeetingUrl_must_be_https()
     {
         var clock = NewClock();
+        var topicId = System.Guid.NewGuid();
         var act = () => Event.Schedule("ا", "x", "ا", "x",
             clock.UtcNow.AddDays(7),
             clock.UtcNow.AddDays(7).AddHours(2),
-            null, null, "http://insecure", null, clock);
+            null, null, "http://insecure", null, topicId, clock);
         act.Should().Throw<DomainException>().WithMessage("*https*");
     }
 
@@ -120,7 +124,8 @@ public class EventTests
             "وصف جديد", "New Description",
             "جدة", "Jeddah",
             "https://meet.example.com/room",
-            "https://img.example.com/banner.jpg");
+            "https://img.example.com/banner.jpg",
+            e.TopicId);
 
         e.TitleAr.Should().Be("عنوان جديد");
         e.TitleEn.Should().Be("New Title");
@@ -142,7 +147,8 @@ public class EventTests
             "ا", "x", "ا", "x",
             null, null,
             "http://insecure.example.com",
-            null);
+            null,
+            e.TopicId);
 
         act.Should().Throw<DomainException>().WithMessage("*https*");
     }

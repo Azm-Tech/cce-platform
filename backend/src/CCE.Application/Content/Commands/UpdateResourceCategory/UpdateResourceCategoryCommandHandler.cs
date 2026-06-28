@@ -1,25 +1,34 @@
+﻿using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
 using CCE.Application.Content.Queries.ListResourceCategories;
+using CCE.Application.Messages;
+using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.UpdateResourceCategory;
 
-public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<UpdateResourceCategoryCommand, ResourceCategoryDto?>
+public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<UpdateResourceCategoryCommand, Response<ResourceCategoryDto>>
 {
-    private readonly IResourceCategoryService _service;
+    private readonly IRepository<ResourceCategory, System.Guid> _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public UpdateResourceCategoryCommandHandler(IResourceCategoryService service)
+    public UpdateResourceCategoryCommandHandler(
+        IRepository<ResourceCategory, System.Guid> repo,
+        ICceDbContext db,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _messages = messages;
     }
 
-    public async Task<ResourceCategoryDto?> Handle(UpdateResourceCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Response<ResourceCategoryDto>> Handle(UpdateResourceCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var category = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (category is null)
-        {
-            return null;
-        }
+            return _messages.NotFound<ResourceCategoryDto>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         category.UpdateNames(request.NameAr, request.NameEn);
         category.Reorder(request.OrderIndex);
@@ -29,8 +38,8 @@ public sealed class UpdateResourceCategoryCommandHandler : IRequestHandler<Updat
         else
             category.Deactivate();
 
-        await _service.UpdateAsync(category, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListResourceCategoriesQueryHandler.MapToDto(category);
+        return _messages.Ok(ListResourceCategoriesQueryHandler.MapToDto(category), MessageKeys.General.SUCCESS_OPERATION);
     }
 }

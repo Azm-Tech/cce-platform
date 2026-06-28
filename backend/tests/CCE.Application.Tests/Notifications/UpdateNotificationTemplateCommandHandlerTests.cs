@@ -1,3 +1,4 @@
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Notifications;
 using CCE.Application.Notifications.Commands.UpdateNotificationTemplate;
 using CCE.Domain.Notifications;
@@ -7,20 +8,21 @@ namespace CCE.Application.Tests.Notifications;
 public class UpdateNotificationTemplateCommandHandlerTests
 {
     [Fact]
-    public async Task Returns_null_when_template_not_found()
+    public async Task Returns_not_found_response_when_template_not_found()
     {
-        var service = Substitute.For<INotificationTemplateService>();
-        service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
+        var repo = Substitute.For<INotificationTemplateRepository>();
+        repo.GetAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((NotificationTemplate?)null);
-        var sut = new UpdateNotificationTemplateCommandHandler(service);
+        var db = Substitute.For<ICceDbContext>();
+        var sut = new UpdateNotificationTemplateCommandHandler(repo, db, NotificationTestMessages.Create());
 
         var result = await sut.Handle(BuildCommand(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Updates_content_and_active_state_and_returns_dto()
+    public async Task Updates_content_and_active_state_and_returns_id()
     {
         var template = NotificationTemplate.Define(
             "OLD_CODE",
@@ -29,10 +31,11 @@ public class UpdateNotificationTemplateCommandHandlerTests
             NotificationChannel.Email,
             "{}");
 
-        var service = Substitute.For<INotificationTemplateService>();
-        service.FindAsync(template.Id, Arg.Any<CancellationToken>()).Returns(template);
+        var repo = Substitute.For<INotificationTemplateRepository>();
+        repo.GetAsync(template.Id, Arg.Any<CancellationToken>()).Returns(template);
 
-        var sut = new UpdateNotificationTemplateCommandHandler(service);
+        var db = Substitute.For<ICceDbContext>();
+        var sut = new UpdateNotificationTemplateCommandHandler(repo, db, NotificationTestMessages.Create());
 
         var cmd = new UpdateNotificationTemplateCommand(
             template.Id,
@@ -42,11 +45,12 @@ public class UpdateNotificationTemplateCommandHandlerTests
 
         var result = await sut.Handle(cmd, CancellationToken.None);
 
-        result.Should().NotBeNull();
-        result!.SubjectEn.Should().Be("New Subject");
-        result.BodyEn.Should().Be("New Body");
-        result.IsActive.Should().BeFalse();
-        await service.Received(1).UpdateAsync(template, Arg.Any<CancellationToken>());
+        result.Success.Should().BeTrue();
+        result.Data.Should().Be(template.Id);
+        template.SubjectEn.Should().Be("New Subject");
+        template.BodyEn.Should().Be("New Body");
+        template.IsActive.Should().BeFalse();
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static UpdateNotificationTemplateCommand BuildCommand(System.Guid id) =>

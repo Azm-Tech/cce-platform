@@ -53,8 +53,9 @@ public class UserMutationTests
     public void UpdateInterests_replaces_list()
     {
         var user = new User();
-        user.UpdateInterests(new[] { "Solar", "Wind" });
-        user.Interests.Should().Equal("Solar", "Wind");
+        var topics = new[] { System.Guid.NewGuid(), System.Guid.NewGuid() };
+        user.UpdateInterests(topics);
+        user.UserInterestTopics.Select(t => t.InterestTopicId).Should().BeEquivalentTo(topics);
     }
 
     [Fact]
@@ -66,11 +67,12 @@ public class UserMutationTests
     }
 
     [Fact]
-    public void UpdateInterests_deduplicates_and_trims()
+    public void UpdateInterests_deduplicates()
     {
         var user = new User();
-        user.UpdateInterests(new[] { " Solar ", "Solar", "Wind", "" });
-        user.Interests.Should().Equal("Solar", "Wind");
+        var id = System.Guid.NewGuid();
+        user.UpdateInterests(new[] { id, id, System.Guid.NewGuid() });
+        user.UserInterestTopics.Should().HaveCount(2);
     }
 
     [Fact]

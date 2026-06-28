@@ -6,36 +6,52 @@ using CCE.Api.Common.Middleware;
 using CCE.Api.Common.Observability;
 using CCE.Api.Common.OpenApi;
 using CCE.Api.Common.RateLimiting;
+using CCE.Api.Common.SignalR;
 using CCE.Api.Internal.Endpoints;
 using CCE.Application;
 using CCE.Application.Common.CountryScope;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Health;
 using CCE.Infrastructure;
+using CCE.Infrastructure.Notifications;
 using CCE.Infrastructure.Search;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseCceSerilog();
 
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+    opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddCceMeilisearchIndexer()
-    .AddCceJwtAuth(builder.Configuration)
+    .AddCceJwtAuth(builder.Configuration, CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal)
     .AddCcePermissionPolicies()
     .AddCceUserSync()
     .AddCceHealthChecks(builder.Configuration)
+    .AddCceOpenTelemetry(builder.Configuration, "CCE.Api.Internal")
     .AddCceRateLimiter(builder.Configuration)
     .AddCceOpenApi("CCE Internal API");
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.Replace(ServiceDescriptor.Scoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>());
 builder.Services.Replace(ServiceDescriptor.Scoped<ICountryScopeAccessor, HttpContextCountryScopeAccessor>());
+builder.Services.AddCceSignalR(builder.Configuration);
+// Option 2: share the same NotificationsHub + Redis backplane with the External API so
+// admin clients on port 5002 receive the same user/post/community/moderation events as
+// public clients on port 5001. Both APIs route user:{id} rooms via the same sub-claim
+// provider. Each API validates its own JWT scheme (LocalAuthApi.External vs .Internal).
+builder.Services.Replace(ServiceDescriptor.Singleton<IUserIdProvider, SubClaimUserIdProvider>());
 
 var app = builder.Build();
 
@@ -50,10 +66,18 @@ app.UseCceUserSync();
 app.UseRateLimiter();
 app.UseCcePrometheus();
 app.UseMiddleware<LocalizationMiddleware>();
+app.UseStaticFiles();
 
 app.UseCceOpenApi(apiTag: "internal");
 
-app.MapIdentityEndpoints();
+// Option 2: same hub path as the External API — admin/CMS clients connect on port 5002.
+// Shares the Redis SignalR backplane so publishes from either (or the Worker) reach all
+// connected clients on both. Requires authenticated connections; [Authorize] is on the hub.
+app.MapHub<NotificationsHub>("/hubs/notifications");
+
+        app.MapAuthEndpoints(CCE.Application.Identity.Auth.Common.LocalAuthApi.Internal);
+        app.MapAdminAuthEndpoints();
+        app.MapIdentityEndpoints();
 app.MapExpertEndpoints();
 app.MapAssetEndpoints();
 app.MapResourceEndpoints();
@@ -61,15 +85,30 @@ app.MapResourceCategoryEndpoints();
 app.MapCountryResourceRequestEndpoints();
 app.MapCountryEndpoints();
 app.MapCountryProfileEndpoints();
+app.MapKapsarcAdminEndpoints();
+app.MapTagEndpoints();
 app.MapNewsEndpoints();
 app.MapEventEndpoints();
 app.MapPageEndpoints();
 app.MapHomepageSectionEndpoints();
 app.MapTopicEndpoints();
 app.MapCommunityModerationEndpoints();
+        app.MapCommunityAdminEndpoints();
 app.MapNotificationTemplateEndpoints();
+app.MapNotificationLogEndpoints();
+app.MapNotificationTestEndpoints();
 app.MapReportEndpoints();
 app.MapAuditEndpoints();
+        app.MapCacheManagementEndpoints();
+        app.MapRedisAdminEndpoints();
+app.MapHomepageSettingsEndpoints();
+app.MapAboutSettingsEndpoints();
+app.MapPoliciesSettingsEndpoints();
+        app.MapInteractiveMapEndpoints();
+        app.MapMediaEndpoints();
+        app.MapCountryCodeEndpoints();
+        app.MapEvaluationEndpoints();
+        app.MapPermissionEndpoints();
 
 // Sub-11d follow-up — dev sign-in shim. Mounts /dev/sign-in,
 // /dev/sign-out, /dev/whoami when Auth:DevMode=true. Production

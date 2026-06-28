@@ -11,7 +11,6 @@ public sealed class UpdateEventCommandValidator : AbstractValidator<UpdateEventC
         RuleFor(x => x.TitleEn).NotEmpty().MaximumLength(500);
         RuleFor(x => x.DescriptionAr).NotEmpty();
         RuleFor(x => x.DescriptionEn).NotEmpty();
-        RuleFor(x => x.RowVersion).NotNull().Must(rv => rv.Length == 8)
-            .WithMessage("RowVersion must be exactly 8 bytes.");
+        RuleFor(x => x.TopicId).NotEmpty();
     }
 }

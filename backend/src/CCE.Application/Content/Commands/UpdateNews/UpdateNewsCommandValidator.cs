@@ -11,9 +11,6 @@ public sealed class UpdateNewsCommandValidator : AbstractValidator<UpdateNewsCom
         RuleFor(x => x.TitleEn).NotEmpty().MaximumLength(500);
         RuleFor(x => x.ContentAr).NotEmpty();
         RuleFor(x => x.ContentEn).NotEmpty();
-        RuleFor(x => x.Slug).NotEmpty().MaximumLength(200)
-            .Matches("^[a-z0-9]+(-[a-z0-9]+)*$").WithMessage("Slug must be kebab-case.");
-        RuleFor(x => x.RowVersion).NotNull().Must(rv => rv.Length == 8)
-            .WithMessage("RowVersion must be exactly 8 bytes.");
+        RuleFor(x => x.TopicId).NotEmpty();
     }
 }

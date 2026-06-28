@@ -1,5 +1,7 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +16,18 @@ namespace CCE.Application.Community.Queries.ListAdminPosts;
 /// against PostReplies (excluding soft-deleted replies).
 /// </summary>
 public sealed class ListAdminPostsQueryHandler
-    : IRequestHandler<ListAdminPostsQuery, PagedResult<AdminPostRow>>
+    : IRequestHandler<ListAdminPostsQuery, Response<PagedResult<AdminPostRow>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListAdminPostsQueryHandler(ICceDbContext db)
+    public ListAdminPostsQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<AdminPostRow>> Handle(
+    public async Task<Response<PagedResult<AdminPostRow>>> Handle(
         ListAdminPostsQuery request,
         CancellationToken cancellationToken)
     {
@@ -82,9 +86,10 @@ public sealed class ListAdminPostsQueryHandler
 
         if (pagePostsResult.Items.Count == 0)
         {
-            return new PagedResult<AdminPostRow>(
+            var empty = new PagedResult<AdminPostRow>(
                 System.Array.Empty<AdminPostRow>(),
                 pagePostsResult.Page, pagePostsResult.PageSize, pagePostsResult.Total);
+            return _msg.Ok(empty, MessageKeys.General.ITEMS_LISTED);
         }
 
         // ─── Lookups for the page slice only ────────────────
@@ -117,7 +122,7 @@ public sealed class ListAdminPostsQueryHandler
                 TopicNameEn: topic?.NameEn ?? string.Empty,
                 TopicNameAr: topic?.NameAr ?? string.Empty,
                 AuthorId: p.AuthorId,
-                Content: p.Content,
+                Content: p.Content ?? string.Empty,
                 Locale: p.Locale,
                 IsAnswerable: p.IsAnswerable,
                 IsAnswered: p.AnsweredReplyId != null,
@@ -127,7 +132,8 @@ public sealed class ListAdminPostsQueryHandler
                 ReplyCount: replyCount);
         }).ToList();
 
-        return new PagedResult<AdminPostRow>(
+        var result = new PagedResult<AdminPostRow>(
             items, pagePostsResult.Page, pagePostsResult.PageSize, pagePostsResult.Total);
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 }

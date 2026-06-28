@@ -1,6 +1,7 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
 using CCE.Application.Content.Commands.CreateNews;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
@@ -9,51 +10,65 @@ namespace CCE.Application.Tests.Content.Commands;
 
 public class CreateNewsCommandHandlerTests
 {
+    private static readonly System.Guid TopicId = System.Guid.NewGuid();
+
     [Fact]
-    public async Task Throws_DomainException_when_actor_unknown()
+    public async Task Returns_not_authenticated_when_actor_unknown()
     {
-        var (sut, _, _) = BuildSut(noUser: true);
+        var (sut, _, _) = BuildSut(TopicId, noUser: true);
 
-        var act = async () => await sut.Handle(BuildCmd(), CancellationToken.None);
+        var result = await sut.Handle(BuildCmd(TopicId), CancellationToken.None);
 
-        await act.Should().ThrowAsync<DomainException>();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
     public async Task Persists_news_when_inputs_valid()
     {
-        var (sut, service, _) = BuildSut();
+        var (sut, repo, db) = BuildSut(TopicId);
 
-        await sut.Handle(BuildCmd(), CancellationToken.None);
+        var result = await sut.Handle(BuildCmd(TopicId), CancellationToken.None);
 
-        await service.Received(1).SaveAsync(Arg.Any<News>(), Arg.Any<CancellationToken>());
+        result.Success.Should().BeTrue();
+        await repo.Received(1).AddAsync(Arg.Any<News>(), Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Returns_dto_with_correct_fields()
     {
-        var (sut, _, _) = BuildSut();
+        var (sut, _, _) = BuildSut(TopicId);
 
-        var dto = await sut.Handle(BuildCmd(), CancellationToken.None);
+        var result = await sut.Handle(BuildCmd(TopicId), CancellationToken.None);
 
-        dto.TitleAr.Should().Be("خبر");
-        dto.TitleEn.Should().Be("News");
-        dto.Slug.Should().Be("first-post");
-        dto.IsPublished.Should().BeFalse();
+        result.Data!.TitleAr.Should().Be("خبر");
+        result.Data.TitleEn.Should().Be("News");
+        result.Data.TopicId.Should().Be(TopicId);
+        result.Data.IsPublished.Should().BeFalse();
     }
 
-    private static CreateNewsCommand BuildCmd() =>
-        new("خبر", "News", "محتوى", "Content", "first-post", null);
+    private static CreateNewsCommand BuildCmd(System.Guid topicId) =>
+        new("خبر", "News", "محتوى", "Content", topicId, null);
 
-    private static (CreateNewsCommandHandler sut, INewsService service, ICurrentUserAccessor user) BuildSut(bool noUser = false)
+    private static (CreateNewsCommandHandler sut,
+        IRepository<News, System.Guid> repo,
+        ICceDbContext db) BuildSut(System.Guid topicId, bool noUser = false)
     {
-        var service = Substitute.For<INewsService>();
+        var repo = Substitute.For<IRepository<News, System.Guid>>();
+        var db = Substitute.For<ICceDbContext>();
+        var topic = CCE.Domain.Community.Topic.Create(
+            "name-ar", "name-en", "desc-ar", "desc-en", "slug", null, null, 0);
+        typeof(CCE.Domain.Community.Topic).GetProperty(nameof(CCE.Domain.Community.Topic.Id))!
+            .SetValue(topic, topicId);
+        db.Topics.Returns(new[] { topic }.AsQueryable());
         var user = Substitute.For<ICurrentUserAccessor>();
         if (noUser)
             user.GetUserId().Returns((System.Guid?)null);
         else
             user.GetUserId().Returns(System.Guid.NewGuid());
-        var sut = new CreateNewsCommandHandler(service, user, new FakeSystemClock());
-        return (sut, service, user);
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        var sut = new CreateNewsCommandHandler(repo, db, user, new FakeSystemClock(), new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
+        return (sut, repo, db);
     }
 }

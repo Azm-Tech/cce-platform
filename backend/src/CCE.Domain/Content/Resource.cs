@@ -1,5 +1,6 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
@@ -11,7 +12,7 @@ namespace CCE.Domain.Content;
 /// <c>[Timestamp]</c> mapping in Phase 07.
 /// </summary>
 [Audited]
-public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Resource : AggregateRoot<System.Guid>
 {
     private Resource(
         System.Guid id,
@@ -23,7 +24,9 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         System.Guid categoryId,
         System.Guid? countryId,
         System.Guid uploadedById,
-        System.Guid assetFileId) : base(id)
+        System.Guid assetFileId,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -34,6 +37,8 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         CountryId = countryId;
         UploadedById = uploadedById;
         AssetFileId = assetFileId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
@@ -47,13 +52,14 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
     public System.Guid AssetFileId { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
     public long ViewCount { get; private set; }
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
+
+    private readonly List<ResourceCountry> _countries = new();
+    public IReadOnlyCollection<ResourceCountry> Countries => _countries.AsReadOnly();
 
     /// <summary>EF-managed concurrency token (rowversion).</summary>
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
 
     /// <summary>True when no country owns this resource (center-managed).</summary>
     public bool IsCenterManaged => CountryId is null;
@@ -71,7 +77,10 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         System.Guid? countryId,
         System.Guid uploadedById,
         System.Guid assetFileId,
-        ISystemClock clock)
+        IEnumerable<System.Guid> countryIds,
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         _ = clock;
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
@@ -81,7 +90,8 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         if (categoryId == System.Guid.Empty) throw new DomainException("CategoryId is required.");
         if (uploadedById == System.Guid.Empty) throw new DomainException("UploadedById is required.");
         if (assetFileId == System.Guid.Empty) throw new DomainException("AssetFileId is required.");
-        return new Resource(
+
+        var resource = new Resource(
             id: System.Guid.NewGuid(),
             titleAr: titleAr,
             titleEn: titleEn,
@@ -91,7 +101,16 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
             categoryId: categoryId,
             countryId: countryId,
             uploadedById: uploadedById,
-            assetFileId: assetFileId);
+            assetFileId: assetFileId,
+            knowledgeLevelId: knowledgeLevelId,
+            jobSectorId: jobSectorId);
+
+        foreach (var cid in countryIds.Distinct().Where(id => id != System.Guid.Empty))
+        {
+            resource._countries.Add(ResourceCountry.Create(resource.Id, cid));
+        }
+
+        return resource;
     }
 
     public void Publish(ISystemClock clock)
@@ -105,11 +124,13 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
             ResourceId: Id,
             CountryId: CountryId,
             CategoryId: CategoryId,
+            UploadedById: UploadedById,
             OccurredOn: PublishedOn.Value));
     }
 
     /// <summary>
-    /// Mutates the editable content fields. Audited via the existing AuditingInterceptor.
+    /// Mutates the editable content fields and covered countries.
+    /// Audited via the existing AuditingInterceptor.
     /// </summary>
     public void UpdateContent(
         string titleAr,
@@ -117,7 +138,10 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         string descriptionAr,
         string descriptionEn,
         ResourceType resourceType,
-        System.Guid categoryId)
+        System.Guid categoryId,
+        IEnumerable<System.Guid> countryIds,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -130,22 +154,23 @@ public sealed class Resource : AggregateRoot<System.Guid>, ISoftDeletable
         DescriptionEn = descriptionEn;
         ResourceType = resourceType;
         CategoryId = categoryId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
+        SyncCountries(countryIds);
+    }
+
+    private void SyncCountries(IEnumerable<System.Guid> countryIds)
+    {
+        var distinctIds = countryIds.Distinct().Where(id => id != System.Guid.Empty).ToList();
+
+        _countries.RemoveAll(rc => !distinctIds.Contains(rc.CountryId));
+
+        var existingIds = _countries.Select(rc => rc.CountryId).ToHashSet();
+        foreach (var cid in distinctIds.Where(id => !existingIds.Contains(id)))
+        {
+            _countries.Add(ResourceCountry.Create(Id, cid));
+        }
     }
 
     public void IncrementViewCount() => ViewCount++;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty)
-        {
-            throw new DomainException("DeletedById is required.");
-        }
-        if (IsDeleted)
-        {
-            return;
-        }
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

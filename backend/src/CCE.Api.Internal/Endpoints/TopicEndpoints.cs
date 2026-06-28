@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Community.Commands.CreateTopic;
 using CCE.Application.Community.Commands.DeleteTopic;
 using CCE.Application.Community.Commands.UpdateTopic;
@@ -27,8 +28,8 @@ public static class TopicEndpoints
                 ParentId: parentId,
                 IsActive: isActive,
                 Search: search);
-            var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("ListTopics");
@@ -37,8 +38,8 @@ public static class TopicEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetTopicByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(new GetTopicByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("GetTopicById");
@@ -51,8 +52,8 @@ public static class TopicEndpoints
                 body.NameAr, body.NameEn,
                 body.DescriptionAr, body.DescriptionEn,
                 body.Slug, body.ParentId, body.IconUrl, body.OrderIndex);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/topics/{dto.Id}", dto);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("CreateTopic");
@@ -66,8 +67,8 @@ public static class TopicEndpoints
                 id, body.NameAr, body.NameEn,
                 body.DescriptionAr, body.DescriptionEn,
                 body.OrderIndex, body.IsActive);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("UpdateTopic");
@@ -76,8 +77,8 @@ public static class TopicEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new DeleteTopicCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var response = await mediator.Send(new DeleteTopicCommand(id), cancellationToken).ConfigureAwait(false);
+            return response.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("DeleteTopic");

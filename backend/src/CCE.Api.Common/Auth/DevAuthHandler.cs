@@ -1,8 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
+using CCE.Application.Identity.Auth.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CCE.Api.Common.Auth;
 
@@ -44,65 +48,190 @@ public sealed class DevAuthHandler : AuthenticationHandler<AuthenticationSchemeO
     /// </summary>
     public static readonly Dictionary<string, Guid> RoleToUserId = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["cce-admin"]    = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
-        ["cce-editor"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
-        ["cce-reviewer"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
-        ["cce-expert"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
-        ["cce-user"]     = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
+        ["cce-super-admin"]   = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000000"),
+        ["cce-admin"]          = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000001"),
+        ["cce-content-manager"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000002"),
+        ["cce-state-representative"]      = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000006"),
+        ["cce-reviewer"]       = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000003"),
+        ["cce-expert"]         = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000004"),
+        ["cce-user"]           = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-000000000005"),
     };
+
+    private readonly IOptions<LocalAuthOptions> _localAuthOptions;
 
     public DevAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder)
-        : base(options, logger, encoder) { }
+        UrlEncoder encoder,
+        IOptions<LocalAuthOptions> localAuthOptions)
+        : base(options, logger, encoder)
+    {
+        _localAuthOptions = localAuthOptions;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var role = ReadRole();
-        if (string.IsNullOrEmpty(role))
+        // PRIORITY 1: If the request carries a real JWT (e.g. from /api/auth/login),
+        // authenticate as the real user and skip dev-mode entirely.
+        var realJwtResult = TryAuthenticateRealJwt();
+        if (realJwtResult is not null)
+            return Task.FromResult(realJwtResult);
+
+        // PRIORITY 2: Dev-mode auth — cookie or dev-prefixed bearer header.
+        // Only reached when no valid real JWT is present.
+        var roles = ReadDevRoles();
+        if (roles is null || roles.Count == 0)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        if (!RoleToUserId.TryGetValue(role, out var userId))
+        // Use the first recognised role for the deterministic userId lookup.
+        var primaryRole = roles.FirstOrDefault(r => RoleToUserId.ContainsKey(r))
+                          ?? roles[0];
+        if (!RoleToUserId.TryGetValue(primaryRole, out var userId))
         {
-            return Task.FromResult(AuthenticateResult.Fail($"Unknown dev role '{role}'"));
+            return Task.FromResult(AuthenticateResult.Fail($"Unknown dev role '{primaryRole}'"));
         }
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim("sub", userId.ToString()),
-            new Claim("oid", userId.ToString()),
-            new Claim("preferred_username", $"{role}@cce.local"),
-            new Claim("name", $"Dev {role}"),
-            new Claim("roles", role),
-            new Claim("email", $"{role}@cce.local"),
+            new("sub", userId.ToString()),
+            new("oid", userId.ToString()),
+            new("preferred_username", $"{primaryRole}@cce.local"),
+            new("name", $"Dev {primaryRole}"),
+            new("email", $"{primaryRole}@cce.local"),
         };
+        claims.AddRange(roles.Select(role => new Claim("roles", role)));
+
         var identity = new ClaimsIdentity(claims, SchemeName, "preferred_username", "roles");
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, SchemeName);
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 
-    private string? ReadRole()
+    /// <summary>
+    /// Attempts to validate the Authorization header as a real JWT issued by
+    /// <c>/api/auth/login</c>. Returns <c>null</c> when no header is present,
+    /// the token is invalid, or it is a dev-mode token.
+    /// </summary>
+    private AuthenticateResult? TryAuthenticateRealJwt()
     {
-        // Prefer cookie (browser path); fall back to bearer header (curl / Postman).
-        if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
+        var raw = GetAuthorizationValue();
+        if (string.IsNullOrEmpty(raw))
+            return null;
+
+        // Skip dev-prefixed tokens — they are handled by the dev-mode path.
+        const string devPrefix = "Bearer dev:";
+        if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        const string bearerPrefix = "Bearer ";
+        if (!raw.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        var token = raw.Substring(bearerPrefix.Length).Trim();
+
+        var opts = _localAuthOptions.Value;
+        var profiles = new[] { opts.External, opts.Internal };
+        var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+
+        foreach (var profile in profiles)
         {
-            return cookieValue.Trim();
+            if (string.IsNullOrWhiteSpace(profile.SigningKey))
+                continue;
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(profile.SigningKey));
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = profile.Issuer,
+                ValidateAudience = true,
+                ValidAudience = profile.Audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(2),
+            };
+
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = handler.ValidateToken(token, parameters, out _);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug(ex, "JWT validation failed for profile {Issuer} in DevAuthHandler", profile.Issuer);
+                continue;
+            }
+
+            // Extract claims directly from the validated JWT — do NOT remap to dev users.
+            var sub = principal.FindFirstValue("sub")
+                      ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(sub))
+                continue;
+
+            var email = principal.FindFirstValue("email") ?? string.Empty;
+            var preferredUsername = principal.FindFirstValue("preferred_username") ?? email;
+            var name = principal.FindFirstValue("name")
+                       ?? principal.FindFirstValue(ClaimTypes.Name)
+                       ?? preferredUsername;
+
+            var claims = new List<Claim>
+            {
+                new("sub", sub),
+                new("oid", sub),
+                new("preferred_username", preferredUsername),
+                new("name", name),
+                new("email", email),
+            };
+            claims.AddRange(principal.FindAll("roles").Select(c => new Claim("roles", c.Value)));
+
+            var identity = new ClaimsIdentity(claims, SchemeName, "preferred_username", "roles");
+            var realPrincipal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(realPrincipal, SchemeName);
+            return AuthenticateResult.Success(ticket);
         }
 
-        if (Request.Headers.TryGetValue("Authorization", out var auth))
+        Logger.LogDebug("No valid real JWT found in DevAuthHandler; falling back to dev-mode auth");
+        return null;
+    }
+
+    /// <summary>
+    /// Reads dev-mode credentials from cookie or the <c>Bearer dev:&lt;role&gt;</c> header.
+    /// Returns <c>null</c> when neither is present.
+    /// </summary>
+    private List<string>? ReadDevRoles()
+    {
+        // Prefer bearer header / ?access_token= (curl, Postman, SignalR WebSocket) over cookie.
+        var raw = GetAuthorizationValue();
+        if (!string.IsNullOrEmpty(raw))
         {
-            var raw = auth.ToString();
             const string devPrefix = "Bearer dev:";
             if (raw.StartsWith(devPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return raw.Substring(devPrefix.Length).Trim();
+                return new List<string> { raw.Substring(devPrefix.Length).Trim() };
             }
         }
 
+        // Fall back to cookie (browser path; also sent on the WebSocket handshake).
+        if (Request.Cookies.TryGetValue(DevCookieName, out var cookieValue) && !string.IsNullOrEmpty(cookieValue))
+        {
+            return new List<string> { cookieValue.Trim() };
+        }
+
         return null;
+    }
+
+    /// <summary>
+    /// Resolves the raw <c>Authorization</c> value from the header, or — for SignalR WebSocket clients that
+    /// can't set headers — from the <c>?access_token=</c> query string (normalised to a Bearer value).
+    /// </summary>
+    private string? GetAuthorizationValue()
+    {
+        if (Request.Headers.TryGetValue("Authorization", out var auth))
+            return auth.ToString();
+
+        var queryToken = Request.Query["access_token"].ToString();
+        return string.IsNullOrEmpty(queryToken) ? null : $"Bearer {queryToken}";
     }
 }

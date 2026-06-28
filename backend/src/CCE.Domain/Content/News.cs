@@ -1,17 +1,17 @@
-using System.Text.RegularExpressions;
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
 /// <summary>
 /// News article — bilingual title + rich-text content + optional featured image.
-/// Slug is unique (enforced in Phase 08 DB unique index). Soft-deletable, audited.
+/// Soft-deletable, audited.
 /// </summary>
 [Audited]
-public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class News : AggregateRoot<System.Guid>
 {
-    private static readonly Regex SlugPattern = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled);
+    private readonly List<Tag> _tags = new();
 
     private News(
         System.Guid id,
@@ -19,32 +19,36 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
+        System.Guid topicId,
         System.Guid authorId,
-        string? featuredImageUrl) : base(id)
+        string? featuredImageUrl,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
         ContentAr = contentAr;
         ContentEn = contentEn;
-        Slug = slug;
+        TopicId = topicId;
         AuthorId = authorId;
         FeaturedImageUrl = featuredImageUrl;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
     public string TitleEn { get; private set; }
     public string ContentAr { get; private set; }
     public string ContentEn { get; private set; }
-    public string Slug { get; private set; }
+    public System.Guid TopicId { get; private set; }
     public System.Guid AuthorId { get; private set; }
     public string? FeaturedImageUrl { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
     public bool IsFeatured { get; private set; }
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
+    public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
 
     public bool IsPublished => PublishedOn is not null;
 
@@ -53,20 +57,19 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
+        System.Guid topicId,
         System.Guid authorId,
         string? featuredImageUrl,
-        ISystemClock clock)
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         _ = clock;
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(contentAr)) throw new DomainException("ContentAr is required.");
         if (string.IsNullOrWhiteSpace(contentEn)) throw new DomainException("ContentEn is required.");
-        if (string.IsNullOrWhiteSpace(slug) || !SlugPattern.IsMatch(slug))
-        {
-            throw new DomainException($"slug '{slug}' must be kebab-case.");
-        }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (authorId == System.Guid.Empty) throw new DomainException("AuthorId is required.");
         if (featuredImageUrl is not null
             && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
@@ -79,9 +82,11 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
             titleEn: titleEn,
             contentAr: contentAr,
             contentEn: contentEn,
-            slug: slug,
+            topicId: topicId,
             authorId: authorId,
-            featuredImageUrl: featuredImageUrl);
+            featuredImageUrl: featuredImageUrl,
+            knowledgeLevelId: knowledgeLevelId,
+            jobSectorId: jobSectorId);
     }
 
     public void UpdateContent(
@@ -89,17 +94,16 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
         string titleEn,
         string contentAr,
         string contentEn,
-        string slug,
-        string? featuredImageUrl)
+        System.Guid topicId,
+        string? featuredImageUrl,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(contentAr)) throw new DomainException("ContentAr is required.");
         if (string.IsNullOrWhiteSpace(contentEn)) throw new DomainException("ContentEn is required.");
-        if (string.IsNullOrWhiteSpace(slug) || !SlugPattern.IsMatch(slug))
-        {
-            throw new DomainException($"slug '{slug}' must be kebab-case.");
-        }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (featuredImageUrl is not null
             && !featuredImageUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -109,27 +113,26 @@ public sealed class News : AggregateRoot<System.Guid>, ISoftDeletable
         TitleEn = titleEn;
         ContentAr = contentAr;
         ContentEn = contentEn;
-        Slug = slug;
+        TopicId = topicId;
         FeaturedImageUrl = featuredImageUrl;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public void Publish(ISystemClock clock)
     {
         if (IsPublished) return;
         PublishedOn = clock.UtcNow;
-        RaiseDomainEvent(new NewsPublishedEvent(Id, Slug, PublishedOn.Value));
+        RaiseDomainEvent(new NewsPublishedEvent(Id, TopicId, AuthorId, PublishedOn.Value));
+    }
+
+    public void SetTags(IEnumerable<Tag> tags)
+    {
+        _tags.Clear();
+        _tags.AddRange(tags);
     }
 
     public void MarkFeatured() => IsFeatured = true;
 
     public void UnmarkFeatured() => IsFeatured = false;
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
-    }
 }

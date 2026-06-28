@@ -15,7 +15,7 @@ public class NewsTests
             titleEn: "News",
             contentAr: "محتوى",
             contentEn: "Content",
-            slug: "first-post",
+            topicId: System.Guid.NewGuid(),
             authorId: System.Guid.NewGuid(),
             featuredImageUrl: null,
             clock: clock);
@@ -31,18 +31,10 @@ public class NewsTests
     }
 
     [Fact]
-    public void Slug_must_be_kebab_case()
-    {
-        var clock = NewClock();
-        var act = () => News.Draft("ا", "x", "ا", "x", "Bad Slug", System.Guid.NewGuid(), null, clock);
-        act.Should().Throw<DomainException>().WithMessage("*slug*");
-    }
-
-    [Fact]
     public void FeaturedImageUrl_must_be_https()
     {
         var clock = NewClock();
-        var act = () => News.Draft("ا", "x", "ا", "x", "x", System.Guid.NewGuid(), "http://insecure", clock);
+        var act = () => News.Draft("ا", "x", "ا", "x", System.Guid.NewGuid(), System.Guid.NewGuid(), "http://insecure", clock);
         act.Should().Throw<DomainException>().WithMessage("*https*");
     }
 
@@ -98,25 +90,15 @@ public class NewsTests
             titleEn: "New News",
             contentAr: "محتوى جديد",
             contentEn: "New Content",
-            slug: "new-slug",
+            topicId: n.TopicId,
             featuredImageUrl: "https://example.com/image.jpg");
 
         n.TitleAr.Should().Be("خبر جديد");
         n.TitleEn.Should().Be("New News");
         n.ContentAr.Should().Be("محتوى جديد");
         n.ContentEn.Should().Be("New Content");
-        n.Slug.Should().Be("new-slug");
         n.FeaturedImageUrl.Should().Be("https://example.com/image.jpg");
     }
 
-    [Fact]
-    public void UpdateContent_throws_DomainException_when_slug_not_kebab_case()
-    {
-        var clock = NewClock();
-        var n = NewDraft(clock);
 
-        var act = () => n.UpdateContent("خبر", "News", "محتوى", "Content", "Bad Slug!", null);
-
-        act.Should().Throw<DomainException>().WithMessage("*slug*");
-    }
 }

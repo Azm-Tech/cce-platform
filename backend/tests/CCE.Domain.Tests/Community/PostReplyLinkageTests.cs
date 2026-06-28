@@ -9,10 +9,10 @@ public class PostReplyLinkageTests
     public void Replying_then_marking_as_answer_links_question_to_reply()
     {
         var clock = new FakeSystemClock();
-        var question = Post.Create(System.Guid.NewGuid(), System.Guid.NewGuid(),
-            "سؤال", "ar", isAnswerable: true, clock);
-        var reply = PostReply.Create(question.Id, System.Guid.NewGuid(),
-            "إجابة", "ar", null, isByExpert: true, clock);
+        var question = Post.CreateDraft(System.Guid.NewGuid(), System.Guid.NewGuid(), System.Guid.NewGuid(),
+            PostType.Question, "عنوان", "سؤال", "ar", clock);
+        var reply = PostReply.CreateRoot(question.Id, System.Guid.NewGuid(),
+            "إجابة", "ar", isByExpert: true, clock);
 
         question.MarkAnswered(reply.Id);
 
@@ -25,14 +25,17 @@ public class PostReplyLinkageTests
     public void Threaded_reply_chain_preserves_parent_links()
     {
         var clock = new FakeSystemClock();
-        var post = Post.Create(System.Guid.NewGuid(), System.Guid.NewGuid(),
-            "س", "ar", isAnswerable: false, clock);
-        var top = PostReply.Create(post.Id, System.Guid.NewGuid(),
-            "أ", "ar", null, isByExpert: false, clock);
-        var nested = PostReply.Create(post.Id, System.Guid.NewGuid(),
-            "ب", "ar", parentReplyId: top.Id, isByExpert: false, clock);
+        var post = Post.CreateDraft(System.Guid.NewGuid(), System.Guid.NewGuid(), System.Guid.NewGuid(),
+            PostType.Info, "عنوان", "س", "ar", clock);
+        var top = PostReply.CreateRoot(post.Id, System.Guid.NewGuid(),
+            "أ", "ar", isByExpert: false, clock);
+        var nested = PostReply.CreateChild(top, System.Guid.NewGuid(),
+            "ب", "ar", isByExpert: false, clock);
 
         nested.ParentReplyId.Should().Be(top.Id);
+        nested.Depth.Should().Be(1);
+        nested.ThreadPath.Should().StartWith(top.ThreadPath);
         top.ParentReplyId.Should().BeNull();
+        top.ChildCount.Should().Be(1);
     }
 }

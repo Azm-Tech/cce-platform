@@ -8,10 +8,11 @@ public class CreateResourceCommandValidatorTests
     private static CreateResourceCommand ValidCmd() => new(
         "عنوان", "Title",
         "وصف", "Description",
-        ResourceType.Pdf,
+        ResourceType.Paper,
         System.Guid.NewGuid(),
         null,
-        System.Guid.NewGuid());
+        System.Guid.NewGuid(),
+        new[] { System.Guid.NewGuid() });
 
     [Fact]
     public void Valid_command_passes()

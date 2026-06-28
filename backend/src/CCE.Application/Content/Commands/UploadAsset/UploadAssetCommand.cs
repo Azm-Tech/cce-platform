@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -12,4 +13,4 @@ public sealed record UploadAssetCommand(
     Stream Content,
     string OriginalFileName,
     string MimeType,
-    long SizeBytes) : IRequest<AssetFileDto>;
+    long SizeBytes) : IRequest<Response<AssetFileDto>>;

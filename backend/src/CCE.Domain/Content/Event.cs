@@ -1,5 +1,6 @@
 using CCE.Domain.Common;
 using CCE.Domain.Content.Events;
+using CCE.Domain.Identity;
 
 namespace CCE.Domain.Content;
 
@@ -9,7 +10,7 @@ namespace CCE.Domain.Content;
 /// stable lets external calendar clients (.ics consumers) deduplicate updates by UID.
 /// </summary>
 [Audited]
-public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
+public sealed class Event : AggregateRoot<System.Guid>
 {
     private Event(
         System.Guid id,
@@ -23,7 +24,10 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         string? locationEn,
         string? onlineMeetingUrl,
         string? featuredImageUrl,
-        string iCalUid) : base(id)
+        string iCalUid,
+        System.Guid topicId,
+        System.Guid? knowledgeLevelId,
+        System.Guid? jobSectorId) : base(id)
     {
         TitleAr = titleAr;
         TitleEn = titleEn;
@@ -36,6 +40,9 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         OnlineMeetingUrl = onlineMeetingUrl;
         FeaturedImageUrl = featuredImageUrl;
         ICalUid = iCalUid;
+        TopicId = topicId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public string TitleAr { get; private set; }
@@ -52,10 +59,20 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
     /// <summary>Stable iCalendar UID (set at creation). Never changes.</summary>
     public string ICalUid { get; private set; }
 
+    public System.Guid TopicId { get; private set; }
+
     public byte[] RowVersion { get; private set; } = System.Array.Empty<byte>();
-    public bool IsDeleted { get; private set; }
-    public System.DateTimeOffset? DeletedOn { get; private set; }
-    public System.Guid? DeletedById { get; private set; }
+    public System.Guid? KnowledgeLevelId { get; private set; }
+    public System.Guid? JobSectorId { get; private set; }
+
+    private readonly List<Tag> _tags = new();
+    public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
+
+    public void SetTags(IEnumerable<Tag> tags)
+    {
+        _tags.Clear();
+        _tags.AddRange(tags);
+    }
 
     public static Event Schedule(
         string titleAr,
@@ -68,7 +85,10 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         string? locationEn,
         string? onlineMeetingUrl,
         string? featuredImageUrl,
-        ISystemClock clock)
+        System.Guid topicId,
+        ISystemClock clock,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
@@ -78,6 +98,7 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         {
             throw new DomainException("EndsOn must be strictly after StartsOn.");
         }
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (onlineMeetingUrl is not null
             && !onlineMeetingUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -91,8 +112,9 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         var id = System.Guid.NewGuid();
         var iCalUid = $"{id:N}@cce.moenergy.gov.sa";
         var ev = new Event(id, titleAr, titleEn, descriptionAr, descriptionEn,
-            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid);
-        ev.RaiseDomainEvent(new EventScheduledEvent(id, startsOn, endsOn, clock.UtcNow));
+            startsOn, endsOn, locationAr, locationEn, onlineMeetingUrl, featuredImageUrl, iCalUid, topicId,
+            knowledgeLevelId, jobSectorId);
+        ev.RaiseDomainEvent(new EventScheduledEvent(id, topicId, startsOn, endsOn, clock.UtcNow));
         return ev;
     }
 
@@ -104,12 +126,16 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         string? locationAr,
         string? locationEn,
         string? onlineMeetingUrl,
-        string? featuredImageUrl)
+        string? featuredImageUrl,
+        System.Guid topicId,
+        System.Guid? knowledgeLevelId = null,
+        System.Guid? jobSectorId = null)
     {
         if (string.IsNullOrWhiteSpace(titleAr)) throw new DomainException("TitleAr is required.");
         if (string.IsNullOrWhiteSpace(titleEn)) throw new DomainException("TitleEn is required.");
         if (string.IsNullOrWhiteSpace(descriptionAr)) throw new DomainException("DescriptionAr is required.");
         if (string.IsNullOrWhiteSpace(descriptionEn)) throw new DomainException("DescriptionEn is required.");
+        if (topicId == System.Guid.Empty) throw new DomainException("TopicId is required.");
         if (onlineMeetingUrl is not null
             && !onlineMeetingUrl.StartsWith("https://", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -128,6 +154,9 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         LocationEn = locationEn;
         OnlineMeetingUrl = onlineMeetingUrl;
         FeaturedImageUrl = featuredImageUrl;
+        TopicId = topicId;
+        KnowledgeLevelId = knowledgeLevelId;
+        JobSectorId = jobSectorId;
     }
 
     public void Reschedule(System.DateTimeOffset startsOn, System.DateTimeOffset endsOn)
@@ -138,14 +167,5 @@ public sealed class Event : AggregateRoot<System.Guid>, ISoftDeletable
         }
         StartsOn = startsOn;
         EndsOn = endsOn;
-    }
-
-    public void SoftDelete(System.Guid deletedById, ISystemClock clock)
-    {
-        if (deletedById == System.Guid.Empty) throw new DomainException("DeletedById is required.");
-        if (IsDeleted) return;
-        IsDeleted = true;
-        DeletedById = deletedById;
-        DeletedOn = clock.UtcNow;
     }
 }

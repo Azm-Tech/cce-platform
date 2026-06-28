@@ -1,51 +1,75 @@
-using CCE.Application.Content;
-using CCE.Application.Content.Dtos;
+﻿using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
+using CCE.Domain.Common;
+using CCE.Domain.Content;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Content.Commands.UpdateResource;
 
-public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourceCommand, ResourceDto?>
+public sealed class UpdateResourceCommandHandler : IRequestHandler<UpdateResourceCommand, Response<System.Guid>>
 {
-    private readonly IResourceService _service;
+    private readonly IRepository<Resource, System.Guid> _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public UpdateResourceCommandHandler(IResourceService service)
+    public UpdateResourceCommandHandler(
+        IRepository<Resource, System.Guid> repo,
+        ICceDbContext db,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _messages = messages;
     }
 
-    public async Task<ResourceDto?> Handle(UpdateResourceCommand request, CancellationToken cancellationToken)
+    public async Task<Response<System.Guid>> Handle(UpdateResourceCommand request, CancellationToken cancellationToken)
     {
-        var resource = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var resource = await _repo.GetByIdAsync(
+            request.Id,
+            q => q.Include(r => r.Countries),
+            cancellationToken).ConfigureAwait(false);
         if (resource is null)
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.RESOURCE_NOT_FOUND);
+
+        var categoryExists = await ExistsAsync(_db.ResourceCategories.Where(c => c.Id == request.CategoryId), cancellationToken).ConfigureAwait(false);
+        if (!categoryExists)
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.CATEGORY_NOT_FOUND);
+
+        var countryIds = request.CountryIds.Distinct().ToList();
+        if (countryIds.Count > 0)
         {
-            return null;
+            var existingCountryCount = await _db.Countries
+                .Where(c => countryIds.Contains(c.Id))
+                .CountAsyncEither(cancellationToken)
+                .ConfigureAwait(false);
+            if (existingCountryCount != countryIds.Count)
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
+        var expectedRowVersion = resource.RowVersion;
         resource.UpdateContent(
             request.TitleAr,
             request.TitleEn,
             request.DescriptionAr,
             request.DescriptionEn,
             request.ResourceType,
-            request.CategoryId);
+            request.CategoryId,
+            request.CountryIds,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
-        await _service.UpdateAsync(resource, request.RowVersion, cancellationToken).ConfigureAwait(false);
+        _db.SetExpectedRowVersion(resource, expectedRowVersion);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new ResourceDto(
-            resource.Id,
-            resource.TitleAr,
-            resource.TitleEn,
-            resource.DescriptionAr,
-            resource.DescriptionEn,
-            resource.ResourceType,
-            resource.CategoryId,
-            resource.CountryId,
-            resource.UploadedById,
-            resource.AssetFileId,
-            resource.PublishedOn,
-            resource.ViewCount,
-            resource.IsCenterManaged,
-            resource.IsPublished,
-            System.Convert.ToBase64String(resource.RowVersion));
+        return _messages.Ok(resource.Id, MessageKeys.General.SUCCESS_OPERATION);
+    }
+
+    private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)
+    {
+        var list = await query.Take(1).ToListAsyncEither(ct).ConfigureAwait(false);
+        return list.Count > 0;
     }
 }

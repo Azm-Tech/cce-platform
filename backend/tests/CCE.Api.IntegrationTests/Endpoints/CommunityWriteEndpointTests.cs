@@ -74,56 +74,42 @@ public class CommunityWriteEndpointTests : IClassFixture<CceTestWebApplicationFa
     }
 
     [Fact]
-    public async Task FollowTopic_anonymous_returns_401()
+    public async Task SetTopicFollow_anonymous_returns_401()
     {
         using var client = AnonClient();
-        var resp = await client.PostAsync(
-            new Uri($"/api/me/follows/topics/{System.Guid.NewGuid()}", UriKind.Relative), null);
+        var resp = await client.PutAsJsonAsync(
+            new Uri($"/api/me/follows/topics/{System.Guid.NewGuid()}", UriKind.Relative),
+            new { status = "Followed" });
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task UnfollowTopic_anonymous_returns_401()
+    public async Task SetUserFollow_anonymous_returns_401()
     {
         using var client = AnonClient();
-        var resp = await client.DeleteAsync(
-            new Uri($"/api/me/follows/topics/{System.Guid.NewGuid()}", UriKind.Relative));
+        var resp = await client.PutAsJsonAsync(
+            new Uri($"/api/me/follows/users/{System.Guid.NewGuid()}", UriKind.Relative),
+            new { status = "Followed" });
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task FollowUser_anonymous_returns_401()
+    public async Task SetPostFollow_anonymous_returns_401()
     {
         using var client = AnonClient();
-        var resp = await client.PostAsync(
-            new Uri($"/api/me/follows/users/{System.Guid.NewGuid()}", UriKind.Relative), null);
+        var resp = await client.PutAsJsonAsync(
+            new Uri($"/api/me/follows/posts/{System.Guid.NewGuid()}", UriKind.Relative),
+            new { status = "Unfollowed" });
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task UnfollowUser_anonymous_returns_401()
+    public async Task SetCommunityFollow_anonymous_returns_401()
     {
         using var client = AnonClient();
-        var resp = await client.DeleteAsync(
-            new Uri($"/api/me/follows/users/{System.Guid.NewGuid()}", UriKind.Relative));
-        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task FollowPost_anonymous_returns_401()
-    {
-        using var client = AnonClient();
-        var resp = await client.PostAsync(
-            new Uri($"/api/me/follows/posts/{System.Guid.NewGuid()}", UriKind.Relative), null);
-        resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task UnfollowPost_anonymous_returns_401()
-    {
-        using var client = AnonClient();
-        var resp = await client.DeleteAsync(
-            new Uri($"/api/me/follows/posts/{System.Guid.NewGuid()}", UriKind.Relative));
+        var resp = await client.PutAsJsonAsync(
+            new Uri($"/api/community/communities/{System.Guid.NewGuid()}/follow", UriKind.Relative),
+            new { status = "Followed" });
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

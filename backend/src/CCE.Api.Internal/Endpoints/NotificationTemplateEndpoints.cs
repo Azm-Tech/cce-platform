@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Notifications.Commands.CreateNotificationTemplate;
 using CCE.Application.Notifications.Commands.UpdateNotificationTemplate;
 using CCE.Application.Notifications.Queries.GetNotificationTemplateById;
@@ -28,7 +29,7 @@ public static class NotificationTemplateEndpoints
                 Channel: channel,
                 IsActive: isActive);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Notification_TemplateManage)
         .WithName("ListNotificationTemplates");
@@ -37,8 +38,8 @@ public static class NotificationTemplateEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetNotificationTemplateByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetNotificationTemplateByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Notification_TemplateManage)
         .WithName("GetNotificationTemplateById");
@@ -53,8 +54,8 @@ public static class NotificationTemplateEndpoints
                 body.BodyAr, body.BodyEn,
                 body.Channel,
                 body.VariableSchemaJson);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Created($"/api/admin/notification-templates/{dto.Id}", dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
         })
         .RequireAuthorization(Permissions.Notification_TemplateManage)
         .WithName("CreateNotificationTemplate");
@@ -69,8 +70,8 @@ public static class NotificationTemplateEndpoints
                 body.SubjectAr, body.SubjectEn,
                 body.BodyAr, body.BodyEn,
                 body.IsActive);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Notification_TemplateManage)
         .WithName("UpdateNotificationTemplate");
@@ -78,19 +79,3 @@ public static class NotificationTemplateEndpoints
         return app;
     }
 }
-
-public sealed record CreateNotificationTemplateRequest(
-    string Code,
-    string SubjectAr,
-    string SubjectEn,
-    string BodyAr,
-    string BodyEn,
-    CCE.Domain.Notifications.NotificationChannel Channel,
-    string VariableSchemaJson);
-
-public sealed record UpdateNotificationTemplateRequest(
-    string SubjectAr,
-    string SubjectEn,
-    string BodyAr,
-    string BodyEn,
-    bool IsActive);

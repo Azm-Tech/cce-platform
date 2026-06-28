@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CCE.Application.Common.Pagination;
@@ -9,15 +10,22 @@ public sealed record PagedResult<T>(
     IReadOnlyList<T> Items,
     int Page,
     int PageSize,
-    long Total);
+    long Total)
+{
+    /// <summary>
+    /// Projects each item into a new shape while preserving pagination metadata.
+    /// </summary>
+    public PagedResult<TOut> Map<TOut>(Func<T, TOut> selector) =>
+        new(Items.Select(selector).ToList(), Page, PageSize, Total);
+}
 
 public static class PaginationExtensions
 {
-    public const int MaxPageSize = 100;
+    public const int MaxPageSize = 1000;
 
     /// <summary>
     /// Materialises an <see cref="IQueryable{T}"/> as a <see cref="PagedResult{T}"/>.
-    /// <c>page</c> is 1-based, clamped to <c>&gt;= 1</c>. <c>pageSize</c> is clamped to <c>[1, 100]</c>.
+    /// <c>page</c> is 1-based, clamped to <c>&gt;= 1</c>. <c>pageSize</c> is clamped to <c>[1, 1000]</c>.
     /// </summary>
     public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query, int page, int pageSize, CancellationToken ct)
@@ -31,6 +39,31 @@ public static class PaginationExtensions
             ? await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct).ConfigureAwait(false)
             : query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         return new PagedResult<T>(items, page, pageSize, total);
+    }
+
+    /// <summary>
+    /// Paginates and projects in a single query — SQL only fetches DTO columns.
+    /// Use for list endpoints where you don't need the full entity.
+    /// </summary>
+    public static async Task<PagedResult<TDto>> ToPagedResultAsync<T, TDto>(
+        this IQueryable<T> query,
+        Expression<Func<T, TDto>> projection,
+        int page, int pageSize, CancellationToken ct)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
+
+        var total = query is IAsyncEnumerable<T>
+            ? await query.LongCountAsync(ct).ConfigureAwait(false)
+            : query.LongCount();
+
+        var projected = query.Select(projection);
+        var items = projected is IAsyncEnumerable<TDto>
+            ? await projected.Skip((page - 1) * pageSize).Take(pageSize)
+                .ToListAsync(ct).ConfigureAwait(false)
+            : projected.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        return new PagedResult<TDto>(items, page, pageSize, total);
     }
 
     /// <summary>
@@ -54,4 +87,37 @@ public static class PaginationExtensions
         => query is IAsyncEnumerable<T>
             ? await query.CountAsync(ct).ConfigureAwait(false)
             : query.Count();
+
+    /// <summary>
+    /// Determines whether any element matches <paramref name="predicate"/>, dispatching to EF's
+    /// <c>AnyAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>Any</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<bool> AnyAsyncEither<T>(
+        this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.AnyAsync(predicate, ct).ConfigureAwait(false)
+            : query.Any(predicate.Compile());
+
+    /// <summary>
+    /// Returns the first element matching <paramref name="predicate"/> (or <c>null</c>), dispatching to
+    /// EF's <c>FirstOrDefaultAsync</c> when the query implements <see cref="IAsyncEnumerable{T}"/>
+    /// and falling back to plain <c>FirstOrDefault</c> for in-memory test queryables.
+    /// </summary>
+    public static async Task<T?> FirstOrDefaultAsyncEither<T>(
+        this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.FirstOrDefaultAsync(predicate, ct).ConfigureAwait(false)
+            : query.FirstOrDefault(predicate.Compile());
+
+    /// <summary>
+    /// Returns the maximum value of a sequence, dispatching to EF's <c>MaxAsync</c> when the query
+    /// implements <see cref="IAsyncEnumerable{T}"/> and falling back to plain <c>Max</c> for
+    /// in-memory test queryables.
+    /// </summary>
+    public static async Task<T?> MaxAsyncEither<T>(
+        this IQueryable<T> query, CancellationToken ct)
+        => query is IAsyncEnumerable<T>
+            ? await query.MaxAsync(ct).ConfigureAwait(false)
+            : query.Max();
 }

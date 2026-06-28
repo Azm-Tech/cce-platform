@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Notifications.Dtos;
 using CCE.Domain.Notifications;
@@ -9,4 +10,4 @@ public sealed record ListNotificationTemplatesQuery(
     int Page = 1,
     int PageSize = 20,
     NotificationChannel? Channel = null,
-    bool? IsActive = null) : IRequest<PagedResult<NotificationTemplateDto>>;
+    bool? IsActive = null) : IRequest<Response<PagedResult<NotificationTemplateDto>>>;

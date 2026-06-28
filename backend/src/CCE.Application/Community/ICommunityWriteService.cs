@@ -6,7 +6,6 @@ public interface ICommunityWriteService
 {
     Task SavePostAsync(Post post, CancellationToken ct);
     Task SaveReplyAsync(PostReply reply, CancellationToken ct);
-    Task SaveRatingAsync(PostRating rating, CancellationToken ct);
     Task<Post?> FindPostAsync(Guid id, CancellationToken ct);
     Task<PostReply?> FindReplyAsync(Guid id, CancellationToken ct);
     Task UpdatePostAsync(Post post, CancellationToken ct);

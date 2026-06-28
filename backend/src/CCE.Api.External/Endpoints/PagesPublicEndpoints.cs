@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Content.Public.Queries.GetPublicPageBySlug;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -14,8 +15,8 @@ public static class PagesPublicEndpoints
 
         pages.MapGet("/{slug}", async (string slug, IMediator mediator, CancellationToken ct) =>
         {
-            var dto = await mediator.Send(new GetPublicPageBySlugQuery(slug), ct).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetPublicPageBySlugQuery(slug), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("GetPublicPageBySlug");

@@ -10,4 +10,7 @@ public sealed record EventDto(
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
     string ICalUid,
-    string RowVersion);
+    System.Guid TopicId,
+    string TopicNameAr,
+    string TopicNameEn,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags);

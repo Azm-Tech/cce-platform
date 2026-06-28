@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using CCE.Application.Common.Interfaces;
+using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.Infrastructure.Persistence;
 using Microsoft.Extensions.Logging;
@@ -20,17 +21,20 @@ public sealed class EntraIdRegistrationService
 {
     private readonly EntraIdGraphClientFactory _graphFactory;
     private readonly CceDbContext _db;
+    private readonly ISystemClock _clock;
     private readonly IEmailSender _emailSender;
     private readonly ILogger<EntraIdRegistrationService> _logger;
 
     public EntraIdRegistrationService(
         EntraIdGraphClientFactory graphFactory,
         CceDbContext db,
+        ISystemClock clock,
         IEmailSender emailSender,
         ILogger<EntraIdRegistrationService> logger)
     {
         _graphFactory = graphFactory;
         _db = db;
+        _clock = clock;
         _emailSender = emailSender;
         _logger = logger;
     }
@@ -87,7 +91,8 @@ public sealed class EntraIdRegistrationService
         var cceUser = CCE.Domain.Identity.User.CreateStubFromEntraId(
             objectId: Guid.Parse(created.Id!),
             email: created.UserPrincipalName!,
-            displayName: created.DisplayName!);
+            displayName: created.DisplayName!,
+            clock: _clock);
         _db.Users.Add(cceUser);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
@@ -103,7 +108,7 @@ public sealed class EntraIdRegistrationService
         {
             var subject = "Welcome to CCE — your account is ready";
             var body = BuildWelcomeEmailHtml(dto, tempPassword);
-            await _emailSender.SendAsync(created.UserPrincipalName!, subject, body, ct).ConfigureAwait(false);
+            await _emailSender.SendAsync(created.UserPrincipalName!, subject, body, ct: ct).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

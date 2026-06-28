@@ -1,4 +1,4 @@
-using CCE.Application.Content.Dtos;
+using CCE.Application.Common;
 using CCE.Domain.Content;
 using MediatR;
 
@@ -12,4 +12,6 @@ public sealed record UpdateResourceCommand(
     string DescriptionEn,
     ResourceType ResourceType,
     System.Guid CategoryId,
-    byte[] RowVersion) : IRequest<ResourceDto?>;
+    IReadOnlyList<System.Guid> CountryIds,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<System.Guid>>;

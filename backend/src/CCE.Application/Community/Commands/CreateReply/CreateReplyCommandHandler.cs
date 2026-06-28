@@ -1,46 +1,133 @@
+using System.Collections.Generic;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
+using CCE.Application.Community.Services;
+using CCE.Application.Messages;
+using CCE.Application.Identity;
+using CCE.Application.Notifications.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
+using CCE.Domain.Notifications;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.CreateReply;
 
-public sealed class CreateReplyCommandHandler : IRequestHandler<CreateReplyCommand, Guid>
+/// <summary>
+/// US029 write path (§A.1): fetch the post (+ parent for nesting), build a root/child reply with a
+/// materialized thread path, persist validated @mentions via MentionService, and commit once via the context (UoW).
+/// </summary>
+public sealed class CreateReplyCommandHandler
+    : IRequestHandler<CreateReplyCommand, Response<Guid>>
 {
-    private readonly ICommunityWriteService _service;
+    private readonly IReplyRepository _repo;
+    private readonly ICceDbContext _db;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly IHtmlSanitizer _sanitizer;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
+    private readonly ICommunityRealtimePublisher _realtime;
+    private readonly INotificationMessageDispatcher _dispatcher;
+    private readonly IUserRepository _userRepo;
+    private readonly IMentionService _mentions;
 
     public CreateReplyCommandHandler(
-        ICommunityWriteService service,
-        ICurrentUserAccessor currentUser,
-        IHtmlSanitizer sanitizer,
-        ISystemClock clock)
+        IReplyRepository repo, ICceDbContext db, ICurrentUserAccessor currentUser,
+        IHtmlSanitizer sanitizer, ISystemClock clock, MessageFactory msg,
+        ICommunityRealtimePublisher realtime, INotificationMessageDispatcher dispatcher,
+        IUserRepository userRepo, IMentionService mentions)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
         _currentUser = currentUser;
         _sanitizer = sanitizer;
         _clock = clock;
+        _msg = msg;
+        _realtime = realtime;
+        _dispatcher = dispatcher;
+        _userRepo = userRepo;
+        _mentions = mentions;
     }
 
-    public async Task<Guid> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
+    public async Task<Response<Guid>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
     {
-        var authorId = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot create a reply without a user identity.");
+        var authorId = _currentUser.GetUserId();
+        if (authorId is null || authorId == Guid.Empty)
+            return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
-        // Verify post exists
-        var post = await _service.FindPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
-        if (post is null)
+        var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
+        if (post is null) return _msg.NotFound<Guid>(MessageKeys.Community.POST_NOT_FOUND);
+
+        var content = _sanitizer.Sanitize(request.Content);
+
+        PostReply reply;
+        if (request.ParentReplyId is { } parentId)
         {
-            throw new KeyNotFoundException($"Post {request.PostId} not found.");
+            var parent = await _repo.GetParentAsync(parentId, cancellationToken).ConfigureAwait(false);
+            if (parent is null || parent.PostId != post.Id)
+                return _msg.NotFound<Guid>(MessageKeys.Community.REPLY_NOT_FOUND);
+            reply = PostReply.CreateChild(parent, authorId.Value, content, request.Locale, isByExpert: false, _clock);
+        }
+        else
+        {
+            reply = PostReply.CreateRoot(post.Id, authorId.Value, content, request.Locale, isByExpert: false, _clock);
         }
 
-        var sanitized = _sanitizer.Sanitize(request.Content);
-        // isByExpert = false for v0.1.0; role-check to be wired later
-        var reply = PostReply.Create(request.PostId, authorId, sanitized, request.Locale, request.ParentReplyId, isByExpert: false, _clock);
-        await _service.SaveReplyAsync(reply, cancellationToken).ConfigureAwait(false);
-        return reply.Id;
+        _repo.AddReply(reply);
+
+        var snippet = content.Length > 120 ? content[..120] : content;
+        var mentioned = await _mentions.ExtractAndPersistAsync(
+            content, MentionSourceType.Reply, reply.Id, post.Id, post.CommunityId,
+            snippet, authorId.Value, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Raise the domain event on the Post aggregate; the bridge handler (ReplyCreatedBusPublisher)
+        // stages the integration event into the EF outbox during this same SaveChanges (atomic).
+        post.RegisterReply(reply.Id, reply.ParentReplyId, authorId.Value,
+            content[..System.Math.Min(content.Length, 200)], _clock);
+
+        // Increment the denormalized comment count atomically with the reply persistence.
+        post.IncrementCommentsCount(_clock);
+
+        var replyAuthor = await _userRepo.FindAsync(authorId.Value, cancellationToken).ConfigureAwait(false);
+        replyAuthor?.IncrementCommentsCount();
+
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.NewReply,
+            new
+            {
+                replyId = reply.Id,
+                postId = post.Id,
+                parentReplyId = reply.ParentReplyId,
+                depth = reply.Depth,
+                body = reply.Content,
+                createdOn = reply.CreatedOn,
+                author = replyAuthor is null ? null : new
+                {
+                    id = reply.AuthorId,
+                    name = $"{replyAuthor.FirstName} {replyAuthor.LastName}".Trim(),
+                    avatarUrl = replyAuthor.AvatarUrl,
+                },
+            }, cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var userId in mentioned)
+        {
+            await _dispatcher.DispatchAsync(new NotificationMessage(
+                TemplateCode: "COMMUNITY_MENTION",
+                RecipientUserId: userId,
+                EventType: NotificationEventType.CommunityUserMentioned,
+                Channels: [NotificationChannel.InApp, NotificationChannel.Push],
+                MetaData: new Dictionary<string, string>
+                {
+                    ["postId"] = post.Id.ToString(),
+                    ["replyId"] = reply.Id.ToString(),
+                },
+                Locale: request.Locale), cancellationToken).ConfigureAwait(false);
+        }
+
+        return _msg.Ok(reply.Id, MessageKeys.General.SUCCESS_CREATED);
     }
 }

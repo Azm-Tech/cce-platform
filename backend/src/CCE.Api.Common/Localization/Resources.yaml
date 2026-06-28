@@ -1,0 +1,821 @@
+REQUIRED_FIELD:
+  ar: "هذا الحقل مطلوب"
+  en: "This field is required"
+
+MAX_LENGTH:
+  ar: "القيمة طويلة جدًا"
+  en: "Value is too long"
+
+INVALID_ENUM:
+  ar: "القيمة المحددة غير صالحة"
+  en: "Selected value is invalid"
+
+# ─── Identity Bare Keys (errors) ───
+
+USER_NOT_FOUND:
+  ar: "عذرًا، لم يتم العثور على المستخدم"
+  en: "Sorry, user not found"
+
+EMAIL_EXISTS:
+  ar: "البريد الإلكتروني مستخدم بالفعل"
+  en: "An account with this email already exists"
+
+INVALID_CREDENTIALS:
+  ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+  en: "Invalid email or password"
+
+NOT_AUTHENTICATED:
+  ar: "المستخدم غير مصادق"
+  en: "User not authenticated"
+
+EXPERT_REQUEST_NOT_FOUND:
+  ar: "طلب الخبير غير موجود"
+  en: "Expert request not found"
+
+STATE_REP_ASSIGNMENT_NOT_FOUND:
+  ar: "التعيين غير موجود"
+  en: "Assignment not found"
+
+COUNTRY_NOT_FOUND:
+  ar: "الدولة غير موجودة"
+  en: "Country not found"
+
+INVALID_REFRESH_TOKEN:
+  ar: "رمز التحديث غير صالح"
+  en: "Invalid refresh token"
+
+REGISTRATION_FAILED:
+  ar: "عذرًا، فشل إنشاء الحساب"
+  en: "Sorry, registration failed"
+
+# ─── Identity Bare Keys (success) ───
+
+REGISTER_SUCCESS:
+  ar: "تم إنشاء المستخدم بنجاح!"
+  en: "User created successfully!"
+
+LOGIN_SUCCESS:
+  ar: "تم تسجيل الدخول بنجاح"
+  en: "Logged in successfully"
+
+LOGOUT_SUCCESS:
+  ar: "تم تسجيل الخروج بنجاح."
+  en: "Logged out successfully."
+
+TOKEN_REFRESHED:
+  ar: "تم تحديث الرمز بنجاح"
+  en: "Token refreshed successfully"
+
+PASSWORD_RESET:
+  ar: "تمت استعادة كلمة المرور بنجاح!"
+  en: "Password recovered successfully!"
+
+ROLES_ASSIGNED:
+  ar: "تم تعيين الأدوار بنجاح"
+  en: "Roles assigned successfully"
+
+USER_STATUS_CHANGED:
+  ar: "تم تغيير حالة المستخدم بنجاح"
+  en: "User status changed successfully"
+
+USER_DELETED:
+  ar: "تم حذف المستخدم بنجاح"
+  en: "User deleted successfully"
+
+EXPERT_REQUEST_APPROVED:
+  ar: "تمت الموافقة على طلب الخبير"
+  en: "Expert request approved"
+
+EXPERT_REQUEST_REJECTED:
+  ar: "تم رفض طلب الخبير"
+  en: "Expert request rejected"
+
+EXPERT_REQUEST_SUBMITTED:
+  ar: "تم تقديم طلبك بنجاح لتسجيلك كخبير في مجتمع المعرفة. سيتم مراجعة طلبك قريباً."
+  en: "Your request to register as an expert in the Knowledge Community has been submitted successfully. It will be reviewed shortly."
+
+STATE_REP_ASSIGNMENT_CREATED:
+  ar: "تم إرسال طلبك بنجاح. سيتم مراجعته من قبل المشرف قريباً. شكراً لمساهمتك!"
+  en: "Your request has been sent successfully. It will be reviewed by the admin shortly. Thank you for your contribution!"
+
+STATE_REP_ASSIGNMENT_REVOKED:
+  ar: "تم إلغاء التعيين بنجاح"
+  en: "Assignment revoked successfully"
+
+PROFILE_UPDATED:
+  ar: "تم تحديث بيانات الملف الشخصي بنجاح. يمكنك الآن الاطلاع على المعلومات المحدثة في ملفك الشخصي."
+  en: "Profile data updated successfully. You can now view the updated information in your profile."
+
+ITEMS_LISTED:
+  ar: "تم جلب العناصر بنجاح"
+  en: "Items listed successfully"
+
+SUCCESS_OPERATION:
+  ar: "تمت العملية بنجاح"
+  en: "Operation completed successfully"
+
+# ─── General Bare Keys (middleware) ───
+
+VALIDATION_ERROR:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+INTERNAL_ERROR:
+  ar: "حدث خطأ غير متوقع"
+  en: "An unexpected error occurred"
+
+BAD_REQUEST:
+  ar: "تعذر معالجة الطلب"
+  en: "The request could not be processed"
+
+RESOURCE_NOT_FOUND_GENERIC:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+CONCURRENCY_CONFLICT:
+  ar: "تم تعديل هذا السجل من قبل مستخدم آخر. يرجى تحديث الصفحة والمحاولة مرة أخرى"
+  en: "This record was modified by another user. Please refresh and try again"
+
+DUPLICATE_VALUE:
+  ar: "القيمة موجودة بالفعل"
+  en: "Value already exists"
+
+RATE_LIMIT_EXCEEDED:
+  ar: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة مرة أخرى لاحقًا"
+  en: "Too many requests. Please try again later."
+
+BUSINESS_RULE_VIOLATION:
+  ar: "تعذر إتمام العملية بسبب مخالفة قاعدة العمل"
+  en: "The operation could not be completed due to a business rule violation."
+
+SCENARIO_NOT_FOUND:
+  ar: "السيناريو غير موجود"
+  en: "Scenario not found"
+
+TECHNOLOGY_NOT_FOUND:
+  ar: "التقنية غير موجودة"
+  en: "Technology not found"
+
+# ─── Platform Settings ───
+
+HOMEPAGE_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات الصفحة الرئيسية"
+  en: "Homepage settings not found"
+
+ABOUT_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات عن المنصة"
+  en: "About settings not found"
+
+POLICIES_SETTINGS_NOT_FOUND:
+  ar: "لم يتم العثور على إعدادات السياسات"
+  en: "Policies settings not found"
+
+GLOSSARY_ENTRY_NOT_FOUND:
+  ar: "لم يتم العثور على المصطلح"
+  en: "Glossary entry not found"
+
+KNOWLEDGE_PARTNER_NOT_FOUND:
+  ar: "لم يتم العثور على شريك المعرفة"
+  en: "Knowledge partner not found"
+
+POLICY_SECTION_NOT_FOUND:
+  ar: "لم يتم العثور على القسم"
+  en: "Policy section not found"
+
+# ─── Media ───
+
+MEDIA_FILE_NOT_FOUND:
+  ar: "لم يتم العثور على الملف"
+  en: "Media file not found"
+
+INVALID_FILE_TYPE:
+  ar: "نوع الملف غير مسموح به"
+  en: "File type is not allowed"
+
+FILE_TOO_LARGE:
+  ar: "حجم الملف يتجاوز الحد المسموح به"
+  en: "File size exceeds the maximum allowed"
+
+EMPTY_FILE:
+  ar: "الملف فارغ"
+  en: "File is empty"
+
+MEDIA_UPLOADED:
+  ar: "تم رفع الملف بنجاح"
+  en: "File uploaded successfully"
+
+MEDIA_UPDATED:
+  ar: "تم تحديث الملف بنجاح"
+  en: "File updated successfully"
+
+MEDIA_DELETED:
+  ar: "تم حذف الملف بنجاح"
+  en: "File deleted successfully"
+
+SETTINGS_UPDATED:
+  ar: "تمت عملية التحديث بنجاح"
+  en: "Content update success"
+
+CONTENT_UPDATE_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء تحديث المحتوى"
+  en: "Sorry, a problem occurred while updating the content"
+
+OTP_NOT_FOUND:
+  ar: "طلب التحقق غير موجود."
+  en: "Verification request not found."
+OTP_EXPIRED:
+  ar: "انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد."
+  en: "The verification code has expired. Please request a new one."
+OTP_INVALID_CODE:
+  ar: "رمز التحقق غير صحيح."
+  en: "The verification code is incorrect."
+OTP_MAX_ATTEMPTS:
+  ar: "تجاوزت الحد الأقصى لمحاولات التحقق. يرجى طلب رمز جديد."
+  en: "Maximum verification attempts reached. Please request a new code."
+OTP_COOLDOWN_ACTIVE:
+  ar: "يرجى الانتظار 60 ثانية قبل طلب رمز جديد."
+  en: "Please wait 60 seconds before requesting a new code."
+OTP_INVALIDATED:
+  ar: "تم إلغاء صلاحية رمز التحقق هذا."
+  en: "This verification code has been invalidated."
+OTP_SENT:
+  ar: "تم إرسال رمز التحقق بنجاح."
+  en: "Verification code sent successfully."
+OTP_VERIFIED:
+  ar: "تم التحقق بنجاح."
+  en: "Verification successful."
+
+NOTIFICATION_SETTINGS_UPDATED:
+  ar: "تم تحديث إعدادات الإشعارات بنجاح"
+  en: "Notification settings updated successfully"
+
+NOTIFICATION_RETRIED:
+  ar: "تمت إعادة إرسال الإشعار بنجاح"
+  en: "Notification retried successfully"
+
+NOTIFICATIONS_MARKED_READ:
+  ar: "تم تحديد الإشعارات كمقروءة"
+  en: "Notifications marked as read"
+
+NOTIFICATION_TEMPLATE_CREATED:
+  ar: "تم إنشاء قالب الإشعار بنجاح"
+  en: "Notification template created successfully"
+
+NOTIFICATION_TEMPLATE_UPDATED:
+  ar: "تم تحديث قالب الإشعار بنجاح"
+  en: "Notification template updated successfully"
+
+DEVICE_TOKEN_REGISTERED:
+  ar: "تم تسجيل الجهاز بنجاح"
+  en: "Device registered successfully"
+
+DEVICE_TOKEN_DELETED:
+  ar: "تم إلغاء تسجيل الجهاز بنجاح"
+  en: "Device unregistered successfully"
+
+DEVICE_TOKEN_NOT_FOUND:
+  ar: "رمز الجهاز غير موجود"
+  en: "Device token not found"
+
+EVALUATION_NOT_FOUND:
+  ar: "التقييم غير موجود"
+  en: "Evaluation not found"
+
+EVALUATION_SUBMITTED:
+  ar: "تم تقديم التقييم بنجاح"
+  en: "Evaluation submitted successfully"
+
+# ─── Resource-specific messages (BRD Sprint 04) ───
+
+RESOURCE_CREATED:
+  ar: "تم رفع المصدر بنجاح!"
+  en: "Resource uploaded successfully!"
+
+RESOURCE_DELETED:
+  ar: "تم حذف المصدر بنجاح!"
+  en: "Resource deleted successfully!"
+
+CONTENT_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Content updated successfully"
+
+CONTENT_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Content deleted successfully"
+
+RESOURCE_DOWNLOAD_FAILED:
+  ar: "حدث خطأ أثناء محاولة تحميل المصدر. يرجى المحاولة مرة أخرى."
+  en: "An error occurred while downloading the resource. Please try again."
+
+RESOURCE_UPLOAD_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء رفع المصدر."
+  en: "Sorry, a problem occurred while uploading the resource."
+
+RESOURCE_DELETE_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء حذف المصدر."
+  en: "Sorry, a problem occurred while deleting the resource."
+
+RESOURCE_NOT_FOUND_ALT:
+  ar: "عذراً، لا توجد مصادر حالياً."
+  en: "Sorry, there are no resources currently."
+
+RESOURCE_DOWNLOAD_SUCCESS:
+  ar: "تم تحميل المصدر بنجاح! يمكنك الآن الوصول إلى المرفق من جهازك."
+  en: "Resource downloaded successfully! You can now access the attachment from your device."
+
+RESOURCE_SHARE_SUCCESS:
+  ar: "تمت مشاركة المصدر بنجاح!"
+  en: "Resource shared successfully!"
+
+RESOURCE_SHARE_FAILED:
+  ar: "حدث خطأ أثناء محاولة مشاركة المصدر. يرجى المحاولة مرة أخرى لاحقاً."
+  en: "An error occurred while trying to share the resource. Please try again later."
+
+# ─── Identity Errors (bare keys without IDENTITY_ prefix) ───
+
+INVALID_TOKEN:
+  ar: "رمز الوصول غير صالح"
+  en: "Invalid access token"
+
+ACCOUNT_DEACTIVATED:
+  ar: "الحساب غير نشط"
+  en: "Account is deactivated"
+
+CONTACT_NOT_VERIFIED:
+  ar: "يرجى التحقق من بريدك الإلكتروني أو رقم هاتفك قبل تسجيل الدخول."
+  en: "Please verify your email or phone number before signing in."
+
+USERNAME_EXISTS:
+  ar: "اسم المستخدم مستخدم بالفعل"
+  en: "Username already taken"
+
+EXPERT_REQUEST_ALREADY_EXISTS:
+  ar: "طلب الخبير موجود بالفعل"
+  en: "Expert request already exists"
+
+STATE_REP_ASSIGNMENT_EXISTS:
+  ar: "التعيين موجود بالفعل"
+  en: "Assignment already exists"
+
+PASSWORD_RECOVERY_FAILED:
+  ar: "حدث خطأ أثناء استعادة كلمة المرور"
+  en: "An error occurred during password recovery"
+
+LOGOUT_FAILED:
+  ar: "حدث خطأ أثناء تسجيل الخروج"
+  en: "An error occurred during logout"
+
+UNAUTHORIZED_ACCESS:
+  ar: "الوصول غير مصرح به"
+  en: "Unauthorized access"
+
+FORBIDDEN_ACCESS:
+  ar: "الوصول ممنوع"
+  en: "Forbidden access"
+
+# ─── Content Errors (bare keys without CONTENT_ prefix) ───
+
+NEWS_NOT_FOUND:
+  ar: "الخبر غير موجود"
+  en: "News not found"
+
+EVENT_NOT_FOUND:
+  ar: "الفعالية غير موجودة"
+  en: "Event not found"
+
+RESOURCE_NOT_FOUND:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+PAGE_NOT_FOUND:
+  ar: "الصفحة غير موجودة"
+  en: "Page not found"
+
+CATEGORY_NOT_FOUND:
+  ar: "التصنيف غير موجود"
+  en: "Category not found"
+
+ASSET_NOT_FOUND:
+  ar: "الملف غير موجود"
+  en: "Asset not found"
+
+ASSET_NOT_CLEAN:
+  ar: "تعذّر رفع الملف، لم يجتز فحص الأمان"
+  en: "Asset upload failed, file did not pass security scan"
+
+HOMEPAGE_SECTION_NOT_FOUND:
+  ar: "القسم غير موجود"
+  en: "Section not found"
+
+COUNTRY_RESOURCE_REQUEST_NOT_FOUND:
+  ar: "طلب المورد غير موجود"
+  en: "Resource request not found"
+
+RESOURCE_DUPLICATE:
+  ar: "المورد موجود بالفعل"
+  en: "Resource already exists"
+
+CATEGORY_DUPLICATE:
+  ar: "التصنيف موجود بالفعل"
+  en: "Category already exists"
+
+PAGE_DUPLICATE:
+  ar: "الصفحة موجودة بالفعل"
+  en: "Page already exists"
+
+NEWS_DUPLICATE:
+  ar: "الخبر موجود بالفعل"
+  en: "News already exists"
+
+EVENT_DUPLICATE:
+  ar: "الفعالية موجودة بالفعل"
+  en: "Event already exists"
+
+# ─── Content Success ───
+
+CONTENT_CREATED:
+  ar: "تم إنشاء المحتوى بنجاح"
+  en: "Content created successfully"
+
+CONTENT_PUBLISHED:
+  ar: "تم نشر المحتوى بنجاح"
+  en: "Content published successfully"
+
+CONTENT_ARCHIVED:
+  ar: "تم أرشفة المحتوى بنجاح"
+  en: "Content archived successfully"
+
+ASSET_UPLOADED:
+  ar: "تم رفع الملف بنجاح"
+  en: "Asset uploaded successfully"
+
+RESOURCE_UPDATED:
+  ar: "تم تحديث المصدر بنجاح"
+  en: "Resource updated successfully"
+
+RESOURCE_PUBLISHED:
+  ar: "تم نشر المصدر بنجاح"
+  en: "Resource published successfully"
+
+# ─── Community Errors (bare keys without COMMUNITY_ prefix) ───
+
+TOPIC_NOT_FOUND:
+  ar: "الموضوع غير موجود"
+  en: "Topic not found"
+
+TOPIC_DUPLICATE:
+  ar: "الموضوع موجود بالفعل"
+  en: "Topic already exists"
+
+POST_NOT_FOUND:
+  ar: "المنشور غير موجود"
+  en: "Post not found"
+
+REPLY_NOT_FOUND:
+  ar: "الرد غير موجود"
+  en: "Reply not found"
+
+RATING_NOT_FOUND:
+  ar: "التقييم غير موجود"
+  en: "Rating not found"
+
+ALREADY_FOLLOWING:
+  ar: "أنت تتابع هذا بالفعل"
+  en: "You are already following this"
+
+NOT_FOLLOWING:
+  ar: "أنت لا تتابع هذا"
+  en: "You are not following this"
+
+CANNOT_FOLLOW_SELF:
+  ar: "لا يمكنك متابعة نفسك"
+  en: "You cannot follow yourself"
+
+CANNOT_MARK_ANSWERED:
+  ar: "غير مصرح لك بتحديد الإجابة"
+  en: "You are not authorized to mark the answer"
+
+EDIT_WINDOW_EXPIRED:
+  ar: "انتهت فترة التعديل"
+  en: "Edit window has expired"
+
+POST_VOTED:
+  ar: "تم تسجيل تقييمك."
+  en: "Your vote has been recorded."
+
+POST_ALREADY_PUBLISHED:
+  ar: "تم نشر المنشور بالفعل."
+  en: "The post is already published."
+
+POST_CREATED:
+  ar: "تم إنشاء المنشور بنجاح!"
+  en: "Post created successfully!"
+
+POST_DRAFT_SAVED:
+  ar: "تم حفظ المسودة."
+  en: "Draft saved."
+
+POST_PUBLISHED:
+  ar: "تم نشر المنشور بنجاح!"
+  en: "Post published successfully!"
+
+DRAFT_DELETED:
+  ar: "تم حذف المسودة."
+  en: "Draft deleted."
+
+COMMUNITY_NOT_FOUND:
+  ar: "المجتمع غير موجود."
+  en: "Community not found."
+
+POLL_NOT_FOUND:
+  ar: "التصويت غير موجود."
+  en: "Poll not found."
+
+POLL_CLOSED:
+  ar: "انتهت مدة التصويت."
+  en: "This poll is closed."
+
+JOIN_REQUEST_NOT_FOUND:
+  ar: "طلب الانضمام غير موجود."
+  en: "Join request not found."
+
+# ─── Country Errors ───
+
+COUNTRY_PROFILE_NOT_FOUND:
+  ar: "الملف التعريفي غير موجود"
+  en: "Country profile not found"
+
+# State Representative profile update (appendix CON026 / ERR033)
+COUNTRY_PROFILE_UPDATED:
+  ar: "تم تحديث الملف التعريفي للدولة بنجاح!"
+  en: "Country profile updated successfully!"
+
+COUNTRY_SCOPE_FORBIDDEN:
+  ar: "لا يمكنك تعديل بيانات دولة غير المخصصة لك."
+  en: "You cannot modify data for a country not assigned to you."
+
+NO_COUNTRY_ASSIGNED:
+  ar: "لا توجد دولة مخصصة لك حالياً."
+  en: "No country is currently assigned to you."
+
+# State Representative content requests (appendix CON024 / CON023 / ERR031)
+COUNTRY_CONTENT_REQUEST_SUBMITTED:
+  ar: "تم إرسال طلبك بنجاح. سيتم مراجعته من قبل المشرف قريباً. شكراً لمساهمتك!"
+  en: "Your request has been submitted successfully. It will be reviewed by the admin shortly. Thank you for your contribution!"
+
+COUNTRY_REQUEST_PROCESSED:
+  ar: "تمت معالجة الطلب بنجاح!"
+  en: "The request has been processed successfully!"
+
+COUNTRY_REQUEST_PROCESSING_FAILED:
+  ar: "عذراً، حدثت مشكلة أثناء معالجة الطلب."
+  en: "Sorry, a problem occurred while processing the request."
+
+# KAPSARC integration (US014 / appendix §6.5.1)
+KAPSARC_DATA_UNAVAILABLE:
+  ar: "عذراً، تعذّر استرجاع بيانات كابسارك حالياً. يرجى المحاولة مرة أخرى لاحقاً."
+  en: "Sorry, KAPSARC data could not be retrieved at this time. Please try again later."
+
+KAPSARC_SNAPSHOT_REFRESHED:
+  ar: "تم تحديث بيانات كابسارك للدولة بنجاح."
+  en: "Country KAPSARC data refreshed successfully."
+
+# ─── Notification Errors / Success (bare keys) ───
+
+TEMPLATE_NOT_FOUND:
+  ar: "القالب غير موجود"
+  en: "Template not found"
+
+TEMPLATE_DUPLICATE:
+  ar: "القالب موجود بالفعل"
+  en: "Template already exists"
+
+NOTIFICATION_NOT_FOUND:
+  ar: "الإشعار غير موجود"
+  en: "Notification not found"
+
+NOTIFICATION_CREATED:
+  ar: "تم إنشاء الإشعار بنجاح"
+  en: "Notification created successfully"
+
+NOTIFICATION_MARKED_READ:
+  ar: "تم تحديد الإشعار كمقروء"
+  en: "Notification marked as read"
+
+NOTIFICATION_DELETED:
+  ar: "تم حذف الإشعار بنجاح"
+  en: "Notification deleted successfully"
+
+# ─── KnowledgeMap Errors (bare keys matching SystemCodeMap) ───
+
+MAP_NOT_FOUND:
+  ar: "خريطة المعرفة غير موجودة"
+  en: "Knowledge map not found"
+
+NODE_NOT_FOUND:
+  ar: "العقدة غير موجودة"
+  en: "Node not found"
+
+EDGE_NOT_FOUND:
+  ar: "الوصلة غير موجودة"
+  en: "Edge not found"
+
+# ─── Verification Success ───
+
+EMAIL_UPDATED:
+  ar: "تم تحديث البريد الإلكتروني بنجاح"
+  en: "Email updated successfully"
+
+PHONE_UPDATED:
+  ar: "تم تحديث رقم الهاتف بنجاح"
+  en: "Phone number updated successfully"
+
+CONTACT_ALREADY_TAKEN:
+  ar: "البيانات التواصلية مستخدمة بالفعل"
+  en: "Contact information is already taken"
+
+# ─── General Success ───
+
+SUCCESS_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+SUCCESS_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"
+
+SUCCESS_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Deleted successfully"
+
+# ─── Validation (bare keys matching SystemCodeMap) ───
+
+INVALID_EMAIL:
+  ar: "البريد الإلكتروني غير صالح"
+  en: "Invalid email format"
+
+INVALID_PHONE:
+  ar: "رقم الهاتف غير صالح"
+  en: "Invalid phone number"
+
+MIN_LENGTH:
+  ar: "القيمة قصيرة جدًا"
+  en: "Value is too short"
+
+INVALID_FORMAT:
+  ar: "التنسيق غير صالح"
+  en: "Invalid format"
+
+PASSWORD_UPPERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف كبير على الأقل"
+  en: "Password must contain at least one uppercase letter"
+
+PASSWORD_LOWERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف صغير على الأقل"
+  en: "Password must contain at least one lowercase letter"
+
+PASSWORD_NUMBER:
+  ar: "يجب أن تحتوي كلمة المرور على رقم على الأقل"
+  en: "Password must contain at least one number"
+
+PASSWORD_POLICY:
+  ar: "كلمة المرور يجب أن تتراوح بين 12 و20 حرفاً وتحتوي على أحرف كبيرة وصغيرة وأرقام"
+  en: "Password must be 12-20 characters and contain uppercase, lowercase, and numbers"
+
+PASSWORDS_MUST_MATCH:
+  ar: "كلمتا المرور غير متطابقتين"
+  en: "Passwords do not match"
+
+# ─── General Errors ───
+
+EXTERNAL_API_ERROR:
+  ar: "حدث خطأ في الاتصال بالخدمة الخارجية"
+  en: "An error occurred connecting to the external service"
+
+EXTERNAL_API_NOT_CONFIGURED:
+  ar: "الخدمة الخارجية غير مهيأة"
+  en: "External service is not configured"
+
+# ─── Lookups ───
+
+COUNTRY_CODE_NOT_FOUND:
+  ar: "رمز الدولة غير موجود"
+  en: "Country code not found"
+
+LOOKUP_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+LOOKUP_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"
+INTEREST_NOT_FOUND:
+  ar: "الاهتمام غير موجود"
+  en: "Interest not found"
+
+INTEREST_UPSERTED:
+  ar: "تم تحديث الاهتمامات بنجاح"
+  en: "Interests updated successfully"
+
+INTEREST_TOPIC_NOT_FOUND:
+  ar: "موضوع الاهتمام غير موجود"
+  en: "Interest topic not found"
+
+INTERACTIVE_MAP_NOT_FOUND:
+  ar: "الخريطة التفاعلية غير موجودة"
+  en: "Interactive map not found"
+
+INTERACTIVE_MAP_CREATED:
+  ar: "تم إنشاء الخريطة التفاعلية بنجاح"
+  en: "Interactive map created successfully"
+
+INTERACTIVE_MAP_UPDATED:
+  ar: "تم تحديث الخريطة التفاعلية بنجاح"
+  en: "Interactive map updated successfully"
+
+INTERACTIVE_MAP_DELETED:
+  ar: "تم حذف الخريطة التفاعلية بنجاح"
+  en: "Interactive map deleted successfully"
+
+INTERACTIVE_MAP_NODE_NOT_FOUND:
+  ar: "العنصر غير موجود في الخريطة التفاعلية"
+  en: "Interactive map node not found"
+
+INTERACTIVE_MAP_NODE_CREATED:
+  ar: "تم إنشاء العنصر في الخريطة التفاعلية بنجاح"
+  en: "Interactive map node created successfully"
+
+INTERACTIVE_MAP_NODE_UPDATED:
+  ar: "تم تحديث العنصر في الخريطة التفاعلية بنجاح"
+  en: "Interactive map node updated successfully"
+
+INTERACTIVE_MAP_NODE_DELETED:
+  ar: "تم حذف العنصر من الخريطة التفاعلية بنجاح"
+  en: "Interactive map node deleted successfully"
+
+# ─── Identity / Permissions / Claims ───
+
+ROLE_NOT_FOUND:
+  ar: "الدور غير موجود"
+  en: "Role not found"
+
+INVALID_RESET_TOKEN:
+  ar: "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية"
+  en: "Password reset token is invalid or expired"
+
+EMAIL_CHANGE_FAILED:
+  ar: "حدث خطأ أثناء تغيير البريد الإلكتروني"
+  en: "An error occurred while changing the email address"
+
+AD_LOGIN_SUCCESS:
+  ar: "تم تسجيل الدخول عبر Active Directory بنجاح"
+  en: "Logged in via Active Directory successfully"
+
+PERMISSIONS_GRANTED:
+  ar: "تم منح الصلاحيات للدور بنجاح"
+  en: "Permissions granted to role successfully"
+
+PERMISSIONS_REVOKED:
+  ar: "تم سحب الصلاحيات من الدور بنجاح"
+  en: "Permissions revoked from role successfully"
+
+PERMISSIONS_UPDATED:
+  ar: "تم تحديث صلاحيات الدور بنجاح"
+  en: "Role permissions updated successfully"
+
+CLAIMS_GRANTED:
+  ar: "تم منح المطالبات للمستخدم بنجاح"
+  en: "Claims granted to user successfully"
+
+CLAIMS_REVOKED:
+  ar: "تم سحب المطالبات من المستخدم بنجاح"
+  en: "Claims revoked from user successfully"
+
+USER_CLAIMS_UPDATED:
+  ar: "تم تحديث مطالبات المستخدم بنجاح"
+  en: "User claims updated successfully"
+
+# ─── Verification ───
+
+OTP_UNAUTHORIZED:
+  ar: "غير مصرح لك بالتحقق من هذا الرمز"
+  en: "You are not authorized to verify this code"
+
+# ─── Content / Community / Platform Settings ───
+
+TAG_NOT_FOUND:
+  ar: "الوسم غير موجود"
+  en: "Tag not found"
+
+NEWSLETTER_SUBSCRIBED:
+  ar: "تم الاشتراك في النشرة البريدية بنجاح"
+  en: "Subscribed to newsletter successfully"
+
+TOPICS_LISTED:
+  ar: "تم جلب الموضوعات بنجاح"
+  en: "Topics listed successfully"
+
+SECTION_REORDERED:
+  ar: "تم إعادة ترتيب الأقسام بنجاح"
+  en: "Sections reordered successfully"
+

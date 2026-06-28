@@ -33,56 +33,67 @@ public sealed class DemoDataSeeder : ISeeder
     private static readonly System.Guid SystemAuthorId =
         DeterministicGuid.From("user:system_demo_author");
 
-    private static readonly (string Slug, string TitleAr, string TitleEn,
-        string ContentAr, string ContentEn, bool Featured)[] DemoNews =
+    private static readonly (string Key, string TitleAr, string TitleEn,
+        string ContentAr, string ContentEn, bool Featured, string TopicSlug)[] DemoNews =
     {
         ("welcome",
          "أهلاً بكم في منصة المعرفة",
          "Welcome to the Knowledge Center",
          "<p>منصة جديدة لمشاركة المعرفة حول الاقتصاد الكربوني الدائري.</p>",
          "<p>A new platform for sharing knowledge about the Circular Carbon Economy.</p>",
-         true),
+         true, "general"),
 
         ("solar-milestone",
          "إنجاز جديد في الطاقة الشمسية",
          "New Solar Milestone",
          "<p>تم تجاوز رقم قياسي عالمي في كفاءة الخلايا الشمسية، مع تحقيق 33٪ في ظروف اختبار قياسية.</p>",
          "<p>A new world record was set in solar-cell efficiency, reaching 33% under standard test conditions.</p>",
-         false),
+         false, "solar-power"),
 
         ("dac-pilot",
          "إطلاق مشروع تجريبي للالتقاط المباشر",
          "Direct Air Capture Pilot Goes Live",
          "<p>وحدة جديدة قادرة على التقاط 1000 طن من ثاني أكسيد الكربون سنوياً بدأت العمل في الرياض.</p>",
          "<p>A new unit capable of capturing 1,000 tonnes of CO₂ per year went live near Riyadh.</p>",
-         true),
+         true, "research"),
 
         ("methane-leakage",
          "تقرير: انخفاض كبير في تسرب الميثان",
          "Report: Major Drop in Methane Leakage",
          "<p>تقرير سنوي يظهر انخفاضاً بنسبة 18٪ في انبعاثات الميثان عبر القطاع.</p>",
          "<p>An annual report shows an 18% drop in methane emissions across the sector.</p>",
-         false),
+         false, "research"),
 
         ("hydrogen-corridor",
          "ممر الهيدروجين الإقليمي يبدأ المرحلة الثانية",
          "Regional Hydrogen Corridor Enters Phase II",
          "<p>توسيع ممر الهيدروجين منخفض الكربون ليشمل ثلاث دول إضافية.</p>",
          "<p>The low-carbon hydrogen corridor expands to include three additional countries.</p>",
-         false),
+         false, "general"),
     };
 
     private async Task SeedNewsAsync(CancellationToken ct)
     {
+        var topicMap = await _ctx.Topics
+            .ToDictionaryAsync(t => t.Slug, t => t.Id, ct).ConfigureAwait(false);
+
         var dayOffset = -1;
         foreach (var n in DemoNews)
         {
-            var id = DeterministicGuid.From($"news:{n.Slug}");
+            if (!topicMap.TryGetValue(n.TopicSlug, out var topicId))
+            {
+                _logger.LogWarning(
+                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping news '{NewsKey}'.",
+                    n.TopicSlug, n.Key);
+                continue;
+            }
+
+            var id = DeterministicGuid.From($"news:{n.Key}");
             var exists = await _ctx.News.IgnoreQueryFilters()
                 .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
             if (exists) { dayOffset -= 7; continue; }
             var news = News.Draft(n.TitleAr, n.TitleEn, n.ContentAr, n.ContentEn,
-                n.Slug, SystemAuthorId, featuredImageUrl: null, _clock);
+                topicId, SystemAuthorId, null, _clock);
             typeof(News).GetProperty(nameof(news.Id))!.SetValue(news, id);
             news.Publish(_clock);
             if (n.Featured)
@@ -96,36 +107,47 @@ public sealed class DemoDataSeeder : ISeeder
         }
     }
 
-    private static readonly (string Slug, string TitleAr, string TitleEn,
+    private static readonly (string Key, string TitleAr, string TitleEn,
         string DescAr, string DescEn, int DaysFromNow, int LengthHours,
-        string LocationAr, string LocationEn, string? OnlineUrl)[] DemoEvents =
+        string LocationAr, string LocationEn, string? OnlineUrl, string TopicSlug)[] DemoEvents =
     {
         ("cce-conference",
          "مؤتمر CCE السنوي",                  "CCE Annual Conference",
          "نقاش حول مستقبل الاقتصاد الكربوني",   "Discussion on the future of CCE",
-         30, 2, "الرياض",        "Riyadh", null),
+         30, 2, "الرياض",        "Riyadh", null, "general"),
 
         ("hydrogen-summit",
          "قمة الهيدروجين الأخضر",              "Green Hydrogen Summit",
          "أحدث التطورات في إنتاج الهيدروجين",    "Latest developments in hydrogen production",
-         60, 6, "نيوم",          "Neom", null),
+         60, 6, "نيوم",          "Neom", null, "general"),
 
         ("dac-workshop",
          "ورشة الالتقاط المباشر",               "DAC Workshop",
          "ورشة عملية حول تقنيات الالتقاط",      "Hands-on workshop on capture technologies",
-         15, 4, "عبر الإنترنت",   "Online", "https://meet.example.com/dac-workshop"),
+         15, 4, "عبر الإنترنت",   "Online", "https://meet.example.com/dac-workshop", "research"),
 
         ("policy-forum",
          "منتدى السياسات المناخية",              "Climate Policy Forum",
          "حوار بين صناع السياسات والباحثين",     "Dialogue between policymakers and researchers",
-         90, 8, "جدة",            "Jeddah", null),
+         90, 8, "جدة",            "Jeddah", null, "policy"),
     };
 
     private async Task SeedEventsAsync(CancellationToken ct)
     {
+        var topicMap = await _ctx.Topics
+            .ToDictionaryAsync(t => t.Slug, t => t.Id, ct).ConfigureAwait(false);
+
         foreach (var e in DemoEvents)
         {
-            var id = DeterministicGuid.From($"event:demo:{e.Slug}");
+            if (!topicMap.TryGetValue(e.TopicSlug, out var topicId))
+            {
+                _logger.LogWarning(
+                    "DemoDataSeeder: topic '{TopicSlug}' missing — skipping event '{EventKey}'.",
+                    e.TopicSlug, e.Key);
+                continue;
+            }
+
+            var id = DeterministicGuid.From($"event:demo:{e.Key}");
             var exists = await _ctx.Events.IgnoreQueryFilters()
                 .AnyAsync(x => x.Id == id, ct).ConfigureAwait(false);
             if (exists) continue;
@@ -138,7 +160,7 @@ public sealed class DemoDataSeeder : ISeeder
                 e.DescAr, e.DescEn,
                 startsOn, endsOn,
                 e.LocationAr, e.LocationEn,
-                e.OnlineUrl, null, _clock);
+                e.OnlineUrl, null, topicId, _clock);
             typeof(CCE.Domain.Content.Event).GetProperty(nameof(ev.Id))!.SetValue(ev, id);
             _ctx.Events.Add(ev);
         }
@@ -193,6 +215,20 @@ public sealed class DemoDataSeeder : ISeeder
 
     private async Task SeedCommunityPostsAsync(CancellationToken ct)
     {
+        // Ensure the default "General" community exists; demo posts are filed under it.
+        var generalId = CommunitySeedIds.GeneralCommunityId;
+        var generalExists = await _ctx.Communities.IgnoreQueryFilters()
+            .AnyAsync(c => c.Id == generalId, ct).ConfigureAwait(false);
+        if (!generalExists)
+        {
+            var general = CCE.Domain.Community.Community.Create(
+                "عام", "General", "المجتمع العام", "The general community",
+                "general", CommunityVisibility.Public);
+            typeof(CCE.Domain.Community.Community).GetProperty(nameof(general.Id))!.SetValue(general, generalId);
+            _ctx.Communities.Add(general);
+            await _ctx.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+
         // Cache topic slug → id once, since DemoPosts references topics by slug.
         var topicMap = await _ctx.Topics
             .ToDictionaryAsync(t => t.Slug, t => t.Id, ct).ConfigureAwait(false);
@@ -213,8 +249,13 @@ public sealed class DemoDataSeeder : ISeeder
 
             if (!postExists)
             {
-                var post = Post.Create(topicId, SystemAuthorId, p.Content,
-                    p.Locale, p.IsAnswerable, _clock);
+                var title = p.Content.Length > Post.MaxTitleLength
+                    ? p.Content[..Post.MaxTitleLength]
+                    : p.Content;
+                var post = Post.CreateDraft(generalId, topicId, SystemAuthorId,
+                    p.IsAnswerable ? PostType.Question : PostType.Info,
+                    title, p.Content, p.Locale, _clock);
+                post.Publish(_clock);
                 typeof(Post).GetProperty(nameof(post.Id))!.SetValue(post, postId);
                 _ctx.Posts.Add(post);
             }
@@ -227,8 +268,8 @@ public sealed class DemoDataSeeder : ISeeder
                 if (replyExists) continue;
 
                 var authorId = r.IsExpert ? DemoExpertId : SystemAuthorId;
-                var reply = PostReply.Create(postId, authorId, r.Content,
-                    p.Locale, parentReplyId: null, isByExpert: r.IsExpert, _clock);
+                var reply = PostReply.CreateRoot(postId, authorId, r.Content,
+                    p.Locale, isByExpert: r.IsExpert, _clock);
                 typeof(PostReply).GetProperty(nameof(reply.Id))!.SetValue(reply, replyId);
                 _ctx.PostReplies.Add(reply);
             }

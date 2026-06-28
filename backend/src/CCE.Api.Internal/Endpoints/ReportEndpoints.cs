@@ -1,5 +1,16 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Reports;
+using CCE.Application.Reports.Queries.GetCommunityPostReport;
+using CCE.Application.Reports.Queries.GetCountryProfilesReport;
+using CCE.Application.Reports.Queries.GetEventsReport;
+using CCE.Application.Reports.Queries.GetExpertReport;
+using CCE.Application.Reports.Queries.GetResourcesReport;
+using CCE.Application.Reports.Queries.GetNewsReport;
+using CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
+using CCE.Application.Reports.Queries.GetUserPreferenceReport;
+using CCE.Application.Reports.Queries.GetUserRegistrationReport;
 using CCE.Domain;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -147,6 +158,103 @@ public static class ReportEndpoints
         })
         .RequireAuthorization(Permissions.Report_CountryProfiles)
         .WithName("CountryProfilesReport");
+
+        reports.MapGet("/user-registration", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetUserRegistrationReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_UserRegistrations)
+        .WithName("UserRegistrationReport");
+
+        reports.MapGet("/satisfaction-survey", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetSatisfactionSurveyReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_SatisfactionSurvey)
+        .WithName("SatisfactionSurveyReportJson");
+
+        reports.MapGet("/user-preferences", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetUserPreferenceReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_UserPreferences)
+        .WithName("UserPreferenceReport");
+
+        reports.MapGet("/experts", async (ISender sender) =>
+        {
+            var result = await sender.Send(new GetExpertReportQuery());
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_Experts)
+        .WithName("ExpertReport");
+
+        reports.MapGet("/news", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetNewsReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_News)
+        .WithName("NewsReportJson");
+
+        reports.MapGet("/community-posts", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetCommunityPostReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_CommunityPosts)
+        .WithName("CommunityPostReportJson");
+
+        reports.MapGet("/events", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetEventsReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_Events)
+        .WithName("EventsReportJson");
+
+        reports.MapGet("/resources", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetResourcesReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_Resources)
+        .WithName("ResourcesReportJson");
+
+        reports.MapGet("/country-profiles", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
+        {
+            var result = await sender.Send(new GetCountryProfilesReportQuery(from, to, page, pageSize));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Report_CountryProfiles)
+        .WithName("CountryProfilesReportJson");
 
         return app;
     }

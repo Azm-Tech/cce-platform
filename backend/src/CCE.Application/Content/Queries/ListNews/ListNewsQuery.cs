@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using MediatR;
@@ -9,4 +10,6 @@ public sealed record ListNewsQuery(
     int PageSize = 20,
     string? Search = null,
     bool? IsPublished = null,
-    bool? IsFeatured = null) : IRequest<PagedResult<NewsDto>>;
+    bool? IsFeatured = null,
+    System.Guid? TopicId = null,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<NewsDto>>>;

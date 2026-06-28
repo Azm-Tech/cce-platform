@@ -1,65 +1,54 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
-using CCE.Application.Content.Dtos;
+using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.PublishResource;
 
-public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResourceCommand, ResourceDto?>
+public sealed class PublishResourceCommandHandler : IRequestHandler<PublishResourceCommand, Response<System.Guid>>
 {
-    private readonly IResourceService _service;
-    private readonly IAssetService _assetService;
+    private readonly IRepository<Resource, System.Guid> _repo;
+    private readonly ICceDbContext _db;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _messages;
 
     public PublishResourceCommandHandler(
-        IResourceService service,
-        IAssetService assetService,
-        ISystemClock clock)
+        IRepository<Resource, System.Guid> repo,
+        ICceDbContext db,
+        ISystemClock clock,
+        MessageFactory messages)
     {
-        _service = service;
-        _assetService = assetService;
+        _repo = repo;
+        _db = db;
         _clock = clock;
+        _messages = messages;
     }
 
-    public async Task<ResourceDto?> Handle(PublishResourceCommand request, CancellationToken cancellationToken)
+    public async Task<Response<System.Guid>> Handle(PublishResourceCommand request, CancellationToken cancellationToken)
     {
-        var resource = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var resource = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (resource is null)
-        {
-            return null;
-        }
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.RESOURCE_NOT_FOUND);
 
-        var asset = await _assetService.FindAsync(resource.AssetFileId, cancellationToken).ConfigureAwait(false);
+        var assets = await _db.AssetFiles
+            .Where(a => a.Id == resource.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var asset = assets.SingleOrDefault();
         if (asset is null)
-        {
-            throw new DomainException($"Asset {resource.AssetFileId} not found for resource {resource.Id}.");
-        }
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
-        {
-            throw new DomainException($"Cannot publish resource {resource.Id}: asset has not passed virus scan ({asset.VirusScanStatus}).");
-        }
+            return _messages.BusinessRule<System.Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
 
         var expectedRowVersion = resource.RowVersion;
         resource.Publish(_clock);
-        await _service.UpdateAsync(resource, expectedRowVersion, cancellationToken).ConfigureAwait(false);
 
-        return new ResourceDto(
-            resource.Id,
-            resource.TitleAr,
-            resource.TitleEn,
-            resource.DescriptionAr,
-            resource.DescriptionEn,
-            resource.ResourceType,
-            resource.CategoryId,
-            resource.CountryId,
-            resource.UploadedById,
-            resource.AssetFileId,
-            resource.PublishedOn,
-            resource.ViewCount,
-            resource.IsCenterManaged,
-            resource.IsPublished,
-            System.Convert.ToBase64String(resource.RowVersion));
+        _db.SetExpectedRowVersion(resource, expectedRowVersion);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return _messages.Ok(resource.Id, MessageKeys.General.SUCCESS_OPERATION);
     }
 }

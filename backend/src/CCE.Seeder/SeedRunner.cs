@@ -17,14 +17,15 @@ public sealed class SeedRunner
         _logger = logger;
     }
 
-    public async Task RunAllAsync(bool includeDemo = false, CancellationToken ct = default)
+    public async Task RunAllAsync(bool includeDemo = false, bool includeBulk = false, CancellationToken ct = default)
     {
         var ordered = _seeders
             .Where(s => includeDemo || s.GetType().Name != "DemoDataSeeder")
+            .Where(s => includeBulk || s.GetType().Name != "BulkPostSeeder")
             .OrderBy(s => s.Order)
             .ToList();
 
-        _logger.LogInformation("Running {Count} seeders (demo={Demo}).", ordered.Count, includeDemo);
+        _logger.LogInformation("Running {Count} seeders (demo={Demo}, bulk={Bulk}).", ordered.Count, includeDemo, includeBulk);
 
         foreach (var seeder in ordered)
         {

@@ -8,7 +8,7 @@ public class CreateResourceCategoryCommandHandlerTests
     [Fact]
     public async Task Creates_category_saves_and_returns_dto()
     {
-        var service = Substitute.For<IResourceCategoryService>();
+        var service = Substitute.For<IResourceCategoryRepository>();
         var sut = new CreateResourceCategoryCommandHandler(service);
 
         var cmd = new CreateResourceCategoryCommand("طاقة", "Energy", "energy", null, 0);

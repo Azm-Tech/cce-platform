@@ -17,8 +17,10 @@ namespace CCE.Api.IntegrationTests.Identity;
 /// to a <see cref="ClaimsPrincipal"/> with <c>roles=cce-admin</c>, the role
 /// name doubling as the bearer-token value. Useful tokens:
 /// <list type="bullet">
-///   <item><c>cce-admin</c> — full admin permissions</item>
-///   <item><c>cce-editor</c> — content-authoring permissions</item>
+///   <item><c>cce-super-admin</c> — full system permissions</item>
+///   <item><c>cce-admin</c> — admin permissions</item>
+///   <item><c>cce-content-manager</c> — content authoring permissions</item>
+///   <item><c>cce-state-representative</c> — country resource upload permissions</item>
 ///   <item><c>cce-reviewer</c> — review-queue access</item>
 ///   <item><c>cce-expert</c> — expert-only access</item>
 ///   <item><c>cce-user</c> — base end-user role</item>

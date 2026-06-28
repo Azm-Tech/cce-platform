@@ -1,102 +1,127 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Queries.ListResources;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
+using DomainCountry = CCE.Domain.Country;
 
 namespace CCE.Application.Tests.Content.Queries;
 
 public class ListResourcesQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
     public async Task Returns_empty_paged_result_when_no_resources_exist()
     {
-        var db = BuildDb(System.Array.Empty<Resource>());
-        var sut = new ListResourcesQueryHandler(db);
+        var sut = BuildSut(Array.Empty<Resource>());
 
         var result = await sut.Handle(new ListResourcesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Items.Should().BeEmpty();
-        result.Total.Should().Be(0);
-        result.Page.Should().Be(1);
-        result.PageSize.Should().Be(20);
+        result.Success.Should().BeTrue();
+        result.Data!.Items.Should().BeEmpty();
+        result.Data.Total.Should().Be(0);
+        result.Data.Page.Should().Be(1);
+        result.Data.PageSize.Should().Be(20);
     }
 
     [Fact]
     public async Task Returns_resources_sorted_by_PublishedOn_descending()
     {
-        var clock = new FakeSystemClock();
         var cat = System.Guid.NewGuid();
         var uploader = System.Guid.NewGuid();
         var asset = System.Guid.NewGuid();
 
-        var older = Resource.Draft("أ", "A", "وصف أ", "Desc A", ResourceType.Pdf, cat, null, uploader, asset, clock);
-        var newer = Resource.Draft("ب", "B", "وصف ب", "Desc B", ResourceType.Video, cat, null, uploader, asset, clock);
+        var older = Resource.Draft("أ", "A", "وصف أ", "Desc A",
+            ResourceType.Paper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+        older.Publish(Clock);
+        Clock.Advance(System.TimeSpan.FromSeconds(1));
+        var newer = Resource.Draft("ب", "B", "وصف ب", "Desc B",
+            ResourceType.Article, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+        newer.Publish(Clock);
 
-        older.Publish(clock);
-        clock.Advance(System.TimeSpan.FromMinutes(5));
-        newer.Publish(clock);
-
-        var db = BuildDb(new[] { older, newer });
-        var sut = new ListResourcesQueryHandler(db);
+        var sut = BuildSut([newer, older]);
 
         var result = await sut.Handle(new ListResourcesQuery(Page: 1, PageSize: 20), CancellationToken.None);
 
-        result.Total.Should().Be(2);
-        result.Items.Should().HaveCount(2);
-        result.Items[0].TitleEn.Should().Be("B");
-        result.Items[1].TitleEn.Should().Be("A");
+        result.Data!.Total.Should().Be(2);
+        result.Data.Items.Should().HaveCount(2);
+        result.Data.Items[0].TitleEn.Should().Be("B");
+        result.Data.Items[1].TitleEn.Should().Be("A");
     }
 
     [Fact]
-    public async Task Search_filter_matches_title_ar_or_title_en()
+    public async Task Search_filter_matches_title_ar_title_en_description_ar_or_description_en()
     {
-        var clock = new FakeSystemClock();
         var cat = System.Guid.NewGuid();
         var uploader = System.Guid.NewGuid();
         var asset = System.Guid.NewGuid();
 
-        var match = Resource.Draft("مطابق", "matching", "وصف", "desc", ResourceType.Pdf, cat, null, uploader, asset, clock);
-        var noMatch = Resource.Draft("آخر", "other", "وصف آخر", "other desc", ResourceType.Pdf, cat, null, uploader, asset, clock);
+        var resource = Resource.Draft("مطابق", "matching", "وصف", "desc",
+            ResourceType.Paper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
 
-        var db = BuildDb(new[] { match, noMatch });
-        var sut = new ListResourcesQueryHandler(db);
+        var sut = BuildSut([resource]);
 
         var result = await sut.Handle(new ListResourcesQuery(Search: "matching"), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().TitleEn.Should().Be("matching");
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("matching");
     }
 
     [Fact]
     public async Task IsPublished_filter_returns_only_published_resources()
     {
-        var clock = new FakeSystemClock();
         var cat = System.Guid.NewGuid();
         var uploader = System.Guid.NewGuid();
         var asset = System.Guid.NewGuid();
 
-        var published = Resource.Draft("منشور", "published", "وصف", "desc", ResourceType.Pdf, cat, null, uploader, asset, clock);
-        var draft = Resource.Draft("مسودة", "draft-resource", "وصف", "desc", ResourceType.Pdf, cat, null, uploader, asset, clock);
-        published.Publish(clock);
+        var published = Resource.Draft("منشور", "published", "وصف", "desc",
+            ResourceType.Paper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+        published.Publish(Clock);
 
-        var db = BuildDb(new[] { published, draft });
-        var sut = new ListResourcesQueryHandler(db);
+        var draft = Resource.Draft("مسودة", "draft", "وصف", "desc",
+            ResourceType.Paper, cat, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+
+        var sut = BuildSut([published, draft]);
 
         var result = await sut.Handle(new ListResourcesQuery(IsPublished: true), CancellationToken.None);
 
-        result.Total.Should().Be(1);
-        result.Items.Single().TitleEn.Should().Be("published");
-        result.Items.Single().IsPublished.Should().BeTrue();
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("published");
+        result.Data.Items.Single().IsPublished.Should().BeTrue();
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<Resource> resources)
+    [Fact]
+    public async Task CategoryId_filter_returns_only_matching_resources()
+    {
+        var catA = System.Guid.NewGuid();
+        var catB = System.Guid.NewGuid();
+        var uploader = System.Guid.NewGuid();
+        var asset = System.Guid.NewGuid();
+
+        var match = Resource.Draft("أ", "Match", "وصف", "desc",
+            ResourceType.Paper, catA, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+        var noMatch = Resource.Draft("ب", "NoMatch", "وصف", "desc",
+            ResourceType.Paper, catB, null, uploader, asset, System.Array.Empty<System.Guid>(), Clock);
+
+        var sut = BuildSut([match, noMatch]);
+
+        var result = await sut.Handle(new ListResourcesQuery(CategoryId: catA), CancellationToken.None);
+
+        result.Data!.Total.Should().Be(1);
+        result.Data.Items.Single().TitleEn.Should().Be("Match");
+    }
+
+    private static ListResourcesQueryHandler BuildSut(IEnumerable<Resource> resources)
     {
         var db = Substitute.For<ICceDbContext>();
         db.Resources.Returns(resources.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.AssetFiles.Returns(System.Array.Empty<CCE.Domain.Content.AssetFile>().AsQueryable());
-        return db;
+        db.ResourceCategories.Returns(Array.Empty<ResourceCategory>().AsQueryable());
+        db.AssetFiles.Returns(Array.Empty<AssetFile>().AsQueryable());
+        db.Countries.Returns(Array.Empty<DomainCountry.Country>().AsQueryable());
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new ListResourcesQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

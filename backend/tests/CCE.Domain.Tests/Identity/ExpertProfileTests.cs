@@ -15,6 +15,7 @@ public class ExpertProfileTests
             bioAr: "خبير الطاقة المتجددة",
             bioEn: "Renewable energy expert",
             tags: new[] { "Solar", "Wind" },
+            cvAssetFileId: System.Guid.NewGuid(),
             clock: clock);
         approverId = System.Guid.NewGuid();
         req.Approve(approverId, clock);
@@ -46,7 +47,7 @@ public class ExpertProfileTests
     {
         var clock = NewClock();
         var pending = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "ا", "a", new[] { "x" }, clock);
+            System.Guid.NewGuid(), "ا", "a", new[] { "x" }, System.Guid.NewGuid(), clock);
 
         var act = () => ExpertProfile.CreateFromApprovedRequest(pending, "د.", "Dr.", clock);
         act.Should().Throw<DomainException>().WithMessage("*Approved*");
@@ -57,7 +58,7 @@ public class ExpertProfileTests
     {
         var clock = NewClock();
         var rejected = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "ا", "a", new[] { "x" }, clock);
+            System.Guid.NewGuid(), "ا", "a", new[] { "x" }, System.Guid.NewGuid(), clock);
         rejected.Reject(System.Guid.NewGuid(), "ر", "r", clock);
 
         var act = () => ExpertProfile.CreateFromApprovedRequest(rejected, "د.", "Dr.", clock);

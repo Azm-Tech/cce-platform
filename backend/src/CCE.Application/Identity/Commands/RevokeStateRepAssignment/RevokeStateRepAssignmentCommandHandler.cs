@@ -1,40 +1,51 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Identity;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Identity.Commands.RevokeStateRepAssignment;
 
-public sealed class RevokeStateRepAssignmentCommandHandler : IRequestHandler<RevokeStateRepAssignmentCommand, Unit>
+public sealed class RevokeStateRepAssignmentCommandHandler : IRequestHandler<RevokeStateRepAssignmentCommand, Response<VoidData>>
 {
-    private readonly IStateRepAssignmentService _service;
+    private readonly ICceDbContext _db;
+    private readonly IStateRepAssignmentRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
 
     public RevokeStateRepAssignmentCommandHandler(
-        IStateRepAssignmentService service,
+        ICceDbContext db,
+        IStateRepAssignmentRepository service,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        MessageFactory msg)
     {
+        _db = db;
         _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(RevokeStateRepAssignmentCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(RevokeStateRepAssignmentCommand request, CancellationToken cancellationToken)
     {
         var assignment = await _service.FindIncludingRevokedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (assignment is null)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"State-rep assignment {request.Id} not found.");
+            return _msg.NotFound<VoidData>(MessageKeys.Identity.STATE_REP_ASSIGNMENT_NOT_FOUND);
         }
 
-        var revokedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot revoke state-rep assignment from a request without a user identity.");
+        var revokedById = _currentUser.GetUserId();
+        if (revokedById is null)
+        {
+            return _msg.Unauthorized<VoidData>(MessageKeys.Identity.NOT_AUTHENTICATED);
+        }
 
-        assignment.Revoke(revokedById, _clock);
-        await _service.UpdateAsync(assignment, cancellationToken).ConfigureAwait(false);
+        assignment.Revoke(revokedById.Value, _clock);
+        _service.Update(assignment);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.Identity.STATE_REP_ASSIGNMENT_REVOKED);
     }
 }

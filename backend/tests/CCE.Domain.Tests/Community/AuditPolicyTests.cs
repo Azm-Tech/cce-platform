@@ -16,7 +16,8 @@ public class AuditPolicyTests
     }
 
     [Theory]
-    [InlineData(typeof(PostRating))]
+    [InlineData(typeof(PostVote))]
+    [InlineData(typeof(ReplyVote))]
     [InlineData(typeof(TopicFollow))]
     [InlineData(typeof(UserFollow))]
     [InlineData(typeof(PostFollow))]

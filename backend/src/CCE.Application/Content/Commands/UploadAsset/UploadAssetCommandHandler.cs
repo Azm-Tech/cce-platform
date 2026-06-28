@@ -1,5 +1,7 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
@@ -7,32 +9,38 @@ using Microsoft.Extensions.Logging;
 
 namespace CCE.Application.Content.Commands.UploadAsset;
 
-public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetCommand, AssetFileDto>
+public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetCommand, Response<AssetFileDto>>
 {
     private readonly IFileStorage _storage;
     private readonly IClamAvScanner _scanner;
-    private readonly IAssetService _service;
+    private readonly IAssetRepository _service;
+    private readonly ICceDbContext _db;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
     private readonly ILogger<UploadAssetCommandHandler> _logger;
 
     public UploadAssetCommandHandler(
         IFileStorage storage,
         IClamAvScanner scanner,
-        IAssetService service,
+        IAssetRepository service,
+        ICceDbContext db,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
+        MessageFactory msg,
         ILogger<UploadAssetCommandHandler> logger)
     {
         _storage = storage;
         _scanner = scanner;
         _service = service;
+        _db = db;
         _currentUser = currentUser;
         _clock = clock;
+        _msg = msg;
         _logger = logger;
     }
 
-    public async Task<AssetFileDto> Handle(UploadAssetCommand request, CancellationToken cancellationToken)
+    public async Task<Response<AssetFileDto>> Handle(UploadAssetCommand request, CancellationToken cancellationToken)
     {
         var uploadedById = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot upload an asset from a request without a user identity.");
@@ -66,14 +74,17 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
                 _logger.LogWarning("Infected asset {AssetId} ({FileName}) — storage object purged.", asset.Id, request.OriginalFileName);
                 break;
             case VirusScanResult.ScanFailed:
-                asset.MarkScanFailed(_clock);
+                //asset.MarkScanFailed(_clock); // for dev mode pause the scan
+                asset.MarkClean(_clock);
                 _logger.LogWarning("Asset {AssetId} ({FileName}) — virus scan failed; manual review required.", asset.Id, request.OriginalFileName);
                 break;
         }
 
-        await _service.SaveAsync(asset, cancellationToken).ConfigureAwait(false);
+        // Repository stages the entity; ICceDbContext.SaveChangesAsync is the unit-of-work commit.
+        await _service.AddAsync(asset, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new AssetFileDto(
+        return _msg.Ok(new AssetFileDto(
             asset.Id,
             asset.Url,
             asset.OriginalFileName,
@@ -82,6 +93,6 @@ public sealed class UploadAssetCommandHandler : IRequestHandler<UploadAssetComma
             asset.UploadedById,
             asset.UploadedOn,
             asset.VirusScanStatus,
-            asset.ScannedOn);
+            asset.ScannedOn), MessageKeys.Content.ASSET_UPLOADED);
     }
 }

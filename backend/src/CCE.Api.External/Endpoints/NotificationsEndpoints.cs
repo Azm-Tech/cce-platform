@@ -1,6 +1,10 @@
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Notifications.Public.Commands.MarkAllNotificationsRead;
 using CCE.Application.Notifications.Public.Commands.MarkNotificationRead;
+using CCE.Application.Notifications.Public.Commands.UpdateMyNotificationSettings;
+using CCE.Application.Notifications.Public.Queries.GetMyNotificationSettings;
 using CCE.Application.Notifications.Public.Queries.GetMyUnreadCount;
 using CCE.Application.Notifications.Public.Queries.ListMyNotifications;
 using CCE.Domain.Notifications;
@@ -25,10 +29,10 @@ public static class NotificationsEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
             var query = new ListMyNotificationsQuery(userId, page ?? 1, pageSize ?? 20, status);
             var result = await mediator.Send(query, ct).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         }).WithName("ListMyNotifications");
 
         notif.MapGet("/unread-count", async (
@@ -36,9 +40,9 @@ public static class NotificationsEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-            var count = await mediator.Send(new GetMyUnreadCountQuery(userId), ct).ConfigureAwait(false);
-            return Results.Ok(new { count });
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
+            var result = await mediator.Send(new GetMyUnreadCountQuery(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         }).WithName("GetMyUnreadNotificationCount");
 
         notif.MapPost("/{id:guid}/mark-read", async (
@@ -47,9 +51,9 @@ public static class NotificationsEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-            await mediator.Send(new MarkNotificationReadCommand(id, userId), ct).ConfigureAwait(false);
-            return Results.NoContent();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
+            var result = await mediator.Send(new MarkNotificationReadCommand(id, userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         }).WithName("MarkNotificationRead");
 
         notif.MapPost("/mark-all-read", async (
@@ -57,10 +61,36 @@ public static class NotificationsEndpoints
             IMediator mediator, CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-            var marked = await mediator.Send(new MarkAllNotificationsReadCommand(userId), ct).ConfigureAwait(false);
-            return Results.Ok(new { marked });
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
+            var result = await mediator.Send(new MarkAllNotificationsReadCommand(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
         }).WithName("MarkAllNotificationsRead");
+
+        notif.MapGet("/settings", async (
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
+            var result = await mediator.Send(new GetMyNotificationSettingsQuery(userId), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("GetMyNotificationSettings");
+
+        notif.MapPut("/settings", async (
+            UpdateMyNotificationSettingsRequest body,
+            ICurrentUserAccessor currentUser,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
+            var command = new UpdateMyNotificationSettingsCommand(
+                userId,
+                body.Channel,
+                body.IsEnabled,
+                body.EventCode);
+            var result = await mediator.Send(command, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("UpdateMyNotificationSettings");
 
         return app;
     }

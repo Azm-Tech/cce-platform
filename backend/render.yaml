@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: cce-api-external
+    runtime: docker
+    repo: https://github.com/YOUR_USER/YOUR_REPO
+    rootDir: .
+    dockerfilePath: src/CCE.Api.External/Dockerfile
+    envVars:
+      - key: ASPNETCORE_URLS
+        value: http://+:${PORT}
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Auth__DevMode
+        value: "true"
+      - key: Auth__DefaultDevRole
+        value: cce-user
+      - key: Infrastructure__SqlConnectionString
+        sync: false
+      - key: Infrastructure__RedisConnectionString
+        sync: false
+    plan: free
+
+  - type: web
+    name: cce-api-internal
+    runtime: docker
+    repo: https://github.com/YOUR_USER/YOUR_REPO
+    rootDir: .
+    dockerfilePath: src/CCE.Api.Internal/Dockerfile
+    envVars:
+      - key: ASPNETCORE_URLS
+        value: http://+:${PORT}
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Auth__DevMode
+        value: "true"
+      - key: Auth__DefaultDevRole
+        value: cce-admin
+      - key: Infrastructure__SqlConnectionString
+        sync: false
+      - key: Infrastructure__RedisConnectionString
+        sync: false
+    plan: free
+
+  - type: cron-job
+    name: cce-seeder
+    runtime: docker
+    repo: https://github.com/YOUR_USER/YOUR_REPO
+    rootDir: .
+    dockerfilePath: src/CCE.Seeder/Dockerfile
+    schedule: "0 0 1 1 *"
+    envVars:
+      - key: Infrastructure__SqlConnectionString
+        sync: false
+
+databases:
+  - name: cce-redis
+    plan: free
+    type: redis

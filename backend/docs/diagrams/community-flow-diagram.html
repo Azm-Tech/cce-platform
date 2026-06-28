@@ -1,0 +1,681 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Community Module — Flow Diagrams</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; padding: 32px 24px; }
+
+h1 { color: #f0f6fc; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.subtitle { color: #8b949e; font-size: 12px; margin-bottom: 36px; }
+h2 { color: #f0f6fc; font-size: 14px; font-weight: 700; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
+
+/* ── Section spacing ── */
+.section { margin-bottom: 52px; }
+
+/* ── Boxes ── */
+.box {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 8px; border: 1.5px solid; padding: 8px 14px;
+  font-size: 11px; font-weight: 600; text-align: center; white-space: nowrap; line-height: 1.4;
+}
+.box sub { font-size: 9px; font-weight: 400; color: #8b949e; margin-top: 2px; }
+.box.client  { border-color: #484f58; background: #1c2128; color: #c9d1d9; }
+.box.cmd     { border-color: #d29922; background: #1a1200; color: #e3b341; }
+.box.domain  { border-color: #388bfd; background: #041526; color: #79c0ff; }
+.box.event   { border-color: #3fb950; background: #021a09; color: #7ee787; }
+.box.outbox  { border-color: #bc4c00; background: #1a0900; color: #ffa657; }
+.box.consumer{ border-color: #a371f7; background: #14052e; color: #d2a8ff; }
+.box.redis   { border-color: #f85149; background: #200505; color: #ff7b72; }
+.box.signalr { border-color: #39d353; background: #021a09; color: #39d353; }
+.box.db      { border-color: #58a6ff; background: #041a35; color: #58a6ff; }
+.box.sql     { border-color: #388bfd; background: #041526; color: #79c0ff; }
+.box.hydrator{ border-color: #e3b341; background: #1a1200; color: #e3b341; }
+.box.feed    { border-color: #a371f7; background: #14052e; color: #d2a8ff; }
+.box.user    { border-color: #58a6ff; background: #041a35; color: #79c0ff; }
+.box.expert  { border-color: #d29922; background: #1a1200; color: #e3b341; }
+.box.note    { border-color: #30363d; background: #161b22; color: #8b949e; font-weight: 400; font-style: italic; font-size: 10px; }
+
+/* ── Arrows ── */
+.arr { color: #484f58; font-size: 18px; display: flex; align-items: center; padding: 0 6px; }
+.arr.down { transform: rotate(90deg); }
+.arr.up   { transform: rotate(270deg); }
+.arr-label { font-size: 9.5px; color: #8b949e; text-align: center; max-width: 80px; line-height: 1.3; }
+
+/* ── Row / Col flex helpers ── */
+.row   { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.col   { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.gap8  { gap: 8px; }
+.gap16 { gap: 16px; }
+.gap24 { gap: 24px; }
+.gap32 { gap: 32px; }
+.mt8   { margin-top: 8px; }
+.mt16  { margin-top: 16px; }
+.mt24  { margin-top: 24px; }
+
+/* ── Divider arrow (vertical lane) ── */
+.vline { width: 1px; background: #30363d; align-self: stretch; margin: 0 4px; }
+.hline { height: 1px; background: #30363d; flex: 1; }
+
+/* ── Badge ── */
+.badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+.b-sync  { background: #0d2045; color: #79c0ff; }
+.b-async { background: #021a09; color: #7ee787; }
+.b-rt    { background: #14052e; color: #d2a8ff; }
+
+/* ── Action-fire table ── */
+table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+th { text-align: left; padding: 8px 12px; background: #1c2128; color: #8b949e; font-weight: 600; border-bottom: 2px solid #30363d; }
+td { padding: 7px 12px; border-bottom: 1px solid #21262d; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+.tag { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin: 1px 2px; }
+.t-cmd     { background: #1a1200; color: #e3b341; border: 1px solid #d29922; }
+.t-domain  { background: #041526; color: #79c0ff; border: 1px solid #388bfd; }
+.t-bus     { background: #021a09; color: #7ee787; border: 1px solid #3fb950; }
+.t-redis   { background: #200505; color: #ff7b72; border: 1px solid #f85149; }
+.t-sigr    { background: #021a09; color: #39d353; border: 1px solid #39d353; }
+.t-notif   { background: #14052e; color: #d2a8ff; border: 1px solid #a371f7; }
+.t-sync    { background: #041a35; color: #58a6ff; border: 1px solid #388bfd; }
+.action-name { font-weight: 600; color: #f0f6fc; }
+.dim { color: #8b949e; font-size: 10.5px; }
+
+/* ── SignalR rooms grid ── */
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.room-card { background: #0d1f0d; border: 1px solid #39d353; border-radius: 8px; overflow: hidden; }
+.room-header { padding: 8px 14px; background: #021a09; font-size: 12px; font-weight: 700; color: #39d353; font-family: monospace; }
+.room-body { padding: 10px 14px; }
+.room-event { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; border-bottom: 1px solid #0a2e0a; font-size: 11px; }
+.room-event:last-child { border-bottom: none; }
+.room-evt-name { font-weight: 600; color: #f0f6fc; min-width: 120px; }
+.room-evt-src  { color: #8b949e; font-size: 10.5px; }
+
+/* ── Feed gen diagram ── */
+.feed-grid { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; gap: 0; align-items: start; }
+.feed-col { display: flex; flex-direction: column; gap: 8px; }
+.feed-col-header { font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #8b949e; text-align: center; margin-bottom: 4px; }
+.feed-arr { display: flex; align-items: center; justify-content: center; padding-top: 32px; color: #484f58; font-size: 22px; }
+
+/* ── Legend ── */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: #8b949e; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+</style>
+
+<h1>Community Module — Flow Diagrams</h1>
+<p class="subtitle">Post lifecycle · Fan-out / Fan-in · Feed generation · SignalR rooms · Action fire map</p>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#d29922"></div> Command / Handler</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#388bfd"></div> Domain Aggregate / Event</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> Integration Event (Bus)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#bc4c00"></div> Outbox → MassTransit</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a371f7"></div> Consumer</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div> Redis</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#39d353"></div> SignalR</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div> SQL / EF</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 1 — POST CREATION & FAN-OUT
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>① Post Creation → Fan-Out Flow</h2>
+
+<div class="row gap8" style="flex-wrap:wrap; align-items:flex-start">
+
+  <!-- LEFT: write path -->
+  <div class="col gap8">
+    <div class="box client">Client<sub>POST /api/community/posts</sub></div>
+    <div class="arr down">→</div>
+    <div class="box cmd">CreatePostCommandHandler<sub>or PublishPostCommandHandler</sub></div>
+    <div class="arr down">→</div>
+    <div class="box domain">Post.Publish()<sub>domain aggregate</sub></div>
+    <div class="arr down">→</div>
+    <div class="box domain" style="font-size:10px">PostCreatedEvent<sub>raised in-memory</sub></div>
+    <div class="arr down">→</div>
+    <div class="box db">SaveChangesAsync()<sub>UoW — commits post row</sub></div>
+    <div class="arr down">→</div>
+    <div class="box domain" style="font-size:10px">DomainEventDispatcher<sub>runs post-commit</sub></div>
+    <div class="arr down">→</div>
+    <div class="box event">PostCreatedBusPublisher<sub>INotificationHandler&lt;PostCreatedEvent&gt;</sub></div>
+    <div class="arr down">→</div>
+    <div class="box outbox">PostCreatedIntegrationEvent<sub>captured by EF Core outbox (atomic)</sub></div>
+    <div class="arr down">→</div>
+    <div class="box outbox" style="font-size:10px">BusOutboxDeliveryService<sub>polls every 1s → relays to InMemory bus</sub></div>
+  </div>
+
+  <div class="arr" style="align-self:center; padding: 0 12px; font-size:28px; color:#30363d">→</div>
+
+  <!-- RIGHT: consumers -->
+  <div class="col gap16" style="align-items:flex-start">
+
+    <!-- FeedConsumer -->
+    <div class="col gap8">
+      <div class="box consumer">FeedConsumer<sub>PostCreatedIntegrationEvent</sub></div>
+      <div class="row gap8" style="align-items:flex-start; padding-left:16px">
+        <div class="col gap6">
+          <div class="box note" style="width:180px">Check author FollowerCount<br>vs CelebrityThreshold (10 000)<br>+ IsExpert flag</div>
+          <div class="row gap8">
+            <div class="col gap4">
+              <div style="font-size:9.5px; color:#8b949e; text-align:center">Normal user</div>
+              <div class="arr down" style="color:#7ee787">→</div>
+              <div class="box redis" style="font-size:10px">AddToUserFeedBatchAsync<sub>fan-out postId → all followers'<br>feed:user:{id} sorted sets</sub></div>
+            </div>
+            <div class="vline"></div>
+            <div class="col gap4">
+              <div style="font-size:9.5px; color:#e3b341; text-align:center">Expert / Celebrity</div>
+              <div class="arr down" style="color:#e3b341">→</div>
+              <div class="box expert" style="font-size:10px">SKIP fan-out<sub>merged at read time via SQL</sub></div>
+            </div>
+          </div>
+          <div class="row gap8" style="margin-top:4px">
+            <div class="box redis" style="font-size:10px">feed:community:{id}<sub>always updated</sub></div>
+            <div class="box redis" style="font-size:10px">leaderboard:hot:{communityId}<sub>always updated</sub></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SignalRConsumer -->
+    <div class="col gap6">
+      <div class="box consumer">SignalRConsumer<sub>PostCreatedIntegrationEvent</sub></div>
+      <div class="row gap8" style="padding-left:16px">
+        <div class="box signalr" style="font-size:10px">NewPost → community:{communityId}</div>
+        <div class="box signalr" style="font-size:10px">NewPost → topic:{topicId}</div>
+      </div>
+    </div>
+
+    <!-- NotificationConsumer -->
+    <div class="col gap6">
+      <div class="box consumer">NotificationConsumer<sub>PostCreatedIntegrationEvent</sub></div>
+      <div style="padding-left:16px">
+        <div class="box notif" style="font-size:10px; border-color:#a371f7; background:#14052e; color:#d2a8ff">
+          NotificationMessage → topic followers<br>+ community followers (excl. author)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 2 — FEED GENERATION (READ PATH)
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>② Feed Read Path — Fan-In & Hydration</h2>
+
+<div class="row gap8" style="align-items:flex-start; flex-wrap:wrap">
+
+  <!-- Community feed -->
+  <div class="col gap8" style="min-width:200px">
+    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#8b949e; text-align:center">Community Feed</div>
+    <div class="box client" style="width:100%; text-align:center">GET /api/community/feed</div>
+    <div class="arr down">→</div>
+    <div class="box cmd" style="width:100%; font-size:10px">ListCommunityFeedQueryHandler</div>
+    <div class="arr down">→</div>
+    <div class="box redis" style="width:100%; font-size:10px">feed:community:{id}<br><span style="font-size:9px;color:#8b949e">sorted set · score=publishedOn</span></div>
+    <div class="arr down">→</div>
+    <div class="box hydrator" style="width:100%; font-size:10px">FeedHydratorService<br><span style="font-size:9px;color:#8b949e">orderedIds → CommunityFeedItemDto[]</span></div>
+  </div>
+
+  <div style="padding-top:30px; color:#30363d; font-size:22px; padding-left:8px; padding-right:8px">|</div>
+
+  <!-- User feed -->
+  <div class="col gap8" style="min-width:220px">
+    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#8b949e; text-align:center">Personal Feed (Fan-In)</div>
+    <div class="box client" style="width:100%; text-align:center">GET /api/community/feed/user</div>
+    <div class="arr down">→</div>
+    <div class="box cmd" style="width:100%; font-size:10px">ListUserFeedQueryHandler</div>
+    <div class="arr down">→</div>
+    <div class="row gap6" style="width:100%">
+      <div class="col gap6" style="flex:1">
+        <div class="box redis" style="width:100%; font-size:10px">feed:user:{userId}<sub>Redis sorted set</sub></div>
+        <div style="font-size:9px; color:#8b949e; text-align:center">normal posts (fan-out)</div>
+      </div>
+      <div class="arr" style="font-size:14px; color:#30363d">+</div>
+      <div class="col gap6" style="flex:1">
+        <div class="box sql" style="width:100%; font-size:10px">SQL JOIN<sub>expert posts</sub></div>
+        <div style="font-size:9px; color:#e3b341; text-align:center">fan-in — experts user follows</div>
+      </div>
+    </div>
+    <div class="arr down">→</div>
+    <div class="box cmd" style="width:100%; font-size:10px">Merge + deduplicate<sub>sort by score, paginate</sub></div>
+    <div class="arr down">→</div>
+    <div class="box hydrator" style="width:100%; font-size:10px">FeedHydratorService</div>
+  </div>
+
+  <div style="padding-top:30px; color:#30363d; font-size:22px; padding-left:8px; padding-right:8px">|</div>
+
+  <!-- Hot leaderboard -->
+  <div class="col gap8" style="min-width:180px">
+    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#8b949e; text-align:center">Hot Leaderboard Feed</div>
+    <div class="box client" style="width:100%; font-size:10px; text-align:center">GET /api/community/feed?sort=Hot</div>
+    <div class="arr down">→</div>
+    <div class="box cmd" style="width:100%; font-size:10px">ListCommunityFeedQueryHandler<sub>sort=Hot</sub></div>
+    <div class="arr down">→</div>
+    <div class="box redis" style="width:100%; font-size:10px">leaderboard:hot:{communityId}<sub>score = VoteScore.Hot(up,down,age)</sub></div>
+    <div class="arr down">→</div>
+    <div class="box hydrator" style="width:100%; font-size:10px">FeedHydratorService</div>
+  </div>
+
+  <div style="padding-top:30px; color:#30363d; font-size:22px; padding-left:8px; padding-right:8px">|</div>
+
+  <!-- Hydrator detail -->
+  <div class="col gap6" style="min-width:220px">
+    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#e3b341; text-align:center">FeedHydratorService Steps</div>
+    <div class="box hydrator" style="width:100%; font-size:10px">Step 1: JOIN posts + community<br>+ author + topic + expert (one query)</div>
+    <div class="arr down">→</div>
+    <div class="row gap6" style="width:100%">
+      <div class="box redis" style="flex:1; font-size:9.5px">Step 2: Redis meta batch<sub>concurrent</sub></div>
+    </div>
+    <div class="arr down">→</div>
+    <div class="box db" style="width:100%; font-size:10px">Step 3: Attachments batch</div>
+    <div class="arr down">→</div>
+    <div class="box db" style="width:100%; font-size:10px">Step 4: Tags batch</div>
+    <div class="arr down">→</div>
+    <div class="box db" style="width:100%; font-size:10px">Step 5: Watchlist + votes<sub>auth only</sub></div>
+    <div class="arr down">→</div>
+    <div class="box db" style="width:100%; font-size:10px">Step 6: PollHydrator.FetchAsync<sub>conditional — Poll-type posts only</sub></div>
+    <div class="arr down">→</div>
+    <div class="box hydrator" style="width:100%; font-size:10px">Map → CommunityFeedItemDto[]<sub>+ PollSummaryDto? per poll post</sub></div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 3 — VOTE FLOW
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>③ Vote Flow (Post Vote)</h2>
+
+<div class="row gap8" style="align-items:flex-start">
+  <div class="col gap8">
+    <div class="box client">Client<sub>POST /api/community/posts/{id}/vote</sub></div>
+    <div class="arr down">→</div>
+    <div class="box cmd">VotePostCommandHandler</div>
+    <div class="arr down">→</div>
+    <div class="box domain">Post.Vote(direction)<sub>updates UpvoteCount, DownvoteCount, Score</sub></div>
+    <div class="arr down">→</div>
+    <div class="box domain" style="font-size:10px">PostVotedEvent<sub>raised in-memory</sub></div>
+    <div class="arr down">→</div>
+    <div class="box db">SaveChangesAsync()<sub>commits PostVote row + denormalized counts</sub></div>
+    <div class="arr down">→</div>
+    <div class="box event">PostVotedBusPublisher<sub>INotificationHandler&lt;PostVotedEvent&gt;</sub></div>
+    <div class="arr down">→</div>
+    <div class="box outbox">VoteCreatedIntegrationEvent<sub>EF Core outbox</sub></div>
+  </div>
+
+  <div class="arr" style="align-self:center; padding: 0 16px; font-size:28px; color:#30363d">→</div>
+
+  <div class="col gap16" style="align-items:flex-start">
+    <div class="col gap6">
+      <div class="box consumer">VoteConsumer<sub>VoteCreatedIntegrationEvent</sub></div>
+      <div class="col gap4" style="padding-left:16px">
+        <div class="box note" style="width:200px">Reads existing meta first<br>(preserves replyCount)</div>
+        <div class="box redis" style="font-size:10px; width:200px">SetPostMetaAsync (absolute set)<sub>post:{id}:meta — idempotent on retry</sub></div>
+        <div class="box redis" style="font-size:10px; width:200px">AddToHotLeaderboardAsync<sub>leaderboard:hot:{communityId}</sub></div>
+      </div>
+    </div>
+    <div class="col gap6">
+      <div class="box signalr" style="font-size:10px">Direct realtime (no consumer)<sub>CommunityRealtimePublisher</sub></div>
+      <div class="box signalr" style="font-size:10px; padding-left:16px">PostVoted → post:{postId} group</div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 4 — REPLY FLOW
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>④ Reply Flow</h2>
+
+<div class="row gap8" style="align-items:flex-start">
+  <div class="col gap8">
+    <div class="box client">Client<sub>POST /api/community/posts/{id}/replies</sub></div>
+    <div class="arr down">→</div>
+    <div class="box cmd">CreateReplyCommandHandler</div>
+    <div class="arr down">→</div>
+    <div class="box domain">PostReply.CreateRoot/Child()<sub>builds ThreadPath · increments CommentsCount</sub></div>
+    <div class="arr down">→</div>
+    <div class="row gap8">
+      <div class="box domain" style="font-size:10px">ReplyCreatedEvent</div>
+      <div class="arr" style="font-size:14px">+</div>
+      <div class="box domain" style="font-size:10px">CommentCountChangedEvent</div>
+    </div>
+    <div class="arr down">→</div>
+    <div class="box db">SaveChangesAsync()</div>
+    <div class="arr down">→</div>
+    <div class="row gap8">
+      <div class="box event" style="font-size:10px">ReplyCreatedIntegrationEvent</div>
+      <div class="arr" style="font-size:14px">+</div>
+      <div class="box event" style="font-size:10px">CommentCountChangedIntegrationEvent</div>
+    </div>
+    <div class="arr down">→</div>
+    <div class="box outbox">EF Core outbox (both events)</div>
+  </div>
+
+  <div class="arr" style="align-self:center; padding: 0 16px; font-size:28px; color:#30363d">→</div>
+
+  <div class="col gap16" style="align-items:flex-start">
+    <div class="col gap6">
+      <div class="box consumer">ReplyCountConsumer<sub>CommentCountChangedIntegrationEvent</sub></div>
+      <div class="box redis" style="font-size:10px; width:200px; margin-left:16px">Updates replyCount<sub>in post:{id}:meta hash</sub></div>
+    </div>
+    <div class="col gap6">
+      <div class="box consumer">NotificationConsumer<sub>ReplyCreatedIntegrationEvent</sub></div>
+      <div class="col gap4" style="padding-left:16px">
+        <div class="box notif" style="font-size:10px; border-color:#a371f7; background:#14052e; color:#d2a8ff; width:200px">Notify post author<br>+ post followers</div>
+      </div>
+    </div>
+    <div class="col gap6">
+      <div class="box consumer">SignalRConsumer<sub>ReplyCreatedIntegrationEvent</sub></div>
+      <div class="box signalr" style="font-size:10px; width:200px; margin-left:16px">NewReply → post:{postId} group</div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 5 — POLL VOTE (DIRECT, NO BUS)
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>⑤ Poll Vote Flow (Synchronous — No Bus Event)</h2>
+
+<div class="row gap8" style="align-items:flex-start">
+  <div class="col gap8">
+    <div class="box client">Client<sub>POST /api/community/polls/{id}/vote</sub></div>
+    <div class="arr down">→</div>
+    <div class="box cmd">CastPollVoteCommandHandler</div>
+    <div class="arr down">→</div>
+    <div class="col gap6" style="padding-left:8px">
+      <div class="box note" style="width:220px">Guards: IsClosed · AllowMultiple<br>· HasVoted check (reject duplicate)</div>
+    </div>
+    <div class="arr down">→</div>
+    <div class="box domain">option.IncrementVotes()<sub>PollOption.VoteCount++ (denormalized)</sub></div>
+    <div class="arr down">→</div>
+    <div class="box db">SaveChangesAsync()<sub>commits PollVote row + VoteCount in same tx</sub></div>
+    <div class="arr down">→</div>
+    <div class="box signalr">ICommunityRealtimePublisher<sub>no bus event — direct SignalR call</sub></div>
+    <div class="arr down">→</div>
+    <div class="box signalr">PollResultsChanged → post:{postId} group<sub>payload: pollId, postId</sub></div>
+  </div>
+
+  <div style="padding-top:80px; padding-left:24px">
+    <div class="box note" style="width:240px; text-align:left; line-height:1.7">
+      <strong style="color:#e3b341">Why no bus event?</strong><br>
+      PollOption.VoteCount is already correct in SQL after SaveChanges (same tx). Poll data is never cached in Redis — PollHydrator always reads fresh from SQL. No consumer needed to keep anything in sync.
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     DIAGRAM 6 — JOIN REQUEST
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>⑥ Join Request Flow (Private Community)</h2>
+<div class="row gap8" style="align-items:flex-start">
+  <div class="col gap8">
+    <div class="box client">Client<sub>POST /api/community/communities/{id}/join</sub></div>
+    <div class="arr down">→</div>
+    <div class="box cmd">JoinCommunityCommandHandler</div>
+    <div class="arr down">→</div>
+    <div class="row gap8">
+      <div class="col gap4" style="align-items:center">
+        <div style="font-size:9.5px; color:#8b949e">Public community</div>
+        <div class="arr down" style="color:#7ee787">→</div>
+        <div class="box db" style="font-size:10px">Add membership directly</div>
+      </div>
+      <div class="vline"></div>
+      <div class="col gap4" style="align-items:center">
+        <div style="font-size:9.5px; color:#8b949e">Private community</div>
+        <div class="arr down" style="color:#e3b341">→</div>
+        <div class="box domain" style="font-size:10px">Community.RegisterJoinRequest()<br>→ CommunityJoinRequestedEvent</div>
+        <div class="arr down">→</div>
+        <div class="box outbox" style="font-size:10px">CommunityJoinRequestedIntegrationEvent</div>
+        <div class="arr down">→</div>
+        <div class="box consumer" style="font-size:10px">NotificationConsumer</div>
+        <div class="arr down">→</div>
+        <div class="box notif" style="font-size:10px; border-color:#a371f7; background:#14052e; color:#d2a8ff">Notify moderators<br>of pending request</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     ACTION FIRE TABLE
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>⑦ Action → Event → Consumer Map</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width:200px">User Action</th>
+      <th>Domain Event</th>
+      <th>Integration Event (Bus)</th>
+      <th>Consumers → Side Effects</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="action-name">Publish Post</span><div class="dim">(or CreatePost not draft)</div></td>
+      <td><span class="tag t-domain">PostCreatedEvent</span></td>
+      <td><span class="tag t-bus">PostCreatedIntegrationEvent</span></td>
+      <td>
+        <span class="tag t-redis">FeedConsumer → feed:user:{id} sorted sets</span>
+        <span class="tag t-redis">FeedConsumer → feed:community:{id}</span>
+        <span class="tag t-redis">FeedConsumer → leaderboard:hot:{id}</span>
+        <span class="tag t-sigr">SignalRConsumer → NewPost → community+topic groups</span>
+        <span class="tag t-notif">NotificationConsumer → notify topic+community followers</span>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Vote Post</span><div class="dim">(up / down)</div></td>
+      <td><span class="tag t-domain">PostVotedEvent</span></td>
+      <td><span class="tag t-bus">VoteCreatedIntegrationEvent</span></td>
+      <td>
+        <span class="tag t-redis">VoteConsumer → SetPostMetaAsync (absolute, idempotent)</span>
+        <span class="tag t-redis">VoteConsumer → leaderboard:hot score update</span>
+        <span class="tag t-sigr">Direct SignalR → PostVoted → post:{id} group</span>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Create Reply</span></td>
+      <td>
+        <span class="tag t-domain">ReplyCreatedEvent</span>
+        <span class="tag t-domain">CommentCountChangedEvent</span>
+      </td>
+      <td>
+        <span class="tag t-bus">ReplyCreatedIntegrationEvent</span>
+        <span class="tag t-bus">CommentCountChangedIntegrationEvent</span>
+      </td>
+      <td>
+        <span class="tag t-redis">ReplyCountConsumer → replyCount in post:{id}:meta</span>
+        <span class="tag t-notif">NotificationConsumer → notify post author + post followers</span>
+        <span class="tag t-sigr">SignalRConsumer → NewReply → post:{id} group</span>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Vote Poll</span></td>
+      <td><div class="dim">None (no domain event)</div></td>
+      <td><div class="dim">None (no bus event)</div></td>
+      <td>
+        <span class="tag t-sync">SYNC: option.IncrementVotes() in same SaveChanges tx</span>
+        <span class="tag t-sigr">Direct SignalR → PollResultsChanged → post:{id} group</span>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Join Community</span><div class="dim">(private)</div></td>
+      <td><span class="tag t-domain">CommunityJoinRequestedEvent</span></td>
+      <td><span class="tag t-bus">CommunityJoinRequestedIntegrationEvent</span></td>
+      <td>
+        <span class="tag t-notif">NotificationConsumer → notify moderators</span>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Join Community</span><div class="dim">(public)</div></td>
+      <td><div class="dim">None</div></td>
+      <td><div class="dim">None</div></td>
+      <td><span class="tag t-sync">SYNC: membership row added in SaveChanges</span></td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Follow Community / Topic / Post / User</span></td>
+      <td><div class="dim">None</div></td>
+      <td><div class="dim">None</div></td>
+      <td><span class="tag t-sync">SYNC: follow row added/removed in SaveChanges</span></td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Edit / Delete Reply</span></td>
+      <td><div class="dim">None</div></td>
+      <td><div class="dim">None</div></td>
+      <td><span class="tag t-sync">SYNC: reply row updated / soft-deleted</span></td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Soft Delete Post</span></td>
+      <td><div class="dim">None</div></td>
+      <td><div class="dim">None</div></td>
+      <td><span class="tag t-sync">SYNC: status → Deleted · stale Redis IDs dropped by hydrator visibility guard</span></td>
+    </tr>
+    <tr>
+      <td><span class="action-name">Approve Join Request</span></td>
+      <td><div class="dim">None</div></td>
+      <td><div class="dim">None</div></td>
+      <td><span class="tag t-sync">SYNC: membership row added, request status → Approved</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     SIGNALR ROOMS
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>⑧ SignalR Groups & Events</h2>
+
+<div class="rooms">
+
+  <div class="room-card">
+    <div class="room-header">community:{communityId}</div>
+    <div class="room-body">
+      <div class="room-event">
+        <div class="room-evt-name">NewPost</div>
+        <div class="room-evt-src">SignalRConsumer ← PostCreatedIntegrationEvent<br>payload: postId, communityId, topicId</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="room-card">
+    <div class="room-header">topic:{topicId}</div>
+    <div class="room-body">
+      <div class="room-event">
+        <div class="room-evt-name">NewPost</div>
+        <div class="room-evt-src">SignalRConsumer ← PostCreatedIntegrationEvent<br>payload: postId, communityId, topicId</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="room-card">
+    <div class="room-header">post:{postId}</div>
+    <div class="room-body">
+      <div class="room-event">
+        <div class="room-evt-name">NewReply</div>
+        <div class="room-evt-src">SignalRConsumer ← ReplyCreatedIntegrationEvent<br>payload: replyId, postId, parentReplyId</div>
+      </div>
+      <div class="room-event">
+        <div class="room-evt-name">PostVoted</div>
+        <div class="room-evt-src">CommunityRealtimePublisher (direct)<br>payload: postId, direction, upvotes, downvotes</div>
+      </div>
+      <div class="room-event">
+        <div class="room-evt-name">ReplyVoted</div>
+        <div class="room-evt-src">CommunityRealtimePublisher (direct)<br>payload: replyId, postId</div>
+      </div>
+      <div class="room-event">
+        <div class="room-evt-name">PollResultsChanged</div>
+        <div class="room-evt-src">CommunityRealtimePublisher (direct)<br>payload: pollId, postId<br><em style="color:#484f58">no bus — fired synchronously after CastPollVote</em></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="room-card">
+    <div class="room-header">moderation</div>
+    <div class="room-body">
+      <div class="room-event">
+        <div class="room-evt-name">JoinRequested</div>
+        <div class="room-evt-src">CommunityRealtimePublisher<br>payload: requestId, communityId, userId</div>
+      </div>
+      <div class="room-event">
+        <div class="room-evt-name">PostFlagged</div>
+        <div class="room-evt-src">CommunityRealtimePublisher<br>payload: postId, reporterId</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mt16" style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px 16px; font-size:11px; color:#8b949e; max-width:620px">
+  <strong style="color:#c9d1d9">Infrastructure note:</strong> SignalR uses a Redis backplane (StackExchange.Redis) so broadcasts reach all API process instances. If Redis is unavailable, <code style="color:#79c0ff">CommunityRealtimePublisher</code> catches <code style="color:#79c0ff">RedisException</code> and logs a warning — the action still succeeds, the realtime push is silently dropped.
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     REDIS KEY SPACE
+     ════════════════════════════════════════════════════════════ -->
+<div class="section">
+<h2>⑨ Redis Key Space</h2>
+<table>
+  <thead>
+    <tr><th>Key Pattern</th><th>Type</th><th>Score / Field</th><th>Written by</th><th>Read by</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code style="color:#ff7b72">feed:user:{userId}</code></td>
+      <td>Sorted Set</td>
+      <td>publishedOn (unix ms)</td>
+      <td>FeedConsumer (fan-out)</td>
+      <td>ListUserFeedQueryHandler</td>
+    </tr>
+    <tr>
+      <td><code style="color:#ff7b72">feed:community:{communityId}</code></td>
+      <td>Sorted Set</td>
+      <td>publishedOn (unix ms)</td>
+      <td>FeedConsumer (always)</td>
+      <td>ListCommunityFeedQueryHandler</td>
+    </tr>
+    <tr>
+      <td><code style="color:#ff7b72">leaderboard:hot:{communityId}</code></td>
+      <td>Sorted Set</td>
+      <td>VoteScore.Hot(up,down,age)</td>
+      <td>FeedConsumer + VoteConsumer</td>
+      <td>ListCommunityFeedQueryHandler (sort=Hot)</td>
+    </tr>
+    <tr>
+      <td><code style="color:#ff7b72">post:{postId}:meta</code></td>
+      <td>Hash</td>
+      <td>upvotes, downvotes, score, replyCount</td>
+      <td>VoteConsumer (absolute set)<br>ReplyCountConsumer (replyCount only)</td>
+      <td>FeedHydratorService (GetPostsMetaBatchAsync)<br>GetPublicPostByIdQueryHandler</td>
+    </tr>
+    <tr>
+      <td><div class="dim">Poll data</div></td>
+      <td><div class="dim">—</div></td>
+      <td><div class="dim">NOT cached</div></td>
+      <td><div class="dim">—</div></td>
+      <td><div class="dim">PollHydrator always reads fresh from SQL</div></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+

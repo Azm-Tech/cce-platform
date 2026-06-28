@@ -9,7 +9,7 @@ public class ListResourceCategoriesQueryHandlerTests
     [Fact]
     public async Task Returns_empty_paged_result_when_no_categories_exist()
     {
-        var db = BuildDb(System.Array.Empty<ResourceCategory>());
+        var db = BuildDb(Array.Empty<ResourceCategory>());
         var sut = new ListResourceCategoriesQueryHandler(db);
 
         var result = await sut.Handle(new ListResourceCategoriesQuery(Page: 1, PageSize: 20), CancellationToken.None);
@@ -27,7 +27,7 @@ public class ListResourceCategoriesQueryHandlerTests
         var inactive = ResourceCategory.Create("غير نشط", "Inactive", "inactive", null, 2);
         inactive.Deactivate();
 
-        var db = BuildDb(new[] { active, inactive });
+        var db = BuildDb([active, inactive]);
         var sut = new ListResourceCategoriesQueryHandler(db);
 
         var result = await sut.Handle(new ListResourceCategoriesQuery(IsActive: true), CancellationToken.None);
@@ -41,15 +41,31 @@ public class ListResourceCategoriesQueryHandlerTests
     {
         var parentId = System.Guid.NewGuid();
         var child = ResourceCategory.Create("فرعي", "Child", "child", parentId, 1);
-        var root = ResourceCategory.Create("جذر", "Root", "root", null, 0);
+        var unrelated = ResourceCategory.Create("مستقل", "Standalone", "standalone", null, 2);
 
-        var db = BuildDb(new[] { child, root });
+        var db = BuildDb([child, unrelated]);
         var sut = new ListResourceCategoriesQueryHandler(db);
 
         var result = await sut.Handle(new ListResourceCategoriesQuery(ParentId: parentId), CancellationToken.None);
 
         result.Total.Should().Be(1);
         result.Items.Single().NameEn.Should().Be("Child");
+    }
+
+    [Fact]
+    public async Task Returns_categories_sorted_by_OrderIndex()
+    {
+        var second = ResourceCategory.Create("ثاني", "Second", "second", null, 5);
+        var first = ResourceCategory.Create("أول", "First", "first", null, 1);
+
+        var db = BuildDb([second, first]);
+        var sut = new ListResourceCategoriesQueryHandler(db);
+
+        var result = await sut.Handle(new ListResourceCategoriesQuery(), CancellationToken.None);
+
+        result.Total.Should().Be(2);
+        result.Items[0].NameEn.Should().Be("First");
+        result.Items[1].NameEn.Should().Be("Second");
     }
 
     private static ICceDbContext BuildDb(IEnumerable<ResourceCategory> categories)

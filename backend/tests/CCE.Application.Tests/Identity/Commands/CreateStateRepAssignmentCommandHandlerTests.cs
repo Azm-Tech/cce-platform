@@ -1,47 +1,52 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.CreateStateRepAssignment;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using Microsoft.AspNetCore.Identity;
+using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
 namespace CCE.Application.Tests.Identity.Commands;
 
 public class CreateStateRepAssignmentCommandHandlerTests
 {
     [Fact]
-    public async Task Throws_KeyNotFound_when_user_missing()
+    public async Task Returns_failure_when_user_missing()
     {
         var db = BuildDb(System.Array.Empty<User>(), System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentService>(), BuildCurrentUser(), new FakeSystemClock());
+            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(System.Guid.NewGuid(), System.Guid.NewGuid()),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
-    public async Task Throws_KeyNotFound_when_country_missing()
+    public async Task Returns_failure_when_country_missing()
     {
         var aliceId = System.Guid.NewGuid();
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
         var db = BuildDb(users, System.Array.Empty<CCE.Domain.Country.Country>());
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentService>(), BuildCurrentUser(), new FakeSystemClock());
+            db, Substitute.For<IStateRepAssignmentRepository>(), BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, System.Guid.NewGuid()),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR070);
     }
 
     [Fact]
-    public async Task Throws_DomainException_when_actor_unknown()
+    public async Task Returns_failure_when_actor_unknown()
     {
         var aliceId = System.Guid.NewGuid();
         var country = BuildCountry();
@@ -51,13 +56,14 @@ public class CreateStateRepAssignmentCommandHandlerTests
 
         var db = BuildDb(users, new[] { country });
         var sut = new CreateStateRepAssignmentCommandHandler(
-            db, Substitute.For<IStateRepAssignmentService>(), currentUser, new FakeSystemClock());
+            db, Substitute.For<IStateRepAssignmentRepository>(), currentUser, new FakeSystemClock(), BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, country.Id),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<DomainException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]
@@ -66,22 +72,24 @@ public class CreateStateRepAssignmentCommandHandlerTests
         var aliceId = System.Guid.NewGuid();
         var country = BuildCountry();
         var users = new[] { BuildUser(aliceId, "alice@cce.local", "alice") };
-        var service = Substitute.For<IStateRepAssignmentService>();
+        var service = Substitute.For<IStateRepAssignmentRepository>();
         var currentUser = BuildCurrentUser();
         var clock = new FakeSystemClock();
 
         var db = BuildDb(users, new[] { country });
-        var sut = new CreateStateRepAssignmentCommandHandler(db, service, currentUser, clock);
+        var sut = new CreateStateRepAssignmentCommandHandler(db, service, currentUser, clock, BuildMsg());
 
-        var dto = await sut.Handle(
+        var result = await sut.Handle(
             new CreateStateRepAssignmentCommand(aliceId, country.Id),
             CancellationToken.None);
 
-        dto.UserId.Should().Be(aliceId);
-        dto.CountryId.Should().Be(country.Id);
-        dto.UserName.Should().Be("alice");
-        dto.IsActive.Should().BeTrue();
-        await service.Received(1).SaveAsync(Arg.Any<StateRepresentativeAssignment>(), Arg.Any<CancellationToken>());
+        result.Success.Should().BeTrue();
+        result.Data!.UserId.Should().Be(aliceId);
+        result.Data!.CountryId.Should().Be(country.Id);
+        result.Data!.UserName.Should().Be("alice");
+        result.Data!.IsActive.Should().BeTrue();
+        await service.Received(1).AddAsync(Arg.Any<StateRepresentativeAssignment>(), Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

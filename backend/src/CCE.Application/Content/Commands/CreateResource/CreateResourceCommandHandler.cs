@@ -1,45 +1,67 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
+using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.CreateResource;
 
-public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourceCommand, ResourceDto>
+public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourceCommand, Response<System.Guid>>
 {
-    private readonly IResourceService _service;
-    private readonly IAssetService _assetService;
+    private readonly IRepository<Resource, System.Guid> _repo;
+    private readonly ICceDbContext _db;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _messages;
 
     public CreateResourceCommandHandler(
-        IResourceService service,
-        IAssetService assetService,
+        IRepository<Resource, System.Guid> repo,
+        ICceDbContext db,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        MessageFactory messages)
     {
-        _service = service;
-        _assetService = assetService;
+        _repo = repo;
+        _db = db;
         _currentUser = currentUser;
         _clock = clock;
+        _messages = messages;
     }
 
-    public async Task<ResourceDto> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
+    public async Task<Response<System.Guid>> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
     {
-        var asset = await _assetService.FindAsync(request.AssetFileId, cancellationToken).ConfigureAwait(false);
+        var assets = await _db.AssetFiles
+            .Where(a => a.Id == request.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+        var asset = assets.SingleOrDefault();
+
         if (asset is null)
-        {
-            throw new System.Collections.Generic.KeyNotFoundException($"Asset {request.AssetFileId} not found.");
-        }
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
         if (asset.VirusScanStatus != VirusScanStatus.Clean)
+            return _messages.BusinessRule<System.Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
+
+        var categoryExists = await ExistsAsync(_db.ResourceCategories.Where(c => c.Id == request.CategoryId), cancellationToken).ConfigureAwait(false);
+        if (!categoryExists)
+            return _messages.NotFound<System.Guid>(MessageKeys.Content.CATEGORY_NOT_FOUND);
+
+        var countryIds = request.CountryIds.Distinct().ToList();
+        if (countryIds.Count > 0)
         {
-            throw new DomainException($"Asset {request.AssetFileId} has not passed virus scan ({asset.VirusScanStatus}).");
+            var existingCountryCount = await _db.Countries
+                .Where(c => countryIds.Contains(c.Id))
+                .CountAsyncEither(cancellationToken)
+                .ConfigureAwait(false);
+            if (existingCountryCount != countryIds.Count)
+                return _messages.NotFound<System.Guid>(MessageKeys.Country.COUNTRY_NOT_FOUND);
         }
 
-        var uploadedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot create a resource from a request without a user identity.");
+        var uploadedById = _currentUser.GetUserId();
+        if (uploadedById is null)
+            return _messages.Unauthorized<System.Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var resource = Resource.Draft(
             request.TitleAr,
@@ -49,27 +71,22 @@ public sealed class CreateResourceCommandHandler : IRequestHandler<CreateResourc
             request.ResourceType,
             request.CategoryId,
             request.CountryId,
-            uploadedById,
+            uploadedById.Value,
             request.AssetFileId,
-            _clock);
+            request.CountryIds,
+            _clock,
+            request.KnowledgeLevelId,
+            request.JobSectorId);
 
-        await _service.SaveAsync(resource, cancellationToken).ConfigureAwait(false);
+        await _repo.AddAsync(resource, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new ResourceDto(
-            resource.Id,
-            resource.TitleAr,
-            resource.TitleEn,
-            resource.DescriptionAr,
-            resource.DescriptionEn,
-            resource.ResourceType,
-            resource.CategoryId,
-            resource.CountryId,
-            resource.UploadedById,
-            resource.AssetFileId,
-            resource.PublishedOn,
-            resource.ViewCount,
-            resource.IsCenterManaged,
-            resource.IsPublished,
-            System.Convert.ToBase64String(resource.RowVersion));
+        return _messages.Ok(resource.Id, MessageKeys.Content.RESOURCE_CREATED);
+    }
+
+    private static async Task<bool> ExistsAsync<T>(IQueryable<T> query, CancellationToken ct)
+    {
+        var list = await query.Take(1).ToListAsyncEither(ct).ConfigureAwait(false);
+        return list.Count > 0;
     }
 }

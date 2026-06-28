@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <!-- CA1707 — Error-code constants use SCREAMING_SNAKE_CASE (industry standard).
+         CA1034 — Nested static classes group error codes by bounded context.
+         CA1000 — Result<T>.Success() / .Failure() are standard factory methods on generic Result.
+         CA2225 — Implicit T → Result<T> conversion is idiomatic for railway-oriented programming.
+         CA1805 — Unit.Value = new() is explicit initialization of a zero-size struct. -->
+    <NoWarn>$(NoWarn);CA1707;CA1034;CA1000;CA2225;CA1805</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +17,7 @@
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Mapster.DependencyInjection" />
   </ItemGroup>

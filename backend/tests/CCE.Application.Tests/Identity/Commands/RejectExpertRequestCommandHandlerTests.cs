@@ -1,10 +1,12 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Identity;
 using CCE.TestInfrastructure.Time;
 using Microsoft.AspNetCore.Identity;
+using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
 namespace CCE.Application.Tests.Identity.Commands;
 
@@ -13,17 +15,18 @@ public class RejectExpertRequestCommandHandlerTests
     [Fact]
     public async Task Throws_KeyNotFound_when_request_missing()
     {
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns((ExpertRegistrationRequest?)null);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(), new FakeSystemClock());
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(), new FakeSystemClock(), BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new RejectExpertRequestCommand(System.Guid.NewGuid(), "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR400);
     }
 
     [Fact]
@@ -31,20 +34,21 @@ public class RejectExpertRequestCommandHandlerTests
     {
         var clock = new FakeSystemClock();
         var registration = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, clock);
-        var service = Substitute.For<IExpertWorkflowService>();
+            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, System.Guid.NewGuid(), clock);
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), currentUser, clock);
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, currentUser, clock, BuildMsg());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<DomainException>();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR407);
     }
 
     [Fact]
@@ -52,15 +56,15 @@ public class RejectExpertRequestCommandHandlerTests
     {
         var clock = new FakeSystemClock();
         var registration = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, clock);
+            System.Guid.NewGuid(), "bio-ar", "bio-en", new[] { "Hydrogen" }, System.Guid.NewGuid(), clock);
         var adminId = System.Guid.NewGuid();
         registration.Approve(adminId, clock); // already approved — not Pending
 
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(), BuildCurrentUser(adminId), clock);
+        var sut = new RejectExpertRequestCommandHandler(BuildDb(), service, BuildCurrentUser(adminId), clock, BuildMsg());
 
         var act = async () => await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
@@ -76,25 +80,26 @@ public class RejectExpertRequestCommandHandlerTests
         var requesterId = System.Guid.NewGuid();
         var adminId = System.Guid.NewGuid();
         var registration = ExpertRegistrationRequest.Submit(
-            requesterId, "bio-ar", "bio-en", new[] { "Hydrogen", "CCS" }, clock);
+            requesterId, "bio-ar", "bio-en", new[] { "Hydrogen", "CCS" }, System.Guid.NewGuid(), clock);
 
-        var service = Substitute.For<IExpertWorkflowService>();
+        var service = Substitute.For<IExpertWorkflowRepository>();
         service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(registration);
 
         var users = new[] { BuildUser(requesterId, "alice@cce.local", "alice") };
+        var db = BuildDb(users);
 
-        var sut = new RejectExpertRequestCommandHandler(service, BuildDb(users), BuildCurrentUser(adminId), clock);
+        var sut = new RejectExpertRequestCommandHandler(db, service, BuildCurrentUser(adminId), clock, BuildMsg());
 
-        var dto = await sut.Handle(
+        var result = await sut.Handle(
             new RejectExpertRequestCommand(registration.Id, "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        dto.Status.Should().Be(ExpertRegistrationStatus.Rejected);
-        dto.RejectionReasonEn.Should().Be("Insufficient evidence.");
-        dto.RejectionReasonAr.Should().Be("غير مؤهل");
+        result.Data!.Status.Should().Be(ExpertRegistrationStatus.Rejected);
+        result.Data!.RejectionReasonEn.Should().Be("Insufficient evidence.");
+        result.Data!.RejectionReasonAr.Should().Be("غير مؤهل");
         registration.Status.Should().Be(ExpertRegistrationStatus.Rejected);
-        await service.Received(1).SaveAsync(registration, null, Arg.Any<CancellationToken>());
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)

@@ -1,6 +1,6 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content;
 using CCE.Application.Content.Commands.RejectCountryResourceRequest;
+using CCE.Application.Tests.Notifications;
 using CCE.Domain.Common;
 using CCE.Domain.Content;
 using CCE.Domain.Country;
@@ -11,19 +11,19 @@ namespace CCE.Application.Tests.Content.Commands;
 public class RejectCountryResourceRequestCommandHandlerTests
 {
     [Fact]
-    public async Task Throws_KeyNotFound_when_request_missing()
+    public async Task Returns_not_found_when_request_missing()
     {
-        var service = Substitute.For<ICountryResourceRequestService>();
-        service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
-            .Returns((CountryResourceRequest?)null);
+        var repo = Substitute.For<IRepository<CountryContentRequest, System.Guid>>();
+        repo.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
+            .Returns((CountryContentRequest?)null);
 
-        var sut = BuildSut(service, BuildCurrentUser());
+        var sut = BuildSut(repo, BuildCurrentUser());
 
-        var act = async () => await sut.Handle(
+        var result = await sut.Handle(
             new RejectCountryResourceRequestCommand(System.Guid.NewGuid(), "غير", "Insufficient."),
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<System.Collections.Generic.KeyNotFoundException>();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
@@ -32,14 +32,14 @@ public class RejectCountryResourceRequestCommandHandlerTests
         var clock = new FakeSystemClock();
         var entity = BuildPendingRequest(clock);
 
-        var service = Substitute.For<ICountryResourceRequestService>();
-        service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
+        var repo = Substitute.For<IRepository<CountryContentRequest, System.Guid>>();
+        repo.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(entity);
 
         var currentUser = Substitute.For<ICurrentUserAccessor>();
         currentUser.GetUserId().Returns((System.Guid?)null);
 
-        var sut = BuildSut(service, currentUser, clock);
+        var sut = BuildSut(repo, currentUser, clock);
 
         var act = async () => await sut.Handle(
             new RejectCountryResourceRequestCommand(entity.Id, "غير", "Insufficient."),
@@ -49,35 +49,34 @@ public class RejectCountryResourceRequestCommandHandlerTests
     }
 
     [Fact]
-    public async Task Rejects_request_and_returns_dto_when_valid()
+    public async Task Rejects_request_and_returns_ok_response()
     {
         var clock = new FakeSystemClock();
-        var adminId = System.Guid.NewGuid();
         var entity = BuildPendingRequest(clock);
 
-        var service = Substitute.For<ICountryResourceRequestService>();
-        service.FindIncludingDeletedAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
+        var repo = Substitute.For<IRepository<CountryContentRequest, System.Guid>>();
+        repo.GetByIdAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
             .Returns(entity);
 
-        var sut = BuildSut(service, BuildCurrentUser(adminId), clock);
+        var db = Substitute.For<ICceDbContext>();
+        var sut = BuildSut(repo, BuildCurrentUser(), clock, db);
 
-        var dto = await sut.Handle(
+        var response = await sut.Handle(
             new RejectCountryResourceRequestCommand(entity.Id, "غير مؤهل", "Insufficient evidence."),
             CancellationToken.None);
 
-        entity.Status.Should().Be(CountryResourceRequestStatus.Rejected);
-        dto.Status.Should().Be(CountryResourceRequestStatus.Rejected);
-        dto.AdminNotesAr.Should().Be("غير مؤهل");
-        dto.AdminNotesEn.Should().Be("Insufficient evidence.");
-        await service.Received(1).UpdateAsync(entity, Arg.Any<CancellationToken>());
+        response.Success.Should().BeTrue();
+        response.Data!.Status.Should().Be(CountryContentRequestStatus.Rejected);
+        response.Data.Type.Should().Be(ContentType.Resource);
+        response.Data.AdminNotesAr.Should().Be("غير مؤهل");
+        await db.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
-    private static CountryResourceRequest BuildPendingRequest(FakeSystemClock clock) =>
-        CountryResourceRequest.Submit(
+    private static CountryContentRequest BuildPendingRequest(FakeSystemClock clock) =>
+        CountryContentRequest.SubmitResource(
             System.Guid.NewGuid(), System.Guid.NewGuid(),
-            "عنوان", "Title",
-            "وصف", "Description",
-            ResourceType.Pdf, System.Guid.NewGuid(), clock);
+            "عنوان", "Title", "وصف", "Description",
+            ResourceType.Paper, System.Guid.NewGuid(), clock);
 
     private static ICurrentUserAccessor BuildCurrentUser(System.Guid? userId = null)
     {
@@ -87,8 +86,13 @@ public class RejectCountryResourceRequestCommandHandlerTests
     }
 
     private static RejectCountryResourceRequestCommandHandler BuildSut(
-        ICountryResourceRequestService service,
+        IRepository<CountryContentRequest, System.Guid> repo,
         ICurrentUserAccessor currentUser,
-        FakeSystemClock? clock = null) =>
-        new(service, currentUser, clock ?? new FakeSystemClock());
+        FakeSystemClock? clock = null,
+        ICceDbContext? db = null) =>
+        new(repo,
+            db ?? Substitute.For<ICceDbContext>(),
+            currentUser,
+            clock ?? new FakeSystemClock(),
+            NotificationTestMessages.Create());
 }

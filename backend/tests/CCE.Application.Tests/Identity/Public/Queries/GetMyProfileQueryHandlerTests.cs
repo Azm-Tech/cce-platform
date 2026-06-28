@@ -1,6 +1,8 @@
-using CCE.Application.Identity.Public;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Identity.Public.Queries.GetMyProfile;
+using CCE.Application.Messages;
 using CCE.Domain.Identity;
+using static CCE.Application.Tests.Identity.IdentityTestHelpers;
 
 namespace CCE.Application.Tests.Identity.Public.Queries;
 
@@ -9,14 +11,14 @@ public class GetMyProfileQueryHandlerTests
     [Fact]
     public async Task Returns_null_when_user_not_found()
     {
-        var service = Substitute.For<IUserProfileService>();
-        service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>())
-            .Returns((User?)null);
-        var sut = new GetMyProfileQueryHandler(service);
+        var db = Substitute.For<ICceDbContext>();
+        db.Users.Returns(System.Array.Empty<User>().AsQueryable());
+        var sut = new GetMyProfileQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR001);
     }
 
     [Fact]
@@ -30,18 +32,18 @@ public class GetMyProfileQueryHandlerTests
             UserName = "alice",
         };
 
-        var service = Substitute.For<IUserProfileService>();
-        service.FindAsync(userId, Arg.Any<CancellationToken>()).Returns(user);
-        var sut = new GetMyProfileQueryHandler(service);
+        var db = Substitute.For<ICceDbContext>();
+        db.Users.Returns(new[] { user }.AsQueryable());
+        var sut = new GetMyProfileQueryHandler(db, BuildMsg());
 
         var result = await sut.Handle(new GetMyProfileQuery(userId), CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Id.Should().Be(userId);
-        result.Email.Should().Be("alice@cce.local");
-        result.UserName.Should().Be("alice");
-        result.LocalePreference.Should().Be("ar");
-        result.KnowledgeLevel.Should().Be(KnowledgeLevel.Beginner);
-        result.Interests.Should().BeEmpty();
+        result.Data!.Id.Should().Be(userId);
+        result.Data.Email.Should().Be("alice@cce.local");
+        result.Data.UserName.Should().Be("alice");
+        result.Data.LocalePreference.Should().Be("ar");
+        result.Data.KnowledgeLevel.Should().Be(KnowledgeLevel.Beginner);
+        result.Data.Interests.Should().BeEmpty();
     }
 }

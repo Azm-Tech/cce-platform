@@ -1,3 +1,6 @@
+using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Requests;
+using CCE.Application.Common;
 using CCE.Application.Country.Commands.UpsertCountryProfile;
 using CCE.Application.Country.Queries.GetCountryProfile;
 using CCE.Domain;
@@ -17,8 +20,8 @@ public static class CountryProfileEndpoints
         group.MapGet("", async (
             System.Guid countryId, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetCountryProfileQuery(countryId), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetCountryProfileQuery(countryId), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("GetCountryProfile");
@@ -28,16 +31,14 @@ public static class CountryProfileEndpoints
             UpsertCountryProfileRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var rowVersion = string.IsNullOrEmpty(body.RowVersion)
-                ? System.Array.Empty<byte>()
-                : System.Convert.FromBase64String(body.RowVersion);
             var cmd = new UpsertCountryProfileCommand(
-                countryId, body.DescriptionAr, body.DescriptionEn,
+                countryId,
+                body.DescriptionAr, body.DescriptionEn,
                 body.KeyInitiativesAr, body.KeyInitiativesEn,
                 body.ContactInfoAr, body.ContactInfoEn,
-                rowVersion);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+                body.Population, body.AreaSqKm, body.GdpPerCapita, body.NdcAssetId);
+            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Country_Profile_Update)
         .WithName("UpsertCountryProfile");
@@ -45,12 +46,3 @@ public static class CountryProfileEndpoints
         return app;
     }
 }
-
-public sealed record UpsertCountryProfileRequest(
-    string DescriptionAr,
-    string DescriptionEn,
-    string KeyInitiativesAr,
-    string KeyInitiativesEn,
-    string? ContactInfoAr,
-    string? ContactInfoEn,
-    string RowVersion);

@@ -1,21 +1,29 @@
-using CCE.Application.Notifications.Dtos;
-using CCE.Application.Notifications.Queries.ListNotificationTemplates;
+﻿using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
 using CCE.Domain.Notifications;
 using MediatR;
 
 namespace CCE.Application.Notifications.Commands.CreateNotificationTemplate;
 
 public sealed class CreateNotificationTemplateCommandHandler
-    : IRequestHandler<CreateNotificationTemplateCommand, NotificationTemplateDto>
+    : IRequestHandler<CreateNotificationTemplateCommand, Response<System.Guid>>
 {
-    private readonly INotificationTemplateService _service;
+    private readonly INotificationTemplateRepository _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public CreateNotificationTemplateCommandHandler(INotificationTemplateService service)
+    public CreateNotificationTemplateCommandHandler(
+        INotificationTemplateRepository repo,
+        ICceDbContext db,
+        MessageFactory msg)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _msg = msg;
     }
 
-    public async Task<NotificationTemplateDto> Handle(
+    public async Task<Response<System.Guid>> Handle(
         CreateNotificationTemplateCommand request,
         CancellationToken cancellationToken)
     {
@@ -28,8 +36,9 @@ public sealed class CreateNotificationTemplateCommandHandler
             request.Channel,
             request.VariableSchemaJson);
 
-        await _service.SaveAsync(template, cancellationToken).ConfigureAwait(false);
+        await _repo.AddAsync(template, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return ListNotificationTemplatesQueryHandler.MapToDto(template);
+        return _msg.Ok(template.Id, MessageKeys.Notifications.NOTIFICATION_TEMPLATE_CREATED);
     }
 }

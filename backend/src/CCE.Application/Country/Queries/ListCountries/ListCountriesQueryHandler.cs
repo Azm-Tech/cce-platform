@@ -1,48 +1,96 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Country.Dtos;
+using CCE.Application.Messages;
+
+using CCE.Domain.Common;
+using CCE.Domain.Country;
 using MediatR;
 
 namespace CCE.Application.Country.Queries.ListCountries;
 
 public sealed class ListCountriesQueryHandler
-    : IRequestHandler<ListCountriesQuery, PagedResult<CountryDto>>
+    : IRequestHandler<ListCountriesQuery, Response<PagedResult<CountryDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public ListCountriesQueryHandler(ICceDbContext db)
+    public ListCountriesQueryHandler(ICceDbContext db, MessageFactory messages)
     {
         _db = db;
+        _messages = messages;
     }
 
-    public async Task<PagedResult<CountryDto>> Handle(
+    public async Task<Response<PagedResult<CountryDto>>> Handle(
         ListCountriesQuery request,
         CancellationToken cancellationToken)
     {
-        IQueryable<CCE.Domain.Country.Country> query = _db.Countries;
+        var baseQuery = _db.Countries
+            .WhereIf(request.IsActive.HasValue, c => c.IsActive == request.IsActive!.Value)
+            .WhereIf(request.IsCceCountry.HasValue, c => c.IsCceCountry == request.IsCceCountry!.Value)
+            .WhereIf(!string.IsNullOrWhiteSpace(request.Search), c =>
+                c.NameAr.Contains(request.Search!) ||
+                c.NameEn.Contains(request.Search!) ||
+                (c.IsoAlpha3 != null && c.IsoAlpha3.Contains(request.Search!)) ||
+                (c.IsoAlpha2 != null && c.IsoAlpha2.Contains(request.Search!)) ||
+                (c.DialCode != null && c.DialCode.Contains(request.Search!)));
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
+        // KAPSARC join and score-based sorting only apply to CCE countries.
+        if (request.IsCceCountry == true)
         {
-            var term = request.Search.Trim();
-            query = query.Where(c =>
-                c.NameAr.Contains(term) ||
-                c.NameEn.Contains(term) ||
-                c.IsoAlpha3.Contains(term) ||
-                c.IsoAlpha2.Contains(term));
+            var cceQuery = from c in baseQuery
+                           join s in _db.CountryKapsarcSnapshots
+                               on c.LatestKapsarcSnapshotId equals s.Id into snapshotGroup
+                           from s in snapshotGroup.DefaultIfEmpty()
+                           select new { c, s };
+
+            cceQuery = request.SortBy switch
+            {
+                PublicCountrySortBy.PerformanceScore => request.SortOrder == SortOrder.Ascending
+                    ? cceQuery.OrderBy(x => x.s.PerformanceScore)
+                    : cceQuery.OrderByDescending(x => x.s.PerformanceScore),
+                PublicCountrySortBy.TotalIndex => request.SortOrder == SortOrder.Ascending
+                    ? cceQuery.OrderBy(x => x.s.TotalIndex)
+                    : cceQuery.OrderByDescending(x => x.s.TotalIndex),
+                _ => request.SortOrder == SortOrder.Ascending
+                    ? cceQuery.OrderBy(x => x.c.NameEn)
+                    : cceQuery.OrderByDescending(x => x.c.NameEn),
+            };
+
+            var ccePage = await cceQuery
+                .ToPagedResultAsync(
+                    x => new CountryDto(
+                        x.c.Id, x.c.IsoAlpha3, x.c.IsoAlpha2,
+                        x.c.NameAr, x.c.NameEn, x.c.RegionAr, x.c.RegionEn, x.c.FlagUrl,
+                        x.c.IsActive,
+                        x.c.DialCode, x.c.IsCceCountry,
+                        x.s != null ? x.s.Classification : null,
+                        x.s != null ? (decimal?)x.s.PerformanceScore : null,
+                        x.s != null ? (decimal?)x.s.TotalIndex : null),
+                    request.Page, request.PageSize, cancellationToken)
+                .ConfigureAwait(false);
+
+            return _messages.Ok(ccePage, MessageKeys.General.SUCCESS_OPERATION);
         }
 
-        if (request.IsActive is { } isActive)
-        {
-            query = query.Where(c => c.IsActive == isActive);
-        }
+        // Simple flat list — no KAPSARC join needed.
+        var sorted = request.SortOrder == SortOrder.Ascending
+            ? baseQuery.OrderBy(c => c.NameEn)
+            : baseQuery.OrderByDescending(c => c.NameEn);
 
-        query = query.OrderBy(c => c.NameEn);
-
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
+        var page = await sorted
+            .ToPagedResultAsync(
+                c => new CountryDto(
+                    c.Id, c.IsoAlpha3, c.IsoAlpha2,
+                    c.NameAr, c.NameEn, c.RegionAr, c.RegionEn, c.FlagUrl,
+                    c.IsActive,
+                    c.DialCode, c.IsCceCountry,
+                    null, null, null),
+                request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<CountryDto>(items, page.Page, page.PageSize, page.Total);
+        return _messages.Ok(page, MessageKeys.General.SUCCESS_OPERATION);
     }
 
     internal static CountryDto MapToDto(CCE.Domain.Country.Country c) => new(
@@ -54,5 +102,10 @@ public sealed class ListCountriesQueryHandler
         c.RegionAr,
         c.RegionEn,
         c.FlagUrl,
-        c.IsActive);
+        c.IsActive,
+        c.DialCode,
+        c.IsCceCountry,
+        null,
+        null,
+        null);
 }

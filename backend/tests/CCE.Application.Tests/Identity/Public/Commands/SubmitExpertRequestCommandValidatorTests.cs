@@ -8,7 +8,8 @@ public class SubmitExpertRequestCommandValidatorTests
         System.Guid.NewGuid(),
         "سيرة ذاتية",
         "English bio",
-        new[] { "Hydrogen" });
+        new[] { "Hydrogen" },
+        System.Guid.NewGuid());
 
     [Fact]
     public void Valid_command_passes()

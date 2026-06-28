@@ -1,22 +1,26 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Queries.ListTopics;
 
 public sealed class ListTopicsQueryHandler
-    : IRequestHandler<ListTopicsQuery, PagedResult<TopicDto>>
+    : IRequestHandler<ListTopicsQuery, Response<PagedResult<TopicDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public ListTopicsQueryHandler(ICceDbContext db)
+    public ListTopicsQueryHandler(ICceDbContext db, MessageFactory messages)
     {
         _db = db;
+        _messages = messages;
     }
 
-    public async Task<PagedResult<TopicDto>> Handle(
+    public async Task<Response<PagedResult<TopicDto>>> Handle(
         ListTopicsQuery request,
         CancellationToken cancellationToken)
     {
@@ -46,8 +50,7 @@ public sealed class ListTopicsQueryHandler
         var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<TopicDto>(items, page.Page, page.PageSize, page.Total);
+        return _messages.Ok(page.Map(MapToDto), MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static TopicDto MapToDto(Topic t) => new(

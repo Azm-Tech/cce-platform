@@ -1,5 +1,7 @@
-using CCE.Application.Content;
+using CCE.Application.Common.Interfaces;
 using CCE.Application.Content.Queries.GetAssetById;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
 
@@ -7,44 +9,51 @@ namespace CCE.Application.Tests.Content.Queries;
 
 public class GetAssetByIdQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
-    public async Task Returns_null_when_asset_not_found()
+    public async Task Returns_not_found_when_asset_missing()
     {
-        var service = Substitute.For<IAssetService>();
-        service.FindAsync(Arg.Any<System.Guid>(), Arg.Any<CancellationToken>()).Returns((AssetFile?)null);
-        var sut = new GetAssetByIdQueryHandler(service);
+        var sut = BuildSut(Array.Empty<AssetFile>());
 
         var result = await sut.Handle(new GetAssetByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Code.Should().Be(SystemCode.ERR045);
     }
 
     [Fact]
     public async Task Returns_dto_when_asset_found()
     {
-        var clock = new FakeSystemClock();
         var asset = AssetFile.Register(
-            url: "uploads/2026/04/abc.pdf",
-            originalFileName: "report.pdf",
-            sizeBytes: 1024,
-            mimeType: "application/pdf",
-            uploadedById: System.Guid.NewGuid(),
-            clock: clock);
-        asset.MarkClean(clock);
+            "uploads/2026/04/abc.pdf",
+            "report.pdf",
+            1024,
+            "application/pdf",
+            System.Guid.NewGuid(),
+            Clock);
+        asset.MarkClean(Clock);
 
-        var service = Substitute.For<IAssetService>();
-        service.FindAsync(asset.Id, Arg.Any<CancellationToken>()).Returns(asset);
-        var sut = new GetAssetByIdQueryHandler(service);
+        var sut = BuildSut([asset]);
 
         var result = await sut.Handle(new GetAssetByIdQuery(asset.Id), CancellationToken.None);
 
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(asset.Id);
-        result.Url.Should().Be("uploads/2026/04/abc.pdf");
-        result.OriginalFileName.Should().Be("report.pdf");
-        result.SizeBytes.Should().Be(1024);
-        result.MimeType.Should().Be("application/pdf");
-        result.VirusScanStatus.Should().Be(VirusScanStatus.Clean);
-        result.ScannedOn.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data!.Id.Should().Be(asset.Id);
+        result.Data.Url.Should().Be("uploads/2026/04/abc.pdf");
+        result.Data.OriginalFileName.Should().Be("report.pdf");
+        result.Data.SizeBytes.Should().Be(1024);
+        result.Data.MimeType.Should().Be("application/pdf");
+        result.Data.VirusScanStatus.Should().Be(VirusScanStatus.Clean);
+        result.Data.ScannedOn.Should().NotBeNull();
+    }
+
+    private static GetAssetByIdQueryHandler BuildSut(IEnumerable<AssetFile> assets)
+    {
+        var db = Substitute.For<ICceDbContext>();
+        db.AssetFiles.Returns(assets.AsQueryable());
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new GetAssetByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }

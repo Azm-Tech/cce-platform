@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using CCE.Domain.Content;
 using MediatR;
@@ -10,4 +11,4 @@ public sealed record CreatePageCommand(
     string TitleAr,
     string TitleEn,
     string ContentAr,
-    string ContentEn) : IRequest<PageDto>;
+    string ContentEn) : IRequest<Response<PageDto>>;

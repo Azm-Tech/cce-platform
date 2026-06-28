@@ -10,4 +10,4 @@ public sealed record CityScenarioDto(
     int TargetYear,
     string ConfigurationJson,
     System.DateTimeOffset CreatedOn,
-    System.DateTimeOffset LastModifiedOn);
+    System.DateTimeOffset? LastModifiedOn);

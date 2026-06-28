@@ -1,18 +1,33 @@
+﻿using CCE.Application.Common;
+using CCE.Application.Messages;
+using CCE.Application.Notifications.Public;
+using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Notifications.Public.Commands.MarkAllNotificationsRead;
 
-public sealed class MarkAllNotificationsReadCommandHandler : IRequestHandler<MarkAllNotificationsReadCommand, int>
+public sealed class MarkAllNotificationsReadCommandHandler : IRequestHandler<MarkAllNotificationsReadCommand, Response<int>>
 {
-    private readonly IUserNotificationService _service;
+    private readonly IUserNotificationRepository _repo;
+    private readonly MessageFactory _msg;
+    private readonly ISystemClock _clock;
 
-    public MarkAllNotificationsReadCommandHandler(IUserNotificationService service)
+    public MarkAllNotificationsReadCommandHandler(
+        IUserNotificationRepository repo,
+        MessageFactory msg,
+        ISystemClock clock)
     {
-        _service = service;
+        _repo = repo;
+        _msg = msg;
+        _clock = clock;
     }
 
-    public async Task<int> Handle(MarkAllNotificationsReadCommand request, CancellationToken cancellationToken)
+    public async Task<Response<int>> Handle(MarkAllNotificationsReadCommand request, CancellationToken cancellationToken)
     {
-        return await _service.MarkAllSentAsReadAsync(request.UserId, cancellationToken).ConfigureAwait(false);
+        var count = await _repo.MarkAllSentAsReadAsync(
+            request.UserId,
+            _clock,
+            cancellationToken).ConfigureAwait(false);
+        return _msg.Ok(count, MessageKeys.Notifications.NOTIFICATIONS_MARKED_READ);
     }
 }

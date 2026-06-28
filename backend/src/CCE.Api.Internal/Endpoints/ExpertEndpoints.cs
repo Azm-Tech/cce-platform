@@ -1,5 +1,7 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.Identity.Commands.ApproveExpertRequest;
 using CCE.Application.Identity.Commands.RejectExpertRequest;
+using CCE.Application.Identity.Queries.GetExpertRequestById;
 using CCE.Application.Identity.Queries.ListExpertProfiles;
 using CCE.Application.Identity.Queries.ListExpertRequests;
 using CCE.Domain;
@@ -27,10 +29,20 @@ public static class ExpertEndpoints
                 Status: status,
                 RequestedById: requestedById);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertRequests");
+
+        requests.MapGet("/{id:guid}", async (
+            System.Guid id,
+            IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(new GetExpertRequestByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
+        .WithName("GetExpertRequestById");
 
         requests.MapPost("/{id:guid}/approve", async (
             System.Guid id,
@@ -38,8 +50,8 @@ public static class ExpertEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new ApproveExpertRequestCommand(id, body.AcademicTitleAr, body.AcademicTitleEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ApproveExpertRequest");
@@ -50,8 +62,8 @@ public static class ExpertEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new RejectExpertRequestCommand(id, body.RejectionReasonAr, body.RejectionReasonEn);
-            var dto = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(dto);
+            var result = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("RejectExpertRequest");
@@ -67,7 +79,7 @@ public static class ExpertEndpoints
                 PageSize: pageSize ?? 20,
                 Search: search);
             var result = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Expert_ApproveRequest)
         .WithName("ListExpertProfiles");
@@ -76,5 +88,4 @@ public static class ExpertEndpoints
     }
 }
 
-public sealed record ApproveExpertRequestRequest(string AcademicTitleAr, string AcademicTitleEn);
-public sealed record RejectExpertRequestRequest(string RejectionReasonAr, string RejectionReasonEn);
+

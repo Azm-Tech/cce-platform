@@ -4,5 +4,6 @@ namespace CCE.Domain.Content.Events;
 
 public sealed record NewsPublishedEvent(
     System.Guid NewsId,
-    string Slug,
+    System.Guid TopicId,
+    System.Guid AuthorId,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

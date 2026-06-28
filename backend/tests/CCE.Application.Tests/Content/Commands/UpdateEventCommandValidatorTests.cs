@@ -9,7 +9,7 @@ public class UpdateEventCommandValidatorTests
         "حدث", "Event",
         "وصف", "Description",
         null, null, null, null,
-        new byte[8]);
+        System.Guid.NewGuid());
 
     [Fact]
     public void Valid_command_passes()
@@ -33,15 +33,4 @@ public class UpdateEventCommandValidatorTests
         result.Errors.Should().Contain(e => e.PropertyName == nameof(UpdateEventCommand.Id));
     }
 
-    [Fact]
-    public void RowVersion_wrong_length_is_rejected()
-    {
-        var sut = new UpdateEventCommandValidator();
-        var cmd = ValidCmd() with { RowVersion = new byte[4] };
-
-        var result = sut.Validate(cmd);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(UpdateEventCommand.RowVersion));
-    }
 }

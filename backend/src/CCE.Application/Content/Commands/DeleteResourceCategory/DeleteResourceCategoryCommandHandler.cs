@@ -1,26 +1,36 @@
+﻿using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Messages;
+using CCE.Domain.Content;
 using MediatR;
 
 namespace CCE.Application.Content.Commands.DeleteResourceCategory;
 
-public sealed class DeleteResourceCategoryCommandHandler : IRequestHandler<DeleteResourceCategoryCommand, Unit>
+public sealed class DeleteResourceCategoryCommandHandler : IRequestHandler<DeleteResourceCategoryCommand, Response<VoidData>>
 {
-    private readonly IResourceCategoryService _service;
+    private readonly IRepository<ResourceCategory, System.Guid> _repo;
+    private readonly ICceDbContext _db;
+    private readonly MessageFactory _messages;
 
-    public DeleteResourceCategoryCommandHandler(IResourceCategoryService service)
+    public DeleteResourceCategoryCommandHandler(
+        IRepository<ResourceCategory, System.Guid> repo,
+        ICceDbContext db,
+        MessageFactory messages)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _messages = messages;
     }
 
-    public async Task<Unit> Handle(DeleteResourceCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(DeleteResourceCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var category = await _repo.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (category is null)
-        {
-            throw new System.Collections.Generic.KeyNotFoundException($"ResourceCategory {request.Id} not found.");
-        }
+            return _messages.NotFound<VoidData>(MessageKeys.Content.CATEGORY_NOT_FOUND);
 
         category.Deactivate();
-        await _service.UpdateAsync(category, cancellationToken).ConfigureAwait(false);
-        return Unit.Value;
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return _messages.Ok(MessageKeys.Content.CONTENT_DELETED);
     }
 }

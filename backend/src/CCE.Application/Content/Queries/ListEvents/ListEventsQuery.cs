@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Content.Dtos;
 using MediatR;
@@ -9,4 +10,6 @@ public sealed record ListEventsQuery(
     int PageSize = 20,
     string? Search = null,
     System.DateTimeOffset? FromDate = null,
-    System.DateTimeOffset? ToDate = null) : IRequest<PagedResult<EventDto>>;
+    System.DateTimeOffset? ToDate = null,
+    System.Guid? TopicId = null,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null) : IRequest<Response<PagedResult<EventDto>>>;

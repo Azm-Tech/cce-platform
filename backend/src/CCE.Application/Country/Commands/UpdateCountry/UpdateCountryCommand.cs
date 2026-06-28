@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Country.Dtos;
 using MediatR;
 
@@ -9,4 +10,4 @@ public sealed record UpdateCountryCommand(
     string NameEn,
     string RegionAr,
     string RegionEn,
-    bool IsActive) : IRequest<CountryDto?>;
+    bool IsActive) : IRequest<Response<CountryDto>>;

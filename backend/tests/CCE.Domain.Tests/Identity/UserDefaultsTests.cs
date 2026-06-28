@@ -22,7 +22,7 @@ public class UserDefaultsTests
     public void New_user_defaults_Interests_to_empty_list()
     {
         var user = new User();
-        user.Interests.Should().BeEmpty();
+        user.UserInterestTopics.Should().BeEmpty();
     }
 
     [Fact]
@@ -44,6 +44,6 @@ public class UserDefaultsTests
     {
         var baseType = typeof(User).BaseType!;
         baseType.Name.Should().Be("IdentityUser`1");
-        baseType.GetGenericArguments()[0].Should().Be(typeof(System.Guid));
+        baseType.GetGenericArguments()[0].Should().Be<System.Guid>();
     }
 }

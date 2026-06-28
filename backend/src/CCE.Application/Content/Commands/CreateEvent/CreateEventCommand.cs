@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -11,4 +12,8 @@ public sealed record CreateEventCommand(
     string? LocationAr,
     string? LocationEn,
     string? OnlineMeetingUrl,
-    string? FeaturedImageUrl) : IRequest<EventDto>;
+    string? FeaturedImageUrl,
+    System.Guid TopicId,
+    System.Collections.Generic.IReadOnlyList<System.Guid>? TagIds = null,
+    System.Guid? KnowledgeLevelId = null,
+    System.Guid? JobSectorId = null) : IRequest<Response<EventDto>>;

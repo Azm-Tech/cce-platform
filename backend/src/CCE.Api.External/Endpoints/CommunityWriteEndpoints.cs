@@ -1,15 +1,24 @@
+﻿using CCE.Api.Common.Extensions;
+using CCE.Api.Common.Results;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Community.Commands.CastPollVote;
 using CCE.Application.Community.Commands.CreatePost;
 using CCE.Application.Community.Commands.CreateReply;
+using CCE.Application.Community.Commands;
+using CCE.Application.Community.Commands.DeleteDraft;
+using CCE.Application.Community.Commands.JoinCommunity;
+using CCE.Application.Community.Commands.LeaveCommunity;
 using CCE.Application.Community.Commands.EditReply;
-using CCE.Application.Community.Commands.FollowPost;
-using CCE.Application.Community.Commands.FollowTopic;
-using CCE.Application.Community.Commands.FollowUser;
 using CCE.Application.Community.Commands.MarkPostAnswered;
-using CCE.Application.Community.Commands.RatePost;
-using CCE.Application.Community.Commands.UnfollowPost;
-using CCE.Application.Community.Commands.UnfollowTopic;
-using CCE.Application.Community.Commands.UnfollowUser;
+using CCE.Application.Community.Commands.PublishPost;
+using CCE.Application.Community.Commands.SetCommunityFollow;
+using CCE.Application.Community.Commands.SetPostFollow;
+using CCE.Application.Community.Commands.SetTopicFollow;
+using CCE.Application.Community.Commands.SetUserFollow;
+using CCE.Application.Community.Commands.UpdateDraft;
+using CCE.Application.Community.Commands.VotePost;
+using CCE.Application.Community.Commands.VoteReply;
+using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,52 +34,81 @@ public static class CommunityWriteEndpoints
             .WithTags("Community")
             .RequireAuthorization();
 
-        // POST /api/community/posts
+        // POST /api/community/posts — create (publish or save as draft); logic-free (§A.4)
         community.MapPost("/posts", async (
             CreatePostRequest body,
-            ICurrentUserAccessor currentUser,
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var cmd = new CreatePostCommand(
+                body.CommunityId, body.TopicId, body.Type, body.Title, body.Content, body.Locale,
+                body.TagIds ?? System.Array.Empty<System.Guid>(),
+                body.Attachments ?? System.Array.Empty<PostAttachmentInput>(),
+                body.Poll,
+                body.SaveAsDraft);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Create).WithName("CreatePost");
 
-            var cmd = new CreatePostCommand(body.TopicId, body.Content, body.Locale, body.IsAnswerable);
-            var id = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Created($"/api/community/posts/{id}", new { id });
-        }).WithName("CreatePost");
+        // PUT /api/community/posts/{id}/draft — edit a draft
+        community.MapPut("/posts/{id:guid}/draft", async (
+            System.Guid id, UpdateDraftRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new UpdateDraftCommand(
+                id, body.Title, body.Content, body.TagIds ?? System.Array.Empty<System.Guid>());
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Create).WithName("UpdateDraft");
 
-        // POST /api/community/posts/{id}/replies
+        // POST /api/community/posts/{id}/publish — publish a draft
+        community.MapPost("/posts/{id:guid}/publish", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new PublishPostCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Create).WithName("PublishPost");
+
+        // DELETE /api/community/posts/{id}/draft — discard an unpublished draft
+        community.MapDelete("/posts/{id:guid}/draft", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new DeleteDraftCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Create).WithName("DeleteDraft");
+
+        // POST /api/community/posts/{id}/replies — logic-free (§A.4); supports nesting + mentions
         community.MapPost("/posts/{id:guid}/replies", async (
             System.Guid id,
             CreateReplyRequest body,
-            ICurrentUserAccessor currentUser,
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-
             var cmd = new CreateReplyCommand(id, body.Content, body.Locale, body.ParentReplyId);
-            var replyId = await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Created($"/api/community/posts/{id}/replies/{replyId}", new { id = replyId });
-        }).WithName("CreateReply");
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Reply).WithName("CreateReply");
 
-        // POST /api/community/posts/{id}/rate
-        community.MapPost("/posts/{id:guid}/rate", async (
+        // POST /api/community/posts/{id}/vote — US027 up/down vote (logic-free; §A.4)
+        community.MapPost("/posts/{id:guid}/vote", async (
             System.Guid id,
-            RatePostRequest body,
-            ICurrentUserAccessor currentUser,
+            VotePostRequest body,
             IMediator mediator,
             CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(new VotePostCommand(id, body.Direction), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Vote).WithName("VotePost");
 
-            var cmd = new RatePostCommand(id, body.Stars);
-            await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Ok();
-        }).WithName("RatePost");
+        // POST /api/community/replies/{id}/vote — US027 up/down vote on a reply
+        community.MapPost("/replies/{id:guid}/vote", async (
+            System.Guid id,
+            VoteReplyRequest body,
+            IMediator mediator,
+            CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new VoteReplyCommand(id, body.Direction), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Post_Vote).WithName("VoteReply");
 
         // POST /api/community/posts/{id}/mark-answer
         community.MapPost("/posts/{id:guid}/mark-answer", async (
@@ -81,11 +119,11 @@ public static class CommunityWriteEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var cmd = new MarkPostAnsweredCommand(id, body.ReplyId);
-            await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Ok();
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         }).WithName("MarkPostAnswered");
 
         // PUT /api/community/replies/{id}
@@ -97,108 +135,80 @@ public static class CommunityWriteEndpoints
             CancellationToken ct) =>
         {
             var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            if (userId == System.Guid.Empty) return EnvelopeResults.Unauthorized();
 
             var cmd = new EditReplyCommand(id, body.Content);
-            await mediator.Send(cmd, ct).ConfigureAwait(false);
-            return Results.Ok();
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         }).WithName("EditReply");
+
+        // POST /api/community/polls/{id}/vote — cast a poll vote
+        community.MapPost("/polls/{id:guid}/vote", async (
+            System.Guid id, CastPollVoteRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new CastPollVoteCommand(id, body.OptionIds ?? System.Array.Empty<System.Guid>());
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Poll_Vote).WithName("CastPollVote");
+
+        // Community membership & follow (logic-free; §A.4)
+        community.MapPost("/communities/{id:guid}/join", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new JoinCommunityCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Join).WithName("JoinCommunity");
+
+        community.MapPost("/communities/{id:guid}/leave", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new LeaveCommunityCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Join).WithName("LeaveCommunity");
+
+        // PUT /api/community/communities/{id}/follow — idempotent follow upsert (logic-free; §A.4)
+        community.MapPut("/communities/{id:guid}/follow", async (
+            System.Guid id, SetFollowRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new SetCommunityFollowCommand(id, body.Status), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Join).WithName("SetCommunityFollow");
 
         // Follows group
         var follows = app.MapGroup("/api/me/follows")
             .WithTags("Community")
             .RequireAuthorization();
 
-        // POST /api/me/follows/topics/{topicId}
-        follows.MapPost("/topics/{topicId:guid}", async (
-            System.Guid topicId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
+        // PUT /api/me/follows/topics/{topicId} — idempotent follow upsert (logic-free; §A.4)
+        follows.MapPut("/topics/{topicId:guid}", async (
+            System.Guid topicId, SetFollowRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(new SetTopicFollowCommand(topicId, body.Status), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("SetTopicFollow");
 
-            await mediator.Send(new FollowTopicCommand(topicId), ct).ConfigureAwait(false);
-            return Results.Ok();
-        }).WithName("FollowTopic");
-
-        // DELETE /api/me/follows/topics/{topicId}
-        follows.MapDelete("/topics/{topicId:guid}", async (
-            System.Guid topicId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
+        // PUT /api/me/follows/users/{userId} — idempotent follow upsert (logic-free; §A.4)
+        follows.MapPut("/users/{userId:guid}", async (
+            System.Guid userId, SetFollowRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
+            var result = await mediator.Send(new SetUserFollowCommand(userId, body.Status), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("SetUserFollow");
 
-            await mediator.Send(new UnfollowTopicCommand(topicId), ct).ConfigureAwait(false);
-            return Results.NoContent();
-        }).WithName("UnfollowTopic");
-
-        // POST /api/me/follows/users/{userId}
-        follows.MapPost("/users/{userId:guid}", async (
-            System.Guid userId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
+        // PUT /api/me/follows/posts/{postId} — idempotent follow upsert (logic-free; §A.4)
+        follows.MapPut("/posts/{postId:guid}", async (
+            System.Guid postId, SetFollowRequest body, IMediator mediator, CancellationToken ct) =>
         {
-            var actorId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (actorId == System.Guid.Empty) return Results.Unauthorized();
-
-            await mediator.Send(new FollowUserCommand(userId), ct).ConfigureAwait(false);
-            return Results.Ok();
-        }).WithName("FollowUser");
-
-        // DELETE /api/me/follows/users/{userId}
-        follows.MapDelete("/users/{userId:guid}", async (
-            System.Guid userId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
-        {
-            var actorId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (actorId == System.Guid.Empty) return Results.Unauthorized();
-
-            await mediator.Send(new UnfollowUserCommand(userId), ct).ConfigureAwait(false);
-            return Results.NoContent();
-        }).WithName("UnfollowUser");
-
-        // POST /api/me/follows/posts/{postId}
-        follows.MapPost("/posts/{postId:guid}", async (
-            System.Guid postId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
-        {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-
-            await mediator.Send(new FollowPostCommand(postId), ct).ConfigureAwait(false);
-            return Results.Ok();
-        }).WithName("FollowPost");
-
-        // DELETE /api/me/follows/posts/{postId}
-        follows.MapDelete("/posts/{postId:guid}", async (
-            System.Guid postId,
-            ICurrentUserAccessor currentUser,
-            IMediator mediator,
-            CancellationToken ct) =>
-        {
-            var userId = currentUser.GetUserId() ?? System.Guid.Empty;
-            if (userId == System.Guid.Empty) return Results.Unauthorized();
-
-            await mediator.Send(new UnfollowPostCommand(postId), ct).ConfigureAwait(false);
-            return Results.NoContent();
-        }).WithName("UnfollowPost");
+            var result = await mediator.Send(new SetPostFollowCommand(postId, body.Status), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("SetPostFollow");
 
         return app;
     }
 }
 
-public sealed record CreatePostRequest(Guid TopicId, string Content, string Locale, bool IsAnswerable);
-public sealed record CreateReplyRequest(string Content, string Locale, Guid? ParentReplyId);
-public sealed record RatePostRequest(int Stars);
 public sealed record MarkAnswerRequest(Guid ReplyId);
 public sealed record EditReplyRequest(string Content);
+
+/// <summary>Body for follow upsert (PUT) endpoints: desired follow state.</summary>
+public sealed record SetFollowRequest(FollowStatus Status);

@@ -8,7 +8,7 @@ public class AuditedCoverageTests
     [Theory]
     [InlineData(typeof(CCE.Domain.Country.Country))]
     [InlineData(typeof(CountryProfile))]
-    [InlineData(typeof(CountryResourceRequest))]
+    [InlineData(typeof(CountryContentRequest))]
     public void Country_aggregate_or_profile_carries_AuditedAttribute(System.Type type)
     {
         var attrs = type.GetCustomAttributes(typeof(AuditedAttribute), inherit: false);

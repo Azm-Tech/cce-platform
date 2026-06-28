@@ -1,3 +1,5 @@
+using CCE.Application.Content.Dtos;
+
 namespace CCE.Application.Content.Public.Dtos;
 
 public sealed record PublicEventDto(
@@ -12,4 +14,10 @@ public sealed record PublicEventDto(
     string? LocationEn,
     string? OnlineMeetingUrl,
     string? FeaturedImageUrl,
-    string ICalUid);
+    string ICalUid,
+    System.Guid TopicId,
+    string TopicNameAr,
+    string TopicNameEn,
+    System.Collections.Generic.IReadOnlyList<TagDto> Tags,
+    System.Guid? KnowledgeLevelId,
+    System.Guid? JobSectorId);

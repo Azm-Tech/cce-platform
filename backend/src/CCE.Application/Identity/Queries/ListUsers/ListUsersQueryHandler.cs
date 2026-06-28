@@ -1,22 +1,28 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace CCE.Application.Identity.Queries.ListUsers;
 
-public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, PagedResult<UserListItemDto>>
+public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Response<PagedResult<UserListItemDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListUsersQueryHandler(ICceDbContext db)
+    public ListUsersQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<UserListItemDto>> Handle(ListUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Response<PagedResult<UserListItemDto>>> Handle(
+     ListUsersQuery request, CancellationToken cancellationToken)
     {
-        var query = _db.Users.AsQueryable();
+        var query = _db.Users.Where(u => !u.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -28,45 +34,32 @@ public sealed class ListUsersQueryHandler : IRequestHandler<ListUsersQuery, Page
 
         if (!string.IsNullOrWhiteSpace(request.Role))
         {
-            var roleName = request.Role.Trim();
-            query = from u in query
-                    join ur in _db.UserRoles on u.Id equals ur.UserId
-                    join r in _db.Roles on ur.RoleId equals r.Id
-                    where r.Name == roleName
-                    select u;
+            var role = request.Role.Trim();
+            // Distinct prevents duplicates when a user has the role assigned more than once
+            query = query
+                .Where(u => _db.UserRoles
+                    .Join(_db.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
+                    .Any(x => x.UserId == u.Id && x.Name == role));
         }
 
         query = query.OrderBy(u => u.UserName);
 
-        var page = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
-
-        if (page.Items.Count == 0)
-        {
-            return new PagedResult<UserListItemDto>(System.Array.Empty<UserListItemDto>(), page.Page, page.PageSize, page.Total);
-        }
-
-        var userIds = page.Items.Select(u => u.Id).ToList();
-        var pairs =
-            from ur in _db.UserRoles
-            join r in _db.Roles on ur.RoleId equals r.Id
-            where userIds.Contains(ur.UserId) && r.Name != null
-            select new RoleAssignmentRow(ur.UserId, r.Name!);
-        var pairsList = await pairs.ToListAsyncEither(cancellationToken).ConfigureAwait(false);
-
-        var rolesByUser = pairsList
-            .GroupBy(p => p.UserId)
-            .ToDictionary(g => g.Key, g => (IReadOnlyList<string>)g.Select(p => p.RoleName).ToList());
-
-        var now = System.DateTimeOffset.UtcNow;
-        var items = page.Items.Select(u => new UserListItemDto(
+        // Single projection — roles are fetched in the same query, no second round-trip
+        var projected = query.Select(u => new UserListItemDto(
             u.Id,
             u.Email,
             u.UserName,
-            rolesByUser.TryGetValue(u.Id, out var roles) ? roles : System.Array.Empty<string>(),
-            !u.LockoutEnabled || u.LockoutEnd is null || u.LockoutEnd < now)).ToList();
+            _db.UserRoles
+                .Join(_db.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
+                .Where(x => x.UserId == u.Id && x.Name != null)
+                .Select(x => x.Name!)
+                .ToList(),
+            u.Status == Domain.Identity.UserStatus.Active));
 
-        return new PagedResult<UserListItemDto>(items, page.Page, page.PageSize, page.Total);
+        var paged = await projected
+            .ToPagedResultAsync(request.Page, request.PageSize, cancellationToken)
+            .ConfigureAwait(false);
+
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
-
-    private sealed record RoleAssignmentRow(System.Guid UserId, string RoleName);
 }

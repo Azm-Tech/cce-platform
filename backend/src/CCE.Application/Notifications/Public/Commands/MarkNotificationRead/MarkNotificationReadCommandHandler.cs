@@ -1,29 +1,50 @@
+﻿using CCE.Application.Common;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Community;
+using CCE.Application.Messages;
+using CCE.Application.Notifications.Public;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Notifications.Public.Commands.MarkNotificationRead;
 
-public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNotificationReadCommand, Unit>
+public sealed class MarkNotificationReadCommandHandler : IRequestHandler<MarkNotificationReadCommand, Response<VoidData>>
 {
-    private readonly IUserNotificationService _service;
+    private readonly IUserNotificationRepository _repo;
+    private readonly ICceDbContext _db;
+    private readonly IRedisFeedStore _feedStore;
+    private readonly MessageFactory _msg;
     private readonly ISystemClock _clock;
 
-    public MarkNotificationReadCommandHandler(IUserNotificationService service, ISystemClock clock)
+    public MarkNotificationReadCommandHandler(
+        IUserNotificationRepository repo,
+        ICceDbContext db,
+        IRedisFeedStore feedStore,
+        MessageFactory msg,
+        ISystemClock clock)
     {
-        _service = service;
+        _repo = repo;
+        _db = db;
+        _feedStore = feedStore;
+        _msg = msg;
         _clock = clock;
     }
 
-    public async Task<Unit> Handle(MarkNotificationReadCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(MarkNotificationReadCommand request, CancellationToken cancellationToken)
     {
-        var notif = await _service.FindAsync(request.Id, cancellationToken).ConfigureAwait(false);
+        var notif = await _repo.GetAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
         if (notif is null || notif.UserId != request.UserId)
-            throw new KeyNotFoundException($"Notification {request.Id} not found.");
+            return _msg.NotFound<VoidData>(MessageKeys.Notifications.NOTIFICATION_NOT_FOUND);
 
         notif.MarkRead(_clock);
-        await _service.UpdateAsync(notif, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return Unit.Value;
+        // Decrement the badge counter by 1. RedisFeedStore clamps at 0 so this is safe
+        // even if the counter is already stale or missing.
+        await _feedStore.IncrementNotificationCountAsync(notif.UserId, delta: -1, cancellationToken)
+            .ConfigureAwait(false);
+
+        return _msg.Ok(MessageKeys.Notifications.NOTIFICATION_MARKED_READ);
     }
 }

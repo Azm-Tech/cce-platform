@@ -6,8 +6,8 @@ namespace CCE.Application.Tests.Identity.Public.Commands;
 public class UpdateMyProfileCommandValidatorTests
 {
     private static UpdateMyProfileCommand ValidCommand() => new(
-        System.Guid.NewGuid(), "ar", KnowledgeLevel.Beginner,
-        System.Array.Empty<string>(), null, null);
+        System.Guid.NewGuid(), "First", "Last", "Engineer", "ACME", "ar", KnowledgeLevel.Beginner,
+        System.Array.Empty<string>(), null, null, null);
 
     [Fact]
     public void Valid_command_passes()

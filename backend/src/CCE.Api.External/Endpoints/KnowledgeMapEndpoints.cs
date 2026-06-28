@@ -1,3 +1,4 @@
+using CCE.Api.Common.Extensions;
 using CCE.Application.KnowledgeMaps.Public.Queries.GetKnowledgeMapById;
 using CCE.Application.KnowledgeMaps.Public.Queries.ListKnowledgeMapEdges;
 using CCE.Application.KnowledgeMaps.Public.Queries.ListKnowledgeMapNodes;
@@ -19,7 +20,7 @@ public static class KnowledgeMapEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(new ListKnowledgeMapsQuery(), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListKnowledgeMaps");
@@ -28,8 +29,8 @@ public static class KnowledgeMapEndpoints
             System.Guid id,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var dto = await mediator.Send(new GetKnowledgeMapByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            var result = await mediator.Send(new GetKnowledgeMapByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("GetKnowledgeMapById");
@@ -39,7 +40,7 @@ public static class KnowledgeMapEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(new ListKnowledgeMapNodesQuery(id), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListKnowledgeMapNodes");
@@ -49,7 +50,7 @@ public static class KnowledgeMapEndpoints
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(new ListKnowledgeMapEdgesQuery(id), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .AllowAnonymous()
         .WithName("ListKnowledgeMapEdges");

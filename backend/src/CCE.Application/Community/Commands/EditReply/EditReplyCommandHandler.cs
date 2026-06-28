@@ -1,11 +1,13 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Sanitization;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.EditReply;
 
-public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, Unit>
+public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, Response<VoidData>>
 {
     private static readonly TimeSpan EditWindow = TimeSpan.FromMinutes(15);
 
@@ -13,20 +15,23 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
     private readonly ICurrentUserAccessor _currentUser;
     private readonly IHtmlSanitizer _sanitizer;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
 
     public EditReplyCommandHandler(
         ICommunityWriteService service,
         ICurrentUserAccessor currentUser,
         IHtmlSanitizer sanitizer,
-        ISystemClock clock)
+        ISystemClock clock,
+        MessageFactory msg)
     {
         _service = service;
         _currentUser = currentUser;
         _sanitizer = sanitizer;
         _clock = clock;
+        _msg = msg;
     }
 
-    public async Task<Unit> Handle(EditReplyCommand request, CancellationToken cancellationToken)
+    public async Task<Response<VoidData>> Handle(EditReplyCommand request, CancellationToken cancellationToken)
     {
         var userId = _currentUser.GetUserId()
             ?? throw new DomainException("Cannot edit a reply without a user identity.");
@@ -49,8 +54,8 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
         }
 
         var sanitized = _sanitizer.Sanitize(request.Content);
-        reply.EditContent(sanitized);
+        reply.EditContent(sanitized, userId, _clock);
         await _service.UpdateReplyAsync(reply, cancellationToken).ConfigureAwait(false);
-        return Unit.Value;
+        return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }
 }

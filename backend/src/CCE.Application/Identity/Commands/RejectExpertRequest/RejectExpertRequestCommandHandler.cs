@@ -1,52 +1,64 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
-using CCE.Application.Identity;
 using CCE.Application.Identity.Dtos;
+using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Identity;
 using MediatR;
 
 namespace CCE.Application.Identity.Commands.RejectExpertRequest;
 
 public sealed class RejectExpertRequestCommandHandler
-    : IRequestHandler<RejectExpertRequestCommand, ExpertRequestDto>
+    : IRequestHandler<RejectExpertRequestCommand, Response<ExpertRequestDto>>
 {
-    private readonly IExpertWorkflowService _service;
     private readonly ICceDbContext _db;
+    private readonly IExpertWorkflowRepository _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
+    private readonly MessageFactory _msg;
 
     public RejectExpertRequestCommandHandler(
-        IExpertWorkflowService service,
         ICceDbContext db,
+        IExpertWorkflowRepository service,
         ICurrentUserAccessor currentUser,
-        ISystemClock clock)
+        ISystemClock clock,
+        MessageFactory msg)
     {
-        _service = service;
         _db = db;
+        _service = service;
         _currentUser = currentUser;
         _clock = clock;
+        _msg = msg;
     }
 
-    public async Task<ExpertRequestDto> Handle(
+    public async Task<Response<ExpertRequestDto>> Handle(
         RejectExpertRequestCommand request,
         CancellationToken cancellationToken)
     {
         var registration = await _service.FindIncludingDeletedAsync(request.Id, cancellationToken).ConfigureAwait(false);
         if (registration is null)
+            return _msg.NotFound<ExpertRequestDto>(MessageKeys.Identity.EXPERT_REQUEST_NOT_FOUND);
+
+        var rejectedById = _currentUser.GetUserId();
+        if (rejectedById is null)
         {
-            throw new System.Collections.Generic.KeyNotFoundException($"Expert registration request {request.Id} not found.");
+            return _msg.Unauthorized<ExpertRequestDto>(MessageKeys.Identity.NOT_AUTHENTICATED);
         }
 
-        var rejectedById = _currentUser.GetUserId()
-            ?? throw new DomainException("Cannot reject an expert request from a request without a user identity.");
-
-        registration.Reject(rejectedById, request.RejectionReasonAr, request.RejectionReasonEn, _clock);
-        await _service.SaveAsync(registration, newProfile: null, cancellationToken).ConfigureAwait(false);
+        registration.Reject(rejectedById.Value, request.RejectionReasonAr, request.RejectionReasonEn, _clock);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var userName = (await _db.Users.Where(u => u.Id == registration.RequestedById).Select(u => u.UserName)
             .ToListAsyncEither(cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
-        return new ExpertRequestDto(
+        var cvIds = await _db.ExpertRequestAttachments
+            .Where(a => a.ExpertRequestId == registration.Id && a.AttachmentType == ExpertRequestAttachmentType.Cv)
+            .Select(a => (System.Guid?)a.AssetFileId)
+            .ToListAsyncEither(cancellationToken)
+            .ConfigureAwait(false);
+
+        return _msg.Ok(new ExpertRequestDto(
             registration.Id,
             registration.RequestedById,
             userName,
@@ -58,6 +70,7 @@ public sealed class RejectExpertRequestCommandHandler
             registration.ProcessedById,
             registration.ProcessedOn,
             registration.RejectionReasonAr,
-            registration.RejectionReasonEn);
+            registration.RejectionReasonEn,
+            cvIds.FirstOrDefault()), MessageKeys.Identity.EXPERT_REQUEST_REJECTED);
     }
 }

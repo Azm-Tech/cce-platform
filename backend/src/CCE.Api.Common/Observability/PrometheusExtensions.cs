@@ -26,6 +26,23 @@ public static class PrometheusExtensions
             "Total citations emitted by the assistant, labeled by kind.",
             new CounterConfiguration { LabelNames = new[] { "kind" } });
 
+    /// <summary>Community search requests, labeled by sort (relevance|Hot|Newest|TopVoted|MostCommented).</summary>
+    public static readonly Counter CommunitySearchHitsTotal = Metrics
+        .CreateCounter(
+            "community_search_hits",
+            "Total community search requests served, labeled by effective sort order.",
+            new CounterConfiguration { LabelNames = new[] { "sort" } });
+
+    /// <summary>Community search end-to-end duration in milliseconds (Meilisearch + DB + hydration).</summary>
+    public static readonly Histogram CommunitySearchDurationMs = Metrics
+        .CreateHistogram(
+            "community_search_duration_ms",
+            "End-to-end duration of community search requests in milliseconds.",
+            new HistogramConfiguration
+            {
+                Buckets = Histogram.ExponentialBuckets(start: 10, factor: 2, count: 10),
+            });
+
     public static WebApplication UseCcePrometheus(this WebApplication app)
     {
         app.UseHttpMetrics();

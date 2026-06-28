@@ -1,6 +1,16 @@
+using CCE.Api.Common.Extensions;
+using CCE.Application.Common.Interfaces;
+using CCE.Application.Community.Commands.ApproveJoinRequest;
+using CCE.Application.Community.Commands.ChangeCommunityVisibility;
+using CCE.Application.Community.Commands.CreateCommunity;
+using CCE.Application.Community.Commands.RejectJoinRequest;
 using CCE.Application.Community.Commands.SoftDeletePost;
 using CCE.Application.Community.Commands.SoftDeleteReply;
+using CCE.Application.Community.Commands.UpdateCommunity;
+using CCE.Application.Community.Public.Queries.GetPublicPostById;
+using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
 using CCE.Application.Community.Queries.ListAdminPosts;
+using CCE.Application.Community.Queries.ListJoinRequests;
 using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +45,7 @@ public static class CommunityModerationEndpoints
                 Search: search,
                 Status: status,
                 Locale: locale), cancellationToken).ConfigureAwait(false);
-            return Results.Ok(result);
+            return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("ListAdminPosts");
@@ -43,8 +53,8 @@ public static class CommunityModerationEndpoints
         moderation.MapDelete("/posts/{id:guid}", async (
             System.Guid id, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new SoftDeletePostCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new SoftDeletePostCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("SoftDeletePost");
@@ -52,11 +62,79 @@ public static class CommunityModerationEndpoints
         moderation.MapDelete("/replies/{id:guid}", async (
             System.Guid id, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            await mediator.Send(new SoftDeleteReplyCommand(id), cancellationToken).ConfigureAwait(false);
-            return Results.NoContent();
+            var result = await mediator.Send(new SoftDeleteReplyCommand(id), cancellationToken).ConfigureAwait(false);
+            return result.ToNoContentHttpResult();
         })
         .RequireAuthorization(Permissions.Community_Post_Moderate)
         .WithName("SoftDeleteReply");
+
+        // ─── Community management ───
+        moderation.MapPost("/communities", async (
+            CreateCommunityRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new CreateCommunityCommand(body.NameAr, body.NameEn, body.DescriptionAr,
+                body.DescriptionEn, body.Slug, body.Visibility, body.PresentationJson);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToCreatedHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Create).WithName("CreateCommunity");
+
+        moderation.MapPut("/communities/{id:guid}", async (
+            System.Guid id, UpdateCommunityRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var cmd = new UpdateCommunityCommand(id, body.NameAr, body.NameEn,
+                body.DescriptionAr, body.DescriptionEn, body.PresentationJson);
+            var result = await mediator.Send(cmd, ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Update).WithName("UpdateCommunity");
+
+        moderation.MapPost("/communities/{id:guid}/visibility", async (
+            System.Guid id, ChangeCommunityVisibilityRequest body, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ChangeCommunityVisibilityCommand(id, body.Visibility), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Update).WithName("ChangeCommunityVisibility");
+
+        moderation.MapGet("/communities/{id:guid}/join-requests", async (
+            System.Guid id, int? page, int? pageSize, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListJoinRequestsQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Moderate).WithName("ListJoinRequests");
+
+        moderation.MapPost("/join-requests/{id:guid}/approve", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new ApproveJoinRequestCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Moderate).WithName("ApproveJoinRequest");
+
+        moderation.MapPost("/join-requests/{id:guid}/reject", async (
+            System.Guid id, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new RejectJoinRequestCommand(id), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization(Permissions.Community_Community_Moderate).WithName("RejectJoinRequest");
+
+        // GET /api/admin/community/posts/{id} — post detail (read-only)
+        moderation.MapGet("/posts/{id:guid}", async (
+            System.Guid id, ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new GetPublicPostByIdQuery(id, currentUser.GetUserId()), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization().WithName("AdminGetPostById");
+
+        // GET /api/admin/community/posts/{id}/replies — list top-level replies
+        moderation.MapGet("/posts/{id:guid}/replies", async (
+            System.Guid id, int? page, int? pageSize,
+            IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListPublicPostRepliesQuery(id, page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).RequireAuthorization().WithName("AdminListPostReplies");
 
         return app;
     }

@@ -11,7 +11,7 @@ public class RescheduleEventCommandValidatorTests
         new(2026, 9, 1, 17, 0, 0, System.TimeSpan.Zero);
 
     private static RescheduleEventCommand ValidCmd() => new(
-        System.Guid.NewGuid(), StartsOn, EndsOn, new byte[8]);
+        System.Guid.NewGuid(), StartsOn, EndsOn);
 
     [Fact]
     public void Valid_command_passes()

@@ -14,7 +14,8 @@ public class DomainEventDispatcherTests
     private static (CceDbContext Ctx, IPublisher Publisher) Build()
     {
         var publisher = Substitute.For<IPublisher>();
-        var dispatcher = new DomainEventDispatcher(publisher);
+        var dispatcher = new DomainEventDispatcher(publisher,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<DomainEventDispatcher>.Instance);
         var options = new DbContextOptionsBuilder<CceDbContext>()
             .UseInMemoryDatabase(System.Guid.NewGuid().ToString())
             .AddInterceptors(dispatcher)
@@ -28,7 +29,7 @@ public class DomainEventDispatcherTests
         var (ctx, publisher) = Build();
         var clock = new FakeSystemClock();
         var req = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, clock);
+            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, System.Guid.NewGuid(), clock);
         req.Approve(System.Guid.NewGuid(), clock);
 
         ctx.ExpertRegistrationRequests.Add(req);
@@ -45,7 +46,7 @@ public class DomainEventDispatcherTests
         var (ctx, _) = Build();
         var clock = new FakeSystemClock();
         var req = ExpertRegistrationRequest.Submit(
-            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, clock);
+            System.Guid.NewGuid(), "خبير", "Expert", new[] { "Solar" }, System.Guid.NewGuid(), clock);
         req.Approve(System.Guid.NewGuid(), clock);
         ctx.ExpertRegistrationRequests.Add(req);
 

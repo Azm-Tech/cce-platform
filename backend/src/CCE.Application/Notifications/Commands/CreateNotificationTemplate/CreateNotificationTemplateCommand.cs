@@ -1,4 +1,4 @@
-using CCE.Application.Notifications.Dtos;
+using CCE.Application.Common;
 using CCE.Domain.Notifications;
 using MediatR;
 
@@ -11,4 +11,4 @@ public sealed record CreateNotificationTemplateCommand(
     string BodyAr,
     string BodyEn,
     NotificationChannel Channel,
-    string VariableSchemaJson) : IRequest<NotificationTemplateDto>;
+    string VariableSchemaJson) : IRequest<Response<System.Guid>>;

@@ -1,5 +1,7 @@
+﻿using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Messages;
 using CCE.Application.Notifications.Dtos;
 using CCE.Domain.Notifications;
 using MediatR;
@@ -7,16 +9,18 @@ using MediatR;
 namespace CCE.Application.Notifications.Queries.ListNotificationTemplates;
 
 public sealed class ListNotificationTemplatesQueryHandler
-    : IRequestHandler<ListNotificationTemplatesQuery, PagedResult<NotificationTemplateDto>>
+    : IRequestHandler<ListNotificationTemplatesQuery, Response<PagedResult<NotificationTemplateDto>>>
 {
     private readonly ICceDbContext _db;
+    private readonly MessageFactory _msg;
 
-    public ListNotificationTemplatesQueryHandler(ICceDbContext db)
+    public ListNotificationTemplatesQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
+        _msg = msg;
     }
 
-    public async Task<PagedResult<NotificationTemplateDto>> Handle(
+    public async Task<Response<PagedResult<NotificationTemplateDto>>> Handle(
         ListNotificationTemplatesQuery request,
         CancellationToken cancellationToken)
     {
@@ -38,7 +42,8 @@ public sealed class ListNotificationTemplatesQueryHandler
             .ConfigureAwait(false);
 
         var items = page.Items.Select(MapToDto).ToList();
-        return new PagedResult<NotificationTemplateDto>(items, page.Page, page.PageSize, page.Total);
+        var result = new PagedResult<NotificationTemplateDto>(items, page.Page, page.PageSize, page.Total);
+        return _msg.Ok(result, MessageKeys.General.ITEMS_LISTED);
     }
 
     internal static NotificationTemplateDto MapToDto(NotificationTemplate t) => new(

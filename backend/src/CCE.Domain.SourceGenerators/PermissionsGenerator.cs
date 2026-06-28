@@ -35,8 +35,10 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
     // SuperAdmin-style names to Entra ID app-role values.
     private static readonly string[] KnownRoles =
     {
+        "cce-super-admin",
         "cce-admin",
-        "cce-editor",
+        "cce-content-manager",
+        "cce-state-representative",
         "cce-reviewer",
         "cce-expert",
         "cce-user",
@@ -321,7 +323,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
         {
             var memberName = ToMemberName(e.Name);
             sb.AppendLine($"    /// <summary>The <c>{e.Name}</c> permission.</summary>");
-            sb.AppendLine($"    public const string {memberName} = \"{e.Name}\";");
+            sb.AppendLine($"    public const string {memberName} = \"{e.Name.ToLowerInvariant()}\";");
             sb.AppendLine();
         }
         sb.AppendLine("    /// <summary>Every permission, in YAML declaration order.</summary>");
@@ -364,7 +366,7 @@ public sealed class PermissionsGenerator : IIncrementalGenerator
                 sb.AppendLine("    {");
                 foreach (var name in matches)
                 {
-                    sb.AppendLine($"        \"{name}\",");
+                    sb.AppendLine($"        \"{name.ToLowerInvariant()}\",");
                 }
                 sb.AppendLine("    };");
             }

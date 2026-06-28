@@ -1,3 +1,4 @@
+using CCE.Application.Common;
 using CCE.Application.Content.Dtos;
 using MediatR;
 
@@ -9,4 +10,4 @@ public sealed record UpdatePageCommand(
     string TitleEn,
     string ContentAr,
     string ContentEn,
-    byte[] RowVersion) : IRequest<PageDto?>;
+    byte[] RowVersion) : IRequest<Response<PageDto>>;

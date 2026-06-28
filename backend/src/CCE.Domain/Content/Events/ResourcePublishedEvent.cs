@@ -10,4 +10,5 @@ public sealed record ResourcePublishedEvent(
     System.Guid ResourceId,
     System.Guid? CountryId,
     System.Guid CategoryId,
+    System.Guid UploadedById,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

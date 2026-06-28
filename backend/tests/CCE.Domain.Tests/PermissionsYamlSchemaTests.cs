@@ -50,8 +50,8 @@ public class PermissionsYamlSchemaTests
 
     private static readonly string[] ExpectedRoleNames =
     {
-        "CceAdmin", "CceEditor", "CceReviewer",
-        "CceExpert", "CceUser", "Anonymous",
+        "CceSuperAdmin", "CceAdmin", "CceContentManager", "CceStateRepresentative",
+        "CceReviewer", "CceExpert", "CceUser", "Anonymous",
     };
 
     private static readonly string[] CceAdminSentinel =
@@ -72,7 +72,8 @@ public class PermissionsYamlSchemaTests
     [Fact]
     public void Permissions_All_count_matches_BRD_matrix()
     {
-        Permissions.All.Count.Should().Be(42);
+        // 49 BRD baseline + 6 Community.Post.* (Vote added) + 5 Community.Community.* + 2 Community.Poll.* (Sprint-09) + 1 Resource.Center.View.
+        Permissions.All.Count.Should().Be(58);
     }
 
     [Fact]

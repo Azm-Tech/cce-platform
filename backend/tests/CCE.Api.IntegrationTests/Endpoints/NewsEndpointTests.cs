@@ -43,10 +43,11 @@ public class NewsEndpointTests :
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await resp.Content.ReadAsStringAsync();
         var doc = JsonDocument.Parse(body).RootElement;
-        doc.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
-        doc.GetProperty("page").GetInt32().Should().Be(1);
-        doc.GetProperty("pageSize").GetInt32().Should().Be(20);
-        doc.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
+        var data = doc.GetProperty("data");
+        data.GetProperty("items").ValueKind.Should().Be(JsonValueKind.Array);
+        data.GetProperty("page").GetInt32().Should().Be(1);
+        data.GetProperty("pageSize").GetInt32().Should().Be(20);
+        data.GetProperty("total").GetInt64().Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -78,7 +79,7 @@ public class NewsEndpointTests :
         {
             titleAr = "خبر", titleEn = "News",
             contentAr = "محتوى", contentEn = "Content",
-            slug = "test-post",
+            topicId = System.Guid.NewGuid(),
             featuredImageUrl = (string?)null,
         });
 
@@ -95,9 +96,8 @@ public class NewsEndpointTests :
         {
             titleAr = "خبر", titleEn = "News",
             contentAr = "محتوى", contentEn = "Content",
-            slug = "test-post",
+            topicId = System.Guid.NewGuid(),
             featuredImageUrl = (string?)null,
-            rowVersion = System.Convert.ToBase64String(new byte[8]),
         });
 
         var resp = await client.PutAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}", UriKind.Relative), body);
@@ -114,9 +114,8 @@ public class NewsEndpointTests :
         {
             titleAr = "خبر", titleEn = "News",
             contentAr = "محتوى", contentEn = "Content",
-            slug = "test-post",
+            topicId = System.Guid.NewGuid(),
             featuredImageUrl = (string?)null,
-            rowVersion = System.Convert.ToBase64String(new byte[8]),
         });
 
         var resp = await client.PutAsync(new Uri($"/api/admin/news/{System.Guid.NewGuid()}", UriKind.Relative), body);

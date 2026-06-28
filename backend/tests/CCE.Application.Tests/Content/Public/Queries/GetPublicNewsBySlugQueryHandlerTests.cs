@@ -1,66 +1,62 @@
 using CCE.Application.Common.Interfaces;
-using CCE.Application.Content.Public.Queries.GetPublicNewsBySlug;
+using CCE.Application.Content.Public.Queries.GetPublicNewsById;
+using CCE.Application.Localization;
+using CCE.Application.Messages;
 using CCE.Domain.Content;
 using CCE.TestInfrastructure.Time;
 
 namespace CCE.Application.Tests.Content.Public.Queries;
 
-public class GetPublicNewsBySlugQueryHandlerTests
+public class GetPublicNewsByIdQueryHandlerTests
 {
+    private static readonly FakeSystemClock Clock = new();
+
     [Fact]
-    public async Task Returns_dto_when_news_is_published_and_slug_matches()
+    public async Task Returns_dto_when_news_is_published()
     {
-        var clock = new FakeSystemClock();
+        var topicId = System.Guid.NewGuid();
         var authorId = System.Guid.NewGuid();
-        var news = News.Draft("عنوان", "Published News", "محتوى", "Content", "published-slug", authorId, null, clock);
-        news.Publish(clock);
+        var news = News.Draft("عنوان", "Published News", "محتوى", "Content", topicId, authorId, null, Clock);
+        news.Publish(Clock);
 
-        var db = BuildDb(new[] { news });
-        var sut = new GetPublicNewsBySlugQueryHandler(db);
+        var sut = BuildSut([news]);
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("published-slug"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(news.Id), CancellationToken.None);
 
-        result.Should().NotBeNull();
-        result!.Slug.Should().Be("published-slug");
-        result.TitleEn.Should().Be("Published News");
-        result.PublishedOn.Should().NotBe(default);
+        result.Success.Should().BeTrue();
+        result.Data!.Id.Should().Be(news.Id);
+        result.Data.TitleEn.Should().Be("Published News");
+        result.Data.PublishedOn.Should().NotBe(default);
     }
 
     [Fact]
-    public async Task Returns_null_when_slug_not_found()
+    public async Task Returns_not_found_when_id_missing()
     {
-        var db = BuildDb(System.Array.Empty<News>());
-        var sut = new GetPublicNewsBySlugQueryHandler(db);
+        var sut = BuildSut(Array.Empty<News>());
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("no-such-slug"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(System.Guid.NewGuid()), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Returns_null_when_news_found_but_not_published()
+    public async Task Returns_not_found_when_news_exists_but_not_published()
     {
-        var clock = new FakeSystemClock();
-        var authorId = System.Guid.NewGuid();
-        var draft = News.Draft("مسودة", "Draft News", "محتوى", "Content", "draft-slug", authorId, null, clock);
-        // Not published — PublishedOn is null
+        var news = News.Draft("مسودة", "Draft News", "محتوى", "Content", System.Guid.NewGuid(), System.Guid.NewGuid(), null, Clock);
 
-        var db = BuildDb(new[] { draft });
-        var sut = new GetPublicNewsBySlugQueryHandler(db);
+        var sut = BuildSut([news]);
 
-        var result = await sut.Handle(new GetPublicNewsBySlugQuery("draft-slug"), CancellationToken.None);
+        var result = await sut.Handle(new GetPublicNewsByIdQuery(news.Id), CancellationToken.None);
 
-        result.Should().BeNull();
+        result.Success.Should().BeFalse();
     }
 
-    private static ICceDbContext BuildDb(IEnumerable<News> news)
+    private static GetPublicNewsByIdQueryHandler BuildSut(IEnumerable<News> news)
     {
         var db = Substitute.For<ICceDbContext>();
         db.News.Returns(news.AsQueryable());
-        db.Users.Returns(System.Array.Empty<CCE.Domain.Identity.User>().AsQueryable());
-        db.Roles.Returns(System.Array.Empty<CCE.Domain.Identity.Role>().AsQueryable());
-        db.UserRoles.Returns(System.Array.Empty<Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>>().AsQueryable());
-        db.Resources.Returns(System.Array.Empty<CCE.Domain.Content.Resource>().AsQueryable());
-        return db;
+        var localization = Substitute.For<ILocalizationService>();
+        localization.GetString(Arg.Any<string>(), Arg.Any<string?>()).Returns(call => call.ArgAt<string>(0));
+        return new GetPublicNewsByIdQueryHandler(db, new MessageFactory(localization, Microsoft.Extensions.Logging.Abstractions.NullLogger<MessageFactory>.Instance));
     }
 }
