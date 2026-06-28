@@ -147,29 +147,31 @@
 }
 .cce-list-view__section-header:hover .cce-list-view__chevron { color: var(--color-brand); }
 
-/* Shape pip — mirrors the cytoscape node shape per type so the
- * visual mapping between graph + list views is obvious. */
+/* Shape pip — circle for all levels, size/colour encodes level. */
 .cce-list-view__pip {
   display: inline-block;
   flex: 0 0 auto;
   width: 16px;
   height: 16px;
+  border-radius: 50%;
   border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.2);
+  background: var(--color-brand-accent);
 
-  &[data-node-type="Technology"] {
-    border-radius: 50%;
+  &[data-level="0"] {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-brand-accent));
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+  &[data-level="1"] {
     background: linear-gradient(135deg, var(--color-brand-mid), var(--color-brand));
+    border-color: rgba(var(--color-brand-rgb), 0.5);
   }
-  &[data-node-type="Sector"] {
-    border-radius: 4px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent));
-  }
-  &[data-node-type="SubTopic"] {
-    width: 13px;
-    height: 13px;
-    background: linear-gradient(135deg, var(--color-brand-accent), var(--color-brand-mid));
-    transform: rotate(45deg);
-    border-radius: 2px;
+  &[data-level="2"] {
+    width: 12px;
+    height: 12px;
+    background: var(--color-brand-dark);
+    border-color: rgba(var(--color-brand-accent-rgb), 0.5);
   }
 }
 
@@ -300,16 +302,16 @@
   font-weight: 700;
 }
 
-/* ─── NodeType-specific section accents ─────────────────── */
-.cce-list-view__section[data-node-type="Technology"] .cce-list-view__count {
-  background: linear-gradient(135deg, rgba(var(--color-brand-accent-rgb), 0.18), rgba(var(--color-brand-rgb), 0.18));
-  color: var(--success--700);
-}
-.cce-list-view__section[data-node-type="Sector"] .cce-list-view__count {
+/* ─── Level-specific section accents ────────────────────── */
+.cce-list-view__section[data-level="0"] .cce-list-view__count {
   background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(var(--color-accent-rgb), 0.22));
   color: var(--warning--700);
 }
-.cce-list-view__section[data-node-type="SubTopic"] .cce-list-view__count {
+.cce-list-view__section[data-level="1"] .cce-list-view__count {
+  background: linear-gradient(135deg, rgba(var(--color-brand-accent-rgb), 0.18), rgba(var(--color-brand-rgb), 0.18));
+  color: var(--success--700);
+}
+.cce-list-view__section[data-level="2"] .cce-list-view__count {
   background: rgba(var(--color-brand-rgb), 0.1);
   color: var(--color-brand);
 }

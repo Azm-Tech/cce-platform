@@ -1,29 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 import { ListViewComponent } from './list-view.component';
 
-const N1: KnowledgeMapNode = {
-  id: 'n1', mapId: 'm1',
-  nameAr: 'تقنية', nameEn: 'Technology One',
-  nodeType: 'Technology',
-  descriptionAr: null, descriptionEn: null,
-  iconUrl: null,
-  layoutX: 0, layoutY: 0,
-  orderIndex: 0,
+const base: Omit<InteractiveMapNode, 'id' | 'nameEn' | 'nameAr' | 'level' | 'parentId'> = {
+  iconKey: 'icon',
+  topicId: 't1',
+  tags: [],
 };
-const N2: KnowledgeMapNode = { ...N1, id: 'n2', nameEn: 'Technology Two', nameAr: 'تقنية ٢' };
-const N3: KnowledgeMapNode = { ...N1, id: 'n3', nodeType: 'Sector', nameEn: 'Energy', nameAr: 'الطاقة' };
-const N4: KnowledgeMapNode = { ...N1, id: 'n4', nodeType: 'SubTopic', nameEn: 'Carbon Capture', nameAr: 'احتجاز الكربون' };
 
-const E1: KnowledgeMapEdge = {
-  id: 'e1', mapId: 'm1',
-  fromNodeId: 'n1', toNodeId: 'n2',
-  relationshipType: 'ParentOf',
-  orderIndex: 0,
+const N1: InteractiveMapNode = {
+  ...base, id: 'n1', nameEn: 'Technology One', nameAr: 'تقنية ١',
+  level: 2, parentId: null,
 };
-const E2: KnowledgeMapEdge = { ...E1, id: 'e2', fromNodeId: 'n1', toNodeId: 'n3' };
+const N2: InteractiveMapNode = {
+  ...base, id: 'n2', nameEn: 'Technology Two', nameAr: 'تقنية ٢',
+  level: 2, parentId: 'n1',
+};
+const N3: InteractiveMapNode = {
+  ...base, id: 'n3', nameEn: 'Energy', nameAr: 'الطاقة',
+  level: 1, parentId: 'n1',
+};
+const N4: InteractiveMapNode = {
+  ...base, id: 'n4', nameEn: 'Carbon Capture', nameAr: 'احتجاز الكربون',
+  level: 0, parentId: null,
+};
 
 describe('ListViewComponent', () => {
   let fixture: ComponentFixture<ListViewComponent>;
@@ -31,29 +33,28 @@ describe('ListViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListViewComponent, TranslocoModule.forRoot()],
+      imports: [ListViewComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(ListViewComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('nodes', [N1, N2, N3, N4]);
-    fixture.componentRef.setInput('edges', [E1, E2]);
     fixture.detectChanges();
   });
 
-  it('renders one section per NodeType (3 sections)', () => {
+  it('renders one section per level (3 sections: 0, 1, 2)', () => {
     const sections = fixture.nativeElement.querySelectorAll('.cce-list-view__section');
     expect(sections.length).toBe(3);
   });
 
-  it('section count badges match the number of nodes of that type', () => {
+  it('groups nodes by level correctly', () => {
     const groups = component.grouped();
-    const tech = groups.find((g) => g.type === 'Technology');
-    const sector = groups.find((g) => g.type === 'Sector');
-    const subTopic = groups.find((g) => g.type === 'SubTopic');
-    expect(tech?.nodes).toHaveLength(2);
-    expect(sector?.nodes).toHaveLength(1);
-    expect(subTopic?.nodes).toHaveLength(1);
+    const level0 = groups.find((g) => g.level === 0);
+    const level1 = groups.find((g) => g.level === 1);
+    const level2 = groups.find((g) => g.level === 2);
+    expect(level0?.nodes).toHaveLength(1);
+    expect(level1?.nodes).toHaveLength(1);
+    expect(level2?.nodes).toHaveLength(2);
   });
 
   it('locale toggle switches all node names between nameAr and nameEn', () => {
@@ -66,7 +67,7 @@ describe('ListViewComponent', () => {
     fixture.componentRef.setInput('locale', 'ar');
     fixture.detectChanges();
     html = fixture.nativeElement.textContent ?? '';
-    expect(html).toContain('تقنية');
+    expect(html).toContain('تقنية ١');
     expect(html).toContain('الطاقة');
     expect(html).toContain('احتجاز الكربون');
   });
@@ -96,9 +97,10 @@ describe('ListViewComponent', () => {
     expect(dimmed.length).toBe(2);
   });
 
-  it('outbound edge counts are computed per source node', () => {
-    expect(component.outboundCountOf(N1)).toBe(2); // E1 + E2 both originate at n1
-    expect(component.outboundCountOf(N2)).toBe(0);
-    expect(component.outboundCountOf(N3)).toBe(0);
+  it('childCountOf returns the number of direct children per node', () => {
+    // N2.parentId='n1', N3.parentId='n1' → N1 has 2 children
+    expect(component.childCountOf(N1)).toBe(2);
+    expect(component.childCountOf(N2)).toBe(0);
+    expect(component.childCountOf(N4)).toBe(0);
   });
 });

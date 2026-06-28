@@ -5,7 +5,7 @@
     {{ 'knowledgeMaps.backToList' | transloco }}
   </a>
 
-  <!-- Slim top progress bar (kept for loading-state continuity) -->
+  <!-- Slim top progress bar -->
   @if (store.loading()) {
     <mat-progress-bar mode="indeterminate" class="cce-map-viewer__progress" />
   }
@@ -42,7 +42,6 @@
   />
 
   @if (store.activeTab(); as tab) {
-    <!-- Branded header card with iconified meta chips -->
     <header class="cce-map-viewer__header">
       <div class="cce-map-viewer__header-text">
         <span class="cce-map-viewer__header-eyebrow">
@@ -57,11 +56,6 @@
             <mat-icon aria-hidden="true">scatter_plot</mat-icon>
             <strong>{{ tab.nodes.length }}</strong>
             <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
-          </li>
-          <li>
-            <mat-icon aria-hidden="true">timeline</mat-icon>
-            <strong>{{ tab.edges.length }}</strong>
-            <span>{{ 'knowledgeMaps.metaEdges' | transloco }}</span>
           </li>
           <li>
             <mat-icon aria-hidden="true">tab</mat-icon>
@@ -114,12 +108,11 @@
       (filtersChange)="onFiltersChange($event)"
     />
 
-    <div class="cce-map-viewer__split">
+    <div class="cce-map-viewer__stage">
       @if (store.viewMode() === 'graph') {
         <cce-graph-canvas
           class="cce-map-viewer__canvas"
           [nodes]="tab.nodes"
-          [edges]="tab.edges"
           [locale]="locale()"
           [mirrored]="mirrored()"
           [selectedId]="store.selectedNodeId()"
@@ -132,7 +125,6 @@
         <cce-list-view
           class="cce-map-viewer__canvas"
           [nodes]="tab.nodes"
-          [edges]="tab.edges"
           [locale]="locale()"
           [selectedId]="store.selectedNodeId()"
           [dimmedIds]="store.dimmedIds()"
@@ -141,13 +133,14 @@
       }
 
       <cce-node-detail-panel
-        class="cce-map-viewer__panel"
+        class="cce-map-viewer__drawer"
         [node]="store.selectedNode()"
-        [outboundEdges]="outboundEdges()"
-        [outboundTargets]="outboundTargets()"
+        [allNodes]="allNodes()"
+        [details]="store.nodeDetails()"
+        [loading]="store.detailsLoading()"
         [locale]="locale()"
         (closed)="onPanelClosed()"
-        (nodeSelected)="onPanelNodeSelected($event)"
+        (linkActivated)="onPanelLink($event)"
       />
     </div>
   }

@@ -1,0 +1,130 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'interactiveMaps.nodes.form.editTitle' : 'interactiveMaps.nodes.form.createTitle') | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="im-node-form">
+
+    <!-- ── Section: Identity ─────────────────────────── -->
+    <div class="im-node-section">
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionIdentity' | transloco }}</h3>
+
+      <!-- Lang eyebrow -->
+      <div class="im-node-form__lang-eyebrow" aria-hidden="true">
+        <span class="im-node-form__lang-tag" dir="rtl">العربية</span>
+        <span class="im-node-form__lang-tag">English</span>
+      </div>
+
+      <div class="im-node-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.form.nameAr' | transloco }}</mat-label>
+          <input matInput formControlName="nameAr" dir="rtl" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
+          <input matInput formControlName="nameEn" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section: Hierarchy ────────────────────────── -->
+    <div class="im-node-section">
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionHierarchy' | transloco }}</h3>
+
+      <div class="im-node-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.level' | transloco }}</mat-label>
+          <input matInput type="number" formControlName="level" min="0" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.parentId' | transloco }}</mat-label>
+          <mat-select formControlName="parentId">
+            <mat-option value="">— {{ 'interactiveMaps.nodes.form.noParent' | transloco }} —</mat-option>
+            @for (node of parentCandidates; track node.id) {
+              <mat-option [value]="node.id">{{ node.nameEn ?? node.nameAr }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section: Classification ───────────────────── -->
+    <div class="im-node-section">
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionClassification' | transloco }}</h3>
+
+      <div class="im-node-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.iconKey' | transloco }}</mat-label>
+          <input matInput formControlName="iconKey" />
+          <mat-hint>{{ 'interactiveMaps.nodes.form.iconKeyHint' | transloco }}</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.category' | transloco }}</mat-label>
+          <input matInput type="number" formControlName="category" />
+        </mat-form-field>
+      </div>
+
+      <!-- Category name — lang eyebrow -->
+      <div class="im-node-form__lang-eyebrow im-node-form__lang-eyebrow--sub" aria-hidden="true">
+        <span class="im-node-form__lang-tag" dir="rtl">العربية</span>
+        <span class="im-node-form__lang-tag">English</span>
+      </div>
+      <div class="im-node-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.categoryNameAr' | transloco }}</mat-label>
+          <input matInput formControlName="categoryNameAr" dir="rtl" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.categoryNameEn' | transloco }}</mat-label>
+          <input matInput formControlName="categoryNameEn" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section: Topic ────────────────────────────── -->
+    <div class="im-node-section">
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionTopic' | transloco }}</h3>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'interactiveMaps.nodes.form.topicId' | transloco }}</mat-label>
+        <mat-select formControlName="topicId">
+          @if (topicsLoading()) {
+            <mat-option value="">{{ 'common.loading' | transloco }}</mat-option>
+          } @else {
+            @for (topic of topics(); track topic.id) {
+              <mat-option [value]="topic.id">{{ topic.nameEn || topic.nameAr }}</mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- ── Section: Status (edit only) ──────────────── -->
+    @if (isEdit) {
+      <div class="im-node-section im-node-section--last">
+        <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionStatus' | transloco }}</h3>
+        <mat-checkbox formControlName="isActive">
+          {{ 'interactiveMaps.form.isActive' | transloco }}
+        </mat-checkbox>
+      </div>
+    }
+
+    @if (errorKind(); as kind) {
+      <div class="im-node-form__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ ('errors.' + kind) | transloco }}
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary"
+    (click)="save()" [disabled]="saving() || form.invalid || topicsLoading()">
+    {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+  </button>
+</mat-dialog-actions>

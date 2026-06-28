@@ -1,0 +1,64 @@
+<h2 mat-dialog-title class="im-form-dialog__title">
+  {{ (isEdit ? 'interactiveMaps.form.editTitle' : 'interactiveMaps.form.createTitle') | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="im-form">
+
+    <!-- Language eyebrow -->
+    <div class="im-form__lang-eyebrow" aria-hidden="true">
+      <span class="im-form__lang-tag" dir="rtl">العربية</span>
+      <span class="im-form__lang-tag">English</span>
+    </div>
+
+    <!-- Name row -->
+    <div class="im-form__bilingual-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'interactiveMaps.form.nameAr' | transloco }}</mat-label>
+        <input matInput formControlName="nameAr" dir="rtl" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
+        <input matInput formControlName="nameEn" />
+      </mat-form-field>
+    </div>
+
+    <!-- Description row -->
+    <div class="im-form__bilingual-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'interactiveMaps.form.descriptionAr' | transloco }}</mat-label>
+        <textarea matInput formControlName="descriptionAr" rows="3" dir="rtl"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'interactiveMaps.form.descriptionEn' | transloco }}</mat-label>
+        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Status (edit only) -->
+    @if (isEdit) {
+      <div class="im-form__divider"></div>
+      <mat-checkbox formControlName="isActive" class="im-form__checkbox">
+        {{ 'interactiveMaps.form.isActive' | transloco }}
+      </mat-checkbox>
+    }
+
+    @if (errorKind(); as kind) {
+      <div class="im-form__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ ('errors.' + kind) | transloco }}
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary"
+    (click)="save()" [disabled]="saving() || form.invalid">
+    {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+  </button>
+</mat-dialog-actions>

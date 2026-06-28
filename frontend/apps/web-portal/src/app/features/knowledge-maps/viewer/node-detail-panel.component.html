@@ -2,10 +2,10 @@
   <aside
     class="cce-node-detail"
     role="complementary"
-    [attr.aria-label]="'knowledgeMaps.detail.description' | transloco"
+    [attr.aria-label]="name()"
   >
+    <!-- ─── Header band ─── -->
     <header class="cce-node-detail__header">
-      <h2 class="cce-node-detail__name">{{ name() }}</h2>
       <button
         type="button"
         mat-icon-button
@@ -15,52 +15,145 @@
       >
         <mat-icon>close</mat-icon>
       </button>
+
+      <div class="cce-node-detail__heading">
+        <div class="cce-node-detail__heading-text">
+          @if (parentName()) {
+            <p class="cce-node-detail__eyebrow">{{ parentName() }}</p>
+          }
+          <h2 class="cce-node-detail__title">{{ name() }}</h2>
+        </div>
+        <span class="cce-node-detail__icon" aria-hidden="true">
+          <img [src]="iconSrc()" alt="" />
+        </span>
+      </div>
     </header>
 
-    <div class="cce-node-detail__meta">
-      <span
-        class="cce-node-detail__badge"
-        [attr.data-node-type]="n.nodeType"
-      >
-        {{ ('knowledgeMaps.detail.nodeType.' + n.nodeType) | transloco }}
-      </span>
-    </div>
+    <!-- ─── Scrollable body ─── -->
+    <div class="cce-node-detail__body">
+      @if (description()) {
+        <p class="cce-node-detail__desc">{{ description() }}</p>
+      }
 
-    <section class="cce-node-detail__section">
-      <h3>{{ 'knowledgeMaps.detail.description' | transloco }}</h3>
-      <p class="cce-node-detail__description">{{ description() }}</p>
-    </section>
+      @if (loading()) {
+        <div class="cce-node-detail__loading" role="status">
+          <mat-progress-spinner mode="indeterminate" diameter="32" />
+          <span>{{ 'knowledgeMaps.drawer.loading' | transloco }}</span>
+        </div>
+      } @else {
+        @if (!hasAnyContent() && !description()) {
+          <p class="cce-node-detail__empty">{{ 'knowledgeMaps.drawer.empty' | transloco }}</p>
+        }
 
-    <section class="cce-node-detail__section">
-      <h3>{{ 'knowledgeMaps.detail.outboundEdges' | transloco }}</h3>
-      @if (hasOutboundEdges()) {
-        <ul class="cce-node-detail__edges">
-          @for (edge of outboundEdges(); track edge.id) {
-            <li>
+        <!-- Related sources -->
+        @if (resources().length > 0) {
+          <span class="cce-node-detail__divider" aria-hidden="true"></span>
+          <section class="cce-node-detail__section">
+            <h3 class="cce-node-detail__section-title">
+              {{ 'knowledgeMaps.drawer.sources' | transloco }}
+            </h3>
+            @for (r of resources(); track r.id) {
               <button
                 type="button"
-                class="cce-node-detail__edge"
-                (click)="onEdgeClick(edge)"
+                class="cce-node-detail__row"
+                (click)="onLink('resource', r.id)"
               >
-                <span
-                  class="cce-node-detail__rel"
-                  [attr.data-rel-type]="edge.relationshipType"
-                >
-                  {{ ('knowledgeMaps.detail.relationshipType.' + edge.relationshipType) | transloco }}
-                </span>
-                <span class="cce-node-detail__edge-target">{{ targetNameOf(edge) }}</span>
-                <mat-icon class="cce-node-detail__edge-arrow" aria-hidden="true">
-                  chevron_right
+                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
+                  chevron_left
                 </mat-icon>
+                <span class="cce-node-detail__row-main">
+                  <span class="cce-node-detail__row-title">{{ titleOf(r) }}</span>
+                  <span class="cce-node-detail__row-meta">
+                    <mat-icon aria-hidden="true">calendar_today</mat-icon>
+                    {{ formatDate(r.publishedOn) }}
+                  </span>
+                </span>
+                <span class="cce-node-detail__tag">
+                  {{ resourceTypeKey(r.resourceType) | transloco }}
+                </span>
               </button>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="cce-node-detail__empty">
-          {{ 'knowledgeMaps.detail.noEdges' | transloco }}
-        </p>
+            }
+          </section>
+        }
+
+        <!-- Related news & events -->
+        @if (newsEvents().length > 0) {
+          <span class="cce-node-detail__divider" aria-hidden="true"></span>
+          <section class="cce-node-detail__section">
+            <h3 class="cce-node-detail__section-title">
+              {{ 'knowledgeMaps.drawer.newsEvents' | transloco }}
+            </h3>
+            @for (item of newsEvents(); track item.kind + item.id) {
+              <button
+                type="button"
+                class="cce-node-detail__row"
+                (click)="onLink(item.kind, item.id)"
+              >
+                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
+                  chevron_left
+                </mat-icon>
+                <span class="cce-node-detail__row-main">
+                  <span class="cce-node-detail__row-kind">
+                    {{ (item.kind === 'news'
+                          ? 'knowledgeMaps.drawer.news'
+                          : 'knowledgeMaps.drawer.event') | transloco }}
+                  </span>
+                  <span class="cce-node-detail__row-title">{{ titleOf(item) }}</span>
+                  <span class="cce-node-detail__row-meta">
+                    <mat-icon aria-hidden="true">calendar_today</mat-icon>
+                    {{ formatDate(item.date) }}
+                  </span>
+                </span>
+                @if (item.featuredImageUrl) {
+                  <img class="cce-node-detail__thumb" [src]="item.featuredImageUrl" alt="" />
+                } @else {
+                  <span class="cce-node-detail__thumb cce-node-detail__thumb--placeholder">
+                    <mat-icon aria-hidden="true">
+                      {{ item.kind === 'news' ? 'article' : 'event' }}
+                    </mat-icon>
+                  </span>
+                }
+              </button>
+            }
+          </section>
+        }
+
+        <!-- Related community posts -->
+        @if (posts().length > 0) {
+          <span class="cce-node-detail__divider" aria-hidden="true"></span>
+          <section class="cce-node-detail__section">
+            <h3 class="cce-node-detail__section-title">
+              {{ 'knowledgeMaps.drawer.posts' | transloco }}
+            </h3>
+            @for (p of posts(); track p.id) {
+              <button
+                type="button"
+                class="cce-node-detail__row"
+                (click)="onLink('post', p.id)"
+              >
+                <span class="cce-node-detail__avatar" aria-hidden="true">{{ postInitial(p) }}</span>
+                <span class="cce-node-detail__row-main">
+                  @if (topicName()) {
+                    <span class="cce-node-detail__row-kind cce-node-detail__row-kind--brand">
+                      {{ topicName() }}
+                    </span>
+                  }
+                  <span class="cce-node-detail__row-title cce-node-detail__row-title--clamp">
+                    {{ p.title }}
+                  </span>
+                  <span class="cce-node-detail__post-foot">
+                    <span class="cce-node-detail__tag">{{ postTypeKey(p.type) | transloco }}</span>
+                    <span class="cce-node-detail__post-comments">
+                      <mat-icon aria-hidden="true">chat_bubble_outline</mat-icon>
+                      {{ p.commentsCount }}
+                    </span>
+                  </span>
+                </span>
+              </button>
+            }
+          </section>
+        }
       }
-    </section>
+    </div>
   </aside>
 }

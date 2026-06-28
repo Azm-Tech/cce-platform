@@ -16,7 +16,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import type { KnowledgeMapNode, NodeType } from './knowledge-maps.types';
 import { downloadBlob, buildFilename } from './lib/download';
 import { exportJson } from './lib/export-json';
 import { exportPdf } from './lib/export-pdf';
@@ -54,8 +53,8 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
     SearchAndFiltersComponent,
     TabsBarComponent,
     ExportMenuComponent,
-    ListViewComponent
-],
+    ListViewComponent,
+  ],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
   styleUrl: './map-viewer.page.scss',
@@ -68,32 +67,14 @@ export class MapViewerPage implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly store = inject(MapViewerStore);
 
-  /** Live reference to the GraphCanvas — used by export to grab cy. */
   @ViewChild(GraphCanvasComponent) canvas?: GraphCanvasComponent;
 
-  /** Active locale signal — drives node label selection in GraphCanvas. */
   readonly locale = this.localeService.locale;
-  /** Mirror x-coordinates when locale === 'ar'. */
   readonly mirrored = computed(() => this.locale() === 'ar');
 
-  /** Outbound edges for the currently selected node within the active tab. */
-  readonly outboundEdges = computed(() => {
-    const tab = this.store.activeTab();
-    const node = this.store.selectedNode();
-    if (!tab || !node) return [];
-    return tab.edges.filter((e) => e.fromNodeId === node.id);
-  });
+  /** All nodes of the active tab — passed to the detail panel for parent/child resolution. */
+  readonly allNodes = computed(() => this.store.activeTab()?.nodes ?? []);
 
-  /** Pre-resolved target nodes for the outbound edges (used by the panel). */
-  readonly outboundTargets = computed<KnowledgeMapNode[]>(() => {
-    const tab = this.store.activeTab();
-    const edges = this.outboundEdges();
-    if (!tab || edges.length === 0) return [];
-    const targetIds = new Set(edges.map((e) => e.toNodeId));
-    return tab.nodes.filter((n) => targetIds.has(n.id));
-  });
-
-  /** Initial-frame guard: skip the URL-sync effect's first run so we don't immediately overwrite the URL the user navigated to. */
   private hydrated = false;
 
   constructor() {
@@ -101,15 +82,12 @@ export class MapViewerPage implements OnInit {
     effect(() => {
       const q = this.store.searchTerm();
       const filters = Array.from(this.store.filters());
-      // open = open tabs other than the active one (the active tab is in the route :id).
       const activeId = this.store.activeId();
       const otherIds = this.store
         .openTabs()
         .map((t) => t.id)
         .filter((tid) => tid !== activeId);
       const view = this.store.viewMode();
-      // Always read all reactive deps so the effect re-fires;
-      // skip the post-hydration baseline run.
       if (!this.hydrated) return;
       const patch = buildUrlPatch({ q, filters, open: otherIds, view });
       void this.router.navigate([], {
@@ -120,9 +98,6 @@ export class MapViewerPage implements OnInit {
       });
     });
 
-    // ─── Sync activeId to route :id when user navigates between tabs ───
-    // Angular reuses the component instance on same-route param changes,
-    // so we subscribe to paramMap and switch the active tab in the store.
     this.route.paramMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
@@ -138,71 +113,63 @@ export class MapViewerPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
 
-    // Hydrate non-route URL state into the store before opening the tab.
     const url = parseUrlState(this.route.snapshot.queryParams);
     this.store.setSearch(url.q);
     this.store.setFilters(url.filters);
     this.store.setViewMode(url.view);
     if (url.node) this.store.selectNode(url.node);
 
-    // Mark hydration complete so the URL-sync effect starts firing on
-    // subsequent user-driven changes.
     this.hydrated = true;
 
-    // Open the active tab first so it's the foreground.
     await this.store.openTab(id);
 
-    // Open any additional tabs from ?open= so they're available in the strip.
     const otherTabsToOpen = url.open.filter((openId) => openId !== id);
     if (otherTabsToOpen.length > 0) {
       for (const otherId of otherTabsToOpen) {
         await this.store.openTab(otherId);
       }
-      // openTab(otherId) flips activeId — restore the route :id as active.
-      // setActive() clears selectedNodeId, so re-apply the hydrated selection.
       this.store.setActive(id);
       if (url.node) this.store.selectNode(url.node);
     }
   }
 
-  /** GraphCanvas (nodeClick) handler. */
   onNodeClick(id: string): void {
     this.store.selectNode(id);
   }
 
-  /** GraphCanvas (selectionChange) handler — feeds the export multi-select. */
   onSelectionChange(ids: ReadonlySet<string>): void {
     this.store.setSelection(ids);
   }
 
-  /** NodeDetailPanel (closed) handler — clears selection. */
   onPanelClosed(): void {
     this.store.selectNode(null);
   }
 
-  /** NodeDetailPanel (nodeSelected) handler — re-selects via store, closing the explore loop. */
-  onPanelNodeSelected(id: string): void {
-    this.store.selectNode(id);
+  /** Drawer link navigation — route to the related content's detail page. */
+  onPanelLink(e: { kind: 'resource' | 'news' | 'event' | 'post'; id: string }): void {
+    const path: Record<typeof e.kind, string[]> = {
+      resource: ['/knowledge-center', e.id],
+      news: ['/news', e.id],
+      event: ['/events', e.id],
+      post: ['/community/posts', e.id],
+    };
+    void this.router.navigate(path[e.kind]);
   }
 
-  /** SearchAndFilters (searchTermChange) handler. */
   onSearchTermChange(term: string): void {
     this.store.setSearch(term);
   }
 
-  /** SearchAndFilters (filtersChange) handler. */
-  onFiltersChange(filters: ReadonlySet<NodeType>): void {
+  onFiltersChange(filters: ReadonlySet<number>): void {
     this.store.setFilters(Array.from(filters));
   }
 
-  /** TabsBar (tabSelected) handler — navigates to the new active tab. */
   onTabSelected(id: string): void {
     void this.router.navigate(['/knowledge-maps', id], {
       queryParamsHandling: 'preserve',
     });
   }
 
-  /** TabsBar (tabClosed) handler — closes a tab; routes accordingly. */
   onTabClosed(id: string): void {
     const wasActive = this.store.activeId() === id;
     this.store.closeTab(id);
@@ -221,14 +188,10 @@ export class MapViewerPage implements OnInit {
     }
   }
 
-  /** View-toggle button handler — flips graph ↔ list. */
   onSetViewMode(mode: ViewMode): void {
     this.store.setViewMode(mode);
   }
 
-  /** GraphCanvas (clearFiltersRequest) handler — fired from the
-   *  all-dimmed empty-state CTA. Resets the search term + active
-   *  filter chips so the graph repopulates. */
   onClearFilters(): void {
     this.store.setSearch('');
     this.store.setFilters([]);
@@ -238,13 +201,6 @@ export class MapViewerPage implements OnInit {
     void this.store.retry();
   }
 
-  /**
-   * Export dispatcher. Called by ExportMenuComponent's (formatChosen)
-   * output. Passes `full: true` (export the whole graph) when the user
-   * has not multi-selected anything; otherwise exports the selection
-   * subgraph (JSON keeps the closure: only edges where both endpoints
-   * are selected).
-   */
   async onExportFormat(format: ExportFormat): Promise<void> {
     const tab = this.store.activeTab();
     if (!tab) return;
@@ -253,7 +209,7 @@ export class MapViewerPage implements OnInit {
 
     const selection = this.store.selection();
     const useFull = selection.size === 0;
-    const filename = buildFilename(tab.metadata.slug, format);
+    const filename = buildFilename(tab.metadata.nameEn, format);
 
     let blob: Blob;
     switch (format) {
@@ -272,14 +228,8 @@ export class MapViewerPage implements OnInit {
             id: tab.id,
             nameAr: tab.metadata.nameAr,
             nameEn: tab.metadata.nameEn,
-            slug: tab.metadata.slug,
           },
           nodes: useFull ? tab.nodes : tab.nodes.filter((n) => selection.has(n.id)),
-          edges: useFull
-            ? tab.edges
-            : tab.edges.filter(
-                (e) => selection.has(e.fromNodeId) && selection.has(e.toNodeId),
-              ),
           exportedAt: new Date().toISOString(),
         });
         break;

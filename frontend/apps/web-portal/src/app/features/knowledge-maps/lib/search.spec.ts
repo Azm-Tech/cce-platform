@@ -1,20 +1,20 @@
-import type { KnowledgeMapNode, NodeType } from '../knowledge-maps.types';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 import { nodeMatches } from './search';
 
-const N: KnowledgeMapNode = {
-  id: 'n1', mapId: 'm1',
+const N: InteractiveMapNode = {
+  id: 'n1',
   nameAr: 'معالجة الكربون', nameEn: 'Carbon Capture',
-  nodeType: 'Technology',
-  descriptionAr: null, descriptionEn: null,
-  iconUrl: null,
-  layoutX: 0, layoutY: 0,
-  orderIndex: 0,
+  iconKey: 'co2',
+  level: 1,
+  parentId: null,
+  topicId: 't1',
+  tags: [],
 };
 
 describe('nodeMatches', () => {
   it('returns true for empty term + empty filters (everything matches)', () => {
     expect(nodeMatches(N, '', new Set())).toBe(true);
-    expect(nodeMatches(N, '   ', new Set())).toBe(true); // whitespace-only
+    expect(nodeMatches(N, '   ', new Set())).toBe(true);
   });
 
   it('matches case-insensitive substring of nameEn', () => {
@@ -30,18 +30,18 @@ describe('nodeMatches', () => {
     expect(nodeMatches(N, 'بترول', new Set())).toBe(false);
   });
 
-  it('filter set excludes nodes whose nodeType is not in the set', () => {
-    const sectorOnly: ReadonlySet<NodeType> = new Set(['Sector']);
-    expect(nodeMatches(N, '', sectorOnly)).toBe(false);
-    const includesTech: ReadonlySet<NodeType> = new Set(['Technology', 'Sector']);
-    expect(nodeMatches(N, '', includesTech)).toBe(true);
+  it('filter set excludes nodes whose level is not in the set', () => {
+    const level0Only: ReadonlySet<number> = new Set([0]);
+    expect(nodeMatches(N, '', level0Only)).toBe(false); // N is level 1
+    const level1Only: ReadonlySet<number> = new Set([1]);
+    expect(nodeMatches(N, '', level1Only)).toBe(true);
   });
 
   it('term + filter compose with AND semantics', () => {
-    const techOnly: ReadonlySet<NodeType> = new Set(['Technology']);
-    expect(nodeMatches(N, 'carbon', techOnly)).toBe(true); // both pass
-    expect(nodeMatches(N, 'storage', techOnly)).toBe(false); // term fails
-    const sectorOnly: ReadonlySet<NodeType> = new Set(['Sector']);
-    expect(nodeMatches(N, 'carbon', sectorOnly)).toBe(false); // filter fails
+    const level1Only: ReadonlySet<number> = new Set([1]);
+    expect(nodeMatches(N, 'carbon', level1Only)).toBe(true);
+    expect(nodeMatches(N, 'storage', level1Only)).toBe(false); // term fails
+    const level0Only: ReadonlySet<number> = new Set([0]);
+    expect(nodeMatches(N, 'carbon', level0Only)).toBe(false); // filter fails
   });
 });

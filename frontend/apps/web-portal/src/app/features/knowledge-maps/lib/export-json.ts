@@ -1,4 +1,4 @@
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 
 /** Subgraph payload shape (the JSON written to disk). */
 export interface JsonExportPayload {
@@ -6,10 +6,8 @@ export interface JsonExportPayload {
     id: string;
     nameAr: string;
     nameEn: string;
-    slug: string;
   };
-  nodes: KnowledgeMapNode[];
-  edges: KnowledgeMapEdge[];
+  nodes: InteractiveMapNode[];
   exportedAt: string;
 }
 

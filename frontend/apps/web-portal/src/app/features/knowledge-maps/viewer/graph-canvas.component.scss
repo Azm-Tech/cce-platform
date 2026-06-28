@@ -1,46 +1,54 @@
-/* Graph canvas — brand-tinted backdrop + floating overlay controls
- * (zoom / fit / reset / legend) + an all-dimmed empty state.
- * The graph itself is rendered by Cytoscape (see lib/cytoscape-styles.ts);
- * this wrapper hosts it. */
+/* Graph canvas — dark-navy "space map" backdrop matching Figma.
+ * The Cytoscape canvas element (#host) fills .cce-graph-canvas;
+ * all floating overlays (controls, legend, empty state) are
+ * absolutely positioned inside .cce-graph-canvas-wrap. */
 
 :host { display: block; }
 
 .cce-graph-canvas-wrap {
   position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
+/* ─── Dark canvas — flat surface-dark (#002645), matches Figma ─── */
 .cce-graph-canvas {
   width: 100%;
-  height: 600px;
+  height: 68vh;
+  min-height: 520px;
+  /* Flat dark navy with a faint central glow behind the root node. */
   background:
-    radial-gradient(900px 320px at 0% 0%, rgba(var(--color-brand-accent-rgb), 0.06), transparent 60%),
-    radial-gradient(900px 320px at 100% 100%, rgba(var(--color-accent-rgb), 0.06), transparent 60%),
-    linear-gradient(180deg, var(--primary--50) 0%, var(--primary--50) 100%);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.14);
-  border-radius: 18px;
-  box-shadow: 0 8px 18px -16px rgba(var(--color-brand-shadow-rgb), 0.22);
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(var(--color-brand-rgb), 0.12) 0%,
+      transparent 55%
+    ),
+    var(--primary--950);
+  border: 1px solid var(--color-brand-darker);
+  border-radius: 20px;
   overflow: hidden;
 }
 
 @media (max-width: 720px) {
-  .cce-graph-canvas { height: 440px; }
+  .cce-graph-canvas {
+    height: 55vh;
+    min-height: 380px;
+  }
 }
 
-/* ─── Floating controls (top-trailing) ───────────────────── */
+/* ─── Floating controls — solid surface-dark panel, top corner (Figma) ─ */
 .cce-graph-controls {
   position: absolute;
-  top: 0.85rem;
-  inset-inline-end: 0.85rem;
-  display: inline-flex;
+  top: 1rem;
+  inset-inline-end: 1rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.16);
-  border-radius: 999px;
-  box-shadow: 0 6px 18px -8px rgba(var(--color-brand-shadow-rgb), 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  gap: 0.5rem;
+  padding: 0.625rem;
+  background: var(--primary--950);
+  border: 1px solid var(--color-brand-darker);
+  border-radius: 10px;
   z-index: 5;
 }
 
@@ -48,55 +56,54 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
   background: transparent;
-  border-radius: 999px;
+  border-radius: 8px;
   cursor: pointer;
-  color: rgba(var(--color-text-primary-rgb), 0.7);
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  color: var(--tertiary--500);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
 
   mat-icon {
-    font-size: 18px !important;
-    width: 18px !important;
-    height: 18px !important;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 
   &:hover {
-    color: var(--color-brand);
-    background: rgba(var(--color-brand-rgb), 0.08);
+    color: var(--white);
+    background: rgba(var(--color-brand-rgb), 0.18);
   }
-  &:active { transform: scale(0.94); }
+  &:active { transform: scale(0.92); }
   &:focus-visible {
-    outline: 3px solid rgba(var(--color-brand-rgb), 0.28);
+    outline: 2px solid rgba(var(--color-brand-rgb), 0.5);
     outline-offset: 2px;
   }
 }
 
 .cce-graph-controls__divider {
-  display: inline-block;
-  width: 1px;
-  height: 18px;
-  background: rgba(var(--color-brand-rgb), 0.18);
-  margin: 0 0.15rem;
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: var(--color-brand-darker);
+  margin: 0.1rem 0;
 }
 
-/* ─── Legend — always-visible panel pinned at the bottom-leading
- *               corner (visual left in LTR, right in RTL). ───────── */
+/* ─── Legend — dark glass panel, bottom-leading corner ──────── */
 .cce-graph-legend {
   position: absolute;
-  bottom: 0.85rem;
-  inset-inline-start: 0.85rem;
+  bottom: 1rem;
+  inset-inline-start: 1rem;
   z-index: 5;
-  width: 230px;
-  max-width: calc(100% - 1.7rem);
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
+  width: 210px;
+  max-width: calc(100% - 2rem);
+  background: rgba(var(--color-brand-dark-rgb), 0.8);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.22);
   border-radius: 14px;
   padding: 0.7rem 0.9rem 0.85rem;
-  box-shadow: 0 12px 26px -14px rgba(var(--color-brand-shadow-rgb), 0.28);
+  box-shadow: 0 8px 24px rgba(var(--color-brand-dark-rgb), 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -106,16 +113,16 @@
   align-items: center;
   gap: 0.35rem;
   margin: 0 0 0.55rem;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-brand);
 
   mat-icon {
-    font-size: 14px !important;
-    width: 14px !important;
-    height: 14px !important;
+    font-size: 13px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
 }
 
@@ -126,71 +133,76 @@
   gap: 0.3rem;
 
   & + & {
-    margin-top: 0.8rem;
-    padding-top: 0.8rem;
-    border-top: 1px dashed rgba(var(--color-brand-shadow-rgb), 0.12);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(var(--color-brand-rgb), 0.14);
   }
 
   dt {
-    font-size: 0.66rem;
-    font-weight: 800;
+    font-size: 0.62rem;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(var(--color-text-primary-rgb), 0.55);
+    color: rgba(var(--color-brand-rgb), 0.55);
     margin-bottom: 0.15rem;
   }
+
   dd {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     margin: 0;
-    font-size: 0.82rem;
-    color: var(--color-text-primary);
+    font-size: 0.8rem;
+    color: rgba(var(--white-rgb, 255,255,255), 0.78);
   }
 }
 
-/* Node glyph swatches — mirror the cytoscape shapes/colours. */
+/* Node swatches — navy fill + blue ring + blue glow, sized by level */
 .cce-graph-legend__node {
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  border-radius: 50%;
   flex: 0 0 auto;
-  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.18);
+  background: var(--color-brand-dark);
+  border: 1.5px solid var(--color-brand);
+  box-shadow: 0 0 6px rgba(var(--color-brand-rgb), 0.6);
+
+  &--root {
+    width: 20px;
+    height: 20px;
+    background: var(--primary--950);
+    box-shadow: 0 0 9px rgba(var(--color-brand-rgb), 0.7);
+  }
 
   &--tech {
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-brand-mid), var(--color-brand));
+    width: 13px;
+    height: 13px;
   }
+
   &--sector {
-    border-radius: 4px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent));
+    width: 17px;
+    height: 17px;
   }
+
   &--subtopic {
-    background: linear-gradient(135deg, var(--color-brand-accent), var(--color-brand-mid));
-    transform: rotate(45deg);
-    border-radius: 2px;
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
   }
 }
 
-/* Edge glyph swatches — mirror the cytoscape line styles. */
+/* Edge swatch — thin solid faint blue connector */
 .cce-graph-legend__edge {
   display: inline-block;
-  width: 28px;
+  width: 26px;
   height: 0;
   flex: 0 0 auto;
-  border-top: 2.5px solid var(--color-brand);
   border-radius: 999px;
 
-  &--parent  { border-top: 3px solid var(--color-brand); }
-  &--related { border-top: 2px dashed var(--neutrals--400); }
-  &--required {
-    border-top: 2.5px dotted var(--color-accent);
-  }
+  &--parent  { border-top: 1.5px solid rgba(var(--color-brand-rgb), 0.5); }
+  &--related { border-top: 1.5px dashed rgba(var(--color-brand-rgb), 0.5); }
+  &--required { border-top: 1.5px dashed var(--color-accent); opacity: 0.65; }
 }
 
-/* ─── All-dimmed empty state ─────────────────────────────── */
+/* ─── All-dimmed empty state — dark overlay ─────────────────── */
 .cce-graph-canvas__empty {
   position: absolute;
   inset: 0;
@@ -200,22 +212,23 @@
   justify-content: center;
   gap: 0.65rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(var(--color-brand-dark-rgb), 0.75);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 4;
   pointer-events: auto;
-  border-radius: 18px;
+  border-radius: 20px;
   animation: cceEmptyFade 220ms cubic-bezier(0.22, 1, 0.36, 1);
 
   p {
     margin: 0;
     max-width: 36ch;
-    color: rgba(var(--color-text-primary-rgb), 0.78);
+    color: rgba(var(--color-brand-rgb), 0.75);
     font-size: 0.95rem;
     line-height: 1.5;
   }
 }
+
 @keyframes cceEmptyFade {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -228,13 +241,14 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(var(--color-brand-rgb), 0.1);
+  background: rgba(var(--color-brand-rgb), 0.12);
   color: var(--color-brand);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.25);
 
   mat-icon {
-    font-size: 28px !important;
-    width: 28px !important;
-    height: 28px !important;
+    font-size: 26px !important;
+    width: 26px !important;
+    height: 26px !important;
   }
 }
 
@@ -243,34 +257,31 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--color-brand);
-  background: rgba(var(--color-brand-rgb), 0.08);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.2);
+  background: rgba(var(--color-brand-rgb), 0.1);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.28);
   padding: 0.45rem 0.95rem;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    background: rgba(var(--color-brand-rgb), 0.14);
-    border-color: rgba(var(--color-brand-rgb), 0.36);
+    background: rgba(var(--color-brand-rgb), 0.18);
+    border-color: rgba(var(--color-brand-rgb), 0.5);
   }
   &:focus-visible {
-    outline: 3px solid rgba(var(--color-brand-rgb), 0.28);
+    outline: 2px solid rgba(var(--color-brand-rgb), 0.45);
     outline-offset: 2px;
   }
 }
 
-/* ─── Mobile tweaks ──────────────────────────────────────── */
+/* ─── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 540px) {
-  .cce-graph-controls__btn { width: 30px; height: 30px; }
-  .cce-graph-legend__toggle span { display: none; }
-  .cce-graph-legend__toggle { padding: 0.45rem; }
-  .cce-graph-legend__panel { min-width: 180px; padding: 0.75rem 0.85rem; }
+  .cce-graph-controls__btn { width: 32px; height: 32px; }
+  .cce-graph-legend { width: 180px; padding: 0.6rem 0.75rem 0.75rem; }
 }
 
+/* ─── Reduced-motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .cce-graph-controls__btn,
-  .cce-graph-legend__toggle { transition: none; }
-  .cce-graph-legend__panel,
+  .cce-graph-controls__btn { transition: none; }
   .cce-graph-canvas__empty { animation: none; }
 }

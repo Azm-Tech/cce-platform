@@ -1,0 +1,111 @@
+<div class="im-list">
+
+  <!-- Page header -->
+  <header class="im-list__header">
+    <div class="im-list__header-text">
+      <h1 class="im-list__title">{{ 'interactiveMaps.pageTitle' | transloco }}</h1>
+      @if (total() > 0) {
+        <span class="im-list__count">{{ total() }}</span>
+      }
+    </div>
+    <button mat-flat-button color="primary" *ccePermission="'Page.Edit'" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      {{ 'interactiveMaps.createBtn' | transloco }}
+    </button>
+  </header>
+
+  <!-- Progress bar -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="im-list__progress" />
+  }
+
+  <!-- Error state -->
+  @if (errorKind(); as kind) {
+    <div class="im-list__error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button mat-button color="primary" (click)="load()">
+        {{ 'common.actions.retry' | transloco }}
+      </button>
+    </div>
+  }
+
+  <!-- Card grid -->
+  @if (!loading() && !errorKind()) {
+
+    @if (rows().length === 0) {
+      <!-- Empty state -->
+      <div class="im-list__empty">
+        <mat-icon>map</mat-icon>
+        <p>{{ 'interactiveMaps.empty' | transloco }}</p>
+        <button mat-stroked-button color="primary" *ccePermission="'Page.Edit'" (click)="openCreate()">
+          {{ 'interactiveMaps.createBtn' | transloco }}
+        </button>
+      </div>
+    } @else {
+
+      <div class="im-list__grid">
+        @for (map of rows(); track map.id) {
+          <article class="im-list__card" [class.im-list__card--inactive]="!map.isActive">
+
+            <!-- Card header: status pill + icon actions -->
+            <div class="im-list__card-top">
+              <span class="im-list__status-pill"
+                [class.im-list__status-pill--active]="map.isActive"
+                [class.im-list__status-pill--inactive]="!map.isActive">
+                <mat-icon>{{ map.isActive ? 'check_circle' : 'pause_circle' }}</mat-icon>
+                {{ (map.isActive ? 'common.active' : 'common.inactive') | transloco }}
+              </span>
+
+              <div class="im-list__card-actions" *ccePermission="'Page.Edit'">
+                <button mat-icon-button
+                  [matTooltip]="'common.actions.edit' | transloco"
+                  (click)="openEdit(map); $event.stopPropagation()">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn"
+                  [matTooltip]="'common.actions.delete' | transloco"
+                  (click)="delete(map); $event.stopPropagation()">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bilingual name block -->
+            <div class="im-list__card-names">
+              <p class="im-list__name-en">{{ map.nameEn ?? '—' }}</p>
+              @if (map.nameAr) {
+                <p class="im-list__name-ar" dir="rtl">{{ map.nameAr }}</p>
+              }
+            </div>
+
+            <!-- Description excerpt -->
+            @if (map.descriptionEn) {
+              <p class="im-list__card-desc">{{ map.descriptionEn }}</p>
+            }
+
+            <!-- Card footer: "Manage nodes" CTA -->
+            <footer class="im-list__card-foot">
+              <button mat-button color="primary" (click)="openDetail(map)">
+                <mat-icon>account_tree</mat-icon>
+                {{ 'interactiveMaps.manageNodes' | transloco }}
+              </button>
+            </footer>
+
+          </article>
+        }
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="total()"
+        [pageIndex]="page() - 1"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[12, 24, 48]"
+        (page)="onPage($event)"
+        class="im-list__paginator" />
+
+    }
+  }
+
+</div>

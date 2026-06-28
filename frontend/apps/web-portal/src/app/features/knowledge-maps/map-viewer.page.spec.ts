@@ -1,37 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
+import { signal } from '@angular/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import { LocaleService } from '@frontend/i18n';
 import { KnowledgeMapsApiService, type Result } from './knowledge-maps-api.service';
-import type {
-  KnowledgeMap,
-  KnowledgeMapEdge,
-  KnowledgeMapNode,
-} from './knowledge-maps.types';
+import type { InteractiveMap, InteractiveMapNode } from './knowledge-maps.types';
 import { MapViewerPage } from './map-viewer.page';
-import { MapViewerStore } from './viewer/map-viewer-store.service';
 
-const MAP: KnowledgeMap = {
+const NODE: InteractiveMapNode = {
+  id: 'n1',
+  nameAr: 'تقنية', nameEn: 'Technology',
+  iconKey: 'tech',
+  level: 1,
+  parentId: null,
+  topicId: 't1',
+  tags: [],
+};
+
+const MAP: InteractiveMap = {
   id: 'm1',
   nameAr: 'خريطة', nameEn: 'Map',
   descriptionAr: 'وصف', descriptionEn: 'Description',
-  slug: 'main',
-  isActive: true,
-};
-const NODE: KnowledgeMapNode = {
-  id: 'n1', mapId: 'm1',
-  nameAr: 'تقنية', nameEn: 'Technology',
-  nodeType: 'Technology',
-  descriptionAr: null, descriptionEn: null,
-  iconUrl: null,
-  layoutX: 100, layoutY: 200,
-  orderIndex: 0,
-};
-const EDGE: KnowledgeMapEdge = {
-  id: 'e1', mapId: 'm1',
-  fromNodeId: 'n1', toNodeId: 'n2',
-  relationshipType: 'ParentOf',
-  orderIndex: 0,
+  nodes: [NODE],
 };
 
 function ok<T>(value: T): Result<T> {
@@ -52,13 +43,9 @@ describe('MapViewerPage', () => {
   let fixture: ComponentFixture<MapViewerPage>;
   let page: MapViewerPage;
   let getMap: jest.Mock;
-  let getNodes: jest.Mock;
-  let getEdges: jest.Mock;
 
   async function setup(opts: { id?: string | null; query?: Record<string, string> } = {}) {
     getMap = jest.fn().mockResolvedValue(ok(MAP));
-    getNodes = jest.fn().mockResolvedValue(ok([NODE]));
-    getEdges = jest.fn().mockResolvedValue(ok([EDGE]));
 
     const { of } = await import('rxjs');
     const routeFixture: RouteFixture = {
@@ -66,17 +53,20 @@ describe('MapViewerPage', () => {
         paramMap: { get: jest.fn(() => opts.id ?? 'm1') },
         queryParams: opts.query ?? {},
       },
-      // paramMap as an Observable for the takeUntilDestroyed subscription.
       paramMap: of({ get: (_key: string) => opts.id ?? 'm1' }),
     };
 
     await TestBed.configureTestingModule({
-      imports: [MapViewerPage, TranslocoModule.forRoot()],
+      imports: [
+        MapViewerPage,
+        TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } }),
+      ],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
-        { provide: KnowledgeMapsApiService, useValue: { getMap, getNodes, getEdges } },
+        { provide: KnowledgeMapsApiService, useValue: { getMap } },
         { provide: ActivatedRoute, useValue: routeFixture },
+        { provide: LocaleService, useValue: { locale: signal<'ar' | 'en'>('en').asReadonly() } },
       ],
     }).compileComponents();
 
@@ -91,25 +81,20 @@ describe('MapViewerPage', () => {
     fixture.detectChanges();
 
     expect(getMap).toHaveBeenCalledWith('m1');
-    expect(getNodes).toHaveBeenCalledWith('m1');
-    expect(getEdges).toHaveBeenCalledWith('m1');
     const html = fixture.nativeElement.textContent ?? '';
     expect(html).toContain('Map');
-    expect(html).toContain('Description');
-    expect(html).toContain('1 nodes');
-    expect(html).toContain('1 edges');
   });
 
   it('hydrates URL query params (q, type, view, node) into the store before opening', async () => {
     await setup({
       id: 'm1',
-      query: { q: 'carbon', type: 'Technology', view: 'list', node: 'n1' },
+      query: { q: 'carbon', type: '1', view: 'list', node: 'n1' },
     });
     fixture.detectChanges();
     await fixture.whenStable();
 
     expect(page.store.searchTerm()).toBe('carbon');
-    expect(Array.from(page.store.filters())).toEqual(['Technology']);
+    expect(Array.from(page.store.filters())).toEqual([1]);
     expect(page.store.viewMode()).toBe('list');
     expect(page.store.selectedNodeId()).toBe('n1');
   });
@@ -134,7 +119,7 @@ describe('MapViewerPage', () => {
     fixture.detectChanges();
 
     expect(page.store.errorKind()).toBe('server');
-    const btn = fixture.nativeElement.querySelector('button[mat-button]') as HTMLButtonElement | null;
+    const btn = fixture.nativeElement.querySelector('.cce-map-viewer__error button') as HTMLButtonElement | null;
     expect(btn).not.toBeNull();
   });
 

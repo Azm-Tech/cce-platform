@@ -9,52 +9,47 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
-import { NODE_TYPES, type NodeType } from '../knowledge-maps.types';
+import { NODE_LEVELS, type NodeLevel } from '../knowledge-maps.types';
 
 const SEARCH_DEBOUNCE_MS = 200;
 
 /**
- * Search input + NodeType filter chips. Lives above the graph.
+ * Search input + level filter chips. Lives above the graph.
  *
- * Manual setTimeout debounce on the input handler (no RxJS — we don't
- * want a whole observable graph for one signal). Cleanup the timer
- * on input changes + on destroy.
+ * Manual setTimeout debounce on the input handler (no RxJS). Chips
+ * represent node levels (0 = Root, 1 = Category, 2 = Topic).
  */
 @Component({
   selector: 'cce-search-and-filters',
   standalone: true,
   imports: [
     FormsModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslocoModule
-],
+    TranslocoModule,
+  ],
   templateUrl: './search-and-filters.component.html',
   styleUrl: './search-and-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchAndFiltersComponent implements OnDestroy {
   readonly searchTerm = input<string>('');
-  readonly filters = input<ReadonlySet<NodeType>>(new Set());
-  readonly nodeTypes = input<readonly NodeType[]>(NODE_TYPES);
+  readonly filters = input<ReadonlySet<number>>(new Set());
+  readonly nodeLevels = input<readonly NodeLevel[]>(NODE_LEVELS);
 
   readonly searchTermChange = output<string>();
-  readonly filtersChange = output<ReadonlySet<NodeType>>();
+  readonly filtersChange = output<ReadonlySet<number>>();
 
-  /** Local mirror of the input — drives the [(ngModel)] binding. */
   readonly inputValue = signal('');
 
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    // Sync external input changes into the local input value.
     effect(() => {
       this.inputValue.set(this.searchTerm());
     });
@@ -73,14 +68,14 @@ export class SearchAndFiltersComponent implements OnDestroy {
     }, SEARCH_DEBOUNCE_MS);
   }
 
-  isActive(type: NodeType): boolean {
-    return this.filters().has(type);
+  isActive(level: number): boolean {
+    return this.filters().has(level);
   }
 
-  toggleFilter(type: NodeType): void {
+  toggleFilter(level: number): void {
     const next = new Set(this.filters());
-    if (next.has(type)) next.delete(type);
-    else next.add(type);
+    if (next.has(level)) next.delete(level);
+    else next.add(level);
     this.filtersChange.emit(next);
   }
 }

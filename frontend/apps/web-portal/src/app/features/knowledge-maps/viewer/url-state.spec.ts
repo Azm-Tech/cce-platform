@@ -15,9 +15,14 @@ describe('parseUrlState', () => {
     expect(state.open).toEqual(['a', 'b', 'c']);
   });
 
-  it('filters out invalid NodeType strings while keeping valid ones', () => {
-    const state = parseUrlState({ type: 'Technology,InvalidType,Sector,SubTopic' });
-    expect(state.filters).toEqual(['Technology', 'Sector', 'SubTopic']);
+  it('filters out invalid level values while keeping valid 0, 1, 2', () => {
+    const state = parseUrlState({ type: '0,5,1,invalid,2' });
+    expect(state.filters).toEqual([0, 1, 2]);
+  });
+
+  it('parses all three valid levels', () => {
+    const state = parseUrlState({ type: '0,1,2' });
+    expect(state.filters).toEqual([0, 1, 2]);
   });
 
   it('falls back to view=graph when ?view= is missing or invalid', () => {
@@ -47,10 +52,9 @@ describe('buildUrlPatch', () => {
     expect(buildUrlPatch({ q: 'carbon' }).q).toBe('carbon');
   });
 
-  it('serializes filters list to comma-separated string', () => {
-    expect(buildUrlPatch({ filters: ['Technology', 'Sector'] }).type).toBe(
-      'Technology,Sector',
-    );
+  it('serializes level filters list to comma-separated string', () => {
+    expect(buildUrlPatch({ filters: [0, 1] }).type).toBe('0,1');
+    expect(buildUrlPatch({ filters: [2] }).type).toBe('2');
   });
 
   it('serializes open list to comma-separated string and clears when empty', () => {

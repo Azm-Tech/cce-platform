@@ -1,24 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import * as cytoscapeLoader from '../lib/cytoscape-loader';
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 import { GraphCanvasComponent } from './graph-canvas.component';
 
-const N1: KnowledgeMapNode = {
-  id: 'n1', mapId: 'm1',
+const N1: InteractiveMapNode = {
+  id: 'n1',
   nameAr: 'تقنية', nameEn: 'Tech',
-  nodeType: 'Technology',
-  descriptionAr: null, descriptionEn: null,
-  iconUrl: null,
-  layoutX: 100, layoutY: 200,
-  orderIndex: 0,
+  iconKey: 'tech',
+  level: 0,
+  parentId: null,
+  topicId: 't1',
+  tags: [],
 };
-const N2: KnowledgeMapNode = { ...N1, id: 'n2', nameEn: 'Sector', nodeType: 'Sector', layoutX: 300 };
-const E1: KnowledgeMapEdge = {
-  id: 'e1', mapId: 'm1',
-  fromNodeId: 'n1', toNodeId: 'n2',
-  relationshipType: 'ParentOf',
-  orderIndex: 0,
+const N2: InteractiveMapNode = {
+  ...N1, id: 'n2', nameEn: 'Sector', nameAr: 'قطاع',
+  level: 1, parentId: 'n1',
 };
 
 /**
@@ -70,6 +68,8 @@ function buildCyStub() {
     },
   };
 
+  const layoutStub = { run: jest.fn() };
+
   const cy = {
     on: jest.fn((event: string, _selector: string, handler: (e: { target: { id: () => string } }) => void) => {
       if (event === 'tap') tapHandlers.push(handler);
@@ -88,6 +88,7 @@ function buildCyStub() {
     }),
     edges: () => edgesCollection,
     add: jest.fn(),
+    layout: jest.fn(() => layoutStub),
     batch: jest.fn((fn: () => void) => fn()),
     zoom: jest.fn(() => 1),
     pan: jest.fn(() => ({ x: 0, y: 0 })),
@@ -124,14 +125,14 @@ describe('GraphCanvasComponent', () => {
       .mockResolvedValue(stub.cy as never);
 
     await TestBed.configureTestingModule({
-      imports: [GraphCanvasComponent],
+      imports: [GraphCanvasComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GraphCanvasComponent);
     component = fixture.componentInstance;
+    // N2 has parentId='n1' → buildElements derives 1 edge → 3 elements total
     fixture.componentRef.setInput('nodes', [N1, N2]);
-    fixture.componentRef.setInput('edges', [E1]);
   });
 
   afterEach(() => {
@@ -143,7 +144,7 @@ describe('GraphCanvasComponent', () => {
     await fixture.whenStable();
     expect(mountSpy).toHaveBeenCalledTimes(1);
     const opts = mountSpy.mock.calls[0][0];
-    expect(opts.elements).toHaveLength(3); // 2 nodes + 1 edge
+    expect(opts.elements).toHaveLength(3); // 2 nodes + 1 derived edge from N2.parentId
     expect(opts.style).toBeDefined();
     expect(opts.boxSelectionEnabled).toBe(true);
   });
@@ -157,15 +158,13 @@ describe('GraphCanvasComponent', () => {
     expect(node1.data.label).toBe('Tech');
   });
 
-  it('passes locale="ar" labels (nameAr) and mirrored x-coordinates', async () => {
+  it('passes locale="ar" labels (nameAr) to elements', async () => {
     fixture.componentRef.setInput('locale', 'ar');
-    fixture.componentRef.setInput('mirrored', true);
     fixture.detectChanges();
     await fixture.whenStable();
     const opts = mountSpy.mock.calls[0][0];
     const node1 = opts.elements.find((e: { data: { id: string } }) => e.data.id === 'n1');
     expect(node1.data.label).toBe('تقنية');
-    expect(node1.position.x).toBe(-100);
   });
 
   it('Cytoscape "tap" handler fires component nodeClick output with the tapped id', async () => {

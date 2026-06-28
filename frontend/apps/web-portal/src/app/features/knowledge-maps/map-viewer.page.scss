@@ -1,13 +1,19 @@
 /* ──────────────────────────────────────────────────────────────
    Knowledge Maps — viewer page
-   Brand palette: deep green var(--color-brand), mid green var(--color-brand-accent), gold var(--color-accent)
+   Dark-navy theme aligned with Figma: canvas is the hero; header
+   card sits above it as an info strip rather than a heavy banner.
    ────────────────────────────────────────────────────────────── */
 
 :host {
   display: block;
   max-width: 1400px;
   margin-inline: auto;
-  padding: 1.25rem clamp(1rem, 2.5vw, 2rem) 4rem;
+  /* Whole viewer sits on flat dark navy (#002645), matching the Figma frame. */
+  background: var(--primary--950);
+  border: 1px solid var(--color-brand-darker);
+  border-radius: 24px;
+  margin-block: 1.25rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 2.5vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);
 }
 
 /* ─── Branded back-pill ─────────────────────────────────── */
@@ -17,13 +23,13 @@
   gap: 0.4rem;
   margin-bottom: 1rem;
   padding: 0.45rem 0.95rem;
-  background: rgba(var(--color-brand-rgb), 0.06);
-  color: var(--color-brand);
+  background: var(--color-brand-dark);
+  color: var(--tertiary--500);
   border-radius: 999px;
   font-size: 0.86rem;
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid rgba(var(--color-brand-rgb), 0.16);
+  border: 1px solid var(--color-brand-darker);
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.18s ease;
 
   mat-icon {
@@ -116,33 +122,18 @@
   span { flex: 1 1 auto; min-width: 0; }
 }
 
-/* ─── Branded header card ────────────────────────────────── */
+/* ─── Header — plain title + description on dark navy (Figma) ── */
 .cce-map-viewer__header {
   position: relative;
-  background:
-    radial-gradient(900px 200px at 0% 0%, rgba(var(--color-brand-accent-rgb), 0.10), transparent 60%),
-    linear-gradient(135deg, var(--white) 0%, var(--primary--50) 100%);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.10);
-  border-radius: 20px;
-  padding: clamp(1.15rem, 2vw, 1.6rem) clamp(1.25rem, 2.5vw, 1.85rem);
-  margin: 1rem 0 1.1rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0.5rem 0 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.cce-map-viewer__header::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--color-brand) 0%, var(--color-brand-accent) 50%, var(--color-accent) 100%);
 }
 
 .cce-map-viewer__header-text {
@@ -150,19 +141,19 @@
   min-width: 0;
 
   h1 {
-    margin: 0 0 0.45rem;
-    font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
     font-weight: 800;
     line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: var(--color-brand-dark);
+    letter-spacing: -0.02em;
+    color: var(--color-brand);
   }
   p {
-    margin: 0 0 0.85rem;
-    color: rgba(var(--color-text-primary-rgb), 0.72);
+    margin: 0 0 0.6rem;
+    color: var(--tertiary--500);
     line-height: 1.55;
-    font-size: 0.95rem;
-    max-width: 70ch;
+    font-size: clamp(0.95rem, 1.4vw, 1.125rem);
+    max-width: 80ch;
   }
 }
 
@@ -170,20 +161,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-brand);
-  background: rgba(var(--color-brand-rgb), 0.08);
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  margin-bottom: 0.75rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
 
   mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
   }
 }
 
@@ -194,32 +182,32 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem;
 
   li {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: var(--white);
-    border: 1px solid rgba(var(--color-brand-rgb), 0.14);
-    color: var(--color-text-primary);
-    padding: 0.35rem 0.7rem;
+    gap: 0.3rem;
+    background: rgba(var(--color-brand-rgb), 0.12);
+    border: 1px solid rgba(var(--color-brand-rgb), 0.22);
+    color: rgba(var(--white-rgb, 255,255,255), 0.75);
+    padding: 0.25rem 0.6rem;
     border-radius: 999px;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     line-height: 1;
   }
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
     color: var(--color-brand);
   }
   strong {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--color-brand);
   }
   span {
-    color: rgba(var(--color-text-primary-rgb), 0.65);
+    color: rgba(var(--color-brand-rgb), 0.6);
   }
 }
 
@@ -233,8 +221,8 @@
 
 .cce-map-viewer__view-toggle {
   display: inline-flex;
-  background: rgba(var(--color-brand-rgb), 0.06);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.14);
+  background: rgba(var(--color-brand-dark-rgb), 0.65);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.22);
   border-radius: 999px;
   padding: 3px;
 }
@@ -245,29 +233,27 @@
   gap: 0.4rem;
   border: none;
   background: transparent;
-  color: rgba(var(--color-text-primary-rgb), 0.7);
-  padding: 0.45rem 0.85rem;
+  color: rgba(var(--color-brand-rgb), 0.65);
+  padding: 0.4rem 0.8rem;
   border-radius: 999px;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
   }
 
-  &:hover {
-    color: var(--color-brand);
-  }
+  &:hover { color: var(--color-brand); }
 
   &--active {
-    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 100%);
+    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 100%);
     color: var(--white);
-    box-shadow: 0 6px 14px -8px rgba(var(--color-brand-rgb), 0.55);
+    box-shadow: 0 4px 12px -6px rgba(var(--color-brand-rgb), 0.6);
 
     &:hover { color: var(--white); }
   }
@@ -277,23 +263,24 @@
    component but we want a small gap between it and the canvas. */
 cce-search-and-filters { display: block; margin-bottom: 1rem; }
 
-/* ─── Split: canvas + side panel ─────────────────────────── */
-.cce-map-viewer__split {
-  display: grid;
-  gap: 1rem;
-
-  /* Single column on mobile (panel falls below the canvas as a sheet). */
-  grid-template-columns: 1fr;
-
-  /* Side-by-side on desktop: canvas grows, panel fixed-width. */
-  @media (min-width: 720px) {
-    grid-template-columns: 1fr 380px;
-    align-items: start;
-  }
+/* ─── Stage: canvas with an overlaying detail drawer ─────── */
+.cce-map-viewer__stage {
+  position: relative;
 }
 
-.cce-map-viewer__canvas { min-width: 0; }
-.cce-map-viewer__panel  { min-width: 0; }
+.cce-map-viewer__canvas { display: block; min-width: 0; }
+
+/* Drawer overlays the trailing edge of the stage. When no node is
+ * selected the panel renders nothing, so the overlay never blocks the
+ * canvas. */
+.cce-map-viewer__drawer {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 6;
+  max-width: 100%;
+  display: block;
+}
 
 /* On narrow screens, drop the toggle button text and just show icons
  * so the toolbar doesn't wrap awkwardly. */

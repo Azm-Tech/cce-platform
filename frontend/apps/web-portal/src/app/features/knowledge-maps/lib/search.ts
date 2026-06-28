@@ -1,11 +1,11 @@
-import type { KnowledgeMapNode, NodeType } from '../knowledge-maps.types';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 
 /**
  * Returns true when `node` should appear as a "match" given the
- * current search term + active type filters.
+ * current search term + active level filters.
  *
  * Composition rules:
- * - Empty filter set means "no type filter" — every NodeType matches.
+ * - Empty filter set means "no level filter" — every level matches.
  * - Whitespace-only term means "no text search" — every name matches.
  * - Both filters active: AND semantics (must satisfy both).
  *
@@ -14,11 +14,11 @@ import type { KnowledgeMapNode, NodeType } from '../knowledge-maps.types';
  * so Arabic and Turkish-style edge cases behave correctly.
  */
 export function nodeMatches(
-  node: KnowledgeMapNode,
+  node: InteractiveMapNode,
   term: string,
-  filters: ReadonlySet<NodeType>,
+  filters: ReadonlySet<number>,
 ): boolean {
-  if (filters.size > 0 && !filters.has(node.nodeType)) return false;
+  if (filters.size > 0 && !filters.has(node.level)) return false;
   const trimmed = term.trim();
   if (!trimmed) return true;
   const needle = trimmed.toLocaleLowerCase();

@@ -28,32 +28,32 @@
   </div>
 
   <nav class="cce-list-view">
-    @for (group of grouped(); track group.type) {
+    @for (group of grouped(); track group.level) {
       <section
         class="cce-list-view__section"
-        [class.cce-list-view__section--collapsed]="isCollapsed(group.type)"
-        [attr.data-node-type]="group.type"
+        [class.cce-list-view__section--collapsed]="isCollapsed(group.level)"
+        [attr.data-level]="group.level"
       >
         <button
           type="button"
           class="cce-list-view__section-header"
-          [attr.aria-expanded]="!isCollapsed(group.type)"
-          [attr.aria-label]="(isCollapsed(group.type)
+          [attr.aria-expanded]="!isCollapsed(group.level)"
+          [attr.aria-label]="(isCollapsed(group.level)
               ? 'knowledgeMaps.list.expandSection'
               : 'knowledgeMaps.list.collapseSection') | transloco"
-          (click)="toggleCollapsed(group.type)"
+          (click)="toggleCollapsed(group.level)"
         >
-          <span class="cce-list-view__pip" [attr.data-node-type]="group.type" aria-hidden="true"></span>
+          <span class="cce-list-view__pip" [attr.data-level]="group.level" aria-hidden="true"></span>
           <h2 class="cce-list-view__section-title">
-            {{ ('knowledgeMaps.detail.nodeType.' + group.type) | transloco }}
+            {{ ('knowledgeMaps.detail.level.' + group.level) | transloco }}
           </h2>
           <span class="cce-list-view__count">{{ group.nodes.length }}</span>
           <mat-icon class="cce-list-view__chevron" aria-hidden="true">
-            {{ isCollapsed(group.type) ? 'expand_more' : 'expand_less' }}
+            {{ isCollapsed(group.level) ? 'expand_more' : 'expand_less' }}
           </mat-icon>
         </button>
 
-        @if (!isCollapsed(group.type)) {
+        @if (!isCollapsed(group.level)) {
           @if (group.nodes.length === 0) {
             <p class="cce-list-view__empty">
               {{ 'knowledgeMaps.list.noneOfType' | transloco }}
@@ -72,26 +72,11 @@
                   >
                     <span class="cce-list-view__name">{{ nameOf(n) }}</span>
 
-                    <!-- Edge composition pills -->
-                    @if (breakdownOf(n).total > 0) {
-                      <span class="cce-list-view__edges" aria-hidden="true">
-                        @for (rel of relTypes; track rel) {
-                          @if (breakdownOf(n)[rel] > 0) {
-                            <span
-                              class="cce-list-view__edge"
-                              [attr.data-rel]="rel"
-                              [title]="('knowledgeMaps.list.edges' + rel) | transloco"
-                            >
-                              {{ breakdownOf(n)[rel] }}
-                            </span>
-                          }
-                        }
+                    @if (childCountOf(n) > 0) {
+                      <span class="cce-list-view__edge-count" aria-hidden="true">
+                        {{ childCountOf(n) }}
                       </span>
                     }
-
-                    <span class="cce-list-view__edge-count">
-                      {{ outboundCountOf(n) }}
-                    </span>
                   </button>
                 </li>
               }

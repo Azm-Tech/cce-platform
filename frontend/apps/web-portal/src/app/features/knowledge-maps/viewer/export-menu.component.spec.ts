@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { ExportMenuComponent, type ExportFormat } from './export-menu.component';
 
 describe('ExportMenuComponent', () => {
@@ -9,7 +9,7 @@ describe('ExportMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExportMenuComponent, TranslocoModule.forRoot()],
+      imports: [ExportMenuComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(ExportMenuComponent);

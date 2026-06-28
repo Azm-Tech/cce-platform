@@ -1,31 +1,66 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import type { InteractiveMapNode, NodeDetails } from '../knowledge-maps.types';
 import { NodeDetailPanelComponent } from './node-detail-panel.component';
 
-const NODE_A: KnowledgeMapNode = {
-  id: 'a', mapId: 'm1',
-  nameAr: 'العقدة أ', nameEn: 'Node A',
-  nodeType: 'Technology',
-  descriptionAr: 'وصف أ', descriptionEn: 'Description A',
-  iconUrl: null,
-  layoutX: 0, layoutY: 0,
-  orderIndex: 0,
+const PARENT: InteractiveMapNode = {
+  id: 'p1',
+  nameAr: 'التقليل', nameEn: 'Reduce',
+  iconKey: 'recycle',
+  level: 0,
+  parentId: null,
+  topicId: 't1',
+  tags: [],
 };
-const NODE_B: KnowledgeMapNode = {
-  ...NODE_A, id: 'b', nameAr: 'العقدة ب', nameEn: 'Node B', nodeType: 'Sector',
-  descriptionAr: null, descriptionEn: null,
+const NODE: InteractiveMapNode = {
+  ...PARENT,
+  id: 'n1',
+  nameAr: 'كفاءة الطاقة', nameEn: 'Energy Efficiency',
+  iconKey: 'factory',
+  level: 1,
+  parentId: 'p1',
 };
-const NODE_C: KnowledgeMapNode = { ...NODE_A, id: 'c', nameEn: 'Node C', nameAr: 'العقدة ج' };
 
-const EDGE_AB: KnowledgeMapEdge = {
-  id: 'eab', mapId: 'm1',
-  fromNodeId: 'a', toNodeId: 'b',
-  relationshipType: 'ParentOf',
-  orderIndex: 0,
+const DETAILS: NodeDetails = {
+  node: { id: 'n1', nameAr: 'كفاءة الطاقة', nameEn: 'Energy Efficiency', iconKey: 'factory', topicId: 't1' },
+  topic: {
+    id: 't1',
+    nameAr: 'عام', nameEn: 'General',
+    descriptionAr: 'وصف عربي', descriptionEn: 'A topic description',
+    slug: 'general',
+  },
+  resources: [
+    {
+      id: 'r1',
+      titleAr: 'مصدر', titleEn: 'Source One',
+      resourceType: 'paper',
+      categoryNameAr: 'فئة', categoryNameEn: 'Category',
+      publishedOn: '2026-01-10T00:00:00Z',
+    },
+  ],
+  news: [
+    { id: 'nw1', titleAr: 'خبر', titleEn: 'News One', publishedOn: '2026-02-01T00:00:00Z' },
+  ],
+  events: [
+    {
+      id: 'ev1',
+      titleAr: 'فعالية', titleEn: 'Event One',
+      startsOn: '2026-03-01T00:00:00Z',
+      endsOn: '2026-03-02T00:00:00Z',
+    },
+  ],
+  posts: [
+    {
+      id: 'po1',
+      type: 'question',
+      title: 'A question post',
+      content: 'body',
+      commentsCount: 3,
+      createdOn: '2026-04-01T00:00:00Z',
+    },
+  ],
 };
-const EDGE_AC: KnowledgeMapEdge = { ...EDGE_AB, id: 'eac', toNodeId: 'c', relationshipType: 'RelatedTo' };
 
 describe('NodeDetailPanelComponent', () => {
   let fixture: ComponentFixture<NodeDetailPanelComponent>;
@@ -33,7 +68,13 @@ describe('NodeDetailPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NodeDetailPanelComponent, TranslocoModule.forRoot()],
+      imports: [
+        NodeDetailPanelComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {}, ar: {} },
+          translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+        }),
+      ],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 
@@ -47,94 +88,85 @@ describe('NodeDetailPanelComponent', () => {
     expect(fixture.nativeElement.querySelector('.cce-node-detail')).toBeNull();
   });
 
-  it('renders localized name + description when node is provided', () => {
-    fixture.componentRef.setInput('node', NODE_A);
+  it('renders title and parent eyebrow when node + allNodes set', () => {
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('allNodes', [PARENT, NODE]);
     fixture.componentRef.setInput('locale', 'en');
     fixture.detectChanges();
-    expect(component.name()).toBe('Node A');
-    expect(component.description()).toBe('Description A');
-    const html = fixture.nativeElement.textContent ?? '';
-    expect(html).toContain('Node A');
-    expect(html).toContain('Description A');
-  });
-
-  it('locale toggle updates name and description', () => {
-    fixture.componentRef.setInput('node', NODE_A);
-    fixture.componentRef.setInput('locale', 'en');
-    fixture.detectChanges();
-    expect(component.name()).toBe('Node A');
-    fixture.componentRef.setInput('locale', 'ar');
-    fixture.detectChanges();
-    expect(component.name()).toBe('العقدة أ');
-    expect(component.description()).toBe('وصف أ');
-  });
-
-  it('renders "—" when description is null in the active locale', () => {
-    fixture.componentRef.setInput('node', NODE_B);
-    fixture.componentRef.setInput('locale', 'en');
-    fixture.detectChanges();
-    expect(component.description()).toBe('—');
-  });
-
-  it('outbound edges list renders one row per edge with the target localized name', () => {
-    fixture.componentRef.setInput('node', NODE_A);
-    fixture.componentRef.setInput('outboundEdges', [EDGE_AB, EDGE_AC]);
-    fixture.componentRef.setInput('outboundTargets', [NODE_B, NODE_C]);
-    fixture.componentRef.setInput('locale', 'en');
-    fixture.detectChanges();
-    const rows = fixture.nativeElement.querySelectorAll('.cce-node-detail__edge');
-    expect(rows.length).toBe(2);
+    expect(component.name()).toBe('Energy Efficiency');
+    expect(component.parentName()).toBe('Reduce');
     const text = fixture.nativeElement.textContent ?? '';
-    expect(text).toContain('Node B');
-    expect(text).toContain('Node C');
+    expect(text).toContain('Energy Efficiency');
+    expect(text).toContain('Reduce');
   });
 
-  it('clicking an edge button emits (nodeSelected) with the target id', () => {
-    fixture.componentRef.setInput('node', NODE_A);
-    fixture.componentRef.setInput('outboundEdges', [EDGE_AB]);
-    fixture.componentRef.setInput('outboundTargets', [NODE_B]);
+  it('shows the loading state when loading and no details', () => {
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('loading', true);
     fixture.detectChanges();
-    let emitted: string | null = null;
-    component.nodeSelected.subscribe((id) => { emitted = id; });
-    const btn = fixture.nativeElement.querySelector('.cce-node-detail__edge') as HTMLButtonElement;
-    btn.click();
-    expect(emitted).toBe('b');
+    expect(fixture.nativeElement.querySelector('.cce-node-detail__loading')).not.toBeNull();
   });
 
-  it('renders "no outbound connections" empty-state when outboundEdges is empty', () => {
-    fixture.componentRef.setInput('node', NODE_A);
-    fixture.componentRef.setInput('outboundEdges', []);
+  it('renders a resource row and emits linkActivated(resource) on click', () => {
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('details', DETAILS);
+    fixture.componentRef.setInput('locale', 'en');
     fixture.detectChanges();
-    expect(component.hasOutboundEdges()).toBe(false);
-    const html = fixture.nativeElement.textContent ?? '';
-    expect(html).toContain('knowledgeMaps.detail.noEdges');
+    let emitted: { kind: string; id: string } | null = null;
+    component.linkActivated.subscribe((e) => { emitted = e; });
+    const rows = fixture.nativeElement.querySelectorAll(
+      '.cce-node-detail__section .cce-node-detail__row',
+    ) as NodeListOf<HTMLButtonElement>;
+    expect(rows.length).toBeGreaterThan(0);
+    rows[0].click();
+    expect(emitted).toEqual({ kind: 'resource', id: 'r1' });
   });
 
-  it('ESC keydown emits (closed) when a node is visible', () => {
-    fixture.componentRef.setInput('node', NODE_A);
+  it('merges news + events and emits linkActivated(news) on the first news row', () => {
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('details', DETAILS);
+    fixture.detectChanges();
+    expect(component.newsEvents().length).toBe(2);
+    expect(component.newsEvents()[0]).toEqual(
+      expect.objectContaining({ kind: 'news', id: 'nw1' }),
+    );
+    let emitted: { kind: string; id: string } | null = null;
+    component.linkActivated.subscribe((e) => { emitted = e; });
+    component.onLink('news', 'nw1');
+    expect(emitted).toEqual({ kind: 'news', id: 'nw1' });
+  });
+
+  it('renders post rows and emits linkActivated(post) on click', () => {
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('details', DETAILS);
+    fixture.detectChanges();
+    let emitted: { kind: string; id: string } | null = null;
+    component.linkActivated.subscribe((e) => { emitted = e; });
+    component.onLink('post', 'po1');
+    expect(emitted).toEqual({ kind: 'post', id: 'po1' });
+  });
+
+  it('close button click emits (closed)', () => {
+    fixture.componentRef.setInput('node', NODE);
     fixture.detectChanges();
     let closed = false;
     component.closed.subscribe(() => { closed = true; });
-    component.onEscape();
+    const btn = fixture.nativeElement.querySelector('.cce-node-detail__close') as HTMLButtonElement;
+    btn.click();
     expect(closed).toBe(true);
   });
 
-  it('ESC is a no-op when no node is visible', () => {
+  it('ESC emits (closed) only when a node is visible', () => {
     fixture.componentRef.setInput('node', null);
     fixture.detectChanges();
     let closed = false;
     component.closed.subscribe(() => { closed = true; });
     component.onEscape();
     expect(closed).toBe(false);
-  });
 
-  it('close button click emits (closed)', () => {
-    fixture.componentRef.setInput('node', NODE_A);
+    fixture.componentRef.setInput('node', NODE);
     fixture.detectChanges();
-    let closed = false;
-    component.closed.subscribe(() => { closed = true; });
-    const btn = fixture.nativeElement.querySelector('.cce-node-detail__close') as HTMLButtonElement;
-    btn.click();
+    component.onEscape();
     expect(closed).toBe(true);
   });
 });

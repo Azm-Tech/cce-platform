@@ -18,15 +18,15 @@
     <span class="cce-search-filters__label">
       {{ 'knowledgeMaps.filter.title' | transloco }}:
     </span>
-    @for (type of nodeTypes(); track type) {
+    @for (level of nodeLevels(); track level) {
       <button
         type="button"
         class="cce-search-filters__chip"
-        [class.cce-search-filters__chip--active]="isActive(type)"
-        [attr.aria-pressed]="isActive(type)"
-        (click)="toggleFilter(type)"
+        [class.cce-search-filters__chip--active]="isActive(level)"
+        [attr.aria-pressed]="isActive(level)"
+        (click)="toggleFilter(level)"
       >
-        {{ ('knowledgeMaps.detail.nodeType.' + type) | transloco }}
+        {{ ('knowledgeMaps.detail.level.' + level) | transloco }}
       </button>
     }
   </div>

@@ -319,7 +319,11 @@
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
-      "retry": "Retry"
+      "retry": "Retry",
+      "edit": "Edit",
+      "delete": "Delete",
+      "create": "Create",
+      "back": "Back"
     },
     "validation": {
       "required": "This field is required.",
@@ -333,7 +337,9 @@
       "en": "English"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "health": {
     "title": "System Health",
@@ -444,7 +450,8 @@
     },
     "homepageSettings": "Homepage Settings",
     "aboutSettings": "About Settings",
-    "policiesSettings": "Policies & Terms"
+    "policiesSettings": "Policies & Terms",
+    "interactiveMaps": "Interactive Maps"
   },
   "header": {
     "signIn": "Sign in",
@@ -2114,8 +2121,13 @@
     "followTopic": "Follow topic",
     "followingTopic": "Following",
     "newPostsPill": "{{count}} new posts — Refresh",
-    "presence": { "viewing": "{{count}} viewing" },
-    "typing": { "one": "Someone is typing…", "many": "{{count}} people are typing…" },
+    "presence": {
+      "viewing": "{{count}} viewing"
+    },
+    "typing": {
+      "one": "Someone is typing…",
+      "many": "{{count}} people are typing…"
+    },
     "unfollowTopic": "Unfollow topic",
     "followPost": "Follow post",
     "followingPost": "Following",
@@ -2234,7 +2246,13 @@
       "placeholder": "Search nodes…"
     },
     "filter": {
-      "title": "Type"
+      "title": "Type",
+      "level": {
+        "0": "Root",
+        "1": "Category",
+        "2": "Topic",
+        "-1": "Map"
+      }
     },
     "tabs": {
       "label": "Open maps",
@@ -2260,7 +2278,8 @@
       "legendOpen": "Show legend",
       "legendClose": "Hide legend",
       "allDimmed": "No nodes match your search or filters.",
-      "allDimmedClear": "Clear filters"
+      "allDimmedClear": "Clear filters",
+      "connections": "Connections"
     },
     "viewMode": {
       "graph": "Graph view",
@@ -2274,20 +2293,38 @@
       "pdf": "PDF document"
     },
     "detail": {
-      "description": "Description",
-      "outboundEdges": "Outbound connections",
-      "noEdges": "No outbound connections.",
       "close": "Close",
-      "nodeType": {
-        "Technology": "Technology",
-        "Sector": "Sector",
-        "SubTopic": "Subtopic"
+      "level": {
+        "0": "Root",
+        "1": "Category",
+        "2": "Topic",
+        "-1": "Map"
       },
-      "relationshipType": {
-        "ParentOf": "Parent of",
-        "RelatedTo": "Related to",
-        "RequiredBy": "Required by"
-      }
+      "parent": "Parent node",
+      "children": "Sub-nodes",
+      "noChildren": "No sub-nodes",
+      "childLink": "Parent–child"
+    },
+    "drawer": {
+      "sources": "Related Sources",
+      "newsEvents": "Related News & Events",
+      "posts": "Related Community Posts",
+      "news": "News",
+      "event": "Event",
+      "loading": "Loading details…",
+      "empty": "No related content yet",
+      "comments": "comments"
+    },
+    "resourceType": {
+      "paper": "Report",
+      "article": "Article",
+      "video": "Video",
+      "other": "Resource"
+    },
+    "postType": {
+      "question": "Question",
+      "poll": "Poll",
+      "info": "Post"
     }
   },
   "interactiveCity": {
@@ -2698,5 +2735,77 @@
     "success": "Your preferences have been saved!",
     "ctaTitle": "Personalize your experience",
     "ctaBody": "Set your interests and knowledge level to get tailored content."
+  },
+  "interactiveMaps": {
+    "pageTitle": "Interactive Maps",
+    "createBtn": "New Map",
+    "col": {
+      "nameEn": "Name (EN)",
+      "nameAr": "Name (AR)",
+      "isActive": "Active",
+      "actions": "Actions",
+      "nodes": "Nodes"
+    },
+    "form": {
+      "createTitle": "Create Interactive Map",
+      "editTitle": "Edit Interactive Map",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "isActive": "Active"
+    },
+    "toast": {
+      "created": "Interactive map created.",
+      "updated": "Interactive map updated.",
+      "deleted": "Interactive map deleted."
+    },
+    "delete": {
+      "title": "Delete Map",
+      "message": "Are you sure you want to delete this map? All its nodes will also be deleted.",
+      "confirm": "Delete"
+    },
+    "nodes": {
+      "pageTitle": "Map Nodes",
+      "createBtn": "Add Node",
+      "col": {
+        "level": "Level",
+        "category": "Category",
+        "topicId": "Topic ID",
+        "node": "Node",
+        "status": "Status"
+      },
+      "form": {
+        "createTitle": "Add Node",
+        "editTitle": "Edit Node",
+        "level": "Level",
+        "iconKey": "Icon Key",
+        "category": "Category (number)",
+        "categoryNameAr": "Category Name (AR)",
+        "categoryNameEn": "Category Name (EN)",
+        "parentId": "Parent Node",
+        "noParent": "None (root)",
+        "topicId": "Topic",
+        "sectionIdentity": "Identity",
+        "sectionHierarchy": "Hierarchy",
+        "sectionClassification": "Classification",
+        "sectionTopic": "Topic",
+        "sectionStatus": "Status",
+        "iconKeyHint": "Material icon name, e.g. star"
+      },
+      "toast": {
+        "created": "Node created.",
+        "updated": "Node updated.",
+        "deleted": "Node deleted."
+      },
+      "delete": {
+        "title": "Delete Node",
+        "message": "Are you sure you want to delete this node?",
+        "confirm": "Delete"
+      },
+      "empty": "No nodes in this map yet."
+    },
+    "manageNodes": "Manage Nodes",
+    "empty": "No interactive maps yet. Create one to get started."
   }
 }

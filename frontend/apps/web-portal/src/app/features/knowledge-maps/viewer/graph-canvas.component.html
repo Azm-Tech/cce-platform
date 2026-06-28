@@ -53,32 +53,28 @@
     <dl class="cce-graph-legend__group">
       <dt>{{ 'knowledgeMaps.filter.title' | transloco }}</dt>
       <dd>
-        <span class="cce-graph-legend__node cce-graph-legend__node--tech" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.Technology' | transloco }}
+        <span class="cce-graph-legend__node cce-graph-legend__node--root" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.level.-1' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__node cce-graph-legend__node--sector" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.Sector' | transloco }}
+        {{ 'knowledgeMaps.detail.level.0' | transloco }}
+      </dd>
+      <dd>
+        <span class="cce-graph-legend__node cce-graph-legend__node--tech" aria-hidden="true"></span>
+        {{ 'knowledgeMaps.detail.level.1' | transloco }}
       </dd>
       <dd>
         <span class="cce-graph-legend__node cce-graph-legend__node--subtopic" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.nodeType.SubTopic' | transloco }}
+        {{ 'knowledgeMaps.detail.level.2' | transloco }}
       </dd>
     </dl>
 
     <dl class="cce-graph-legend__group">
-      <dt>{{ 'knowledgeMaps.detail.outboundEdges' | transloco }}</dt>
+      <dt>{{ 'knowledgeMaps.graph.connections' | transloco }}</dt>
       <dd>
         <span class="cce-graph-legend__edge cce-graph-legend__edge--parent" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.ParentOf' | transloco }}
-      </dd>
-      <dd>
-        <span class="cce-graph-legend__edge cce-graph-legend__edge--related" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.RelatedTo' | transloco }}
-      </dd>
-      <dd>
-        <span class="cce-graph-legend__edge cce-graph-legend__edge--required" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.relationshipType.RequiredBy' | transloco }}
+        {{ 'knowledgeMaps.detail.childLink' | transloco }}
       </dd>
     </dl>
   </aside>

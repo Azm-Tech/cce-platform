@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import type { ViewerTab } from './map-viewer-store.service';
 import { TabsBarComponent } from './tabs-bar.component';
 
@@ -10,13 +10,15 @@ const TAB1: ViewerTab = {
     id: 'm1',
     nameAr: 'الخريطة الأولى', nameEn: 'Map One',
     descriptionAr: '', descriptionEn: '',
-    slug: 'one', isActive: true,
+    nodes: [],
   },
   nodes: [],
-  edges: [],
   loadedAt: 0,
 };
-const TAB2: ViewerTab = { ...TAB1, id: 'm2', metadata: { ...TAB1.metadata, id: 'm2', nameEn: 'Map Two', nameAr: 'الخريطة الثانية', slug: 'two' } };
+const TAB2: ViewerTab = {
+  ...TAB1, id: 'm2',
+  metadata: { ...TAB1.metadata, id: 'm2', nameEn: 'Map Two', nameAr: 'الخريطة الثانية' },
+};
 
 describe('TabsBarComponent', () => {
   let fixture: ComponentFixture<TabsBarComponent>;
@@ -24,7 +26,7 @@ describe('TabsBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TabsBarComponent, TranslocoModule.forRoot()],
+      imports: [TabsBarComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(TabsBarComponent);

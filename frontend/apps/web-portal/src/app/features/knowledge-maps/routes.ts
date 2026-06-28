@@ -4,7 +4,7 @@ export const KNOWLEDGE_MAPS_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./knowledge-maps-list.page').then((m) => m.KnowledgeMapsListPage),
+      import('./knowledge-maps-list.page').then((m) => m.InteractiveMapsListPage),
   },
   {
     path: ':id',

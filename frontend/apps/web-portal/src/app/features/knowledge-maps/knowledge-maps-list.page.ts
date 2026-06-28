@@ -12,7 +12,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { KnowledgeMapsApiService } from './knowledge-maps-api.service';
-import type { KnowledgeMap } from './knowledge-maps.types';
+import type { InteractiveMap } from './knowledge-maps.types';
 
 /**
  * Public list page for knowledge maps. Polished UX:
@@ -43,11 +43,11 @@ import type { KnowledgeMap } from './knowledge-maps.types';
   styleUrl: './knowledge-maps-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KnowledgeMapsListPage implements OnInit {
+export class InteractiveMapsListPage implements OnInit {
   private readonly api = inject(KnowledgeMapsApiService);
   private readonly localeService = inject(LocaleService);
 
-  readonly rows = signal<KnowledgeMap[]>([]);
+  readonly rows = signal<InteractiveMap[]>([]);
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
 
@@ -58,7 +58,7 @@ export class KnowledgeMapsListPage implements OnInit {
 
   /** Filtered result of `rows()` after applying `query`. Lower-cased
    *  contains-match against name + description in the active locale. */
-  readonly filtered = computed<KnowledgeMap[]>(() => {
+  readonly filtered = computed<InteractiveMap[]>(() => {
     const q = this.query().trim().toLowerCase();
     const all = this.rows();
     if (!q) return all;
@@ -66,7 +66,6 @@ export class KnowledgeMapsListPage implements OnInit {
       const haystack = [
         this.nameOf(m),
         this.descriptionOf(m),
-        m.slug,
       ]
         .filter(Boolean)
         .join(' ')
@@ -134,11 +133,11 @@ export class KnowledgeMapsListPage implements OnInit {
     this.query.set('');
   }
 
-  nameOf(m: KnowledgeMap): string {
+  nameOf(m: InteractiveMap): string {
     return this.locale() === 'ar' ? m.nameAr : m.nameEn;
   }
 
-  descriptionOf(m: KnowledgeMap): string {
+  descriptionOf(m: InteractiveMap): string {
     return this.locale() === 'ar' ? m.descriptionAr : m.descriptionEn;
   }
 }

@@ -319,7 +319,11 @@
       "save": "حفظ",
       "cancel": "إلغاء",
       "close": "إغلاق",
-      "retry": "إعادة المحاولة"
+      "retry": "إعادة المحاولة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "create": "إنشاء",
+      "back": "رجوع"
     },
     "validation": {
       "required": "هذا الحقل مطلوب.",
@@ -333,7 +337,9 @@
       "en": "الإنجليزية"
     },
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "active": "نشط",
+    "inactive": "غير نشط"
   },
   "health": {
     "title": "حالة النظام",
@@ -444,7 +450,8 @@
     },
     "homepageSettings": "إعدادات الصفحة الرئيسية",
     "aboutSettings": "إعدادات حول المنصة",
-    "policiesSettings": "السياسات والشروط"
+    "policiesSettings": "السياسات والشروط",
+    "interactiveMaps": "الخرائط التفاعلية"
   },
   "header": {
     "signIn": "تسجيل الدخول",
@@ -2114,8 +2121,13 @@
     "followTopic": "متابعة الموضوع",
     "followingTopic": "متابَع",
     "newPostsPill": "{{count}} منشورات جديدة — تحديث",
-    "presence": { "viewing": "{{count}} يشاهدون" },
-    "typing": { "one": "شخص ما يكتب…", "many": "{{count}} أشخاص يكتبون…" },
+    "presence": {
+      "viewing": "{{count}} يشاهدون"
+    },
+    "typing": {
+      "one": "شخص ما يكتب…",
+      "many": "{{count}} أشخاص يكتبون…"
+    },
     "unfollowTopic": "إلغاء متابعة الموضوع",
     "followPost": "متابعة المنشور",
     "followingPost": "متابَع",
@@ -2234,7 +2246,13 @@
       "placeholder": "ابحث في العقد…"
     },
     "filter": {
-      "title": "النوع"
+      "title": "النوع",
+      "level": {
+        "0": "جذر",
+        "1": "فئة",
+        "2": "موضوع",
+        "-1": "الخريطة"
+      }
     },
     "tabs": {
       "label": "الخرائط المفتوحة",
@@ -2260,7 +2278,8 @@
       "legendOpen": "إظهار الإيضاح",
       "legendClose": "إخفاء الإيضاح",
       "allDimmed": "لا توجد عقد تطابق بحثك أو فلاترك.",
-      "allDimmedClear": "مسح الفلاتر"
+      "allDimmedClear": "مسح الفلاتر",
+      "connections": "الروابط"
     },
     "viewMode": {
       "graph": "عرض الرسم البياني",
@@ -2274,20 +2293,38 @@
       "pdf": "مستند PDF"
     },
     "detail": {
-      "description": "الوصف",
-      "outboundEdges": "العلاقات الصادرة",
-      "noEdges": "لا توجد علاقات صادرة.",
       "close": "إغلاق",
-      "nodeType": {
-        "Technology": "تقنية",
-        "Sector": "قطاع",
-        "SubTopic": "موضوع فرعي"
+      "level": {
+        "0": "جذر",
+        "1": "فئة",
+        "2": "موضوع",
+        "-1": "الخريطة"
       },
-      "relationshipType": {
-        "ParentOf": "أصل لـ",
-        "RelatedTo": "مرتبط بـ",
-        "RequiredBy": "مطلوب من قبل"
-      }
+      "parent": "العقدة الأم",
+      "children": "العقد الفرعية",
+      "noChildren": "لا توجد عقد فرعية",
+      "childLink": "أصل–فرع"
+    },
+    "drawer": {
+      "sources": "مصادر ذات الصلة",
+      "newsEvents": "أخبار وفعاليات ذات صلة",
+      "posts": "منشورات المجتمع ذات الصلة",
+      "news": "خبر",
+      "event": "فعالية",
+      "loading": "جارٍ تحميل التفاصيل…",
+      "empty": "لا يوجد محتوى مرتبط بعد",
+      "comments": "تعليقات"
+    },
+    "resourceType": {
+      "paper": "تقرير",
+      "article": "مقال",
+      "video": "فيديو",
+      "other": "مصدر"
+    },
+    "postType": {
+      "question": "سؤال",
+      "poll": "استطلاع",
+      "info": "منشور"
     }
   },
   "interactiveCity": {
@@ -2698,5 +2735,77 @@
     "success": "تم حفظ تفضيلاتك!",
     "ctaTitle": "خصّص تجربتك",
     "ctaBody": "حدد اهتماماتك ومستوى معرفتك للحصول على محتوى مخصص."
+  },
+  "interactiveMaps": {
+    "pageTitle": "الخرائط التفاعلية",
+    "createBtn": "خريطة جديدة",
+    "col": {
+      "nameEn": "الاسم (إنجليزي)",
+      "nameAr": "الاسم (عربي)",
+      "isActive": "نشط",
+      "actions": "الإجراءات",
+      "nodes": "العقد"
+    },
+    "form": {
+      "createTitle": "إنشاء خريطة تفاعلية",
+      "editTitle": "تعديل الخريطة التفاعلية",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "isActive": "نشط"
+    },
+    "toast": {
+      "created": "تم إنشاء الخريطة التفاعلية.",
+      "updated": "تم تحديث الخريطة التفاعلية.",
+      "deleted": "تم حذف الخريطة التفاعلية."
+    },
+    "delete": {
+      "title": "حذف الخريطة",
+      "message": "هل أنت متأكد من حذف هذه الخريطة؟ سيتم حذف جميع عقدها أيضاً.",
+      "confirm": "حذف"
+    },
+    "nodes": {
+      "pageTitle": "عقد الخريطة",
+      "createBtn": "إضافة عقدة",
+      "col": {
+        "level": "المستوى",
+        "category": "الفئة",
+        "topicId": "معرّف الموضوع",
+        "node": "العقدة",
+        "status": "الحالة"
+      },
+      "form": {
+        "createTitle": "إضافة عقدة",
+        "editTitle": "تعديل العقدة",
+        "level": "المستوى",
+        "iconKey": "مفتاح الأيقونة",
+        "category": "الفئة (رقم)",
+        "categoryNameAr": "اسم الفئة (عربي)",
+        "categoryNameEn": "اسم الفئة (إنجليزي)",
+        "parentId": "العقدة الأب",
+        "noParent": "لا يوجد (جذر)",
+        "topicId": "الموضوع",
+        "sectionIdentity": "الهوية",
+        "sectionHierarchy": "التسلسل الهرمي",
+        "sectionClassification": "التصنيف",
+        "sectionTopic": "الموضوع",
+        "sectionStatus": "الحالة",
+        "iconKeyHint": "اسم أيقونة Material، مثال: star"
+      },
+      "toast": {
+        "created": "تم إنشاء العقدة.",
+        "updated": "تم تحديث العقدة.",
+        "deleted": "تم حذف العقدة."
+      },
+      "delete": {
+        "title": "حذف العقدة",
+        "message": "هل أنت متأكد من حذف هذه العقدة؟",
+        "confirm": "حذف"
+      },
+      "empty": "لا توجد عقد في هذه الخريطة بعد."
+    },
+    "manageNodes": "إدارة العقد",
+    "empty": "لا توجد خرائط تفاعلية بعد. أنشئ واحدة للبدء."
   }
 }

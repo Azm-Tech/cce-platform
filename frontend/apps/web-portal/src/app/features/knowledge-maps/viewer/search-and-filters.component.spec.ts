@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
-import type { NodeType } from '../knowledge-maps.types';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { SearchAndFiltersComponent } from './search-and-filters.component';
 
 describe('SearchAndFiltersComponent', () => {
@@ -11,7 +10,7 @@ describe('SearchAndFiltersComponent', () => {
   beforeEach(async () => {
     jest.useFakeTimers();
     await TestBed.configureTestingModule({
-      imports: [SearchAndFiltersComponent, TranslocoModule.forRoot()],
+      imports: [SearchAndFiltersComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 
@@ -24,7 +23,7 @@ describe('SearchAndFiltersComponent', () => {
     jest.useRealTimers();
   });
 
-  it('renders one chip per NodeType (3 by default)', () => {
+  it('renders one chip per node level (3 chips: Root, Category, Topic)', () => {
     const chips = fixture.nativeElement.querySelectorAll('.cce-search-filters__chip');
     expect(chips.length).toBe(3);
   });
@@ -51,21 +50,21 @@ describe('SearchAndFiltersComponent', () => {
     expect(emitted).toEqual(['car']);
   });
 
-  it('clicking an inactive chip emits (filtersChange) with the type added', () => {
-    let emitted: ReadonlySet<NodeType> | null = null;
+  it('clicking an inactive chip emits (filtersChange) with the level added', () => {
+    let emitted: ReadonlySet<number> | null = null;
     component.filtersChange.subscribe((v) => { emitted = v; });
-    fixture.componentRef.setInput('filters', new Set<NodeType>());
-    component.toggleFilter('Technology');
+    fixture.componentRef.setInput('filters', new Set<number>());
+    component.toggleFilter(1);
     expect(emitted).not.toBeNull();
-    expect(Array.from(emitted as unknown as Set<NodeType>)).toEqual(['Technology']);
+    expect(Array.from(emitted as unknown as Set<number>)).toEqual([1]);
   });
 
-  it('clicking an active chip emits (filtersChange) with the type removed', () => {
-    let emitted: ReadonlySet<NodeType> | null = null;
+  it('clicking an active chip emits (filtersChange) with the level removed', () => {
+    let emitted: ReadonlySet<number> | null = null;
     component.filtersChange.subscribe((v) => { emitted = v; });
-    fixture.componentRef.setInput('filters', new Set<NodeType>(['Technology', 'Sector']));
-    component.toggleFilter('Technology');
-    expect(Array.from(emitted as unknown as Set<NodeType>)).toEqual(['Sector']);
+    fixture.componentRef.setInput('filters', new Set<number>([0, 1]));
+    component.toggleFilter(0);
+    expect(Array.from(emitted as unknown as Set<number>)).toEqual([1]);
   });
 
   it('searchTerm input updates the visible input value via the effect', () => {

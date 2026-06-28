@@ -157,6 +157,14 @@ export const appRoutes: Route[] = [
         title: 'CCE — Translations',
       },
       {
+        path: 'interactive-maps',
+        canMatch: [permissionGuard],
+        data: { permission: CcePermission.PageEdit },
+        loadChildren: () =>
+          import('./features/interactive-maps/routes').then((m) => m.INTERACTIVE_MAPS_ROUTES),
+        title: 'CCE — Interactive Maps',
+      },
+      {
         path: 'settings',
         canMatch: [permissionGuard],
         data: { permission: CcePermission.SettingsManage },

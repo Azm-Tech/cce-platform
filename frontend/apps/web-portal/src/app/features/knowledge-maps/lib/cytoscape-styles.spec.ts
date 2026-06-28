@@ -15,18 +15,16 @@ describe('buildStylesheet', () => {
     });
   });
 
-  it('defines a style for every NodeType (Technology, Sector, SubTopic)', () => {
+  it('defines a style for every level (0 = Root, 1 = Category, 2 = Topic)', () => {
     const selectors = sheet.map((e) => e.selector);
-    expect(selectors).toContain('node[nodeType = "Technology"]');
-    expect(selectors).toContain('node[nodeType = "Sector"]');
-    expect(selectors).toContain('node[nodeType = "SubTopic"]');
+    expect(selectors).toContain('node[level = 0]');
+    expect(selectors).toContain('node[level = 1]');
+    expect(selectors).toContain('node[level = 2]');
   });
 
-  it('defines a style for every RelationshipType (ParentOf, RelatedTo, RequiredBy)', () => {
+  it('defines a base edge style (all edges are parent-child)', () => {
     const selectors = sheet.map((e) => e.selector);
-    expect(selectors).toContain('edge[relationshipType = "ParentOf"]');
-    expect(selectors).toContain('edge[relationshipType = "RelatedTo"]');
-    expect(selectors).toContain('edge[relationshipType = "RequiredBy"]');
+    expect(selectors).toContain('edge');
   });
 
   it('defines selected + dimmed states for nodes and edges', () => {

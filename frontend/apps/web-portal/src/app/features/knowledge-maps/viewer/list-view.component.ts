@@ -2,44 +2,19 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
-import {
-  NODE_TYPES,
-  type KnowledgeMapEdge,
-  type KnowledgeMapNode,
-  type NodeType,
-  type RelationshipType,
-} from '../knowledge-maps.types';
+import { NODE_LEVELS, type InteractiveMapNode, type NodeLevel } from '../knowledge-maps.types';
 
 type SortOrder = 'default' | 'alpha';
 
 interface NodeGroup {
-  type: NodeType;
-  nodes: KnowledgeMapNode[];
-}
-
-/** Per-relationship outbound edge counts for a single node. */
-interface EdgeBreakdown {
-  ParentOf: number;
-  RelatedTo: number;
-  RequiredBy: number;
-  total: number;
+  level: NodeLevel;
+  nodes: InteractiveMapNode[];
 }
 
 /**
- * Accessible alternative to GraphCanvas. Renders the same node data
- * as a structured set of grouped node lists, with brand-aligned UX:
- *
- *   - Sort toggle (default order ↔ alphabetical) at the top of the view.
- *   - Each section header carries a shape pip that matches the
- *     Cytoscape node shape (circle / round-rect / diamond) so the
- *     visual mapping between graph + list views is obvious.
- *   - Sections are collapsible — click the header to fold the rows.
- *   - Each row shows a small composition pill (parent / related /
- *     required outbound counts) so users can spot dense or hub-like
- *     nodes at a glance.
- *
- * Click any node row → emits (nodeSelected) — same handler the
- * GraphCanvas uses, so the explore loop is identical in both views.
+ * Accessible alternative to GraphCanvas. Renders nodes grouped by
+ * level (0 = Root, 1 = Category, 2 = Topic) with children counts
+ * and sort toggle.
  */
 @Component({
   selector: 'cce-list-view',
@@ -50,32 +25,28 @@ interface EdgeBreakdown {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListViewComponent {
-  readonly nodes = input.required<KnowledgeMapNode[]>();
-  readonly edges = input.required<KnowledgeMapEdge[]>();
+  readonly nodes = input.required<InteractiveMapNode[]>();
   readonly selectedId = input<string | null>(null);
   readonly dimmedIds = input<ReadonlySet<string>>(new Set());
   readonly locale = input<'ar' | 'en'>('en');
 
   readonly nodeSelected = output<string>();
 
-  /** Sort order applied within each section. Default = original order. */
   readonly sortOrder = signal<SortOrder>('default');
 
-  /** Set of collapsed section types. Empty = all sections expanded. */
-  readonly collapsed = signal<ReadonlySet<NodeType>>(new Set());
+  readonly collapsed = signal<ReadonlySet<number>>(new Set());
 
-  /** Group nodes by type and apply the sort order. */
   readonly grouped = computed<NodeGroup[]>(() => {
-    const byType: Record<NodeType, KnowledgeMapNode[]> = {
-      Technology: [],
-      Sector: [],
-      SubTopic: [],
-    };
-    for (const n of this.nodes()) byType[n.nodeType].push(n);
+    const byLevel: Record<number, InteractiveMapNode[]> = { 0: [], 1: [], 2: [] };
+    for (const n of this.nodes()) {
+      // Clamp into 0..2 — the synthetic map root (level -1) lands in the Root group.
+      const lvl = Math.min(Math.max(n.level, 0), 2);
+      byLevel[lvl].push(n);
+    }
 
     const sort = this.sortOrder();
     const localeCode = this.locale();
-    const sorted = (rows: KnowledgeMapNode[]): KnowledgeMapNode[] => {
+    const sorted = (rows: InteractiveMapNode[]): InteractiveMapNode[] => {
       if (sort === 'default') return rows;
       return [...rows].sort((a, b) => {
         const an = (localeCode === 'ar' ? a.nameAr : a.nameEn) || '';
@@ -83,60 +54,46 @@ export class ListViewComponent {
         return an.localeCompare(bn, localeCode);
       });
     };
-    return NODE_TYPES.map((t) => ({ type: t, nodes: sorted(byType[t]) }));
+
+    return NODE_LEVELS.map((l) => ({ level: l, nodes: sorted(byLevel[l] ?? []) }));
   });
 
-  /** Outbound edge counts broken down by relationship type per node. */
-  readonly edgeBreakdowns = computed<ReadonlyMap<string, EdgeBreakdown>>(() => {
-    const map = new Map<string, EdgeBreakdown>();
-    for (const e of this.edges()) {
-      const slot = map.get(e.fromNodeId) ?? { ParentOf: 0, RelatedTo: 0, RequiredBy: 0, total: 0 };
-      slot[e.relationshipType] += 1;
-      slot.total += 1;
-      map.set(e.fromNodeId, slot);
+  /** Children count per node (nodes where parentId === id). */
+  readonly childCounts = computed<ReadonlyMap<string, number>>(() => {
+    const map = new Map<string, number>();
+    for (const n of this.nodes()) {
+      if (n.parentId) {
+        map.set(n.parentId, (map.get(n.parentId) ?? 0) + 1);
+      }
     }
     return map;
   });
 
-  /** Outbound edge totals (used for the legacy count badge). */
-  readonly outboundCounts = computed<ReadonlyMap<string, number>>(() => {
-    const map = new Map<string, number>();
-    for (const [id, b] of this.edgeBreakdowns()) map.set(id, b.total);
-    return map;
-  });
-
-  /** Relationship-type ordering for the per-row composition pills. */
-  readonly relTypes: readonly RelationshipType[] = ['ParentOf', 'RelatedTo', 'RequiredBy'];
-
-  nameOf(n: KnowledgeMapNode): string {
+  nameOf(n: InteractiveMapNode): string {
     return this.locale() === 'ar' ? n.nameAr : n.nameEn;
   }
 
-  outboundCountOf(n: KnowledgeMapNode): number {
-    return this.outboundCounts().get(n.id) ?? 0;
+  childCountOf(n: InteractiveMapNode): number {
+    return this.childCounts().get(n.id) ?? 0;
   }
 
-  breakdownOf(n: KnowledgeMapNode): EdgeBreakdown {
-    return this.edgeBreakdowns().get(n.id) ?? { ParentOf: 0, RelatedTo: 0, RequiredBy: 0, total: 0 };
-  }
-
-  isSelected(n: KnowledgeMapNode): boolean {
+  isSelected(n: InteractiveMapNode): boolean {
     return this.selectedId() === n.id;
   }
 
-  isDimmed(n: KnowledgeMapNode): boolean {
+  isDimmed(n: InteractiveMapNode): boolean {
     return this.dimmedIds().has(n.id);
   }
 
-  isCollapsed(type: NodeType): boolean {
-    return this.collapsed().has(type);
+  isCollapsed(level: number): boolean {
+    return this.collapsed().has(level);
   }
 
-  toggleCollapsed(type: NodeType): void {
+  toggleCollapsed(level: number): void {
     this.collapsed.update((prev) => {
       const next = new Set(prev);
-      if (next.has(type)) next.delete(type);
-      else next.add(type);
+      if (next.has(level)) next.delete(level);
+      else next.add(level);
       return next;
     });
   }
@@ -145,7 +102,7 @@ export class ListViewComponent {
     this.sortOrder.set(order);
   }
 
-  onSelect(n: KnowledgeMapNode): void {
+  onSelect(n: InteractiveMapNode): void {
     this.nodeSelected.emit(n.id);
   }
 }

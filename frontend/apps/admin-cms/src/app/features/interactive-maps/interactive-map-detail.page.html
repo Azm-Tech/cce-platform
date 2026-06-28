@@ -1,0 +1,143 @@
+<div class="im-detail">
+
+  <!-- Page header -->
+  <header class="im-detail__header">
+    <button mat-icon-button (click)="goBack()" [matTooltip]="'common.actions.back' | transloco">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    @if (map(); as m) {
+      <div class="im-detail__title-block">
+        <h1 class="im-detail__title">{{ m.nameEn }}</h1>
+        <span class="im-detail__title-ar" dir="rtl">{{ m.nameAr }}</span>
+      </div>
+      <span class="im-detail__status-pill"
+        [class.im-detail__status-pill--active]="m.isActive"
+        [class.im-detail__status-pill--inactive]="!m.isActive">
+        <mat-icon>{{ m.isActive ? 'check_circle' : 'pause_circle' }}</mat-icon>
+        {{ (m.isActive ? 'common.active' : 'common.inactive') | transloco }}
+      </span>
+    } @else if (loading()) {
+      <div class="im-detail__title-block im-detail__title-block--loading"></div>
+    }
+
+    <div class="im-detail__header-spacer"></div>
+
+    <div class="im-detail__header-actions" *ccePermission="'Page.Edit'">
+      <button mat-flat-button color="primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon>
+        {{ 'interactiveMaps.nodes.createBtn' | transloco }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Description strip -->
+  @if (map()?.descriptionEn) {
+    <p class="im-detail__desc">{{ map()!.descriptionEn }}</p>
+  }
+
+  <!-- Progress bar -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="im-detail__progress" />
+  }
+
+  <!-- Error state -->
+  @if (errorKind(); as kind) {
+    <div class="im-detail__error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button mat-button color="primary" (click)="loadNodes()">
+        {{ 'common.actions.retry' | transloco }}
+      </button>
+    </div>
+  }
+
+  <!-- Tree view panel -->
+  @if (!loading() && !errorKind()) {
+    <div class="im-tree__panel">
+
+      @if (treeNodes().length === 0) {
+        <!-- Empty state -->
+        <div class="im-tree__empty">
+          <mat-icon>account_tree</mat-icon>
+          <p>{{ 'interactiveMaps.nodes.empty' | transloco }}</p>
+          <button mat-stroked-button color="primary" *ccePermission="'Page.Edit'" (click)="openCreate()">
+            {{ 'interactiveMaps.nodes.createBtn' | transloco }}
+          </button>
+        </div>
+      } @else {
+
+        <!-- Column header row -->
+        <div class="im-tree__head" aria-hidden="true">
+          <span class="im-tree__head-node">{{ 'interactiveMaps.nodes.col.node' | transloco }}</span>
+          <span class="im-tree__head-category">{{ 'interactiveMaps.nodes.col.category' | transloco }}</span>
+          <span class="im-tree__head-status">{{ 'interactiveMaps.nodes.col.status' | transloco }}</span>
+          <span class="im-tree__head-actions"></span>
+        </div>
+
+        <!-- Tree rows -->
+        <ul class="im-tree__list" role="tree">
+          @for (node of treeNodes(); track node.id) {
+            <li class="im-tree__row" role="treeitem" [style.--lvl]="node.level">
+
+              <!-- Indent + level badge -->
+              <div class="im-tree__indent">
+                @if (node.level > 0) {
+                  <span class="im-tree__connector" aria-hidden="true"></span>
+                }
+                <span class="im-tree__level-badge"
+                  [attr.data-level]="node.level > 2 ? 'deep' : node.level">
+                  L{{ node.level }}
+                </span>
+              </div>
+
+              <!-- Node name -->
+              <div class="im-tree__name">
+                <span class="im-tree__name-en">{{ node.nameEn ?? '—' }}</span>
+                @if (node.nameAr) {
+                  <span class="im-tree__name-ar" dir="rtl">{{ node.nameAr }}</span>
+                }
+              </div>
+
+              <!-- Category -->
+              <div class="im-tree__category">
+                @if (node.categoryNameEn || node.categoryNameAr) {
+                  <span class="im-tree__category-badge">{{ node.categoryNameEn ?? node.categoryNameAr }}</span>
+                } @else if (node.category !== null && node.category !== undefined) {
+                  <span class="im-tree__category-badge im-tree__category-badge--raw">{{ node.category }}</span>
+                } @else {
+                  <span class="im-tree__category-none">—</span>
+                }
+              </div>
+
+              <!-- Status dot -->
+              <div class="im-tree__status">
+                <span class="im-tree__status-dot"
+                  [class.im-tree__status-dot--active]="node.isActive"
+                  [matTooltip]="(node.isActive ? 'common.active' : 'common.inactive') | transloco">
+                </span>
+              </div>
+
+              <!-- Row actions -->
+              <div class="im-tree__actions" *ccePermission="'Page.Edit'">
+                <button mat-icon-button
+                  [matTooltip]="'common.actions.edit' | transloco"
+                  (click)="openEdit(node)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn"
+                  [matTooltip]="'common.actions.delete' | transloco"
+                  (click)="delete(node)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+            </li>
+          }
+        </ul>
+
+      }
+    </div>
+  }
+
+</div>

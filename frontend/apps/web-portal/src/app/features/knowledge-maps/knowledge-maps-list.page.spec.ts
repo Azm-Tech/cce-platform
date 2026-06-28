@@ -3,33 +3,32 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { KnowledgeMapsApiService, type Result } from './knowledge-maps-api.service';
-import type { KnowledgeMap } from './knowledge-maps.types';
-import { KnowledgeMapsListPage } from './knowledge-maps-list.page';
+import type { InteractiveMap } from './knowledge-maps.types';
+import { InteractiveMapsListPage } from './knowledge-maps-list.page';
 
-const SAMPLE: KnowledgeMap = {
+const SAMPLE: InteractiveMap = {
   id: 'm1',
   nameAr: 'خريطة', nameEn: 'Map',
   descriptionAr: 'وصف', descriptionEn: 'Description',
-  slug: 'main',
-  isActive: true,
+  nodes: [],
 };
 
 function ok<T>(value: T): Result<T> {
   return { ok: true, value };
 }
 
-describe('KnowledgeMapsListPage', () => {
-  let fixture: ComponentFixture<KnowledgeMapsListPage>;
-  let page: KnowledgeMapsListPage;
+describe('InteractiveMapsListPage', () => {
+  let fixture: ComponentFixture<InteractiveMapsListPage>;
+  let page: InteractiveMapsListPage;
   let listMaps: jest.Mock;
 
   beforeEach(async () => {
     listMaps = jest.fn().mockResolvedValue(ok([SAMPLE]));
 
     await TestBed.configureTestingModule({
-      imports: [KnowledgeMapsListPage, TranslocoModule.forRoot()],
+      imports: [InteractiveMapsListPage, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
@@ -37,7 +36,7 @@ describe('KnowledgeMapsListPage', () => {
         { provide: LocaleService, useValue: { locale: signal<'ar' | 'en'>('en').asReadonly() } },
       ],
     }).compileComponents();
-    fixture = TestBed.createComponent(KnowledgeMapsListPage);
+    fixture = TestBed.createComponent(InteractiveMapsListPage);
     page = fixture.componentInstance;
   });
 
@@ -50,7 +49,7 @@ describe('KnowledgeMapsListPage', () => {
     expect(html).toContain('Map');
   });
 
-  it('renders each map as a routerLink to /knowledge-maps/:id (Sub-7 ship)', async () => {
+  it('renders each map as a routerLink to /knowledge-maps/:id', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();

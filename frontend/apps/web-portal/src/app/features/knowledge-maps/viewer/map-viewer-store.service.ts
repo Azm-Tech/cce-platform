@@ -1,18 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { KnowledgeMapsApiService } from '../knowledge-maps-api.service';
 import { nodeMatches } from '../lib/search';
-import type {
-  KnowledgeMap,
-  KnowledgeMapEdge,
-  KnowledgeMapNode,
-  NodeType,
-} from '../knowledge-maps.types';
+import type { InteractiveMap, InteractiveMapNode, NodeDetails } from '../knowledge-maps.types';
 
 export interface ViewerTab {
   id: string;
-  metadata: KnowledgeMap;
-  nodes: KnowledgeMapNode[];
-  edges: KnowledgeMapEdge[];
+  metadata: InteractiveMap;
+  nodes: InteractiveMapNode[];
   loadedAt: number;
 }
 
@@ -25,11 +19,6 @@ export type ViewMode = 'graph' | 'list';
  * so each route activation gets a fresh instance. Holds open tabs,
  * the active tab, the selected node, search + filter state, view
  * mode, and the multi-select for export.
- *
- * Actions (openTab, closeTab, setActive, selectNode, setSearch,
- * setFilters, setViewMode, setSelection, retry) mutate signals;
- * computed signals (openTabs, activeTab, selectedNode, notFound)
- * derive read-only views.
  */
 @Injectable()
 export class MapViewerStore {
@@ -39,11 +28,14 @@ export class MapViewerStore {
   private readonly _activeId = signal<string | null>(null);
   private readonly _selectedNodeId = signal<string | null>(null);
   private readonly _searchTerm = signal('');
-  private readonly _filters = signal<Set<NodeType>>(new Set());
+  private readonly _filters = signal<Set<number>>(new Set());
   private readonly _viewMode = signal<ViewMode>('graph');
   private readonly _selection = signal<Set<string>>(new Set());
   private readonly _loading = signal(false);
   private readonly _errorKind = signal<string | null>(null);
+  private readonly _nodeDetails = signal<NodeDetails | null>(null);
+  private readonly _detailsLoading = signal(false);
+  private readonly detailsCache = new Map<string, NodeDetails>();
 
   // ─── Read-only signal accessors ───
   readonly tabsById = this._tabsById.asReadonly();
@@ -55,6 +47,8 @@ export class MapViewerStore {
   readonly selection = this._selection.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly errorKind = this._errorKind.asReadonly();
+  readonly nodeDetails = this._nodeDetails.asReadonly();
+  readonly detailsLoading = this._detailsLoading.asReadonly();
 
   // ─── Computed ───
   readonly openTabs = computed(() => Array.from(this._tabsById().values()));
@@ -62,7 +56,7 @@ export class MapViewerStore {
     const id = this._activeId();
     return id ? (this._tabsById().get(id) ?? null) : null;
   });
-  readonly selectedNode = computed<KnowledgeMapNode | null>(() => {
+  readonly selectedNode = computed<InteractiveMapNode | null>(() => {
     const tab = this.activeTab();
     const sid = this._selectedNodeId();
     if (!tab || !sid) return null;
@@ -70,7 +64,7 @@ export class MapViewerStore {
   });
   readonly notFound = computed(() => this._errorKind() === 'not-found');
 
-  /** Set of node ids matching the current search term + filters in the active tab. */
+  /** Set of node ids matching the current search term + level filters in the active tab. */
   readonly matchedIds = computed<ReadonlySet<string>>(() => {
     const tab = this.activeTab();
     if (!tab) return new Set();
@@ -83,11 +77,6 @@ export class MapViewerStore {
     return matched;
   });
 
-  /**
-   * Set of node ids that should be visually dimmed.
-   * Empty when no filter is active (term is whitespace AND no type
-   * filters), so an unfiltered graph never dims anything.
-   */
   readonly dimmedIds = computed<ReadonlySet<string>>(() => {
     const tab = this.activeTab();
     if (!tab) return new Set();
@@ -104,38 +93,46 @@ export class MapViewerStore {
 
   // ─── Actions ───
 
-  /** Loads map + nodes + edges in parallel. Adds the tab to the store and sets it active. */
+  /** Loads map (with embedded nodes) and sets the tab active. */
   async openTab(id: string): Promise<void> {
-    // Already open? just switch.
     if (this._tabsById().has(id)) {
       this._activeId.set(id);
       return;
     }
     this._loading.set(true);
     this._errorKind.set(null);
-    const [mapRes, nodesRes, edgesRes] = await Promise.all([
-      this.api.getMap(id),
-      this.api.getNodes(id),
-      this.api.getEdges(id),
-    ]);
+    const mapRes = await this.api.getMap(id);
     this._loading.set(false);
     if (!mapRes.ok) {
       this._errorKind.set(mapRes.error.kind);
       return;
     }
-    if (!nodesRes.ok) {
-      this._errorKind.set(nodesRes.error.kind);
-      return;
-    }
-    if (!edgesRes.ok) {
-      this._errorKind.set(edgesRes.error.kind);
-      return;
-    }
+    const mapData = mapRes.value;
+
+    // Synthesize the map itself as the central root node (level = -1).
+    // The API returns nameAr/nameEn on the map object — this IS the Figma
+    // center node. Nodes from mapData.nodes that have no parentId connect to it.
+    const rootId = `${id}__root`;
+    const syntheticRoot: InteractiveMapNode = {
+      id: rootId,
+      nameAr: mapData.nameAr.trim(),
+      nameEn: mapData.nameEn.trim(),
+      iconKey: 'co2',
+      level: -1,
+      parentId: null,
+      category: null,
+      topicId: '',
+      tags: [],
+    };
+    const nodes: InteractiveMapNode[] = [
+      syntheticRoot,
+      ...mapData.nodes.map((n) => (!n.parentId ? { ...n, parentId: rootId } : n)),
+    ];
+
     const tab: ViewerTab = {
       id,
-      metadata: mapRes.value,
-      nodes: nodesRes.value,
-      edges: edgesRes.value,
+      metadata: mapData,
+      nodes,
       loadedAt: Date.now(),
     };
     this._tabsById.update((m) => {
@@ -166,14 +163,47 @@ export class MapViewerStore {
 
   selectNode(id: string | null): void {
     this._selectedNodeId.set(id);
+    if (!id) {
+      this._nodeDetails.set(null);
+      this._detailsLoading.set(false);
+      return;
+    }
+    // The synthetic map root (level -1) has no backing topic — no details fetch.
+    if (id.endsWith('__root')) {
+      this._nodeDetails.set(null);
+      this._detailsLoading.set(false);
+      return;
+    }
+    // Clear so the drawer shows a loading state for the newly-selected node.
+    this._nodeDetails.set(null);
+    void this.loadNodeDetails(id);
+  }
+
+  /** Lazily fetch (and cache) the topic content for a node's detail drawer. */
+  async loadNodeDetails(nodeId: string): Promise<void> {
+    const cached = this.detailsCache.get(nodeId);
+    if (cached) {
+      this._nodeDetails.set(cached);
+      this._detailsLoading.set(false);
+      return;
+    }
+    this._detailsLoading.set(true);
+    const res = await this.api.getNodeDetails(nodeId);
+    // Ignore a stale response if the user has since selected a different node.
+    if (this._selectedNodeId() !== nodeId) return;
+    this._detailsLoading.set(false);
+    if (res.ok) {
+      this.detailsCache.set(nodeId, res.value);
+      this._nodeDetails.set(res.value);
+    }
   }
 
   setSearch(term: string): void {
     this._searchTerm.set(term);
   }
 
-  setFilters(types: NodeType[]): void {
-    this._filters.set(new Set(types));
+  setFilters(levels: number[]): void {
+    this._filters.set(new Set(levels));
   }
 
   setViewMode(mode: ViewMode): void {
@@ -187,7 +217,6 @@ export class MapViewerStore {
   retry(): Promise<void> | void {
     const id = this._activeId();
     if (id) return this.openTab(id);
-    // No active tab — nothing to retry.
     return undefined;
   }
 }

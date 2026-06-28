@@ -1,5 +1,4 @@
 import type { Params } from '@angular/router';
-import { NODE_TYPES, type NodeType } from '../knowledge-maps.types';
 import type { ViewMode } from './map-viewer-store.service';
 
 export interface ViewerUrlState {
@@ -9,20 +8,15 @@ export interface ViewerUrlState {
   node: string | null;
   /** Search term from `?q=`, or '' if absent. */
   q: string;
-  /** Comma-separated NodeType filter from `?type=`, validated against NODE_TYPES. */
-  filters: NodeType[];
+  /** Comma-separated level filter from `?type=` — validated as 0, 1, or 2. */
+  filters: number[];
   /** View mode from `?view=`, falls back to 'graph' for any unknown value. */
   view: ViewMode;
 }
 
 const VALID_VIEW_MODES: ReadonlySet<string> = new Set(['graph', 'list']);
-const VALID_NODE_TYPES: ReadonlySet<string> = new Set(NODE_TYPES);
+const VALID_LEVELS = new Set(['0', '1', '2']);
 
-/**
- * Parses Angular's `Params` (from `ActivatedRoute.queryParams` or the
- * snapshot) into the typed shape consumed by `MapViewerStore`. Pure
- * function — easily unit-tested without a router fixture.
- */
 export function parseUrlState(params: Params): ViewerUrlState {
   const openRaw = (params['open'] as string | undefined) ?? '';
   const open = openRaw
@@ -38,7 +32,8 @@ export function parseUrlState(params: Params): ViewerUrlState {
   const filters = typeRaw
     .split(',')
     .map((s) => s.trim())
-    .filter((s): s is NodeType => VALID_NODE_TYPES.has(s));
+    .filter((s) => VALID_LEVELS.has(s))
+    .map((s) => parseInt(s, 10));
 
   const viewRaw = (params['view'] as string | undefined) ?? 'graph';
   const view: ViewMode = VALID_VIEW_MODES.has(viewRaw) ? (viewRaw as ViewMode) : 'graph';
@@ -46,11 +41,6 @@ export function parseUrlState(params: Params): ViewerUrlState {
   return { open, node, q, filters, view };
 }
 
-/**
- * Patch object suitable for `router.navigate(..., { queryParams: patch,
- * queryParamsHandling: 'merge' })`. `null` values clear the param
- * (Angular's convention — the merge strategy drops null entries).
- */
 export interface UrlPatch {
   open?: string | null;
   node?: string | null;
@@ -59,11 +49,6 @@ export interface UrlPatch {
   view?: string | null;
 }
 
-/**
- * Builds an UrlPatch from a partial state. Empty arrays / strings and
- * default values map to `null` so the URL stays clean (only non-default
- * values appear in the address bar).
- */
 export function buildUrlPatch(opts: Partial<ViewerUrlState>): UrlPatch {
   const patch: UrlPatch = {};
   if (opts.open !== undefined) {
@@ -76,7 +61,7 @@ export function buildUrlPatch(opts: Partial<ViewerUrlState>): UrlPatch {
     patch.q = opts.q.length > 0 ? opts.q : null;
   }
   if (opts.filters !== undefined) {
-    patch.type = opts.filters.length > 0 ? opts.filters.join(',') : null;
+    patch.type = opts.filters.length > 0 ? opts.filters.map(String).join(',') : null;
   }
   if (opts.view !== undefined) {
     patch.view = opts.view === 'graph' ? null : opts.view;

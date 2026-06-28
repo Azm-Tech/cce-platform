@@ -1,24 +1,18 @@
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import type { InteractiveMapNode } from '../knowledge-maps.types';
 import { exportJson } from './export-json';
 import { exportPng } from './export-png';
 import { exportSvg } from './export-svg';
 import { exportPdf } from './export-pdf';
 import * as cytoscapeLoader from './cytoscape-loader';
 
-const NODE: KnowledgeMapNode = {
-  id: 'n1', mapId: 'm1',
+const NODE: InteractiveMapNode = {
+  id: 'n1',
   nameAr: 'تقنية', nameEn: 'Technology',
-  nodeType: 'Technology',
-  descriptionAr: null, descriptionEn: null,
-  iconUrl: null,
-  layoutX: 100, layoutY: 200,
-  orderIndex: 0,
-};
-const EDGE: KnowledgeMapEdge = {
-  id: 'e1', mapId: 'm1',
-  fromNodeId: 'n1', toNodeId: 'n2',
-  relationshipType: 'ParentOf',
-  orderIndex: 0,
+  iconKey: 'tech',
+  level: 1,
+  parentId: null,
+  topicId: 't1',
+  tags: [],
 };
 
 // Type-erased factory because Core's full surface is huge and we mock
@@ -34,9 +28,8 @@ function fakeCy(overrides: Record<string, jest.Mock | unknown> = {}): unknown {
 describe('exportJson', () => {
   it('serializes the payload to a pretty-printed JSON blob with the right type', () => {
     const blob = exportJson({
-      map: { id: 'm1', nameAr: 'خريطة', nameEn: 'Map', slug: 'main' },
+      map: { id: 'm1', nameAr: 'خريطة', nameEn: 'Map' },
       nodes: [NODE],
-      edges: [EDGE],
       exportedAt: '2026-05-02T12:00:00.000Z',
     });
     expect(blob.type).toBe('application/json');

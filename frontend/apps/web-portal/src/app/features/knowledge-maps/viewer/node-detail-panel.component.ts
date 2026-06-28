@@ -9,44 +9,57 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
-import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
+import { iconDataUri } from '../lib/node-icons';
+import type {
+  InteractiveMapNode,
+  NodeDetailEvent,
+  NodeDetailNews,
+  NodeDetailPost,
+  NodeDetailResource,
+  NodeDetails,
+} from '../knowledge-maps.types';
+
+/** A merged news/event row shape for the "Related News & Events" section. */
+export interface NewsEventRow {
+  kind: 'news' | 'event';
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  date: string;
+  featuredImageUrl?: string | null;
+}
+
+export type DrawerLinkKind = 'resource' | 'news' | 'event' | 'post';
 
 /**
- * Side-panel (desktop) / bottom-sheet (mobile) showing the details
- * of the currently selected node. CSS-driven responsiveness — a
- * single component handles both breakpoints via a media query at
- * 720px.
+ * Node-detail drawer. Slides over the graph canvas when a map node is
+ * selected and surfaces the node's topic content — description, related
+ * sources, news & events, and community posts — from
+ * GET /api/interactive-maps/nodes/{id}/details.
  *
- * The panel renders nothing when `node()` is null. When a node is
- * provided, it shows:
- *   - Localized name (h2)
- *   - Localized description (or "—" when null)
- *   - Node-type badge
- *   - Outbound edges list (relationship-type badge + target node
- *     name; click emits (nodeSelected) so the parent can re-route
- *     selection through the store, closing the explore loop)
- *
- * ESC keyboard shortcut + a close button both emit (closed).
+ * Renders nothing when `node()` is null. The page positions the drawer
+ * as an absolute overlay on the trailing edge.
  */
 @Component({
   selector: 'cce-node-detail-panel',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, TranslocoModule],
+  imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './node-detail-panel.component.html',
   styleUrl: './node-detail-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeDetailPanelComponent {
-  readonly node = input<KnowledgeMapNode | null>(null);
-  /** Edges where fromNodeId === node().id. Resolved by parent. */
-  readonly outboundEdges = input<KnowledgeMapEdge[]>([]);
-  /** Pre-resolved target nodes for outboundEdges (parent looks them up). */
-  readonly outboundTargets = input<KnowledgeMapNode[]>([]);
+  readonly node = input<InteractiveMapNode | null>(null);
+  /** Full node list of the active tab — used to resolve the parent eyebrow. */
+  readonly allNodes = input<InteractiveMapNode[]>([]);
+  readonly details = input<NodeDetails | null>(null);
+  readonly loading = input<boolean>(false);
   readonly locale = input<'ar' | 'en'>('en');
 
   readonly closed = output<void>();
-  readonly nodeSelected = output<string>();
+  readonly linkActivated = output<{ kind: DrawerLinkKind; id: string }>();
 
   readonly name = computed(() => {
     const n = this.node();
@@ -54,28 +67,99 @@ export class NodeDetailPanelComponent {
     return this.locale() === 'ar' ? n.nameAr : n.nameEn;
   });
 
-  readonly description = computed(() => {
+  readonly parent = computed<InteractiveMapNode | null>(() => {
     const n = this.node();
-    if (!n) return '';
-    const raw = this.locale() === 'ar' ? n.descriptionAr : n.descriptionEn;
-    return raw ?? '—';
+    if (!n?.parentId) return null;
+    return this.allNodes().find((p) => p.id === n.parentId) ?? null;
   });
 
-  readonly hasOutboundEdges = computed(() => this.outboundEdges().length > 0);
+  readonly parentName = computed(() => {
+    const p = this.parent();
+    if (!p) return '';
+    return this.locale() === 'ar' ? p.nameAr : p.nameEn;
+  });
 
-  /** Resolves the localized target name for an edge. */
-  targetNameOf(edge: KnowledgeMapEdge): string {
-    const target = this.outboundTargets().find((n) => n.id === edge.toNodeId);
-    if (!target) return edge.toNodeId;
-    return this.locale() === 'ar' ? target.nameAr : target.nameEn;
+  readonly description = computed(() => {
+    const d = this.details();
+    if (!d) return '';
+    return this.locale() === 'ar' ? d.topic.descriptionAr : d.topic.descriptionEn;
+  });
+
+  readonly topicName = computed(() => {
+    const d = this.details();
+    if (!d) return '';
+    return this.locale() === 'ar' ? d.topic.nameAr : d.topic.nameEn;
+  });
+
+  readonly resources = computed<NodeDetailResource[]>(() => this.details()?.resources ?? []);
+  readonly posts = computed<NodeDetailPost[]>(() => this.details()?.posts ?? []);
+
+  /** News then events, merged into one display list with a normalized date. */
+  readonly newsEvents = computed<NewsEventRow[]>(() => {
+    const d = this.details();
+    if (!d) return [];
+    const news: NewsEventRow[] = d.news.map((n: NodeDetailNews) => ({
+      kind: 'news',
+      id: n.id,
+      titleAr: n.titleAr,
+      titleEn: n.titleEn,
+      date: n.publishedOn,
+      featuredImageUrl: n.featuredImageUrl,
+    }));
+    const events: NewsEventRow[] = d.events.map((e: NodeDetailEvent) => ({
+      kind: 'event',
+      id: e.id,
+      titleAr: e.titleAr,
+      titleEn: e.titleEn,
+      date: e.startsOn,
+      featuredImageUrl: e.featuredImageUrl,
+    }));
+    return [...news, ...events];
+  });
+
+  readonly hasAnyContent = computed(
+    () =>
+      this.resources().length > 0 || this.newsEvents().length > 0 || this.posts().length > 0,
+  );
+
+  iconSrc(): string {
+    return iconDataUri(this.node()?.iconKey);
+  }
+
+  /** Localized title for a resource / news / event row. */
+  titleOf(item: { titleAr: string; titleEn: string }): string {
+    return this.locale() === 'ar' ? item.titleAr : item.titleEn;
+  }
+
+  formatDate(iso: string): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return new Intl.DateTimeFormat(this.locale() === 'ar' ? 'ar' : 'en', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(d);
+  }
+
+  resourceTypeKey(type: string): string {
+    return `knowledgeMaps.resourceType.${type || 'other'}`;
+  }
+
+  postTypeKey(type: string): string {
+    return `knowledgeMaps.postType.${type || 'info'}`;
+  }
+
+  postInitial(post: NodeDetailPost): string {
+    return (post.title?.trim()?.charAt(0) ?? '•').toUpperCase();
   }
 
   onClose(): void {
     this.closed.emit();
   }
 
-  onEdgeClick(edge: KnowledgeMapEdge): void {
-    this.nodeSelected.emit(edge.toNodeId);
+  onLink(kind: DrawerLinkKind, id: string): void {
+    this.linkActivated.emit({ kind, id });
   }
 
   @HostListener('document:keydown.escape')
