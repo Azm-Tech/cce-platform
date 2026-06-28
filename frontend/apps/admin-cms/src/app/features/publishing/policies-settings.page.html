@@ -1,0 +1,100 @@
+<div class="cce-policies-settings">
+  <div class="cce-policies-settings__header">
+    <h1 class="cce-policies-settings__title">{{ 'policiesSettings.title' | transloco }}</h1>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (loadError()) {
+    <div class="cce-policies-settings__error">{{ 'errors.ERR001' | transloco }}</div>
+  }
+
+  @if (!loading() && !loadError()) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'policiesSettings.section.sections' | transloco }}</mat-card-title>
+        <div class="cce-policies-settings__card-actions">
+          <button type="button" mat-stroked-button (click)="startAdd()" [disabled]="editingId() !== null">
+            <mat-icon>add</mat-icon>
+            {{ 'policiesSettings.add' | transloco }}
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (editingId() !== null) {
+          <form [formGroup]="sectionForm" (ngSubmit)="save()" class="cce-policies-settings__form">
+            <div class="cce-policies-settings__form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'policiesSettings.field.titleAr' | transloco }}</mat-label>
+                <input matInput formControlName="titleAr" dir="rtl" />
+                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'policiesSettings.field.titleEn' | transloco }}</mat-label>
+                <input matInput formControlName="titleEn" />
+                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="cce-policies-settings__form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'policiesSettings.field.contentAr' | transloco }}</mat-label>
+                <textarea matInput formControlName="contentAr" rows="6" dir="rtl"></textarea>
+                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'policiesSettings.field.contentEn' | transloco }}</mat-label>
+                <textarea matInput formControlName="contentEn" rows="6"></textarea>
+                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="cce-policies-settings__form-actions">
+              <button mat-flat-button color="primary" type="submit" [disabled]="saving()">{{ 'common.actions.save' | transloco }}</button>
+              <button mat-button type="button" (click)="cancel()">{{ 'common.actions.cancel' | transloco }}</button>
+            </div>
+          </form>
+        }
+
+        <table mat-table [dataSource]="sections()" class="cce-policies-settings__table">
+          <ng-container matColumnDef="orderIndex">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let row">
+              <button type="button" mat-icon-button (click)="moveUp(row)" [disabled]="editingId() !== null">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button type="button" mat-icon-button (click)="moveDown(row)" [disabled]="editingId() !== null">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="titleAr">
+            <th mat-header-cell *matHeaderCellDef>{{ 'policiesSettings.field.titleAr' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.titleAr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="titleEn">
+            <th mat-header-cell *matHeaderCellDef>{{ 'policiesSettings.field.titleEn' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.titleEn }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row" class="cce-policies-settings__row-actions">
+              <button type="button" mat-icon-button (click)="startEdit(row)" [disabled]="editingId() !== null">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" mat-icon-button color="warn" (click)="delete(row)" [disabled]="editingId() !== null">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="cols"></tr>
+          <tr mat-row *matRowDef="let row; columns: cols;"></tr>
+        </table>
+
+        @if (sections().length === 0 && editingId() === null) {
+          <p class="cce-policies-settings__empty">{{ 'policiesSettings.empty' | transloco }}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

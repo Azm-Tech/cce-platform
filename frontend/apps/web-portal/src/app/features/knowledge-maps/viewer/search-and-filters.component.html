@@ -1,7 +1,7 @@
 <div class="cce-search-filters">
   <mat-form-field appearance="outline" class="cce-search-filters__input">
     <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-    <mat-label>{{ 'knowledgeMaps.search.placeholder' | translate }}</mat-label>
+    <mat-label>{{ 'knowledgeMaps.search.placeholder' | transloco }}</mat-label>
     <input
       matInput
       type="search"
@@ -13,10 +13,10 @@
   <div
     class="cce-search-filters__chips"
     role="group"
-    [attr.aria-label]="'knowledgeMaps.filter.title' | translate"
+    [attr.aria-label]="'knowledgeMaps.filter.title' | transloco"
   >
     <span class="cce-search-filters__label">
-      {{ 'knowledgeMaps.filter.title' | translate }}:
+      {{ 'knowledgeMaps.filter.title' | transloco }}:
     </span>
     @for (type of nodeTypes(); track type) {
       <button
@@ -26,7 +26,7 @@
         [attr.aria-pressed]="isActive(type)"
         (click)="toggleFilter(type)"
       >
-        {{ ('knowledgeMaps.detail.nodeType.' + type) | translate }}
+        {{ ('knowledgeMaps.detail.nodeType.' + type) | transloco }}
       </button>
     }
   </div>

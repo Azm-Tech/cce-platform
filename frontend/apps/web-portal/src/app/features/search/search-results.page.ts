@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { LocaleService } from '@frontend/i18n';
 import { SearchApiService } from './search-api.service';
@@ -16,10 +16,13 @@ import { SEARCHABLE_TYPES, type SearchHit, type SearchableType } from './search.
   selector: 'cce-search-results',
   standalone: true,
   imports: [
-    CommonModule,
-    MatButtonModule, MatPaginatorModule, MatProgressBarModule, MatRadioModule,
-    TranslateModule, SearchHitComponent,
-  ],
+    MatButtonModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    TranslocoModule,
+    SearchHitComponent
+],
   templateUrl: './search-results.page.html',
   styleUrl: './search-results.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

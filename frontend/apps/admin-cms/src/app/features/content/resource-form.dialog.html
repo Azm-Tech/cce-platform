@@ -1,78 +1,139 @@
 <h2 mat-dialog-title>
-  {{ (isEdit ? 'resources.edit.title' : 'resources.create.title') | translate }}
+  {{ (isEdit ? 'resources.edit.title' : 'resources.create.title') | transloco }}
 </h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-resource-form">
     <div class="cce-resource-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.titleAr' | translate }}</mat-label>
-        <input matInput formControlName="titleAr" autocomplete="off" />
+        <mat-label>{{ 'resources.field.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" autocomplete="off" [maxlength]="titleMax + 20" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }} / {{ titleMax }}</mat-hint>
+        @if (form.controls.titleAr.hasError('maxlength')) {
+          <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.titleEn' | translate }}</mat-label>
-        <input matInput formControlName="titleEn" autocomplete="off" />
-      </mat-form-field>
-    </div>
-
-    <div class="cce-resource-form__row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.descriptionAr' | translate }}</mat-label>
-        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.descriptionEn' | translate }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+        <mat-label>{{ 'resources.field.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" autocomplete="off" [maxlength]="titleMax + 20" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }} / {{ titleMax }}</mat-hint>
+        @if (form.controls.titleEn.hasError('maxlength')) {
+          <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
+        }
       </mat-form-field>
     </div>
 
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      class="cce-resource-form__full"
+      formControlName="descriptionAr"
+      [label]="'resources.field.descriptionAr' | transloco"
+      [maxLength]="descriptionMax"
+      dir="rtl"
+    />
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      class="cce-resource-form__full"
+      formControlName="descriptionEn"
+      [label]="'resources.field.descriptionEn' | transloco"
+      [maxLength]="descriptionMax"
+      dir="ltr"
+    />
+
     <div class="cce-resource-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.resourceType' | translate }}</mat-label>
+        <mat-label>{{ 'resources.field.resourceType' | transloco }}</mat-label>
         <mat-select formControlName="resourceType">
           @for (t of resourceTypes; track t) {
-            <mat-option [value]="t">{{ t }}</mat-option>
+            <mat-option [value]="t">{{ ('resources.type.' + t) | transloco }}</mat-option>
           }
         </mat-select>
+        @if (form.controls.resourceType.hasError('required') && form.controls.resourceType.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
+
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.categoryId' | translate }}</mat-label>
-        <input matInput formControlName="categoryId" autocomplete="off" />
+        <mat-label>{{ 'resources.field.categoryId' | transloco }}</mat-label>
+        <mat-select formControlName="categoryId">
+          @for (c of categories(); track c.id) {
+            <mat-option [value]="c.id">{{ locale() === 'ar' ? c.nameAr : c.nameEn }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.categoryId.hasError('required') && form.controls.categoryId.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
     </div>
 
-    @if (!isEdit) {
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.countryId' | translate }}</mat-label>
-        <input matInput formControlName="countryId" autocomplete="off" />
-      </mat-form-field>
-      <div class="cce-resource-form__asset">
-        <span class="cce-resource-form__asset-label">{{ 'resources.field.asset' | translate }}</span>
-        <cce-asset-upload (uploaded)="onAssetUploaded($event)" />
-      </div>
-    }
+    <mat-form-field appearance="outline" class="cce-resource-form__full">
+      <mat-label>{{ 'resources.field.countryIds' | transloco }}</mat-label>
+      <mat-select formControlName="countryIds" multiple>
+        @for (c of countries(); track c.id) {
+          <mat-option [value]="c.id">{{ locale() === 'ar' ? c.nameAr : c.nameEn }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.countryIds.hasError('required') && form.controls.countryIds.touched) {
+        <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="cce-resource-form__asset">
+      <span class="cce-resource-form__asset-label">
+        {{ (isEdit ? 'resources.field.currentFile' : 'resources.field.asset') | transloco }}
+      </span>
+
+      @if (isEdit) {
+        @if (replacingFile()) {
+          <!-- Upload widget + cancel -->
+          <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
+          <button type="button" mat-button (click)="cancelReplaceFile()">
+            {{ 'common.actions.cancel' | transloco }}
+          </button>
+        } @else if (assetFile()) {
+          <!-- New file chosen — show it with option to revert -->
+          <div class="cce-resource-form__asset-existing">
+            <mat-icon>description</mat-icon>
+            <span>{{ assetFile()!.originalFileName }}</span>
+          </div>
+          <button type="button" mat-button (click)="cancelReplaceFile()">
+            {{ 'common.actions.cancel' | transloco }}
+          </button>
+        } @else {
+          <!-- Current file — show it with a Change button -->
+          <div class="cce-resource-form__asset-existing">
+            <mat-icon>description</mat-icon>
+            <span>{{ data.resource?.assetFileName || data.resource?.assetFileId }}</span>
+            <button type="button" mat-button class="cce-resource-form__asset-change" (click)="startReplaceFile()">
+              {{ 'resources.field.changeFile' | transloco }}
+            </button>
+          </div>
+        }
+      } @else {
+        <cce-asset-upload accept=".pdf,.doc,.docx" (uploaded)="onAssetUploaded($event)" />
+      }
+    </div>
 
     @if (errorKind(); as kind) {
-      <div class="cce-resource-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      <div class="cce-resource-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
+  <!-- Stays enabled while invalid so clicking surfaces ERR013 (BRD AC6) -->
   <button
     type="button"
     mat-flat-button
     color="primary"
     (click)="save()"
-    [disabled]="saving() || form.invalid"
+    [disabled]="saving()"
   >
     @if (saving()) {
       <mat-spinner diameter="20" />
     } @else {
-      {{ (isEdit ? 'resources.edit.save' : 'resources.create.save') | translate }}
+      {{ (isEdit ? 'resources.edit.save' : 'resources.create.save') | transloco }}
     }
   </button>
 </mat-dialog-actions>

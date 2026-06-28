@@ -1,7 +1,9 @@
+import { CcePermission } from '@frontend/contracts';
+
 export interface NavItem {
   labelKey: string;
   route: string;
-  permission: string;
+  permission: CcePermission;
   icon: string;
 }
 
@@ -35,10 +37,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     labelKey: 'nav.group.people',
     icon: 'groups',
     items: [
-      { labelKey: 'nav.users', route: '/users', permission: 'User.Read', icon: 'people' },
-      { labelKey: 'nav.stateReps', route: '/state-rep-assignments', permission: 'Role.Assign', icon: 'badge' },
-      { labelKey: 'nav.experts', route: '/experts', permission: 'Community.Expert.ApproveRequest', icon: 'school' },
-      { labelKey: 'nav.communityModeration', route: '/community-moderation', permission: 'Community.Post.Moderate', icon: 'forum' },
+      { labelKey: 'nav.users', route: '/users', permission: CcePermission.UserRead, icon: 'people' },
+      { labelKey: 'nav.stateReps', route: '/state-rep-assignments', permission: CcePermission.RoleAssign, icon: 'badge' },
+      { labelKey: 'nav.experts', route: '/experts', permission: CcePermission.CommunityExpertApprove, icon: 'school' },
+      { labelKey: 'nav.communityModeration', route: '/community-moderation', permission: CcePermission.CommunityPostModerate, icon: 'forum' },
     ],
   },
   {
@@ -46,10 +48,12 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     labelKey: 'nav.group.publishing',
     icon: 'edit_note',
     items: [
-      { labelKey: 'nav.pages', route: '/pages', permission: 'Page.Edit', icon: 'web' },
-      { labelKey: 'nav.homepage', route: '/homepage', permission: 'Page.Edit', icon: 'home' },
-      { labelKey: 'nav.news', route: '/news', permission: 'News.Update', icon: 'feed' },
-      { labelKey: 'nav.events', route: '/events', permission: 'Event.Manage', icon: 'event' },
+      { labelKey: 'nav.pages', route: '/pages', permission: CcePermission.PageEdit, icon: 'web' },
+      { labelKey: 'nav.homepage', route: '/homepage', permission: CcePermission.PageEdit, icon: 'home' },
+      { labelKey: 'nav.aboutSettings', route: '/about-settings', permission: CcePermission.PageEdit, icon: 'info' },
+      { labelKey: 'nav.policiesSettings', route: '/policies-settings', permission: CcePermission.SettingsManage, icon: 'policy' },
+      { labelKey: 'nav.news', route: '/news', permission: CcePermission.NewsUpdate, icon: 'feed' },
+      { labelKey: 'nav.events', route: '/events', permission: CcePermission.EventManage, icon: 'event' },
     ],
   },
   {
@@ -57,10 +61,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     labelKey: 'nav.group.knowledge',
     icon: 'menu_book',
     items: [
-      { labelKey: 'nav.resources', route: '/resources', permission: 'Resource.Center.Upload', icon: 'description' },
-      { labelKey: 'nav.taxonomies', route: '/taxonomies', permission: 'Resource.Center.Upload', icon: 'category' },
-      { labelKey: 'nav.countryResourceRequests', route: '/country-resource-requests', permission: 'Resource.Country.Approve', icon: 'flag' },
-      { labelKey: 'nav.countries', route: '/countries', permission: 'Country.Profile.Update', icon: 'public' },
+      { labelKey: 'nav.resources', route: '/resources', permission: CcePermission.ResourceCenterUpload, icon: 'description' },
+      { labelKey: 'nav.taxonomies', route: '/taxonomies', permission: CcePermission.ResourceCenterUpload, icon: 'category' },
+      { labelKey: 'nav.countryResourceRequests', route: '/country-resource-requests', permission: CcePermission.ResourceCountryApprove, icon: 'flag' },
+      { labelKey: 'nav.countries', route: '/countries', permission: CcePermission.CountryProfileUpdate, icon: 'public' },
     ],
   },
   {
@@ -68,9 +72,9 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     labelKey: 'nav.group.operations',
     icon: 'monitor_heart',
     items: [
-      { labelKey: 'nav.notifications', route: '/notifications', permission: 'Notification.TemplateManage', icon: 'notifications' },
-      { labelKey: 'nav.reports', route: '/reports', permission: 'Report.UserRegistrations', icon: 'assessment' },
-      { labelKey: 'nav.audit', route: '/audit', permission: 'Audit.Read', icon: 'history' },
+      { labelKey: 'nav.notifications', route: '/notifications', permission: CcePermission.NotificationTemplateManage, icon: 'notifications' },
+      { labelKey: 'nav.reports', route: '/reports', permission: CcePermission.ReportUserRegistrations, icon: 'assessment' },
+      { labelKey: 'nav.audit', route: '/audit', permission: CcePermission.AuditRead, icon: 'history' },
     ],
   },
   {
@@ -78,8 +82,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     labelKey: 'nav.group.system',
     icon: 'settings',
     items: [
-      { labelKey: 'nav.translations', route: '/translations', permission: 'Translation.Manage', icon: 'translate' },
-      { labelKey: 'nav.settings', route: '/settings', permission: 'Settings.Manage', icon: 'settings' },
+      { labelKey: 'nav.translations', route: '/translations', permission: CcePermission.TranslationManage, icon: 'translate' },
+      { labelKey: 'nav.settings', route: '/settings', permission: CcePermission.SettingsManage, icon: 'settings' },
     ],
   },
 ];

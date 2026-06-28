@@ -1,20 +1,20 @@
 <div class="cce-expert-requests__header">
-  <h1 class="cce-expert-requests__title">{{ 'experts.requests.title' | translate }}</h1>
+  <h1 class="cce-expert-requests__title">{{ 'experts.requests.title' | transloco }}</h1>
   <a mat-button routerLink="/experts/profiles">
-    {{ 'experts.profiles.viewProfilesButton' | translate }}
+    {{ 'experts.profiles.viewProfilesButton' | transloco }}
   </a>
 </div>
 
 <div class="cce-expert-requests__filters">
   <mat-form-field appearance="outline" class="cce-expert-requests__filter">
-    <mat-label>{{ 'experts.requests.filter.status' | translate }}</mat-label>
+    <mat-label>{{ 'experts.requests.filter.status' | transloco }}</mat-label>
     <mat-select
       [ngModel]="statusFilter()"
       (ngModelChange)="onStatusFilter($event)"
     >
-      <mat-option value="">{{ 'experts.requests.filter.allStatuses' | translate }}</mat-option>
+      <mat-option value="">{{ 'experts.requests.filter.allStatuses' | transloco }}</mat-option>
       @for (s of statuses; track s) {
-        <mat-option [value]="s">{{ ('experts.status.' + s) | translate }}</mat-option>
+        <mat-option [value]="s">{{ ('experts.status.' + s) | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -25,42 +25,56 @@
 }
 
 @if (errorKind(); as kind) {
-  <div class="cce-expert-requests__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-expert-requests__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <table mat-table [dataSource]="rows()" class="cce-expert-requests__table">
   <ng-container matColumnDef="user">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.user' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.user' | transloco }}</th>
     <td mat-cell *matCellDef="let row">{{ row.requestedByUserName ?? row.requestedById }}</td>
   </ng-container>
   <ng-container matColumnDef="submitted">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.submitted' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.submitted' | transloco }}</th>
     <td mat-cell *matCellDef="let row">{{ row.submittedOn | date:'medium' }}</td>
   </ng-container>
   <ng-container matColumnDef="tags">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.tags' | translate }}</th>
-    <td mat-cell *matCellDef="let row">{{ row.requestedTags.join(', ') || '—' }}</td>
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.tags' | transloco }}</th>
+    <td mat-cell *matCellDef="let row">{{ row.requestedTags.length ? resolveTagNames(row.requestedTags) : '—' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="cv">
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.cv' | transloco }}</th>
+    <td mat-cell *matCellDef="let row">
+      @if (row.cvUrl) {
+        <a mat-icon-button [href]="row.cvUrl" target="_blank" rel="noopener"
+           [attr.aria-label]="'experts.requests.col.cvDownload' | transloco">
+          <mat-icon>download</mat-icon>
+        </a>
+      } @else if (row.cvAssetFileId) {
+        <mat-icon class="cce-expert-requests__cv-attached" title="CV attached">attach_file</mat-icon>
+      } @else {
+        <span class="cce-expert-requests__cv-none">—</span>
+      }
+    </td>
   </ng-container>
   <ng-container matColumnDef="status">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.status' | translate }}</th>
-    <td mat-cell *matCellDef="let row">{{ ('experts.status.' + row.status) | translate }}</td>
+    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.status' | transloco }}</th>
+    <td mat-cell *matCellDef="let row">{{ ('experts.status.' + row.status) | transloco }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.actions' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let row">
-      @if (row.status === 'Pending') {
-        <button type="button" mat-button color="primary" (click)="approve(row)">
-          {{ 'experts.requests.action.approve' | translate }}
-        </button>
-        <button type="button" mat-button color="warn" (click)="reject(row)">
-          {{ 'experts.requests.action.reject' | translate }}
-        </button>
-      }
+      <a mat-icon-button [routerLink]="row.id" [attr.aria-label]="'experts.detail.viewButton' | transloco">
+        <mat-icon class="cce-expert-requests__dir-icon">chevron_right</mat-icon>
+      </a>
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
+
+@if (!loading() && !errorKind() && rows().length === 0) {
+  <p class="cce-expert-requests__empty" role="status">{{ 'info.INF005' | transloco }}</p>
+}
 
 <mat-paginator
   [length]="total()"

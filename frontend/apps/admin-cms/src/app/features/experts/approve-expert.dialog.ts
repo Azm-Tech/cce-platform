@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,15 +8,20 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertRequest } from './expert.types';
 
 export interface ApproveExpertDialogData {
   requestId: string;
   requesterName: string | null;
+  bioAr: string;
+  bioEn: string;
+  requestedTags: string[];
+  cvUrl: string | null;
 }
 
 interface ApproveForm {
@@ -28,16 +33,17 @@ interface ApproveForm {
   selector: 'cce-approve-expert-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './approve-expert.dialog.html',
+  styleUrl: './approve-expert.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApproveExpertDialogComponent {

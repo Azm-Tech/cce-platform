@@ -1,0 +1,178 @@
+<section class="cce-register">
+  <h1 class="cce-register__title">{{ 'account.register.title' | transloco }}</h1>
+
+  @if (isAuthenticated()) {
+    <p class="cce-register__body">{{ 'account.register.alreadySignedIn' | transloco }}</p>
+    <a mat-flat-button color="primary" routerLink="/me/profile">
+      {{ 'account.register.openProfile' | transloco }}
+    </a>
+  } @else {
+    <p class="cce-register__body">{{ 'account.register.body' | transloco }}</p>
+
+    <form [formGroup]="form" class="cce-register__form" (ngSubmit)="submit()">
+        <div class="cce-register__row-2">
+          <mat-form-field>
+            <mat-label>{{ 'account.register.firstNameLabel' | transloco }}</mat-label>
+            <input matInput formControlName="firstName" autocomplete="given-name" (input)="clearServerError('firstName')" />
+            @if (form.get('firstName')?.hasError('serverError')) {
+              <mat-error>{{ form.get('firstName')?.getError('serverError') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'account.register.lastNameLabel' | transloco }}</mat-label>
+            <input matInput formControlName="lastName" autocomplete="family-name" (input)="clearServerError('lastName')" />
+            @if (form.get('lastName')?.hasError('serverError')) {
+              <mat-error>{{ form.get('lastName')?.getError('serverError') }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.register.emailLabel' | transloco }}</mat-label>
+          <input matInput type="email" formControlName="emailAddress" autocomplete="email" (input)="clearServerError('emailAddress')" />
+          @if (form.get('emailAddress')?.hasError('serverError')) {
+            <mat-error>{{ form.get('emailAddress')?.getError('serverError') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.register.jobTitleLabel' | transloco }}</mat-label>
+          <input matInput formControlName="jobTitle" autocomplete="organization-title" (input)="clearServerError('jobTitle')" />
+          @if (form.get('jobTitle')?.hasError('serverError')) {
+            <mat-error>{{ form.get('jobTitle')?.getError('serverError') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.register.organizationLabel' | transloco }}</mat-label>
+          <input matInput formControlName="organizationName" autocomplete="organization" (input)="clearServerError('organizationName')" />
+          @if (form.get('organizationName')?.hasError('serverError')) {
+            <mat-error>{{ form.get('organizationName')?.getError('serverError') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Nationality — autocomplete -->
+        <mat-form-field>
+          <mat-label>{{ 'account.register.nationalityLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            formControlName="countryCodeId"
+            [matAutocomplete]="nationalityAuto"
+            autocomplete="off"
+          />
+          <mat-autocomplete #nationalityAuto [displayWith]="displayNationality" autoActiveFirstOption>
+            @for (cc of filteredNationalities(); track cc.id) {
+              <mat-option [value]="cc">
+                <span class="cce-register__cc-option">
+                  @if (cc.flagUrl) {
+                    <img class="cce-register__cc-flag" [src]="cc.flagUrl" [alt]="" aria-hidden="true" />
+                  }
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
+                </span>
+              </mat-option>
+            } @empty {
+              <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (form.get('countryCodeId')?.hasError('required') && form.get('countryCodeId')?.touched) {
+            <mat-error>{{ 'account.register.errorRequired' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Phone row: dial code autocomplete + number -->
+        <div class="cce-register__phone-row">
+          <mat-form-field class="cce-register__phone-code">
+            <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
+            <input
+              matInput
+              formControlName="phoneCountryCodeId"
+              [matAutocomplete]="phoneCodeAuto"
+              autocomplete="off"
+            />
+            <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
+              @for (cc of filteredPhoneCodes(); track cc.id) {
+                <mat-option [value]="cc">
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
+                  <span class="cce-register__dial-badge">{{ cc.dialCode }}</span>
+                </mat-option>
+              } @empty {
+                <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field class="cce-register__phone-number">
+            <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
+            <input matInput type="tel" inputmode="numeric" formControlName="phoneNumber" autocomplete="tel-national" (input)="clearServerError('phoneNumber')" />
+            @if (form.get('phoneNumber')?.hasError('serverError')) {
+              <mat-error>{{ form.get('phoneNumber')?.getError('serverError') }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.register.passwordLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="toggleShowPassword()"
+            [attr.aria-label]="(showPassword() ? 'account.login.hidePassword' : 'account.login.showPassword') | transloco"
+          >
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>{{ 'account.register.passwordHint' | transloco }}</mat-hint>
+        </mat-form-field>
+
+        @if (passwordStrengthError) {
+          <p class="cce-register__field-error">
+            {{ 'account.register.passwordStrengthError' | transloco }}
+          </p>
+        }
+
+        <mat-form-field>
+          <mat-label>{{ 'account.register.confirmPasswordLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+        </mat-form-field>
+
+        @if (passwordMismatch) {
+          <p class="cce-register__field-error">
+            {{ 'account.register.passwordMismatch' | transloco }}
+          </p>
+        }
+
+        @if (state().kind === 'error') {
+          <p class="cce-register__error" role="alert">
+            {{ errorMessageKey() | transloco }}
+          </p>
+        }
+
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          [disabled]="state().kind === 'submitting' || form.invalid"
+        >
+          {{ submitButtonKey() | transloco }}
+        </button>
+      </form>
+
+    <p class="cce-register__hint">
+      {{ 'account.register.alreadyHaveAccount' | transloco }}
+      <a routerLink="/login" class="cce-register__signin-link">
+        {{ 'account.register.signInLink' | transloco }}
+      </a>
+    </p>
+  }
+</section>

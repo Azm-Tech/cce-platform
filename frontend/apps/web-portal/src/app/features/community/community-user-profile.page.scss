@@ -1,0 +1,679 @@
+// ── Design tokens ─────────────────────────────────────────────────────────────
+$p-50:  var(--primary--50);
+$p-100: var(--primary--100);
+$p-200: var(--primary--200);
+$p-500: var(--primary--500);
+$p-600: var(--primary--600);
+$p-800: var(--primary--800);
+$p-900: var(--primary--900);
+$n-50:  var(--neutrals--50);
+$n-100: var(--neutrals--100);
+$n-200: var(--neutrals--200);
+$n-300: var(--neutrals--300);
+$n-500: var(--neutrals--500);
+$n-600: var(--neutrals--600);
+$n-900: var(--neutrals--900);
+$font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
+
+:host {
+  display: block;
+  font-family: $font;
+}
+
+.cup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Back to community ──────────────────────────────────────────────────────── */
+.cup__back-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: $n-500;
+  margin-bottom: 20px;
+
+  &:hover .cup__back-icon-box { border-color: $p-500; color: $p-500; }
+  &:hover .cup__back-label { color: $p-500; }
+}
+
+.cup__back-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  width: 46px;
+  border: 1px solid $n-300;
+  color: $n-900;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+}
+
+.cup__back-label {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 2;
+  color: $n-500;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+/* Base glyph points → for RTL (Arabic default); mirror under LTR. */
+:host-context([dir="ltr"]) .cup__back-btn mat-icon { transform: scaleX(-1); }
+
+// The white profile card (header + stats only)
+.cup__card {
+  background: var(--white);
+  border: 1px solid $n-100;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+// ── Header: info col + bio card ───────────────────────────────────────────────
+.cup__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 40px;
+}
+
+// Info column — inline-start (right in RTL)
+.cup__info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+// Hero row: avatar (rightmost in RTL) + text column to its left
+.cup__hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.cup__hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cup__avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 9999px;
+  background: $p-100;
+  border: 1.5px solid $p-50;
+  color: $p-900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 400;
+  font-family: $font;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.cup__expert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 400;
+  color: $n-500;
+  font-family: $font;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; color: var(--success--600); }
+}
+
+.cup__name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__subtitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__org {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: $n-900;
+  font-family: $font;
+  text-align: start;
+}
+
+.cup__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: $n-500;
+  font-family: $font;
+}
+
+.cup__meta-sep {
+  color: $n-300;
+}
+
+// Bio card — inline-end (left in RTL)
+.cup__bio-card {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--secondary--50);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.cup__bio-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: $p-800;
+  font-family: $font;
+  text-align: end;
+  width: 100%;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: $p-800; flex-shrink: 0; }
+}
+
+.cup__bio-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: $p-800;
+  font-family: $font;
+  text-align: start;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+// ── Stats + follow bar ────────────────────────────────────────────────────────
+.cup__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 32px;
+  border-top: 1px solid $n-200;
+}
+
+// Stats group — inline-start (right in RTL)
+.cup__stats {
+  display: flex;
+  align-items: center;
+}
+
+.cup__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 28px;
+  text-align: center;
+
+  &:first-child { padding-inline-start: 0; }
+  &:last-child  { padding-inline-end: 0; }
+}
+
+.cup__stat-num {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  color: $n-900;
+  font-family: $font;
+}
+
+.cup__stat-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: $n-500;
+  font-family: $font;
+  white-space: nowrap;
+}
+
+.cup__stat-sep {
+  width: 1px;
+  height: 36px;
+  background: $n-200;
+  flex-shrink: 0;
+}
+
+// Follow button — inline-end (left in RTL)
+.cup__follow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 46px;
+  padding: 10px 12px;
+  border: 1px solid $n-300;
+  background: var(--white);
+  color: $n-500;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.13s, color 0.13s;
+
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+
+  &:hover { border-color: $n-500; }
+  &:focus-visible { outline: 2px solid $p-500; outline-offset: 2px; }
+
+  &--active {
+    color: $p-500;
+    border-color: $p-200;
+  }
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+.cup__skel-header {
+  display: flex;
+  gap: 24px;
+  padding: 40px;
+  align-items: flex-start;
+}
+
+.cup__skel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cup-skel {
+  background: linear-gradient(90deg, $n-100 25%, $n-50 50%, $n-100 75%);
+  background-size: 200% 100%;
+  animation: cup-shimmer 1.6s ease-in-out infinite;
+  border-radius: 4px;
+
+  &--avatar { width: 74px; height: 74px; border-radius: 9999px; }
+  &--name   { width: 220px; height: 24px; }
+  &--line   { width: 180px; height: 16px; }
+  &--short  { width: 120px; }
+  &--bio    { width: 280px; height: 180px; flex-shrink: 0; }
+  &--bar    { width: 100%; height: 85px; border-radius: 0; }
+}
+
+@keyframes cup-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Error ─────────────────────────────────────────────────────────────────────
+.cup__error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: var(--danger--50);
+  border-bottom: 1px solid var(--danger--200);
+  color: var(--danger--600);
+  font-size: 15px;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  button {
+    margin-inline-start: auto;
+    border: 1px solid var(--danger--300);
+    background: transparent;
+    color: var(--danger--600);
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+
+    &:hover { background: var(--danger--100); }
+  }
+}
+
+// ── Feed ──────────────────────────────────────────────────────────────────────
+.cup__feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 32px;
+}
+
+// Search
+.cup__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid $n-200;
+  margin-bottom: 24px;
+}
+
+.cup__search-icon {
+  position: absolute;
+  inset-inline-end: 16px;
+  color: $n-500;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.cup__search-input {
+  width: 100%;
+  height: 64px;
+  padding: 8px 52px 8px 48px;
+  background: var(--white);
+  border: none;
+  font-size: 18px;
+  font-family: $font;
+  color: $n-900;
+  outline: none;
+  text-align: start;
+
+  &::placeholder { color: $n-500; }
+  &:focus { background: $n-50; }
+}
+
+.cup__search-clear {
+  position: absolute;
+  inset-inline-start: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: $n-200;
+  color: $n-500;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  &:hover { background: $n-300; }
+}
+
+// Filter bar
+.cup__filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid $n-200;
+  background: var(--white);
+}
+
+.cup__sort-tabs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cup__sort-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1px solid $n-200;
+  background: var(--white);
+  color: $p-600;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.13s, background 0.13s, color 0.13s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { border-color: $p-600; background: $p-50; }
+
+  &--active {
+    background: $p-50;
+    border-color: $p-600;
+    color: $p-800;
+  }
+}
+
+.cup__filter-dropdowns {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cup__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  min-width: 160px;
+  height: 46px;
+  border: 1px solid $n-300;
+  background: var(--white);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: $font;
+  color: $n-900;
+  cursor: pointer;
+  white-space: nowrap;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: $n-500; flex-shrink: 0; }
+  &:hover { border-color: $n-500; }
+}
+
+// Posts list
+.cup__posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// Feed error
+.cup__feed-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--danger--50);
+  border-bottom: 1px solid var(--danger--200);
+  color: var(--danger--600);
+  font-size: 15px;
+  font-family: $font;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  button {
+    margin-inline-start: auto;
+    border: 1px solid var(--danger--300);
+    background: transparent;
+    color: var(--danger--600);
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: $font;
+    cursor: pointer;
+    &:hover { background: var(--danger--100); }
+  }
+}
+
+// Empty state
+.cup__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 20px;
+  text-align: center;
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; color: $n-300; }
+  p { margin: 0; font-size: 18px; color: $n-500; font-family: $font; }
+}
+
+// Progress bar (paginating with existing posts)
+.cup__progress {
+  height: 2px;
+  background: $n-100;
+  overflow: hidden;
+
+  &-bar {
+    height: 100%;
+    background: $p-500;
+    animation: cup-progress 1.4s ease-in-out infinite;
+    width: 40%;
+  }
+}
+
+@keyframes cup-progress {
+  0%   { transform: translateX(-250%); }
+  100% { transform: translateX(350%); }
+}
+
+// Post card skeletons
+.cup__card-skel {
+  background: var(--white);
+  border-bottom: 1px solid $n-100;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &-header { display: flex; align-items: center; gap: 12px; }
+  &-meta { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  &-chips { display: flex; gap: 8px; margin-inline-start: auto; }
+}
+
+// Add feed-specific skeleton sizes
+.cup-skel {
+  &--avatar-sm { width: 33px; height: 33px; border-radius: 9999px; }
+  &--sm        { height: 12px; width: 70px; }
+  &--title     { height: 20px; width: 70%; }
+  &--body      { height: 14px; width: 100%; }
+  &--body-short { width: 60%; }
+  &--chip      { height: 22px; width: 80px; border-radius: 9999px; }
+}
+
+// Pagination
+.cup__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.cup__pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 64px;
+  padding: 14px 16px;
+  border: 1px solid $p-500;
+  background: var(--white);
+  color: $p-500;
+  cursor: pointer;
+  transition: background 0.12s, opacity 0.12s;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 32px; width: 32px; height: 32px; }
+
+  &:hover:not([disabled]) { background: $p-50; }
+
+  &[disabled] {
+    border-color: $n-300;
+    background: $n-200;
+    color: $n-500;
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.cup__pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+}
+
+.cup__pagination-num {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 36px;
+  padding-bottom: 4px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: $n-500;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: $font;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+
+  &--active {
+    border-bottom-color: $p-500;
+    color: $p-500;
+  }
+
+  &:hover:not(&--active) { color: $n-900; }
+}
+
+.cup__pagination-ellipsis {
+  width: 36px;
+  text-align: center;
+  color: $n-500;
+  font-size: 20px;
+  font-family: $font;
+  line-height: 32px;
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .cup__header { flex-direction: column; padding: 20px; gap: 16px; }
+  .cup__bio-card { width: 100%; }
+  .cup__bar { padding: 16px 20px; flex-wrap: wrap; }
+  .cup__feed { margin-top: 16px; }
+  .cup__stat { padding-inline: 16px; }
+  .cup__stat-num { font-size: 22px; }
+  .cup__filter-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 16px; }
+  .cup__filter-dropdowns { flex-direction: column; }
+  .cup__filter-btn { width: 100%; }
+  .cup__sort-tabs { overflow-x: auto; padding-bottom: 2px; }
+}

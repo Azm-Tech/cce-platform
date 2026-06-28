@@ -1,0 +1,179 @@
+<div class="cce-sp-edit">
+
+  <!-- ── Header band ──────────────────────────────────────────────────────── -->
+  <div class="cce-sp-edit__header">
+    <div class="cce-sp-edit__header-icon" aria-hidden="true">
+      <mat-icon>edit_document</mat-icon>
+    </div>
+    <div class="cce-sp-edit__header-text">
+      <h2 class="cce-sp-edit__title">{{ 'stateProfile.edit.title' | transloco }}</h2>
+    </div>
+    <button
+      type="button"
+      mat-icon-button
+      mat-dialog-close
+      class="cce-sp-edit__close"
+      [attr.aria-label]="'common.actions.close' | transloco"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ── Scrollable body ──────────────────────────────────────────────────── -->
+  <mat-dialog-content>
+    <form [formGroup]="form" id="sp-edit-form" class="cce-sp-edit__form">
+
+      @if (errorKey()) {
+        <div class="cce-sp-edit__alert" role="alert">{{ errorKey()! | transloco }}</div>
+      }
+
+      <!-- Statistics -->
+      <div class="cce-sp-edit__section">
+        <p class="cce-sp-edit__section-label">
+          <mat-icon aria-hidden="true">bar_chart</mat-icon>
+          {{ 'stateProfile.statsSection' | transloco }}
+        </p>
+        <div class="cce-sp-edit__stats-grid">
+          <mat-form-field>
+            <mat-label>{{ 'stateProfile.population' | transloco }}</mat-label>
+            <input matInput type="number" step="1" min="1" formControlName="population" />
+            @if (form.controls.population.touched && form.controls.population.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (form.controls.population.touched && (form.controls.population.hasError('min') || form.controls.population.hasError('pattern'))) {
+              <mat-error>{{ 'stateProfile.edit.mustBePositiveInt' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'stateProfile.areaSqKm' | transloco }}</mat-label>
+            <input matInput type="number" step="any" min="0.01" formControlName="areaSqKm" />
+            @if (form.controls.areaSqKm.touched && form.controls.areaSqKm.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (form.controls.areaSqKm.touched && form.controls.areaSqKm.hasError('min')) {
+              <mat-error>{{ 'stateProfile.edit.mustBePositive' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>{{ 'stateProfile.gdpPerCapita' | transloco }}</mat-label>
+            <input matInput type="number" step="any" min="0.01" formControlName="gdpPerCapita" />
+            @if (form.controls.gdpPerCapita.touched && form.controls.gdpPerCapita.hasError('required')) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+            @if (form.controls.gdpPerCapita.touched && form.controls.gdpPerCapita.hasError('min')) {
+              <mat-error>{{ 'stateProfile.edit.mustBePositive' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- NDC Document -->
+      <div class="cce-sp-edit__section">
+        <p class="cce-sp-edit__section-label">
+          <mat-icon aria-hidden="true">upload_file</mat-icon>
+          {{ 'stateProfile.ndcDocument' | transloco }}
+        </p>
+        <label class="cce-sp-edit__ndc-zone" for="ndc-file-input"
+          [class.cce-sp-edit__ndc-zone--selected]="!!selectedNdc()">
+          <mat-icon class="cce-sp-edit__ndc-zone-icon" aria-hidden="true">
+            {{ selectedNdc() ? 'description' : 'upload_file' }}
+          </mat-icon>
+          <span class="cce-sp-edit__ndc-name">
+            {{ selectedNdc()?.name ?? ('stateProfile.edit.chooseNdc' | transloco) }}
+          </span>
+          <span class="cce-sp-edit__ndc-tag">PDF</span>
+        </label>
+        <input
+          id="ndc-file-input"
+          type="file"
+          accept=".pdf"
+          class="cce-sp-edit__ndc-input"
+          (change)="onNdcChange($event)"
+        />
+        @if (currentNdcAssetId && !selectedNdc()) {
+          <button type="button" class="cce-sp-edit__ndc-view" (click)="viewCurrentNdc()">
+            <mat-icon aria-hidden="true">visibility</mat-icon>
+            {{ 'stateProfile.edit.viewCurrentNdc' | transloco }}
+          </button>
+        }
+        @if (ndcError()) {
+          <p class="cce-sp-edit__ndc-error">{{ ndcError()! | transloco }}</p>
+        }
+      </div>
+
+      <!-- Description -->
+      <div class="cce-sp-edit__section">
+        <p class="cce-sp-edit__section-label">
+          <mat-icon aria-hidden="true">article</mat-icon>
+          {{ 'stateProfile.description' | transloco }}
+        </p>
+        <div class="cce-sp-edit__bilingual">
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="descriptionAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.descriptionAr' | transloco"
+          />
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="descriptionEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.descriptionEn' | transloco"
+          />
+        </div>
+      </div>
+
+      <!-- Key Initiatives -->
+      <div class="cce-sp-edit__section">
+        <p class="cce-sp-edit__section-label">
+          <mat-icon aria-hidden="true">emoji_events</mat-icon>
+          {{ 'stateProfile.keyInitiatives' | transloco }}
+        </p>
+        <div class="cce-sp-edit__bilingual">
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="keyInitiativesAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.keyInitiativesAr' | transloco"
+          />
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="keyInitiativesEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.keyInitiativesEn' | transloco"
+          />
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="cce-sp-edit__section">
+        <p class="cce-sp-edit__section-label">
+          <mat-icon aria-hidden="true">contact_mail</mat-icon>
+          {{ 'stateProfile.contactInfo' | transloco }}
+        </p>
+        <div class="cce-sp-edit__bilingual">
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="contactInfoAr"
+            dir="rtl"
+            [label]="'stateProfile.edit.contactInfoAr' | transloco"
+          />
+          <cce-rich-text-editor [imageUploader]="uploadImage"
+            formControlName="contactInfoEn"
+            dir="ltr"
+            [label]="'stateProfile.edit.contactInfoEn' | transloco"
+          />
+        </div>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <!-- ── Footer ───────────────────────────────────────────────────────────── -->
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+      {{ 'common.actions.cancel' | transloco }}
+    </button>
+    <button type="button" mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+      @if (saving()) { <mat-spinner diameter="18" /> } @else {
+        {{ 'stateProfile.edit.save' | transloco }}
+      }
+    </button>
+  </mat-dialog-actions>
+
+</div>

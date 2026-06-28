@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { NotificationsApiService, type Result } from './notifications-api.service';
 import type { PagedResult, UserNotification } from './notification.types';
 import { NotificationsDrawerComponent } from './notifications-drawer.component';
@@ -46,7 +46,13 @@ describe('NotificationsDrawerComponent', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [NotificationsDrawerComponent, TranslateModule.forRoot()],
+      imports: [
+        NotificationsDrawerComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {}, ar: {} },
+          translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideNoopAnimations(),
         {

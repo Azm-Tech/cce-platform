@@ -5,7 +5,7 @@
   [disabled]="disabled()"
 >
   <mat-icon>file_download</mat-icon>
-  {{ 'knowledgeMaps.export.title' | translate }}
+  {{ 'knowledgeMaps.export.title' | transloco }}
 </button>
 
 <mat-menu #menu="matMenu">
@@ -15,7 +15,7 @@
       mat-menu-item
       (click)="onChoose(format)"
     >
-      {{ ('knowledgeMaps.export.' + format) | translate }}
+      {{ ('knowledgeMaps.export.' + format) | transloco }}
     </button>
   }
 </mat-menu>

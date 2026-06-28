@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AssistantStore } from './assistant-store.service';
 
 const MAX_LENGTH = 2000;
@@ -24,7 +24,7 @@ const WARN_LENGTH = 1500;
     TextFieldModule, // for cdkTextareaAutosize
     MatButtonModule,
     MatIconModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './compose-box.component.html',
   styleUrl: './compose-box.component.scss',

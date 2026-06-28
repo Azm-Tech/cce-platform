@@ -22,7 +22,32 @@ import type { StylesheetJson } from 'cytoscape';
  * GraphCanvasComponent when a node falls outside the current search/
  * filter match set; the selected ring uses the portal's gold accent.
  */
+/**
+ * Cytoscape renders to canvas and does NOT resolve CSS custom properties,
+ * so we read the design-system tokens off :root at build time and feed
+ * cytoscape concrete values. This keeps colors driven by _palette.scss
+ * (no hardcoded literals) while staying compatible with canvas rendering.
+ */
+function token(name: string, fallback: string): string {
+  if (typeof getComputedStyle === 'undefined' || typeof document === 'undefined') {
+    return fallback;
+  }
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+/** rgba() from an `--x-rgb` channel token. */
+function tokenAlpha(rgbName: string, alpha: number, fallback: string): string {
+  const channels = token(rgbName, '');
+  return channels ? `rgba(${channels}, ${alpha})` : fallback;
+}
+
 export function buildStylesheet(): StylesheetJson {
+  const cBrand       = token('--color-brand', '#4285f2');
+  const cBrandAccent = token('--color-brand-accent', '#235bb0');
+  const cAccent      = token('--color-accent', '#459ed9');
+  const cWhite       = token('--white', '#ffffff');
+  const cNeutral400  = token('--neutrals--400', '#98a2b0');
+
   return [
     // ─── Base node ───
     {
@@ -31,22 +56,22 @@ export function buildStylesheet(): StylesheetJson {
         'label': 'data(label)',
         'text-valign': 'center',
         'text-halign': 'center',
-        'color': '#ffffff',
+        'color': cWhite,
         'font-size': 12,
         'font-weight': 600,
         'text-outline-width': 1.5,
-        'text-outline-color': 'rgba(0, 30, 22, 0.55)',
+        'text-outline-color': tokenAlpha('--color-brand-shadow-rgb', 0.55, 'rgba(0,30,22,0.55)'),
         'width': 84,
         'height': 84,
         'border-width': 2,
-        'border-color': 'rgba(0, 60, 44, 0.18)',
+        'border-color': tokenAlpha('--color-brand-shadow-rgb', 0.18, 'rgba(0,60,44,0.18)'),
       },
     },
     // ─── NodeType: Technology — deep brand-green ellipse (primary) ───
     {
       selector: 'node[nodeType = "Technology"]',
       style: {
-        'background-color': '#006c4f',
+        'background-color': cBrand,
         'shape': 'ellipse',
       },
     },
@@ -54,7 +79,7 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'node[nodeType = "Sector"]',
       style: {
-        'background-color': '#c8a045',
+        'background-color': cAccent,
         'shape': 'round-rectangle',
       },
     },
@@ -62,7 +87,7 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'node[nodeType = "SubTopic"]',
       style: {
-        'background-color': '#14b88f',
+        'background-color': cBrandAccent,
         'shape': 'diamond',
         'width': 92,
         'height': 92,
@@ -72,11 +97,11 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'node.cce-hover',
       style: {
-        'overlay-color': '#14b88f',
+        'overlay-color': cBrandAccent,
         'overlay-opacity': 0.16,
         'overlay-padding': 8,
         'border-width': 3,
-        'border-color': 'rgba(20, 184, 143, 0.55)',
+        'border-color': tokenAlpha('--color-brand-accent-rgb', 0.55, 'rgba(20,184,143,0.55)'),
       },
     },
     // ─── Selected highlight — gold ring (matches portal selection) ───
@@ -84,8 +109,8 @@ export function buildStylesheet(): StylesheetJson {
       selector: 'node:selected',
       style: {
         'border-width': 5,
-        'border-color': '#c8a045',
-        'overlay-color': '#c8a045',
+        'border-color': cAccent,
+        'overlay-color': cAccent,
         'overlay-opacity': 0.12,
         'overlay-padding': 8,
       },
@@ -110,8 +135,8 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'edge[relationshipType = "ParentOf"]',
       style: {
-        'line-color': '#006c4f',
-        'target-arrow-color': '#006c4f',
+        'line-color': cBrand,
+        'target-arrow-color': cBrand,
         'width': 3,
       },
     },
@@ -119,8 +144,8 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'edge[relationshipType = "RelatedTo"]',
       style: {
-        'line-color': '#94a098',
-        'target-arrow-color': '#94a098',
+        'line-color': cNeutral400,
+        'target-arrow-color': cNeutral400,
         'line-style': 'dashed',
       },
     },
@@ -128,8 +153,8 @@ export function buildStylesheet(): StylesheetJson {
     {
       selector: 'edge[relationshipType = "RequiredBy"]',
       style: {
-        'line-color': '#a87d0e',
-        'target-arrow-color': '#a87d0e',
+        'line-color': cAccent,
+        'target-arrow-color': cAccent,
         'line-style': 'dotted',
         'width': 2.5,
       },

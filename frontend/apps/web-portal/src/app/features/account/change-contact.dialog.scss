@@ -1,0 +1,148 @@
+.cce-cc {
+  display: flex;
+  flex-direction: column;
+  min-width: 360px;
+  max-width: 460px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 20px 0;
+  }
+
+  &__header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--mat-sys-primary-container, var(--success--50));
+    color: var(--mat-sys-on-primary-container, var(--success--800));
+    flex-shrink: 0;
+
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  }
+
+  &__title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  &__body {
+    padding: 16px 24px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--danger--50);
+    color: var(--danger--600);
+    font-size: 0.85rem;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant, var(--neutrals--600));
+    line-height: 1.5;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__phone-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  &__phone-code,
+  &__phone-number {
+    width: 100%;
+  }
+
+  &__dial-badge {
+    margin-inline-start: auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.02em;
+  }
+
+  &__otp {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 8px 0 4px;
+    width: 100%;
+    box-sizing: border-box;
+    /* OTP is entered left-to-right regardless of UI direction */
+    direction: ltr;
+  }
+
+  &__otp-box {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 52px;
+    height: 52px;
+    box-sizing: border-box;
+    border: 2px solid rgba(var(--color-brand-rgb), 0.22);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    background: var(--white);
+    outline: none;
+    caret-color: transparent;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+
+    &:focus {
+      border-color: var(--color-brand);
+      box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.12);
+    }
+
+    &--filled {
+      border-color: rgba(var(--color-brand-rgb), 0.45);
+      background: rgba(var(--color-brand-rgb), 0.04);
+    }
+  }
+
+  &__otp-sent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  &__otp-sent-icon {
+    color: var(--mat-sys-primary, var(--success--700));
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 16px 16px !important;
+  }
+}

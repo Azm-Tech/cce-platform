@@ -1,34 +1,30 @@
 <section class="cce-events-list">
   <cce-workbench-hero
-    [eyebrow]="'events.eyebrow' | translate"
-    [title]="'events.title' | translate"
-    [subtitle]="'events.subtitle' | translate"
+    [eyebrow]="'events.eyebrow' | transloco"
+    [title]="'events.title' | transloco"
+    [subtitle]="'events.subtitle' | transloco"
   />
 
   <!-- ─── Toolbar ─────────────────────────────────────────── -->
   <div class="cce-list-toolbar">
-    <div class="cce-list-toolbar__search">
-      <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
-      <input
-        type="search"
-        class="cce-list-toolbar__search-input"
-        [placeholder]="'events.searchPlaceholder' | translate"
+    <!-- Search — stretches to fill available space (right side in RTL) -->
+    <mat-form-field appearance="outline" class="cce-list-toolbar__search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput
         [ngModel]="query()"
         (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'events.searchPlaceholder' | translate"
+        [placeholder]="'events.searchPlaceholder' | transloco"
       />
       @if (query()) {
-        <button
-          type="button"
-          class="cce-list-toolbar__search-clear"
-          [attr.aria-label]="'events.clearSearch' | translate"
-          (click)="clearQuery()"
-        >
+        <button type="button" matSuffix mat-icon-button
+          [attr.aria-label]="'events.clearSearch' | transloco"
+          (click)="clearQuery()">
           <mat-icon>close</mat-icon>
         </button>
       }
-    </div>
+    </mat-form-field>
 
+    <!-- Filters toggle -->
     <button
       type="button"
       class="cce-list-toolbar__chip"
@@ -39,19 +35,31 @@
       (click)="toggleFilters()"
     >
       <mat-icon aria-hidden="true">tune</mat-icon>
-      {{ 'events.filters.open' | translate }}
+      {{ 'events.filters.open' | transloco }}
       @if (activeChips().length > 0) {
         <span class="cce-list-toolbar__chip-badge">{{ activeChips().length }}</span>
       }
     </button>
 
-    <div class="cce-list-toolbar__view" role="group" aria-label="View density">
+    <!-- Sort -->
+    <mat-form-field appearance="outline" class="cce-list-toolbar__sort">
+      <mat-icon matPrefix>sort</mat-icon>
+      <input matInput [formControl]="sortOrderSearch" [matAutocomplete]="sortOrderAuto" />
+      <mat-autocomplete #sortOrderAuto (optionSelected)="onSortOrderSelected($event.option.value, $event.option.viewValue)">
+        @for (opt of filteredSortOrderOptions(); track opt.value) {
+          <mat-option [value]="opt.value">{{ ('events.filters.sort' + (opt.value === 'soonest' ? 'Soonest' : 'Latest')) | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!-- View toggle (far left in RTL) -->
+    <div class="cce-list-toolbar__view" role="group" [attr.aria-label]="'resources.view.grid' | transloco">
       <button
         type="button"
         class="cce-list-toolbar__view-btn"
         [class.cce-list-toolbar__view-btn--active]="viewMode() === 'grid'"
         [attr.aria-pressed]="viewMode() === 'grid'"
-        aria-label="Grid view"
+        [attr.aria-label]="'resources.view.grid' | transloco"
         (click)="setViewMode('grid')"
       >
         <mat-icon>grid_view</mat-icon>
@@ -61,18 +69,12 @@
         class="cce-list-toolbar__view-btn"
         [class.cce-list-toolbar__view-btn--active]="viewMode() === 'list'"
         [attr.aria-pressed]="viewMode() === 'list'"
-        aria-label="List view"
+        [attr.aria-label]="'resources.view.list' | transloco"
         (click)="setViewMode('list')"
       >
         <mat-icon>view_agenda</mat-icon>
       </button>
     </div>
-
-    @if (!loading() && rows().length > 0) {
-      <span class="cce-list-toolbar__count">
-        {{ filtered().length }} / {{ rows().length }}
-      </span>
-    }
   </div>
 
   <!-- ─── Filter panel (collapsible) ──────────────────────── -->
@@ -80,23 +82,23 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">category</mat-icon>
-        {{ 'events.filters.type' | translate }}
+        {{ 'events.filters.type' | transloco }}
       </legend>
       <div class="cce-list-filters__seg">
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="typeFilter() === 'all'"
                 (click)="setType('all')">
-          {{ 'events.filters.typeAll' | translate }}
+          {{ 'events.filters.typeAll' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="typeFilter() === 'online'"
                 (click)="setType('online')">
-          {{ 'events.filters.typeOnline' | translate }}
+          {{ 'events.filters.typeOnline' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="typeFilter() === 'inPerson'"
                 (click)="setType('inPerson')">
-          {{ 'events.filters.typeInPerson' | translate }}
+          {{ 'events.filters.typeInPerson' | transloco }}
         </button>
       </div>
     </fieldset>
@@ -104,28 +106,28 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">schedule</mat-icon>
-        {{ 'events.filters.when' | translate }}
+        {{ 'events.filters.when' | transloco }}
       </legend>
       <div class="cce-list-filters__seg">
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="whenFilter() === 'all'"
                 (click)="setWhen('all')">
-          {{ 'events.filters.whenAll' | translate }}
+          {{ 'events.filters.whenAll' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="whenFilter() === 'upcoming'"
                 (click)="setWhen('upcoming')">
-          {{ 'events.filters.whenUpcoming' | translate }}
+          {{ 'events.filters.whenUpcoming' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="whenFilter() === 'today'"
                 (click)="setWhen('today')">
-          {{ 'events.filters.whenToday' | translate }}
+          {{ 'events.filters.whenToday' | transloco }}
         </button>
         <button type="button" class="cce-list-filters__seg-btn"
                 [class.cce-list-filters__seg-btn--active]="whenFilter() === 'past'"
                 (click)="setWhen('past')">
-          {{ 'events.filters.whenPast' | translate }}
+          {{ 'events.filters.whenPast' | transloco }}
         </button>
       </div>
     </fieldset>
@@ -133,51 +135,33 @@
     <fieldset class="cce-list-filters__group">
       <legend class="cce-list-filters__legend">
         <mat-icon aria-hidden="true">date_range</mat-icon>
-        {{ 'events.filters.dateRange' | translate }}
+        {{ 'events.filters.dateRange' | transloco }}
       </legend>
       <div class="cce-list-filters__date-row">
         <label class="cce-list-filters__date">
-          <span>{{ 'events.filters.from' | translate }}</span>
+          <span>{{ 'events.filters.from' | transloco }}</span>
           <input type="date" [ngModel]="from()" (ngModelChange)="setDateFrom($event)" />
         </label>
         <label class="cce-list-filters__date">
-          <span>{{ 'events.filters.to' | translate }}</span>
+          <span>{{ 'events.filters.to' | transloco }}</span>
           <input type="date" [ngModel]="to()" (ngModelChange)="setDateTo($event)" />
         </label>
       </div>
     </fieldset>
 
-    <fieldset class="cce-list-filters__group">
-      <legend class="cce-list-filters__legend">
-        <mat-icon aria-hidden="true">sort</mat-icon>
-        {{ 'events.filters.sort' | translate }}
-      </legend>
-      <div class="cce-list-filters__seg">
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'soonest'"
-                (click)="setSort('soonest')">
-          {{ 'events.filters.sortSoonest' | translate }}
-        </button>
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'latest'"
-                (click)="setSort('latest')">
-          {{ 'events.filters.sortLatest' | translate }}
-        </button>
-      </div>
-    </fieldset>
   </div>
 
   <!-- ─── Active filter chips ─────────────────────────────── -->
   @if (activeChips().length > 0) {
     <div class="cce-list-active" role="status">
-      <span class="cce-list-active__label">{{ 'events.filters.active' | translate }}:</span>
+      <span class="cce-list-active__label">{{ 'events.filters.active' | transloco }}:</span>
       @for (chip of activeChips(); track chip.id) {
         <span class="cce-list-active__chip">
           {{ chip.label }}
           <button
             type="button"
             class="cce-list-active__chip-x"
-            [attr.aria-label]="'events.clearSearch' | translate"
+            [attr.aria-label]="'events.clearSearch' | transloco"
             (click)="removeChip(chip.id)"
           >
             <mat-icon>close</mat-icon>
@@ -185,7 +169,7 @@
         </span>
       }
       <button type="button" class="cce-list-active__clear" (click)="clearAllFilters()">
-        {{ 'events.filters.clearAll' | translate }}
+        {{ 'events.filters.clearAll' | transloco }}
       </button>
     </div>
   }
@@ -198,8 +182,8 @@
   @if (errorKind(); as kind) {
     <div class="cce-list-error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
@@ -208,12 +192,15 @@
     <div class="cce-list-grid" aria-busy="true">
       @for (s of skeletons; track $index) {
         <div class="cce-list-skeleton">
-          <div class="cce-list-skeleton__band"></div>
-          <div class="cce-list-skeleton__lines">
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--sm"></div>
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--lg"></div>
+          <div class="cce-list-skeleton__media"></div>
+          <div class="cce-list-skeleton__body">
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--meta"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--title"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--title cce-list-skeleton__line--short"></div>
             <div class="cce-list-skeleton__line"></div>
+            <div class="cce-list-skeleton__line cce-list-skeleton__line--shorter"></div>
           </div>
+          <div class="cce-list-skeleton__foot"></div>
         </div>
       }
     </div>
@@ -225,8 +212,8 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>event</mat-icon>
       </span>
-      <h2>{{ 'events.empty' | translate }}</h2>
-      <p>{{ 'events.emptyDesc' | translate }}</p>
+      <h2>{{ 'events.empty' | transloco }}</h2>
+      <p>{{ 'events.emptyDesc' | transloco }}</p>
     </div>
   }
 
@@ -236,9 +223,9 @@
       <span class="cce-list-empty__art" aria-hidden="true">
         <mat-icon>search_off</mat-icon>
       </span>
-      <h2>{{ 'events.filteredEmpty' | translate }}</h2>
+      <h2>{{ 'events.filteredEmpty' | transloco }}</h2>
       <button type="button" class="cce-list-toolbar__chip" (click)="clearAllFilters()">
-        {{ 'events.filters.clearAll' | translate }}
+        {{ 'events.filters.clearAll' | transloco }}
       </button>
     </div>
   }

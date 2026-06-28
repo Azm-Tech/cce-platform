@@ -1,9 +1,9 @@
-<h1>{{ 'communityModeration.title' | translate }}</h1>
+<h1>{{ 'communityModeration.title' | transloco }}</h1>
 
 <!-- ─── Filter toolbar ─────────────────────────────────────── -->
 <div class="cce-cm__filters" data-admin-filters>
   <mat-form-field appearance="outline" class="cce-cm__filter cce-cm__filter--search">
-    <mat-label>{{ 'communityModeration.filter.search' | translate }}</mat-label>
+    <mat-label>{{ 'communityModeration.filter.search' | transloco }}</mat-label>
     <input
       matInput
       type="search"
@@ -15,20 +15,20 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-cm__filter">
-    <mat-label>{{ 'communityModeration.filter.status' | translate }}</mat-label>
-    <mat-select [ngModel]="status()" (ngModelChange)="onStatus($event)">
-      @for (s of statuses; track s) {
-        <mat-option [value]="s">
-          {{ ('communityModeration.statusOption.' + s) | translate }}
+    <mat-label>{{ 'communityModeration.filter.type' | transloco }}</mat-label>
+    <mat-select [ngModel]="typeFilter()" (ngModelChange)="onType($event)">
+      @for (t of typeFilters; track t) {
+        <mat-option [value]="t">
+          {{ ('communityModeration.typeOption.' + t) | transloco }}
         </mat-option>
       }
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-cm__filter">
-    <mat-label>{{ 'communityModeration.filter.topic' | translate }}</mat-label>
+    <mat-label>{{ 'communityModeration.filter.topic' | transloco }}</mat-label>
     <mat-select [ngModel]="topicId()" (ngModelChange)="onTopic($event)">
-      <mat-option value="">{{ 'communityModeration.filter.allTopics' | translate }}</mat-option>
+      <mat-option value="">{{ 'communityModeration.filter.allTopics' | transloco }}</mat-option>
       @for (t of topics(); track t.id) {
         <mat-option [value]="t.id">
           {{ locale() === 'ar' ? t.nameAr : t.nameEn }}
@@ -38,9 +38,9 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-cm__filter">
-    <mat-label>{{ 'communityModeration.filter.locale' | translate }}</mat-label>
+    <mat-label>{{ 'communityModeration.filter.locale' | transloco }}</mat-label>
     <mat-select [ngModel]="localeFilter()" (ngModelChange)="onLocale($event)">
-      <mat-option value="">{{ 'communityModeration.filter.allLocales' | translate }}</mat-option>
+      <mat-option value="">{{ 'communityModeration.filter.allLocales' | transloco }}</mat-option>
       <mat-option value="en">English</mat-option>
       <mat-option value="ar">العربية</mat-option>
     </mat-select>
@@ -48,7 +48,7 @@
 
   <button type="button" mat-stroked-button class="cce-cm__filter-clear" (click)="clearFilters()">
     <mat-icon>refresh</mat-icon>
-    {{ 'communityModeration.filter.clear' | translate }}
+    {{ 'communityModeration.filter.clear' | transloco }}
   </button>
 </div>
 
@@ -59,9 +59,9 @@
 @if (errorKind(); as kind) {
   <div class="cce-cm__error" data-admin-error role="alert">
     <mat-icon aria-hidden="true">error_outline</mat-icon>
-    <span>{{ ('errors.' + kind) | translate }}</span>
+    <span>{{ ('errors.' + kind) | transloco }}</span>
     <button type="button" mat-stroked-button (click)="retry()">
-      {{ 'errors.retry' | translate }}
+      {{ 'errors.retry' | transloco }}
     </button>
   </div>
 }
@@ -72,7 +72,7 @@
     <span class="cce-cm__empty-art" aria-hidden="true">
       <mat-icon>forum</mat-icon>
     </span>
-    <p>{{ 'communityModeration.empty' | translate }}</p>
+    <p>{{ 'communityModeration.empty' | transloco }}</p>
   </div>
 }
 
@@ -82,13 +82,13 @@
     <table class="cce-cm__table">
       <thead>
         <tr>
-          <th>{{ 'communityModeration.col.status' | translate }}</th>
-          <th>{{ 'communityModeration.col.content' | translate }}</th>
-          <th>{{ 'communityModeration.col.topic' | translate }}</th>
-          <th>{{ 'communityModeration.col.replies' | translate }}</th>
-          <th>{{ 'communityModeration.col.locale' | translate }}</th>
-          <th>{{ 'communityModeration.col.createdOn' | translate }}</th>
-          <th class="cce-cm__col-actions">{{ 'communityModeration.col.actions' | translate }}</th>
+          <th>{{ 'communityModeration.col.type' | transloco }}</th>
+          <th>{{ 'communityModeration.col.title' | transloco }}</th>
+          <th>{{ 'communityModeration.col.topic' | transloco }}</th>
+          <th>{{ 'communityModeration.col.replies' | transloco }}</th>
+          <th>{{ 'communityModeration.col.locale' | transloco }}</th>
+          <th>{{ 'communityModeration.col.createdOn' | transloco }}</th>
+          <th class="cce-cm__col-actions">{{ 'communityModeration.col.actions' | transloco }}</th>
         </tr>
       </thead>
       <tbody>
@@ -96,25 +96,14 @@
           <tr [class.cce-cm__row--deleted]="row.isDeleted">
             <td>
               <span class="cce-cm__chips">
+                <span class="cce-cm__chip cce-cm__chip--{{ postTypeKind(row) }}">
+                  <mat-icon aria-hidden="true">{{ postTypeIcon(postTypeKind(row)) }}</mat-icon>
+                  {{ ('communityModeration.typeChip.' + postTypeKind(row)) | transloco }}
+                </span>
                 @if (row.isDeleted) {
                   <span class="cce-cm__chip cce-cm__chip--deleted">
                     <mat-icon aria-hidden="true">delete</mat-icon>
-                    {{ 'communityModeration.chip.deleted' | translate }}
-                  </span>
-                } @else if (row.isAnswered) {
-                  <span class="cce-cm__chip cce-cm__chip--answered">
-                    <mat-icon aria-hidden="true">check_circle</mat-icon>
-                    {{ 'communityModeration.chip.answered' | translate }}
-                  </span>
-                } @else if (row.isAnswerable) {
-                  <span class="cce-cm__chip cce-cm__chip--question">
-                    <mat-icon aria-hidden="true">help_outline</mat-icon>
-                    {{ 'communityModeration.chip.question' | translate }}
-                  </span>
-                } @else {
-                  <span class="cce-cm__chip cce-cm__chip--discussion">
-                    <mat-icon aria-hidden="true">forum</mat-icon>
-                    {{ 'communityModeration.chip.discussion' | translate }}
+                    {{ 'communityModeration.chip.deleted' | transloco }}
                   </span>
                 }
               </span>
@@ -130,12 +119,12 @@
                   matTooltipPosition="below"
                   (click)="openInPortal(row, $event)"
                 >
-                  {{ excerptOf(row) }}
+                  {{ titleOf(row) }}
                   <mat-icon class="cce-cm__excerpt-icon" aria-hidden="true">open_in_new</mat-icon>
                 </a>
               } @else {
                 <span class="cce-cm__excerpt" [matTooltip]="row.content" matTooltipPosition="below">
-                  {{ excerptOf(row) }}
+                  {{ titleOf(row) }}
                 </span>
               }
               <span class="cce-cm__id" [matTooltip]="row.id">{{ row.id.slice(0, 8) }}</span>
@@ -153,14 +142,23 @@
             <td class="cce-cm__col-date">{{ row.createdOn | date:'mediumDate' }}</td>
             <td class="cce-cm__col-actions">
               <div class="cce-cm__row-actions">
+                <button
+                  type="button"
+                  mat-icon-button
+                  [matTooltip]="'communityModeration.action.viewDetails' | transloco"
+                  [attr.aria-label]="'communityModeration.action.viewDetails' | transloco"
+                  (click)="openDetail(row)"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
                 @if (publicPostUrl(row); as url) {
                   <a
                     mat-icon-button
                     [href]="url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    [matTooltip]="'communityModeration.action.viewOnPortal' | translate"
-                    [attr.aria-label]="'communityModeration.action.viewOnPortal' | translate"
+                    [matTooltip]="'communityModeration.action.viewOnPortal' | transloco"
+                    [attr.aria-label]="'communityModeration.action.viewOnPortal' | transloco"
                     (click)="openInPortal(row, $event)"
                   >
                     <mat-icon>open_in_new</mat-icon>
@@ -170,7 +168,7 @@
                   type="button"
                   mat-icon-button
                   color="warn"
-                  [matTooltip]="'communityModeration.action.delete' | translate"
+                  [matTooltip]="'communityModeration.action.delete' | transloco"
                   [disabled]="row.isDeleted || busy()"
                   (click)="deletePost(row)"
                 >
@@ -180,8 +178,8 @@
                   type="button"
                   mat-icon-button
                   [matMenuTriggerFor]="rowMenu"
-                  [matTooltip]="'communityModeration.action.moreActions' | translate"
-                  [attr.aria-label]="'communityModeration.action.moreActions' | translate"
+                  [matTooltip]="'communityModeration.action.moreActions' | transloco"
+                  [attr.aria-label]="'communityModeration.action.moreActions' | transloco"
                   class="cce-cm__row-more"
                 >
                   <mat-icon>more_vert</mat-icon>
@@ -190,16 +188,16 @@
                   @if (publicPostUrl(row)) {
                     <button mat-menu-item type="button" (click)="openReplies(row)">
                       <mat-icon>forum</mat-icon>
-                      <span>{{ 'communityModeration.action.viewReplies' | translate }}</span>
+                      <span>{{ 'communityModeration.action.viewReplies' | transloco }}</span>
                     </button>
                     <button mat-menu-item type="button" (click)="copyLink(row)">
                       <mat-icon>link</mat-icon>
-                      <span>{{ 'communityModeration.action.copyLink' | translate }}</span>
+                      <span>{{ 'communityModeration.action.copyLink' | transloco }}</span>
                     </button>
                   }
                   <button mat-menu-item type="button" (click)="copyId(row)">
                     <mat-icon>content_copy</mat-icon>
-                    <span>{{ 'communityModeration.action.copyId' | translate }}</span>
+                    <span>{{ 'communityModeration.action.copyId' | transloco }}</span>
                   </button>
                 </mat-menu>
               </div>
@@ -223,15 +221,15 @@
 <details class="cce-cm__quick">
   <summary class="cce-cm__quick-summary">
     <mat-icon aria-hidden="true">bolt</mat-icon>
-    {{ 'communityModeration.quick.title' | translate }}
+    {{ 'communityModeration.quick.title' | transloco }}
   </summary>
   <div class="cce-cm__quick-body">
     <p class="cce-cm__quick-help">
-      {{ 'communityModeration.quick.help' | translate }}
+      {{ 'communityModeration.quick.help' | transloco }}
     </p>
     <div class="cce-cm__quick-row">
       <mat-form-field appearance="outline" class="cce-cm__quick-field">
-        <mat-label>{{ 'communityModeration.reply.id' | translate }}</mat-label>
+        <mat-label>{{ 'communityModeration.reply.id' | transloco }}</mat-label>
         <input
           matInput
           type="text"
@@ -240,7 +238,7 @@
           (ngModelChange)="quickReplyId.set($event); quickReplyError.set(false)"
         />
         @if (quickReplyError()) {
-          <mat-error>{{ 'communityModeration.invalidGuid' | translate }}</mat-error>
+          <mat-error>{{ 'communityModeration.invalidGuid' | transloco }}</mat-error>
         }
       </mat-form-field>
       <button
@@ -251,7 +249,7 @@
         [disabled]="busy()"
       >
         <mat-icon>delete</mat-icon>
-        {{ 'communityModeration.reply.openButton' | translate }}
+        {{ 'communityModeration.reply.openButton' | transloco }}
       </button>
     </div>
   </div>

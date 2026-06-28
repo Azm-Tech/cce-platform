@@ -6,12 +6,15 @@ export interface NewsArticle {
   titleEn: string;
   contentAr: string;
   contentEn: string;
-  slug: string;
   authorId: string;
   featuredImageUrl: string | null;
   publishedOn: string | null;
   isFeatured: boolean;
   isPublished: boolean;
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
+  tags?: string[];
 }
 
 export type { PagedResult };

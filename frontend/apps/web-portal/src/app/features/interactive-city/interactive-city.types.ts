@@ -70,6 +70,8 @@ export interface SavedScenario {
   configurationJson: string;
   /** ISO 8601 timestamp from server. */
   createdOn: string;
+  /** ISO 8601 timestamp; null if never edited after initial save. */
+  lastModifiedOn?: string | null;
 }
 
 // ─── Environmental factors (BRD §4.1.5 / F009) ───

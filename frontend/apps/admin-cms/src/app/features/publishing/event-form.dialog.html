@@ -1,69 +1,174 @@
 <h2 mat-dialog-title>
-  {{ (isEdit ? 'events.edit.title' : 'events.create.title') | translate }}
+  {{ (isView ? 'events.view.title' : isEdit ? 'events.edit.title' : 'events.create.title') | transloco }}
 </h2>
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-event-form">
     <div class="cce-event-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.titleAr' | translate }}</mat-label>
-        <input matInput formControlName="titleAr" />
+        <mat-label>{{ 'events.field.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.titleEn' | translate }}</mat-label>
-        <input matInput formControlName="titleEn" />
+        <mat-label>{{ 'events.field.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" [maxlength]="titleMax" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/{{ titleMax }}</mat-hint>
       </mat-form-field>
     </div>
-    <div class="cce-event-form__row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.descriptionAr' | translate }}</mat-label>
-        <textarea matInput formControlName="descriptionAr" rows="3"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.descriptionEn' | translate }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
-      </mat-form-field>
-    </div>
-    @if (!isEdit) {
-      <div class="cce-event-form__row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'events.field.startsOn' | translate }}</mat-label>
-          <input matInput type="datetime-local" formControlName="startsOn" />
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      class="cce-event-form__field--full"
+      formControlName="descriptionAr"
+      dir="rtl"
+      [label]="'events.field.descriptionAr' | transloco"
+      [maxLength]="descMax"
+    />
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      class="cce-event-form__field--full"
+      formControlName="descriptionEn"
+      dir="ltr"
+      [label]="'events.field.descriptionEn' | transloco"
+      [maxLength]="descMax"
+    />
+    @if (!isEdit || isView) {
+      <div class="cce-event-form__datetime-row">
+        <mat-form-field appearance="outline" class="cce-event-form__date">
+          <mat-label>{{ 'events.field.startDate' | transloco }}</mat-label>
+          <input matInput [matDatepicker]="startDp" formControlName="startDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="startDp" />
+          <mat-datepicker #startDp />
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'events.field.endsOn' | translate }}</mat-label>
-          <input matInput type="datetime-local" formControlName="endsOn" />
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.startHour' | transloco }}</mat-label>
+          <mat-select formControlName="startHour">
+            @for (h of hourOptions; track h) {
+              <mat-option [value]="h">{{ h }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.startMinute' | transloco }}</mat-label>
+          <mat-select formControlName="startMinute">
+            @for (m of minuteOptions; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="cce-event-form__datetime-row">
+        <mat-form-field appearance="outline" class="cce-event-form__date">
+          <mat-label>{{ 'events.field.endDate' | transloco }}</mat-label>
+          <input matInput [matDatepicker]="endDp" formControlName="endDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="endDp" />
+          <mat-datepicker #endDp />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.endHour' | transloco }}</mat-label>
+          <mat-select formControlName="endHour">
+            @for (h of hourOptions; track h) {
+              <mat-option [value]="h">{{ h }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="cce-event-form__time-part">
+          <mat-label>{{ 'events.field.endMinute' | transloco }}</mat-label>
+          <mat-select formControlName="endMinute">
+            @for (m of minuteOptions; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
       </div>
     }
     <div class="cce-event-form__row">
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.locationAr' | translate }}</mat-label>
-        <input matInput formControlName="locationAr" />
+        <mat-label>{{ 'events.field.locationAr' | transloco }}</mat-label>
+        <input matInput formControlName="locationAr" [maxlength]="locationMax" />
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'events.field.locationEn' | translate }}</mat-label>
-        <input matInput formControlName="locationEn" />
+        <mat-label>{{ 'events.field.locationEn' | transloco }}</mat-label>
+        <input matInput formControlName="locationEn" [maxlength]="locationMax" />
+      </mat-form-field>
+    </div>
+    <div class="cce-event-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.onlineMeetingUrl' | transloco }}</mat-label>
+        <input matInput formControlName="onlineMeetingUrl" type="url" placeholder="https://…" [maxlength]="locationMax" />
+        @if (form.controls.onlineMeetingUrl.hasError('pattern') && form.controls.onlineMeetingUrl.touched) {
+          <mat-error>{{ 'common.validation.url' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'events.field.topic' | transloco }}</mat-label>
+        <mat-select formControlName="topicId">
+          @for (t of topics(); track t.id) {
+            <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'events.field.onlineMeetingUrl' | translate }}</mat-label>
-      <input matInput formControlName="onlineMeetingUrl" />
+      <mat-label>{{ 'events.field.tags' | transloco }}</mat-label>
+      <mat-select formControlName="tagIds" multiple>
+        @for (tag of tags(); track tag.id) {
+          <mat-option [value]="tag.id">{{ locale() === 'ar' ? tag.nameAr : tag.nameEn }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
+    @if (form.hasError('venueRequired') && (form.controls.locationAr.touched || form.controls.locationEn.touched || form.controls.onlineMeetingUrl.touched)) {
+      <div class="cce-event-form__error" role="alert">
+        {{ 'events.validation.venueRequired' | transloco }}
+      </div>
+    }
+
+    @if (!isView) {
+      <div class="cce-event-form__image">
+        <input
+          #imgInput
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          (change)="onImagePicked($event)"
+        />
+        <button type="button" mat-stroked-button (click)="imgInput.click()" [disabled]="uploadingImage()">
+          <mat-icon>image</mat-icon>
+          @if (uploadingImage()) {
+            {{ 'news.field.uploadingImage' | transloco }}
+          } @else {
+            {{ 'news.field.uploadImage' | transloco }}
+          }
+        </button>
+        <span class="cce-event-form__image-hint">{{ 'news.field.imageHint' | transloco }}</span>
+      </div>
+    }
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'events.field.featuredImageUrl' | translate }}</mat-label>
+      <mat-label>{{ 'events.field.featuredImageUrl' | transloco }}</mat-label>
       <input matInput formControlName="featuredImageUrl" />
     </mat-form-field>
+    @if (form.controls.featuredImageUrl.value) {
+      <div class="cce-event-form__preview">
+        <img [src]="form.controls.featuredImageUrl.value" alt="" />
+      </div>
+    }
+
+    @if (missingRequired() && form.invalid) {
+      <div class="cce-event-form__error" role="alert">{{ 'errors.ERR013' | transloco }}</div>
+    }
     @if (errorKind(); as kind) {
-      <div class="cce-event-form__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+      <div class="cce-event-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
     }
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ (isView ? 'common.actions.close' : 'common.actions.cancel') | transloco }}
   </button>
-  <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || form.invalid">
-    @if (saving()) { <mat-spinner diameter="20" /> }
-    @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | translate }} }
-  </button>
+  @if (!isView) {
+    <button type="button" mat-flat-button color="primary" (click)="save()" [disabled]="saving() || uploadingImage()">
+      @if (saving()) { <mat-spinner diameter="20" /> }
+      @else { {{ (isEdit ? 'events.edit.save' : 'events.create.save') | transloco }} }
+    </button>
+  }
 </mat-dialog-actions>

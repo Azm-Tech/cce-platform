@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { FollowsApiService } from './follows-api.service';
 import type { FollowEntityType, MyFollows } from './follows.types';
@@ -22,10 +22,13 @@ interface Section {
   selector: 'cce-follows-page',
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    MatButtonModule, MatChipsModule, MatIconModule, MatProgressBarModule,
-    TranslateModule,
-  ],
+    RouterLink,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressBarModule,
+    TranslocoModule
+],
   templateUrl: './follows.page.html',
   styleUrl: './follows.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

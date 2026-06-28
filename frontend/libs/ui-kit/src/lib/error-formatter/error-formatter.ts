@@ -1,5 +1,24 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+/**
+ * Maps the CCE API array-based 400 body to a per-field message map.
+ * Handles both PascalCase and camelCase field names from the server.
+ * Keeps the first error message per field.
+ *
+ * Expected shape: { errors: [{ field, code, message }] }
+ */
+export function toApiFieldErrors(err: HttpErrorResponse): Record<string, string> {
+  if (err.status !== 400) return {};
+  const raw = (err.error as { errors?: { field: string; message: string }[] })?.errors;
+  if (!Array.isArray(raw)) return {};
+  const result: Record<string, string> = {};
+  for (const e of raw) {
+    const key = e.field.charAt(0).toLowerCase() + e.field.slice(1);
+    result[key] ??= e.message;
+  }
+  return result;
+}
+
 /** Map FluentValidation 400 ProblemDetails to a per-field error map. */
 export function toFieldErrors(err: HttpErrorResponse): Record<string, string[]> {
   if (err.status !== 400) return {};
@@ -29,7 +48,18 @@ export type FeatureError =
 /** Map an HttpErrorResponse to a FeatureError. */
 export function toFeatureError(err: HttpErrorResponse): FeatureError {
   if (err.status === 0) return { kind: 'network' };
-  if (err.status === 400) return { kind: 'validation', fieldErrors: toFieldErrors(err) };
+  if (err.status === 400) {
+    const raw = (err.error as { errors?: unknown })?.errors;
+    if (Array.isArray(raw)) {
+      const fieldErrors: Record<string, string[]> = {};
+      for (const e of raw as { field: string; message: string }[]) {
+        const key = e.field.charAt(0).toLowerCase() + e.field.slice(1);
+        (fieldErrors[key] ??= []).push(e.message);
+      }
+      return { kind: 'validation', fieldErrors };
+    }
+    return { kind: 'validation', fieldErrors: toFieldErrors(err) };
+  }
   if (err.status === 404) return { kind: 'not-found' };
   if (err.status === 403) return { kind: 'forbidden' };
   if (err.status === 409) {

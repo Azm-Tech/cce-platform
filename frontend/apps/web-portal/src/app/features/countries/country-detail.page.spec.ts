@@ -3,7 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CountriesApiService, type Result } from './countries-api.service';
 import { KapsarcApiService } from './kapsarc-api.service';
 import type { Country, CountryProfile, KapsarcSnapshot } from './country.types';
@@ -55,7 +55,7 @@ describe('CountryDetailPage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [CountryDetailPage, TranslateModule.forRoot()],
+      imports: [CountryDetailPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

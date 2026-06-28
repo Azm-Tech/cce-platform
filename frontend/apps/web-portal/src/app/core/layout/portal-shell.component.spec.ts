@@ -3,14 +3,14 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PortalShellComponent } from './portal-shell.component';
 import { AuthService } from '../auth/auth.service';
 
 describe('PortalShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PortalShellComponent, TranslateModule.forRoot()],
+      imports: [PortalShellComponent, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

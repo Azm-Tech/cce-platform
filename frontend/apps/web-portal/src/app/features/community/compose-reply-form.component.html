@@ -3,50 +3,111 @@
   [formGroup]="form"
   (ngSubmit)="submit()"
 >
-  @if (parentReplyId() && parentHandle(); as h) {
-    <div class="cce-compose-reply__parent" role="status">
-      <mat-icon aria-hidden="true">reply</mat-icon>
-      <span>{{ 'community.detail.replyToReply' | translate:{ handle: h } }}</span>
+  <!-- Header row -->
+  <div class="cce-compose-reply__hd">
+    <span class="cce-compose-reply__title">{{ 'community.detail.composeTitle' | transloco }}</span>
+    <mat-icon svgIcon="message-square-plus" aria-hidden="true" class="cce-compose-reply__hd-icon"></mat-icon>
+  </div>
+
+  @if (parentReply(); as parent) {
+    <div class="cce-compose-reply__parent">
+      <mat-icon svgIcon="corner-down-right" aria-hidden="true"></mat-icon>
+      <span>{{ 'community.detail.replyToReply' | transloco:{ handle: '@' + (parent.authorName ?? 'member') } }}</span>
       <button
         type="button"
         class="cce-compose-reply__cancel"
-        [attr.aria-label]="'community.detail.cancelReply' | translate"
-        (click)="cancelReply.emit()"
+        [attr.aria-label]="'community.detail.cancelReply' | transloco"
+        (click)="cancelParent.emit()"
       >
-        <mat-icon>close</mat-icon>
+        <mat-icon aria-hidden="true">close</mat-icon>
       </button>
     </div>
   }
 
   @if (errorKind()) {
     <div class="cce-compose-reply__error" role="alert">
-      {{ ('errors.' + errorKind()) | translate }}
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      {{ ('errors.' + errorKind()) | transloco }}
     </div>
   }
 
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'community.reply.placeholder' | translate }}</mat-label>
-    <textarea
-      matInput
-      formControlName="content"
-      rows="3"
-      maxlength="5000"
-    ></textarea>
-  </mat-form-field>
+  <!-- Textarea + mention picker -->
+  <div class="cce-compose-reply__textarea-wrap">
+    <div class="cce-compose-reply__mention-anchor">
+      <textarea
+        #textareaEl
+        class="cce-compose-reply__textarea"
+        formControlName="content"
+        [placeholder]="'community.replyPlaceholder' | transloco"
+        maxlength="500"
+        rows="1"
+        dir="auto"
+        (focus)="onFieldFocus($event)"
+        (input)="onType($event)"
+        (blur)="endTyping()"
+        (keydown)="onKeydown($event)"
+      ></textarea>
 
+      @if (mentionOpen()) {
+        <div
+          class="cce-compose-reply__mention-drop"
+          role="listbox"
+          aria-label="mention suggestions"
+        >
+          @if (mentionLoading()) {
+            <div class="cce-compose-reply__mention-loading" aria-live="polite">
+              <mat-icon class="cce-compose-reply__spin" aria-hidden="true">refresh</mat-icon>
+            </div>
+          } @else if (autocompleteResults().length === 0) {
+            <div class="cce-compose-reply__mention-empty">{{ 'community.mentions.empty' | transloco }}</div>
+          } @else {
+            @for (user of autocompleteResults(); track user.userId) {
+              <button
+                type="button"
+                class="cce-compose-reply__mention-item"
+                role="option"
+                (mousedown)="$event.preventDefault(); selectMention(user)"
+              >
+                @if (user.avatarUrl) {
+                  <img
+                    class="cce-compose-reply__mention-avatar"
+                    [src]="user.avatarUrl"
+                    [alt]="user.displayName"
+                  />
+                } @else {
+                  <span class="cce-compose-reply__mention-avatar cce-compose-reply__mention-avatar--initials"
+                    aria-hidden="true">
+                    {{ user.displayName.charAt(0).toUpperCase() }}
+                  </span>
+                }
+                <span class="cce-compose-reply__mention-name">{{ user.displayName }}</span>
+                @if (user.isFollowed) {
+                  <span class="cce-compose-reply__mention-badge">{{ 'community.mention.followedBadge' | transloco }}</span>
+                }
+                @if (user.isMember) {
+                  <span class="cce-compose-reply__mention-badge cce-compose-reply__mention-badge--member">{{ 'community.mention.memberBadge' | transloco }}</span>
+                }
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <span class="cce-compose-reply__char-count">{{ form.controls.content.value.length }} / 500</span>
+  </div>
+
+  <!-- Submit row -->
   <div class="cce-compose-reply__row">
-    <mat-radio-group formControlName="locale" class="cce-compose-reply__locale">
-      <mat-radio-button value="en">English</mat-radio-button>
-      <mat-radio-button value="ar">العربية</mat-radio-button>
-    </mat-radio-group>
-
     <button
-      mat-flat-button
-      color="primary"
       type="submit"
+      class="cce-compose-reply__submit"
       [disabled]="form.invalid || submitting()"
     >
-      {{ 'community.reply.submit' | translate }}
+      @if (submitting()) {
+        <mat-icon class="cce-compose-reply__spin" aria-hidden="true">refresh</mat-icon>
+      }
+      {{ 'community.sendReply' | transloco }}
     </button>
   </div>
 </form>

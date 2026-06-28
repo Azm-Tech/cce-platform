@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types';
 
 /**
@@ -32,7 +32,7 @@ import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types
 @Component({
   selector: 'cce-node-detail-panel',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './node-detail-panel.component.html',
   styleUrl: './node-detail-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

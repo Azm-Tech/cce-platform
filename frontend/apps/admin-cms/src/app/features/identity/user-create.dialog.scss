@@ -1,0 +1,70 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  min-width: 480px;
+}
+
+.cce-user-create__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.cce-user-create__full {
+  width: 100%;
+}
+
+/* Phone row: narrow code picker + wider number input */
+.cce-user-create__phone-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1rem;
+}
+
+.cce-user-create__phone-code,
+.cce-user-create__phone-number {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+/* Dial code badge inside autocomplete option — right-aligned */
+:host ::ng-deep .cce-user-create__dial-badge {
+  margin-inline-start: auto;
+  padding-inline-start: 0.5rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+:host ::ng-deep mat-option {
+  display: flex !important;
+  align-items: center;
+}
+
+.cce-user-create__error {
+  background: var(--danger--50);
+  color: var(--danger--600);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+/* Country option flag (matches registration's flagged dropdown) */
+.cce-user-create__cc-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cce-user-create__cc-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

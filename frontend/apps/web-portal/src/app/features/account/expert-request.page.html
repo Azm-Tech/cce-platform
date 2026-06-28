@@ -1,11 +1,11 @@
 <section class="cce-expert-request">
-  <h1 class="cce-expert-request__title">{{ 'account.expert.title' | translate }}</h1>
+  <h1 class="cce-expert-request__title">{{ 'account.expert.title' | transloco }}</h1>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
   @if (errorKind()) {
     <div class="cce-expert-request__error" role="alert">
-      {{ ('errors.' + errorKind()) | translate }}
+      {{ ('errors.' + errorKind()) | transloco }}
     </div>
   }
 
@@ -13,27 +13,54 @@
     @if (s.status === 'Pending') {
       <div class="cce-expert-request__banner cce-expert-request__banner--pending" role="status">
         <p>
-          {{ 'account.expert.banner.pending' | translate:{ date: (s.submittedOn | date:'mediumDate') } }}
+          {{ 'account.expert.banner.pending' | transloco:{ date: (s.submittedOn | date:'mediumDate') } }}
         </p>
       </div>
     } @else if (s.status === 'Approved') {
       <div class="cce-expert-request__banner cce-expert-request__banner--approved" role="status">
-        <p>{{ 'account.expert.banner.approved' | translate }}</p>
+        <p>{{ 'account.expert.banner.approved' | transloco }}</p>
       </div>
     } @else if (s.status === 'Rejected' && !showForm()) {
       <div class="cce-expert-request__banner cce-expert-request__banner--rejected" role="status">
         <p>
-          {{ 'account.expert.banner.rejected' | translate:{ reason: rejectionReason() } }}
+          {{ 'account.expert.banner.rejected' | transloco:{ reason: rejectionReason() } }}
         </p>
         <button mat-stroked-button type="button" (click)="resubmit()">
-          {{ 'account.expert.resubmitButton' | translate }}
+          {{ 'account.expert.resubmitButton' | transloco }}
         </button>
+      </div>
+    }
+
+    @if (!showForm()) {
+      <div class="cce-expert-request__details">
+        <h2 class="cce-expert-request__details-title">{{ 'account.expert.submittedData' | transloco }}</h2>
+
+        <div class="cce-expert-request__detail-row">
+          <span class="cce-expert-request__detail-label">{{ 'account.expert.field.bioAr' | transloco }}</span>
+          <p class="cce-expert-request__detail-value" dir="rtl">{{ s.requestedBioAr }}</p>
+        </div>
+
+        <div class="cce-expert-request__detail-row">
+          <span class="cce-expert-request__detail-label">{{ 'account.expert.field.bioEn' | transloco }}</span>
+          <p class="cce-expert-request__detail-value" dir="ltr">{{ s.requestedBioEn }}</p>
+        </div>
+
+        @if (s.requestedTags.length) {
+          <div class="cce-expert-request__detail-row">
+            <span class="cce-expert-request__detail-label">{{ 'account.expert.field.tags' | transloco }}</span>
+            <div class="cce-expert-request__tags">
+              @for (tag of s.requestedTags; track tag) {
+                <span class="cce-expert-request__tag">{{ tag }}</span>
+              }
+            </div>
+          </div>
+        }
       </div>
     }
   }
 
   @if (showForm()) {
-    <p class="cce-expert-request__body">{{ 'account.expert.body' | translate }}</p>
+    <p class="cce-expert-request__body">{{ 'account.expert.body' | transloco }}</p>
 
     <form
       class="cce-expert-request__form"
@@ -42,12 +69,12 @@
     >
       @if (submitErrorKind()) {
         <div class="cce-expert-request__error" role="alert">
-          {{ ('errors.' + submitErrorKind()) | translate }}
+          {{ ('errors.' + submitErrorKind()) | transloco }}
         </div>
       }
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'account.expert.field.bioAr' | translate }}</mat-label>
+      <mat-form-field>
+        <mat-label>{{ 'account.expert.field.bioAr' | transloco }}</mat-label>
         <textarea
           matInput
           formControlName="requestedBioAr"
@@ -56,8 +83,8 @@
         ></textarea>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'account.expert.field.bioEn' | translate }}</mat-label>
+      <mat-form-field>
+        <mat-label>{{ 'account.expert.field.bioEn' | transloco }}</mat-label>
         <textarea
           matInput
           formControlName="requestedBioEn"
@@ -66,19 +93,49 @@
         ></textarea>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'account.expert.field.tags' | translate }}</mat-label>
-        <input matInput type="text" formControlName="requestedTags" placeholder="waste, water, carbon" />
-      </mat-form-field>
+      @if (allTopics().length) {
+        <div class="cce-expert-request__topics-field">
+          <span class="cce-expert-request__topics-label">{{ 'account.expert.field.tags' | transloco }}</span>
+          <div class="cce-expert-request__topic-chips">
+            @for (topic of allTopics(); track topic.id) {
+              <button
+                type="button"
+                class="cce-expert-request__topic-chip"
+                [class.cce-expert-request__topic-chip--on]="selectedTags().has(topic.id)"
+                (click)="toggleTag(topic.id)"
+              >{{ isAr() ? topic.nameAr : topic.nameEn }}</button>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="cce-expert-request__cv-upload">
+        <label class="cce-expert-request__cv-label" [class.cce-expert-request__cv-label--busy]="uploadingCv()">
+          <input type="file" accept=".pdf,.doc,.docx" (change)="onCvFileChange($event)" [disabled]="uploadingCv()" hidden />
+          @if (uploadingCv()) {
+            <mat-progress-bar mode="indeterminate" />
+          } @else {
+            <span class="cce-expert-request__cv-icon">attach_file</span>
+            @if (cvFileName()) {
+              {{ cvFileName() }}
+            } @else {
+              {{ 'account.expert.field.cvUpload' | transloco }}
+            }
+          }
+        </label>
+        @if (cvFileName()) {
+          <span class="cce-expert-request__cv-check">✓</span>
+        }
+      </div>
 
       <div class="cce-expert-request__form-actions">
         <button
           mat-flat-button
           color="primary"
           type="submit"
-          [disabled]="form.invalid || submitting()"
+          [disabled]="form.invalid || submitting() || uploadingCv()"
         >
-          {{ 'account.expert.submitButton' | translate }}
+          {{ 'account.expert.submitButton' | transloco }}
         </button>
       </div>
     </form>

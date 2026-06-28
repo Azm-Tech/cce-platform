@@ -1,48 +1,62 @@
-import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject } from '@angular/core';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection, inject, isDevMode } from '@angular/core';
 import { AuthService } from './core/auth/auth.service';
+import { tokenInterceptor } from './core/http/token.interceptor';
 import { bffCredentialsInterceptor } from './core/http/bff-credentials.interceptor';
+import { authInterceptor } from './core/http/auth.interceptor';
 import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
-import { serverErrorInterceptor } from './core/http/server-error.interceptor';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { serverErrorInterceptor, provideCceIcons } from '@frontend/ui-kit';
+import { localeInterceptor } from '@frontend/i18n';
 import { provideRouter } from '@angular/router';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LocaleService } from '@frontend/i18n';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { LocaleService } from '@frontend/i18n';
+import { provideRealtime } from '@frontend/real-time';
 import { appRoutes } from './app.routes';
 import { EnvService } from './core/env.service';
-import { ngxTranslateHttpLoaderFactory } from './core/translate-loader.factory';
+import { TranslocoHttpLoader } from '@frontend/i18n';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    provideCceIcons(),
     provideRouter(appRoutes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([correlationIdInterceptor, bffCredentialsInterceptor, serverErrorInterceptor]),
+      withInterceptors([localeInterceptor, correlationIdInterceptor, bffCredentialsInterceptor, tokenInterceptor, serverErrorInterceptor, authInterceptor]),
     ),
-    provideAnimationsAsync(),
-    ...(TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: ngxTranslateHttpLoaderFactory,
-        deps: [HttpClient],
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'ar',
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
       },
-      defaultLanguage: 'ar',
-    }).providers ?? []),
+      loader: TranslocoHttpLoader
+    }),
     provideAppInitializer(async () => {
       const env = inject(EnvService);
-      const translate = inject(TranslateService);
+      const translate = inject(TranslocoService);
       const locale = inject(LocaleService);
       const auth = inject(AuthService);
       await env.load();
-      translate.setDefaultLang('ar');
-      await firstValueFrom(translate.use(locale.locale()));
-      // Bootstrap auth state from /api/me. Without this the SPA never
-      // discovers an existing BFF cookie session — so after a successful
-      // login redirect the header keeps showing the "Sign in" button as
-      // if nothing happened. Tolerates 401 silently (anonymous user).
+      const lang = locale.locale();
+      translate.setActiveLang(lang);
+      await firstValueFrom(translate.load(lang));
       await auth.refresh();
+    }),
+    provideRealtime(() => {
+      const auth = inject(AuthService);
+      return {
+        // Relative path, same-origin — routed to the backend by the dev proxy
+        // (and the reverse proxy in prod), exactly like the /api/* calls.
+        hubUrlFactory: () => '/hubs/notifications',
+        accessToken: auth.accessToken,
+        isAuthenticated: auth.isAuthenticated,
+        debug: isDevMode(),
+      };
     }),
   ],
 };

@@ -1,5 +1,21 @@
 <header class="cce-header" role="banner">
-  <a routerLink="/" class="cce-header__logo" (click)="closeMobileMenu()">CCE</a>
+  <a
+    routerLink="/"
+    class="cce-header__logo"
+    (click)="closeMobileMenu()"
+    [attr.aria-label]="('header.brandLine1' | transloco) + ' ' + ('header.brandLine2' | transloco)"
+  >
+    <svg class="cce-header__logo-mark" viewBox="1575.32 29.5272 72.6779 62.9456" aria-hidden="true" focusable="false">
+      <path style="fill: var(--logo-sky)" d="M1616.04 74.2281H1598.42H1582.96L1593.49 92.4728H1616.04L1606.92 83.3504L1616.04 74.2281Z" />
+      <path style="fill: var(--logo-navy)" d="M1582.31 66.2211L1590.37 58.172L1598.42 66.2211V47.7549V29.5272H1593.49L1575.32 60.9913L1582.31 66.2211Z" />
+      <path style="fill: var(--logo-green)" d="M1607.29 47.7549H1624.89H1640.36L1629.82 29.5272H1607.29L1616.4 38.6411L1607.29 47.7549Z" />
+      <path style="fill: var(--color-brand)" d="M1641.01 55.7106L1632.95 63.7682L1624.89 55.7106V55.8128V74.2279V92.4726H1629.82L1648 60.9915L1641.01 55.7106Z" />
+    </svg>
+    <span class="cce-header__logo-text">
+      <span class="cce-header__logo-line1">{{ 'header.brandLine1' | transloco }}</span>
+      <span class="cce-header__logo-line2">{{ 'header.brandLine2' | transloco }}</span>
+    </span>
+  </a>
 
   <nav
     id="cce-primary-nav"
@@ -15,7 +31,7 @@
           [routerLinkActiveOptions]="{ exact: item.route === '/' }"
           (click)="closeMobileMenu()"
         >
-          {{ item.labelKey | translate }}
+          {{ item.labelKey | transloco }}
         </a>
       } @else if (isGroup(item)) {
         <div
@@ -32,7 +48,7 @@
             [attr.aria-controls]="'cce-mega-' + item.id"
             (click)="toggleGroup(item)"
           >
-            {{ item.labelKey | translate }}
+            {{ item.labelKey | transloco }}
             <mat-icon class="cce-header__group-chevron" aria-hidden="true">expand_more</mat-icon>
           </button>
 
@@ -60,9 +76,9 @@
                         <mat-icon>{{ child.icon }}</mat-icon>
                       </span>
                       <span class="cce-header__mega-text">
-                        <span class="cce-header__mega-title">{{ child.labelKey | translate }}</span>
+                        <span class="cce-header__mega-title">{{ child.labelKey | transloco }}</span>
                         @if (child.descriptionKey) {
-                          <span class="cce-header__mega-desc">{{ child.descriptionKey | translate }}</span>
+                          <span class="cce-header__mega-desc">{{ child.descriptionKey | transloco }}</span>
                         }
                       </span>
                       <mat-icon class="cce-header__mega-arrow" aria-hidden="true">arrow_forward</mat-icon>
@@ -84,9 +100,9 @@
                 @if (previewLinkFor(item); as link) {
                   <div class="cce-header__mega-preview-overlay">
                     <span class="cce-header__mega-preview-eyebrow">DISCOVER</span>
-                    <span class="cce-header__mega-preview-title">{{ link.labelKey | translate }}</span>
+                    <span class="cce-header__mega-preview-title">{{ link.labelKey | transloco }}</span>
                     @if (link.descriptionKey) {
-                      <span class="cce-header__mega-preview-desc">{{ link.descriptionKey | translate }}</span>
+                      <span class="cce-header__mega-preview-desc">{{ link.descriptionKey | transloco }}</span>
                     }
                   </div>
                 }
@@ -99,14 +115,20 @@
   </nav>
 
   <cce-search-box class="cce-header__search" />
-  <cce-locale-switcher class="cce-header__locale" />
 
   @if (isAuthenticated()) {
+    @if (isDev) {
+      <span
+        class="cce-header__rt-dot cce-header__rt-dot--{{ connectionState() }}"
+        [title]="'Realtime: ' + connectionState()"
+        aria-hidden="true"
+      ></span>
+    }
     <button
       type="button"
       mat-icon-button
       class="cce-header__bell"
-      [attr.aria-label]="'notifications.bellLabel' | translate"
+      [attr.aria-label]="'notifications.bellLabel' | transloco"
       [matBadge]="unreadCount()"
       matBadgeColor="warn"
       matBadgeSize="small"
@@ -115,28 +137,91 @@
     >
       <mat-icon>notifications</mat-icon>
     </button>
-    <button type="button" mat-button [matMenuTriggerFor]="userMenu" class="cce-header__user">
-      <mat-icon>account_circle</mat-icon>
-      <span>{{ userLabel() }}</span>
+
+    <button type="button" [matMenuTriggerFor]="userMenu" class="cce-header__user">
+      <div class="cce-header__avatar">
+        @if (userAvatarUrl(); as avatar) {
+          <img class="cce-header__avatar-img" [src]="avatar" alt="" referrerpolicy="no-referrer" />
+        } @else {
+          {{ userInitials() }}
+        }
+      </div>
     </button>
-    <mat-menu #userMenu>
-      <a mat-menu-item routerLink="/me/profile">{{ 'header.profile' | translate }}</a>
-      <a mat-menu-item routerLink="/me/notifications">{{ 'header.notifications' | translate }}</a>
-      <a mat-menu-item routerLink="/me/follows">{{ 'header.follows' | translate }}</a>
-      <button type="button" mat-menu-item (click)="signOut()">{{ 'header.signOut' | translate }}</button>
+
+    <mat-menu #userMenu="matMenu" panelClass="cce-user-menu" xPosition="before">
+      <!-- ── Profile card header ── -->
+      <div class="cce-user-card">
+        <div class="cce-user-card__avatar">
+          @if (userAvatarUrl(); as avatar) {
+            <img class="cce-user-card__avatar-img" [src]="avatar" alt="" referrerpolicy="no-referrer" />
+          } @else {
+            {{ userInitials() }}
+          }
+        </div>
+        <div class="cce-user-card__info">
+          <span class="cce-user-card__name">{{ userLabel() }}</span>
+          <span class="cce-user-card__email">{{ userEmail() }}</span>
+          @if (isStateRep()) {
+            <span class="cce-user-card__role">{{ 'header.roleStateRep' | transloco }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- ── Account links ── -->
+      <a mat-menu-item routerLink="/me/profile">
+        <mat-icon>person</mat-icon>
+        {{ 'header.profile' | transloco }}
+      </a>
+      <a mat-menu-item routerLink="/me/notifications">
+        <mat-icon>notifications</mat-icon>
+        {{ 'header.notifications' | transloco }}
+      </a>
+      <a mat-menu-item routerLink="/me/follows">
+        <mat-icon>favorite_border</mat-icon>
+        {{ 'header.follows' | transloco }}
+      </a>
+
+      <!-- ── State rep section ── -->
+      @if (isStateRep()) {
+        <mat-divider />
+        <span class="cce-user-menu__section-label">{{ 'header.stateRepSection' | transloco }}</span>
+        <a mat-menu-item routerLink="/my-state">
+          <mat-icon>location_city</mat-icon>
+          {{ 'header.myState' | transloco }}
+        </a>
+        <a mat-menu-item routerLink="/my-profile">
+          <mat-icon>manage_accounts</mat-icon>
+          {{ 'header.manageProfile' | transloco }}
+        </a>
+        <a mat-menu-item routerLink="/my-requests">
+          <mat-icon>assignment</mat-icon>
+          {{ 'header.myRequests' | transloco }}
+        </a>
+      }
+
+      <!-- ── Sign out ── -->
+      <mat-divider />
+      <button type="button" mat-menu-item class="cce-user-menu__signout" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        {{ 'header.signOut' | transloco }}
+      </button>
     </mat-menu>
+
   } @else {
     <button type="button" mat-flat-button color="primary" (click)="signIn()" class="cce-header__signin">
-      {{ 'header.signIn' | translate }}
+      <mat-icon class="cce-header__signin-icon" aria-hidden="true">login</mat-icon>
+      {{ 'header.signIn' | transloco }}
     </button>
   }
+
+  <cce-locale-switcher class="cce-header__locale" />
 
   <button
     type="button"
     mat-icon-button
     class="cce-header__hamburger"
     (click)="toggleMobileMenu()"
-    [attr.aria-label]="'header.menu' | translate"
+    [attr.aria-label]="'header.menu' | transloco"
     [attr.aria-expanded]="mobileMenuOpen()"
     aria-controls="cce-primary-nav"
   >

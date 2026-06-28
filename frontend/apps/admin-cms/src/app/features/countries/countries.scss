@@ -3,7 +3,7 @@
 .cce-countries__filter { width: 100%; max-width: 320px; margin-bottom: 1rem; }
 .cce-countries__error,
 .cce-country-detail__error {
-  background: #fdecea; color: #b00020; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+  background: var(--danger--50); color: var(--danger--600); padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
 }
 .cce-countries__table { width: 100%; }
 .cce-countries__flag { height: 18px; width: auto; }
@@ -14,4 +14,70 @@
 .cce-country-detail__row {
   display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
   @media (max-width: 720px) { grid-template-columns: 1fr; }
+}
+
+/* Country profile — statistics row (3-up) + NDC upload zone */
+.cce-country-detail__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+}
+.cce-country-detail__ndc { margin-top: 0.25rem; }
+.cce-country-detail__ndc-input { display: none; }
+.cce-country-detail__ndc-zone {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed var(--neutrals--300);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--neutrals--600);
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+
+  &:hover {
+    border-color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.04);
+  }
+}
+.cce-country-detail__ndc-zone--selected {
+  border-color: var(--color-brand);
+  color: var(--color-text-primary);
+}
+.cce-country-detail__ndc-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cce-country-detail__ndc-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(var(--color-brand-rgb), 0.12);
+  color: var(--color-brand);
+}
+.cce-country-detail__ndc-error {
+  color: var(--danger--600);
+  font-size: 0.82rem;
+  margin: 0.4rem 0 0;
+}
+.cce-country-detail__ndc-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-brand);
+
+  &:hover { text-decoration: underline; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }

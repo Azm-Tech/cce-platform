@@ -4,8 +4,8 @@
       <mat-icon>insert_drive_file</mat-icon>
       <span class="cce-asset-upload__name">{{ a.originalFileName }}</span>
       <span class="cce-asset-upload__size">{{ a.sizeBytes }} B · {{ a.mimeType }}</span>
-      <span class="cce-asset-upload__scan">{{ ('asset.scan.' + a.virusScanStatus) | translate }}</span>
-      <button type="button" mat-icon-button (click)="clear()" [attr.aria-label]="'asset.clear' | translate">
+      <span class="cce-asset-upload__scan">{{ ('asset.scan.' + a.virusScanStatus) | transloco }}</span>
+      <button type="button" mat-icon-button (click)="clear()" [attr.aria-label]="'asset.clear' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -14,12 +14,13 @@
       <input
         type="file"
         class="cce-asset-upload__input"
+        [attr.accept]="accept || null"
         (change)="onFile($event)"
         [disabled]="uploading()"
       />
       <span class="cce-asset-upload__cta">
         <mat-icon>upload_file</mat-icon>
-        {{ 'asset.choose' | translate }}
+        {{ 'asset.choose' | transloco }}
       </span>
     </label>
   }
@@ -29,6 +30,6 @@
   }
 
   @if (errorKind(); as kind) {
-    <div class="cce-asset-upload__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    <div class="cce-asset-upload__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
   }
 </div>

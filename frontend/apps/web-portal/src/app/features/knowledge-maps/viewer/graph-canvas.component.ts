@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -13,7 +13,7 @@ import {
   untracked,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Core, EventObject } from 'cytoscape';
 import { mountCytoscape } from '../lib/cytoscape-loader';
 import { buildStylesheet } from '../lib/cytoscape-styles';
@@ -44,7 +44,7 @@ import type { KnowledgeMapEdge, KnowledgeMapNode } from '../knowledge-maps.types
 @Component({
   selector: 'cce-graph-canvas',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule],
+  imports: [MatIconModule, TranslocoModule],
   templateUrl: './graph-canvas.component.html',
   styleUrl: './graph-canvas.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

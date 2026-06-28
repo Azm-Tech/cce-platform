@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../../core/auth/auth.service';
 import { InteractiveCityApiService } from '../interactive-city-api.service';
@@ -33,7 +33,7 @@ describe('TechnologyCatalogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TechnologyCatalogComponent, TranslateModule.forRoot()],
+      imports: [TechnologyCatalogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         ScenarioBuilderStore,

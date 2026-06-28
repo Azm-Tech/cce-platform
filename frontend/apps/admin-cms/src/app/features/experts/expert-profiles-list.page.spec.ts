@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService, type Result } from './expert-api.service';
 import type { ExpertProfile, PagedResult } from './expert.types';
 import { ExpertProfilesListPage } from './expert-profiles-list.page';
@@ -31,7 +31,7 @@ describe('ExpertProfilesListPage', () => {
   beforeEach(async () => {
     listProfiles = jest.fn().mockResolvedValue(ok({ items: [SAMPLE], page: 1, pageSize: 20, total: 1 }));
     await TestBed.configureTestingModule({
-      imports: [ExpertProfilesListPage, TranslateModule.forRoot()],
+      imports: [ExpertProfilesListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

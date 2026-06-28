@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 interface SettingsModel {
   general: {
@@ -59,8 +59,8 @@ const DEFAULT_SETTINGS: SettingsModel = {
     timezone: 'Asia/Riyadh',
   },
   branding: {
-    primaryColor: '#006c4f',
-    accentColor: '#c8a045',
+    primaryColor: 'var(--color-brand)',
+    accentColor: 'var(--color-accent)',
     logoUrl: 'https://assets.cce.local/logo.svg',
   },
   email: {
@@ -102,7 +102,6 @@ const DEFAULT_SETTINGS: SettingsModel = {
   selector: 'cce-settings',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -112,8 +111,8 @@ const DEFAULT_SETTINGS: SettingsModel = {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    TranslateModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

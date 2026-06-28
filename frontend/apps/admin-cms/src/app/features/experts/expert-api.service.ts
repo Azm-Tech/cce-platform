@@ -20,6 +20,14 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class ExpertApiService {
   private readonly http = inject(HttpClient);
 
+  async getRequest(id: string): Promise<Result<ExpertRequest>> {
+    return this.run(() =>
+      firstValueFrom(
+        this.http.get<ExpertRequest>(`/api/admin/expert-requests/${id}`),
+      ),
+    );
+  }
+
   async listRequests(opts: {
     page?: number;
     pageSize?: number;
@@ -68,6 +76,17 @@ export class ExpertApiService {
         this.http.get<PagedResult<ExpertProfile>>('/api/admin/expert-profiles', { params }),
       ),
     );
+  }
+
+  async downloadCvAsset(id: string): Promise<Result<Blob>> {
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(`/api/admin/assets/${encodeURIComponent(id)}/download`, { responseType: 'blob' }),
+      );
+      return { ok: true, value: blob };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
   }
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {

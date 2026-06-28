@@ -24,18 +24,18 @@
 
   &:hover { transform: scale(1.05); }
   &:focus-visible {
-    outline: 2px solid #1565c0;
+    outline: 2px solid var(--primary--700);
     outline-offset: 2px;
   }
 }
 
-.cce-service-rating__star--filled { color: #fbc02d; }
+.cce-service-rating__star--filled { color: var(--warning--400); }
 
 .cce-service-rating__comment { width: 100%; }
 
 .cce-service-rating__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
   margin-top: 0.5rem;

@@ -2,15 +2,23 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type {
-  ApproveCountryResourceRequestBody,
-  AssetFile,
-  CountryResourceRequest,
-  CreateResourceBody,
-  PagedResult,
-  RejectCountryResourceRequestBody,
-  Resource,
-  UpdateResourceBody,
+import {
+  ADMIN_CONTENT_TYPE_API_VALUE,
+  AdminContentRequestStatus,
+  AdminContentType,
+  RESOURCE_TYPE_VALUE,
+  adminContentTypeFromApiValue,
+  normalizeResourceType,
+  type AdminContentRequestStatusValue,
+  type AdminCountryContentRequest,
+  type ApproveCountryResourceRequestBody,
+  type AssetFile,
+  type CreateResourceBody,
+  type PagedResult,
+  type RejectCountryResourceRequestBody,
+  type Resource,
+  type ResourceType,
+  type UpdateResourceBody,
 } from './content.types';
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };
@@ -43,26 +51,32 @@ export class ContentApiService {
     if (opts.countryId) params = params.set('countryId', opts.countryId);
     if (opts.isPublished !== undefined)
       params = params.set('isPublished', String(opts.isPublished));
-    return this.run(() =>
+    return this.runNormalized(() =>
       firstValueFrom(this.http.get<PagedResult<Resource>>('/api/admin/resources', { params })),
     );
   }
 
   async createResource(body: CreateResourceBody): Promise<Result<Resource>> {
-    return this.run(() =>
-      firstValueFrom(this.http.post<Resource>('/api/admin/resources', body)),
+    return this.runNormalized(() =>
+      firstValueFrom(this.http.post<Resource>('/api/admin/resources', this.serializeBody(body))),
     );
   }
 
   async updateResource(id: string, body: UpdateResourceBody): Promise<Result<Resource>> {
-    return this.run(() =>
-      firstValueFrom(this.http.put<Resource>(`/api/admin/resources/${id}`, body)),
+    return this.runNormalized(() =>
+      firstValueFrom(this.http.put<Resource>(`/api/admin/resources/${id}`, this.serializeBody(body))),
     );
   }
 
   async publishResource(id: string): Promise<Result<Resource>> {
-    return this.run(() =>
+    return this.runNormalized(() =>
       firstValueFrom(this.http.post<Resource>(`/api/admin/resources/${id}/publish`, {})),
+    );
+  }
+
+  async deleteResource(id: string): Promise<Result<void>> {
+    return this.run(() =>
+      firstValueFrom(this.http.delete<void>(`/api/admin/resources/${id}`)),
     );
   }
 
@@ -71,9 +85,43 @@ export class ContentApiService {
   async uploadAsset(file: File): Promise<Result<AssetFile>> {
     const form = new FormData();
     form.append('file', file, file.name);
-    return this.run(() =>
-      firstValueFrom(this.http.post<AssetFile>('/api/admin/assets', form)),
-    );
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AssetFile>('/api/admin/assets', form),
+      );
+      return { ...res, url: this.toAbsoluteUrl(res.url) };
+    });
+  }
+
+  /** Media upload — multipart POST to /api/media. The endpoint sits
+   *  outside `/api/admin/*` so the envelope interceptor does NOT auto-
+   *  unwrap; we read `res.data` manually. The returned URL is normalised
+   *  to absolute (it usually arrives absolute already, e.g.
+   *  `https://cce-internal-api.runasp.net/media/uploads/.../foo.jpg`). */
+  async uploadMedia(file: File): Promise<Result<AssetFile>> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<{ data: { id: string; storageKey: string; url: string } }>(
+          '/api/media',
+          form,
+        ),
+      );
+      const d = res.data;
+      const out: AssetFile = {
+        id: d.id,
+        url: this.toAbsoluteUrl(d.url),
+        originalFileName: file.name,
+        sizeBytes: file.size,
+        mimeType: file.type,
+        uploadedById: '',
+        uploadedOn: new Date().toISOString(),
+        virusScanStatus: 'Clean',
+        scannedOn: null,
+      };
+      return out;
+    });
   }
 
   async getAsset(id: string): Promise<Result<AssetFile>> {
@@ -82,34 +130,151 @@ export class ContentApiService {
     );
   }
 
-  // --- Country resource requests (approve/reject only — list endpoint not exposed) ---
+  async downloadAsset(id: string): Promise<Result<Blob>> {
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(`/api/admin/assets/${encodeURIComponent(id)}/download`, { responseType: 'blob' }),
+      );
+      return { ok: true, value: blob };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
+  /** Resolve a relative or protocol-relative URL into a full absolute URL,
+   *  using the current window origin (which routes via the dev proxy in
+   *  development and the same-origin admin host in production). */
+  private toAbsoluteUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+    if (typeof window === 'undefined') return url;
+    if (url.startsWith('//')) return `${window.location.protocol}${url}`;
+    return new URL(url, window.location.origin).toString();
+  }
+
+  // --- Country content requests (resources / news / events) ---
+
+  async listCountryRequests(opts: {
+    type?: AdminContentType;
+    status?: number;
+    page?: number;
+    pageSize?: number;
+    countryId?: string;
+  } = {}): Promise<Result<PagedResult<AdminCountryContentRequest>>> {
+    let params = new HttpParams();
+    if (opts.type !== undefined) params = params.set('type', ADMIN_CONTENT_TYPE_API_VALUE[opts.type]);
+    if (opts.status !== undefined) params = params.set('status', opts.status);
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    if (opts.countryId) params = params.set('countryId', opts.countryId);
+    const res = await this.run(() =>
+      firstValueFrom(this.http.get<PagedResult<AdminCountryContentRequest>>(
+        '/api/admin/country-resource-requests', { params },
+      )),
+    );
+    if (!res.ok) return res;
+    return {
+      ok: true,
+      value: {
+        ...res.value,
+        items: (res.value.items ?? []).map((r) => this.normalizeCountryRequestType(r)),
+      },
+    };
+  }
+
+  async getCountryRequest(id: string): Promise<Result<AdminCountryContentRequest>> {
+    const res = await this.run(() =>
+      firstValueFrom(this.http.get<AdminCountryContentRequest>(
+        `/api/admin/country-resource-requests/${id}`,
+      )),
+    );
+    if (!res.ok) return res;
+    return { ok: true, value: this.normalizeCountryRequestType(res.value) };
+  }
 
   async approveCountryResourceRequest(
     id: string,
     body: ApproveCountryResourceRequestBody = {},
-  ): Promise<Result<CountryResourceRequest>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<CountryResourceRequest>(
+  ): Promise<Result<AdminCountryContentRequest>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AdminCountryContentRequest>(
           `/api/admin/country-resource-requests/${id}/approve`,
           body,
         ),
-      ),
-    );
+      );
+      return this.normalizeCountryRequestType(res);
+    });
   }
 
   async rejectCountryResourceRequest(
     id: string,
     body: RejectCountryResourceRequestBody,
-  ): Promise<Result<CountryResourceRequest>> {
-    return this.run(() =>
-      firstValueFrom(
-        this.http.post<CountryResourceRequest>(
+  ): Promise<Result<AdminCountryContentRequest>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.post<AdminCountryContentRequest>(
           `/api/admin/country-resource-requests/${id}/reject`,
           body,
         ),
-      ),
-    );
+      );
+      return this.normalizeCountryRequestType(res);
+    });
+  }
+
+  private normalizeCountryRequestType(r: AdminCountryContentRequest): AdminCountryContentRequest {
+    const typeMap: Record<string, AdminContentType> = {
+      Resource: AdminContentType.Resource,
+      News:     AdminContentType.News,
+      Event:    AdminContentType.Event,
+    };
+    const statusMap: Record<string, AdminContentRequestStatusValue> = {
+      Pending:  AdminContentRequestStatus.Pending,
+      Approved: AdminContentRequestStatus.Approved,
+      Rejected: AdminContentRequestStatus.Rejected,
+    };
+    const rawType   = r.type   as unknown as string;
+    const rawStatus = r.status as unknown as string | number;
+    const normalizedStatus: AdminContentRequestStatusValue =
+      typeof rawStatus === 'string'
+        ? (statusMap[rawStatus] ?? AdminContentRequestStatus.Pending)
+        : (rawStatus as AdminContentRequestStatusValue);
+    return {
+      ...r,
+      type:   typeMap[rawType] ?? adminContentTypeFromApiValue(r.type as unknown as number),
+      status: normalizedStatus,
+    };
+  }
+
+  /** Converts resourceType string → integer before sending to the API. */
+  private serializeBody<T extends { resourceType?: ResourceType }>(body: T): object {
+    if (!body.resourceType) return body;
+    return { ...body, resourceType: RESOURCE_TYPE_VALUE[body.resourceType] };
+  }
+
+  /** Like run(), but normalizes integer resourceType fields in the response. */
+  private async runNormalized<T extends object>(fn: () => Promise<T>): Promise<Result<T>> {
+    try {
+      const value = await fn();
+      return { ok: true, value: this.normalizeTypes(value) as T };
+    } catch (err) {
+      return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
+    }
+  }
+
+  private normalizeTypes<T>(obj: T): T {
+    if (Array.isArray(obj)) return obj.map((item) => this.normalizeTypes(item)) as unknown as T;
+    if (obj !== null && typeof obj === 'object') {
+      const result = { ...obj } as Record<string, unknown>;
+      if ('resourceType' in result) {
+        result['resourceType'] = normalizeResourceType(result['resourceType'] as ResourceType | number);
+      }
+      if ('items' in result && Array.isArray(result['items'])) {
+        result['items'] = result['items'].map((item: unknown) => this.normalizeTypes(item as object));
+      }
+      return result as T;
+    }
+    return obj;
   }
 
   private async run<T>(fn: () => Promise<T>): Promise<Result<T>> {

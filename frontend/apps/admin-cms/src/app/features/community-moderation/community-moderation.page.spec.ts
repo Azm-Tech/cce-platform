@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { signal } from '@angular/core';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -56,7 +56,10 @@ describe('CommunityModerationPage', () => {
     toast = { success: jest.fn(), error: jest.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [CommunityModerationPage, TranslateModule.forRoot()],
+      imports: [CommunityModerationPage, TranslocoTestingModule.forRoot({
+        langs: { en: {}, ar: {} },
+        translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+      })],
       providers: [
         provideNoopAnimations(),
         { provide: CommunityModerationApiService, useValue: api },
@@ -130,12 +133,12 @@ describe('CommunityModerationPage', () => {
     expect(toast.success).toHaveBeenCalledWith('communityModeration.reply.toast');
   });
 
-  it('filter handlers re-trigger list load', () => {
+  it('filter handlers re-trigger list load with the post type', () => {
     api.listPosts.mockClear();
-    page.onStatus('deleted');
+    page.onType('question');
     expect(api.listPosts).toHaveBeenCalled();
     const lastCall = api.listPosts.mock.calls.at(-1)?.[0];
-    expect(lastCall?.status).toBe('deleted');
+    expect(lastCall?.postType).toBe(1);
   });
 
   it('publicPostUrl returns the deep-link to the web-portal', () => {

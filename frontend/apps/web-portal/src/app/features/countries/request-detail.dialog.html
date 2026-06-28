@@ -1,0 +1,173 @@
+<mat-dialog-content class="cce-req-detail">
+
+  <!-- ── Hero header ───────────────────────────────────────── -->
+  <div class="cce-req-detail__hero cce-req-detail__hero--{{ statusKey(request.status) }}">
+    <div class="cce-req-detail__hero-top">
+      <div class="cce-req-detail__type-icon cce-req-detail__type-icon--{{ statusKey(request.status) }}">
+        @if (request.type === ContentType.Resource) {
+          <mat-icon>description</mat-icon>
+        } @else if (request.type === ContentType.Event) {
+          <mat-icon>event</mat-icon>
+        } @else {
+          <mat-icon>newspaper</mat-icon>
+        }
+      </div>
+      <div class="cce-req-detail__hero-meta">
+        <span class="cce-req-detail__type-label">
+          @if (request.type === ContentType.Resource) {
+            {{ 'myRequests.typeResource' | transloco }}
+          } @else if (request.type === ContentType.Event) {
+            {{ 'myRequests.typeEvent' | transloco }}
+          } @else {
+            {{ 'myRequests.typeNews' | transloco }}
+          }
+        </span>
+        <span class="cce-req-detail__hero-dot"></span>
+        <span class="cce-req-detail__hero-date">{{ request.submittedOn | date:'mediumDate' }}</span>
+      </div>
+      <span class="cce-req-detail__status cce-req-detail__status--{{ statusKey(request.status) }}">
+        {{ ('myRequests.status.' + statusKey(request.status)) | transloco }}
+      </span>
+    </div>
+    <h2 class="cce-req-detail__hero-title">
+      {{ locale() === 'ar' ? request.proposedTitleAr : request.proposedTitleEn }}
+    </h2>
+  </div>
+
+  <!-- ── Titles ────────────────────────────────────────────── -->
+  <div class="cce-req-detail__section">
+    <div class="cce-req-detail__titles">
+      <div class="cce-req-detail__title-block">
+        <span class="cce-req-detail__label">{{ 'myRequests.detail.titleAr' | transloco }}</span>
+        <p class="cce-req-detail__title-text" dir="rtl">{{ request.proposedTitleAr }}</p>
+      </div>
+      <div class="cce-req-detail__title-block">
+        <span class="cce-req-detail__label">{{ 'myRequests.detail.titleEn' | transloco }}</span>
+        <p class="cce-req-detail__title-text" dir="ltr">{{ request.proposedTitleEn }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Resource-specific ─────────────────────────────────── -->
+  @if (request.type === ContentType.Resource) {
+    @if (request.proposedResourceType !== null || request.proposedAssetFileId) {
+      <div class="cce-req-detail__section">
+        @if (request.proposedResourceType !== null) {
+          <div class="cce-req-detail__meta-row">
+            <mat-icon>sell</mat-icon>
+            <div>
+              <span class="cce-req-detail__label">{{ 'myRequests.detail.type' | transloco }}</span>
+              <span class="cce-req-detail__meta-value">{{ ('resources.type.' + request.proposedResourceType) | transloco }}</span>
+            </div>
+          </div>
+        }
+        @if (request.proposedAssetFileId) {
+          <div class="cce-req-detail__meta-row">
+            <mat-icon>attach_file</mat-icon>
+            <div>
+              <span class="cce-req-detail__label">{{ 'myRequests.detail.file' | transloco }}</span>
+              <button
+                type="button"
+                mat-stroked-button
+                class="cce-req-detail__download-btn"
+                (click)="downloadAsset()"
+                [disabled]="downloading()"
+              >
+                @if (downloading()) {
+                  <mat-spinner diameter="16" />
+                } @else {
+                  <mat-icon>download</mat-icon>
+                }
+                {{ 'myRequests.detail.downloadFile' | transloco }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ── Event-specific ───────────────────────────────────── -->
+  @if (request.type === ContentType.Event) {
+    <div class="cce-req-detail__section cce-req-detail__section--tinted">
+      @if (request.proposedStartsOn || request.proposedEndsOn) {
+        <div class="cce-req-detail__dates">
+          @if (request.proposedStartsOn) {
+            <div class="cce-req-detail__date-item">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <span class="cce-req-detail__label">{{ 'newsEventRequest.form.startsOn' | transloco }}</span>
+                <p>{{ request.proposedStartsOn | date:'medium' }}</p>
+              </div>
+            </div>
+          }
+          @if (request.proposedEndsOn) {
+            <div class="cce-req-detail__date-item">
+              <mat-icon>event_busy</mat-icon>
+              <div>
+                <span class="cce-req-detail__label">{{ 'newsEventRequest.form.endsOn' | transloco }}</span>
+                <p>{{ request.proposedEndsOn | date:'medium' }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+      @if (request.proposedLocationAr || request.proposedLocationEn) {
+        <div class="cce-req-detail__meta-row">
+          <mat-icon>location_on</mat-icon>
+          <div>
+            <span class="cce-req-detail__label">{{ 'newsEventRequest.form.locationAr' | transloco }}</span>
+            <span class="cce-req-detail__meta-value">{{ locale() === 'ar' ? request.proposedLocationAr : request.proposedLocationEn }}</span>
+          </div>
+        </div>
+      }
+      @if (request.proposedOnlineMeetingUrl) {
+        <div class="cce-req-detail__meta-row">
+          <mat-icon>videocam</mat-icon>
+          <div>
+            <span class="cce-req-detail__label">{{ 'newsEventRequest.form.onlineMeetingUrl' | transloco }}</span>
+            <a [href]="request.proposedOnlineMeetingUrl" target="_blank" rel="noopener" class="cce-req-detail__link">
+              {{ request.proposedOnlineMeetingUrl }}
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Descriptions ──────────────────────────────────────── -->
+  @if (request.proposedDescriptionAr) {
+    <div class="cce-req-detail__section">
+      <span class="cce-req-detail__label">{{ 'myRequests.detail.descAr' | transloco }}</span>
+      <div class="cce-req-detail__rich-content ql-editor" dir="rtl"
+           [innerHTML]="safe(request.proposedDescriptionAr)"></div>
+    </div>
+  }
+
+  @if (request.proposedDescriptionEn) {
+    <div class="cce-req-detail__section">
+      <span class="cce-req-detail__label">{{ 'myRequests.detail.descEn' | transloco }}</span>
+      <div class="cce-req-detail__rich-content ql-editor" dir="ltr"
+           [innerHTML]="safe(request.proposedDescriptionEn)"></div>
+    </div>
+  }
+
+  <!-- ── Admin notes (after processing) ───────────────────── -->
+  @if (request.adminNotesAr || request.adminNotesEn) {
+    <div class="cce-req-detail__notes cce-req-detail__notes--{{ statusKey(request.status) }}">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <div>
+        <span class="cce-req-detail__label">{{ 'myRequests.detail.adminNotes' | transloco }}</span>
+        <p>{{ locale() === 'ar' ? request.adminNotesAr : request.adminNotesEn }}</p>
+        @if (request.processedOn) {
+          <span class="cce-req-detail__processed-date">{{ request.processedOn | date:'mediumDate' }}</span>
+        }
+      </div>
+    </div>
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button mat-dialog-close>{{ 'common.actions.close' | transloco }}</button>
+</mat-dialog-actions>

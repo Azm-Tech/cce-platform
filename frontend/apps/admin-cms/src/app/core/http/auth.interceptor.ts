@@ -1,33 +1,49 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { EMPTY, catchError, from, switchMap, throwError } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { isInternalUrl } from './is-internal-url';
 
 /**
- * Same-origin or relative-path requests target the CCE backend; everything
- * else (Entra ID discovery, Sentry, KAPSARC) is third-party and must not be
- * tagged with `withCredentials` — that would force a credentialed CORS
- * preflight which Entra ID's discovery endpoint does not allow.
+ * Paths that may legitimately return 401 without requiring a redirect.
+ * /api/me   — used on cold-start to probe whether the session is still valid.
+ * /api/auth — token-lifecycle endpoints (login, refresh, logout).
  */
-function isInternalUrl(url: string): boolean {
-  if (url.startsWith('/')) return true;
-  try {
-    return new URL(url).origin === window.location.origin;
-  } catch {
-    return false;
-  }
-}
+const SILENT_401_PATHS = ['/api/me', '/api/auth/'];
 
+/**
+ * Dual-purpose auth interceptor:
+ *   1. Adds `withCredentials: true` to every same-origin request so the
+ *      browser sends BFF session cookies alongside the Bearer token.
+ *   2. On 401 from a protected endpoint, attempts a silent token refresh and
+ *      retries the original request once. Redirects to login only if the
+ *      refresh produces no new access token.
+ */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
-  const cloned = isInternalUrl(req.url)
-    ? req.clone({ withCredentials: true })
-    : req;
-  return next(cloned).pipe(
-    catchError((err: HttpErrorResponse) => {
-      if (err.status === 401 && isInternalUrl(req.url) && !req.url.includes('/api/me')) {
-        const returnUrl = encodeURIComponent(router.url);
-        window.location.assign(`/auth/login?returnUrl=${returnUrl}`);
+  const isInternal = isInternalUrl(req.url);
+  const outReq = isInternal ? req.clone({ withCredentials: true }) : req;
+
+  return next(outReq).pipe(
+    catchError((err) => {
+      if (
+        isInternal &&
+        err instanceof HttpErrorResponse &&
+        err.status === 401 &&
+        !SILENT_401_PATHS.some((p) => req.url.includes(p))
+      ) {
+        const authService = inject(AuthService);
+        const router = inject(Router);
+        return from(authService.refresh()).pipe(
+          switchMap(() => {
+            const token = authService.accessToken();
+            if (!token) {
+              authService.signIn(router.url);
+              return EMPTY;
+            }
+            return next(outReq.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
+          }),
+        );
       }
       return throwError(() => err);
     }),

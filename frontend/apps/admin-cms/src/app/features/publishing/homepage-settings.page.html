@@ -1,0 +1,98 @@
+<div class="cce-hp-settings">
+  <div class="cce-hp-settings__header">
+    <h1 class="cce-hp-settings__title">{{ 'homepageSettings.title' | transloco }}</h1>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (loadError()) {
+    <div class="cce-hp-settings__error">{{ 'errors.ERR001' | transloco }}</div>
+  }
+
+  @if (!loading() && !loadError()) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-card class="cce-hp-settings__card">
+        <mat-card-header>
+          <mat-card-title>{{ 'homepageSettings.section.general' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="cce-hp-settings__card-content">
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.videoUrl' | transloco }}</mat-label>
+            <input matInput formControlName="videoUrl" placeholder="https://..." />
+            <mat-icon matSuffix>videocam</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="cce-hp-settings__card">
+        <mat-card-header>
+          <mat-card-title>{{ 'homepageSettings.section.objective' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="cce-hp-settings__card-content">
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.objectiveAr' | transloco }}</mat-label>
+            <textarea matInput formControlName="objectiveAr" rows="4" dir="rtl"></textarea>
+            <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.objectiveEn' | transloco }}</mat-label>
+            <textarea matInput formControlName="objectiveEn" rows="4"></textarea>
+            <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="cce-hp-settings__card">
+        <mat-card-header>
+          <mat-card-title>{{ 'homepageSettings.section.cceConcepts' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="cce-hp-settings__card-content">
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.cceConceptsAr' | transloco }}</mat-label>
+            <textarea matInput formControlName="cceConceptsAr" rows="4" dir="rtl"></textarea>
+            <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.cceConceptsEn' | transloco }}</mat-label>
+            <textarea matInput formControlName="cceConceptsEn" rows="4"></textarea>
+            <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="cce-hp-settings__card">
+        <mat-card-header>
+          <mat-card-title>{{ 'homepageSettings.section.countries' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="cce-hp-settings__card-content">
+          <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
+            <mat-label>{{ 'homepageSettings.field.participatingCountries' | transloco }}</mat-label>
+            <mat-select formControlName="participatingCountryIds" multiple [compareWith]="compareCountryId">
+              @for (country of countries(); track country.id) {
+                <mat-option [value]="country.id">
+                  {{ country.nameEn }} ({{ country.isoAlpha3 }})
+                </mat-option>
+              }
+            </mat-select>
+            <mat-hint>{{ 'homepageSettings.field.participatingCountriesHint' | transloco }}</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      @if (saveError()) {
+        <div class="cce-hp-settings__error">{{ 'errors.ERR025' | transloco }}</div>
+      }
+
+      <div class="cce-hp-settings__actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <mat-icon>hourglass_empty</mat-icon>
+          }
+          {{ 'homepageSettings.save.button' | transloco }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

@@ -7,31 +7,35 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { RegisterPage } from './register.page';
 
 describe('RegisterPage', () => {
   let fixture: ComponentFixture<RegisterPage>;
   let isAuthenticatedSig: ReturnType<typeof signal<boolean>>;
-  let signInMock: jest.Mock;
   let http: HttpTestingController;
 
+  const VALID_FORM = {
+    firstName: 'Test',
+    lastName: 'User',
+    emailAddress: 'test.user@example.com',
+    jobTitle: 'Engineer',
+    organizationName: 'Acme Corp',
+    phoneNumber: '+1234567890',
+    password: 'Passw0rd!',
+    confirmPassword: 'Passw0rd!',
+  };
+
   function fillFormWithValidValues(component: RegisterPage): void {
-    component.model = {
-      givenName: 'Test',
-      surname: 'User',
-      email: 'test.user@example.com',
-      mailNickname: 'test.user',
-    };
+    component.form.setValue(VALID_FORM);
   }
 
   beforeEach(async () => {
     isAuthenticatedSig = signal(false);
-    signInMock = jest.fn();
 
     await TestBed.configureTestingModule({
-      imports: [RegisterPage, TranslateModule.forRoot()],
+      imports: [RegisterPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
@@ -41,7 +45,6 @@ describe('RegisterPage', () => {
           provide: AuthService,
           useValue: {
             isAuthenticated: isAuthenticatedSig.asReadonly(),
-            signIn: signInMock,
           },
         },
       ],
@@ -55,18 +58,6 @@ describe('RegisterPage', () => {
     http.verify();
   });
 
-  it('Sign-in-existing CTA calls auth.signIn(/me/profile)', () => {
-    fixture.detectChanges();
-    const signInExistingBtn = Array.from(
-      fixture.nativeElement.querySelectorAll('button[mat-button]') as NodeListOf<HTMLButtonElement>,
-    ).find((b: HTMLButtonElement) =>
-      (b.textContent ?? '').includes('signInExistingButton'),
-    );
-    expect(signInExistingBtn).toBeDefined();
-    signInExistingBtn!.click();
-    expect(signInMock).toHaveBeenCalledWith('/me/profile');
-  });
-
   it('when authenticated, hides the form + renders an "Open profile" link', () => {
     isAuthenticatedSig.set(true);
     fixture.detectChanges();
@@ -76,30 +67,18 @@ describe('RegisterPage', () => {
     expect(link.getAttribute('href')).toBe('/me/profile');
   });
 
-  it('happy path: submitting valid form POSTs /api/users/register and shows success', async () => {
+  it('happy path: submitting valid form POSTs /api/auth/register and shows success', async () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
     fillFormWithValidValues(component);
     fixture.detectChanges();
 
-    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
-    expect(form).not.toBeNull();
+    component.submit();
 
-    component.submit({ invalid: false, valid: true } as never);
-
-    const req = http.expectOne('/api/users/register');
+    const req = http.expectOne('/api/auth/register');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({
-      givenName: 'Test',
-      surname: 'User',
-      email: 'test.user@example.com',
-      mailNickname: 'test.user',
-    });
-    req.flush({
-      entraIdObjectId: '11111111-1111-1111-1111-111111111111',
-      userPrincipalName: 'test.user@example.com',
-      displayName: 'Test User',
-    });
+    expect(req.request.body).toEqual(VALID_FORM);
+    req.flush(null, { status: 201, statusText: 'Created' });
 
     expect(component.state().kind).toBe('success');
   });
@@ -108,11 +87,10 @@ describe('RegisterPage', () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
     fillFormWithValidValues(component);
-    fixture.detectChanges();
 
-    component.submit({ invalid: false, valid: true } as never);
+    component.submit();
 
-    const req = http.expectOne('/api/users/register');
+    const req = http.expectOne('/api/auth/register');
     req.flush({}, { status: 409, statusText: 'Conflict' });
 
     const state = component.state();
@@ -126,11 +104,10 @@ describe('RegisterPage', () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
     fillFormWithValidValues(component);
-    fixture.detectChanges();
 
-    component.submit({ invalid: false, valid: true } as never);
+    component.submit();
 
-    const req = http.expectOne('/api/users/register');
+    const req = http.expectOne('/api/auth/register');
     req.flush({}, { status: 400, statusText: 'Bad Request' });
 
     const state = component.state();
@@ -144,11 +121,10 @@ describe('RegisterPage', () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
     fillFormWithValidValues(component);
-    fixture.detectChanges();
 
-    component.submit({ invalid: false, valid: true } as never);
+    component.submit();
 
-    const req = http.expectOne('/api/users/register');
+    const req = http.expectOne('/api/auth/register');
     req.flush({}, { status: 500, statusText: 'Server Error' });
 
     const state = component.state();

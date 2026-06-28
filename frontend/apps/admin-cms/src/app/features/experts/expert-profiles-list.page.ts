@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertProfile } from './expert.types';
 
@@ -29,7 +29,7 @@ import type { ExpertProfile } from './expert.types';
     MatPaginatorModule,
     MatProgressBarModule,
     MatTableModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './expert-profiles-list.page.html',
   styleUrl: './expert-profiles-list.page.scss',

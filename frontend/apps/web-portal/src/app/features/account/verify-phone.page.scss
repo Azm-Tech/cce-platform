@@ -1,0 +1,188 @@
+:host {
+  display: block;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  padding-block: 3rem 4rem;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  min-height: calc(100vh - 80px);
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(var(--color-brand-mid-rgb), 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(var(--color-accent-rgb), 0.08), transparent 55%),
+    linear-gradient(180deg, var(--neutrals--50) 0%, var(--primary--50) 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; padding-block: 2rem 3rem; }
+}
+
+.cce-auth {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.cce-auth__card {
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.12);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 44px -16px rgba(var(--color-brand-shadow-rgb), 0.18);
+  padding: 2rem 2rem 1.75rem;
+}
+
+.cce-auth__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.cce-auth__brand-glyph {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 50%, var(--color-accent) 100%);
+  box-shadow: 0 4px 10px -4px rgba(var(--color-brand-mid-rgb), 0.55);
+}
+.cce-auth__brand-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.10em;
+  color: var(--color-brand);
+}
+
+.cce-auth__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.20;
+  color: var(--color-text-primary);
+}
+
+.cce-auth__subtitle {
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: rgba(var(--color-text-primary-rgb), 0.62);
+  line-height: 1.50;
+}
+
+.cce-auth__error {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--danger--50);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.20);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.cce-auth__submit {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 44px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 60%, var(--color-brand-accent) 100%) !important;
+  color: var(--white) !important;
+  box-shadow: 0 6px 18px -6px rgba(var(--color-brand-rgb), 0.45) !important;
+  text-transform: uppercase !important;
+  font-size: 0.85rem !important;
+
+  &[disabled] {
+    background: rgba(var(--color-text-primary-rgb), 0.18) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: none !important;
+  }
+}
+
+.cce-auth__footer-line {
+  text-align: center;
+  margin: 1.25rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.92rem;
+  color: rgba(var(--color-text-primary-rgb), 0.65);
+}
+
+.cce-auth__footer-link {
+  font-weight: 700;
+  color: var(--color-brand);
+  text-decoration: none;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+/* ── Enter-phone step ──────────────────────────────────────── */
+.cce-auth__phone-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cce-auth__phone-code,
+.cce-auth__phone-number {
+  width: 100%;
+}
+
+.cce-auth__dial-badge {
+  margin-inline-start: auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(var(--color-text-primary-rgb), 0.50);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 400px) {
+  .cce-auth__phone-row { grid-template-columns: 1fr; }
+}
+
+/* ── OTP boxes ─────────────────────────────────────────────── */
+.cce-otp {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.cce-otp__box {
+  width: 46px;
+  height: 54px;
+  border: 2px solid rgba(var(--color-brand-rgb), 0.22);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  background: var(--white);
+  outline: none;
+  caret-color: transparent;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+
+  &:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.12);
+  }
+
+  &.cce-otp__box--filled {
+    border-color: rgba(var(--color-brand-rgb), 0.45);
+    background: rgba(var(--color-brand-rgb), 0.04);
+  }
+}
+
+@media (max-width: 400px) {
+  .cce-otp { gap: 0.35rem; }
+  .cce-otp__box { width: 40px; height: 48px; font-size: 1.3rem; }
+  .cce-auth__card { padding: 1.5rem 1rem; }
+}

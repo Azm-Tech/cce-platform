@@ -9,8 +9,14 @@ export interface Country {
   regionAr: string;
   regionEn: string;
   flagUrl: string;
+  dialCode: string;
   isActive: boolean;
+  isCceCountry: boolean;
+  cceClassification: string | null;
+  ccePerformanceScore: number | null;
+  cceTotalIndex: number | null;
 }
+
 
 export interface UpdateCountryBody {
   nameAr: string;
@@ -18,6 +24,13 @@ export interface UpdateCountryBody {
   regionAr: string;
   regionEn: string;
   isActive: boolean;
+}
+
+/** NDC document as returned by the profile GET (read shape). The PUT body
+ *  accepts just the `ndcAssetId` string. */
+export interface NdcDocument {
+  assetId: string;
+  originalFileName: string;
 }
 
 export interface CountryProfile {
@@ -29,6 +42,12 @@ export interface CountryProfile {
   keyInitiativesEn: string;
   contactInfoAr: string | null;
   contactInfoEn: string | null;
+  population: number | null;
+  areaSqKm: number | null;
+  gdpPerCapita: number | null;
+  /** Read with `ndcDocument?.assetId ?? ndcAssetId` — endpoints vary. */
+  ndcDocument: NdcDocument | null;
+  ndcAssetId: string | null;
   lastUpdatedById: string;
   lastUpdatedOn: string;
   rowVersion: string;
@@ -41,6 +60,10 @@ export interface UpsertCountryProfileBody {
   keyInitiativesEn: string;
   contactInfoAr?: string | null;
   contactInfoEn?: string | null;
+  population?: number | null;
+  areaSqKm?: number | null;
+  gdpPerCapita?: number | null;
+  ndcAssetId?: string | null;
   rowVersion: string;
 }
 

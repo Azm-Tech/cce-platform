@@ -1,0 +1,10 @@
+<h1 class="cce-homepage-page__title">{{ 'homepage.pageTitle' | transloco }}</h1>
+
+<mat-tab-group animationDuration="0ms" class="cce-homepage-page__tabs">
+  <mat-tab [label]="'homepage.tab.sections' | transloco">
+    <cce-homepage-sections />
+  </mat-tab>
+  <mat-tab [label]="'homepage.tab.settings' | transloco">
+    <cce-homepage-settings />
+  </mat-tab>
+</mat-tab-group>

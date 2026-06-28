@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, s
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent, type HeroStep } from '@frontend/ui-kit';
 import { EnvironmentalFactorsComponent } from './builder/environmental-factors.component';
@@ -24,7 +24,7 @@ import { buildUrlPatch, parseUrlState } from './lib/url-state';
   selector: 'cce-scenario-builder-page',
   standalone: true,
   imports: [
-    TranslateModule,
+    TranslocoModule,
     MatButtonModule,
     MatProgressBarModule,
     WorkbenchHeroComponent,
@@ -44,7 +44,7 @@ export class ScenarioBuilderPage implements OnInit {
   readonly store = inject(ScenarioBuilderStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
   private readonly locale = inject(LocaleService).locale;
 
   /** Set true after the URL is hydrated so the sync effect doesn't fire
@@ -60,18 +60,18 @@ export class ScenarioBuilderPage implements OnInit {
     return [
       {
         num: '1',
-        label: this.t.instant('interactiveCity.builder.step1Label'),
-        desc: this.t.instant('interactiveCity.builder.step1Desc'),
+        label: this.t.translate('interactiveCity.builder.step1Label'),
+        desc: this.t.translate('interactiveCity.builder.step1Desc'),
       },
       {
         num: '2',
-        label: this.t.instant('interactiveCity.builder.step2Label'),
-        desc: this.t.instant('interactiveCity.builder.step2Desc'),
+        label: this.t.translate('interactiveCity.builder.step2Label'),
+        desc: this.t.translate('interactiveCity.builder.step2Desc'),
       },
       {
         num: '3',
-        label: this.t.instant('interactiveCity.builder.step3Label'),
-        desc: this.t.instant('interactiveCity.builder.step3Desc'),
+        label: this.t.translate('interactiveCity.builder.step3Label'),
+        desc: this.t.translate('interactiveCity.builder.step3Desc'),
       },
     ];
   });

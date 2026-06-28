@@ -2,26 +2,26 @@
   <header class="cce-search-results__header">
     @if (q()) {
       <h1>
-        {{ 'search.resultsForPrefix' | translate }}
+        {{ 'search.resultsForPrefix' | transloco }}
         <span class="cce-search-results__query">{{ q() }}</span>
       </h1>
       @if (!loading() && !errorKind() && total() > 0) {
         <p class="cce-search-results__count">
-          {{ total() }} {{ 'search.totalCountSuffix' | translate }}
+          {{ total() }} {{ 'search.totalCountSuffix' | transloco }}
         </p>
       }
     } @else {
-      <h1>{{ 'search.title' | translate }}</h1>
+      <h1>{{ 'search.title' | transloco }}</h1>
     }
   </header>
 
   @if (noQuery()) {
-    <p class="cce-search-results__hint">{{ 'search.typeAQuery' | translate }}</p>
+    <p class="cce-search-results__hint">{{ 'search.typeAQuery' | transloco }}</p>
   } @else {
     <div class="cce-search-results__layout">
-      <aside class="cce-search-results__facets" [attr.aria-label]="'search.facets.title' | translate">
+      <aside class="cce-search-results__facets" [attr.aria-label]="'search.facets.title' | transloco">
         <h2 class="cce-search-results__facets-title">
-          {{ 'search.facets.title' | translate }}
+          {{ 'search.facets.title' | transloco }}
         </h2>
         <ul class="cce-search-results__facets-list">
           @for (t of facetTypes; track t) {
@@ -33,7 +33,7 @@
                 [class.cce-search-results__facet-btn--active]="type() === t"
                 (click)="toggleType(t)"
               >
-                {{ ('searchType.' + t) | translate }}
+                {{ ('searchType.' + t) | transloco }}
               </button>
             </li>
           }
@@ -45,7 +45,7 @@
             class="cce-search-results__facet-clear"
             (click)="clearType()"
           >
-            {{ 'search.facets.clear' | translate }}
+            {{ 'search.facets.clear' | transloco }}
           </button>
         }
       </aside>
@@ -55,16 +55,16 @@
 
         @if (errorKind(); as kind) {
           <div class="cce-search-results__error" role="alert">
-            <span>{{ ('errors.' + kind) | translate }}</span>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
             <button mat-button type="button" (click)="retry()">
-              {{ 'errors.retry' | translate }}
+              {{ 'errors.retry' | transloco }}
             </button>
           </div>
         }
 
         @if (empty()) {
           <p class="cce-search-results__empty">
-            {{ 'search.emptyPrefix' | translate }}
+            {{ 'search.emptyPrefix' | transloco }}
             <span class="cce-search-results__query">{{ q() }}</span>.
           </p>
         }

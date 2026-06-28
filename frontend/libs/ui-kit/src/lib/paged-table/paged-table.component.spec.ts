@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PagedTableColumn, PagedTableComponent, PagedTablePageChange } from './paged-table.component';
 
 interface Row {
@@ -54,7 +54,7 @@ describe('PagedTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HostComponent, TranslateModule.forRoot()],
+      imports: [HostComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 

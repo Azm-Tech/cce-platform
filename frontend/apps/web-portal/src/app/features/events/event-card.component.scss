@@ -1,180 +1,41 @@
-/* Event card — horizontal 75/25 layout matching news + topic cards. */
+/* Event card — vertical layout (image header → content → footer).
+   Matches the unified News & Events design mockup. */
 
 :host { display: block; height: 100%; }
 
 .cce-event-card {
-  display: grid;
-  /* Exact 25/75 split (1fr : 3fr). Image leads, content fills. */
-  grid-template-columns: 1fr 3fr;
-  min-height: 184px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.08);
-  border-radius: 16px;
-  text-decoration: none;
-  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.08);
+  border-radius: 14px;
   overflow: hidden;
-  outline: none;
+  // Containment on the card itself (not the host) so its border — including
+  // the bottom edge — isn't clipped by the host's paint containment.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
   transition:
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.18s ease;
 
   &:hover,
-  &:focus-visible {
+  &:focus-within {
     transform: translateY(-2px);
-    border-color: #006c4f;
-    box-shadow: 0 14px 28px -16px rgba(0, 48, 31, 0.22);
-  }
-  &:focus-visible {
-    outline: 3px solid rgba(0, 108, 79, 0.25);
-    outline-offset: 2px;
+    border-color: rgba(var(--color-brand-rgb), 0.32);
+    box-shadow: 0 14px 28px -16px rgba(var(--color-brand-shadow-rgb), 0.22);
   }
 }
 
-/* ─── Content (75%) ──────────────────────────────────────── */
-.cce-event-card__content {
-  padding: 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  min-width: 0;
-}
-
-.cce-event-card__eyebrow-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-
-.cce-event-card__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #006c4f;
-  background: rgba(0, 108, 79, 0.08);
-  padding: 0.28rem 0.6rem;
-  border-radius: 999px;
-
-  mat-icon { font-size: 12px; width: 12px; height: 12px; }
-}
-
-.cce-event-card__eyebrow--online {
-  color: #6b4f0a;
-  background: linear-gradient(135deg, rgba(200, 160, 69, 0.18) 0%, rgba(212, 185, 105, 0.22) 100%);
-}
-
-.cce-event-card__when {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
-  padding: 0.28rem 0.55rem;
-  border-radius: 999px;
-  border: 1px dashed rgba(28, 39, 36, 0.18);
-}
-
-.cce-event-card__when--today {
-  color: #ffffff;
-  background: #006c4f;
-  border-color: transparent;
-}
-
-.cce-event-card__when--past {
-  color: rgba(28, 39, 36, 0.4);
-  border-color: rgba(28, 39, 36, 0.12);
-}
-
-.cce-event-card__title {
-  margin: 0;
-  font-size: 1.02rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: #1c2724;
-  letter-spacing: -0.01em;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.cce-event-card__meta {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem 0.85rem;
-
-  li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgba(28, 39, 36, 0.65);
-
-    mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
-      color: #006c4f;
-    }
-  }
-}
-
-.cce-event-card__meta-loc {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cce-event-card__foot {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: auto;
-  padding-top: 0.4rem;
-}
-
-.cce-event-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #006c4f;
-
-  mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
-.cce-event-card:hover .cce-event-card__cta mat-icon,
-.cce-event-card:focus-visible .cce-event-card__cta mat-icon {
-  transform: translateX(3px);
-}
-
-[dir="rtl"] .cce-event-card__cta mat-icon { transform: scaleX(-1); }
-[dir="rtl"] .cce-event-card:hover .cce-event-card__cta mat-icon,
-[dir="rtl"] .cce-event-card:focus-visible .cce-event-card__cta mat-icon {
-  transform: translateX(-3px) scaleX(-1);
-}
-
-/* ─── Media (25%) ────────────────────────────────────────── */
+/* ─── Media ─────────────────────────────────────────────── */
 .cce-event-card__media {
   position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--neutrals--200) 0%, var(--neutrals--300) 60%, var(--neutrals--300) 100%);
   overflow: hidden;
-  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%);
+  text-decoration: none;
 
   img {
     width: 100%;
@@ -183,10 +44,15 @@
     display: block;
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  &:focus-visible {
+    outline: 3px solid rgba(var(--color-brand-rgb), 0.28);
+    outline-offset: -3px;
+  }
 }
 
 .cce-event-card:hover .cce-event-card__media img,
-.cce-event-card:focus-visible .cce-event-card__media img {
+.cce-event-card:focus-within .cce-event-card__media img {
   transform: scale(1.04);
 }
 
@@ -196,59 +62,183 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(var(--color-brand-shadow-rgb), 0.30);
 
-  mat-icon { font-size: 36px; width: 36px; height: 36px; }
+  mat-icon { font-size: 56px; width: 56px; height: 56px; }
 }
 
-/* Crisp, glassy day pill in the corner of the media. */
-.cce-event-card__day-pill {
+.cce-event-card__badge {
   position: absolute;
-  inset-inline-end: 0.65rem;
-  bottom: 0.65rem;
+  top: 0.75rem;
+  inset-inline-end: 0.75rem;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #006c4f;
-  box-shadow: 0 4px 12px -4px rgba(0, 48, 31, 0.35);
-  backdrop-filter: blur(6px);
-  line-height: 1;
-}
-
-.cce-event-card__day-pill-day {
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.cce-event-card__day-pill-mon {
-  font-size: 0.62rem;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(var(--color-text-primary-rgb), 0.78);
+  color: var(--white);
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.7);
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(6px);
+
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
 }
 
-/* ─── Mobile: stack vertically ───────────────────────────── */
-@media (max-width: 480px) {
-  .cce-event-card {
-    grid-template-columns: 1fr;
-    min-height: 0;
+.cce-event-card__badge--today {
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 100%);
+}
+
+.cce-event-card__badge--past {
+  background: rgba(var(--color-text-primary-rgb), 0.78);
+}
+
+/* ─── Content ───────────────────────────────────────────── */
+.cce-event-card__content {
+  padding: 1rem 1.1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.cce-event-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.78rem;
+  color: rgba(var(--color-text-primary-rgb), 0.62);
+  flex-wrap: wrap;
+}
+
+.cce-event-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: rgba(var(--color-text-primary-rgb), 0.55);
+    flex-shrink: 0;
   }
+}
+
+.cce-event-card__meta-loc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.cce-event-card__title-link {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  &:focus-visible {
+    outline: 3px solid rgba(var(--color-brand-rgb), 0.25);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+.cce-event-card__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cce-event-card__excerpt {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(var(--color-text-primary-rgb), 0.68);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Footer (share + add-to-calendar) ──────────────────── */
+.cce-event-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1.1rem 1rem;
+  border-top: 1px solid rgba(var(--color-brand-shadow-rgb), 0.06);
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ─── List view: horizontal compact card. */
+:host-context(.cce-list-grid--list) {
+  .cce-event-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr auto;
+    height: auto;
+    min-height: 140px;
+  }
+
   .cce-event-card__media {
-    order: -1;
-    height: 140px;
+    grid-row: 1 / span 2;
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 140px;
+  }
+
+  .cce-event-card__content {
+    padding: 0.85rem 1rem 0.45rem;
+    gap: 0.4rem;
+  }
+
+  .cce-event-card__title { -webkit-line-clamp: 1; }
+  .cce-event-card__excerpt { -webkit-line-clamp: 2; }
+
+  .cce-event-card__foot {
+    padding: 0.5rem 1rem 0.85rem;
+    margin-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (max-width: 540px) {
+  :host-context(.cce-list-grid--list) {
+    .cce-event-card { grid-template-columns: 120px 1fr; }
+    .cce-event-card__media { min-height: 100px; }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cce-event-card,
-  .cce-event-card__media img,
-  .cce-event-card__cta mat-icon { transition: none; }
+  .cce-event-card__media img { transition: none; }
   .cce-event-card:hover { transform: none; }
+}
+
+/* Topic chip (US010 AC3 — list shows Title, Date, Topic) */
+.cce-event-card__topic {
+  display: inline-block;
+  align-self: flex-start;
+  margin-block: 0.15rem 0.1rem;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-brand);
+  background: rgba(var(--color-brand-rgb), 0.08);
+  border-radius: 20px;
 }

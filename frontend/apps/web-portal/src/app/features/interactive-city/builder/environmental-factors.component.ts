@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ENV_FACTOR_BOUNDS, type EnvironmentalFactors } from '../interactive-city.types';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
 
@@ -39,7 +39,7 @@ interface FactorRow {
   imports: [
     DecimalPipe, FormsModule,
     MatButtonModule, MatIconModule, MatSliderModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './environmental-factors.component.html',
   styleUrl: './environmental-factors.component.scss',

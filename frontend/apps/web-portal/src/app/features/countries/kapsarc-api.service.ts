@@ -20,12 +20,12 @@ export class KapsarcApiService {
    */
   async getLatestSnapshot(countryId: string): Promise<Result<KapsarcSnapshot | null>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<KapsarcSnapshot>(
+      const res = await firstValueFrom(
+        this.http.get<{ data: KapsarcSnapshot }>(
           `/api/kapsarc/snapshots/${encodeURIComponent(countryId)}`,
         ),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       const error = err as HttpErrorResponse;
       if (error.status === 404) {

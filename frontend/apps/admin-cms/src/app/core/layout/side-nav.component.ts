@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../auth/auth.service';
 import { PermissionDirective } from '../auth/permission.directive';
 import { NAV_GROUPS, NavGroup } from './nav-config';
@@ -18,14 +18,13 @@ import { NAV_GROUPS, NavGroup } from './nav-config';
   selector: 'cce-side-nav',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     MatListModule,
     MatIconModule,
-    TranslateModule,
-    PermissionDirective,
-  ],
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,95 +1,139 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
-import { ToastService } from '@frontend/ui-kit';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ContentApiService } from './content-api.service';
+import {
+  AdminContentRequestStatus,
+  AdminContentType,
+  adminContentRequestStatusKey,
+  RESOURCE_TYPE_FROM_VALUE,
+  type AdminContentRequestStatusValue,
+  type AdminCountryContentRequest,
+} from './content.types';
 
-const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-interface CrrForm {
-  requestId: FormControl<string>;
-  adminNotesAr: FormControl<string>;
-  adminNotesEn: FormControl<string>;
-}
-
-/**
- * Admin → Country resource requests. The Internal API only exposes approve
- * + reject (no list endpoint) so v0.1.0 ships a by-ID power-user form. A
- * future phase can add a list once Sub-3 exposes one.
- */
 @Component({
   selector: 'cce-country-resource-request',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
+    DatePipe,
+    NgTemplateOutlet,
+    FormsModule,
+    RouterLink,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
-    MatInputModule,
-    TranslateModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatTableModule,
+    MatTabsModule,
+    TranslocoModule,
   ],
   templateUrl: './country-resource-request.page.html',
   styleUrl: './country-resource-request.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CountryResourceRequestPage {
+export class CountryResourceRequestPage implements OnInit {
   private readonly api = inject(ContentApiService);
-  private readonly toast = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  readonly form = new FormGroup<CrrForm>({
-    requestId: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(GUID_RE)] }),
-    adminNotesAr: new FormControl('', { nonNullable: true }),
-    adminNotesEn: new FormControl('', { nonNullable: true }),
-  });
-  readonly busy = signal(false);
+  private readonly TYPES: AdminContentType[] = [
+    AdminContentType.Resource,
+    AdminContentType.News,
+    AdminContentType.Event,
+  ];
 
-  async approve(): Promise<void> {
-    if (this.form.controls.requestId.invalid) {
-      this.form.controls.requestId.markAsTouched();
-      return;
+  private readonly TYPE_TAB_INDEX: Record<AdminContentType, number> = {
+    [AdminContentType.Resource]: 0,
+    [AdminContentType.News]: 1,
+    [AdminContentType.Event]: 2,
+  };
+
+  readonly AdminContentType = AdminContentType;
+  readonly AdminContentRequestStatus = AdminContentRequestStatus;
+  readonly statusKey = adminContentRequestStatusKey;
+  readonly resourceTypeLabel = (n: number | null) =>
+    n != null ? RESOURCE_TYPE_FROM_VALUE[n] ?? String(n) : '—';
+
+  readonly STATUSES: Array<{ value: AdminContentRequestStatusValue | ''; label: string }> = [
+    { value: '', label: 'countryRequest.filter.allStatuses' },
+    { value: AdminContentRequestStatus.Pending, label: 'countryRequest.status.pending' },
+    { value: AdminContentRequestStatus.Approved, label: 'countryRequest.status.approved' },
+    { value: AdminContentRequestStatus.Rejected, label: 'countryRequest.status.rejected' },
+  ];
+
+  readonly displayedColumns = ['title', 'submittedOn', 'status', 'actions'];
+
+  readonly activeType = signal<AdminContentType>(AdminContentType.Resource);
+  readonly tabIndex = computed(() => this.TYPE_TAB_INDEX[this.activeType()]);
+  readonly statusFilter = signal<AdminContentRequestStatusValue | ''>('');
+  readonly page = signal(1);
+  readonly pageSize = signal(20);
+  readonly rows = signal<AdminCountryContentRequest[]>([]);
+  readonly total = signal(0);
+  readonly loading = signal(false);
+  readonly errorKind = signal<string | null>(null);
+
+  ngOnInit(): void {
+    const typeParam = this.route.snapshot.queryParamMap.get('type') as AdminContentType | null;
+    if (typeParam && Object.values(AdminContentType).includes(typeParam)) {
+      this.activeType.set(typeParam);
     }
-    this.busy.set(true);
-    const v = this.form.getRawValue();
-    const res = await this.api.approveCountryResourceRequest(v.requestId, {
-      adminNotesAr: v.adminNotesAr || null,
-      adminNotesEn: v.adminNotesEn || null,
-    });
-    this.busy.set(false);
-    if (res.ok) {
-      this.toast.success('countryResourceRequest.approve.toast');
-      this.form.reset();
-    } else {
-      this.toast.error(`errors.${res.error.kind}`);
-    }
+    void this.load();
   }
 
-  async reject(): Promise<void> {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    if (!this.form.controls.adminNotesAr.value || !this.form.controls.adminNotesEn.value) {
-      this.toast.error('countryResourceRequest.reject.notesRequired');
-      return;
-    }
-    this.busy.set(true);
-    const v = this.form.getRawValue();
-    const res = await this.api.rejectCountryResourceRequest(v.requestId, {
-      adminNotesAr: v.adminNotesAr,
-      adminNotesEn: v.adminNotesEn,
+  onTabChange(index: number): void {
+    const type = this.TYPES[index] ?? AdminContentType.Resource;
+    this.activeType.set(type);
+    this.page.set(1);
+    this.statusFilter.set('');
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { type },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
-    this.busy.set(false);
+    void this.load();
+  }
+
+  onStatusFilter(value: AdminContentRequestStatusValue | ''): void {
+    this.statusFilter.set(value);
+    this.page.set(1);
+    void this.load();
+  }
+
+  onPage(e: PageEvent): void {
+    this.page.set(e.pageIndex + 1);
+    this.pageSize.set(e.pageSize);
+    void this.load();
+  }
+
+  async load(): Promise<void> {
+    this.loading.set(true);
+    this.errorKind.set(null);
+    const res = await this.api.listCountryRequests({
+      type: this.activeType(),
+      status: this.statusFilter() !== '' ? (this.statusFilter() as AdminContentRequestStatusValue) : undefined,
+      page: this.page(),
+      pageSize: this.pageSize(),
+    });
+    this.loading.set(false);
     if (res.ok) {
-      this.toast.success('countryResourceRequest.reject.toast');
-      this.form.reset();
+      this.rows.set(res.value.items ?? []);
+      this.total.set(Number(res.value.total));
     } else {
-      this.toast.error(`errors.${res.error.kind}`);
+      this.errorKind.set(res.error.kind);
     }
   }
 }

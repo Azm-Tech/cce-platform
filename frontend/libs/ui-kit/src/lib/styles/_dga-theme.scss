@@ -1,7 +1,11 @@
+@use "sass:map";
 @use "@angular/material" as mat;
 @use "./tokens" as t;
+@use "./palette" as p;
+@use "./css-vars" as cv;
 
-// Build a Material 18 (M2 API) light theme using DGA tokens.
+// Build a Material 18 (M2 API) light theme from the palette
+// (_palette.scss is the single source of truth).
 $cce-primary-palette: mat.m2-define-palette((
   50:  t.$cce-primary-50,
   100: t.$cce-primary-100,
@@ -15,12 +19,13 @@ $cce-primary-palette: mat.m2-define-palette((
   )
 ));
 
+// Accent — sky blue (Figma Tertiary scale)
 $cce-accent-palette: mat.m2-define-palette((
-  50:  #fff7e6,  100: #ffe6b3,  300: #ffcc66,
-  500: t.$cce-accent-500,  700: #a37c20,  900: #6b4f0e,
+  50:  map.get(p.$tertiary, 50),   100: map.get(p.$tertiary, 100),  300: map.get(p.$tertiary, 300),
+  500: map.get(p.$tertiary, 700),  700: map.get(p.$tertiary, 800),  900: map.get(p.$tertiary, 900),
   contrast: (
     50: rgba(black, 0.87),  100: rgba(black, 0.87),  300: rgba(black, 0.87),
-    500: rgba(black, 0.87), 700: white,              900: white,
+    500: white,             700: white,              900: white,
   )
 ));
 
@@ -41,6 +46,7 @@ $cce-theme: mat.m2-define-light-theme((
 ));
 
 @mixin cce-theme {
+  @include cv.cce-css-vars;
   @include mat.core();
   @include mat.all-component-themes($cce-theme);
 
@@ -50,5 +56,43 @@ $cce-theme: mat.m2-define-light-theme((
   }
   [dir="ltr"] body, body[dir="ltr"] {
     font-family: t.$cce-font-family-en;
+  }
+
+  // Respect the OS "reduce motion" setting: neutralise the app's
+  // continuously-running animations + transitions. Pure a11y + perf win —
+  // no effect for users who haven't opted in. (PERF001 B2)
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  // Rich-text (Quill) OUTPUT rendered via [innerHTML] on public/detail
+  // pages. The editor itself loads quill.snow.css lazily; detail pages
+  // render the saved HTML without it, so the align/indent/direction
+  // classes + blockquote/code-block need styling here to actually show.
+  .ql-align-center  { text-align: center; }
+  .ql-align-right   { text-align: right; }
+  .ql-align-justify { text-align: justify; }
+  .ql-direction-rtl { direction: rtl; }
+  @for $i from 1 through 8 {
+    .ql-indent-#{$i} { padding-inline-start: #{$i * 3}em; }
+  }
+  blockquote {
+    border-inline-start: 4px solid var(--color-brand);
+    margin-inline: 0;
+    padding-inline-start: 1rem;
+    color: var(--neutrals--700);
+  }
+  pre.ql-syntax {
+    background: var(--neutrals--900);
+    color: var(--neutrals--50);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
   }
 }

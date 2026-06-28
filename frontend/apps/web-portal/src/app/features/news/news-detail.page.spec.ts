@@ -3,7 +3,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { NewsApiService, type Result } from './news-api.service';
 import type { NewsArticle } from './news.types';
 import { NewsDetailPage } from './news-detail.page';
@@ -35,7 +35,7 @@ describe('NewsDetailPage', () => {
     paramMapGet = jest.fn().mockReturnValue('hello');
 
     await TestBed.configureTestingModule({
-      imports: [NewsDetailPage, TranslateModule.forRoot()],
+      imports: [NewsDetailPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

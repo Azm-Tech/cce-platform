@@ -1,6 +1,9 @@
 import { Route } from '@angular/router';
+import { CcePortalRole } from '@frontend/contracts';
 import { HealthPage } from './health/health.page';
 import { authGuard } from './core/auth/auth.guard';
+import { guestGuard } from './core/auth/guest.guard';
+import { roleGuard } from './core/auth/role.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -11,6 +14,14 @@ export const appRoutes: Route[] = [
   {
     path: 'pages',
     loadChildren: () => import('./features/pages/routes').then((m) => m.STATIC_PAGES_ROUTES),
+  },
+  {
+    path: 'about',
+    loadChildren: () => import('./features/pages/routes').then((m) => m.ABOUT_ROUTES),
+  },
+  {
+    path: 'policies',
+    loadChildren: () => import('./features/pages/routes').then((m) => m.POLICIES_ROUTES),
   },
   {
     path: 'knowledge-center',
@@ -34,6 +45,30 @@ export const appRoutes: Route[] = [
     title: 'CCE — Countries',
   },
   {
+    path: 'my-state',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/my-state.page').then((m) => m.MyStatePage),
+    title: 'CCE — My State',
+  },
+  {
+    path: 'my-requests',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/my-requests.page').then((m) => m.MyRequestsPage),
+    title: 'CCE — My Requests',
+  },
+  {
+    path: 'my-profile',
+    canActivate: [authGuard],
+    canMatch: [roleGuard],
+    data: { role: CcePortalRole.StateRepresentative },
+    loadComponent: () => import('./features/countries/state-profile.page').then((m) => m.StateProfilePage),
+    title: 'CCE — My Profile',
+  },
+  {
     path: 'search',
     loadComponent: () =>
       import('./features/search/search-results.page').then((m) => m.SearchResultsPage),
@@ -41,15 +76,44 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/account/login.page').then((m) => m.LoginPage),
     title: 'CCE — Sign in',
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/account/register.page').then((m) => m.RegisterPage),
     title: 'CCE — Register',
+  },
+  {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/forgot-password.page').then((m) => m.ForgotPasswordPage),
+    title: 'CCE — Forgot password',
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/reset-password.page').then((m) => m.ResetPasswordPage),
+    title: 'CCE — Reset password',
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/account/verify-email.page').then((m) => m.VerifyEmailPage),
+    title: 'CCE — Verify email',
+  },
+  {
+    path: 'verify-phone',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/account/verify-phone.page').then((m) => m.VerifyPhonePage),
+    title: 'CCE — Verify phone',
   },
   {
     path: 'me',

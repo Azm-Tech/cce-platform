@@ -1,0 +1,134 @@
+<div class="cce-cc">
+
+  <div class="cce-cc__header">
+    <div class="cce-cc__header-icon" aria-hidden="true">
+      <mat-icon>{{ data.type === 'email' ? 'mail' : 'phone' }}</mat-icon>
+    </div>
+    <h2 class="cce-cc__title">
+      {{ (data.type === 'email' ? 'account.changeContact.titleEmail' : 'account.changeContact.titlePhone') | transloco }}
+    </h2>
+    <button mat-icon-button type="button" mat-dialog-close class="cce-cc__close" [attr.aria-label]="'common.actions.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="cce-cc__body">
+
+    @if (errorKind()) {
+      <div class="cce-cc__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      </div>
+    }
+
+    @if (step() === 'request') {
+
+      <p class="cce-cc__hint">
+        {{ (data.type === 'email' ? 'account.changeContact.hintEmail' : 'account.changeContact.hintPhone') | transloco }}
+      </p>
+
+      @if (data.type === 'email') {
+        <mat-form-field class="cce-cc__field">
+          <mat-label>{{ 'account.changeContact.newEmail' | transloco }}</mat-label>
+          <mat-icon matPrefix>alternate_email</mat-icon>
+          <input matInput type="email" autocomplete="off" [formControl]="newValueControl" />
+          @if (newValueControl.hasError('required')) {
+            <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+          } @else if (newValueControl.hasError('email')) {
+            <mat-error>{{ 'common.validation.invalid' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <div class="cce-cc__phone-row">
+          <mat-form-field class="cce-cc__phone-code">
+            <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
+            <input matInput [formControl]="phoneCodeControl" [matAutocomplete]="phoneCodeAuto" autocomplete="off" />
+            <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
+              @for (cc of filteredPhoneCodes(); track cc.id) {
+                <mat-option [value]="cc">
+                  {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
+                  <span class="cce-cc__dial-badge">{{ cc.dialCode }}</span>
+                </mat-option>
+              } @empty {
+                <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+              }
+            </mat-autocomplete>
+            @if (phoneCodeControl.hasError('required') && phoneCodeControl.touched) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="cce-cc__phone-number">
+            <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
+            <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" dir="ltr" [formControl]="localPhoneControl" />
+            @if (localPhoneControl.hasError('required') && localPhoneControl.touched) {
+              <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+            } @else if (localPhoneControl.hasError('pattern') && localPhoneControl.touched) {
+              <mat-error>{{ 'common.validation.invalid' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      }
+
+    } @else {
+
+      <div class="cce-cc__otp-sent">
+        <mat-icon class="cce-cc__otp-sent-icon">mark_email_read</mat-icon>
+        <p class="cce-cc__hint">
+          @if (data.type === 'email') {
+            {{ 'account.changeContact.otpSentEmail' | transloco : { value: newValueControl.value } }}
+          } @else {
+            {{ 'account.changeContact.otpSentPhone' | transloco : { value: phoneDisplay() } }}
+          }
+        </p>
+      </div>
+
+      <div
+        class="cce-cc__otp"
+        dir="ltr"
+        role="group"
+        [attr.aria-label]="'account.changeContact.otpCode' | transloco"
+      >
+        @for (digit of digits; track $index) {
+          <input
+            #otpInput
+            class="cce-cc__otp-box"
+            [class.cce-cc__otp-box--filled]="digit()"
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            autocomplete="one-time-code"
+            [value]="digit()"
+            (input)="onDigitInput($event, $index)"
+            (keydown)="onKeyDown($event, $index)"
+            (paste)="onPaste($event)"
+          />
+        }
+      </div>
+
+    }
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cce-cc__actions">
+    @if (step() === 'request') {
+      <button mat-button type="button" mat-dialog-close>
+        {{ 'common.actions.cancel' | transloco }}
+      </button>
+      <button mat-flat-button color="primary" type="button" [disabled]="sending()" (click)="requestChange()">
+        @if (sending()) { <mat-progress-spinner diameter="18" mode="indeterminate" /> }
+        {{ 'account.changeContact.sendOtp' | transloco }}
+      </button>
+    } @else {
+      <button mat-button type="button" [disabled]="confirming()" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'account.changeContact.back' | transloco }}
+      </button>
+      <button mat-flat-button color="primary" type="button" [disabled]="!isOtpComplete || confirming()" (click)="confirmChange()">
+        @if (confirming()) { <mat-progress-spinner diameter="18" mode="indeterminate" /> }
+        {{ 'account.changeContact.confirm' | transloco }}
+      </button>
+    }
+  </mat-dialog-actions>
+
+</div>

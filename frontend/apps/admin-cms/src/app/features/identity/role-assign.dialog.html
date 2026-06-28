@@ -1,28 +1,28 @@
-<h2 mat-dialog-title>{{ 'roleAssign.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'roleAssign.title' | transloco }}</h2>
 
 <mat-dialog-content>
   <mat-form-field appearance="outline" class="cce-role-assign__field">
-    <mat-label>{{ 'roleAssign.roles' | translate }}</mat-label>
+    <mat-label>{{ 'roleAssign.roles' | transloco }}</mat-label>
     <mat-select
       multiple
       [ngModel]="selected()"
       (ngModelChange)="onSelectionChange($event)"
       [disabled]="saving()"
     >
-      @for (role of knownRoles; track role) {
-        <mat-option [value]="role">{{ role }}</mat-option>
+      @for (opt of knownRoleOptions; track opt.value) {
+        <mat-option [value]="opt.value">{{ opt.labelKey | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 
   @if (errorKind(); as kind) {
-    <div class="cce-role-assign__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+    <div class="cce-role-assign__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
   <button
     type="button"
@@ -34,7 +34,7 @@
     @if (saving()) {
       <mat-spinner diameter="20" />
     } @else {
-      {{ 'common.actions.save' | translate }}
+      {{ 'common.actions.save' | transloco }}
     }
   </button>
 </mat-dialog-actions>

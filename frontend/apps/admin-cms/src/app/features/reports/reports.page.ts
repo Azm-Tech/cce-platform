@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { ToastService } from '@frontend/ui-kit';
 import { REPORTS, type ReportConfig } from './reports-config';
@@ -21,10 +21,16 @@ import { ReportsApiService } from './reports-api.service';
   selector: 'cce-reports',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressSpinnerModule, TranslateModule, PermissionDirective,
-  ],
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    TranslocoModule,
+    PermissionDirective
+],
   templateUrl: './reports.page.html',
   styleUrl: './reports.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

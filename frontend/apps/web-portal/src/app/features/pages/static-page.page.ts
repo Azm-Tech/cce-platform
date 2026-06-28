@@ -1,15 +1,15 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PagesApiService } from './pages-api.service';
 import type { PublicPage } from './page.types';
 
 @Component({
   selector: 'cce-static-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [TranslocoModule],
   templateUrl: './static-page.page.html',
   styleUrl: './static-page.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

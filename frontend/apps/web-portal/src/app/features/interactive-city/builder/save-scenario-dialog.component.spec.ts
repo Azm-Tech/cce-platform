@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   SaveScenarioDialogComponent,
   type SaveScenarioDialogData,
@@ -16,7 +16,7 @@ describe('SaveScenarioDialogComponent', () => {
     dialogRef = { close: jest.fn() };
     const data: SaveScenarioDialogData = { initialName };
     TestBed.configureTestingModule({
-      imports: [SaveScenarioDialogComponent, TranslateModule.forRoot()],
+      imports: [SaveScenarioDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: MatDialogRef, useValue: dialogRef },

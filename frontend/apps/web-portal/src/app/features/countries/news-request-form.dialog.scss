@@ -1,0 +1,48 @@
+.cce-news-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 0.5rem;
+  min-width: min(560px, 90vw);
+
+  // mat-form-field doesn't auto-stretch in flex containers without this
+  mat-form-field { width: 100%; }
+  cce-rich-text-editor { width: 100%; }
+}
+
+.cce-news-request-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.cce-news-request-form__image {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 0.25rem;
+}
+
+.cce-news-request-form__image-hint {
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cce-news-request-form__preview {
+  img {
+    max-width: 220px;
+    max-height: 140px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    object-fit: cover;
+  }
+}
+
+.cce-news-request-form__error {
+  font-size: 0.875rem;
+  color: var(--mat-sys-error);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--mat-sys-error) 10%, transparent);
+}

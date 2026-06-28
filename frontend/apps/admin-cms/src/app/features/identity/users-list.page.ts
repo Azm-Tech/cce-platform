@@ -1,18 +1,24 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   PagedTableColumn,
   PagedTableComponent,
   PagedTablePageChange,
+  ToastService,
 } from '@frontend/ui-kit';
+import { UserCreateDialogComponent } from './user-create.dialog';
 import { IdentityApiService } from './identity-api.service';
-import { KNOWN_ROLES, type UserListItem } from './identity.types';
+import { KNOWN_ROLE_OPTIONS, type UserListItem } from './identity.types';
+import { RoleLabelPipe } from './role-label.pipe';
 
 /**
  * Admin → Users list page. Paged Material table with search + role filter.
@@ -23,13 +29,13 @@ import { KNOWN_ROLES, type UserListItem } from './identity.types';
   selector: 'cce-users-list',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
-    RouterLink,
+    MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
     PagedTableComponent,
   ],
   templateUrl: './users-list.page.html',
@@ -38,6 +44,11 @@ import { KNOWN_ROLES, type UserListItem } from './identity.types';
 })
 export class UsersListPage implements OnInit {
   private readonly api = inject(IdentityApiService);
+  private readonly dialog = inject(MatDialog);
+  private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
+  private readonly translate = inject(TranslocoService);
+  private readonly rolePipe = new RoleLabelPipe();
 
   readonly searchInput = signal('');
   readonly roleFilter = signal<string>('');
@@ -47,12 +58,14 @@ export class UsersListPage implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
-  readonly knownRoles = KNOWN_ROLES;
+  readonly knownRoleOptions = KNOWN_ROLE_OPTIONS;
 
   readonly columns: PagedTableColumn<UserListItem>[] = [
     { key: 'userName', labelKey: 'users.col.userName', cell: (r) => r.userName ?? '—' },
     { key: 'email', labelKey: 'users.col.email', cell: (r) => r.email ?? '—' },
-    { key: 'roles', labelKey: 'users.col.roles', cell: (r) => (r.roles.length ? r.roles.join(', ') : '—') },
+    { key: 'roles', labelKey: 'users.col.roles', cell: (r) => r.roles.length
+        ? r.roles.map(v => this.translate.translate(this.rolePipe.transform(v))).join(', ')
+        : '—' },
     { key: 'isActive', labelKey: 'users.col.isActive', cell: (r) => (r.isActive ? '✓' : '✗') },
   ];
 
@@ -93,5 +106,20 @@ export class UsersListPage implements OnInit {
     this.roleFilter.set(value);
     this.page.set(1);
     void this.load();
+  }
+
+  onRowClick(user: UserListItem): void {
+    void this.router.navigate(['/users', user.id]);
+  }
+
+  openCreate(): void {
+    const ref = this.dialog.open(UserCreateDialogComponent, { width: '560px', disableClose: true });
+    ref.afterClosed().subscribe((created: UserListItem | null) => {
+      if (created) {
+        this.toast.success('users.create.successToast');
+        this.page.set(1);
+        void this.load();
+      }
+    });
   }
 }

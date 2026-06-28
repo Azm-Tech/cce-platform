@@ -19,4 +19,11 @@ export const COUNTRY_RESOURCE_REQUEST_ROUTES: Routes = [
     data: { permission: 'Resource.Country.Approve' },
     canMatch: [permissionGuard],
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./country-request-detail.page').then((m) => m.CountryRequestDetailPage),
+    data: { permission: 'Resource.Country.Approve' },
+    canMatch: [permissionGuard],
+  },
 ];

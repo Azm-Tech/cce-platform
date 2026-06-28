@@ -19,13 +19,22 @@ export interface News {
   titleEn: string;
   contentAr: string;
   contentEn: string;
-  slug: string;
   authorId: string;
   featuredImageUrl: string | null;
   publishedOn: string | null;
   isFeatured: boolean;
   isPublished: boolean;
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
   rowVersion: string;
+}
+
+export interface TagDto {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  color: string | null;
 }
 
 export interface CreateNewsBody {
@@ -33,12 +42,26 @@ export interface CreateNewsBody {
   titleEn: string;
   contentAr: string;
   contentEn: string;
-  slug: string;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface UpdateNewsBody extends CreateNewsBody {
   rowVersion: string;
+}
+
+export interface Topic {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+  slug: string;
+  parentId: string | null;
+  iconUrl: string | null;
+  orderIndex: number;
+  isActive: boolean;
 }
 
 export interface Event {
@@ -53,6 +76,9 @@ export interface Event {
   locationEn: string | null;
   onlineMeetingUrl: string | null;
   featuredImageUrl: string | null;
+  topicId?: string | null;
+  topicNameAr?: string | null;
+  topicNameEn?: string | null;
   iCalUid: string;
   rowVersion: string;
 }
@@ -68,6 +94,8 @@ export interface CreateEventBody {
   locationEn?: string | null;
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface UpdateEventBody {
@@ -79,6 +107,8 @@ export interface UpdateEventBody {
   locationEn?: string | null;
   onlineMeetingUrl?: string | null;
   featuredImageUrl?: string | null;
+  topicId?: string | null;
+  tagIds?: string[] | null;
   rowVersion: string;
 }
 
@@ -140,6 +170,104 @@ export interface UpdateHomepageSectionBody {
 
 export interface ReorderHomepageSectionsBody {
   assignments: { id: string; orderIndex: number }[];
+}
+
+// ---- Platform Settings ----
+
+export interface HomepageSettings {
+  videoUrl: string | null;
+  objectiveAr: string | null;
+  objectiveEn: string | null;
+  cceConceptsAr: string | null;
+  cceConceptsEn: string | null;
+  participatingCountryIds: string[];
+}
+
+export interface UpdateHomepageSettingsBody {
+  videoUrl?: string | null;
+  objectiveAr?: string | null;
+  objectiveEn?: string | null;
+  cceConceptsAr?: string | null;
+  cceConceptsEn?: string | null;
+  participatingCountryIds?: string[];
+}
+
+export interface GlossaryTerm {
+  id: string;
+  termAr: string;
+  termEn: string;
+  definitionAr: string;
+  definitionEn: string;
+}
+
+export interface GlossaryTermBody {
+  termAr: string;
+  termEn: string;
+  definitionAr: string;
+  definitionEn: string;
+}
+
+export interface KnowledgePartner {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  logoUrl: string | null;
+  websiteUrl: string | null;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+}
+
+export interface KnowledgePartnerBody {
+  nameAr: string;
+  nameEn: string;
+  logoUrl?: string | null;
+  websiteUrl?: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
+}
+
+export interface AboutSettings {
+  descriptionAr: string;
+  descriptionEn: string;
+  howToUseVideoUrl: string | null;
+  glossaryTerms: GlossaryTerm[];
+  knowledgePartners: KnowledgePartner[];
+}
+
+export interface UpdateAboutSettingsBody {
+  descriptionAr?: string;
+  descriptionEn?: string;
+  howToUseVideoUrl?: string | null;
+}
+
+export interface ApiPolicySection {
+  id: string;
+  type: number;
+  title: { ar: string; en: string };
+  content: { ar: string; en: string };
+  orderIndex: number;
+}
+
+export interface PolicySection {
+  id: string;
+  type: number;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
+  orderIndex: number;
+}
+
+export interface PolicySectionBody {
+  type?: number;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
+}
+
+export interface PoliciesSettings {
+  sections: PolicySection[];
 }
 
 export type { PagedResult };

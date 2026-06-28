@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,7 +14,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import type { KnowledgeMapNode, NodeType } from './knowledge-maps.types';
 import { downloadBlob, buildFilename } from './lib/download';
@@ -44,16 +44,18 @@ import { buildUrlPatch, parseUrlState } from './viewer/url-state';
   selector: 'cce-map-viewer-page',
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    MatButtonModule, MatIconModule, MatProgressBarModule,
-    TranslateModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    TranslocoModule,
     GraphCanvasComponent,
     NodeDetailPanelComponent,
     SearchAndFiltersComponent,
     TabsBarComponent,
     ExportMenuComponent,
-    ListViewComponent,
-  ],
+    ListViewComponent
+],
   providers: [MapViewerStore],
   templateUrl: './map-viewer.page.html',
   styleUrl: './map-viewer.page.scss',

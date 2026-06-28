@@ -17,12 +17,13 @@ describe('CountryApiService', () => {
 
   afterEach(() => http.verify());
 
-  it('listCountries builds query', async () => {
-    const p = sut.listCountries({ page: 1, pageSize: 20, search: 'q', isActive: true });
-    const req = http.expectOne((r) => r.url === '/api/admin/countries');
+  it('listCountries builds query and hits /api/countries', async () => {
+    const p = sut.listCountries({ page: 1, pageSize: 20, search: 'q', sortBy: 1, sortOrder: 0, isCceCountry: true });
+    const req = http.expectOne((r) => r.url === '/api/countries');
     expect(req.request.params.get('search')).toBe('q');
-    expect(req.request.params.get('isActive')).toBe('true');
-    req.flush({ items: [], page: 1, pageSize: 20, total: 0 });
+    expect(req.request.params.get('sortBy')).toBe('1');
+    expect(req.request.params.get('isCceCountry')).toBe('true');
+    req.flush({ data: { items: [], page: 1, pageSize: 20, total: 0 } });
     await p;
   });
 

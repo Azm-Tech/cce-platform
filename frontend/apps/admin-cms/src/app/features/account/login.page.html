@@ -1,0 +1,111 @@
+<div class="cce-admin-login">
+
+  <!-- Left panel — branding -->
+  <div class="cce-admin-login__brand-panel" aria-hidden="true">
+    <div class="cce-admin-login__brand-content">
+      <div class="cce-admin-login__brand">
+        <span class="cce-admin-login__brand-glyph"></span>
+        <span class="cce-admin-login__brand-name">CCE</span>
+      </div>
+      <h2 class="cce-admin-login__tagline">{{ 'account.login.brandTagline' | transloco }}</h2>
+      <p class="cce-admin-login__brand-desc">{{ 'account.login.brandDesc' | transloco }}</p>
+
+      <div class="cce-admin-login__stats">
+        <div class="cce-admin-login__stat">
+          <span class="cce-admin-login__stat-value">٦٣+</span>
+          <span class="cce-admin-login__stat-label">{{ 'account.login.statCountries' | transloco }}</span>
+        </div>
+        <div class="cce-admin-login__stat">
+          <span class="cce-admin-login__stat-value">١٢٠٠+</span>
+          <span class="cce-admin-login__stat-label">{{ 'account.login.statResources' | transloco }}</span>
+        </div>
+        <div class="cce-admin-login__stat">
+          <span class="cce-admin-login__stat-value">٨٥٠٠+</span>
+          <span class="cce-admin-login__stat-label">{{ 'account.login.statExperts' | transloco }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative shapes -->
+    <div class="cce-admin-login__deco">
+      <div class="cce-admin-login__deco-circle cce-admin-login__deco-circle--1"></div>
+      <div class="cce-admin-login__deco-circle cce-admin-login__deco-circle--2"></div>
+      <div class="cce-admin-login__deco-circle cce-admin-login__deco-circle--3"></div>
+      <div class="cce-admin-login__deco-bar cce-admin-login__deco-bar--1"></div>
+      <div class="cce-admin-login__deco-bar cce-admin-login__deco-bar--2"></div>
+    </div>
+  </div>
+
+  <!-- Right panel — form -->
+  <div class="cce-admin-login__form-panel">
+    <div class="cce-admin-login__lang-switcher">
+      <cce-locale-switcher />
+    </div>
+
+    <div class="cce-admin-login__card">
+      <h1 class="cce-admin-login__title">{{ 'account.login.title' | transloco }}</h1>
+      <p class="cce-admin-login__subtitle">{{ 'account.login.subtitle' | transloco }}</p>
+
+      <form [formGroup]="form" class="cce-admin-login__form" (ngSubmit)="submit()">
+        <mat-form-field>
+          <mat-label>{{ 'account.login.emailLabel' | transloco }}</mat-label>
+          <mat-icon matPrefix>mail</mat-icon>
+          <input
+            matInput
+            type="email"
+            id="email"
+            name="email"
+            formControlName="emailAddress"
+            autocomplete="email"
+            placeholder="you@cce.gov"
+          />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>{{ 'account.login.passwordLabel' | transloco }}</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            name="password"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="toggleShowPassword()"
+            [attr.aria-label]="(showPassword() ? 'account.login.hidePassword' : 'account.login.showPassword') | transloco"
+          >
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (state().kind === 'error') {
+          <p class="cce-admin-login__error" role="alert">
+            {{ errorMessageKey() | transloco }}
+          </p>
+        }
+
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          class="cce-admin-login__submit"
+          [disabled]="state().kind === 'submitting' || form.invalid"
+        >
+          {{ submitButtonKey() | transloco }}
+        </button>
+      </form>
+
+      <p class="cce-admin-login__footer-line">
+        <a routerLink="/forgot-password" class="cce-admin-login__footer-link">
+          {{ 'account.login.forgotPassword' | transloco }}
+        </a>
+      </p>
+    </div>
+  </div>
+
+</div>

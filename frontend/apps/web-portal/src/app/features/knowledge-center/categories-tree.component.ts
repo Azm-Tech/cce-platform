@@ -7,15 +7,15 @@ import {
   computed,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { ResourceCategory } from './knowledge.types';
 
 @Component({
   selector: 'cce-categories-tree',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, TranslateModule],
+  imports: [MatButtonModule, TranslocoModule],
   templateUrl: './categories-tree.component.html',
   styleUrl: './categories-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

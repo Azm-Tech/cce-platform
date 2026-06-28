@@ -1,153 +1,423 @@
-<section class="cce-profile">
-  <header class="cce-profile__title-row">
-    <h1 class="cce-profile__title">{{ 'account.profile.title' | translate }}</h1>
-    @if (profile() && mode() === 'view') {
-      <button mat-stroked-button type="button" (click)="enterEditMode()">
-        {{ 'account.profile.editButton' | translate }}
-      </button>
-    }
-  </header>
+<div class="cce-profile">
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (loading()) {
+    <div class="cce-profile__skeleton">
+      <div class="cce-profile__skel-layout">
+        <div class="cce-profile__skel-sidebar">
+          <div class="cce-profile__skel-sidebar-card">
+            <div class="cce-profile__skel-band skel-pulse"></div>
+            <div class="cce-profile__skel-avatar skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--md skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--sm skel-pulse"></div>
+            <div class="cce-profile__skel-line cce-profile__skel-line--xs skel-pulse"></div>
+            <div class="cce-profile__skel-rule"></div>
+            <div class="cce-profile__skel-meta">
+              <div class="cce-profile__skel-line cce-profile__skel-line--sm skel-pulse"></div>
+              <div class="cce-profile__skel-line cce-profile__skel-line--xs skel-pulse"></div>
+            </div>
+            <div class="cce-profile__skel-rule"></div>
+            <div class="cce-profile__skel-btn skel-pulse"></div>
+          </div>
+        </div>
+        <div class="cce-profile__skel-main">
+          <div class="cce-profile__skel-card skel-pulse"></div>
+          <div class="cce-profile__skel-card cce-profile__skel-card--short skel-pulse"></div>
+        </div>
+      </div>
+    </div>
+  }
 
   @if (notProvisioned()) {
-    <div class="cce-profile__not-provisioned" role="alert">
-      <p>{{ 'account.profile.notProvisioned' | translate }}</p>
-      <button mat-stroked-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
-      </button>
+    <div class="cce-profile__alert cce-profile__alert--warn" role="alert">
+      <mat-icon>info</mat-icon>
+      <span>{{ 'account.profile.notProvisioned' | transloco }}</span>
+      <button mat-button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   } @else if (errorKind()) {
-    <div class="cce-profile__error" role="alert">
-      <span>{{ ('errors.' + errorKind()) | translate }}</span>
-      <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
-      </button>
+    <div class="cce-profile__alert cce-profile__alert--error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
+      <button mat-button type="button" (click)="retry()">{{ 'errors.retry' | transloco }}</button>
     </div>
   }
 
   @if (profile(); as p) {
+
     @if (mode() === 'view') {
-      <article class="cce-profile__card">
-        <header class="cce-profile__header">
-          @if (p.avatarUrl) {
-            <img class="cce-profile__avatar" [src]="p.avatarUrl" alt="" width="96" height="96" />
-          } @else {
-            <mat-icon class="cce-profile__avatar-fallback" aria-hidden="true">account_circle</mat-icon>
-          }
-          <div>
-            <h2 class="cce-profile__user-name">{{ p.userName ?? p.email ?? p.id }}</h2>
-            @if (p.email) {
-              <p class="cce-profile__email">{{ p.email }}</p>
-            }
-          </div>
-        </header>
 
-        <dl class="cce-profile__fields">
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.localePreference' | translate }}</dt>
-            <dd>{{ p.localePreference }}</dd>
-          </div>
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.knowledgeLevel' | translate }}</dt>
-            <dd>
-              <span class="cce-profile__badge">
-                {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | translate }}
-              </span>
-            </dd>
-          </div>
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.country' | translate }}</dt>
-            <dd>{{ countryName() }}</dd>
-          </div>
-          <div class="cce-profile__field">
-            <dt>{{ 'account.profile.field.interests' | translate }}</dt>
-            <dd>
-              @if (p.interests.length) {
-                <mat-chip-set>
-                  @for (interest of p.interests; track interest) {
-                    <mat-chip>{{ interest }}</mat-chip>
-                  }
-                </mat-chip-set>
+      <!-- ══ VIEW LAYOUT ══════════════════════════════════════════════════════ -->
+      <div class="cce-profile__layout">
+
+        <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
+        <aside class="cce-profile__sidebar">
+          <div class="cce-profile__sidebar-card">
+
+            <div class="cce-profile__sidebar-band" aria-hidden="true"></div>
+
+            <div class="cce-profile__sidebar-avatar-wrap">
+              @if (p.avatarUrl) {
+                <img [src]="p.avatarUrl" class="cce-profile__sidebar-avatar-img" alt="" />
               } @else {
-                —
+                <span class="cce-profile__sidebar-initials">{{ profileInitials() }}</span>
               }
-            </dd>
-          </div>
-        </dl>
-      </article>
-    } @else {
-      <form
-        class="cce-profile__form"
-        [formGroup]="form"
-        (ngSubmit)="save()"
-      >
-        @if (saveErrorKind()) {
-          <div class="cce-profile__error" role="alert">
-            {{ ('errors.' + saveErrorKind()) | translate }}
-          </div>
-        }
+              @if (expertBadgeStatus() === 'Approved') {
+                <span class="cce-profile__sidebar-verified" aria-label="Verified Expert">
+                  <mat-icon aria-hidden="true">verified</mat-icon>
+                </span>
+              }
+            </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.localePreference' | translate }}</mat-label>
-          <mat-select formControlName="localePreference">
-            <mat-option value="en">English</mat-option>
-            <mat-option value="ar">العربية</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.knowledgeLevel' | translate }}</mat-label>
-          <mat-select formControlName="knowledgeLevel">
-            @for (level of knowledgeLevels; track level) {
-              <mat-option [value]="level">
-                {{ ('account.knowledgeLevel.' + level) | translate }}
-              </mat-option>
+            <h1 class="cce-profile__sidebar-name">{{ profileFullName() }}</h1>
+            @if (p.jobTitle) {
+              <p class="cce-profile__sidebar-role">{{ p.jobTitle }}</p>
             }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.interests' | translate }}</mat-label>
-          <input matInput type="text" formControlName="interests" placeholder="waste, water, carbon" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.country' | translate }}</mat-label>
-          <mat-select formControlName="countryId">
-            <mat-option [value]="null">—</mat-option>
-            @for (c of countries(); track c.id) {
-              <mat-option [value]="c.id">
-                {{ locale() === 'ar' ? c.nameAr : c.nameEn }}
-              </mat-option>
+            @if (p.organizationName) {
+              <p class="cce-profile__sidebar-org">{{ p.organizationName }}</p>
             }
-          </mat-select>
-        </mat-form-field>
+            @if (p.email) {
+              <p class="cce-profile__sidebar-email">{{ p.email }}</p>
+            }
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'account.profile.field.avatarUrl' | translate }}</mat-label>
-          <input matInput type="url" formControlName="avatarUrl" />
-        </mat-form-field>
+            <div class="cce-profile__sidebar-rule"></div>
 
-        <div class="cce-profile__form-actions">
-          <button
-            mat-stroked-button
-            type="button"
-            [disabled]="saving()"
-            (click)="cancelEdit()"
-          >
-            {{ 'account.profile.cancelButton' | translate }}
-          </button>
-          <button
-            mat-flat-button
-            color="primary"
-            type="submit"
-            [disabled]="form.invalid || saving()"
-          >
-            {{ 'account.profile.saveButton' | translate }}
-          </button>
+            <div class="cce-profile__sidebar-meta">
+              @if (countryCodeLabel() !== '—') {
+                <div class="cce-profile__meta-row">
+                  <mat-icon aria-hidden="true">flag</mat-icon>
+                  <span>{{ countryCodeLabel() }}</span>
+                </div>
+              }
+              <div class="cce-profile__meta-row">
+                <mat-icon aria-hidden="true">language</mat-icon>
+                <span>{{ p.localePreference === 'ar' ? 'العربية' : 'English' }}</span>
+              </div>
+              @if (expertStatusLoaded()) {
+                <div class="cce-profile__meta-row">
+                  <mat-icon aria-hidden="true">workspace_premium</mat-icon>
+                  @if (expertBadgeStatus(); as badge) {
+                    <span class="cce-profile__meta-badge cce-profile__meta-badge--{{ badge.toLowerCase() }}">
+                      {{ ('account.profile.expertStatus.' + badge) | transloco }}
+                    </span>
+                  } @else {
+                    <span class="cce-profile__meta-dim">{{ 'account.profile.expertStatus.None' | transloco }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="cce-profile__sidebar-rule"></div>
+
+            <button
+              type="button"
+              mat-flat-button
+              color="primary"
+              class="cce-profile__sidebar-edit-btn"
+              (click)="enterEditMode()"
+            >
+              <mat-icon>edit</mat-icon>
+              {{ 'account.profile.editButton' | transloco }}
+            </button>
+
+          </div>
+        </aside>
+
+        <!-- ── Main content ─────────────────────────────────────────────────── -->
+        <div class="cce-profile__main">
+
+          <!-- Personal information -->
+          <section class="cce-profile__section-card">
+            <h2 class="cce-profile__section-title">
+              <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>person</mat-icon></span>
+              {{ 'account.profile.section.personal' | transloco }}
+            </h2>
+            <dl class="cce-profile__field-list">
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.firstName' | transloco }}</dt>
+                <dd>{{ p.firstName || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.lastName' | transloco }}</dt>
+                <dd>{{ p.lastName || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.jobTitle' | transloco }}</dt>
+                <dd>{{ p.jobTitle || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.organizationName' | transloco }}</dt>
+                <dd>{{ p.organizationName || '—' }}</dd>
+              </div>
+              <div class="cce-profile__field-row cce-profile__field-row--action">
+                <dt>{{ 'account.profile.field.email' | transloco }}</dt>
+                <dd>{{ p.email || '—' }}</dd>
+                <button mat-stroked-button type="button" class="cce-profile__change-btn" (click)="openChangeContact('email')">
+                  <mat-icon>edit</mat-icon>{{ 'account.changeContact.change' | transloco }}
+                </button>
+              </div>
+              <div class="cce-profile__field-row cce-profile__field-row--action">
+                <dt>{{ 'account.profile.field.phoneNumber' | transloco }}</dt>
+                <dd>{{ p.phoneNumber || '—' }}</dd>
+                <button mat-stroked-button type="button" class="cce-profile__change-btn" (click)="openChangeContact('phone')">
+                  <mat-icon>edit</mat-icon>{{ 'account.changeContact.change' | transloco }}
+                </button>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.nationality' | transloco }}</dt>
+                <dd>{{ countryCodeLabel() }}</dd>
+              </div>
+              <div class="cce-profile__field-row">
+                <dt>{{ 'account.profile.field.localePreference' | transloco }}</dt>
+                <dd>{{ p.localePreference === 'ar' ? 'العربية' : 'English' }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <!-- Expertise & interests -->
+        <!--   <section class="cce-profile__section-card">
+            <h2 class="cce-profile__section-title">
+              <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>workspace_premium</mat-icon></span>
+              {{ 'account.profile.section.expertise' | transloco }}
+            </h2>
+
+            @if (p.knowledgeLevel || (p.interests && p.interests.length)) {
+              @if (p.knowledgeLevel) {
+                <div class="cce-profile__expertise-row">
+                  <span class="cce-profile__expertise-label">{{ 'account.profile.field.knowledgeLevel' | transloco }}</span>
+                  <div class="cce-profile__kl-badge cce-profile__kl-badge--{{ p.knowledgeLevel.toLowerCase() }}">
+                    <mat-icon aria-hidden="true">
+                      @switch (p.knowledgeLevel) {
+                        @case ('Beginner')     { school }
+                        @case ('Intermediate') { auto_stories }
+                        @case ('Advanced')     { workspace_premium }
+                      }
+                    </mat-icon>
+                    {{ ('account.knowledgeLevel.' + p.knowledgeLevel) | transloco }}
+                  </div>
+                </div>
+              }
+
+              @if (p.interests && p.interests.length) {
+                <div class="cce-profile__expertise-row">
+                  <span class="cce-profile__expertise-label">{{ 'account.profile.field.interests' | transloco }}</span>
+                  <div class="cce-profile__interests">
+                    @for (interest of p.interests; track interest) {
+                      <span class="cce-profile__interest-chip">{{ interest }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="cce-profile__expertise-empty">
+                <mat-icon aria-hidden="true">interests</mat-icon>
+                <p>{{ 'account.profile.expertise.empty' | transloco }}</p>
+                <button type="button" mat-stroked-button (click)="openPreferences()">
+                  <mat-icon>tune</mat-icon>
+                  {{ 'account.profile.expertise.addButton' | transloco }}
+                </button>
+              </div>
+            }
+          </section>-->
+
+          <!-- Expert request status -->
+          @if (expertStatus(); as es) {
+            <section class="cce-profile__section-card">
+              <h2 class="cce-profile__section-title">
+                <span class="cce-profile__section-title-icon" aria-hidden="true"><mat-icon>verified_user</mat-icon></span>
+                {{ 'account.profile.section.expertRequest' | transloco }}
+              </h2>
+
+              <div class="cce-profile__expert-status-row">
+                @if (es.status === 'Approved') {
+                  <span class="cce-profile__expert-badge cce-profile__expert-badge--approved">
+                    <mat-icon>verified</mat-icon>
+                    {{ 'account.profile.expertStatus.Approved' | transloco }}
+                  </span>
+                } @else {
+                  <span class="cce-profile__expert-badge cce-profile__expert-badge--{{ es.status.toLowerCase() }}">
+                    <mat-icon>{{ es.status === 'Pending' ? 'hourglass_top' : 'cancel' }}</mat-icon>
+                    {{ ('account.profile.expertStatus.' + es.status) | transloco }}
+                  </span>
+                }
+                <a mat-button routerLink="/me/expert-request" class="cce-profile__expert-details-link">
+                  {{ 'account.profile.expertRequest.viewDetails' | transloco }}
+                  <mat-icon>chevron_right</mat-icon>
+                </a>
+              </div>
+
+              <div class="cce-profile__expert-bio">
+                {{ locale() === 'ar' ? es.requestedBioAr : es.requestedBioEn }}
+              </div>
+
+              @if (es.requestedTags.length) {
+                <div class="cce-profile__interests" style="margin-top: 0.75rem">
+                  @for (tag of es.requestedTags; track tag) {
+                    <span class="cce-profile__interest-chip">{{ tag }}</span>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+          <!-- Expert CTA -->
+          @if (showExpertCta()) {
+            <div class="cce-profile__cta-card cce-profile__cta-card--expert">
+              <div class="cce-profile__cta-icon-wrap" aria-hidden="true"><mat-icon>verified</mat-icon></div>
+              <div class="cce-profile__cta-text">
+                <strong>{{ 'account.profile.expertCta.title' | transloco }}</strong>
+                <span>{{ 'account.profile.expertCta.body' | transloco }}</span>
+              </div>
+              <a mat-flat-button color="primary" routerLink="/me/expert-request">
+                @if (expertBadgeStatus() === 'Rejected') {
+                  {{ 'account.profile.expertCta.reapplyButton' | transloco }}
+                } @else {
+                  {{ 'account.profile.expertCta.button' | transloco }}
+                }
+              </a>
+            </div>
+          }
+
+          <!-- Preferences CTA -->
+          <div class="cce-profile__cta-card cce-profile__cta-card--prefs">
+            <div class="cce-profile__cta-icon-wrap" aria-hidden="true"><mat-icon>tune</mat-icon></div>
+            <div class="cce-profile__cta-text">
+              <strong>{{ 'preferences.ctaTitle' | transloco }}</strong>
+              <span>{{ 'preferences.ctaBody' | transloco }}</span>
+            </div>
+            <button type="button" mat-stroked-button (click)="openPreferences()">
+              {{ 'preferences.save' | transloco }}
+            </button>
+          </div>
+
         </div>
-      </form>
+      </div>
+
+    } @else {
+
+      <!-- ══ EDIT FORM ══════════════════════════════════════════════════════ -->
+      <div class="cce-profile__edit-wrap">
+
+        <div class="cce-profile__edit-band">
+          <div class="cce-profile__edit-avatar-zone">
+            <label
+              class="cce-profile__edit-avatar-trigger"
+              [class.cce-profile__edit-avatar-trigger--busy]="uploading()"
+              [attr.aria-label]="'account.profile.changePhoto' | transloco"
+            >
+              @if (form.get('avatarUrl')?.value) {
+                <img class="cce-profile__edit-avatar-img" [src]="form.get('avatarUrl')?.value" alt="" />
+              } @else {
+                <span class="cce-profile__edit-avatar-initials">{{ profileInitials() }}</span>
+              }
+              <span class="cce-profile__edit-avatar-overlay">
+                @if (uploading()) {
+                  <mat-progress-bar mode="indeterminate" class="cce-profile__edit-avatar-bar" />
+                } @else {
+                  <mat-icon>photo_camera</mat-icon>
+                  <span class="cce-profile__edit-avatar-overlay-text">{{ 'account.profile.changePhoto' | transloco }}</span>
+                }
+              </span>
+              <input type="file" accept="image/*" (change)="onAvatarFileChange($event)" [disabled]="uploading()" hidden />
+            </label>
+            @if (!uploading()) {
+              <span class="cce-profile__edit-avatar-badge" aria-hidden="true">
+                <mat-icon>photo_camera</mat-icon>
+              </span>
+            }
+          </div>
+          <div class="cce-profile__edit-band-info">
+            <span class="cce-profile__edit-band-title">{{ 'account.profile.editTitle' | transloco }}</span>
+            <span class="cce-profile__edit-band-hint">{{ 'account.profile.editHint' | transloco }}</span>
+          </div>
+        </div>
+
+        <form class="cce-profile__form" [formGroup]="form" (ngSubmit)="save()">
+
+          @if (saveErrorKind()) {
+            <div class="cce-profile__alert cce-profile__alert--error" role="alert">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ ('errors.' + saveErrorKind()) | transloco }}</span>
+            </div>
+          }
+
+          <div class="cce-profile__form-section">
+            <p class="cce-profile__form-section-label">
+              <mat-icon aria-hidden="true">person</mat-icon>
+              {{ 'account.profile.section.personal' | transloco }}
+            </p>
+            <div class="cce-profile__form-grid">
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.firstName' | transloco }}</mat-label>
+                <input matInput formControlName="firstName" autocomplete="given-name" />
+                @if (form.controls.firstName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.lastName' | transloco }}</mat-label>
+                <input matInput formControlName="lastName" autocomplete="family-name" />
+                @if (form.controls.lastName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.jobTitle' | transloco }}</mat-label>
+                <input matInput formControlName="jobTitle" autocomplete="organization-title" />
+                @if (form.controls.jobTitle.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.organizationName' | transloco }}</mat-label>
+                <input matInput formControlName="organizationName" autocomplete="organization" />
+                @if (form.controls.organizationName.hasError('required')) {
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.nationality' | transloco }}</mat-label>
+                <input matInput [formControl]="countryCodeSearch" [matAutocomplete]="ccAuto" />
+                <mat-autocomplete #ccAuto (optionSelected)="onCountryCodeSelected($event.option.value, $event.option.viewValue)">
+                  <mat-option [value]="null">—</mat-option>
+                  @for (cc of filteredCountryCodes(); track cc.id) {
+                    <mat-option [value]="cc.id">
+                      <span class="cce-profile__cc-option">
+                        @if (cc.flagUrl) {
+                          <img class="cce-profile__cc-flag" [src]="cc.flagUrl" [alt]="" aria-hidden="true" />
+                        }
+                        {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
+                      </span>
+                    </mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>{{ 'account.profile.field.localePreference' | transloco }}</mat-label>
+                <input matInput [formControl]="localeSearch" [matAutocomplete]="localeAuto" />
+                <mat-autocomplete #localeAuto (optionSelected)="onLocaleSelected($event.option.value, $event.option.viewValue)">
+                  @for (opt of filteredLocaleOptions(); track opt.value) {
+                    <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="cce-profile__form-actions">
+            <button mat-button type="button" [disabled]="saving()" (click)="cancelEdit()">
+              {{ 'account.profile.cancelButton' | transloco }}
+            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+              @if (saving()) {
+                <mat-progress-spinner diameter="18" mode="indeterminate" />
+              }
+              {{ 'account.profile.saveButton' | transloco }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+
     }
   }
-</section>
+
+</div>

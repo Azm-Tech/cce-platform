@@ -1,24 +1,220 @@
-<article class="cce-news-detail">
-  <a class="cce-news-detail__back" routerLink="/news">
-    <mat-icon>arrow_back</mat-icon>
-    {{ 'news.back' | translate }}
-  </a>
+<a class="cce-news-detail__back" routerLink="/news">
+  <mat-icon>arrow_back</mat-icon>
+  {{ 'news.back' | transloco }}
+</a>
 
-  @if (loading()) { <p class="cce-news-detail__loading">{{ 'common.loading' | translate }}</p> }
-  @if (errorKind(); as kind) {
-    <div class="cce-news-detail__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
-  }
+@if (loading()) {
+  <div class="cce-news-detail__layout cce-skeleton" aria-busy="true" aria-live="polite">
+    <article class="cce-news-detail__main">
+      <header class="cce-news-detail__header">
+        <span class="cce-sk cce-sk--title"></span>
+        <span class="cce-sk cce-sk--title cce-sk--title-sm"></span>
+        <ul class="cce-news-detail__meta" role="list">
+          <li><span class="cce-sk cce-sk--meta"></span></li>
+          <li><span class="cce-sk cce-sk--meta"></span></li>
+          <li><span class="cce-sk cce-sk--meta"></span></li>
+        </ul>
+      </header>
+      <div class="cce-news-detail__hero cce-sk cce-sk--block"></div>
+      <section class="cce-news-detail__section">
+        <span class="cce-sk cce-sk--section-title"></span>
+        <span class="cce-sk cce-sk--line"></span>
+        <span class="cce-sk cce-sk--line"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-90"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-70"></span>
+        <span class="cce-sk cce-sk--line"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-80"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-60"></span>
+      </section>
+      <div class="cce-news-detail__tags">
+        <span class="cce-sk cce-sk--tag"></span>
+        <span class="cce-sk cce-sk--tag"></span>
+        <span class="cce-sk cce-sk--tag"></span>
+      </div>
+      <div class="cce-news-detail__publisher">
+        <span class="cce-sk cce-sk--avatar"></span>
+        <div class="cce-news-detail__publisher-body">
+          <span class="cce-sk cce-sk--line cce-sk--line-40"></span>
+          <span class="cce-sk cce-sk--line cce-sk--line-80"></span>
+        </div>
+      </div>
+    </article>
+    <aside class="cce-news-detail__sidebar">
+      <div class="cce-news-detail__widget">
+        <span class="cce-sk cce-sk--widget-title"></span>
+        <span class="cce-sk cce-sk--line"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-80"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-90"></span>
+        <span class="cce-sk cce-sk--line cce-sk--line-70"></span>
+      </div>
+      <div class="cce-news-detail__widget">
+        <span class="cce-sk cce-sk--widget-title"></span>
+        <div class="cce-news-detail__share">
+          <span class="cce-sk cce-sk--circle"></span>
+          <span class="cce-sk cce-sk--circle"></span>
+          <span class="cce-sk cce-sk--circle"></span>
+          <span class="cce-sk cce-sk--circle"></span>
+          <span class="cce-sk cce-sk--circle"></span>
+        </div>
+      </div>
+      <div class="cce-news-detail__widget cce-news-detail__widget--newsletter">
+        <span class="cce-sk cce-sk--circle cce-sk--on-dark"></span>
+        <span class="cce-sk cce-sk--line cce-sk--on-dark cce-sk--line-70"></span>
+        <span class="cce-sk cce-sk--line cce-sk--on-dark cce-sk--line-90"></span>
+        <span class="cce-sk cce-sk--block cce-sk--on-dark cce-sk--input"></span>
+        <span class="cce-sk cce-sk--block cce-sk--on-dark cce-sk--btn"></span>
+      </div>
+    </aside>
+  </div>
+}
 
-  @if (article(); as a) {
-    <h1 class="cce-news-detail__title">{{ title() }}</h1>
-    @if (a.publishedOn) {
-      <p class="cce-news-detail__date">
-        {{ 'news.publishedOn' | translate }} {{ a.publishedOn | date:'mediumDate' }}
-      </p>
-    }
-    @if (a.featuredImageUrl) {
-      <img [src]="a.featuredImageUrl" [alt]="title()" class="cce-news-detail__image" />
-    }
-    <div class="cce-news-detail__content" [innerHTML]="content()"></div>
+@if (errorKind(); as kind) {
+  <div class="cce-news-detail__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
+}
+
+@if (article(); as a) {
+  <div class="cce-news-detail__layout">
+
+    <!-- ═══════════════════════════ MAIN COLUMN ═══════════════════════════ -->
+    <article class="cce-news-detail__main">
+      <header class="cce-news-detail__header">
+        <h1 class="cce-news-detail__title">{{ title() }}</h1>
+        <ul class="cce-news-detail__meta" role="list">
+          @if (a.publishedOn) {
+            <li>
+              <mat-icon aria-hidden="true">calendar_today</mat-icon>
+              {{ a.publishedOn | date:'longDate' }}
+            </li>
+          }
+          <li>
+            <mat-icon aria-hidden="true">article</mat-icon>
+            {{ 'news.tag' | transloco }}
+          </li>
+          <li>
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            {{ readingTime() }}
+          </li>
+        </ul>
+      </header>
+
+      <div class="cce-news-detail__hero">
+        @if (a.featuredImageUrl) {
+          <img [src]="a.featuredImageUrl" [alt]="title()" />
+        } @else {
+          <span class="cce-news-detail__hero-icon" aria-hidden="true">
+            <mat-icon>image</mat-icon>
+          </span>
+        }
+      </div>
+
+      <section id="overview" class="cce-news-detail__section">
+        <h2 class="cce-news-detail__section-title">{{ 'news.detail.overview' | transloco }}</h2>
+        <div class="cce-news-detail__body" [innerHTML]="contentHtml()"></div>
+      </section>
+
+      @if (tags().length > 0) {
+        <div class="cce-news-detail__tags">
+          @for (t of tags(); track t) {
+            <span class="cce-news-detail__tag">#{{ t }}</span>
+          }
+        </div>
+      }
+
+      <section id="publisher" class="cce-news-detail__publisher">
+        <div class="cce-news-detail__publisher-logo" aria-hidden="true">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="cce-news-detail__publisher-body">
+          <h3 class="cce-news-detail__publisher-name">{{ 'news.detail.publisher' | transloco }}</h3>
+          <p class="cce-news-detail__publisher-desc">{{ 'news.detail.publisherDesc' | transloco }}</p>
+        </div>
+      </section>
+    </article>
+
+    <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+    <aside class="cce-news-detail__sidebar">
+      <div class="cce-news-detail__widget cce-news-detail__widget--toc">
+        <h3 class="cce-news-detail__widget-title">{{ 'news.detail.contents' | transloco }}</h3>
+        <nav>
+          <ul role="list">
+            @for (item of toc(); track item.id) {
+              <li>
+                <button
+                  type="button"
+                  class="cce-news-detail__toc-item"
+                  [class.cce-news-detail__toc-item--active]="activeTocId() === item.id"
+                  (click)="scrollToToc(item.id)"
+                >
+                  {{ item.label }}
+                </button>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <div class="cce-news-detail__widget">
+        <h3 class="cce-news-detail__widget-title">{{ 'news.detail.shareTitle' | transloco }}</h3>
+        <button
+          type="button"
+          mat-stroked-button
+          class="cce-news-detail__share-cta"
+          (click)="openShareDialog()"
+        >
+          <mat-icon>share</mat-icon>
+          {{ 'share.button' | transloco }}
+        </button>
+      </div>
+
+      <div class="cce-news-detail__widget cce-news-detail__widget--newsletter">
+        <span class="cce-news-detail__newsletter-icon" aria-hidden="true">
+          <mat-icon>mail</mat-icon>
+        </span>
+        <h3 class="cce-news-detail__newsletter-title">{{ 'news.detail.newsletterTitle' | transloco }}</h3>
+        <p class="cce-news-detail__newsletter-sub">{{ 'news.detail.newsletterSub' | transloco }}</p>
+        <div class="cce-news-detail__newsletter-form">
+          <input
+            type="email"
+            class="cce-news-detail__newsletter-input"
+            [placeholder]="'news.detail.newsletterEmail' | transloco"
+            [formControl]="newsletterEmail"
+          />
+          <button type="button" class="cce-news-detail__newsletter-btn" (click)="submitNewsletter()">
+            {{ 'news.detail.newsletterJoin' | transloco }}
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ═══════════════════════════ RELATED NEWS ═══════════════════════════ -->
+  @if (related().length > 0) {
+    <section id="related" class="cce-news-detail__related">
+      <header class="cce-news-detail__related-head">
+        <h2>{{ 'news.detail.relatedTitle' | transloco }}</h2>
+      </header>
+      <div class="cce-news-detail__related-grid">
+        @for (r of related(); track r.id) {
+          <a class="cce-news-detail__related-card" [routerLink]="['/news', r.id]">
+            <div class="cce-news-detail__related-media">
+              @if (r.featuredImageUrl) {
+                <img [src]="r.featuredImageUrl" [alt]="articleTitle(r)" loading="lazy" />
+              } @else {
+                <span class="cce-news-detail__related-media-icon" aria-hidden="true">
+                  <mat-icon>image</mat-icon>
+                </span>
+              }
+            </div>
+            <div class="cce-news-detail__related-body">
+              <h3>{{ articleTitle(r) }}</h3>
+              <p>{{ excerpt(r) }}</p>
+              @if (r.publishedOn) {
+                <span class="cce-news-detail__related-date">{{ r.publishedOn | date:'longDate' }}</span>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    </section>
   }
-</article>
+}

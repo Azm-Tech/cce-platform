@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,11 +9,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { PermissionDirective } from '../../core/auth/permission.directive';
+import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { EventFormDialogComponent } from './event-form.dialog';
+import { formatLocaleDate } from '../../core/util/format-locale-date';
 import { PublishingApiService } from './publishing-api.service';
 import { RescheduleEventDialogComponent } from './reschedule-event.dialog';
 import type { Event as CceEvent } from './publishing.types';
@@ -22,10 +24,10 @@ import type { Event as CceEvent } from './publishing.types';
   selector: 'cce-events-list',
   standalone: true,
   imports: [
-    CommonModule, DatePipe, FormsModule,
+    CommonModule, FormsModule,
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatPaginatorModule, MatProgressBarModule, MatTableModule,
-    TranslateModule, PermissionDirective,
+    TranslocoModule, PermissionDirective,
   ],
   templateUrl: './events-list.page.html',
   styleUrl: './events-list.page.scss',
@@ -36,8 +38,10 @@ export class EventsListPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
 
-  readonly displayedColumns = ['titleEn', 'startsOn', 'endsOn', 'location', 'actions'];
+  readonly locale = this.localeService.locale;
+  readonly displayedColumns = ['title', 'startsOn', 'endsOn', 'location', 'actions'];
   readonly searchInput = signal('');
   readonly page = signal(1);
   readonly pageSize = signal(20);
@@ -47,6 +51,23 @@ export class EventsListPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
 
   ngOnInit(): void { void this.load(); }
+
+  /** Title in the active language, falling back to the other if missing. */
+  title(r: CceEvent): string {
+    return this.locale() === 'ar' ? r.titleAr || r.titleEn : r.titleEn || r.titleAr;
+  }
+
+  /** Location in the active language; online URL or em-dash as fallback. */
+  location(r: CceEvent): string {
+    const loc = this.locale() === 'ar' ? r.locationAr : r.locationEn;
+    return loc || r.locationEn || r.locationAr || r.onlineMeetingUrl || '—';
+  }
+
+  formatDate(iso: string | null): string {
+    return formatLocaleDate(iso, this.locale(), {
+      day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+  }
 
   async load(): Promise<void> {
     this.loading.set(true);
@@ -71,18 +92,21 @@ export class EventsListPage implements OnInit {
   onSearch(): void { this.page.set(1); void this.load(); }
 
   async openCreate(): Promise<void> {
-    const ref = this.dialog.open(EventFormDialogComponent, { data: {}, width: '720px' });
+    const ref = this.dialog.open(EventFormDialogComponent, { data: { mode: 'create' }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.create.toast');
       void this.load();
     }
   }
   async openEdit(row: CceEvent): Promise<void> {
-    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: row }, width: '720px' });
+    const ref = this.dialog.open(EventFormDialogComponent, { data: { event: row, mode: 'edit' }, width: '720px' });
     if (await firstValueFrom(ref.afterClosed())) {
       this.toast.success('events.edit.toast');
       void this.load();
     }
+  }
+  openView(row: CceEvent): void {
+    this.dialog.open(EventFormDialogComponent, { data: { event: row, mode: 'view' }, width: '720px' });
   }
   async reschedule(row: CceEvent): Promise<void> {
     const ref = this.dialog.open(RescheduleEventDialogComponent, { data: { event: row }, width: '480px' });
@@ -98,6 +122,6 @@ export class EventsListPage implements OnInit {
     }))) return;
     const res = await this.api.deleteEvent(row.id);
     if (res.ok) { this.toast.success('events.delete.toast'); void this.load(); }
-    else this.toast.error(`errors.${res.error.kind}`);
+    else this.toast.error('errors.ERR028');
   }
 }

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { PagesApiService, type Result } from './pages-api.service';
 import type { PublicPage } from './page.types';
@@ -33,7 +33,7 @@ describe('StaticPagePage', () => {
     const localeStub = { locale: localeSig.asReadonly() };
 
     await TestBed.configureTestingModule({
-      imports: [StaticPagePage, TranslateModule.forRoot()],
+      imports: [StaticPagePage, TranslocoModule.forRoot()],
       providers: [
         { provide: PagesApiService, useValue: { getBySlug } },
         { provide: LocaleService, useValue: localeStub },

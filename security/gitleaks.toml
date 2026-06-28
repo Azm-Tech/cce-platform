@@ -22,6 +22,7 @@ regexes = [
   '''Strong!Passw0rd''',
   '''Admin123!''',
   '''no-reply@cce\.local''',
+  '''evaluation\.scale\d''',
 ]
 
 # Project rules (in addition to defaults)

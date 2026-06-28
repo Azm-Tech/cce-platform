@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 
 /**
@@ -22,9 +22,9 @@ import { MatIconModule } from '@angular/material/icon';
  * ```html
  * <cce-page-hero
  *   eyebrowIcon="newspaper"
- *   [eyebrow]="'nav.news' | translate"
- *   [title]="'news.title' | translate"
- *   [subtitle]="'news.subtitle' | translate"
+ *   [eyebrow]="'nav.news' | transloco"
+ *   [title]="'news.title' | transloco"
+ *   [subtitle]="'news.subtitle' | transloco"
  * >
  *   <button hero-aside mat-stroked-button>Filter</button>
  * </cce-page-hero>
@@ -33,7 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'cce-page-hero',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="cce-page-hero">
@@ -78,9 +78,9 @@ import { MatIconModule } from '@angular/material/icon';
       padding: clamp(1.4rem, 3vw, 2.4rem) clamp(1.4rem, 3vw, 2.6rem);
       padding-inline-start: calc(clamp(1.4rem, 3vw, 2.6rem) + 4px);
       background:
-        radial-gradient(900px 240px at 0% 0%, rgba(20, 184, 143, 0.12), transparent 60%),
-        linear-gradient(135deg, #ffffff 0%, #f4faf7 100%);
-      border: 1px solid rgba(0, 108, 79, 0.10);
+        radial-gradient(900px 240px at 0% 0%, rgba(var(--color-brand-accent-rgb), 0.12), transparent 60%),
+        linear-gradient(135deg, var(--white) 0%, var(--neutrals--50) 100%);
+      border: 1px solid rgba(var(--color-brand-rgb), 0.10);
       border-radius: 24px;
       overflow: hidden;
       isolation: isolate;
@@ -94,7 +94,7 @@ import { MatIconModule } from '@angular/material/icon';
       top: 0;
       bottom: 0;
       width: 4px;
-      background: linear-gradient(180deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
+      background: linear-gradient(180deg, var(--color-brand) 0%, var(--color-brand-accent) 50%, var(--color-accent) 100%);
     }
 
     .cce-page-hero__text { min-width: 0; }
@@ -107,8 +107,8 @@ import { MatIconModule } from '@angular/material/icon';
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #006c4f;
-      background: rgba(0, 108, 79, 0.08);
+      color: var(--color-brand);
+      background: rgba(var(--color-brand-rgb), 0.08);
       padding: 0.32rem 0.72rem;
       border-radius: 999px;
       margin-bottom: 0.85rem;
@@ -126,7 +126,7 @@ import { MatIconModule } from '@angular/material/icon';
       line-height: 1.1;
       font-weight: 800;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #003a2b 0%, #006c4f 50%, #0f8b6c 100%);
+      background: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand) 50%, var(--color-brand-mid) 100%);
       -webkit-background-clip: text;
               background-clip: text;
       color: transparent;
@@ -136,7 +136,7 @@ import { MatIconModule } from '@angular/material/icon';
       margin: 0;
       font-size: clamp(0.94rem, 1.05vw, 1.05rem);
       line-height: 1.55;
-      color: rgba(28, 39, 36, 0.72);
+      color: rgba(var(--color-text-primary-rgb), 0.72);
       max-width: 60ch;
     }
 

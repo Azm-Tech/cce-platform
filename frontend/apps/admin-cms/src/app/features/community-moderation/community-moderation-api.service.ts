@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type { AdminPostRow, AdminPostStatus } from './admin-post.types';
+import type { AdminPostDetail, AdminPostReply, AdminPostRow } from './admin-post.types';
 
 interface PagedResult<T> {
   items: T[];
@@ -23,8 +23,9 @@ export interface TopicLite {
 /**
  * Admin → community moderation API client.
  *
- * Reads from `/api/admin/community/posts` for the moderation list and
- * the existing soft-delete endpoints for the row-level actions. Topic
+ * Reads from `/api/admin/community/posts` for the moderation list, the
+ * `/api/admin/community/posts/{id}` + `/{id}/replies` endpoints for the
+ * detail dialog, and the soft-delete endpoints for row-level actions. Topic
  * names are sourced from `/api/admin/topics` (TaxonomyApiService also
  * uses this; we don't import it here to keep the moderation feature
  * self-contained).
@@ -40,7 +41,7 @@ export class CommunityModerationApiService {
     pageSize?: number;
     topicId?: string;
     search?: string;
-    status?: AdminPostStatus;
+    postType?: 0 | 1 | 2;
     locale?: 'ar' | 'en';
   } = {}): Promise<Result<PagedResult<AdminPostRow>>> {
     let params = new HttpParams();
@@ -48,7 +49,7 @@ export class CommunityModerationApiService {
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
     if (opts.topicId) params = params.set('topicId', opts.topicId);
     if (opts.search) params = params.set('search', opts.search);
-    if (opts.status && opts.status !== 'all') params = params.set('status', opts.status);
+    if (opts.postType !== undefined) params = params.set('postType', opts.postType);
     if (opts.locale) params = params.set('locale', opts.locale);
     return this.run(() =>
       firstValueFrom(
@@ -68,6 +69,34 @@ export class CommunityModerationApiService {
   async softDeleteReply(id: string): Promise<Result<void>> {
     return this.run(async () => {
       await firstValueFrom(this.http.delete<void>(`/api/admin/community/replies/${id}`));
+    });
+  }
+
+  /** Full post detail from the admin moderation API.
+   *  `/api/admin/*` responses are auto-unwrapped by the envelope
+   *  interceptor, so we type the inner shape directly (no `.data`). */
+  async getPostDetail(id: string): Promise<Result<AdminPostDetail>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<AdminPostDetail>(`/api/admin/community/posts/${encodeURIComponent(id)}`),
+      );
+      if (!res) throw new Error('not-found');
+      return res;
+    });
+  }
+
+  /** Replies for a post from the admin moderation API (paged; up to 100).
+   *  Auto-unwrapped — accepts a paged `{ items }` or a bare array. */
+  async listPostReplies(postId: string): Promise<Result<AdminPostReply[]>> {
+    const params = new HttpParams().set('page', 1).set('pageSize', 100);
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<PagedResult<AdminPostReply> | AdminPostReply[]>(
+          `/api/admin/community/posts/${encodeURIComponent(postId)}/replies`,
+          { params },
+        ),
+      );
+      return Array.isArray(res) ? res : (res?.items ?? []);
     });
   }
 

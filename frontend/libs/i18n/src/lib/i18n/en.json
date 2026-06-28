@@ -64,6 +64,198 @@
         "title": "Expert Community",
         "body": "Connect with researchers, policymakers, and practitioners shaping the carbon transition. Ask questions, share findings, learn together."
       }
+    },
+    "v2": {
+      "hero": {
+        "eyebrow": "CCE KNOWLEDGE HUB",
+        "title": "CCE Knowledge Center for Carbon Economy",
+        "subtitle": "The global platform for knowledge exchange, policy dialogue, and collaborative action on carbon management — connecting governments, institutions, and industry leaders.",
+        "cta": "Explore the Platform",
+        "learnMore": "Learn More"
+      },
+      "stats": {
+        "resources": "Resources",
+        "experts": "Experts",
+        "countries": "Countries"
+      },
+      "search": {
+        "widgetTitle": "An Integrated Global Platform for Knowledge Exchange",
+        "placeholder": "Search for research, reports, or experts...",
+        "submit": "Search",
+        "cat": {
+          "carbonCapture": "Carbon Capture",
+          "renewableEnergy": "Renewable Energy",
+          "recycling": "Recycling",
+          "policy": "Policy & Regulation",
+          "technology": "Technology",
+          "finance": "Finance & Investment"
+        }
+      },
+      "map": {
+        "eyebrow": "EXPLORE THE WORLD",
+        "title": "Interactive Global Carbon Map",
+        "sub": "Discover carbon economy initiatives across 63+ countries. Explore real-time data, city profiles, and sustainability projects on our interactive globe.",
+        "cta": "Open the Map"
+      },
+      "features": {
+        "title": "What Does the Platform Offer?",
+        "map": {
+          "title": "Reports & Case Studies",
+          "body": "Access peer-reviewed research, annual reports, and global carbon initiative case studies curated by experts."
+        },
+        "knowledge": {
+          "title": "Global Experts Network",
+          "body": "Connect local engineers with international scientists and certified CCE specialists worldwide."
+        },
+        "community": {
+          "title": "Innovative Solutions & Tech",
+          "body": "Discover emerging carbon removal frameworks, breakthrough technologies, and industry best practices."
+        },
+        "city": {
+          "title": "Training & Continuous Programs",
+          "body": "Enroll in certified courses on circular economy practices, sustainability, and carbon management."
+        }
+      },
+      "framework": {
+        "eyebrow": "THE CCE FRAMEWORK",
+        "title": "What is the Circular Carbon Economy?",
+        "subtitle": "A comprehensive framework built on four core pillars for sustainable carbon emissions management",
+        "objectiveTitle": "Our Objective",
+        "conceptsTitle": "Core Concepts",
+        "cta": "Explore Resources",
+        "tab": {
+          "reduce": "Reduce",
+          "reuse": "Reuse",
+          "recycle": "Recycle",
+          "remove": "Remove"
+        },
+        "reduce": {
+          "sub": "Reducing emissions at the source through energy efficiency optimization and clean industrial transformation",
+          "body": "The foundation of the CCE model focuses on minimizing carbon output through energy-efficient infrastructure, cleaner industrial processes, and smarter resource management across all sectors of the economy."
+        },
+        "reuse": {
+          "sub": "Repurposing carbon compounds as raw materials for new industrial and biological production cycles",
+          "body": "Rather than treating carbon as a waste product, the reuse pillar transforms captured carbon into valuable feedstocks for manufacturing, chemical production, and the creation of sustainable synthetic fuels."
+        },
+        "recycle": {
+          "sub": "Recycling carbon back into organic systems through biological and geological carbon cycling processes",
+          "body": "This pillar leverages natural carbon cycles and biotech innovations to reintegrate carbon into ecosystems, supporting soil carbon sequestration, biochar production, and bio-based material manufacturing."
+        },
+        "remove": {
+          "sub": "Permanently removing atmospheric CO₂ through direct air capture and geological storage technologies",
+          "body": "The removal tier addresses legacy carbon through cutting-edge technologies including enhanced weathering, direct air capture (DAC), and deep geological storage — targeting net-negative emissions pathways by 2050."
+        }
+      },
+      "app": {
+        "eyebrow": "MOBILE APP",
+        "title": "Knowledge in your hands, anytime",
+        "subtitle": "Download the app to access knowledge content and engage with the community from anywhere.",
+        "feature1": "Personalized experience",
+        "feature2": "Instant notifications",
+        "feature3": "Engage with the knowledge community",
+        "feature4": "Seamless resource browsing",
+        "appStore": "Download on App Store",
+        "googlePlay": "Download on Google Play"
+      },
+      "resources": {
+        "eyebrow": "KNOWLEDGE HUB",
+        "title": "Featured Resources",
+        "viewAll": "Browse All",
+        "read": "Read more",
+        "r1": {
+          "label": "Annual Report",
+          "title": "Framework for Implementing CCE in the Middle East Region",
+          "meta": "2024 · 145 pages"
+        },
+        "r2": {
+          "label": "Case Study",
+          "title": "Successful Model for Carbon Reuse and Management in Large Industrial Facilities",
+          "meta": "2023 · 68 pages"
+        },
+        "r3": {
+          "label": "Research Paper",
+          "title": "Carbon Capture and Future Storage Technologies: A Vision to 2030",
+          "meta": "2024 · 32 pages"
+        }
+      },
+      "networkMap": {
+        "eyebrow": "GLOBAL NETWORK",
+        "title": "Participating Countries",
+        "sub": "More than 50 countries actively contributing to enriching the scientific and knowledge content on our platform",
+        "countriesCount": "50+",
+        "countriesLabel": "Contributing Countries"
+      },
+      "discussions": {
+        "eyebrow": "COMMUNITY INSIGHTS",
+        "title": "Latest Insights & Comments",
+        "updated": "Constantly Updated",
+        "videoTitle": "Public Webinar: The Future of Climate Research and Digital Transformation",
+        "d1": "Discussion on using AI techniques in monitoring greenhouse gas emissions and tracking decarbonization progress...",
+        "d2": "The importance of activating the 'Recycle' pillar in local petrochemical plants and industrial zones...",
+        "d3": "Excellent research review on the efficiency of modern bio-filters for carbon sequestration applications..."
+      },
+      "metrics": {
+        "m1": {
+          "value": "+15,000",
+          "label": "Active Monthly Users"
+        },
+        "m2": {
+          "value": "+3,200",
+          "label": "Published Research Papers"
+        },
+        "m3": {
+          "value": "+1,800",
+          "label": "Certified Expert Consultants"
+        },
+        "m4": {
+          "value": "+2,500 tons",
+          "label": "Managed Emissions Rate"
+        }
+      },
+      "objective": {
+        "eyebrow": "OUR MISSION",
+        "title": "What is the Circular Carbon Economy?",
+        "cta": "Discover More"
+      },
+      "concepts": {
+        "eyebrow": "THE FOUR PILLARS",
+        "title": "Reducing emissions at source through energy efficiency and clean industrial transition",
+        "reduce": "Reduce",
+        "reuse": "Reuse",
+        "recycle": "Recycle",
+        "remove": "Remove"
+      },
+      "community": {
+        "title": "Join the Platform Community",
+        "sub": "Share insights, collaborate on active environmental models, and engage with top-tier industrial researchers.",
+        "cardText": "Connect with certified specialists in the field of Circular Carbon Economy from around the world",
+        "joinCta": "Join the Community",
+        "registerCta": "Create Account",
+        "badge": "500+ certified experts"
+      },
+      "countries": {
+        "eyebrow": "FEATURED REGIONS",
+        "title": "Participating Countries"
+      },
+      "news": {
+        "eyebrow": "LATEST NEWS",
+        "title": "News & Updates",
+        "viewAll": "View all news"
+      },
+      "events": {
+        "eyebrow": "UPCOMING EVENTS",
+        "title": "Events & Conferences",
+        "viewAll": "View all events"
+      },
+      "cta": {
+        "title": "Explore. Learn. Contribute.",
+        "sub": "Join thousands of peers advancing global research and shaping a sustainable carbon future.",
+        "explore": "Explore",
+        "learn": "Learn",
+        "contribute": "Contribute",
+        "joinMember": "Join as a Specialized Member",
+        "contact": "Contact Us"
+      }
     }
   },
   "explore": {
@@ -119,18 +311,29 @@
       "unauthorized": "Please sign in to continue.",
       "forbidden": "You don't have permission to access this resource."
     },
+    "search": "Search…",
+    "noResults": "No results found.",
     "actions": {
       "signIn": "Sign in",
       "signOut": "Sign out",
       "save": "Save",
       "cancel": "Cancel",
+      "close": "Close",
       "retry": "Retry"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "url": "Enter a valid URL starting with http:// or https://",
+      "maxLength": "Maximum length is {{max}} characters.",
+      "invalid": "The value entered is not valid."
     },
     "locale": {
       "switchTo": "Switch to",
       "ar": "العربية",
       "en": "English"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   },
   "health": {
     "title": "System Health",
@@ -142,15 +345,63 @@
     "server": "Server error. Try again later.",
     "forbidden": "You don't have permission for this action.",
     "network": "Network error. Check your connection.",
+    "rateLimit": "Too many requests. Please wait a moment and try again.",
     "concurrency": "Item was modified by another user. Reload and try again.",
     "duplicate": "Duplicate value — this item already exists.",
     "validation": "Please correct the highlighted fields.",
     "not-found": "Item not found.",
     "unknown": "Unexpected error. Try again.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "ERR002": "Could not download the resource. Please try again.",
+    "ERR004": "Sharing failed. Please try again.",
+    "ERR006": "Could not add the event to your calendar. Please try again later.",
+    "ERR013": "Required fields are missing.",
+    "ERR027": "Could not upload the news/event. Please try again.",
+    "ERR028": "Could not delete the news/event. Please try again.",
+    "ERR029": "Could not upload the resource. Please try again.",
+    "ERR030": "Could not delete the resource. Please try again.",
+    "ERR033": "Sorry, there was a problem updating the profile. Please try again.",
+    "ERR005": "Could not update your follow status. Please try again.",
+    "ERR012": "Sorry, could not follow this topic right now. Please try again.",
+    "ERR014": "Sorry, a problem occurred while publishing the post. Please try again.",
+    "ERR015": "Sorry, could not follow this post right now. Please try again.",
+    "ERR016": "Reply cannot be empty.",
+    "ERR017": "Sorry, a problem occurred while sending the reply. Please try again.",
+    "ERR032": "Sorry, a problem occurred while deleting the post. Please try again.",
+    "fileType": "Unsupported file format. Allowed formats: PDF or Word.",
+    "ERR001": "An error occurred while loading the page.",
+    "ERR025": "Sorry, a problem occurred while updating the content."
+  },
+  "info": {
+    "INF003": "No news or events available yet.",
+    "INF005": "There are no expert requests at the moment."
+  },
+  "share": {
+    "button": "Share",
+    "copyLink": "Copy link",
+    "email": "Email",
+    "native": "Share via…"
+  },
+  "confirmations": {
+    "CON001": "Resource downloaded! You can now access the file from your device.",
+    "CON002": "Resource shared successfully!",
+    "CON003": "Shared successfully!",
+    "CON004": "Event added to your calendar.",
+    "CON020": "News/event deleted successfully.",
+    "CON021": "Uploaded successfully!",
+    "CON016": "Update completed successfully.",
+    "CON010": "You are now following this topic. You will receive notifications about new posts.",
+    "CON011": "Post created successfully!",
+    "CON012": "You are now following this post. You will receive notifications about new replies.",
+    "CON013": "Reply sent successfully!",
+    "CON024": "Your request has been submitted successfully. It will be reviewed by an admin shortly. Thank you for your contribution!",
+    "CON025": "Post deleted successfully!",
+    "CON026": "Country profile updated successfully!"
   },
   "nav": {
     "sidebarLabel": "Admin navigation",
+    "adminConsole": "Admin Console",
+    "footerTagline": "Carbon Circular Economy",
     "group": {
       "people": "People & Access",
       "publishing": "Publishing",
@@ -170,7 +421,7 @@
     "pages": "Pages",
     "homepage": "Homepage",
     "taxonomies": "Taxonomies",
-    "community": "Community",
+    "community": "Knowledge Community",
     "communityModeration": "Community moderation",
     "countries": "Countries",
     "notifications": "Notifications",
@@ -182,12 +433,18 @@
     "interactiveCity": "Interactive city",
     "worldMap": "World Map",
     "assistant": "Assistant",
+    "stateProfile": "My State Profile",
+    "manageProfile": "Manage Profile",
+    "myRequests": "My Requests",
     "discover": "Discover",
     "discoverDesc": {
       "knowledgeCenter": "Curated long-reads, briefs & references",
       "worldMap": "Interactive map of cities & regions",
       "countries": "Country profiles & KAPSARC indices"
-    }
+    },
+    "homepageSettings": "Homepage Settings",
+    "aboutSettings": "About Settings",
+    "policiesSettings": "Policies & Terms"
   },
   "header": {
     "signIn": "Sign in",
@@ -195,10 +452,18 @@
     "profile": "My profile",
     "notifications": "Notifications",
     "follows": "Follows",
-    "menu": "Menu"
+    "menu": "Menu",
+    "myState": "My State",
+    "manageProfile": "Manage Profile",
+    "myRequests": "My Requests",
+    "roleStateRep": "State Representative",
+    "stateRepSection": "My Country",
+    "brandLine1": "Knowledge Center",
+    "brandLine2": "for Circular Carbon Economy"
   },
   "footer": {
     "about": "About",
+    "policies": "Policies & Terms",
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact",
@@ -231,6 +496,7 @@
   },
   "users": {
     "title": "Users",
+    "createButton": "New User",
     "col": {
       "userName": "User name",
       "email": "Email",
@@ -242,15 +508,73 @@
       "role": "Role",
       "allRoles": "All roles"
     },
+    "role": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "contentManager": "Content Manager",
+      "stateRepresentative": "Country Representative",
+      "communityExpert": "Community Expert",
+      "registeredUser": "Registered User"
+    },
+    "create": {
+      "title": "Create User",
+      "firstNameLabel": "First Name",
+      "lastNameLabel": "Last Name",
+      "emailLabel": "Email Address",
+      "emailHint": "A password setup link will be sent to this address.",
+      "phoneCodeLabel": "Country code",
+      "phoneLabel": "Phone Number",
+      "countryLabel": "Country",
+      "roleLabel": "Role",
+      "submitButton": "Create User",
+      "successToast": "User created. A password setup email has been sent.",
+      "errorRequired": "This field is required.",
+      "errorEmail": "Enter a valid email address.",
+      "errorConflict": "A user with this email already exists.",
+      "errorGeneric": "Failed to create user. Please try again."
+    },
+    "delete": {
+      "button": "Delete User",
+      "confirmTitle": "Delete User",
+      "confirmMessage": "Are you sure you want to delete this user? This action cannot be undone.",
+      "confirmButton": "Delete",
+      "successToast": "User deleted successfully.",
+      "errorGeneric": "Failed to delete user. Please try again."
+    },
+    "deactivate": {
+      "button": "Deactivate",
+      "confirmTitle": "Deactivate User",
+      "confirmMessage": "The user will be signed out and will not be able to access the platform until you reactivate them.",
+      "confirmButton": "Deactivate",
+      "successToast": "User deactivated.",
+      "errorGeneric": "Failed to deactivate user. Please try again."
+    },
+    "activate": {
+      "button": "Activate",
+      "confirmTitle": "Activate User",
+      "confirmMessage": "The user will regain access to the platform.",
+      "confirmButton": "Activate",
+      "successToast": "User activated.",
+      "errorGeneric": "Failed to activate user. Please try again."
+    },
     "detail": {
       "back": "Back to users",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "knowledgeLevel": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
       "field": {
-        "locale": "Locale preference",
+        "locale": "Language preference",
         "knowledgeLevel": "Knowledge level",
         "interests": "Interests",
         "country": "Country",
         "roles": "Roles",
-        "isActive": "Active"
+        "isActive": "Status"
       }
     }
   },
@@ -273,7 +597,9 @@
         "submitted": "Submitted",
         "tags": "Expertise tags",
         "status": "Status",
-        "actions": "Actions"
+        "actions": "Actions",
+        "cv": "CV",
+        "cvDownload": "Download CV"
       },
       "filter": {
         "status": "Status",
@@ -297,6 +623,23 @@
       "reasonEn": "Rejection reason (English)",
       "save": "Reject",
       "toast": "Expert request rejected."
+    },
+    "review": {
+      "bioAr": "Bio (Arabic)",
+      "bioEn": "Bio (English)",
+      "tags": "Expertise tags",
+      "downloadCv": "Download CV"
+    },
+    "detail": {
+      "backButton": "Back to requests",
+      "viewButton": "View details",
+      "submissionSection": "Submission",
+      "decisionSection": "Decision",
+      "field": {
+        "processedOn": "Processed on",
+        "rejectionReasonAr": "Rejection reason (Arabic)",
+        "rejectionReasonEn": "Rejection reason (English)"
+      }
     },
     "profiles": {
       "title": "Expert profiles",
@@ -329,10 +672,12 @@
     "create": {
       "title": "New state-rep assignment",
       "openButton": "New assignment",
-      "user": "User ID",
-      "country": "Country ID",
+      "user": "User",
+      "userSearch": "Search by name or email...",
+      "country": "Country",
+      "countrySearch": "Search for a country...",
+      "required": "This field is required.",
       "save": "Create",
-      "invalidGuid": "Enter a valid GUID.",
       "toast": "Assignment created."
     },
     "revoke": {
@@ -341,6 +686,126 @@
       "message": "Revoke this assignment? It can be re-created later, and the audit trail records the revocation.",
       "confirm": "Revoke",
       "toast": "Assignment revoked."
+    }
+  },
+  "stateProfile": {
+    "title": "Manage State Profile",
+    "editButton": "Edit Profile",
+    "kapsarcSection": "KAPSARC Indicators (read-only)",
+    "statsSection": "Country Statistics",
+    "descriptionsSection": "Descriptions & Initiatives",
+    "cceClassification": "CCE Classification",
+    "ccePerformance": "Performance Score",
+    "cceTotalIndex": "CCE Total Index",
+    "snapshotDate": "Last KAPSARC snapshot date",
+    "population": "Population",
+    "areaSqKm": "Area (km²)",
+    "gdpPerCapita": "GDP per Capita (USD)",
+    "ndcDocument": "Nationally Determined Contribution (NDC)",
+    "ndcUploaded": "Uploaded",
+    "ndcMissing": "Not yet uploaded",
+    "description": "Country description",
+    "keyInitiatives": "Key initiatives",
+    "contactInfo": "Contact information",
+    "edit": {
+      "title": "Edit State Profile",
+      "save": "Save Updates",
+      "descriptionAr": "Country description (Arabic)",
+      "descriptionEn": "Country description (English)",
+      "keyInitiativesAr": "Key initiatives (Arabic)",
+      "keyInitiativesEn": "Key initiatives (English)",
+      "contactInfoAr": "Contact information (Arabic)",
+      "contactInfoEn": "Contact information (English)",
+      "chooseNdc": "Choose NDC file (PDF)",
+      "ndcTypeError": "Only PDF files are allowed.",
+      "mustBePositiveInt": "Must be a positive integer greater than zero.",
+      "mustBePositive": "Must be greater than zero.",
+      "viewCurrentNdc": "View current file"
+    }
+  },
+  "myRequests": {
+    "title": "My Requests",
+    "addResource": "Add Resource",
+    "addNews": "Add News",
+    "addEvent": "Add Event",
+    "empty": "No requests available at the moment.",
+    "newsSection": "News Submissions",
+    "eventsSection": "Event Submissions",
+    "typeNews": "News",
+    "typeEvent": "Event",
+    "typeResource": "Resource",
+    "tabs": {
+      "resources": "Resources",
+      "newsEvents": "News & Events",
+      "news": "News",
+      "events": "Events"
+    },
+    "status": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "detail": {
+      "title": "Request Details",
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "type": "Resource type",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "submittedOn": "Submitted on:",
+      "processedOn": "Processed on:",
+      "adminNotes": "Admin notes",
+      "file": "Attached file",
+      "downloadFile": "Download"
+    }
+  },
+  "resourceRequest": {
+    "form": {
+      "title": "Submit New Resource Request",
+      "titleAr": "Resource title (Arabic)",
+      "titleEn": "Resource title (English)",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "type": "Resource type",
+      "category": "Category",
+      "topic": "Topic (optional)",
+      "countries": "Covered countries (optional)",
+      "file": "Resource file",
+      "chooseFile": "Choose a file (PDF or Word)",
+      "fileTypeError": "Only PDF and Word files are allowed.",
+      "fileRequired": "A file is required.",
+      "submit": "Submit Request"
+    }
+  },
+  "newsEventRequest": {
+    "news": {
+      "formTitle": "Submit New News Article"
+    },
+    "event": {
+      "formTitle": "Submit New Event"
+    },
+    "form": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)",
+      "descAr": "Description (Arabic)",
+      "descEn": "Description (English)",
+      "startsOn": "Start date & time",
+      "endsOn": "End date & time",
+      "locationHint": "Provide a physical location, an online meeting URL, or both.",
+      "locationAr": "Location (Arabic)",
+      "locationEn": "Location (English)",
+      "onlineMeetingUrl": "Online meeting URL",
+      "locationRequired": "Please enter a location or an online meeting URL.",
+      "topic": "Topic",
+      "hour": "Hour",
+      "minute": "Minute",
+      "uploadImage": "Upload featured image",
+      "uploadingImage": "Uploading…",
+      "imageHint": "PNG, JPG or WebP · max 5 MB",
+      "imageInvalidType": "Only PNG, JPG and WebP images are allowed (max 5 MB).",
+      "submit": "Submit Request"
     }
   },
   "asset": {
@@ -363,7 +828,8 @@
       "published": "Published",
       "publishedOn": "Published on",
       "views": "Views",
-      "actions": "Actions"
+      "actions": "Actions",
+      "category": "Category"
     },
     "filter": {
       "search": "Search",
@@ -373,7 +839,15 @@
       "country": "Country",
       "resourceType": "Type",
       "allTypes": "All types",
-      "allCategories": "All categories"
+      "allCategories": "All categories",
+      "allCountries": "All countries",
+      "category": "Category",
+      "searchCountries": "Search countries...",
+      "noMatch": "No matching results",
+      "publishedOnly": "Published"
+    },
+    "search": {
+      "placeholder": "Search resources…"
     },
     "field": {
       "titleAr": "Title (Arabic)",
@@ -381,9 +855,12 @@
       "descriptionAr": "Description (Arabic)",
       "descriptionEn": "Description (English)",
       "resourceType": "Type",
-      "categoryId": "Category ID",
-      "countryId": "Country ID (optional)",
-      "asset": "File"
+      "categoryId": "Category",
+      "asset": "File",
+      "currentFile": "Current file",
+      "changeFile": "Change file",
+      "topicId": "Topic",
+      "countryIds": "Covered Countries"
     },
     "create": {
       "openButton": "New resource",
@@ -407,17 +884,133 @@
     "empty": "No resources match your filters.",
     "publishedOn": "Published on",
     "viewCount": "{{count}} views",
-    "back": "Back to all resources",
+    "back": "Back to the resource library",
     "type": {
-      "Pdf": "PDF",
-      "Video": "Video",
-      "Image": "Image",
-      "Link": "Link",
-      "Document": "Document"
+      "Paper": "Paper",
+      "Article": "Article",
+      "Study": "Study",
+      "Presentation": "Presentation",
+      "ScientificPaper": "Scientific Paper",
+      "Report": "Report",
+      "Book": "Book",
+      "Research": "Research",
+      "CceGuide": "CCE Guide",
+      "Media": "Media"
     },
     "download": {
       "openButton": "Download",
       "toast": "Download started."
+    },
+    "sort": {
+      "label": "Sort by",
+      "date": "Date",
+      "views": "Most viewed",
+      "title": "Title"
+    },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
+    },
+    "detail": {
+      "getResourceTitle": "GET THIS RESOURCE",
+      "getResourceHint": "Download a copy or open the original source.",
+      "metaMinRead": "min read",
+      "metaViews": "views",
+      "factType": "Type",
+      "factPublished": "Published",
+      "factPublishedBy": "Published by",
+      "factReadingTime": "Reading time",
+      "factViews": "Views",
+      "relatedEyebrow": "Related",
+      "relatedTitle": "You might also be interested in",
+      "toc": "Contents",
+      "tocOverview": "Overview",
+      "tocSummary": "Description",
+      "tocResults": "Key results",
+      "docData": "Document details",
+      "resultsTitle": "Key Results",
+      "factFormat": "Format",
+      "factLanguage": "Language",
+      "factCountries": "Countries",
+      "factFile": "File",
+      "downloadCta": "Download report",
+      "shareCta": "Share report"
+    },
+    "delete": {
+      "openButton": "Delete",
+      "title": "Delete resource",
+      "message": "Delete this resource? This action cannot be undone.",
+      "confirm": "Delete",
+      "toast": "Resource deleted successfully!"
+    }
+  },
+  "countryRequest": {
+    "title": "Country content requests",
+    "backToList": "Back to requests",
+    "untitled": "(Untitled)",
+    "empty": "No requests found.",
+    "submittedOn": "Submitted",
+    "notesAr": "Admin notes (Arabic)",
+    "notesEn": "Admin notes (English)",
+    "tabs": {
+      "resources": "Resources",
+      "news": "News",
+      "events": "Events"
+    },
+    "filter": {
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
+    "col": {
+      "title": "Title",
+      "submittedOn": "Submitted on",
+      "status": "Status",
+      "actions": ""
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "type": {
+      "resource": "Resource",
+      "news": "News",
+      "event": "Event"
+    },
+    "section": {
+      "content": "Content",
+      "resource": "Resource details",
+      "event": "Event details",
+      "adminNotes": "Admin notes"
+    },
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "resourceType": "Resource type",
+      "assetFileId": "Attached file",
+      "downloadFile": "Download file",
+      "startsOn": "Starts on",
+      "endsOn": "Ends on",
+      "locationAr": "Location (Arabic)",
+      "locationEn": "Location (English)",
+      "onlineMeetingUrl": "Online meeting URL",
+      "notesAr": "Notes (Arabic)",
+      "notesEn": "Notes (English)",
+      "processedOn": "Processed on"
+    },
+    "approve": {
+      "title": "Approve request",
+      "confirm": "Are you sure you want to approve this request? You may optionally leave admin notes.",
+      "action": "Approve",
+      "toast": "Request approved successfully."
+    },
+    "reject": {
+      "title": "Reject request",
+      "confirm": "Please provide a reason for rejecting this request (required in both languages).",
+      "action": "Reject",
+      "toast": "Request rejected."
     }
   },
   "countryResourceRequest": {
@@ -447,7 +1040,8 @@
       "slug": "Slug",
       "published": "Published",
       "publishedOn": "Published on",
-      "actions": "Actions"
+      "actions": "Actions",
+      "topic": "Topic"
     },
     "filter": {
       "search": "Search",
@@ -462,7 +1056,13 @@
       "contentAr": "Content (Arabic)",
       "contentEn": "Content (English)",
       "slug": "Slug",
-      "featuredImageUrl": "Featured image URL"
+      "featuredImageUrl": "Featured image URL",
+      "uploadImage": "Upload image",
+      "uploadingImage": "Uploading…",
+      "imageHint": "PNG, JPG, or WebP. Max 5 MB.",
+      "imageInvalidType": "Please choose a PNG, JPG, or WebP image.",
+      "topic": "Topic",
+      "tags": "Tags"
     },
     "create": {
       "openButton": "New article",
@@ -475,6 +1075,10 @@
       "title": "Edit news article",
       "save": "Save",
       "toast": "News article updated."
+    },
+    "view": {
+      "openButton": "View",
+      "title": "View news article"
     },
     "publish": {
       "openButton": "Publish",
@@ -493,12 +1097,26 @@
     "empty": "No news articles published yet.",
     "emptyDesc": "Stories published by the editorial team will appear here.",
     "back": "Back to news",
+    "detail": {
+      "overview": "Overview",
+      "publisher": "Publisher",
+      "publisherDesc": "A leading research center providing analysis and research on energy economics and sustainability.",
+      "contents": "Contents",
+      "shareTitle": "Share this article",
+      "newsletterTitle": "Stay informed",
+      "newsletterSub": "Get our latest analysis and news straight to your inbox.",
+      "newsletterEmail": "Email address",
+      "newsletterJoin": "Join now",
+      "relatedTitle": "Read more similar news",
+      "minRead": "min read"
+    },
     "publishedOn": "Published",
     "featured": {
       "toggle": "Featured only",
       "tag": "FEATURED"
     },
-    "tag": "ARTICLE",
+    "tag": "News",
+    "publishedBy": "Published by",
     "searchPlaceholder": "Search articles by title or excerpt…",
     "filteredEmpty": "No articles match your search.",
     "clearSearch": "Clear",
@@ -518,12 +1136,25 @@
       "sortOldest": "Oldest first",
       "active": "Active filters",
       "clearAll": "Clear all"
-    }
+    },
+    "followButton": "Follow news",
+    "followingButton": "Following",
+    "followSuccess": "You are now following the news page.",
+    "unfollowSuccess": "You have unfollowed the news page."
   },
   "events": {
     "title": "Events",
     "subtitle": "Conferences, webinars, workshops, and gatherings shaping the future of low-carbon cities.",
     "eyebrow": "EVENTS · UPCOMING & PAST",
+    "calendar": {
+      "moreOptions": "More calendar options",
+      "addTo": {
+        "google": "Add to Google Calendar",
+        "outlook": "Add to Outlook",
+        "apple": "Add to Apple Calendar",
+        "yahoo": "Add to Yahoo Calendar"
+      }
+    },
     "col": {
       "title": "Title",
       "startsOn": "Starts",
@@ -546,7 +1177,18 @@
       "locationAr": "Location (Arabic)",
       "locationEn": "Location (English)",
       "onlineMeetingUrl": "Online meeting URL",
-      "featuredImageUrl": "Featured image URL"
+      "featuredImageUrl": "Featured image URL",
+      "topic": "Topic",
+      "tags": "Tags",
+      "startDate": "Start date",
+      "startHour": "Start hour",
+      "startMinute": "Start minute",
+      "endDate": "End date",
+      "endHour": "End hour",
+      "endMinute": "End minute"
+    },
+    "validation": {
+      "venueRequired": "Provide a venue (Arabic or English) or an online meeting URL."
     },
     "create": {
       "openButton": "New event",
@@ -559,6 +1201,10 @@
       "title": "Edit event",
       "save": "Save",
       "toast": "Event updated."
+    },
+    "view": {
+      "openButton": "View",
+      "title": "View event"
     },
     "reschedule": {
       "openButton": "Reschedule",
@@ -588,6 +1234,16 @@
       "notFound": "Event not found.",
       "notFoundDesc": "The event you're looking for may have been moved or removed.",
       "notesTitle": "About this event",
+      "detailsTitle": "Event details",
+      "aboutTab": "About the event",
+      "outcomesTab": "Event outcomes",
+      "overviewTitle": "Event overview",
+      "speakersTitle": "Key speakers",
+      "shareTitle": "Share this event",
+      "otherEvents": "Other events",
+      "date": "Date",
+      "time": "Time",
+      "eventLink": "Event link",
       "logisticsTitle": "Logistics",
       "starts": "Starts",
       "ends": "Ends",
@@ -618,9 +1274,15 @@
     "tagOnline": "ONLINE",
     "tagInPerson": "IN PERSON",
     "tagWebinar": "WEBINAR",
-    "tagUpcoming": "UPCOMING",
-    "tagPast": "PAST",
-    "tagToday": "TODAY",
+    "tagUpcoming": "Upcoming event",
+    "tagPast": "Past event",
+    "tagToday": "Today",
+    "venue": {
+      "zoom": "Online — Zoom",
+      "teams": "Online — Microsoft Teams",
+      "meet": "Online — Google Meet",
+      "online": "Online"
+    },
     "searchPlaceholder": "Search events by title or location…",
     "filteredEmpty": "No events match your filters.",
     "clearSearch": "Clear",
@@ -716,6 +1378,11 @@
     },
     "reorder": {
       "toast": "Section order updated."
+    },
+    "pageTitle": "Homepage",
+    "tab": {
+      "sections": "Sections",
+      "settings": "Settings"
     }
   },
   "taxonomies": {
@@ -787,6 +1454,7 @@
   },
   "communityModeration": {
     "title": "Community moderation",
+    "toastModerated": "Another moderator acted — list refreshed.",
     "byIdNote": "The Internal API exposes only soft-delete endpoints; enter the GUID of the post or reply to remove. A flag-queue UI lands in v0.2.0.",
     "invalidGuid": "Enter a valid GUID.",
     "post": {
@@ -809,6 +1477,7 @@
     "filter": {
       "search": "Search content",
       "status": "Status",
+      "type": "Type",
       "topic": "Topic",
       "allTopics": "All topics",
       "locale": "Locale",
@@ -822,9 +1491,22 @@
       "question": "Open questions",
       "answered": "Answered"
     },
+    "typeOption": {
+      "all": "All types",
+      "info": "Informational",
+      "question": "Question",
+      "poll": "Poll"
+    },
+    "typeChip": {
+      "info": "Info",
+      "question": "Question",
+      "poll": "Poll"
+    },
     "col": {
       "status": "Status",
+      "type": "Type",
       "content": "Content",
+      "title": "Title",
       "topic": "Topic",
       "replies": "Replies",
       "locale": "Locale",
@@ -841,11 +1523,18 @@
       "delete": "Soft-delete post",
       "viewOnPortal": "Open post on the public portal",
       "viewReplies": "Open replies on portal",
+      "viewDetails": "View post details",
       "copyId": "Copy post ID",
       "copyLink": "Copy public link",
       "copyIdToast": "Post ID copied to clipboard.",
       "copyLinkToast": "Public link copied to clipboard.",
       "moreActions": "More actions"
+    },
+    "dialog": {
+      "title": "Post details",
+      "replies": "Replies",
+      "noReplies": "No replies yet.",
+      "deleteReply": "Soft-delete reply"
     },
     "quick": {
       "title": "Quick action — delete a reply by ID",
@@ -853,17 +1542,36 @@
     }
   },
   "countries": {
-    "title": "Countries",
-    "subtitle": "Country profiles, KAPSARC indices, and decarbonization snapshots across the GCC and beyond.",
+    "title": "Participating Countries",
+    "subtitle": "Explore country contributions and experiences in applying circular carbon economy concepts.",
     "eyebrow": "COUNTRIES · PROFILES & INDICES",
     "search": {
-      "placeholder": "Search countries…"
+      "placeholder": "Search"
     },
     "empty": "No countries available.",
-    "back": "Back to countries",
+    "back": "Back to Participating Countries",
     "notFound": "Country not found.",
+    "myState": {
+      "noCountry": "No country is assigned to your account. Please contact the platform administrator."
+    },
+    "view": {
+      "grid": "Grid view",
+      "map": "Map view"
+    },
     "filter": {
-      "search": "Search"
+      "search": "Search",
+      "all": "All Regions",
+      "topPerformers": "Top Performers",
+      "region": "Region"
+    },
+    "card": {
+      "emissionReduction": "Emission Reduction",
+      "globalRanking": "Global Ranking",
+      "of": "of",
+      "viewReport": "View Country Report"
+    },
+    "map": {
+      "empty": "Select a country from the map to view its profile and circular carbon economy experiences."
     },
     "col": {
       "flag": "Flag",
@@ -884,7 +1592,17 @@
       "keyInitiativesAr": "Key initiatives (Arabic)",
       "keyInitiativesEn": "Key initiatives (English)",
       "contactInfoAr": "Contact info (Arabic)",
-      "contactInfoEn": "Contact info (English)"
+      "contactInfoEn": "Contact info (English)",
+      "population": "Population",
+      "areaSqKm": "Area (km²)",
+      "gdpPerCapita": "GDP per capita",
+      "statsSection": "Statistics",
+      "ndcSection": "NDC Attachment",
+      "chooseNdc": "Choose a PDF file",
+      "ndcTypeError": "Only PDF files are allowed",
+      "mustBePositive": "Must be a positive value",
+      "mustBePositiveInt": "Must be a positive whole number",
+      "viewCurrentNdc": "View current file"
     },
     "edit": {
       "save": "Save",
@@ -892,12 +1610,40 @@
     },
     "detail": {
       "openButton": "Edit",
-      "back": "Back to countries",
+      "back": "Back to Participating Countries",
       "subtitle": "Edit metadata + profile",
       "description": "Description",
       "keyInitiatives": "Key initiatives",
       "contactInfo": "Contact information",
-      "lastUpdated": "Last updated"
+      "lastUpdated": "Last updated",
+      "cceIndex": "CCE Index Score",
+      "population": "Total Population",
+      "area": "Total Country Area",
+      "emissionReduction": "Total Emission Reduction",
+      "gdpPerCapita": "GDP Per Capita",
+      "energyDensity": "Energy Density",
+      "classification": "CCE Classification",
+      "foundingPartner": "CCE Centre Founding Strategic Partner",
+      "share": "Share Report",
+      "download": "Download Report",
+      "tab": {
+        "analytics": "Analytics View",
+        "resources": "Resources",
+        "initiatives": "Initiatives & Innovation",
+        "experts": "Experts"
+      },
+      "chart": {
+        "radial": "Circular Carbon Economy Performance (4Rs)",
+        "radialSub": "Comprehensive analysis of the four core axes for 2026",
+        "trend": "Annual Change in CCE Scores",
+        "trendSub": "Evolution of the country's CCE index performance over past years",
+        "years": "Last 5 years"
+      },
+      "achievements": "Key Strategic Achievements",
+      "reduce": "Reduce",
+      "reuse": "Reuse",
+      "recycle": "Recycle",
+      "remove": "Remove"
     },
     "profile": {
       "title": "Country profile",
@@ -920,8 +1666,13 @@
   "account": {
     "login": {
       "title": "Sign in to CCE",
-      "subtitle": "Welcome back. Sign in with your work email or pick a demo persona below.",
-      "emailLabel": "Email",
+      "subtitle": "Welcome back.",
+      "brandTagline": "Powering the Carbon Circular Economy",
+      "brandDesc": "A secure admin panel for managing CCE platform content, users, and operations across 63+ countries.",
+      "statCountries": "Countries",
+      "statResources": "Resources",
+      "statExperts": "Experts",
+      "emailLabel": "Email address",
       "passwordLabel": "Password",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
@@ -929,8 +1680,11 @@
       "submitButton": "Sign in",
       "submittingButton": "Signing in…",
       "errorInvalid": "Invalid email or password.",
+      "errorNotFound": "Account not found or not yet active.",
+      "errorForbidden": "Your account does not have access to this panel.",
       "errorGeneric": "We couldn't sign you in. Please try again.",
-      "orDemoAs": "or sign in as a demo persona",
+      "errorPhoneNotVerified": "Your phone number hasn't been verified yet. Please verify it to sign in.",
+      "verifyPhoneButton": "Verify phone number",
       "noAccount": "Don't have an account?",
       "register": "Create one",
       "alreadySignedIn": "You're already signed in.",
@@ -938,42 +1692,151 @@
     },
     "register": {
       "title": "Create your CCE account",
-      "body": "Sign up to access expert-curated knowledge, save scenarios, and join the community discussion.",
-      "givenNameLabel": "First name",
-      "surnameLabel": "Last name",
-      "emailLabel": "Work email",
-      "mailNicknameLabel": "Username",
-      "mailNicknameHint": "Letters, digits, dots — no spaces. Used to construct your sign-in name.",
+      "body": "Sign up to access expert-curated knowledge, save scenarios, and join the community.",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email address",
+      "jobTitleLabel": "Job title",
+      "organizationLabel": "Organization",
+      "nationalityLabel": "Nationality / dial code",
+      "phoneLabel": "Phone number",
+      "errorRequired": "This field is required.",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "passwordHint": "12–20 characters.",
+      "passwordStrengthError": "Password must be 12–20 characters and include uppercase, lowercase, and a number.",
+      "passwordMismatch": "Passwords do not match.",
       "submitButton": "Create account",
       "submittingButton": "Creating…",
-      "successBody": "Account created. Check your email — we sent your one-time password. Sign in and you'll be prompted to choose a new password.",
+      "successBody": "Your account has been created. You can now sign in.",
+      "resendButton": "Resend verification email",
+      "resendingButton": "Sending…",
+      "resendSuccess": "Verification email sent. Please check your inbox.",
+      "resendError": "We couldn't resend the email. Please try again.",
       "errorConflict": "An account with that email already exists. Try signing in instead.",
-      "errorValidation": "Please fill in all fields and try again.",
-      "errorGeneric": "We couldn't create your account right now. Please try again in a few minutes.",
-      "contactHint": "Already have a Microsoft Entra ID account? Sign in directly — no need to register.",
-      "signInButton": "Sign in",
-      "signInExistingButton": "Sign in with existing account",
+      "errorValidation": "Please check your details and try again.",
+      "errorGeneric": "We couldn't create your account. Please try again.",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in",
       "alreadySignedIn": "You're already signed in.",
-      "openProfile": "Open my profile"
+      "openProfile": "Open my profile",
+      "phoneCodeLabel": "Code"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email address and we'll send you a reset link.",
+      "emailLabel": "Email address",
+      "submitButton": "Send reset link",
+      "submittingButton": "Sending…",
+      "successBody": "A password reset link has been sent to your email address.",
+      "errorNotFound": "No account found with that email address.",
+      "errorGeneric": "We couldn't send the reset link. Please try again.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "subtitle": "Choose a strong password for your account.",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "passwordHint": "12–20 characters.",
+      "passwordStrengthError": "Password must be 12–20 characters and include uppercase, lowercase, and a number.",
+      "passwordMismatch": "Passwords do not match.",
+      "submitButton": "Set new password",
+      "submittingButton": "Saving…",
+      "successBody": "Your password has been changed. You can now sign in.",
+      "errorInvalidToken": "This reset link has expired or is invalid. Please request a new one.",
+      "errorGeneric": "We couldn't update your password. Please try again.",
+      "signInLink": "Sign in"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "verifying": "Verifying your email address…",
+      "successBody": "Your email has been verified. You can now sign in.",
+      "errorBody": "This verification link has expired or is invalid. Please register again or contact support.",
+      "signInLink": "Sign in",
+      "backToLogin": "Back to sign in"
+    },
+    "verifyPhone": {
+      "title": "Verify your phone",
+      "subtitle": "We sent a 6-digit code to",
+      "sending": "Sending verification code…",
+      "codeLabel": "Verification code",
+      "submitButton": "Verify",
+      "verifying": "Verifying…",
+      "resend": "Resend code",
+      "resendIn": "Resend in {{s}}s",
+      "errorInvalid": "Invalid or expired code. Please try again.",
+      "errorRateLimit": "Please wait 60 seconds before requesting a new code.",
+      "errorGeneric": "Something went wrong. Please try again.",
+      "enterPhoneTitle": "Verify your phone",
+      "enterPhoneHint": "Enter the phone number you registered with to receive a verification code.",
+      "phoneLabel": "Phone number",
+      "continueButton": "Send code",
+      "invalidPhone": "Enter a valid phone number (e.g. +966501234567)"
     },
     "profile": {
       "title": "My profile",
+      "roles": "Roles",
       "notProvisioned": "We're still setting up your profile. Please retry in a moment.",
+      "section": {
+        "personal": "Personal Information",
+        "expertise": "Expertise & Interests",
+        "expertRequest": "Expert Request"
+      },
       "field": {
         "email": "Email",
         "userName": "User name",
         "localePreference": "Language preference",
         "knowledgeLevel": "Knowledge level",
         "interests": "Interests",
+        "interestsHint": "Comma-separated values or use the Personalize button above",
         "country": "Country",
-        "avatarUrl": "Avatar URL"
+        "avatarUrl": "Avatar URL",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "jobTitle": "Job title",
+        "organizationName": "Organization",
+        "countryCode": "Phone country code",
+        "avatarUpload": "Upload photo",
+        "nationality": "Nationality",
+        "phoneNumber": "Phone number",
+        "expertStatus": "Expert status"
       },
+      "editTitle": "Edit your profile",
+      "editHint": "Changes are applied immediately after saving.",
       "editButton": "Edit",
       "saveButton": "Save",
       "cancelButton": "Cancel",
       "toast": {
         "saved": "Profile saved."
+      },
+      "changePhoto": "Change photo",
+      "avatarUploaded": "Photo uploaded. Save your profile to apply it.",
+      "avatarUploadError": "Failed to upload photo. Please try again.",
+      "expertCta": {
+        "title": "Become an Expert",
+        "body": "Share your knowledge with the CCE community by applying for expert status.",
+        "button": "Apply now",
+        "reapplyButton": "Reapply"
+      },
+      "expertStatus": {
+        "None": "Not applied",
+        "Pending": "Application under review",
+        "Approved": "Verified Expert",
+        "Rejected": "Application rejected"
+      },
+      "expertRequest": {
+        "viewDetails": "View Details"
+      },
+      "expertise": {
+        "empty": "You haven’t added your interests yet.",
+        "addButton": "Personalize your experience"
       }
+    },
+    "logout": {
+      "button": "Sign out",
+      "successMessage": "You've been signed out successfully.",
+      "errorMessage": "Sign out failed. Please try again."
     },
     "knowledgeLevel": {
       "Beginner": "Beginner",
@@ -986,7 +1849,8 @@
       "field": {
         "bioAr": "Biography (Arabic)",
         "bioEn": "Biography (English)",
-        "tags": "Topics (comma-separated)"
+        "tags": "Topics (comma-separated)",
+        "cvUpload": "Attach CV (PDF, DOC)"
       },
       "submitButton": "Submit request",
       "resubmitButton": "Submit a new request",
@@ -997,7 +1861,9 @@
       },
       "toast": {
         "submitted": "Request submitted."
-      }
+      },
+      "cvUploadError": "Failed to upload CV. Please try again.",
+      "submittedData": "Submitted Information"
     },
     "serviceRating": {
       "openButton": "Rate this page",
@@ -1008,6 +1874,24 @@
       "toast": {
         "thanks": "Thanks for your feedback."
       }
+    },
+    "changeContact": {
+      "titleEmail": "Change Email",
+      "titlePhone": "Change Phone Number",
+      "hintEmail": "An OTP will be sent to your new email address",
+      "hintPhone": "An OTP will be sent to your new phone number (international format: +966XXXXXXXXX)",
+      "newEmail": "New Email Address",
+      "newPhone": "New Phone Number",
+      "sendOtp": "Send OTP",
+      "otpSentEmail": "A verification code was sent to {{value}}",
+      "otpSentPhone": "A verification code was sent to {{value}}",
+      "otpCode": "Verification Code",
+      "invalidOtp": "Code must be 4–8 digits.",
+      "confirm": "Confirm",
+      "back": "Back",
+      "change": "Change",
+      "successEmail": "Email updated successfully",
+      "successPhone": "Phone number updated successfully"
     }
   },
   "notifications": {
@@ -1017,6 +1901,13 @@
     "markAllRead": "Mark all read",
     "markRead": "Mark as read",
     "markedToast": "Marked {{n}} as read.",
+    "newToast": "You have a new notification.",
+    "toastNew": "New notification",
+    "toastView": "View",
+    "toastNow": "now",
+    "toastDismiss": "Dismiss",
+    "newPostTitle": "New post",
+    "newPostBody": "A new post was published in a community you follow.",
     "unreadBadge": "Unread",
     "bellLabel": "Open notifications",
     "channel": {
@@ -1077,11 +1968,14 @@
     "errorToast": "Couldn't update follow status. Try again."
   },
   "community": {
+    "pageTitle": "Knowledge Community",
+    "topicsTitle": "Topics",
+    "expertBadge": "Expert",
     "title": "Community",
     "subtitle": "Discussions, questions, and answers from researchers, practitioners, and experts across the network.",
     "eyebrow": "COMMUNITY · DISCUSSIONS",
     "tag": "TOPIC",
-    "searchPlaceholder": "Search topics by name or description…",
+    "searchPlaceholder": "Search the community…",
     "filteredEmpty": "No topics match your search.",
     "clearSearch": "Clear",
     "openTopic": "Open topic",
@@ -1094,16 +1988,16 @@
       "postNotFoundDesc": "The post you're looking for may have been moved or removed.",
       "postsCount": "{{count}} posts",
       "postsCountSingular": "{{count}} post",
-      "repliesCount": "{{count}} replies",
-      "repliesCountSingular": "{{count}} reply",
-      "noReplies": "No replies yet",
+      "repliesCount": "{{count}} comments",
+      "repliesCountSingular": "{{count}} comment",
+      "noReplies": "No comments yet",
       "questionTag": "QUESTION",
       "discussionTag": "DISCUSSION",
       "resolvedTag": "RESOLVED",
       "askedBy": "Asked",
       "repliedBy": "Replied",
-      "repliesTitle": "Replies",
-      "composeTitle": "Add a reply",
+      "repliesTitle": "Comments",
+      "composeTitle": "Add a comment",
       "actionReply": "Reply",
       "actionShare": "Share",
       "actionSave": "Save",
@@ -1117,7 +2011,14 @@
       "actionDisliked": "Disliked",
       "replyToReply": "Replying to {{handle}}",
       "cancelReply": "Cancel reply",
-      "replyToCommentLabel": "Reply"
+      "replyToCommentLabel": "Reply",
+      "fullProfile": "Full profile",
+      "myProfile": "My profile",
+      "followAuthor": "Follow",
+      "followingAuthor": "Following",
+      "attachments": "Attachments",
+      "download": "Download",
+      "unnamedFile": "File"
     },
     "filters": {
       "open": "Filters",
@@ -1133,8 +2034,18 @@
     "signInToReply": "Sign in to reply.",
     "signInToRate": "Sign in to rate.",
     "signInButton": "Sign in",
+    "authDialog": {
+      "title": "Sign in required",
+      "message": "Sign in or create an account to interact with the community.",
+      "messageVote": "Sign in or create an account to vote on posts.",
+      "messageReply": "Sign in or create an account to reply.",
+      "messageFollow": "Sign in or create an account to follow.",
+      "messageDownload": "Sign in or create an account to download attachments.",
+      "login": "Sign in",
+      "register": "Create an account",
+      "close": "Close"
+    },
     "acceptedAnswer": "Accepted answer",
-    "expertBadge": "Expert",
     "languageBadge": "in {{locale}}",
     "notFound": "Topic / post not found.",
     "empty": {
@@ -1144,10 +2055,31 @@
     },
     "compose": {
       "title": "Compose new post",
-      "content": "Content",
-      "locale": "Language",
+      "typeLabel": "Post category",
+      "topicLabel": "Post topic",
+      "selectTopic": "Select a topic",
+      "titleLabel": "Post title",
+      "content": "Post content",
+      "locale": "Post language",
       "isAnswerable": "Allow replies to be marked as accepted answer",
-      "submit": "Post",
+      "attachmentsLabel": "Attachments",
+      "attachmentAdd": "Add attachment",
+      "attachmentHint": "Drag the file here or pick from your device",
+      "attachmentFormats": "Allowed formats: JPG, PNG, PDF, DOCX — max size 3MB",
+      "attachmentUploaded": "Uploaded",
+      "attachmentDelete": "Delete",
+      "attachmentUploading": "Uploading…",
+      "attachmentTooLarge": "File exceeds the 3MB limit.",
+      "attachmentBadType": "Unsupported file type.",
+      "pollOptionsLabel": "Poll options",
+      "pollOptionPlaceholder": "Option {{n}}",
+      "pollAddOption": "Add option",
+      "pollRemoveOption": "Remove option",
+      "pollDeadline": "Closing date",
+      "pollAllowMultiple": "Allow multiple choices",
+      "pollAnonymous": "Anonymous voting",
+      "pollShowResults": "Show results before closing",
+      "submit": "Publish",
       "toast": "Post created."
     },
     "reply": {
@@ -1155,12 +2087,129 @@
       "submit": "Reply",
       "toast": "Reply posted."
     },
+    "poll": {
+      "vote": "Vote",
+      "totalVotes": "{{count}} votes",
+      "closed": "Voting closed",
+      "closesOn": "Closes",
+      "anonymous": "Anonymous poll"
+    },
+    "following": {
+      "title": "Members I follow",
+      "empty": "You don't follow any members yet.",
+      "close": "Close"
+    },
     "rate": {
       "toast": "Rated."
     },
     "markAnswer": {
       "button": "Mark as accepted answer",
       "toast": "Marked as accepted answer."
+    },
+    "postType": {
+      "informational": "Informational",
+      "question": "Question",
+      "poll": "Poll"
+    },
+    "followTopic": "Follow topic",
+    "followingTopic": "Following",
+    "newPostsPill": "{{count}} new posts — Refresh",
+    "presence": { "viewing": "{{count}} viewing" },
+    "typing": { "one": "Someone is typing…", "many": "{{count}} people are typing…" },
+    "unfollowTopic": "Unfollow topic",
+    "followPost": "Follow post",
+    "followingPost": "Following",
+    "unfollowPost": "Unfollow post",
+    "joinCommunity": "Join",
+    "leaveCommunity": "Leave",
+    "memberCount": "{{count}} members",
+    "verifiedExpert": "Verified expert",
+    "draftTag": "Draft",
+    "saveDraft": "Save as draft",
+    "publishPost": "Publish",
+    "pollDeadline": "Poll closes",
+    "pollVote": "Vote",
+    "pollVoted": "Voted",
+    "pollClosed": "Poll closed",
+    "replyCharCount": "{{current}}/{{max}}",
+    "replyPlaceholder": "Write your comment…",
+    "sendReply": "Send comment",
+    "mentions": {
+      "empty": "No mentions yet",
+      "mentionedBy": "{{name}} mentioned you"
+    },
+    "mention": {
+      "followedBadge": "Following",
+      "memberBadge": "Member"
+    },
+    "filter": {
+      "sortHot": "Hot",
+      "sortNewest": "Newest",
+      "sortTop": "Most Voted",
+      "sortMostReplied": "Most Discussed",
+      "allTopics": "All topics",
+      "allCategories": "All",
+      "allTypes": "All categories"
+    },
+    "profile": {
+      "followers": "Followers",
+      "following": "Following",
+      "posts": "Posts",
+      "myPosts": "My posts",
+      "followedPosts": "Posts I follow",
+      "followedTopics": "Topics I follow",
+      "myMentions": "My Mentions",
+      "registerExpert": "Register as expert",
+      "myProfile": "My Profile",
+      "newPost": "Create new post",
+      "empty": "You haven't posted anything yet.",
+      "emptyDesc": "You have no posts on your page yet. Start by sharing your expertise or asking the circular carbon economy specialists a question.",
+      "browseCommunity": "Browse the community",
+      "noPostsDesc": "Tap “Follow post” on any post that matters to you and it'll show up here, with notifications of its updates.",
+      "expertBadge": "Verified expert",
+      "replies": "Replies",
+      "bio": "Bio",
+      "joinedIn": "Joined",
+      "followUser": "Follow",
+      "followingUser": "Following",
+      "searchPostsPlaceholder": "Search posts...",
+      "noPosts": "No posts you follow yet",
+      "topicsNotice": "You'll be notified of new posts in the topics you follow.",
+      "noTopics": "No topics available yet."
+    },
+    "anonymousAuthor": "Anonymous",
+    "share": "Share",
+    "shareDialog": {
+      "title": "Share Post",
+      "copyLink": "Copy Link",
+      "copied": "Copied",
+      "close": "Close"
+    },
+    "comment": "Comment",
+    "readMore": "Read more",
+    "membersLabel": "Members",
+    "rules": {
+      "title": "Community Rules",
+      "rule1": {
+        "title": "Commitment to scientific accuracy and integrity"
+      },
+      "rule2": {
+        "title": "Mutual respect and constructive criticism"
+      },
+      "rule3": {
+        "title": "Scientific integrity and copyrights"
+      },
+      "rule4": {
+        "title": "Commitment to specialized topics (no random posting)"
+      }
+    },
+    "roles": {
+      "title": "Community roles"
+    },
+    "footer": {
+      "copyright": "All Rights Reserved © 2026",
+      "privacy": "Privacy Policy",
+      "terms": "Terms and Conditions"
     }
   },
   "knowledgeMaps": {
@@ -1462,5 +2511,192 @@
       "diff": "Diff",
       "noDiff": "No diff recorded."
     }
+  },
+  "paginator": {
+    "itemsPerPage": "Items per page:",
+    "nextPage": "Next page",
+    "previousPage": "Previous page",
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "range": "{{ start }} – {{ end }} of {{ length }}",
+    "rangeEmpty": "0 of {{ length }}"
+  },
+  "homepageSettings": {
+    "title": "Homepage Settings",
+    "section": {
+      "general": "General",
+      "objective": "Objective",
+      "cceConcepts": "CCE Concepts",
+      "countries": "Participating Countries"
+    },
+    "field": {
+      "videoUrl": "Video URL",
+      "objectiveAr": "Objective (Arabic)",
+      "objectiveEn": "Objective (English)",
+      "cceConceptsAr": "CCE Concepts (Arabic)",
+      "cceConceptsEn": "CCE Concepts (English)",
+      "participatingCountries": "Participating countries",
+      "participatingCountriesHint": "Countries shown in the CCE member nations section on the homepage"
+    },
+    "save": {
+      "button": "Save settings",
+      "toast": "Homepage settings saved."
+    }
+  },
+  "aboutSettings": {
+    "title": "About Platform Settings",
+    "section": {
+      "description": "Description & Video",
+      "glossary": "Terms",
+      "partners": "Knowledge Partners"
+    },
+    "field": {
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "howToUseVideoUrl": "How-to-use video URL",
+      "howToUseVideoUrlHint": "YouTube or Vimeo embed URL"
+    },
+    "save": {
+      "button": "Save description",
+      "toast": "About settings saved."
+    },
+    "glossary": {
+      "add": "Add term",
+      "addTitle": "Add New Term",
+      "editTitle": "Edit Term",
+      "empty": "No glossary terms yet.",
+      "col": {
+        "term": "Term",
+        "definition": "Definition"
+      },
+      "field": {
+        "termAr": "Term (Arabic)",
+        "termEn": "Term (English)",
+        "definitionAr": "Definition (Arabic)",
+        "definitionEn": "Definition (English)"
+      },
+      "save": {
+        "toast": "Glossary term saved."
+      },
+      "delete": {
+        "title": "Delete term",
+        "message": "Delete this glossary term?",
+        "confirm": "Delete",
+        "toast": "Glossary term deleted."
+      }
+    },
+    "partners": {
+      "add": "Add partner",
+      "addTitle": "Add New Partner",
+      "editTitle": "Edit Partner",
+      "empty": "No knowledge partners yet.",
+      "col": {
+        "name": "Partner",
+        "website": "Website"
+      },
+      "field": {
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "logoUrl": "Logo URL",
+        "websiteUrl": "Website URL",
+        "descriptionAr": "Description (Arabic)",
+        "descriptionEn": "Description (English)"
+      },
+      "save": {
+        "toast": "Knowledge partner saved."
+      },
+      "delete": {
+        "title": "Delete partner",
+        "message": "Delete this knowledge partner?",
+        "confirm": "Delete",
+        "toast": "Knowledge partner deleted."
+      }
+    }
+  },
+  "policies": {
+    "title": "Policies & Terms",
+    "empty": "No policy sections available."
+  },
+  "about": {
+    "eyebrow": "About the Platform",
+    "title": "Circular Carbon Economy Knowledge Center",
+    "tagline": "A unified hub for circular carbon economy knowledge, partnerships, and learning.",
+    "description": "About",
+    "howToUse": "How to Use the Platform",
+    "knowledgePartners": "Knowledge Partners",
+    "glossary": "Dictionary of Terms",
+    "visitWebsite": "Visit website",
+    "empty": "Content not available yet."
+  },
+  "policiesSettings": {
+    "title": "Policies & Terms Settings",
+    "section": {
+      "sections": "Policy Sections"
+    },
+    "add": "Add section",
+    "empty": "No policy sections yet.",
+    "field": {
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)"
+    },
+    "save": {
+      "toast": "Policy section saved."
+    },
+    "delete": {
+      "title": "Delete section",
+      "message": "Delete this policy section?",
+      "confirm": "Delete",
+      "toast": "Policy section deleted."
+    },
+    "reorder": {
+      "toast": "Section order updated."
+    }
+  },
+  "evaluation": {
+    "title": "Rate Our Services",
+    "subtitle": "Your feedback helps us improve the platform.",
+    "q1": "How would you rate your overall satisfaction with the platform?",
+    "q2": "How would you rate the ease of use of the platform?",
+    "q3": "How suitable is the platform's content for your knowledge level?",
+    "q4": "How suitable are the personalized suggestions to your interests?",
+    "scale1": "Excellent",
+    "scale2": "Satisfactory",
+    "scale3": "Neutral",
+    "scale4": "Unsatisfactory",
+    "scale5": "Poor",
+    "feedback": "Additional comments",
+    "feedbackHint": "Optional · max 500 characters",
+    "submit": "Submit Evaluation",
+    "success": "Thank you! Your evaluation has been submitted.",
+    "nudge": "Help us improve — share your experience with the platform.",
+    "nudgeAction": "Rate the Platform"
+  },
+  "preferences": {
+    "title": "Personalize Your Experience",
+    "subtitle": "Help us show you the most relevant content. All fields are required.",
+    "interests": "Areas of Interest",
+    "interestsHint": "Select all that apply",
+    "interestsRequired": "Please select at least one area of interest.",
+    "knowledgeLevel": "Circular Carbon Economy Knowledge Level",
+    "knowledgeLevels": {
+      "High": "High",
+      "Medium": "Medium",
+      "Low": "Low"
+    },
+    "sectorOfWork": "Sector of Work",
+    "sectors": {
+      "Government": "Government",
+      "Academic": "Academic",
+      "Private": "Private"
+    },
+    "country": "Country",
+    "countryPlaceholder": "Select your country",
+    "save": "Save Preferences",
+    "skip": "Skip for now",
+    "success": "Your preferences have been saved!",
+    "ctaTitle": "Personalize your experience",
+    "ctaBody": "Set your interests and knowledge level to get tailored content."
   }
 }

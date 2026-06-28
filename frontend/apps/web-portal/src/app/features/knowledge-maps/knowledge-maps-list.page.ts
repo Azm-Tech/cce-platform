@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
 import { KnowledgeMapsApiService } from './knowledge-maps-api.service';
@@ -28,12 +28,17 @@ import type { KnowledgeMap } from './knowledge-maps.types';
   selector: 'cce-knowledge-maps-list-page',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressBarModule,
-    TranslateModule,
-    WorkbenchHeroComponent,
-  ],
+    FormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    WorkbenchHeroComponent
+],
   templateUrl: './knowledge-maps-list.page.html',
   styleUrl: './knowledge-maps-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,12 +95,12 @@ export class KnowledgeMapsListPage implements OnInit {
    *  `--km-card-ring` custom properties. Colors stay within the brand
    *  palette (greens, gold, deep teal). */
   private readonly palettes: ReadonlyArray<{ grad: string; ring: string; icon: string }> = [
-    { grad: 'linear-gradient(135deg, #006c4f 0%, #0f8b6c 50%, #14b88f 100%)', ring: '#006c4f', icon: 'account_tree' },
-    { grad: 'linear-gradient(135deg, #0f8b6c 0%, #14b88f 60%, #c8a045 100%)', ring: '#0f8b6c', icon: 'hub' },
-    { grad: 'linear-gradient(135deg, #003a2b 0%, #006c4f 60%, #0f8b6c 100%)', ring: '#003a2b', icon: 'schema' },
-    { grad: 'linear-gradient(135deg, #14b88f 0%, #c8a045 80%, #d4b969 100%)', ring: '#14b88f', icon: 'polyline' },
-    { grad: 'linear-gradient(135deg, #006c4f 0%, #c8a045 100%)', ring: '#7a8550', icon: 'lan' },
-    { grad: 'linear-gradient(135deg, #0a4d3a 0%, #0f8b6c 50%, #14b88f 100%)', ring: '#0a4d3a', icon: 'device_hub' },
+    { grad: 'linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 50%, var(--color-brand-accent) 100%)', ring: 'var(--color-brand)', icon: 'account_tree' },
+    { grad: 'linear-gradient(135deg, var(--color-brand-mid) 0%, var(--color-brand-accent) 60%, var(--color-accent) 100%)', ring: 'var(--color-brand-mid)', icon: 'hub' },
+    { grad: 'linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand) 60%, var(--color-brand-mid) 100%)', ring: 'var(--color-brand-dark)', icon: 'schema' },
+    { grad: 'linear-gradient(135deg, var(--color-brand-accent) 0%, var(--color-accent) 80%, var(--color-accent) 100%)', ring: 'var(--color-brand-accent)', icon: 'polyline' },
+    { grad: 'linear-gradient(135deg, var(--color-brand) 0%, var(--color-accent) 100%)', ring: 'var(--neutrals--500)', icon: 'lan' },
+    { grad: 'linear-gradient(135deg, var(--color-brand-darker) 0%, var(--color-brand-mid) 50%, var(--color-brand-accent) 100%)', ring: 'var(--color-brand-darker)', icon: 'device_hub' },
   ];
 
   /** Returns the palette for a given card index (cycles). */

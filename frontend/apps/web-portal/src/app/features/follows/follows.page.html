@@ -1,13 +1,13 @@
 <section class="cce-follows">
-  <h1 class="cce-follows__title">{{ 'follows.title' | translate }}</h1>
+  <h1 class="cce-follows__title">{{ 'follows.title' | transloco }}</h1>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
   @if (errorKind(); as kind) {
     <div class="cce-follows__error" role="alert">
-      <span>{{ ('errors.' + kind) | translate }}</span>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
       <button mat-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
@@ -16,12 +16,12 @@
     @for (section of sections(); track section.type) {
       <article class="cce-follows__section">
         <h2 class="cce-follows__section-title">
-          {{ section.titleKey | translate }}
+          {{ section.titleKey | transloco }}
           <small>({{ section.ids.length }})</small>
         </h2>
 
         @if (section.ids.length === 0) {
-          <p class="cce-follows__empty">{{ section.emptyKey | translate }}</p>
+          <p class="cce-follows__empty">{{ section.emptyKey | transloco }}</p>
         } @else {
           <ul class="cce-follows__chips">
             @for (id of section.ids; track id) {
@@ -36,7 +36,7 @@
                   type="button"
                   mat-icon-button
                   class="cce-follows__chip-unfollow"
-                  [attr.aria-label]="'follows.unfollow' | translate"
+                  [attr.aria-label]="'follows.unfollow' | transloco"
                   (click)="unfollow(section.type, id)"
                 >
                   <mat-icon>close</mat-icon>

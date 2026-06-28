@@ -9,20 +9,20 @@
   align-items: center;
   gap: 5px;
   padding: 0.7rem 0.95rem;
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.10);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.10);
   border-radius: 16px;
   border-top-left-radius: 4px;
-  box-shadow: 0 4px 14px -8px rgba(0, 48, 31, 0.15);
+  box-shadow: 0 4px 14px -8px rgba(var(--color-brand-shadow-rgb), 0.15);
 }
 
 .cce-typing__dot {
   display: inline-block;
   width: 7px;
   height: 7px;
-  background: linear-gradient(135deg, #006c4f, #14b88f);
+  background: linear-gradient(135deg, var(--color-brand), var(--color-brand-accent));
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(20, 184, 143, 0.45);
+  box-shadow: 0 0 8px rgba(var(--color-brand-accent-rgb), 0.45);
   animation: cceTypingBounce 1.4s infinite ease-in-out both;
 }
 

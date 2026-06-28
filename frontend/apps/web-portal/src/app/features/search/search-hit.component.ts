@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { SearchHit, SearchableType } from './search.types';
 
 /**
@@ -31,7 +31,7 @@ function resolveDetailLink(hit: SearchHit): string | null {
 @Component({
   selector: 'cce-search-hit',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, RouterLink, MatCardModule, TranslateModule],
+  imports: [CommonModule, DecimalPipe, RouterLink, MatCardModule, TranslocoModule],
   template: `
     @if (detailLink(); as link) {
       <a class="cce-search-hit cce-search-hit--linked" [routerLink]="link">
@@ -49,11 +49,11 @@ function resolveDetailLink(hit: SearchHit): string | null {
           <mat-card-title>{{ title() }}</mat-card-title>
           <mat-card-subtitle>
             <span class="cce-search-hit__type">
-              {{ ('searchType.' + hit().type) | translate }}
+              {{ ('searchType.' + hit().type) | transloco }}
             </span>
             <span
               class="cce-search-hit__score"
-              [attr.aria-label]="'search.score' | translate"
+              [attr.aria-label]="'search.score' | transloco"
             >
               {{ hit().score | number:'1.2-2' }}
             </span>

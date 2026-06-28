@@ -1,55 +1,144 @@
 <section class="cce-resources-list">
   <cce-workbench-hero
-    [eyebrow]="'resources.eyebrow' | translate"
-    [title]="'resources.title' | translate"
-    [subtitle]="'resources.subtitle' | translate"
+    [eyebrow]="'resources.eyebrow' | transloco"
+    [title]="'resources.title' | transloco"
+    [subtitle]="'resources.subtitle' | transloco"
   />
 
   <div class="cce-resources-list__layout">
-    <cce-filter-rail>
-      <cce-categories-tree
-        [categories]="categories()"
-        [selectedId]="categoryId()"
-        [locale]="locale()"
-        (selectionChange)="onCategoryChange($event)"
-      />
+    <!-- ── Sidebar ── -->
+    <aside class="cce-resources-list__sidebar">
+      <cce-filter-rail>
+        <!-- Category filter — checkbox list -->
+        <div class="cce-filter-section cce-filter-section--first">
+          <p class="cce-filter-section__label">{{ 'resources.filter.category' | transloco }}</p>
+          <div class="cce-filter-section__list cce-filter-section__list--scroll">
+            @for (cat of categoryOptions(); track cat.id) {
+              <mat-checkbox
+                class="cce-filter-check"
+                [class.cce-filter-check--child]="cat.depth > 0"
+                [checked]="categoryId() === cat.id"
+                (change)="onCategoryChange($event.checked ? cat.id : null)">
+                {{ cat.label }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
 
-      <mat-form-field appearance="outline" class="cce-resources-list__filter">
-        <mat-label>{{ 'resources.filter.country' | translate }}</mat-label>
-        <input matInput
-          [ngModel]="countryId()"
-          (ngModelChange)="onCountryChange($event)"
-        />
-      </mat-form-field>
+        <!-- Country filter — searchable checkbox list -->
+        <div class="cce-filter-section">
+          <p class="cce-filter-section__label">{{ 'resources.filter.country' | transloco }}</p>
+          <input
+            type="search"
+            class="cce-filter-section__search"
+            [placeholder]="'resources.filter.searchCountries' | transloco"
+            [ngModel]="countrySearch()"
+            (ngModelChange)="countrySearch.set($event)"
+          />
+          <div class="cce-filter-section__list cce-filter-section__list--scroll">
+            @for (c of filteredCountries(); track c.id) {
+              <mat-checkbox
+                class="cce-filter-check"
+                [checked]="countryId() === c.id"
+                (change)="onCountryChange($event.checked ? c.id : '')">
+                {{ locale() === 'ar' ? c.nameAr : c.nameEn }}
+              </mat-checkbox>
+            } @empty {
+              <p class="cce-filter-section__no-match">{{ 'resources.filter.noMatch' | transloco }}</p>
+            }
+          </div>
+        </div>
 
-      <mat-form-field appearance="outline" class="cce-resources-list__filter">
-        <mat-label>{{ 'resources.filter.resourceType' | translate }}</mat-label>
-        <mat-select
-          [ngModel]="resourceType()"
-          (ngModelChange)="onResourceTypeChange($event)"
-        >
-          <mat-option [value]="''">{{ 'resources.filter.allTypes' | translate }}</mat-option>
-          @for (t of resourceTypes; track t) {
-            <mat-option [value]="t">{{ ('resources.type.' + t) | translate }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </cce-filter-rail>
+        <!-- Resource type filter — checkbox list -->
+        <div class="cce-filter-section">
+          <p class="cce-filter-section__label">{{ 'resources.filter.resourceType' | transloco }}</p>
+          <div class="cce-filter-section__list">
+            @for (t of resourceTypes; track t) {
+              <mat-checkbox
+                class="cce-filter-check"
+                [checked]="resourceType() === t"
+                (change)="onResourceTypeChange($event.checked ? t : '')">
+                {{ ('resources.type.' + t) | transloco }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </cce-filter-rail>
+    </aside>
 
+    <!-- ── Main content ── -->
     <div class="cce-resources-list__content">
-      @if (loading()) {
-        <mat-progress-bar mode="indeterminate" />
-      }
+
+      <!-- Search + sort + view toggle -->
+      <div class="cce-resources-list__toolbar">
+        <mat-form-field appearance="outline" class="cce-resources-list__search">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput
+            [ngModel]="searchInput()"
+            (ngModelChange)="searchInput.set($event)"
+            (keyup.enter)="onSearch()"
+            [placeholder]="'resources.search.placeholder' | transloco"
+          />
+          @if (searchInput()) {
+            <button type="button" matSuffix mat-icon-button aria-label="clear" (click)="searchInput.set(''); onSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="cce-resources-list__sort">
+          <mat-icon matPrefix>sort</mat-icon>
+          <input matInput [formControl]="sortBySearch" [matAutocomplete]="sortByAuto" />
+          <mat-autocomplete #sortByAuto (optionSelected)="onSortBySelected($event.option.value, $event.option.viewValue)">
+            @for (opt of filteredSortByOptions(); track opt.value) {
+              <mat-option [value]="opt.value">{{ ('resources.sort.' + opt.value) | transloco }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <div class="cce-resources-list__view-toggle">
+          <button type="button" mat-icon-button
+            [class.cce-resources-list__view-btn--active]="viewMode() === 'grid'"
+            [attr.aria-label]="'resources.view.grid' | transloco"
+            (click)="viewMode.set('grid')">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button type="button" mat-icon-button
+            [class.cce-resources-list__view-btn--active]="viewMode() === 'list'"
+            [attr.aria-label]="'resources.view.list' | transloco"
+            (click)="viewMode.set('list')">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
+
       @if (errorKind(); as kind) {
-        <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+        <div class="cce-resources-list__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
       }
       @if (empty()) {
-        <p class="cce-resources-list__empty">{{ 'resources.empty' | translate }}</p>
+        <p class="cce-resources-list__empty">{{ 'resources.empty' | transloco }}</p>
       }
 
-      <div class="cce-resources-list__grid">
-        @for (resource of rows(); track resource.id) {
-          <cce-resource-card [resource]="resource" [locale]="locale()" />
+      <div class="cce-resources-list__grid"
+           [class.cce-resources-list__grid--list]="viewMode() === 'list'">
+        @if (loading()) {
+          @for (s of skeletons; track $index) {
+            <div class="cce-resource-skeleton" aria-hidden="true">
+              <div class="cce-resource-skeleton__media"></div>
+              <div class="cce-resource-skeleton__body">
+                <div class="cce-resource-skeleton__line cce-resource-skeleton__line--title"></div>
+                <div class="cce-resource-skeleton__line cce-resource-skeleton__line--title cce-resource-skeleton__line--short"></div>
+                <div class="cce-resource-skeleton__line cce-resource-skeleton__line--sub"></div>
+              </div>
+              <div class="cce-resource-skeleton__footer">
+                <div class="cce-resource-skeleton__line cce-resource-skeleton__line--btn"></div>
+              </div>
+            </div>
+          }
+        } @else {
+          @for (resource of rows(); track resource.id) {
+            <cce-resource-card [resource]="resource" [locale]="locale()" />
+          }
         }
       </div>
 

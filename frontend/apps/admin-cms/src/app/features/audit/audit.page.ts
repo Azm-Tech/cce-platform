@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuditApiService } from './audit-api.service';
 import type { AuditEvent } from './audit.types';
 
@@ -23,7 +23,7 @@ import type { AuditEvent } from './audit.types';
   imports: [
     CommonModule, DatePipe, FormsModule,
     MatButtonModule, MatExpansionModule, MatFormFieldModule, MatInputModule,
-    MatPaginatorModule, MatProgressBarModule, MatTableModule, TranslateModule,
+    MatPaginatorModule, MatProgressBarModule, MatTableModule, TranslocoModule,
   ],
   templateUrl: './audit.page.html',
   styleUrl: './audit.page.scss',

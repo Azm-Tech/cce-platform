@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IdentityApiService, type Result } from './identity-api.service';
 import type { PagedResult, UserListItem } from './identity.types';
 import { UsersListPage } from './users-list.page';
@@ -29,7 +29,7 @@ describe('UsersListPage', () => {
     api = { listUsers };
 
     await TestBed.configureTestingModule({
-      imports: [UsersListPage, TranslateModule.forRoot()],
+      imports: [UsersListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

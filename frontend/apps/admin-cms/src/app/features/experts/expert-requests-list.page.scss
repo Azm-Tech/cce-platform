@@ -25,8 +25,8 @@
 }
 
 .cce-expert-requests__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -34,4 +34,20 @@
 
 .cce-expert-requests__table {
   width: 100%;
+}
+
+.cce-expert-requests__cv-attached {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.45);
+  vertical-align: middle;
+}
+
+.cce-expert-requests__cv-none {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+:host-context([dir="rtl"]) .cce-expert-requests__dir-icon {
+  transform: scaleX(-1);
 }

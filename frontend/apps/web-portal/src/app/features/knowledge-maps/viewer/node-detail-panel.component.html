@@ -2,7 +2,7 @@
   <aside
     class="cce-node-detail"
     role="complementary"
-    [attr.aria-label]="'knowledgeMaps.detail.description' | translate"
+    [attr.aria-label]="'knowledgeMaps.detail.description' | transloco"
   >
     <header class="cce-node-detail__header">
       <h2 class="cce-node-detail__name">{{ name() }}</h2>
@@ -10,7 +10,7 @@
         type="button"
         mat-icon-button
         class="cce-node-detail__close"
-        [attr.aria-label]="'knowledgeMaps.detail.close' | translate"
+        [attr.aria-label]="'knowledgeMaps.detail.close' | transloco"
         (click)="onClose()"
       >
         <mat-icon>close</mat-icon>
@@ -22,17 +22,17 @@
         class="cce-node-detail__badge"
         [attr.data-node-type]="n.nodeType"
       >
-        {{ ('knowledgeMaps.detail.nodeType.' + n.nodeType) | translate }}
+        {{ ('knowledgeMaps.detail.nodeType.' + n.nodeType) | transloco }}
       </span>
     </div>
 
     <section class="cce-node-detail__section">
-      <h3>{{ 'knowledgeMaps.detail.description' | translate }}</h3>
+      <h3>{{ 'knowledgeMaps.detail.description' | transloco }}</h3>
       <p class="cce-node-detail__description">{{ description() }}</p>
     </section>
 
     <section class="cce-node-detail__section">
-      <h3>{{ 'knowledgeMaps.detail.outboundEdges' | translate }}</h3>
+      <h3>{{ 'knowledgeMaps.detail.outboundEdges' | transloco }}</h3>
       @if (hasOutboundEdges()) {
         <ul class="cce-node-detail__edges">
           @for (edge of outboundEdges(); track edge.id) {
@@ -46,7 +46,7 @@
                   class="cce-node-detail__rel"
                   [attr.data-rel-type]="edge.relationshipType"
                 >
-                  {{ ('knowledgeMaps.detail.relationshipType.' + edge.relationshipType) | translate }}
+                  {{ ('knowledgeMaps.detail.relationshipType.' + edge.relationshipType) | transloco }}
                 </span>
                 <span class="cce-node-detail__edge-target">{{ targetNameOf(edge) }}</span>
                 <mat-icon class="cce-node-detail__edge-arrow" aria-hidden="true">
@@ -58,7 +58,7 @@
         </ul>
       } @else {
         <p class="cce-node-detail__empty">
-          {{ 'knowledgeMaps.detail.noEdges' | translate }}
+          {{ 'knowledgeMaps.detail.noEdges' | transloco }}
         </p>
       }
     </section>

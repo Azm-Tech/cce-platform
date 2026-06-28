@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { InteractiveCityApiService, type Result } from './interactive-city-api.service';
 import type { CityTechnology } from './interactive-city.types';
@@ -36,7 +36,7 @@ describe('ScenarioBuilderPage', () => {
     } as unknown as jest.Mocked<InteractiveCityApiService>;
 
     TestBed.configureTestingModule({
-      imports: [ScenarioBuilderPage, TranslateModule.forRoot()],
+      imports: [ScenarioBuilderPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

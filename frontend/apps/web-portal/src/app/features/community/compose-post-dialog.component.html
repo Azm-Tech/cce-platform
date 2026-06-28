@@ -1,46 +1,39 @@
-<h2 mat-dialog-title>{{ 'community.compose.title' | translate }}</h2>
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
+<div class="cpd__header">
+  <h2 class="cpd__title">{{ 'community.compose.title' | transloco }}</h2>
+  <button type="button" class="cpd__close" (click)="cancel()">
+    <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+  </button>
+</div>
 
-<mat-dialog-content>
-  <form [formGroup]="form" class="cce-compose-post" (ngSubmit)="submit()">
-    @if (errorKind()) {
-      <div class="cce-compose-post__error" role="alert">
-        {{ ('errors.' + errorKind()) | translate }}
-      </div>
-    }
-
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'community.compose.content' | translate }}</mat-label>
-      <textarea
-        matInput
-        formControlName="content"
-        rows="6"
-        maxlength="5000"
-      ></textarea>
-    </mat-form-field>
-
-    <mat-radio-group formControlName="locale" class="cce-compose-post__locale">
-      <span class="cce-compose-post__label">{{ 'community.compose.locale' | translate }}:</span>
-      <mat-radio-button value="en">English</mat-radio-button>
-      <mat-radio-button value="ar">العربية</mat-radio-button>
-    </mat-radio-group>
-
-    <mat-checkbox formControlName="isAnswerable" class="cce-compose-post__checkbox">
-      {{ 'community.compose.isAnswerable' | translate }}
-    </mat-checkbox>
-  </form>
+<!-- ── Body ───────────────────────────────────────────────────────────── -->
+<mat-dialog-content class="cpd__body">
+  <cce-compose-post-form
+    [topics]="data.topics"
+    [preselectedTopicId]="data.preselectedTopicId ?? null"
+    (submitted)="onFormSubmitted($event)"
+  />
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button type="button" [disabled]="submitting()" (click)="cancel()">
-    {{ 'account.profile.cancelButton' | translate }}
+<!-- ── Footer ────────────────────────────────────────────────────────── -->
+<mat-dialog-actions class="cpd__footer">
+  <button
+    type="button"
+    class="cpd__btn cpd__btn--cancel"
+    [disabled]="formRef().submitting()"
+    (click)="cancel()"
+  >
+    {{ 'account.profile.cancelButton' | transloco }}
   </button>
   <button
-    mat-flat-button
-    color="primary"
     type="button"
-    [disabled]="form.invalid || submitting()"
-    (click)="submit()"
+    class="cpd__btn cpd__btn--submit"
+    [disabled]="!formRef().canSubmit() || formRef().submitting()"
+    (click)="formRef().triggerSubmit()"
   >
-    {{ 'community.compose.submit' | translate }}
+    @if (formRef().submitting()) {
+      <mat-icon svgIcon="refresh-ccw" class="cpd__spin" aria-hidden="true"></mat-icon>
+    }
+    {{ 'community.compose.submit' | transloco }}
   </button>
 </mat-dialog-actions>

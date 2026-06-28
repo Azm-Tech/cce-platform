@@ -1,8 +1,14 @@
-<h1 class="cce-users-list__title">{{ 'users.title' | translate }}</h1>
+<div class="cce-users-list__header">
+  <h1 class="cce-users-list__title">{{ 'users.title' | transloco }}</h1>
+  <button type="button" mat-flat-button color="primary" (click)="openCreate()">
+    <mat-icon>person_add</mat-icon>
+    {{ 'users.createButton' | transloco }}
+  </button>
+</div>
 
 <div class="cce-users-list__filters">
   <mat-form-field appearance="outline" class="cce-users-list__filter">
-    <mat-label>{{ 'users.filter.search' | translate }}</mat-label>
+    <mat-label>{{ 'users.filter.search' | transloco }}</mat-label>
     <input
       matInput
       type="search"
@@ -12,21 +18,21 @@
     />
   </mat-form-field>
   <mat-form-field appearance="outline" class="cce-users-list__filter">
-    <mat-label>{{ 'users.filter.role' | translate }}</mat-label>
+    <mat-label>{{ 'users.filter.role' | transloco }}</mat-label>
     <mat-select
       [ngModel]="roleFilter()"
       (ngModelChange)="onRoleFilter($event)"
     >
-      <mat-option value="">{{ 'users.filter.allRoles' | translate }}</mat-option>
-      @for (role of knownRoles; track role) {
-        <mat-option [value]="role">{{ role }}</mat-option>
+      <mat-option value="">{{ 'users.filter.allRoles' | transloco }}</mat-option>
+      @for (opt of knownRoleOptions; track opt.value) {
+        <mat-option [value]="opt.value">{{ opt.labelKey | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 </div>
 
 @if (errorKind(); as kind) {
-  <div class="cce-users-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-users-list__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <cce-paged-table
@@ -37,4 +43,5 @@
   [pageSize]="pageSize()"
   [loading]="loading()"
   (pageChange)="onPage($event)"
+  (rowClick)="onRowClick($event)"
 />

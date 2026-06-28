@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { NodeType } from '../knowledge-maps.types';
 import { SearchAndFiltersComponent } from './search-and-filters.component';
 
@@ -11,7 +11,7 @@ describe('SearchAndFiltersComponent', () => {
   beforeEach(async () => {
     jest.useFakeTimers();
     await TestBed.configureTestingModule({
-      imports: [SearchAndFiltersComponent, TranslateModule.forRoot()],
+      imports: [SearchAndFiltersComponent, TranslocoModule.forRoot()],
       providers: [provideNoopAnimations()],
     }).compileComponents();
 

@@ -3,25 +3,25 @@
     <div class="cce-env-factors__head-text">
       <span class="cce-env-factors__eyebrow">
         <mat-icon aria-hidden="true">eco</mat-icon>
-        {{ 'interactiveCity.factors.eyebrow' | translate }}
+        {{ 'interactiveCity.factors.eyebrow' | transloco }}
       </span>
       <h2 id="cce-env-factors-title" class="cce-env-factors__title">
-        {{ 'interactiveCity.factors.title' | translate }}
+        {{ 'interactiveCity.factors.title' | transloco }}
       </h2>
       <p class="cce-env-factors__subtitle">
-        {{ 'interactiveCity.factors.subtitle' | translate }}
+        {{ 'interactiveCity.factors.subtitle' | transloco }}
       </p>
     </div>
 
     <div class="cce-env-factors__head-aside">
       <div class="cce-env-factors__baseline" aria-live="polite">
         <span class="cce-env-factors__baseline-label">
-          {{ 'interactiveCity.factors.baseline' | translate }}
+          {{ 'interactiveCity.factors.baseline' | transloco }}
         </span>
         <span class="cce-env-factors__baseline-value">
           {{ baseline() | number }}
           <span class="cce-env-factors__baseline-unit">
-            {{ 'interactiveCity.totals.carbonUnit' | translate }}
+            {{ 'interactiveCity.totals.carbonUnit' | transloco }}
           </span>
         </span>
       </div>
@@ -32,7 +32,7 @@
         (click)="reset()"
       >
         <mat-icon aria-hidden="true">restart_alt</mat-icon>
-        {{ 'interactiveCity.factors.reset' | translate }}
+        {{ 'interactiveCity.factors.reset' | transloco }}
       </button>
     </div>
   </header>
@@ -46,10 +46,10 @@
           </span>
           <div class="cce-env-factors__row-text">
             <span class="cce-env-factors__row-label">
-              {{ row.labelKey | translate }}
+              {{ row.labelKey | transloco }}
             </span>
             <span class="cce-env-factors__row-help">
-              {{ row.helpKey | translate }}
+              {{ row.helpKey | transloco }}
             </span>
           </div>
           <span class="cce-env-factors__row-badge" aria-hidden="true">
@@ -57,7 +57,7 @@
             @if (row.bounds.unit === 'percent') { % }
             @else if (row.bounds.unit === 'km') {
               <span class="cce-env-factors__row-badge-unit">
-                {{ 'interactiveCity.factors.unitKm' | translate }}
+                {{ 'interactiveCity.factors.unitKm' | transloco }}
               </span>
             }
           </span>
@@ -74,7 +74,7 @@
             matSliderThumb
             [value]="factors()[row.key]"
             (valueChange)="setValue(row.key, $event)"
-            [attr.aria-label]="row.labelKey | translate"
+            [attr.aria-label]="row.labelKey | transloco"
             [attr.aria-valuemin]="row.bounds.min"
             [attr.aria-valuemax]="row.bounds.max"
             [attr.aria-valuenow]="factors()[row.key]"

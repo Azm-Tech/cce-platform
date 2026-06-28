@@ -1,0 +1,91 @@
+<h2 mat-dialog-title>{{ 'newsEventRequest.news.formTitle' | transloco }}</h2>
+
+<mat-dialog-content class="cce-news-request-form">
+  <form [formGroup]="form" id="news-request-form">
+
+    <div class="cce-news-request-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" dir="rtl" autocomplete="off" [maxlength]="260" />
+        <mat-hint align="end">{{ form.controls.titleAr.value.length }}/255</mat-hint>
+        @if (form.controls.titleAr.touched && form.controls.titleAr.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'newsEventRequest.form.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" dir="ltr" autocomplete="off" [maxlength]="260" />
+        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/255</mat-hint>
+        @if (form.controls.titleEn.touched && form.controls.titleEn.hasError('required')) {
+          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'newsEventRequest.form.topic' | transloco }}</mat-label>
+      <input matInput [formControl]="topicSearch" [matAutocomplete]="topicAuto" />
+      <mat-autocomplete #topicAuto (optionSelected)="onTopicSelected($event.option.value, $event.option.viewValue)">
+        <mat-option value="">—</mat-option>
+        @for (t of filteredTopics(); track t.id) {
+          <mat-option [value]="t.id">{{ locale() === 'ar' ? t.nameAr : t.nameEn }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      formControlName="contentAr"
+      [label]="'newsEventRequest.form.contentAr' | transloco"
+      [maxLength]="2000"
+      dir="rtl"
+    />
+
+    <cce-rich-text-editor [imageUploader]="uploadImage"
+      formControlName="contentEn"
+      [label]="'newsEventRequest.form.contentEn' | transloco"
+      [maxLength]="2000"
+      dir="ltr"
+    />
+
+    <div class="cce-news-request-form__image">
+      <input
+        #imgInput
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        hidden
+        (change)="onImagePicked($event)"
+      />
+      <button type="button" mat-stroked-button (click)="imgInput.click()" [disabled]="uploadingImage()">
+        <mat-icon>image</mat-icon>
+        @if (uploadingImage()) {
+          {{ 'newsEventRequest.form.uploadingImage' | transloco }}
+        } @else {
+          {{ 'newsEventRequest.form.uploadImage' | transloco }}
+        }
+      </button>
+      <span class="cce-news-request-form__image-hint">{{ 'newsEventRequest.form.imageHint' | transloco }}</span>
+    </div>
+
+    @if (imagePreviewUrl()) {
+      <div class="cce-news-request-form__preview">
+        <img [src]="imagePreviewUrl()!" alt="" />
+      </div>
+    }
+
+    @if (errorKey()) {
+      <div class="cce-news-request-form__error" role="alert">{{ errorKey()! | transloco }}</div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary" (click)="submit()" [disabled]="saving() || uploadingImage()">
+    @if (saving()) { <mat-spinner diameter="20" /> } @else {
+      {{ 'newsEventRequest.form.submit' | transloco }}
+    }
+  </button>
+</mat-dialog-actions>

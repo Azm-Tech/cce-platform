@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { ViewerTab } from './map-viewer-store.service';
 
 /**
@@ -15,7 +15,7 @@ import type { ViewerTab } from './map-viewer-store.service';
 @Component({
   selector: 'cce-tabs-bar',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './tabs-bar.component.html',
   styleUrl: './tabs-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

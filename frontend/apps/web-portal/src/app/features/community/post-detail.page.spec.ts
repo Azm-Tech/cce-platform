@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AuthService, type CurrentUser } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import { FollowsApiService } from '../follows/follows-api.service';
@@ -12,17 +12,24 @@ import type { PagedResult, PublicPost, PublicPostReply } from './community.types
 import { PostDetailPage } from './post-detail.page';
 
 const POST: PublicPost = {
-  id: 'p1', topicId: 't1', authorId: 'u1',
+  id: 'p1', communityId: 'c1', topicId: 't1',
+  type: 'Question',
+  title: 'Test post',
+  author: { id: 'u1', name: 'Test Author', avatarUrl: null, isExpert: false, postsCount: 0, followerCount: 0 },
   content: 'Question content', locale: 'en',
   isAnswerable: true,
-  answeredReplyId: null,
+  upvoteCount: 5, downvoteCount: 0, commentsCount: 2,
+  answeredReplyId: null, attachmentIds: [],
   createdOn: '2026-04-29T12:00:00Z',
+  topicNameAr: null, topicNameEn: null,
+  isWatchlisted: false, isFollowed: false, voteStatus: 0,
 };
 
 const R1: PublicPostReply = {
   id: 'r1', postId: 'p1', authorId: 'u2',
   content: 'first', locale: 'en',
   parentReplyId: null, isByExpert: false,
+  depth: 0, childCount: 0, upvoteCount: 0,
   createdOn: '2026-04-29T13:00:00Z',
 };
 const R2: PublicPostReply = { ...R1, id: 'r2', content: 'second', isByExpert: true };
@@ -42,6 +49,8 @@ describe('PostDetailPage', () => {
   let page: PostDetailPage;
   let getPost: jest.Mock;
   let listReplies: jest.Mock;
+  let listTopics: jest.Mock;
+  let getCommunityUser: jest.Mock;
   let isAuthSig: ReturnType<typeof signal<boolean>>;
   let currentUserSig: ReturnType<typeof signal<CurrentUser | null>>;
 
@@ -50,15 +59,17 @@ describe('PostDetailPage', () => {
     listReplies = jest.fn().mockResolvedValue(
       ok({ items: [R1, R2], page: 1, pageSize: 20, total: 2 } as PagedResult<PublicPostReply>),
     );
+    listTopics = jest.fn().mockResolvedValue(ok([]));
+    getCommunityUser = jest.fn().mockResolvedValue(ok({}));
     isAuthSig = signal<boolean>(opts.user !== null);
     currentUserSig = signal<CurrentUser | null>(opts.user ?? null);
 
     await TestBed.configureTestingModule({
-      imports: [PostDetailPage, TranslateModule.forRoot()],
+      imports: [PostDetailPage, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
-        { provide: CommunityApiService, useValue: { getPost, listReplies, ratePost: jest.fn(), markAnswer: jest.fn(), createReply: jest.fn() } },
+        { provide: CommunityApiService, useValue: { getPost, listReplies, listTopics, getCommunityUser, ratePost: jest.fn(), markAnswer: jest.fn(), createReply: jest.fn() } },
         {
           provide: FollowsApiService,
           useValue: {
@@ -87,10 +98,21 @@ describe('PostDetailPage', () => {
     page = fixture.componentInstance;
   }
 
-  it('init: getPost + listReplies fired in parallel and bound to DOM', async () => {
-    await setup({ user: USER_AUTHOR });
+  /**
+   * Triggers ngOnInit and runs its floating async `load()` chain to
+   * completion. `whenStable()` can resolve before the ngOnInit promise
+   * settles, so we also drain the macrotask queue, then re-render.
+   */
+  async function flush(): Promise<void> {
     fixture.detectChanges();
     await fixture.whenStable();
+    await new Promise<void>((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+  }
+
+  it('init: getPost + listReplies fired in parallel and bound to DOM', async () => {
+    await setup({ user: USER_AUTHOR });
+    await flush();
     expect(getPost).toHaveBeenCalledWith('p1');
     expect(listReplies).toHaveBeenCalledWith('p1', { page: 1, pageSize: 20 });
     expect(page.post()).toEqual(POST);
@@ -100,38 +122,33 @@ describe('PostDetailPage', () => {
   it('404 on getPost renders not-found block', async () => {
     await setup({ user: USER_AUTHOR });
     getPost.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.notFound()).toBe(true);
   });
 
   it('accepted answer is hoisted to first position in orderedReplies', async () => {
     await setup({ user: USER_AUTHOR });
     getPost.mockResolvedValueOnce(ok({ ...POST, answeredReplyId: 'r2' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.orderedReplies().map((r) => r.id)).toEqual(['r2', 'r1']);
   });
 
   it('canMarkAnswer is true when current user is the post author and post is answerable', async () => {
     await setup({ user: USER_AUTHOR });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.canMarkAnswer()).toBe(true);
   });
 
   it('canMarkAnswer is false for non-author', async () => {
     const otherUser: CurrentUser = { ...USER_AUTHOR, id: 'u-other' };
     await setup({ user: otherUser });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.canMarkAnswer()).toBe(false);
   });
 
   it('paginator change re-fires listReplies', async () => {
     await setup({ user: USER_AUTHOR });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     listReplies.mockClear();
     await page.onPage({ pageIndex: 1, pageSize: 50, length: 2, previousPageIndex: 0 });
     expect(listReplies).toHaveBeenCalledWith('p1', { page: 2, pageSize: 50 });

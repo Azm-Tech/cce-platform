@@ -1,186 +1,215 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { toApiFieldErrors, PASSWORD_STRENGTH_VALIDATORS } from '@frontend/ui-kit';
+import { LocaleService } from '@frontend/i18n';
+import { AuthApiService } from '../../core/auth/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { CountriesApiService } from '../countries/countries-api.service';
+import type { Country } from '../countries/country.types';
 
-interface RegistrationFormModel {
-  givenName: string;
-  surname: string;
-  email: string;
-  mailNickname: string;
+function passwordsMatch(group: AbstractControl) {
+  const p = group.get('password')?.value as string;
+  const c = group.get('confirmPassword')?.value as string;
+  return p === c ? null : { passwordMismatch: true };
 }
 
 type SubmitState =
   | { kind: 'idle' }
   | { kind: 'submitting' }
-  | { kind: 'success'; userPrincipalName: string }
   | { kind: 'error'; messageKey: string };
 
-/**
- * Public registration page.
- *
- * Sub-11d — anonymous self-service is back. Sub-11 Phase 01 made the
- * /api/users/register endpoint admin-only as a stop-gap until an
- * IEmailSender abstraction existed. Sub-11d Tasks A+B added it; the
- * temp password is now delivered via email (subject "Welcome to CCE")
- * instead of returned in the response. The page now POSTs the form
- * directly to /api/users/register and surfaces 201 as "check your
- * inbox", 409 as "account already exists", 400 as field errors.
- *
- * Internal-tenant users (cce.local synced via Entra ID Connect) and
- * partner-tenant users should sign in with their existing accounts;
- * the form below is for external users who don't have an Entra ID
- * account anywhere.
- */
+
 @Component({
   selector: 'cce-register',
   standalone: true,
   imports: [
-    CommonModule,
+    ReactiveFormsModule,
     RouterLink,
-    FormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
-  template: `
-    <section class="cce-register">
-      <h1 class="cce-register__title">{{ 'account.register.title' | translate }}</h1>
-
-      @if (isAuthenticated()) {
-        <p class="cce-register__body">{{ 'account.register.alreadySignedIn' | translate }}</p>
-        <a mat-flat-button color="primary" routerLink="/me/profile">
-          {{ 'account.register.openProfile' | translate }}
-        </a>
-      } @else {
-        @if (state().kind === 'success') {
-          <p class="cce-register__body">
-            {{ 'account.register.successBody' | translate }}
-          </p>
-          <button type="button" mat-flat-button color="primary" (click)="signIn()">
-            {{ 'account.register.signInButton' | translate }}
-          </button>
-        } @else {
-          <p class="cce-register__body">{{ 'account.register.body' | translate }}</p>
-
-          <form #form="ngForm" class="cce-register__form" (ngSubmit)="submit(form)">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.givenNameLabel' | translate }}</mat-label>
-              <input
-                matInput
-                name="givenName"
-                [(ngModel)]="model.givenName"
-                required
-                autocomplete="given-name"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.surnameLabel' | translate }}</mat-label>
-              <input
-                matInput
-                name="surname"
-                [(ngModel)]="model.surname"
-                required
-                autocomplete="family-name"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.emailLabel' | translate }}</mat-label>
-              <input
-                matInput
-                name="email"
-                type="email"
-                [(ngModel)]="model.email"
-                required
-                autocomplete="email"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'account.register.mailNicknameLabel' | translate }}</mat-label>
-              <input
-                matInput
-                name="mailNickname"
-                [(ngModel)]="model.mailNickname"
-                required
-                autocomplete="username"
-              />
-              <mat-hint>{{ 'account.register.mailNicknameHint' | translate }}</mat-hint>
-            </mat-form-field>
-
-            @if (state().kind === 'error') {
-              <p class="cce-register__error" role="alert">
-                {{ errorMessageKey() | translate }}
-              </p>
-            }
-
-            <button
-              type="submit"
-              mat-flat-button
-              color="primary"
-              [disabled]="state().kind === 'submitting' || form.invalid"
-            >
-              {{ submitButtonKey() | translate }}
-            </button>
-          </form>
-
-          <p class="cce-register__hint">{{ 'account.register.contactHint' | translate }}</p>
-          <button
-            type="button"
-            mat-button
-            class="cce-register__signin-link"
-            (click)="signIn()"
-          >
-            {{ 'account.register.signInExistingButton' | translate }}
-          </button>
-        }
-      }
-    </section>
-  `,
+  templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterPage {
+export class RegisterPage implements OnInit {
   private readonly auth = inject(AuthService);
-  private readonly http = inject(HttpClient);
+  private readonly authApi = inject(AuthApiService);
+  private readonly countriesApi = inject(CountriesApiService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly locale = inject(LocaleService).locale;
 
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly state = signal<SubmitState>({ kind: 'idle' });
+  readonly showPassword = signal(false);
+  readonly countryCodes = signal<Country[]>([]);
 
-  model: RegistrationFormModel = {
-    givenName: '',
-    surname: '',
-    email: '',
-    mailNickname: '',
+  readonly form = new FormGroup(
+    {
+      firstName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^[-a-zA-Z؀-ۿ\s']+$/),
+      ]),
+      lastName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^[-a-zA-Z؀-ۿ\s']+$/),
+      ]),
+      emailAddress: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(100),
+      ]),
+      jobTitle: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      organizationName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      countryCodeId: new FormControl<Country | null>(null, [Validators.required]),
+      phoneCountryId: new FormControl<Country | null>(null, [Validators.required]),
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(15),
+        Validators.pattern(/^[\d\s\-()]+$/),
+      ]),
+      password: new FormControl('', [Validators.required, ...PASSWORD_STRENGTH_VALIDATORS]),
+      confirmPassword: new FormControl('', [Validators.required]),
+    },
+    { validators: passwordsMatch },
+  );
+
+  // Track typed text to drive filtering (string while typing, Country once selected)
+  private readonly nationalityInput = toSignal(
+    this.form.get('countryCodeId')!.valueChanges.pipe(
+      map((v) => (typeof v === 'string' ? v : '')),
+    ),
+    { initialValue: '' },
+  );
+  private readonly phoneCodeInput = toSignal(
+    this.form.get('phoneCountryId')!.valueChanges.pipe(
+      map((v) => (typeof v === 'string' ? v : '')),
+    ),
+    { initialValue: '' },
+  );
+
+  readonly filteredNationalities = computed(() => {
+    const q = this.nationalityInput().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(
+      (cc) => cc.nameAr.toLowerCase().includes(q) || cc.nameEn.toLowerCase().includes(q),
+    );
+  });
+
+  readonly filteredPhoneCodes = computed(() => {
+    const q = this.phoneCodeInput().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(
+      (cc) =>
+        cc.nameAr.toLowerCase().includes(q) ||
+        cc.nameEn.toLowerCase().includes(q) ||
+        cc.dialCode.includes(q),
+    );
+  });
+
+  readonly displayNationality = (cc: Country | null): string => {
+    if (!cc) return '';
+    return this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
   };
 
-  submit(form: NgForm): void {
-    if (form.invalid || this.state().kind === 'submitting') {
-      return;
-    }
+  readonly displayPhoneCode = (cc: Country | null): string => {
+    if (!cc) return '';
+    const name = this.locale() === 'ar' ? cc.nameAr : cc.nameEn;
+    return `${name} (${cc.dialCode})`;
+  };
+
+  async ngOnInit(): Promise<void> {
+    const res = await this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false });
+    if (res.ok) this.countryCodes.set(res.value);
+
+    // Auto-set phone code to the same country when nationality is selected
+    this.form.get('countryCodeId')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        if (!val || typeof val === 'string') return;
+        this.form.get('phoneCountryId')!.setValue(val, { emitEvent: false });
+      });
+  }
+
+  get passwordMismatch(): boolean {
+    return (
+      this.form.hasError('passwordMismatch') &&
+      (this.form.get('confirmPassword')?.touched ?? false)
+    );
+  }
+
+  get passwordStrengthError(): boolean {
+    const ctrl = this.form.get('password');
+    return (ctrl?.touched ?? false) && (ctrl?.hasError('pattern') ?? false);
+  }
+
+  toggleShowPassword(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  submit(): void {
+    if (this.form.invalid || this.state().kind === 'submitting') return;
     this.state.set({ kind: 'submitting' });
-    this.http
-      .post<{ entraIdObjectId: string; userPrincipalName: string }>(
-        '/api/users/register',
-        this.model,
-      )
+    const v = this.form.value;
+    const phoneCode = v.phoneCountryId as Country | null;
+    const dial = phoneCode?.dialCode?.replace(/^\+/, '') ?? '';
+    const localPhone = (v.phoneNumber ?? '').replace(/\s/g, '');
+    const fullPhone = phoneCode ? `${dial}${localPhone}` : localPhone;
+    this.authApi
+      .register({
+        firstName: v.firstName!,
+        lastName: v.lastName!,
+        emailAddress: v.emailAddress!,
+        jobTitle: v.jobTitle!,
+        organizationName: v.organizationName!,
+        countryCodeId: (v.countryCodeId as Country).id,
+        phoneNumber: fullPhone,
+        password: v.password!,
+        confirmPassword: v.confirmPassword!,
+      })
       .subscribe({
-        next: (response) =>
-          this.state.set({ kind: 'success', userPrincipalName: response.userPrincipalName }),
+        next: () =>
+          this.router.navigate(['/verify-phone'], {
+            state: { phoneNumber: fullPhone },
+          }),
         error: (err: HttpErrorResponse) => {
           if (err.status === 409) {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorConflict' });
           } else if (err.status === 400) {
-            this.state.set({ kind: 'error', messageKey: 'account.register.errorValidation' });
+            const fieldErrors = toApiFieldErrors(err);
+            if (Object.keys(fieldErrors).length > 0) {
+              for (const [field, message] of Object.entries(fieldErrors)) {
+                this.form.get(field)?.setErrors({ serverError: message });
+              }
+              this.state.set({ kind: 'idle' });
+            } else {
+              this.state.set({ kind: 'error', messageKey: 'account.register.errorValidation' });
+            }
           } else {
             this.state.set({ kind: 'error', messageKey: 'account.register.errorGeneric' });
           }
@@ -188,8 +217,11 @@ export class RegisterPage {
       });
   }
 
-  signIn(): void {
-    this.auth.signIn('/me/profile');
+  clearServerError(field: string): void {
+    const ctrl = this.form.get(field);
+    if (!ctrl?.hasError('serverError')) return;
+    const { serverError: _, ...remaining } = ctrl.errors!;
+    ctrl.setErrors(Object.keys(remaining).length ? remaining : null);
   }
 
   errorMessageKey(): string {

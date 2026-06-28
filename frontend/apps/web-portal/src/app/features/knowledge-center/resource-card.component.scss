@@ -1,136 +1,217 @@
-/* ============================================================
-   Knowledge Center — resource card (SIMPLE edition)
-   ------------------------------------------------------------
-   Clean white card. Hairline border. No gradients, no glows,
-   no shadows, no decorative shapes. Type indicated only by a
-   small colored dot before the type label. Title is the focus.
-   Subtle hover: light tinted background.
-   ============================================================ */
-
 :host {
   display: block;
   height: 100%;
-  --type-color: #006c4f;
+  --type-color: var(--color-brand);
+  --type-tint: rgba(var(--color-brand-rgb), 0.08);
 }
 
-/* Type colors (used only on the small leading dot + on hover border) */
-.cce-resource-card[data-type="Pdf"]      { --type-color: #dc2626; }
-.cce-resource-card[data-type="Video"]    { --type-color: #7c3aed; }
-.cce-resource-card[data-type="Image"]    { --type-color: #0891b2; }
-.cce-resource-card[data-type="Link"]     { --type-color: #d97706; }
-.cce-resource-card[data-type="Document"] { --type-color: #4f46e5; }
+/* ── Type colors ────────────────────────────────────────── */
+.cce-resource-card[data-type="Paper"]          { --type-color: var(--danger--500); --type-tint: rgba(var(--danger--500-rgb),.08); }
+.cce-resource-card[data-type="Article"]        { --type-color: var(--warning--500); --type-tint: rgba(var(--warning--500-rgb),.08); }
+.cce-resource-card[data-type="Study"]          { --type-color: var(--info--600); --type-tint: rgba(var(--info--600-rgb),.08); }
+.cce-resource-card[data-type="Presentation"]   { --type-color: var(--tertiary--700); --type-tint: rgba(var(--tertiary--700-rgb),.08); }
+.cce-resource-card[data-type="ScientificPaper"]{ --type-color: var(--tertiary--800); --type-tint: rgba(var(--tertiary--800-rgb),.08); }
+.cce-resource-card[data-type="Report"]         { --type-color: var(--warning--500); --type-tint: rgba(var(--warning--500-rgb),.08); }
+.cce-resource-card[data-type="Book"]           { --type-color: var(--warning--700); --type-tint: rgba(var(--warning--700-rgb),.08); }
+.cce-resource-card[data-type="Research"]       { --type-color: var(--info--500); --type-tint: rgba(var(--info--500-rgb),.08); }
+.cce-resource-card[data-type="CceGuide"]       { --type-color: var(--success--600); --type-tint: rgba(var(--success--600-rgb),.08); }
+.cce-resource-card[data-type="Media"]          { --type-color: var(--primary--600); --type-tint: rgba(var(--primary--600-rgb),.08); }
 
-/* ─── Outer link ───────────────────────────────────────── */
+/* ── Card shell ─────────────────────────────────────────── */
 .cce-resource-card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  height: 100%;
-  border-radius: 0;
-  position: relative;
-}
-
-/* ─── Inner mat-card ─────────────────────────────────────── */
-::ng-deep .cce-resource-card mat-card {
-  height: 100%;
-  border-radius: 8px !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  background: #ffffff !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  padding: 1rem 1.1rem !important;
-  display: flex !important;
+  display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  overflow: hidden !important;
-  transition: border-color 0.18s ease, background-color 0.18s ease;
-}
-.cce-resource-card:hover ::ng-deep mat-card {
-  border-color: var(--type-color) !important;
-  background: #fafafa !important;
-}
+  background: var(--white);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  // Perf containment lives here (not the host) so the card's own border —
+  // notably the bottom edge — isn't clipped by the host's paint containment.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
 
-/* ─── Header row ───────────────────────────────────────── */
-::ng-deep .cce-resource-card mat-card-header {
-  padding: 0 !important;
-  margin: 0 !important;
-  display: grid !important;
-  grid-template-columns: 1fr;
-  gap: 0.4rem;
-}
-
-/* Hide the Material avatar — we don't want the colored icon block */
-::ng-deep .cce-resource-card mat-icon[mat-card-avatar] {
-  display: none !important;
-}
-
-/* Type label with leading dot */
-::ng-deep .cce-resource-card mat-card-subtitle {
-  font-size: 0.72rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.04em;
-  color: var(--type-color) !important;
-  margin: 0 !important;
-  padding: 0;
-  background: none;
-  border: none;
-  border-radius: 0;
-  display: inline-flex !important;
-  align-items: center;
-  gap: 0.4rem;
-
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
+  &:hover {
+    border-color: var(--type-color);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 }
 
-/* Title */
-::ng-deep .cce-resource-card mat-card-title {
-  font-size: 0.96rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0;
-  line-height: 1.40 !important;
-  color: #1c2724;
-  margin: 0 !important;
+/* ── Media / image area ─────────────────────────────────── */
+.cce-resource-card__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--type-tint);
+  height: 120px;
+  text-decoration: none;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cce-resource-card__media-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(4px);
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: var(--type-color);
+  }
+}
+
+/* type badge — top corner */
+.cce-resource-card__badge {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--type-color);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 3px 8px 3px 5px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* ── Body ───────────────────────────────────────────────── */
+.cce-resource-card__body {
+  flex: 1;
+  padding: 1rem 1.15rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cce-resource-card__title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cce-resource-card__title {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--color-text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Content area */
-::ng-deep .cce-resource-card mat-card-content {
-  padding: 0 !important;
-  margin: auto 0 0 !important;
+.cce-resource-card__title-link:hover .cce-resource-card__title {
+  color: var(--type-color);
 }
 
-.cce-resource-card__meta {
+.cce-resource-card__category {
   margin: 0;
-  color: rgba(28, 39, 36, 0.55);
-  font-size: 0.78rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  color: rgba(var(--color-text-primary-rgb), 0.50);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Meta row ───────────────────────────────────────────── */
+.cce-resource-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 1.15rem 0.65rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cce-resource-card__meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  font-variant-numeric: tabular-nums;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: rgba(var(--color-text-primary-rgb), 0.55);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
-  &::before { display: none !important; }
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
 }
 
-.cce-resource-card__date {
-  margin-inline-start: 0.3rem;
-  color: rgba(28, 39, 36, 0.45);
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-  &::before {
-    content: '·';
-    margin-inline-end: 0.4rem;
-    opacity: 0.6;
+/* ── Footer / actions ───────────────────────────────────── */
+.cce-resource-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cce-resource-card__download-btn {
+  flex: 1;
+  font-size: 0.78rem !important;
+  height: 34px !important;
+  border-color: var(--type-color) !important;
+  color: var(--type-color) !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--type-tint) !important;
+  }
+}
+
+.cce-resource-card__share-btn {
+  /* Resize via the M3 token so the inner icon stays centred — forcing
+     width/height alone leaves Material's 48px padding and shifts the icon. */
+  --mdc-icon-button-state-layer-size: 34px;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0;
+  color: rgba(var(--color-text-primary-rgb), 0.50) !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
+  &:hover {
+    color: var(--type-color) !important;
   }
 }

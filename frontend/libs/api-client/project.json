@@ -32,6 +32,28 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "refresh-contracts": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "curl -sf https://cce-external-api.runasp.net/swagger/external/v1/swagger.json -o ../contracts/openapi.external.json",
+          "curl -sf https://cce-internal-api.runasp.net/swagger/internal/v1/swagger.json -o ../contracts/openapi.internal.json"
+        ],
+        "parallel": true
+      }
+    },
+    "generate-types": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/lib/schema"],
+      "dependsOn": ["refresh-contracts"],
+      "options": {
+        "commands": [
+          "./node_modules/.bin/openapi-typescript ../contracts/openapi.external.json -o libs/api-client/src/lib/schema/external.ts",
+          "./node_modules/.bin/openapi-typescript ../contracts/openapi.internal.json -o libs/api-client/src/lib/schema/internal.ts"
+        ],
+        "parallel": false
+      }
+    },
     "generate": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/lib/generated"],

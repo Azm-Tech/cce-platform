@@ -1,0 +1,141 @@
+<section class="cce-auth">
+  <div class="cce-auth__card">
+    <div class="cce-auth__brand">
+      <span class="cce-auth__brand-glyph" aria-hidden="true"></span>
+      <span class="cce-auth__brand-name">CCE</span>
+    </div>
+
+    @if (step() === 'enter-phone') {
+      <h1 class="cce-auth__title">{{ 'account.verifyPhone.enterPhoneTitle' | transloco }}</h1>
+      <p class="cce-auth__subtitle">{{ 'account.verifyPhone.enterPhoneHint' | transloco }}</p>
+
+      <!-- Phone row: dial code autocomplete + local number, matches registration layout -->
+      <div class="cce-auth__phone-row">
+        <mat-form-field class="cce-auth__phone-code">
+          <mat-label>{{ 'account.register.phoneCodeLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            [formControl]="phoneCodeControl"
+            [matAutocomplete]="phoneCodeAuto"
+            autocomplete="off"
+          />
+          <mat-autocomplete #phoneCodeAuto [displayWith]="displayPhoneCode" autoActiveFirstOption>
+            @for (cc of filteredPhoneCodes(); track cc.id) {
+              <mat-option [value]="cc">
+                {{ locale() === 'ar' ? cc.nameAr : cc.nameEn }}
+                <span class="cce-auth__dial-badge">{{ cc.dialCode }}</span>
+              </mat-option>
+            } @empty {
+              <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (phoneCodeControl.hasError('required') && phoneCodeControl.touched) {
+            <mat-error>{{ 'account.register.errorRequired' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="cce-auth__phone-number">
+          <mat-label>{{ 'account.register.phoneLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            dir="ltr"
+            [formControl]="localPhoneControl"
+          />
+          @if (localPhoneControl.invalid && localPhoneControl.touched) {
+            <mat-error>{{ 'account.register.errorRequired' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (errorKey()) {
+        <p class="cce-auth__error" role="alert">{{ errorKey() | transloco }}</p>
+      }
+
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        class="cce-auth__submit"
+        [disabled]="state() === 'sending'"
+        (click)="submitPhone()"
+      >
+        @if (state() === 'sending') {
+          <mat-spinner diameter="18" />
+        }
+        {{ (state() === 'sending' ? 'account.verifyPhone.sending' : 'account.verifyPhone.continueButton') | transloco }}
+      </button>
+    } @else {
+      <h1 class="cce-auth__title">{{ 'account.verifyPhone.title' | transloco }}</h1>
+
+      @if (state() === 'sending') {
+        <p class="cce-auth__subtitle">{{ 'account.verifyPhone.sending' | transloco }}</p>
+        <mat-spinner diameter="32" />
+      } @else if (state() === 'error' && !verificationId) {
+        <p class="cce-auth__subtitle cce-auth__subtitle--error">
+          {{ errorKey() | transloco }}
+        </p>
+        <button type="button" mat-flat-button color="primary" class="cce-auth__submit" (click)="resend()">
+          {{ 'account.verifyPhone.resend' | transloco }}
+        </button>
+      } @else {
+        <p class="cce-auth__subtitle">
+          {{ 'account.verifyPhone.subtitle' | transloco }}
+          <strong dir="ltr">{{ phoneNumber() }}</strong>
+        </p>
+
+        <div class="cce-otp" dir="ltr" role="group" [attr.aria-label]="'account.verifyPhone.codeLabel' | transloco">
+          @for (digit of digits; track $index) {
+            <input
+              #otpInput
+              class="cce-otp__box"
+              [class.cce-otp__box--filled]="digit()"
+              type="text"
+              inputmode="numeric"
+              maxlength="1"
+              autocomplete="one-time-code"
+              [value]="digit()"
+              (input)="onDigitInput($event, $index)"
+              (keydown)="onKeyDown($event, $index)"
+              (paste)="onPaste($event)"
+            />
+          }
+        </div>
+
+        @if (errorKey()) {
+          <p class="cce-auth__error" role="alert">{{ errorKey() | transloco }}</p>
+        }
+
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          class="cce-auth__submit"
+          [disabled]="!isComplete || state() === 'verifying'"
+          (click)="submit()"
+        >
+          @if (state() === 'verifying') {
+            <mat-spinner diameter="18" />
+          }
+          {{ (state() === 'verifying' ? 'account.verifyPhone.verifying' : 'account.verifyPhone.submitButton') | transloco }}
+        </button>
+
+        <p class="cce-auth__footer-line">
+          @if (countdown() > 0) {
+            {{ 'account.verifyPhone.resendIn' | transloco: { s: countdown() } }}
+          } @else {
+            <a
+              class="cce-auth__footer-link"
+              role="button"
+              tabindex="0"
+              (click)="resend()"
+              (keydown.enter)="resend()"
+            >{{ 'account.verifyPhone.resend' | transloco }}</a>
+          }
+        </p>
+      }
+    }
+  </div>
+</section>

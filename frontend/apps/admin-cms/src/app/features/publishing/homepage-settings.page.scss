@@ -1,0 +1,32 @@
+:host { display: block; max-width: 860px; }
+
+.cce-hp-settings__header { margin-bottom: 1.5rem; }
+.cce-hp-settings__title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+.cce-hp-settings__card {
+  margin-bottom: 1.5rem;
+}
+
+.cce-hp-settings__card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem !important;
+}
+
+.cce-hp-settings__field--full { width: 100%; }
+
+.cce-hp-settings__error {
+  background: var(--danger--50);
+  color: var(--danger--600);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.cce-hp-settings__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}

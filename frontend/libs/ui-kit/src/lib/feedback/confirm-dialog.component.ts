@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export interface ConfirmDialogData {
   titleKey: string;
@@ -14,13 +14,13 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'cce-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, TranslateModule],
+  imports: [MatButtonModule, MatDialogModule, TranslocoModule],
   template: `
-    <h2 mat-dialog-title>{{ data.titleKey | translate }}</h2>
-    <mat-dialog-content>{{ data.messageKey | translate }}</mat-dialog-content>
+    <h2 mat-dialog-title>{{ data.titleKey | transloco }}</h2>
+    <mat-dialog-content>{{ data.messageKey | transloco }}</mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button type="button" mat-button (click)="onCancel()">{{ (data.cancelKey ?? 'common.actions.cancel') | translate }}</button>
-      <button type="button" mat-flat-button color="primary" (click)="onConfirm()">{{ (data.confirmKey ?? 'common.actions.save') | translate }}</button>
+      <button type="button" mat-button (click)="onCancel()">{{ (data.cancelKey ?? 'common.actions.cancel') | transloco }}</button>
+      <button type="button" mat-flat-button color="primary" (click)="onConfirm()">{{ (data.confirmKey ?? 'common.actions.save') | transloco }}</button>
     </mat-dialog-actions>
   `,
 })

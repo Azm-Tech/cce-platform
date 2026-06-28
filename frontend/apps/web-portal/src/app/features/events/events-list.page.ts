@@ -1,13 +1,18 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
 import { WorkbenchHeroComponent } from '@frontend/ui-kit';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { EventsApiService } from './events-api.service';
 import { EventCardComponent } from './event-card.component';
 import type { Event as EventModel } from './event.types';
@@ -32,9 +37,18 @@ interface ActiveChip {
   selector: 'cce-events-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslateModule, EventCardComponent, WorkbenchHeroComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    EventCardComponent,
+    WorkbenchHeroComponent,
   ],
   templateUrl: './events-list.page.html',
   styleUrl: './events-list.page.scss',
@@ -45,7 +59,7 @@ export class EventsListPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
 
   // ─── Search / view ──────────────────────────────────────
   readonly query = signal('');
@@ -58,6 +72,18 @@ export class EventsListPage implements OnInit {
   readonly to = signal('');
   readonly sortOrder = signal<SortOrder>('soonest');
   readonly filtersOpen = signal(false);
+
+  readonly sortOrderOptions = [
+    { value: 'soonest' as const, label: 'Soonest' },
+    { value: 'latest' as const, label: 'Latest' },
+  ];
+  readonly sortOrderSearch = new FormControl('');
+  private readonly sortOrderSearchValue = toSignal(this.sortOrderSearch.valueChanges, { initialValue: '' });
+  readonly filteredSortOrderOptions = computed(() => {
+    const q = (this.sortOrderSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.sortOrderOptions;
+    return this.sortOrderOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
 
   // ─── Pagination + load state ────────────────────────────
   readonly page = signal(1);
@@ -134,7 +160,7 @@ export class EventsListPage implements OnInit {
     if (this.typeFilter() !== 'all') {
       chips.push({
         id: 'type',
-        label: this.t.instant(
+        label: this.t.translate(
           this.typeFilter() === 'online'
             ? 'events.filters.typeOnline'
             : 'events.filters.typeInPerson',
@@ -147,12 +173,12 @@ export class EventsListPage implements OnInit {
         today: 'events.filters.whenToday',
         past: 'events.filters.whenPast',
       } as const;
-      chips.push({ id: 'when', label: this.t.instant(map[this.whenFilter() as Exclude<WhenFilter, 'all'>]) });
+      chips.push({ id: 'when', label: this.t.translate(map[this.whenFilter() as Exclude<WhenFilter, 'all'>]) });
     }
-    if (this.from()) chips.push({ id: 'from', label: `${this.t.instant('events.filters.from')}: ${this.from()}` });
-    if (this.to()) chips.push({ id: 'to', label: `${this.t.instant('events.filters.to')}: ${this.to()}` });
+    if (this.from()) chips.push({ id: 'from', label: `${this.t.translate('events.filters.from')}: ${this.from()}` });
+    if (this.to()) chips.push({ id: 'to', label: `${this.t.translate('events.filters.to')}: ${this.to()}` });
     if (this.sortOrder() !== 'soonest') {
-      chips.push({ id: 'sort', label: this.t.instant('events.filters.sortLatest') });
+      chips.push({ id: 'sort', label: this.t.translate('events.filters.sortLatest') });
     }
     return chips;
   });
@@ -173,7 +199,16 @@ export class EventsListPage implements OnInit {
     const wf = qp.get('when');
     this.whenFilter.set(wf === 'upcoming' || wf === 'today' || wf === 'past' ? wf : 'all');
     this.sortOrder.set(qp.get('sort') === 'latest' ? 'latest' : 'soonest');
+
+    const sortMatch = this.sortOrderOptions.find(o => o.value === this.sortOrder());
+    if (sortMatch) this.sortOrderSearch.setValue(sortMatch.label, { emitEvent: false });
+
     void this.load();
+  }
+
+  onSortOrderSelected(value: SortOrder, label: string): void {
+    this.setSort(value);
+    this.sortOrderSearch.setValue(label, { emitEvent: false });
   }
 
   // ─── Handlers ───────────────────────────────────────────

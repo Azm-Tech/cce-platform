@@ -16,95 +16,123 @@ export type AssignUserRolesRequest = {
 };
 
 export type CreateEventRequest = {
+    titleAr?: (string) | null;
+    titleEn?: (string) | null;
     descriptionAr?: (string) | null;
     descriptionEn?: (string) | null;
+    startsOn?: string;
     endsOn?: string;
-    featuredImageUrl?: (string) | null;
     locationAr?: (string) | null;
     locationEn?: (string) | null;
     onlineMeetingUrl?: (string) | null;
-    startsOn?: string;
-    titleAr?: (string) | null;
-    titleEn?: (string) | null;
+    featuredImageUrl?: (string) | null;
 };
 
 export type CreateHomepageSectionRequest = {
+    sectionType?: HomepageSectionType;
+    orderIndex?: number;
     contentAr?: (string) | null;
     contentEn?: (string) | null;
-    orderIndex?: number;
-    sectionType?: HomepageSectionType;
 };
 
 export type CreateNewsRequest = {
-    contentAr?: (string) | null;
-    contentEn?: (string) | null;
-    featuredImageUrl?: (string) | null;
-    slug?: (string) | null;
     titleAr?: (string) | null;
     titleEn?: (string) | null;
+    contentAr?: (string) | null;
+    contentEn?: (string) | null;
+    slug?: (string) | null;
+    featuredImageUrl?: (string) | null;
 };
 
 export type CreateNotificationTemplateRequest = {
-    bodyAr?: (string) | null;
-    bodyEn?: (string) | null;
-    channel?: NotificationChannel;
     code?: (string) | null;
     subjectAr?: (string) | null;
     subjectEn?: (string) | null;
+    bodyAr?: (string) | null;
+    bodyEn?: (string) | null;
+    channel?: NotificationChannel;
     variableSchemaJson?: (string) | null;
 };
 
 export type CreatePageRequest = {
-    contentAr?: (string) | null;
-    contentEn?: (string) | null;
-    pageType?: PageType;
     slug?: (string) | null;
+    pageType?: PageType;
     titleAr?: (string) | null;
     titleEn?: (string) | null;
+    contentAr?: (string) | null;
+    contentEn?: (string) | null;
 };
 
 export type CreateResourceCategoryRequest = {
     nameAr?: (string) | null;
     nameEn?: (string) | null;
-    orderIndex?: number;
-    parentId?: (string) | null;
     slug?: (string) | null;
+    parentId?: (string) | null;
+    orderIndex?: number;
 };
 
 export type CreateResourceRequest = {
-    assetFileId?: string;
-    categoryId?: string;
-    countryId?: (string) | null;
+    titleAr?: (string) | null;
+    titleEn?: (string) | null;
     descriptionAr?: (string) | null;
     descriptionEn?: (string) | null;
     resourceType?: ResourceType;
-    titleAr?: (string) | null;
-    titleEn?: (string) | null;
+    categoryId?: string;
+    countryId?: (string) | null;
+    assetFileId?: string;
 };
 
 export type CreateStateRepAssignmentRequest = {
-    countryId?: string;
     userId?: string;
+    countryId?: string;
 };
 
 export type CreateTopicRequest = {
-    descriptionAr?: (string) | null;
-    descriptionEn?: (string) | null;
-    iconUrl?: (string) | null;
     nameAr?: (string) | null;
     nameEn?: (string) | null;
-    orderIndex?: number;
-    parentId?: (string) | null;
+    descriptionAr?: (string) | null;
+    descriptionEn?: (string) | null;
     slug?: (string) | null;
+    parentId?: (string) | null;
+    iconUrl?: (string) | null;
+    orderIndex?: number;
 };
 
 export type ExpertRegistrationStatus = 0 | 1 | 2;
 
+export type ForgotPasswordRequest = {
+    emailAddress?: (string) | null;
+};
+
 export type HomepageSectionType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 99;
+
+export type LoginRequest = {
+    emailAddress?: (string) | null;
+    password?: (string) | null;
+};
+
+export type LogoutRequest = {
+    refreshToken?: (string) | null;
+};
 
 export type NotificationChannel = 0 | 1 | 2;
 
 export type PageType = 0 | 1 | 2 | 99;
+
+export type RefreshTokenRequest = {
+    refreshToken?: (string) | null;
+};
+
+export type RegisterUserRequest = {
+    firstName?: (string) | null;
+    lastName?: (string) | null;
+    emailAddress?: (string) | null;
+    jobTitle?: (string) | null;
+    organizationName?: (string) | null;
+    phoneNumber?: (string) | null;
+    password?: (string) | null;
+    confirmPassword?: (string) | null;
+};
 
 export type RejectCountryResourceRequestRequest = {
     adminNotesAr?: (string) | null;
@@ -126,31 +154,38 @@ export type ReorderHomepageSectionsRequest = {
 };
 
 export type RescheduleEventRequest = {
+    startsOn?: string;
     endsOn?: string;
     rowVersion?: (string) | null;
-    startsOn?: string;
+};
+
+export type ResetPasswordRequest = {
+    emailAddress?: (string) | null;
+    token?: (string) | null;
+    newPassword?: (string) | null;
+    confirmPassword?: (string) | null;
 };
 
 export type ResourceType = 0 | 1 | 2 | 3 | 4;
 
 export type UpdateCountryRequest = {
-    isActive?: boolean;
     nameAr?: (string) | null;
     nameEn?: (string) | null;
     regionAr?: (string) | null;
     regionEn?: (string) | null;
+    isActive?: boolean;
 };
 
 export type UpdateEventRequest = {
+    titleAr?: (string) | null;
+    titleEn?: (string) | null;
     descriptionAr?: (string) | null;
     descriptionEn?: (string) | null;
-    featuredImageUrl?: (string) | null;
     locationAr?: (string) | null;
     locationEn?: (string) | null;
     onlineMeetingUrl?: (string) | null;
+    featuredImageUrl?: (string) | null;
     rowVersion?: (string) | null;
-    titleAr?: (string) | null;
-    titleEn?: (string) | null;
 };
 
 export type UpdateHomepageSectionRequest = {
@@ -160,70 +195,66 @@ export type UpdateHomepageSectionRequest = {
 };
 
 export type UpdateNewsRequest = {
-    contentAr?: (string) | null;
-    contentEn?: (string) | null;
-    featuredImageUrl?: (string) | null;
-    rowVersion?: (string) | null;
-    slug?: (string) | null;
     titleAr?: (string) | null;
     titleEn?: (string) | null;
+    contentAr?: (string) | null;
+    contentEn?: (string) | null;
+    slug?: (string) | null;
+    featuredImageUrl?: (string) | null;
+    rowVersion?: (string) | null;
 };
 
 export type UpdateNotificationTemplateRequest = {
+    subjectAr?: (string) | null;
+    subjectEn?: (string) | null;
     bodyAr?: (string) | null;
     bodyEn?: (string) | null;
     isActive?: boolean;
-    subjectAr?: (string) | null;
-    subjectEn?: (string) | null;
 };
 
 export type UpdatePageRequest = {
+    titleAr?: (string) | null;
+    titleEn?: (string) | null;
     contentAr?: (string) | null;
     contentEn?: (string) | null;
     rowVersion?: (string) | null;
-    titleAr?: (string) | null;
-    titleEn?: (string) | null;
 };
 
 export type UpdateResourceCategoryRequest = {
-    isActive?: boolean;
     nameAr?: (string) | null;
     nameEn?: (string) | null;
     orderIndex?: number;
+    isActive?: boolean;
 };
 
 export type UpdateResourceRequest = {
-    categoryId?: string;
+    titleAr?: (string) | null;
+    titleEn?: (string) | null;
     descriptionAr?: (string) | null;
     descriptionEn?: (string) | null;
     resourceType?: ResourceType;
+    categoryId?: string;
     rowVersion?: (string) | null;
-    titleAr?: (string) | null;
-    titleEn?: (string) | null;
 };
 
 export type UpdateTopicRequest = {
-    descriptionAr?: (string) | null;
-    descriptionEn?: (string) | null;
-    isActive?: boolean;
     nameAr?: (string) | null;
     nameEn?: (string) | null;
+    descriptionAr?: (string) | null;
+    descriptionEn?: (string) | null;
     orderIndex?: number;
+    isActive?: boolean;
 };
 
 export type UpsertCountryProfileRequest = {
-    contactInfoAr?: (string) | null;
-    contactInfoEn?: (string) | null;
     descriptionAr?: (string) | null;
     descriptionEn?: (string) | null;
     keyInitiativesAr?: (string) | null;
     keyInitiativesEn?: (string) | null;
+    contactInfoAr?: (string) | null;
+    contactInfoEn?: (string) | null;
     rowVersion?: (string) | null;
 };
-
-export type GetResponse = (string);
-
-export type GetError = unknown;
 
 export type UploadAssetResponse = (unknown);
 
@@ -255,6 +286,99 @@ export type ListAuditEventsData = {
 export type ListAuditEventsResponse = (unknown);
 
 export type ListAuditEventsError = unknown;
+
+export type InternalRegisterUserData = {
+    body: RegisterUserRequest;
+};
+
+export type InternalRegisterUserResponse = (unknown);
+
+export type InternalRegisterUserError = unknown;
+
+export type InternalLoginData = {
+    body: LoginRequest;
+};
+
+export type InternalLoginResponse = (unknown);
+
+export type InternalLoginError = unknown;
+
+export type InternalRefreshTokenData = {
+    body: RefreshTokenRequest;
+};
+
+export type InternalRefreshTokenResponse = (unknown);
+
+export type InternalRefreshTokenError = unknown;
+
+export type InternalForgotPasswordData = {
+    body: ForgotPasswordRequest;
+};
+
+export type InternalForgotPasswordResponse = (unknown);
+
+export type InternalForgotPasswordError = unknown;
+
+export type InternalResetPasswordData = {
+    body: ResetPasswordRequest;
+};
+
+export type InternalResetPasswordResponse = (unknown);
+
+export type InternalResetPasswordError = unknown;
+
+export type InternalLogoutData = {
+    body: LogoutRequest;
+};
+
+export type InternalLogoutResponse = (unknown);
+
+export type InternalLogoutError = unknown;
+
+export type AuthLoginShimData = {
+    query?: {
+        returnUrl?: string;
+    };
+};
+
+export type AuthLoginShimResponse = (unknown);
+
+export type AuthLoginShimError = unknown;
+
+export type AuthLogoutShimResponse = (unknown);
+
+export type AuthLogoutShimError = unknown;
+
+export type GetResponse = (string);
+
+export type GetError = unknown;
+
+export type GetAuthEchoResponse = (unknown);
+
+export type GetAuthEchoError = unknown;
+
+export type GetHealthResponse = (unknown);
+
+export type GetHealthError = unknown;
+
+export type GetHealthAuthenticatedResponse = (unknown);
+
+export type GetHealthAuthenticatedError = unknown;
+
+export type ListAdminPostsData = {
+    query?: {
+        locale?: string;
+        page?: number;
+        pageSize?: number;
+        search?: string;
+        status?: string;
+        topicId?: string;
+    };
+};
+
+export type ListAdminPostsResponse = (unknown);
+
+export type ListAdminPostsError = unknown;
 
 export type SoftDeletePostData = {
     path: {
@@ -289,27 +413,6 @@ export type ListCountriesResponse = (unknown);
 
 export type ListCountriesError = unknown;
 
-export type GetCountryProfileData = {
-    path: {
-        countryId: string;
-    };
-};
-
-export type GetCountryProfileResponse = (unknown);
-
-export type GetCountryProfileError = unknown;
-
-export type UpsertCountryProfileData = {
-    body: UpsertCountryProfileRequest;
-    path: {
-        countryId: string;
-    };
-};
-
-export type UpsertCountryProfileResponse = (unknown);
-
-export type UpsertCountryProfileError = unknown;
-
 export type GetCountryByIdData = {
     path: {
         id: string;
@@ -330,6 +433,27 @@ export type UpdateCountryData = {
 export type UpdateCountryResponse = (unknown);
 
 export type UpdateCountryError = unknown;
+
+export type GetCountryProfileData = {
+    path: {
+        countryId: string;
+    };
+};
+
+export type GetCountryProfileResponse = (unknown);
+
+export type GetCountryProfileError = unknown;
+
+export type UpsertCountryProfileData = {
+    body: UpsertCountryProfileRequest;
+    path: {
+        countryId: string;
+    };
+};
+
+export type UpsertCountryProfileResponse = (unknown);
+
+export type UpsertCountryProfileError = unknown;
 
 export type ApproveCountryResourceRequestData = {
     body: ApproveCountryResourceRequestRequest;
@@ -353,6 +477,25 @@ export type RejectCountryResourceRequestResponse = (unknown);
 
 export type RejectCountryResourceRequestError = unknown;
 
+export type DevSignInData = {
+    query?: {
+        returnUrl?: string;
+        role?: string;
+    };
+};
+
+export type DevSignInResponse = (unknown);
+
+export type DevSignInError = unknown;
+
+export type DevSignOutResponse = (unknown);
+
+export type DevSignOutError = unknown;
+
+export type DevWhoAmIResponse = (unknown);
+
+export type DevWhoAmIError = unknown;
+
 export type ListEventsData = {
     query?: {
         fromDate?: string;
@@ -375,16 +518,6 @@ export type CreateEventResponse = (unknown);
 
 export type CreateEventError = unknown;
 
-export type DeleteEventData = {
-    path: {
-        id: string;
-    };
-};
-
-export type DeleteEventResponse = (unknown);
-
-export type DeleteEventError = unknown;
-
 export type GetEventByIdData = {
     path: {
         id: string;
@@ -406,6 +539,16 @@ export type UpdateEventResponse = (unknown);
 
 export type UpdateEventError = unknown;
 
+export type DeleteEventData = {
+    path: {
+        id: string;
+    };
+};
+
+export type DeleteEventResponse = (unknown);
+
+export type DeleteEventError = unknown;
+
 export type RescheduleEventData = {
     body: RescheduleEventRequest;
     path: {
@@ -416,18 +559,6 @@ export type RescheduleEventData = {
 export type RescheduleEventResponse = (unknown);
 
 export type RescheduleEventError = unknown;
-
-export type ListExpertProfilesData = {
-    query?: {
-        page?: number;
-        pageSize?: number;
-        search?: string;
-    };
-};
-
-export type ListExpertProfilesResponse = (unknown);
-
-export type ListExpertProfilesError = unknown;
 
 export type ListExpertRequestsData = {
     query?: {
@@ -464,6 +595,18 @@ export type RejectExpertRequestResponse = (unknown);
 
 export type RejectExpertRequestError = unknown;
 
+export type ListExpertProfilesData = {
+    query?: {
+        page?: number;
+        pageSize?: number;
+        search?: string;
+    };
+};
+
+export type ListExpertProfilesResponse = (unknown);
+
+export type ListExpertProfilesError = unknown;
+
 export type ListHomepageSectionsResponse = (unknown);
 
 export type ListHomepageSectionsError = unknown;
@@ -476,13 +619,16 @@ export type CreateHomepageSectionResponse = (unknown);
 
 export type CreateHomepageSectionError = unknown;
 
-export type ReorderHomepageSectionsData = {
-    body: ReorderHomepageSectionsRequest;
+export type UpdateHomepageSectionData = {
+    body: UpdateHomepageSectionRequest;
+    path: {
+        id: string;
+    };
 };
 
-export type ReorderHomepageSectionsResponse = (unknown);
+export type UpdateHomepageSectionResponse = (unknown);
 
-export type ReorderHomepageSectionsError = unknown;
+export type UpdateHomepageSectionError = unknown;
 
 export type DeleteHomepageSectionData = {
     path: {
@@ -494,16 +640,83 @@ export type DeleteHomepageSectionResponse = (unknown);
 
 export type DeleteHomepageSectionError = unknown;
 
-export type UpdateHomepageSectionData = {
-    body: UpdateHomepageSectionRequest;
+export type ReorderHomepageSectionsData = {
+    body: ReorderHomepageSectionsRequest;
+};
+
+export type ReorderHomepageSectionsResponse = (unknown);
+
+export type ReorderHomepageSectionsError = unknown;
+
+export type ListUsersData = {
+    query?: {
+        page?: number;
+        pageSize?: number;
+        role?: string;
+        search?: string;
+    };
+};
+
+export type ListUsersResponse = (unknown);
+
+export type ListUsersError = unknown;
+
+export type GetUserByIdData = {
     path: {
         id: string;
     };
 };
 
-export type UpdateHomepageSectionResponse = (unknown);
+export type GetUserByIdResponse = (unknown);
 
-export type UpdateHomepageSectionError = unknown;
+export type GetUserByIdError = unknown;
+
+export type AssignUserRolesData = {
+    body: AssignUserRolesRequest;
+    path: {
+        id: string;
+    };
+};
+
+export type AssignUserRolesResponse = (unknown);
+
+export type AssignUserRolesError = unknown;
+
+export type SyncEntraIdUsersResponse = (unknown);
+
+export type SyncEntraIdUsersError = unknown;
+
+export type ListStateRepAssignmentsData = {
+    query?: {
+        active?: boolean;
+        countryId?: string;
+        page?: number;
+        pageSize?: number;
+        userId?: string;
+    };
+};
+
+export type ListStateRepAssignmentsResponse = (unknown);
+
+export type ListStateRepAssignmentsError = unknown;
+
+export type CreateStateRepAssignmentData = {
+    body: CreateStateRepAssignmentRequest;
+};
+
+export type CreateStateRepAssignmentResponse = (unknown);
+
+export type CreateStateRepAssignmentError = unknown;
+
+export type RevokeStateRepAssignmentData = {
+    path: {
+        id: string;
+    };
+};
+
+export type RevokeStateRepAssignmentResponse = (unknown);
+
+export type RevokeStateRepAssignmentError = unknown;
 
 export type ListNewsData = {
     query?: {
@@ -527,16 +740,6 @@ export type CreateNewsResponse = (unknown);
 
 export type CreateNewsError = unknown;
 
-export type DeleteNewsData = {
-    path: {
-        id: string;
-    };
-};
-
-export type DeleteNewsResponse = (unknown);
-
-export type DeleteNewsError = unknown;
-
 export type GetNewsByIdData = {
     path: {
         id: string;
@@ -557,6 +760,16 @@ export type UpdateNewsData = {
 export type UpdateNewsResponse = (unknown);
 
 export type UpdateNewsError = unknown;
+
+export type DeleteNewsData = {
+    path: {
+        id: string;
+    };
+};
+
+export type DeleteNewsResponse = (unknown);
+
+export type DeleteNewsError = unknown;
 
 export type PublishNewsData = {
     path: {
@@ -631,16 +844,6 @@ export type CreatePageResponse = (unknown);
 
 export type CreatePageError = unknown;
 
-export type DeletePageData = {
-    path: {
-        id: string;
-    };
-};
-
-export type DeletePageResponse = (unknown);
-
-export type DeletePageError = unknown;
-
 export type GetPageByIdData = {
     path: {
         id: string;
@@ -662,38 +865,26 @@ export type UpdatePageResponse = (unknown);
 
 export type UpdatePageError = unknown;
 
-export type CommunityPostsReportData = {
+export type DeletePageData = {
+    path: {
+        id: string;
+    };
+};
+
+export type DeletePageResponse = (unknown);
+
+export type DeletePageError = unknown;
+
+export type UsersRegistrationsReportData = {
     query?: {
         from?: string;
         to?: string;
     };
 };
 
-export type CommunityPostsReportResponse = (unknown);
+export type UsersRegistrationsReportResponse = (unknown);
 
-export type CommunityPostsReportError = unknown;
-
-export type CountryProfilesReportData = {
-    query?: {
-        from?: string;
-        to?: string;
-    };
-};
-
-export type CountryProfilesReportResponse = (unknown);
-
-export type CountryProfilesReportError = unknown;
-
-export type EventsReportData = {
-    query?: {
-        from?: string;
-        to?: string;
-    };
-};
-
-export type EventsReportResponse = (unknown);
-
-export type EventsReportError = unknown;
+export type UsersRegistrationsReportError = unknown;
 
 export type ExpertsReportData = {
     query?: {
@@ -706,6 +897,28 @@ export type ExpertsReportResponse = (unknown);
 
 export type ExpertsReportError = unknown;
 
+export type SatisfactionSurveyReportData = {
+    query?: {
+        from?: string;
+        to?: string;
+    };
+};
+
+export type SatisfactionSurveyReportResponse = (unknown);
+
+export type SatisfactionSurveyReportError = unknown;
+
+export type CommunityPostsReportData = {
+    query?: {
+        from?: string;
+        to?: string;
+    };
+};
+
+export type CommunityPostsReportResponse = (unknown);
+
+export type CommunityPostsReportError = unknown;
+
 export type NewsReportData = {
     query?: {
         from?: string;
@@ -716,6 +929,17 @@ export type NewsReportData = {
 export type NewsReportResponse = (unknown);
 
 export type NewsReportError = unknown;
+
+export type EventsReportData = {
+    query?: {
+        from?: string;
+        to?: string;
+    };
+};
+
+export type EventsReportResponse = (unknown);
+
+export type EventsReportError = unknown;
 
 export type ResourcesReportData = {
     query?: {
@@ -728,27 +952,16 @@ export type ResourcesReportResponse = (unknown);
 
 export type ResourcesReportError = unknown;
 
-export type SatisfactionSurveyReportData = {
+export type CountryProfilesReportData = {
     query?: {
         from?: string;
         to?: string;
     };
 };
 
-export type SatisfactionSurveyReportResponse = (unknown);
+export type CountryProfilesReportResponse = (unknown);
 
-export type SatisfactionSurveyReportError = unknown;
-
-export type UsersRegistrationsReportData = {
-    query?: {
-        from?: string;
-        to?: string;
-    };
-};
-
-export type UsersRegistrationsReportResponse = (unknown);
-
-export type UsersRegistrationsReportError = unknown;
+export type CountryProfilesReportError = unknown;
 
 export type ListResourceCategoriesData = {
     query?: {
@@ -771,16 +984,6 @@ export type CreateResourceCategoryResponse = (unknown);
 
 export type CreateResourceCategoryError = unknown;
 
-export type DeleteResourceCategoryData = {
-    path: {
-        id: string;
-    };
-};
-
-export type DeleteResourceCategoryResponse = (unknown);
-
-export type DeleteResourceCategoryError = unknown;
-
 export type GetResourceCategoryByIdData = {
     path: {
         id: string;
@@ -801,6 +1004,16 @@ export type UpdateResourceCategoryData = {
 export type UpdateResourceCategoryResponse = (unknown);
 
 export type UpdateResourceCategoryError = unknown;
+
+export type DeleteResourceCategoryData = {
+    path: {
+        id: string;
+    };
+};
+
+export type DeleteResourceCategoryResponse = (unknown);
+
+export type DeleteResourceCategoryError = unknown;
 
 export type ListResourcesData = {
     query?: {
@@ -846,38 +1059,6 @@ export type PublishResourceResponse = (unknown);
 
 export type PublishResourceError = unknown;
 
-export type ListStateRepAssignmentsData = {
-    query?: {
-        active?: boolean;
-        countryId?: string;
-        page?: number;
-        pageSize?: number;
-        userId?: string;
-    };
-};
-
-export type ListStateRepAssignmentsResponse = (unknown);
-
-export type ListStateRepAssignmentsError = unknown;
-
-export type CreateStateRepAssignmentData = {
-    body: CreateStateRepAssignmentRequest;
-};
-
-export type CreateStateRepAssignmentResponse = (unknown);
-
-export type CreateStateRepAssignmentError = unknown;
-
-export type RevokeStateRepAssignmentData = {
-    path: {
-        id: string;
-    };
-};
-
-export type RevokeStateRepAssignmentResponse = (unknown);
-
-export type RevokeStateRepAssignmentError = unknown;
-
 export type ListTopicsData = {
     query?: {
         isActive?: boolean;
@@ -900,16 +1081,6 @@ export type CreateTopicResponse = (unknown);
 
 export type CreateTopicError = unknown;
 
-export type DeleteTopicData = {
-    path: {
-        id: string;
-    };
-};
-
-export type DeleteTopicResponse = (unknown);
-
-export type DeleteTopicError = unknown;
-
 export type GetTopicByIdData = {
     path: {
         id: string;
@@ -931,48 +1102,12 @@ export type UpdateTopicResponse = (unknown);
 
 export type UpdateTopicError = unknown;
 
-export type ListUsersData = {
-    query?: {
-        page?: number;
-        pageSize?: number;
-        role?: string;
-        search?: string;
-    };
-};
-
-export type ListUsersResponse = (unknown);
-
-export type ListUsersError = unknown;
-
-export type GetUserByIdData = {
+export type DeleteTopicData = {
     path: {
         id: string;
     };
 };
 
-export type GetUserByIdResponse = (unknown);
+export type DeleteTopicResponse = (unknown);
 
-export type GetUserByIdError = unknown;
-
-export type AssignUserRolesData = {
-    body: AssignUserRolesRequest;
-    path: {
-        id: string;
-    };
-};
-
-export type AssignUserRolesResponse = (unknown);
-
-export type AssignUserRolesError = unknown;
-
-export type GetAuthEchoResponse = (unknown);
-
-export type GetAuthEchoError = unknown;
-
-export type GetHealthResponse = (unknown);
-
-export type GetHealthError = unknown;
-
-export type GetHealthAuthenticatedResponse = (unknown);
-
-export type GetHealthAuthenticatedError = unknown;
+export type DeleteTopicError = unknown;

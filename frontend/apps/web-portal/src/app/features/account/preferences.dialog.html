@@ -1,0 +1,159 @@
+<div class="cce-prefs">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="cce-prefs__header">
+    <div class="cce-prefs__header-icon" aria-hidden="true">
+      <mat-icon>tune</mat-icon>
+    </div>
+    <div class="cce-prefs__header-text">
+      <h2 class="cce-prefs__title">{{ 'preferences.title' | transloco }}</h2>
+      <p class="cce-prefs__sub">{{ 'preferences.subtitle' | transloco }}</p>
+    </div>
+    <button type="button" mat-icon-button mat-dialog-close class="cce-prefs__close"
+      [attr.aria-label]="'common.actions.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ── Body ───────────────────────────────────────────────────────────────── -->
+  <mat-dialog-content>
+    <form class="cce-prefs__form">
+
+      @if (errorKind()) {
+        <div class="cce-prefs__error" role="alert">{{ ('errors.' + errorKind()) | transloco }}</div>
+      }
+
+      @if (loading()) {
+        <mat-progress-bar mode="indeterminate" />
+      } @else {
+
+        <!-- ── Carbon Area (multiple) ──────────────────────────────────────── -->
+        @if (carbonQuestion(); as q) {
+          <div class="cce-prefs__section" [class.cce-prefs__section--err]="carbonError()">
+            <p class="cce-prefs__section-title">
+              {{ isAr() ? q.titleAr : q.titleEn }}
+              <span class="cce-prefs__required" aria-hidden="true">*</span>
+              <span class="cce-prefs__section-hint">{{ 'preferences.interestsHint' | transloco }}</span>
+            </p>
+            <div class="cce-prefs__topics">
+              @for (opt of q.options; track opt.id) {
+                @if (opt.isActive) {
+                  <button
+                    type="button"
+                    class="cce-prefs__topic"
+                    [class.cce-prefs__topic--sel]="selectedCarbonIds().has(opt.id)"
+                    (click)="toggleCarbon(opt.id)"
+                  >
+                    <mat-icon class="cce-prefs__topic-mat-icon" aria-hidden="true">label</mat-icon>
+                    {{ optionName(opt) }}
+                  </button>
+                }
+              }
+            </div>
+            @if (carbonError()) {
+              <p class="cce-prefs__field-error">{{ 'preferences.interestsRequired' | transloco }}</p>
+            }
+          </div>
+        }
+
+        <!-- ── Knowledge Assessment (single) ──────────────────────────────── -->
+        @if (knowledgeQuestion(); as q) {
+          <div class="cce-prefs__section" [class.cce-prefs__section--err]="knowledgeError()">
+            <p class="cce-prefs__section-title">
+              {{ isAr() ? q.titleAr : q.titleEn }}
+              <span class="cce-prefs__required" aria-hidden="true">*</span>
+            </p>
+            <div class="cce-prefs__radio-group">
+              @for (opt of q.options; track opt.id) {
+                @if (opt.isActive) {
+                  <button
+                    type="button"
+                    class="cce-prefs__radio-card"
+                    [class.cce-prefs__radio-card--sel]="selectedKnowledgeId() === opt.id"
+                    (click)="selectKnowledge(opt.id)"
+                  >
+                    <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">{{ optionIcon(opt) }}</mat-icon>
+                    <span class="cce-prefs__radio-label">{{ optionName(opt) }}</span>
+                  </button>
+                }
+              }
+            </div>
+            @if (knowledgeError()) {
+              <p class="cce-prefs__field-error">{{ 'common.validation.required' | transloco }}</p>
+            }
+          </div>
+        }
+
+        <!-- ── Job Sector (single) ────────────────────────────────────────── -->
+        @if (jobSectorQuestion(); as q) {
+          <div class="cce-prefs__section" [class.cce-prefs__section--err]="jobSectorError()">
+            <p class="cce-prefs__section-title">
+              {{ isAr() ? q.titleAr : q.titleEn }}
+              <span class="cce-prefs__required" aria-hidden="true">*</span>
+            </p>
+            <div class="cce-prefs__radio-group">
+              @for (opt of q.options; track opt.id) {
+                @if (opt.isActive) {
+                  <button
+                    type="button"
+                    class="cce-prefs__radio-card"
+                    [class.cce-prefs__radio-card--sel]="selectedJobSectorId() === opt.id"
+                    (click)="selectJobSector(opt.id)"
+                  >
+                    <mat-icon class="cce-prefs__radio-icon" aria-hidden="true">{{ optionIcon(opt) }}</mat-icon>
+                    <span class="cce-prefs__radio-label">{{ optionName(opt) }}</span>
+                  </button>
+                }
+              }
+            </div>
+            @if (jobSectorError()) {
+              <p class="cce-prefs__field-error">{{ 'common.validation.required' | transloco }}</p>
+            }
+          </div>
+        }
+
+        <!-- ── Country ────────────────────────────────────────────────────── -->
+        <mat-form-field class="cce-prefs__country-field">
+          <mat-label>{{ 'preferences.country' | transloco }}</mat-label>
+          <input matInput [formControl]="countrySearch" [matAutocomplete]="countryAuto"
+            [placeholder]="'preferences.countryPlaceholder' | transloco" />
+          <mat-autocomplete #countryAuto (optionSelected)="onTargetCountrySelected($event.option.value, $event.option.viewValue)">
+            @for (c of filteredCountries(); track c.id) {
+              <mat-option [value]="c.id">
+                <span class="cce-prefs__cc-option">
+                  @if (c.flagUrl) {
+                    <img class="cce-prefs__cc-flag" [src]="c.flagUrl" [alt]="" aria-hidden="true" />
+                  }
+                  {{ isAr() ? c.nameAr : c.nameEn }}
+                </span>
+              </mat-option>
+            }
+          </mat-autocomplete>
+          @if (targetCountryId.invalid && targetCountryId.touched) {
+            <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+
+      }
+    </form>
+  </mat-dialog-content>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="skip()">{{ 'preferences.skip' | transloco }}</button>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      @if (saving()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" />
+      } @else {
+        {{ 'preferences.save' | transloco }}
+      }
+    </button>
+  </mat-dialog-actions>
+
+</div>

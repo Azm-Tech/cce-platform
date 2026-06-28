@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IdentityApiService, type Result } from './identity-api.service';
 import type { StateRepAssignment } from './identity.types';
 import { StateRepCreateDialogComponent } from './state-rep-create.dialog';
@@ -33,7 +33,7 @@ describe('StateRepCreateDialogComponent', () => {
     dialogRef = { close: jest.fn() };
 
     TestBed.configureTestingModule({
-      imports: [StateRepCreateDialogComponent, TranslateModule.forRoot()],
+      imports: [StateRepCreateDialogComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         { provide: IdentityApiService, useValue: api },

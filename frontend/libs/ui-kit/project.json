@@ -31,6 +31,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "stylelint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "stylelint \"libs/ui-kit/**/*.scss\""
+      }
     }
   }
 }

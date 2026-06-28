@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuditApiService, type Result } from './audit-api.service';
 import type { AuditEvent, PagedResult } from './audit.types';
 import { AuditPage } from './audit.page';
@@ -25,7 +25,7 @@ describe('AuditPage', () => {
   beforeEach(async () => {
     list = jest.fn().mockResolvedValue(ok({ items: [E], page: 1, pageSize: 50, total: 1 }));
     await TestBed.configureTestingModule({
-      imports: [AuditPage, TranslateModule.forRoot()],
+      imports: [AuditPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),

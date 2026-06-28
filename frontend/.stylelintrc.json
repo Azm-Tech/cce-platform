@@ -1,0 +1,35 @@
+{
+  "//": "Minimal, focused config: ENFORCE the no-hardcoded-color rule (CLAUDE.md gotcha #7 / PERF001). Not the full standard ruleset — we don't want to flag pre-existing style nits, only hardcoded colors. All colors must be design tokens: var(--…) from libs/ui-kit/src/lib/styles/_palette.scss.",
+  "overrides": [
+    {
+      "files": ["**/*.scss"],
+      "customSyntax": "postcss-scss"
+    }
+  ],
+  "rules": {
+    "color-no-hex": [
+      true,
+      {
+        "message": "No hardcoded hex colors. Use a design token: var(--…) from _palette.scss. Need a new color? Add it to _palette.scss first. (CLAUDE.md #7 / PERF001)"
+      }
+    ],
+    "color-named": [
+      "never",
+      {
+        "message": "No named colors. Use a design token: var(--…) from _palette.scss. (CLAUDE.md #7 / PERF001)"
+      }
+    ],
+    "function-disallowed-list": [
+      ["hsl", "hsla"],
+      {
+        "message": "No raw hsl()/hsla(). Use a design token: var(--…), or rgba(var(--x-rgb), a). (CLAUDE.md #7 / PERF001)"
+      }
+    ]
+  },
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "libs/ui-kit/src/lib/styles/_palette.scss"
+  ]
+}

@@ -2,7 +2,7 @@
   <!-- Back link as a branded pill -->
   <a class="cce-map-viewer__back" routerLink="/knowledge-maps">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'knowledgeMaps.backToList' | translate }}
+    {{ 'knowledgeMaps.backToList' | transloco }}
   </a>
 
   <!-- Slim top progress bar (kept for loading-state continuity) -->
@@ -16,19 +16,19 @@
       <span class="cce-map-viewer__notfound-art" aria-hidden="true">
         <mat-icon>map</mat-icon>
       </span>
-      <h1>{{ 'knowledgeMaps.notFound' | translate }}</h1>
-      <p>{{ 'knowledgeMaps.notFoundDesc' | translate }}</p>
+      <h1>{{ 'knowledgeMaps.notFound' | transloco }}</h1>
+      <p>{{ 'knowledgeMaps.notFoundDesc' | transloco }}</p>
       <a mat-flat-button color="primary" routerLink="/knowledge-maps">
         <mat-icon>arrow_back</mat-icon>
-        {{ 'knowledgeMaps.backToList' | translate }}
+        {{ 'knowledgeMaps.backToList' | transloco }}
       </a>
     </div>
   } @else if (store.errorKind()) {
     <div class="cce-map-viewer__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + store.errorKind()) | translate }}</span>
+      <span>{{ ('errors.' + store.errorKind()) | transloco }}</span>
       <button mat-stroked-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
@@ -47,7 +47,7 @@
       <div class="cce-map-viewer__header-text">
         <span class="cce-map-viewer__header-eyebrow">
           <mat-icon aria-hidden="true">account_tree</mat-icon>
-          {{ 'knowledgeMaps.title' | translate }}
+          {{ 'knowledgeMaps.title' | transloco }}
         </span>
         <h1>{{ locale() === 'ar' ? tab.metadata.nameAr : tab.metadata.nameEn }}</h1>
         <p>{{ locale() === 'ar' ? tab.metadata.descriptionAr : tab.metadata.descriptionEn }}</p>
@@ -56,17 +56,17 @@
           <li>
             <mat-icon aria-hidden="true">scatter_plot</mat-icon>
             <strong>{{ tab.nodes.length }}</strong>
-            <span>{{ 'knowledgeMaps.metaNodes' | translate }}</span>
+            <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
           </li>
           <li>
             <mat-icon aria-hidden="true">timeline</mat-icon>
             <strong>{{ tab.edges.length }}</strong>
-            <span>{{ 'knowledgeMaps.metaEdges' | translate }}</span>
+            <span>{{ 'knowledgeMaps.metaEdges' | transloco }}</span>
           </li>
           <li>
             <mat-icon aria-hidden="true">tab</mat-icon>
             <strong>{{ store.openTabs().length }}</strong>
-            <span>{{ 'knowledgeMaps.metaTabs' | translate }}</span>
+            <span>{{ 'knowledgeMaps.metaTabs' | transloco }}</span>
           </li>
         </ul>
       </div>
@@ -75,29 +75,29 @@
         <div
           class="cce-map-viewer__view-toggle"
           role="group"
-          [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate"
+          [attr.aria-label]="'knowledgeMaps.viewMode.graph' | transloco"
         >
           <button
             type="button"
             class="cce-map-viewer__view-toggle-btn"
             [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'graph'"
-            [attr.aria-label]="'knowledgeMaps.viewMode.graph' | translate"
+            [attr.aria-label]="'knowledgeMaps.viewMode.graph' | transloco"
             [attr.aria-pressed]="store.viewMode() === 'graph'"
             (click)="onSetViewMode('graph')"
           >
             <mat-icon>account_tree</mat-icon>
-            <span>{{ 'knowledgeMaps.viewMode.graph' | translate }}</span>
+            <span>{{ 'knowledgeMaps.viewMode.graph' | transloco }}</span>
           </button>
           <button
             type="button"
             class="cce-map-viewer__view-toggle-btn"
             [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'list'"
-            [attr.aria-label]="'knowledgeMaps.viewMode.list' | translate"
+            [attr.aria-label]="'knowledgeMaps.viewMode.list' | transloco"
             [attr.aria-pressed]="store.viewMode() === 'list'"
             (click)="onSetViewMode('list')"
           >
             <mat-icon>list</mat-icon>
-            <span>{{ 'knowledgeMaps.viewMode.list' | translate }}</span>
+            <span>{{ 'knowledgeMaps.viewMode.list' | transloco }}</span>
           </button>
         </div>
         <cce-export-menu

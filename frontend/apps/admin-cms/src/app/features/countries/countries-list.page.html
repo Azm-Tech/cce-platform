@@ -1,45 +1,45 @@
-<h1 class="cce-countries__title">{{ 'countries.title' | translate }}</h1>
+<h1 class="cce-countries__title">{{ 'countries.title' | transloco }}</h1>
 
 <mat-form-field appearance="outline" class="cce-countries__filter">
-  <mat-label>{{ 'countries.filter.search' | translate }}</mat-label>
+  <mat-label>{{ 'countries.filter.search' | transloco }}</mat-label>
   <input matInput type="search" [ngModel]="searchInput()"
     (ngModelChange)="searchInput.set($event)" (keyup.enter)="onSearch()" />
 </mat-form-field>
 
 @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 @if (errorKind(); as kind) {
-  <div class="cce-countries__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-countries__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <table mat-table [dataSource]="rows()" class="cce-countries__table">
   <ng-container matColumnDef="flag">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.flag' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.flag' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
       @if (r.flagUrl) {
-        <img [src]="r.flagUrl" [alt]="r.nameEn + ' flag'" class="cce-countries__flag" />
+        <img [src]="r.flagUrl" [alt]="(isAr() ? r.nameAr : r.nameEn) + ' flag'" class="cce-countries__flag" />
       }
     </td>
   </ng-container>
   <ng-container matColumnDef="iso">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.iso' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.iso' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.isoAlpha3 }}</td>
   </ng-container>
   <ng-container matColumnDef="nameEn">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.name' | translate }}</th>
-    <td mat-cell *matCellDef="let r">{{ r.nameEn }}</td>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.name' | transloco }}</th>
+    <td mat-cell *matCellDef="let r">{{ isAr() ? r.nameAr : r.nameEn }}</td>
   </ng-container>
   <ng-container matColumnDef="region">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.region' | translate }}</th>
-    <td mat-cell *matCellDef="let r">{{ r.regionEn }}</td>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.region' | transloco }}</th>
+    <td mat-cell *matCellDef="let r">{{ isAr() ? r.regionAr : r.regionEn }}</td>
   </ng-container>
   <ng-container matColumnDef="isActive">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.active' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.active' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.isActive ? '✓' : '—' }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.actions' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'countries.col.actions' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
-      <a mat-button [routerLink]="['/countries', r.id]">{{ 'countries.detail.openButton' | translate }}</a>
+      <a mat-button [routerLink]="['/countries', r.id]">{{ 'countries.detail.openButton' | transloco }}</a>
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

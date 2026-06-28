@@ -1,97 +1,97 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CalendarMenuComponent, type CalendarEventInput } from '../../shared/calendar-menu/calendar-menu.component';
+import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import type { Event as EventModel } from './event.types';
 
 /**
- * Public event card. Same horizontal 75/25 layout as news + topic
- * cards. The eyebrow shows ONLINE / IN PERSON / WEBINAR + a relative-
- * time indicator (TODAY / UPCOMING / PAST). The media column shows
- * the event image when present, otherwise a brand gradient + the
- * event icon (`event` for in-person, `videocam` for online).
+ * Public event card — vertical layout matching the unified News & Events
+ * design:
+ *   [ image header with type-badge (upcoming / past / today) ]
+ *   [ meta row: date + venue (or Zoom) ]
+ *   [ title ]
+ *   [ excerpt (description) ]
+ *   [ footer: share + (upcoming only) add-to-calendar ]
  */
 @Component({
   selector: 'cce-event-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [
+    CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule,
+    CalendarMenuComponent, ShareMenuComponent,
+  ],
   template: `
-    <a class="cce-event-card" [routerLink]="['/events', event().id]"
-       [attr.aria-label]="title()">
-      <div class="cce-event-card__media"
-           [class.cce-event-card__media--placeholder]="!event().featuredImageUrl">
+    <article class="cce-event-card">
+      <a class="cce-event-card__media"
+         [routerLink]="['/events', event().id]"
+         [attr.aria-label]="title()">
         @if (event().featuredImageUrl; as src) {
           <img [src]="src" [alt]="title()" loading="lazy" referrerpolicy="no-referrer" />
         } @else {
           <span class="cce-event-card__media-icon" aria-hidden="true">
-            <mat-icon>{{ event().onlineMeetingUrl ? 'videocam' : 'event' }}</mat-icon>
+            <mat-icon>image</mat-icon>
           </span>
         }
-        <!-- Day-pill on the media: shows the day number + month. -->
-        <span class="cce-event-card__day-pill" aria-hidden="true">
-          <span class="cce-event-card__day-pill-day">{{ event().startsOn | date:'d' }}</span>
-          <span class="cce-event-card__day-pill-mon">{{ event().startsOn | date:'MMM' }}</span>
+        <span class="cce-event-card__badge"
+              [class.cce-event-card__badge--past]="timeBucket() === 'past'"
+              [class.cce-event-card__badge--today]="timeBucket() === 'today'">
+          <mat-icon aria-hidden="true">event</mat-icon>
+          @if (timeBucket() === 'today') {
+            {{ 'events.tagToday' | transloco }}
+          } @else if (timeBucket() === 'past') {
+            {{ 'events.tagPast' | transloco }}
+          } @else {
+            {{ 'events.tagUpcoming' | transloco }}
+          }
         </span>
-      </div>
+      </a>
 
       <div class="cce-event-card__content">
-        <span class="cce-event-card__eyebrow-row">
-          <span class="cce-event-card__eyebrow"
-                [class.cce-event-card__eyebrow--online]="event().onlineMeetingUrl">
-            @if (event().onlineMeetingUrl) {
-              <mat-icon aria-hidden="true">videocam</mat-icon>
-              {{ 'events.tagOnline' | translate }}
-            } @else {
-              <mat-icon aria-hidden="true">place</mat-icon>
-              {{ 'events.tagInPerson' | translate }}
-            }
+        <div class="cce-event-card__meta">
+          <span class="cce-event-card__meta-item">
+            <mat-icon aria-hidden="true">calendar_today</mat-icon>
+            {{ event().startsOn | date:'longDate' }}
           </span>
-          <span class="cce-event-card__when"
-                [class.cce-event-card__when--past]="timeBucket() === 'past'"
-                [class.cce-event-card__when--today]="timeBucket() === 'today'">
-            @if (timeBucket() === 'today') {
-              {{ 'events.tagToday' | translate }}
-            } @else if (timeBucket() === 'past') {
-              {{ 'events.tagPast' | translate }}
-            } @else {
-              {{ 'events.tagUpcoming' | translate }}
-            }
-          </span>
-        </span>
-
-        <h3 class="cce-event-card__title">{{ title() }}</h3>
-
-        <ul class="cce-event-card__meta" role="list">
-          <li>
-            <mat-icon aria-hidden="true">event</mat-icon>
-            {{ event().startsOn | date:'mediumDate' }}
-          </li>
-          <li>
-            <mat-icon aria-hidden="true">schedule</mat-icon>
-            {{ event().startsOn | date:'shortTime' }}
-          </li>
-          @if (locationLabel(); as loc) {
-            <li class="cce-event-card__meta-loc">
-              <mat-icon aria-hidden="true">location_on</mat-icon>
-              {{ loc }}
-            </li>
+          @if (venueLabel(); as v) {
+            <span class="cce-event-card__meta-item cce-event-card__meta-loc">
+              <mat-icon aria-hidden="true">{{ event().onlineMeetingUrl ? 'videocam' : 'location_on' }}</mat-icon>
+              {{ v }}
+            </span>
           }
-        </ul>
-
-        <div class="cce-event-card__foot">
-          <span class="cce-event-card__cta">
-            {{ 'events.viewEvent' | translate }}
-            <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-          </span>
         </div>
+
+        @if (topicLabel(); as topic) {
+          <span class="cce-event-card__topic">{{ topic }}</span>
+        }
+
+        <a class="cce-event-card__title-link"
+           [routerLink]="['/events', event().id]"
+           [attr.aria-label]="title()">
+          <h3 class="cce-event-card__title">{{ title() }}</h3>
+        </a>
+
+        @if (excerpt()) {
+          <p class="cce-event-card__excerpt">{{ excerpt() }}</p>
+        }
       </div>
-    </a>
+
+      <footer class="cce-event-card__foot">
+        <cce-share-menu [title]="title()" [url]="absoluteUrl()" />
+        @if (timeBucket() !== 'past') {
+          <cce-calendar-menu [event]="calendarPayload()" />
+        }
+      </footer>
+    </article>
   `,
   styleUrl: './event-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventCardComponent {
+  private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   readonly event = input.required<EventModel>();
   readonly locale = input<'ar' | 'en'>('en');
 
@@ -100,13 +100,33 @@ export class EventCardComponent {
     return this.locale() === 'ar' ? e.titleAr : e.titleEn;
   });
 
-  readonly locationLabel = computed<string | null>(() => {
+  /** Localized topic chip (US010 AC3 — list shows Title, Date, Topic). */
+  readonly topicLabel = computed<string | null>(() => {
     const e = this.event();
-    if (e.onlineMeetingUrl) return null; // covered by ONLINE chip
+    return (this.locale() === 'ar' ? e.topicNameAr : e.topicNameEn) || null;
+  });
+
+  readonly excerpt = computed(() => {
+    const e = this.event();
+    const content = this.locale() === 'ar' ? e.descriptionAr : e.descriptionEn;
+    const stripped = (content ?? '').replace(/<[^>]*>/g, '').trim();
+    return stripped.length > 140 ? stripped.slice(0, 140) + '…' : stripped;
+  });
+
+  /** Show the online URL label when online; otherwise locale-aware location. */
+  readonly venueLabel = computed<string | null>(() => {
+    this.locale(); // reactive dependency for language switch
+    const e = this.event();
+    if (e.onlineMeetingUrl) {
+      const url = e.onlineMeetingUrl.toLowerCase();
+      if (url.includes('zoom')) return this.transloco.translate('events.venue.zoom');
+      if (url.includes('teams.microsoft')) return this.transloco.translate('events.venue.teams');
+      if (url.includes('meet.google')) return this.transloco.translate('events.venue.meet');
+      return this.transloco.translate('events.venue.online');
+    }
     return this.locale() === 'ar' ? e.locationAr : e.locationEn;
   });
 
-  /** Bucket the event into today / upcoming / past for the time chip. */
   readonly timeBucket = computed<'today' | 'upcoming' | 'past'>(() => {
     const e = this.event();
     const now = Date.now();
@@ -123,5 +143,25 @@ export class EventCardComponent {
     if (sameDay(start, now) || (start <= now && end >= now)) return 'today';
     if (start < now) return 'past';
     return 'upcoming';
+  });
+
+  readonly calendarPayload = computed<CalendarEventInput>(() => {
+    const e = this.event();
+    const loc = this.locale() === 'ar' ? e.locationAr : e.locationEn;
+    const desc = this.locale() === 'ar' ? e.descriptionAr : e.descriptionEn;
+    return {
+      id: e.id,
+      title: this.title(),
+      description: desc,
+      location: e.onlineMeetingUrl ?? loc,
+      startsOn: e.startsOn,
+      endsOn: e.endsOn,
+    };
+  });
+
+  readonly absoluteUrl = computed<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const tree = this.router.createUrlTree(['/events', this.event().id]);
+    return new URL(tree.toString(), window.location.origin).toString();
   });
 }

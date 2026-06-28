@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export interface SaveScenarioDialogData {
   initialName: string;
@@ -29,7 +29,7 @@ export interface SaveScenarioDialogResult {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './save-scenario-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

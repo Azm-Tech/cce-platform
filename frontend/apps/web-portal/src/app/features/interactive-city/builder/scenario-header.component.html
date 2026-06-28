@@ -1,28 +1,29 @@
 <form [formGroup]="form" class="cce-scenario-header" autocomplete="off">
   <mat-form-field appearance="outline" class="cce-scenario-header__name">
-    <mat-label>{{ 'interactiveCity.builder.name' | translate }}</mat-label>
+    <mat-label>{{ 'interactiveCity.builder.name' | transloco }}</mat-label>
     <input
       matInput
       type="text"
       formControlName="name"
-      [placeholder]="'interactiveCity.builder.namePlaceholder' | translate"
+      [placeholder]="'interactiveCity.builder.namePlaceholder' | transloco"
       maxlength="200"
     />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-scenario-header__city">
-    <mat-label>{{ 'interactiveCity.builder.cityType' | translate }}</mat-label>
-    <mat-select formControlName="cityType">
-      @for (c of cityTypes; track c) {
+    <mat-label>{{ 'interactiveCity.builder.cityType' | transloco }}</mat-label>
+    <input matInput [formControl]="cityTypeSearch" [matAutocomplete]="cityTypeAuto" />
+    <mat-autocomplete #cityTypeAuto (optionSelected)="onCityTypeSelected($event.option.value)">
+      @for (c of filteredCityTypes(); track c) {
         <mat-option [value]="c">
-          {{ 'interactiveCity.cityType.' + c | translate }}
+          {{ 'interactiveCity.cityType.' + c | transloco }}
         </mat-option>
       }
-    </mat-select>
+    </mat-autocomplete>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="cce-scenario-header__year">
-    <mat-label>{{ 'interactiveCity.builder.targetYear' | translate }}</mat-label>
+    <mat-label>{{ 'interactiveCity.builder.targetYear' | transloco }}</mat-label>
     <input
       matInput
       type="number"

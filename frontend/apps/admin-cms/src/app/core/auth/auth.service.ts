@@ -1,126 +1,189 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { AuthApiService, AuthUser, TokenPair } from './auth-api.service';
+import { ToastService } from '@frontend/ui-kit';
+import { CceAdminRole, CcePermission, CcePortalRole } from '@frontend/contracts';
 
-export interface CurrentUser {
-  id: string;
-  email: string;
-  userName: string;
-  permissions: readonly string[];
+export interface CurrentUser extends AuthUser {
+  permissions: readonly CcePermission[];
 }
 
-/**
- * Dev-mode role → permission map. Mirrors what the production backend
- * would compute server-side (per ADR / permissions.yaml). Used by
- * `AuthService.refresh()` when the admin backend doesn't expose a
- * `/api/me` endpoint, so we can derive permissions client-side from
- * the `cce-dev-role` cookie set by `/dev/sign-in?role=...`.
- *
- * Platform Admin gets every permission referenced by the nav-config;
- * other roles get scoped subsets so each persona sees a meaningful
- * but limited menu.
- */
-const ALL_NAV_PERMISSIONS = [
-  'User.Read', 'Role.Assign',
-  'Community.Expert.ApproveRequest', 'Community.Post.Moderate',
-  'Resource.Center.Upload', 'Resource.Country.Approve',
-  'News.Update', 'Event.Manage',
-  'Page.Edit',
-  'Country.Profile.Update',
-  'Notification.TemplateManage',
-  'Report.UserRegistrations',
-  'Audit.Read',
-  'Translation.Manage', 'Settings.Manage',
-] as const;
+const ALL_PERMISSIONS: readonly CcePermission[] = [
+  CcePermission.UserRead,
+  CcePermission.RoleAssign,
+  CcePermission.CommunityExpertApprove,
+  CcePermission.CommunityPostModerate,
+  CcePermission.ResourceCenterUpload,
+  CcePermission.ResourceCenterUpdate,
+  CcePermission.ResourceCenterDelete,
+  CcePermission.ResourceCountryApprove,
+  CcePermission.NewsUpdate,
+  CcePermission.NewsPublish,
+  CcePermission.NewsDelete,
+  CcePermission.EventManage,
+  CcePermission.PageEdit,
+  CcePermission.CountryProfileUpdate,
+  CcePermission.NotificationTemplateManage,
+  CcePermission.ReportUserRegistrations,
+  CcePermission.ReportExpertList,
+  CcePermission.ReportSatisfactionSurvey,
+  CcePermission.ReportCommunityPosts,
+  CcePermission.ReportNews,
+  CcePermission.ReportEvents,
+  CcePermission.ReportResources,
+  CcePermission.ReportCountryProfiles,
+  CcePermission.AuditRead,
+  CcePermission.TranslationManage,
+  CcePermission.SettingsManage,
+];
 
-const DEV_PERMISSIONS_BY_ROLE: Record<string, readonly string[]> = {
-  // Platform admin gets everything, including Translations + Settings.
-  'cce-admin': ALL_NAV_PERMISSIONS,
-  // CMS editor: content + page operations + translations (so they can
-  // localize new content without admin approval).
-  'cce-editor': [
-    'Resource.Center.Upload', 'News.Update', 'Event.Manage',
-    'Page.Edit', 'User.Read', 'Translation.Manage',
+const SUPER_ADMIN_PERMISSIONS: readonly CcePermission[] = [
+  ...ALL_PERMISSIONS,
+  CcePermission.UserDelete,
+];
+
+const PERMISSIONS_BY_ROLE: Partial<Record<CceAdminRole | CcePortalRole, readonly CcePermission[]>> = {
+  [CceAdminRole.SuperAdmin]: SUPER_ADMIN_PERMISSIONS,
+  [CceAdminRole.Admin]:      ALL_PERMISSIONS,
+  [CceAdminRole.ContentManager]: [
+    CcePermission.ResourceCenterUpload,
+    CcePermission.ResourceCenterUpdate,
+    CcePermission.ResourceCenterDelete,
+    CcePermission.NewsUpdate,
+    CcePermission.NewsPublish,
+    CcePermission.NewsDelete,
+    CcePermission.EventManage,
+    CcePermission.PageEdit,
+    CcePermission.CountryProfileUpdate,
+    CcePermission.TranslationManage,
+    CcePermission.ReportNews,
+    CcePermission.ReportEvents,
+    CcePermission.ReportResources,
   ],
-  // Reviewer: moderation tasks only — no settings/translations.
-  'cce-reviewer': [
-    'Resource.Country.Approve', 'Community.Post.Moderate',
-    'Community.Expert.ApproveRequest', 'User.Read',
+  [CcePortalRole.StateRepresentative]: [
+    CcePermission.ResourceCountryApprove,
+    CcePermission.CountryProfileUpdate,
+    CcePermission.ReportCountryProfiles,
   ],
-  'cce-expert': ['User.Read'],
-  'cce-user': [],
 };
 
-const DEV_USER_INFO_BY_ROLE: Record<string, { email: string; userName: string; id: string }> = {
-  'cce-admin':    { id: 'aaaaaaaa-aaaa-aaaa-aaaa-000000000001', email: 'cce-admin@cce.local',    userName: 'cce-admin' },
-  'cce-editor':   { id: 'aaaaaaaa-aaaa-aaaa-aaaa-000000000002', email: 'cce-editor@cce.local',   userName: 'cce-editor' },
-  'cce-reviewer': { id: 'aaaaaaaa-aaaa-aaaa-aaaa-000000000003', email: 'cce-reviewer@cce.local', userName: 'cce-reviewer' },
-  'cce-expert':   { id: 'aaaaaaaa-aaaa-aaaa-aaaa-000000000004', email: 'cce-expert@cce.local',   userName: 'cce-expert' },
-  'cce-user':     { id: 'aaaaaaaa-aaaa-aaaa-aaaa-000000000005', email: 'cce-user@cce.local',     userName: 'cce-user' },
-};
+const REFRESH_TOKEN_KEY = 'cce_admin_rt';
+
+function derivePermissions(roles: (CceAdminRole | CcePortalRole)[]): readonly CcePermission[] {
+  const perms = new Set<CcePermission>();
+  for (const role of roles) {
+    for (const perm of PERMISSIONS_BY_ROLE[role as CceAdminRole] ?? []) {
+      perms.add(perm);
+    }
+  }
+  return [...perms];
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
-  private readonly _currentUser = signal<CurrentUser | null>(null);
-  readonly currentUser = this._currentUser.asReadonly();
-  readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  private readonly authApi = inject(AuthApiService);
+  private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
-  /**
-   * Bootstraps the user. Tries `/api/me` first; falls back to deriving
-   * the user + permissions from the `cce-dev-role` cookie set by the
-   * BFF dev-sign-in shim (the admin backend doesn't ship /api/me yet).
-   * Call from APP_INITIALIZER.
-   */
+  private readonly _currentUser = signal<CurrentUser | null>(null);
+  private readonly _accessToken = signal<string | null>(null);
+  private _refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private _refreshInFlight: Promise<void> | null = null;
+
+  readonly currentUser = this._currentUser.asReadonly();
+  readonly accessToken = this._accessToken.asReadonly();
+  readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  readonly roles = computed(() => this._currentUser()?.roles ?? []);
+
+  hasRole(role: CceAdminRole): boolean {
+    return this._currentUser()?.roles.includes(role) ?? false;
+  }
+
+  hasAnyRole(...roles: CceAdminRole[]): boolean {
+    return roles.some((r) => this.hasRole(r));
+  }
+
+  setSession(tokens: TokenPair): void {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
+    this._accessToken.set(tokens.accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+    // Fall back to SUPER_ADMIN_PERMISSIONS when the API returns an empty roles array.
+    // Remove once the backend includes roles in the login/refresh response.
+    const permissions = tokens.user.roles.length > 0
+      ? derivePermissions(tokens.user.roles)
+      : SUPER_ADMIN_PERMISSIONS;
+    this._currentUser.set({ ...tokens.user, permissions });
+    const delay = new Date(tokens.accessTokenExpiresAtUtc).getTime() - Date.now() - 60_000;
+    if (delay > 0) {
+      this._refreshTimer = setTimeout(() => void this.refresh(), delay);
+    }
+  }
+
+  hasPermission(permission: CcePermission): boolean {
+    return this._currentUser()?.permissions.includes(permission) ?? false;
+  }
+
+  hasAnyPermission(...permissions: CcePermission[]): boolean {
+    return permissions.some((p) => this.hasPermission(p));
+  }
+
   async refresh(): Promise<void> {
-    // Try the real endpoint first (future-proofs against the day the
-    // admin backend ships /api/me).
+    if (this._refreshInFlight) return this._refreshInFlight;
+    this._refreshInFlight = this._doRefresh().finally(() => {
+      this._refreshInFlight = null;
+    });
+    return this._refreshInFlight;
+  }
+
+  private async _doRefresh(): Promise<void> {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    if (!refreshToken) {
+      this._currentUser.set(null);
+      return;
+    }
     try {
-      const me = await firstValueFrom(this.http.get<CurrentUser>('/api/me'));
-      this._currentUser.set(me);
-      return;
+      const tokens = await firstValueFrom(this.authApi.refresh(refreshToken));
+      this.setSession(tokens);
     } catch {
-      // fall through to cookie-derived user
-    }
-    const role = this.readDevRoleCookie();
-    if (!role) {
+      this._accessToken.set(null);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
       this._currentUser.set(null);
-      return;
     }
-    const info = DEV_USER_INFO_BY_ROLE[role];
-    const permissions = DEV_PERMISSIONS_BY_ROLE[role] ?? [];
-    if (!info) {
-      this._currentUser.set(null);
-      return;
-    }
-    this._currentUser.set({
-      id: info.id,
-      email: info.email,
-      userName: info.userName,
-      permissions,
+  }
+
+  signIn(returnUrl: string = '/'): void {
+    void this.router.navigate(['/login'], {
+      queryParams: returnUrl && returnUrl !== '/login' ? { returnUrl } : undefined,
     });
   }
 
-  hasPermission(permission: string): boolean {
-    const u = this._currentUser();
-    return u?.permissions.includes(permission) ?? false;
+  async signOut(): Promise<void> {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    try {
+      if (refreshToken) {
+        await firstValueFrom(this.authApi.logout(refreshToken));
+      }
+      this.toast.success('account.logout.successMessage');
+    } catch {
+      this.toast.error('account.logout.errorMessage');
+    } finally {
+      this._accessToken.set(null);
+      this._currentUser.set(null);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      void this.router.navigate(['/login']);
+    }
   }
 
-  /** Public test helper — explicitly set the user. Not for application code; AuthService.refresh() is the prod path. */
+  /** Public test helper. Not for application code. */
   _setUserForTest(user: CurrentUser | null): void {
     this._currentUser.set(user);
-  }
-
-  signOut(): void {
-    this._currentUser.set(null);
-    // Expire the dev cookie client-side, then bounce home.
-    document.cookie = 'cce-dev-role=; Path=/; Max-Age=0';
-    window.location.assign('/');
-  }
-
-  private readDevRoleCookie(): string | null {
-    if (typeof document === 'undefined') return null;
-    const m = document.cookie.match(/(?:^|;\s*)cce-dev-role=([^;]+)/);
-    return m ? decodeURIComponent(m[1]) : null;
   }
 }

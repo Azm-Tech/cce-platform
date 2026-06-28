@@ -22,18 +22,22 @@ const TOPIC: PublicTopic = {
 };
 
 const POST: PublicPost = {
-  id: 'p1', topicId: 't1', authorId: 'u1',
+  id: 'p1', communityId: 'c1', topicId: 't1',
+  type: 'Info',
+  title: 'Test', author: { id: 'u1', name: 'Alice', avatarUrl: null, isExpert: false, postsCount: 0, followerCount: 0 },
   content: 'Hello', locale: 'en',
-  isAnswerable: true,
-  answeredReplyId: null,
-  createdOn: '2026-04-29T12:00:00Z',
+  isAnswerable: true, answeredReplyId: null,
+  upvoteCount: 0, downvoteCount: 0, commentsCount: 0,
+  attachmentIds: [], createdOn: '2026-04-29T12:00:00Z',
+  topicNameAr: null, topicNameEn: null,
+  isWatchlisted: false, voteStatus: 0,
 };
 
 const REPLY: PublicPostReply = {
   id: 'r1', postId: 'p1', authorId: 'u2',
   content: 'Reply', locale: 'en',
-  parentReplyId: null,
-  isByExpert: false,
+  parentReplyId: null, isByExpert: false,
+  depth: 0, childCount: 0, upvoteCount: 0,
   createdOn: '2026-04-29T13:00:00Z',
 };
 

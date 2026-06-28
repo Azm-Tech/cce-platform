@@ -3,7 +3,7 @@
 .cce-search-results__header { margin-bottom: 1rem; }
 .cce-search-results__header h1 { margin: 0; }
 .cce-search-results__query {
-  color: #1565c0;
+  color: var(--primary--700);
   font-style: italic;
 }
 .cce-search-results__count {
@@ -54,8 +54,8 @@
 }
 
 .cce-search-results__facet-btn--active {
-  background: rgba(21, 101, 192, 0.1);
-  color: #1565c0;
+  background: rgba(var(--primary--700-rgb), 0.1);
+  color: var(--primary--700);
   font-weight: 600;
 }
 
@@ -69,8 +69,8 @@
 }
 
 .cce-search-results__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;

@@ -1,22 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
-  FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
-} from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
-import { TranslateModule } from '@ngx-translate/core';
-import { LocaleService } from '@frontend/i18n';
-import { ToastService } from '@frontend/ui-kit';
-import { CommunityApiService } from './community-api.service';
-import type { CreatePostPayload } from './community.types';
+  ComposePostFormComponent,
+  type ComposePostSubmittedEvent,
+} from './compose-post-form.component';
+import type { PublicTopic } from './community.types';
 
 export interface ComposePostDialogData {
-  topicId: string;
+  topics: PublicTopic[];
+  preselectedTopicId?: string | null;
 }
 
 export interface ComposePostDialogResult {
@@ -24,69 +18,43 @@ export interface ComposePostDialogResult {
   postId?: string;
 }
 
-interface ComposePostFormShape {
-  content: FormControl<string>;
-  locale: FormControl<'ar' | 'en'>;
-  isAnswerable: FormControl<boolean>;
-}
-
 @Component({
   selector: 'cce-compose-post-dialog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule,
-    MatDialogModule, MatButtonModule, MatCheckboxModule,
-    MatFormFieldModule, MatInputModule, MatRadioModule,
-    TranslateModule,
-  ],
+  imports: [MatDialogModule, MatIconModule, TranslocoModule, ComposePostFormComponent],
   templateUrl: './compose-post-dialog.component.html',
   styleUrl: './compose-post-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Default required — dialog overlay boundary breaks Transloco with OnPush
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ComposePostDialogComponent {
-  private readonly api = inject(CommunityApiService);
-  private readonly toast = inject(ToastService);
-  private readonly localeService = inject(LocaleService);
+  readonly data = inject<ComposePostDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef =
     inject<MatDialogRef<ComposePostDialogComponent, ComposePostDialogResult>>(MatDialogRef);
-  readonly data = inject<ComposePostDialogData>(MAT_DIALOG_DATA);
-  private readonly fb = inject(FormBuilder);
 
-  readonly submitting = signal(false);
-  readonly errorKind = signal<string | null>(null);
+  readonly formRef = viewChild.required(ComposePostFormComponent);
 
-  readonly form: FormGroup<ComposePostFormShape> = this.fb.nonNullable.group({
-    content: this.fb.nonNullable.control('', [
-      Validators.required,
-      Validators.minLength(10),
-      Validators.maxLength(5000),
-    ]),
-    locale: this.fb.nonNullable.control<'ar' | 'en'>(this.localeService.locale(), Validators.required),
-    isAnswerable: this.fb.nonNullable.control(true),
-  });
-
-  async submit(): Promise<void> {
-    if (this.form.invalid) return;
-    const v = this.form.getRawValue();
-    const payload: CreatePostPayload = {
-      topicId: this.data.topicId,
-      content: v.content,
-      locale: v.locale,
-      isAnswerable: v.isAnswerable,
-    };
-    this.submitting.set(true);
-    this.errorKind.set(null);
-    const res = await this.api.createPost(payload);
-    this.submitting.set(false);
-    if (res.ok) {
-      this.toast.success('community.compose.toast');
-      this.dialogRef.close({ submitted: true, postId: res.value.id });
-    } else {
-      this.errorKind.set(res.error.kind);
-    }
+  onFormSubmitted(event: ComposePostSubmittedEvent): void {
+    this.dialogRef.close({ submitted: true, postId: event.postId });
   }
 
   cancel(): void {
     this.dialogRef.close({ submitted: false });
+  }
+
+  /** Open the dialog with consistent width/config from any caller. */
+  static open(
+    dialog: MatDialog,
+    data: ComposePostDialogData,
+  ): MatDialogRef<ComposePostDialogComponent, ComposePostDialogResult> {
+    return dialog.open<ComposePostDialogComponent, ComposePostDialogData, ComposePostDialogResult>(
+      ComposePostDialogComponent,
+      {
+        data,
+        width: '600px',
+        maxWidth: '96vw',
+        autoFocus: 'first-tabbable',
+      },
+    );
   }
 }

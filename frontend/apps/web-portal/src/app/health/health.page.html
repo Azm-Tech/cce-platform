@@ -1,19 +1,19 @@
 <mat-card class="health-card">
   <mat-card-header>
-    <mat-card-title>{{ "health.title" | translate }}</mat-card-title>
+    <mat-card-title>{{ "health.title" | transloco }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>
     @if (loading()) {
       <mat-spinner diameter="32"></mat-spinner>
-      <span>{{ "common.loading" | translate }}</span>
+      <span>{{ "common.loading" | transloco }}</span>
     } @else if (error()) {
-      <p role="alert">{{ "common.error.serverError" | translate }}: {{ error() }}</p>
+      <p role="alert">{{ "common.error.serverError" | transloco }}: {{ error() }}</p>
     } @else {
       @if (data(); as h) {
         <dl>
-          <dt>{{ "health.status" | translate }}</dt>
+          <dt>{{ "health.status" | transloco }}</dt>
           <dd>{{ h.status }}</dd>
-          <dt>{{ "health.version" | translate }}</dt>
+          <dt>{{ "health.version" | transloco }}</dt>
           <dd>{{ h.version }}</dd>
         </dl>
       }
@@ -21,7 +21,7 @@
   </mat-card-content>
   <mat-card-actions>
     <button type="button" mat-button (click)="refresh()" [disabled]="loading()">
-      {{ "common.actions.retry" | translate }}
+      {{ "common.actions.retry" | transloco }}
     </button>
   </mat-card-actions>
 </mat-card>

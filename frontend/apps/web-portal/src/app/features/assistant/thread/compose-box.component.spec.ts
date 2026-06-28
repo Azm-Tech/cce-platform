@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AssistantApiService } from '../assistant-api.service';
 import { AssistantStore } from './assistant-store.service';
@@ -13,7 +13,7 @@ describe('ComposeBoxComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ComposeBoxComponent, TranslateModule.forRoot()],
+      imports: [ComposeBoxComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         AssistantStore,

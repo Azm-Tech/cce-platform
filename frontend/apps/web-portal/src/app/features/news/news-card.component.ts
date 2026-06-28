@@ -1,71 +1,83 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { ShareMenuComponent } from '../../shared/share-menu/share-menu.component';
 import type { NewsArticle } from './news.types';
 
 /**
- * Public news article card. Modern + simple horizontal layout:
- * 75% content (left in LTR, right in RTL) and 25% media (right in
- * LTR, left in RTL). Image fallback uses a brand gradient with the
- * `newspaper` icon. FEATURED articles show a gold pill on the media.
+ * Public news article card — vertical layout matching the unified News &
+ * Events design:
+ *   [ image header with type-badge overlay ]
+ *   [ meta row: published date + read-time ]
+ *   [ title ]
+ *   [ excerpt ]
+ *   [ footer: share menu + "نُشر بواسطة: …" attribution ]
+ *
+ * The image and title are individually wrapped in `<a>` for navigation
+ * so the share button in the footer doesn't trigger card navigation.
  */
 @Component({
   selector: 'cce-news-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [CommonModule, DatePipe, RouterLink, MatIconModule, TranslocoModule, ShareMenuComponent],
   template: `
-    <a class="cce-news-card" [routerLink]="['/news', article().slug]"
-       [attr.aria-label]="title()">
-      <!-- Media on the leading edge (left in LTR, right in RTL). -->
-      <div class="cce-news-card__media"
-           [class.cce-news-card__media--placeholder]="!article().featuredImageUrl">
+    <article class="cce-news-card">
+      <a class="cce-news-card__media"
+         [routerLink]="['/news', article().id]"
+         [attr.aria-label]="title()">
         @if (article().featuredImageUrl; as src) {
           <img [src]="src" [alt]="title()" loading="lazy" referrerpolicy="no-referrer" />
         } @else {
           <span class="cce-news-card__media-icon" aria-hidden="true">
-            <mat-icon>newspaper</mat-icon>
+            <mat-icon>image</mat-icon>
           </span>
+        }
+        <span class="cce-news-card__badge"
+              [class.cce-news-card__badge--featured]="article().isFeatured">
+          <mat-icon aria-hidden="true">article</mat-icon>
+          {{ (article().isFeatured ? 'news.featured.tag' : 'news.tag') | transloco }}
+        </span>
+      </a>
+
+      <div class="cce-news-card__content">
+        <div class="cce-news-card__meta">
+          @if (article().publishedOn) {
+            <span class="cce-news-card__meta-item">
+              <mat-icon aria-hidden="true">calendar_today</mat-icon>
+              {{ article().publishedOn | date:'longDate' }}
+            </span>
+            <span class="cce-news-card__meta-sep" aria-hidden="true">•</span>
+          }
+          <span class="cce-news-card__meta-item">{{ readingTimeLabel() }}</span>
+        </div>
+
+        <a class="cce-news-card__title-link"
+           [routerLink]="['/news', article().id]"
+           [attr.aria-label]="title()">
+          <h3 class="cce-news-card__title">{{ title() }}</h3>
+        </a>
+
+        @if (topicLabel(); as topic) {
+          <span class="cce-news-card__topic">{{ topic }}</span>
+        }
+        @if (excerpt()) {
+          <p class="cce-news-card__excerpt">{{ excerpt() }}</p>
         }
       </div>
 
-      <div class="cce-news-card__content">
-        <span class="cce-news-card__eyebrow"
-              [class.cce-news-card__eyebrow--featured]="article().isFeatured">
-          @if (article().isFeatured) {
-            <mat-icon aria-hidden="true">star</mat-icon>
-            {{ 'news.featured.tag' | translate }}
-          } @else {
-            {{ 'news.tag' | translate }}
-          }
-        </span>
-
-        <h3 class="cce-news-card__title">{{ title() }}</h3>
-        <p class="cce-news-card__excerpt">{{ excerpt() }}</p>
-
-        <div class="cce-news-card__foot">
-          <span class="cce-news-card__meta">
-            @if (article().publishedOn) {
-              <mat-icon aria-hidden="true">schedule</mat-icon>
-              {{ article().publishedOn | date:'mediumDate' }}
-            } @else {
-              <mat-icon aria-hidden="true">edit_note</mat-icon>
-              {{ 'news.draft' | translate }}
-            }
-          </span>
-          <span class="cce-news-card__cta">
-            {{ 'news.readArticle' | translate }}
-            <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-          </span>
-        </div>
-      </div>
-    </a>
+      <footer class="cce-news-card__foot">
+        <cce-share-menu [title]="title()" [url]="absoluteUrl()" />
+      </footer>
+    </article>
   `,
   styleUrl: './news-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewsCardComponent {
+  private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   readonly article = input.required<NewsArticle>();
   readonly locale = input<'ar' | 'en'>('en');
 
@@ -77,7 +89,36 @@ export class NewsCardComponent {
   readonly excerpt = computed(() => {
     const a = this.article();
     const content = this.locale() === 'ar' ? a.contentAr : a.contentEn;
-    const stripped = content.replace(/<[^>]*>/g, '').trim();
-    return stripped.length > 180 ? stripped.slice(0, 180) + '…' : stripped;
+    const stripped = this.decodeEntities((content ?? '').replace(/<[^>]*>/g, '')).trim();
+    return stripped.length > 160 ? stripped.slice(0, 160) + '…' : stripped;
+  });
+
+  private decodeEntities(html: string): string {
+    if (typeof document === 'undefined') return html;
+    const el = document.createElement('textarea');
+    el.innerHTML = html;
+    return el.value;
+  }
+
+  readonly topicLabel = computed<string | null>(() => {
+    const a = this.article();
+    const label = this.locale() === 'ar' ? a.topicNameAr : a.topicNameEn;
+    return label ?? null;
+  });
+
+  /** Approximate read time based on word count, ~200 wpm, min 1 min. */
+  readonly readingTimeLabel = computed(() => {
+    this.locale(); // reactive dependency for language switch
+    const a = this.article();
+    const content = (this.locale() === 'ar' ? a.contentAr : a.contentEn) ?? '';
+    const words = content.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.round(words / 200));
+    return `${minutes} ${this.transloco.translate('news.detail.minRead')}`;
+  });
+
+  readonly absoluteUrl = computed<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const tree = this.router.createUrlTree(['/news', this.article().id]);
+    return new URL(tree.toString(), window.location.origin).toString();
   });
 }

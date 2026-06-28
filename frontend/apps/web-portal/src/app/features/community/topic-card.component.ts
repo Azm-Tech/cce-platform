@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { PublicTopic } from './community.types';
 
 /**
@@ -13,7 +13,7 @@ import type { PublicTopic } from './community.types';
 @Component({
   selector: 'cce-topic-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, TranslateModule],
+  imports: [RouterLink, MatIconModule, TranslocoModule],
   template: `
     <a class="cce-topic-card" [routerLink]="['/community', 'topics', topic().slug]"
        [attr.aria-label]="name()">
@@ -28,13 +28,13 @@ import type { PublicTopic } from './community.types';
       </div>
 
       <div class="cce-topic-card__content">
-        <span class="cce-topic-card__eyebrow">{{ 'community.tag' | translate }}</span>
+        <span class="cce-topic-card__eyebrow">{{ 'community.tag' | transloco }}</span>
         <h3 class="cce-topic-card__title">{{ name() }}</h3>
         <p class="cce-topic-card__excerpt">{{ description() }}</p>
 
         <div class="cce-topic-card__foot">
           <span class="cce-topic-card__cta">
-            {{ 'community.openTopic' | translate }}
+            {{ 'community.openTopic' | transloco }}
             <mat-icon aria-hidden="true">arrow_forward</mat-icon>
           </span>
         </div>
@@ -56,7 +56,7 @@ export class TopicCardComponent {
   readonly description = computed(() => {
     const t = this.topic();
     const raw = this.locale() === 'ar' ? t.descriptionAr : t.descriptionEn;
-    const stripped = raw.replace(/<[^>]*>/g, '').trim();
+    const stripped = (raw ?? '').replace(/<[^>]*>/g, '').trim();
     return stripped.length > 180 ? stripped.slice(0, 180) + '…' : stripped;
   });
 }

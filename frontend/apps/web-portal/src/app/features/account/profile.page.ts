@@ -1,29 +1,33 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,
 } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { CountriesApiService } from '../countries/countries-api.service';
 import type { Country } from '../countries/country.types';
+import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
-import { KNOWLEDGE_LEVELS, type KnowledgeLevel, type UpdateMyProfilePayload, type UserProfile } from './account.types';
+import { type ExpertRegistrationStatus, type ExpertRequestStatus, type UpdateMyProfilePayload, type UserProfile } from './account.types';
 
 interface ProfileFormShape {
+  firstName: FormControl<string>;
+  lastName: FormControl<string>;
+  jobTitle: FormControl<string>;
+  organizationName: FormControl<string>;
   localePreference: FormControl<string>;
-  knowledgeLevel: FormControl<KnowledgeLevel>;
-  interests: FormControl<string>;        // comma-separated; serialized to string[] on submit
-  countryId: FormControl<string | null>;
+  countryCodeId: FormControl<string | null>;
   avatarUrl: FormControl<string | null>;
 }
 
@@ -31,10 +35,16 @@ interface ProfileFormShape {
   selector: 'cce-profile-page',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatButtonModule, MatChipsModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressBarModule, MatRadioModule, MatSelectModule,
-    TranslateModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    TranslocoModule,
   ],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
@@ -43,36 +53,86 @@ interface ProfileFormShape {
 export class ProfilePage implements OnInit {
   private readonly api = inject(AccountApiService);
   private readonly countriesApi = inject(CountriesApiService);
+  private readonly mediaApi = inject(MediaApiService);
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
 
   readonly profile = signal<UserProfile | null>(null);
-  readonly countries = signal<Country[]>([]);
+  readonly countryCodes = signal<Country[]>([]);
+  readonly expertStatus = signal<ExpertRequestStatus | null>(null);
+  readonly expertStatusLoaded = signal(false);
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly uploading = signal(false);
   readonly errorKind = signal<string | null>(null);
   readonly saveErrorKind = signal<string | null>(null);
   readonly mode = signal<'view' | 'edit'>('view');
 
-  readonly knowledgeLevels = KNOWLEDGE_LEVELS;
   readonly locale = this.localeService.locale;
+
+  readonly countryCodeSearch = new FormControl('');
+  private readonly countryCodeSearchValue = toSignal(this.countryCodeSearch.valueChanges, { initialValue: '' });
+  readonly filteredCountryCodes = computed(() => {
+    const q = (this.countryCodeSearchValue() ?? '').trim().toLowerCase();
+    const all = this.countryCodes();
+    if (!q) return all;
+    return all.filter(cc =>
+      cc.nameAr.toLowerCase().includes(q) || cc.nameEn.toLowerCase().includes(q)
+    );
+  });
+
+  readonly localeOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'ar', label: 'العربية' },
+  ];
+  readonly localeSearch = new FormControl('');
+  private readonly localeSearchValue = toSignal(this.localeSearch.valueChanges, { initialValue: '' });
+  readonly filteredLocaleOptions = computed(() => {
+    const q = (this.localeSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.localeOptions;
+    return this.localeOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
 
   readonly notProvisioned = computed(() => this.errorKind() === 'not-found');
 
-  readonly countryName = computed(() => {
+  readonly profileInitials = computed(() => {
     const p = this.profile();
-    if (!p?.countryId) return '—';
-    const match = this.countries().find((c) => c.id === p.countryId);
+    return ((p?.firstName?.[0] ?? '') + (p?.lastName?.[0] ?? '')).toUpperCase() || '?';
+  });
+
+  readonly profileFullName = computed(() => {
+    const p = this.profile();
+    if (!p) return '';
+    return `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim() || p.userName || p.email || '';
+  });
+
+  readonly showExpertCta = computed(() => {
+    const s = this.expertStatus();
+    return s === null || s.status === 'Rejected';
+  });
+
+  readonly expertBadgeStatus = computed<ExpertRegistrationStatus | null>(() => {
+    const s = this.expertStatus();
+    return s ? s.status : null;
+  });
+
+  readonly countryCodeLabel = computed(() => {
+    const p = this.profile();
+    if (!p?.countryCodeId) return '—';
+    const match = this.countryCodes().find((c) => c.id === p.countryCodeId);
     if (!match) return '—';
     return this.locale() === 'ar' ? match.nameAr : match.nameEn;
   });
 
   readonly form: FormGroup<ProfileFormShape> = this.fb.nonNullable.group({
+    firstName: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
+    lastName: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
+    jobTitle: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
+    organizationName: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(100)]),
     localePreference: this.fb.nonNullable.control('en', Validators.required),
-    knowledgeLevel: this.fb.nonNullable.control<KnowledgeLevel>('Beginner', Validators.required),
-    interests: this.fb.nonNullable.control(''),
-    countryId: this.fb.control<string | null>(null),
+    countryCodeId: this.fb.control<string | null>(null),
     avatarUrl: this.fb.control<string | null>(null),
   });
 
@@ -83,28 +143,66 @@ export class ProfilePage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
-    const [profileRes, countriesRes] = await Promise.all([
+    const [profileRes, countryCodesRes, expertRes] = await Promise.all([
       this.api.getProfile(),
-      this.countriesApi.listCountries({}),
+      // All country codes (no isActive filter) so a saved countryCodeId
+      // always resolves to its nationality label — same source as registration.
+      this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }),
+      this.api.getExpertStatus(),
     ]);
     this.loading.set(false);
-    if (profileRes.ok) this.profile.set(profileRes.value);
-    else this.errorKind.set(profileRes.error.kind);
-    if (countriesRes.ok) this.countries.set(countriesRes.value);
+    if (profileRes.ok) {
+      this.profile.set(profileRes.value);
+      if (
+        (profileRes.value.interests?.length ?? 0) === 0 &&
+        !localStorage.getItem('cce_prefs_shown')
+      ) {
+        this.openPreferences();
+      }
+    } else {
+      this.errorKind.set(profileRes.error.kind);
+    }
+    if (countryCodesRes.ok) this.countryCodes.set(countryCodesRes.value);
+    if (expertRes.ok) this.expertStatus.set(expertRes.value);
+    this.expertStatusLoaded.set(true);
   }
 
   enterEditMode(): void {
     const p = this.profile();
     if (!p) return;
     this.form.reset({
+      firstName: p.firstName ?? '',
+      lastName: p.lastName ?? '',
+      jobTitle: p.jobTitle ?? '',
+      organizationName: p.organizationName ?? '',
       localePreference: p.localePreference,
-      knowledgeLevel: p.knowledgeLevel,
-      interests: p.interests.join(', '),
-      countryId: p.countryId,
+      countryCodeId: p.countryCodeId,
       avatarUrl: p.avatarUrl,
     });
+    const ccMatch = this.countryCodes().find(cc => cc.id === p.countryCodeId);
+    this.countryCodeSearch.setValue(
+      ccMatch ? (this.locale() === 'ar' ? ccMatch.nameAr : ccMatch.nameEn) : '',
+      { emitEvent: false }
+    );
+    const localeMatch = this.localeOptions.find(o => o.value === p.localePreference);
+    this.localeSearch.setValue(localeMatch ? localeMatch.label : '', { emitEvent: false });
     this.saveErrorKind.set(null);
     this.mode.set('edit');
+    if (!this.countryCodes().length) {
+      void this.countriesApi.listCountries({ pageSize: 1000, isCceCountry: false }).then((res) => {
+        if (res.ok) this.countryCodes.set(res.value);
+      });
+    }
+  }
+
+  onCountryCodeSelected(id: string | null, displayText: string): void {
+    this.form.controls.countryCodeId.setValue(id);
+    this.countryCodeSearch.setValue(id === null ? '' : displayText, { emitEvent: false });
+  }
+
+  onLocaleSelected(value: string, label: string): void {
+    this.form.controls.localePreference.setValue(value);
+    this.localeSearch.setValue(label, { emitEvent: false });
   }
 
   cancelEdit(): void {
@@ -115,12 +213,17 @@ export class ProfilePage implements OnInit {
   async save(): Promise<void> {
     if (this.form.invalid) return;
     const v = this.form.getRawValue();
+    const p = this.profile()!;
     const payload: UpdateMyProfilePayload = {
+      firstName: v.firstName,
+      lastName: v.lastName,
+      jobTitle: v.jobTitle,
+      organizationName: v.organizationName,
       localePreference: v.localePreference,
-      knowledgeLevel: v.knowledgeLevel,
-      interests: this.parseInterests(v.interests),
+      knowledgeLevel: p.knowledgeLevel || 'Beginner',
+      interests: p.interests,
       avatarUrl: v.avatarUrl,
-      countryId: v.countryId,
+      countryCodeId: v.countryCodeId,
     };
     this.saving.set(true);
     this.saveErrorKind.set(null);
@@ -139,15 +242,71 @@ export class ProfilePage implements OnInit {
     void this.load();
   }
 
-  /** Splits the comma-separated interests input into a deduped, trimmed string[]. */
-  private parseInterests(raw: string): string[] {
-    return Array.from(
-      new Set(
-        raw
-          .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0),
-      ),
-    );
+  openChangeContact(type: 'email' | 'phone'): void {
+    import('./change-contact.dialog').then(({ ChangeContactDialogComponent }) => {
+      const p = this.profile();
+      const ref = this.dialog.open(ChangeContactDialogComponent, {
+        data: { type, currentPhone: type === 'phone' ? p?.phoneNumber : undefined },
+        panelClass: 'cce-dialog-no-padding',
+        autoFocus: 'first-tabbable',
+        width: '460px',
+      });
+      ref.afterClosed().subscribe((saved) => {
+        if (saved) {
+          this.toast.success(type === 'email' ? 'account.changeContact.successEmail' : 'account.changeContact.successPhone');
+          void this.load();
+        }
+      });
+    });
   }
+
+  openPreferences(): void {
+    import('./preferences.dialog').then(({ PreferencesDialogComponent }) => {
+      const ref = this.dialog.open(PreferencesDialogComponent, {
+        panelClass: 'cce-dialog-no-padding',
+        autoFocus: 'first-tabbable',
+      });
+      ref.afterClosed().subscribe((saved) => {
+        if (saved) void this.load();
+      });
+    });
+  }
+
+  async onAvatarFileChange(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    const uploadRes = await this.mediaApi.uploadFile(file);
+    if (!uploadRes.ok) {
+      this.uploading.set(false);
+      this.toast.error('account.profile.avatarUploadError');
+      return;
+    }
+
+    const avatarUrl = uploadRes.value.url;
+    this.form.patchValue({ avatarUrl });
+
+    const v = this.form.getRawValue();
+    const p = this.profile()!;
+    const saveRes = await this.api.updateProfile({
+      firstName: v.firstName,
+      lastName: v.lastName,
+      jobTitle: v.jobTitle,
+      organizationName: v.organizationName,
+      localePreference: v.localePreference,
+      knowledgeLevel: p.knowledgeLevel || 'Beginner',
+      interests: p.interests,
+      avatarUrl,
+      countryCodeId: v.countryCodeId,
+    });
+    this.uploading.set(false);
+    if (saveRes.ok) {
+      this.profile.set(saveRes.value);
+      this.toast.success('account.profile.toast.saved');
+    } else {
+      this.form.markAllAsTouched();
+      this.saveErrorKind.set(saveRes.error.kind);
+    }
+  }
+
 }

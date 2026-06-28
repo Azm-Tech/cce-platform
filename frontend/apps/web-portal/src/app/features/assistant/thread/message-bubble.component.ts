@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { ThreadMessage } from '../assistant.types';
 import { CitationChipComponent } from './citation-chip.component';
 
@@ -17,7 +17,7 @@ import { CitationChipComponent } from './citation-chip.component';
   imports: [
     MatButtonModule,
     MatIconModule,
-    TranslateModule,
+    TranslocoModule,
     CitationChipComponent,
   ],
   templateUrl: './message-bubble.component.html',

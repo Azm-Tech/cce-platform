@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { SignInCtaComponent } from './sign-in-cta.component';
 
@@ -12,7 +12,7 @@ describe('SignInCtaComponent', () => {
     signIn = jest.fn();
 
     await TestBed.configureTestingModule({
-      imports: [SignInCtaComponent, TranslateModule.forRoot()],
+      imports: [SignInCtaComponent, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideNoopAnimations(),
         { provide: AuthService, useValue: { signIn } },

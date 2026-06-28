@@ -1,7 +1,7 @@
 <section class="cce-topic-detail">
   <a class="cce-topic-detail__back" routerLink="/community">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'community.detail.backToTopics' | translate }}
+    {{ 'community.detail.backToTopics' | transloco }}
   </a>
 
   @if (loading()) {
@@ -14,52 +14,54 @@
       <span class="cce-topic-detail__notfound-art" aria-hidden="true">
         <mat-icon>forum</mat-icon>
       </span>
-      <h1>{{ 'community.notFound' | translate }}</h1>
-      <p>{{ 'community.detail.notFoundDesc' | translate }}</p>
+      <h1>{{ 'community.notFound' | transloco }}</h1>
+      <p>{{ 'community.detail.notFoundDesc' | transloco }}</p>
       <a mat-flat-button color="primary" routerLink="/community">
         <mat-icon>arrow_back</mat-icon>
-        {{ 'community.detail.backToTopics' | translate }}
+        {{ 'community.detail.backToTopics' | transloco }}
       </a>
     </div>
   } @else if (errorKind()) {
     <div class="cce-topic-detail__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + errorKind()) | translate }}</span>
+      <span>{{ ('errors.' + errorKind()) | transloco }}</span>
       <button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
 
-  <!-- ─── Hero header ─────────────────────────────────────── -->
+  <!-- ─── Topic header ────────────────────────────────────── -->
   @if (topic(); as t) {
     <header class="cce-topic-detail__header">
       <div class="cce-topic-detail__title-row">
         <span class="cce-topic-detail__icon-wrap" aria-hidden="true">
           @if (t.iconUrl) {
             <img class="cce-topic-detail__icon" [src]="t.iconUrl"
-                 [alt]="topicName()" width="48" height="48"
+                 [alt]="topicName()" width="56" height="56"
                  referrerpolicy="no-referrer" />
           } @else {
-            <mat-icon class="cce-topic-detail__icon-fallback">forum</mat-icon>
+            <mat-icon class="cce-topic-detail__icon-fallback">workspaces</mat-icon>
           }
         </span>
         <div class="cce-topic-detail__title-text">
           <span class="cce-topic-detail__eyebrow">
-            <mat-icon aria-hidden="true">forum</mat-icon>
-            {{ 'community.tag' | translate }}
+            <mat-icon aria-hidden="true">tag</mat-icon>
+            {{ 'community.tag' | transloco }}
           </span>
           <h1 class="cce-topic-detail__name">{{ topicName() }}</h1>
         </div>
       </div>
 
-      <p class="cce-topic-detail__description">{{ topicDescription() }}</p>
+      @if (topicDescription()) {
+        <p class="cce-topic-detail__description">{{ topicDescription() }}</p>
+      }
 
       <div class="cce-topic-detail__meta">
         <span>
-          <mat-icon aria-hidden="true">forum</mat-icon>
+          <mat-icon aria-hidden="true">article</mat-icon>
           <strong>{{ total() }}</strong>
-          {{ (total() === 1 ? 'community.detail.postsCountSingular' : 'community.detail.postsCount') | translate:{ count: total() } }}
+          {{ 'community.detail.postsCount' | transloco:{ count: total() } }}
         </span>
       </div>
 
@@ -72,9 +74,20 @@
             cceFollow
             entityType="topic"
             [entityId]="t.id"
+            #topicFollow="cceFollow"
+            [class.cce-topic-detail__follow--active]="topicFollow.isFollowing()"
           >
-            <mat-icon>star_outline</mat-icon>
-            {{ 'follows.followButton' | translate }}
+            @if (topicFollow.isFollowing()) {
+              <ng-container>
+                <mat-icon>star</mat-icon>
+                {{ 'community.followingTopic' | transloco }}
+              </ng-container>
+            } @else {
+              <ng-container>
+                <mat-icon>star_outline</mat-icon>
+                {{ 'community.followTopic' | transloco }}
+              </ng-container>
+            }
           </button>
           <button
             type="button"
@@ -84,7 +97,7 @@
             (click)="openComposeDialog()"
           >
             <mat-icon>edit</mat-icon>
-            {{ 'community.newPostButton' | translate }}
+            {{ 'community.newPostButton' | transloco }}
           </button>
         } @else {
           <cce-sign-in-cta messageKey="community.signInToPost" />
@@ -114,20 +127,34 @@
         <span class="cce-topic-detail__empty-art" aria-hidden="true">
           <mat-icon>chat_bubble_outline</mat-icon>
         </span>
-        <h2>{{ 'community.empty.posts' | translate }}</h2>
+        <h2>{{ 'community.empty.posts' | transloco }}</h2>
         @if (isAuthenticated()) {
           <button type="button" mat-flat-button color="primary"
                   (click)="openComposeDialog()">
             <mat-icon>edit</mat-icon>
-            {{ 'community.newPostButton' | translate }}
+            {{ 'community.newPostButton' | transloco }}
           </button>
         }
       </div>
     }
 
+    <!-- ─── New-posts pill (live) ─────────────────────────── -->
+    @if (newPostCount() > 0) {
+      <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        class="cce-topic-detail__newposts"
+        (click)="showNewPosts()"
+      >
+        <mat-icon>arrow_upward</mat-icon>
+        {{ 'community.newPostsPill' | transloco:{ count: newPostCount() } }}
+      </button>
+    }
+
     <!-- ─── Posts ─────────────────────────────────────────── -->
     @if (posts().length > 0) {
-      <article class="cce-topic-detail__posts">
+      <div class="cce-topic-detail__posts">
         @for (p of posts(); track p.id) {
           <cce-post-summary [post]="p" />
         }
@@ -142,7 +169,7 @@
             (page)="onPage($event)"
           />
         }
-      </article>
+      </div>
     }
   }
 </section>

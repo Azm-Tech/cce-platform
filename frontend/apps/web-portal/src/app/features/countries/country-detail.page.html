@@ -1,83 +1,390 @@
 <section class="cce-country-detail">
-  <a class="cce-country-detail__back" routerLink="/countries">
-    ← {{ 'countries.back' | translate }}
-  </a>
 
-  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (loading()) {
+    <!-- Skeleton loader -->
+    <div class="cce-detail-skeleton" aria-hidden="true">
+      <!-- Topbar skeleton -->
+      <div class="cce-detail-skeleton__topbar">
+        <div class="cce-detail-skeleton__back"></div>
+        <div class="cce-detail-skeleton__actions">
+          <div class="cce-detail-skeleton__btn"></div>
+          <div class="cce-detail-skeleton__btn"></div>
+        </div>
+      </div>
 
-  @if (errorKind() === 'not-found') {
-    <div class="cce-country-detail__notfound" role="alert">
-      <h1>{{ 'countries.notFound' | translate }}</h1>
-    </div>
-  } @else if (errorKind()) {
-    <div class="cce-country-detail__error" role="alert">
-      {{ ('errors.' + errorKind()) | translate }}
+      <!-- Header card skeleton -->
+      <div class="cce-detail-skeleton__header">
+        <div class="cce-detail-skeleton__badge"></div>
+        <div class="cce-detail-skeleton__header-main">
+          <div class="cce-detail-skeleton__flag"></div>
+          <div class="cce-detail-skeleton__header-text">
+            <div class="cce-detail-skeleton__name"></div>
+            <div class="cce-detail-skeleton__region"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats grid skeleton -->
+      <div class="cce-detail-skeleton__stats">
+        @for (s of detailSkeletons; track $index) {
+          <div class="cce-detail-skeleton__stat-card">
+            <div class="cce-detail-skeleton__stat-icon"></div>
+            <div class="cce-detail-skeleton__stat-label"></div>
+            <div class="cce-detail-skeleton__stat-value"></div>
+            <div class="cce-detail-skeleton__stat-sub"></div>
+          </div>
+        }
+      </div>
+
+      <!-- Tabs skeleton -->
+      <div class="cce-detail-skeleton__tabs">
+        @for (t of [1,2,3,4]; track t) {
+          <div class="cce-detail-skeleton__tab"></div>
+        }
+      </div>
+
+      <!-- Charts skeleton -->
+      <div class="cce-detail-skeleton__charts">
+        <div class="cce-detail-skeleton__chart-card">
+          <div class="cce-detail-skeleton__chart-title"></div>
+          <div class="cce-detail-skeleton__chart-sub"></div>
+          <div class="cce-detail-skeleton__chart-area"></div>
+        </div>
+        <div class="cce-detail-skeleton__chart-card">
+          <div class="cce-detail-skeleton__chart-title"></div>
+          <div class="cce-detail-skeleton__chart-sub"></div>
+          <div class="cce-detail-skeleton__chart-area"></div>
+        </div>
+      </div>
     </div>
   }
 
+  @if (errorKind() === 'not-found') {
+    <div class="cce-country-detail__notfound" role="alert">
+      <h1>{{ 'countries.notFound' | transloco }}</h1>
+    </div>
+  } @else if (errorKind()) {
+    <div class="cce-country-detail__error" role="alert">{{ ('errors.' + errorKind()) | transloco }}</div>
+  }
+
   @if (profile(); as p) {
+    <!-- Back link + action buttons row -->
+    <div class="cce-country-detail__topbar">
+      <a class="cce-country-detail__back" routerLink="/countries">
+        <mat-icon>arrow_forward</mat-icon>
+        {{ 'countries.detail.back' | transloco }}
+      </a>
+      <div class="cce-country-detail__actions">
+        <button type="button" mat-stroked-button class="cce-country-detail__action-btn" (click)="share()">
+          <mat-icon>share</mat-icon>
+          {{ 'countries.detail.share' | transloco }}
+        </button>
+        <div class="cce-country-detail__download-wrap">
+          <button type="button" mat-flat-button class="cce-country-detail__download-btn" (click)="toggleDownload()">
+            {{ 'countries.detail.download' | transloco }}
+            <mat-icon>expand_more</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header: name + badge + region -->
     <header class="cce-country-detail__header">
-      @if (country(); as c) {
-        <span class="cce-country-detail__flag-wrap" [attr.aria-hidden]="true">
-          @if (!flagFailed()) {
-            <img
-              class="cce-country-detail__flag"
-              [src]="flagSrc()"
-              [alt]="headerName()"
-              width="88"
-              height="60"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-              (error)="onFlagError()"
-            />
-          } @else {
-            <span class="cce-country-detail__flag-fallback">{{ flagEmoji() }}</span>
-          }
+      @if (snapshot(); as snap) {
+        <span class="cce-country-detail__classification-badge">
+          {{ 'countries.detail.classification' | transloco }}: {{ snap.classification }}
         </span>
       }
-      <div>
-        <h1 class="cce-country-detail__name">
-          {{ headerName() || ('countries.title' | translate) }}
-        </h1>
-        <p class="cce-country-detail__updated">
-          <small>
-            {{ 'countries.detail.lastUpdated' | translate }}:
-            {{ p.lastUpdatedOn | date:'mediumDate' }}
-          </small>
-        </p>
+      <div class="cce-country-detail__header-main">
+        @if (country(); as c) {
+          <div class="cce-country-detail__flag-wrap" aria-hidden="true">
+            @if (!flagFailed()) {
+              <img
+                class="cce-country-detail__flag"
+                [src]="flagSrc()"
+                [alt]="headerName()"
+                width="64" height="46"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                (error)="onFlagError()"
+              />
+            } @else {
+              <span class="cce-country-detail__flag-fallback">{{ flagEmoji() }}</span>
+            }
+          </div>
+        }
+        <div>
+          <h1 class="cce-country-detail__name">{{ headerName() }}</h1>
+          @if (countryMeta(); as meta) {
+            <p class="cce-country-detail__region">
+              {{ headerRegion() }}
+              @if (meta.isFoundingPartner) {
+                <span class="cce-country-detail__separator">|</span>
+                {{ 'countries.detail.foundingPartner' | transloco }}
+              }
+            </p>
+          }
+        </div>
       </div>
     </header>
 
-    <article class="cce-country-detail__section">
-      <h2>{{ 'countries.detail.description' | translate }}</h2>
-      <div class="cce-country-detail__body" [innerHTML]="description()"></div>
-    </article>
+    <!-- Stats grid -->
+    @if (snapshot(); as snap) {
+      <div class="cce-country-detail__stats">
+        <!-- CCE Index -->
+        <div class="cce-country-detail__stat-card">
+          <mat-icon class="cce-country-detail__stat-icon">emoji_events</mat-icon>
+          <span class="cce-country-detail__stat-label">{{ 'countries.detail.cceIndex' | transloco }}</span>
+          <span class="cce-country-detail__stat-value">#{{ cceRankDisplay() }}</span>
+          <span class="cce-country-detail__stat-sub">{{ snap.classification }}</span>
+        </div>
 
-    <article class="cce-country-detail__section">
-      <h2>{{ 'countries.detail.keyInitiatives' | translate }}</h2>
-      <div class="cce-country-detail__body" [innerHTML]="keyInitiatives()"></div>
-    </article>
+        @if (countryMeta(); as meta) {
+          <!-- Population -->
+          <div class="cce-country-detail__stat-card">
+            <mat-icon class="cce-country-detail__stat-icon">groups</mat-icon>
+            <span class="cce-country-detail__stat-label">{{ 'countries.detail.population' | transloco }}</span>
+            <span class="cce-country-detail__stat-value">{{ meta.populationMillions | number:'1.2-2' }} <span class="cce-country-detail__stat-unit">{{ locale() === 'ar' ? 'مليون' : 'M' }}</span></span>
+            <span class="cce-country-detail__stat-sub cce-country-detail__stat-sub--trend">
+              <mat-icon>trending_up</mat-icon> +{{ meta.populationTrend }}% {{ locale() === 'ar' ? 'سنوياً' : '/yr' }}
+            </span>
+          </div>
 
-    @if (contactInfo(); as contact) {
-      <article class="cce-country-detail__section">
-        <h2>{{ 'countries.detail.contactInfo' | translate }}</h2>
-        <div class="cce-country-detail__body" [innerHTML]="contact"></div>
-      </article>
+          <!-- Area -->
+          <div class="cce-country-detail__stat-card">
+            <mat-icon class="cce-country-detail__stat-icon">map</mat-icon>
+            <span class="cce-country-detail__stat-label">{{ 'countries.detail.area' | transloco }}</span>
+            <span class="cce-country-detail__stat-value">{{ meta.areaMillionKm2 | number:'1.2-2' }} <span class="cce-country-detail__stat-unit">{{ locale() === 'ar' ? 'مليون كم²' : 'M km²' }}</span></span>
+            <span class="cce-country-detail__stat-sub">{{ meta.administrativeDivisions }} {{ locale() === 'ar' ? 'منطقة إدارية' : 'regions' }}</span>
+          </div>
+        }
+
+        <!-- Emission Reduction -->
+        @if (cardStats(); as cs) {
+          <div class="cce-country-detail__stat-card">
+            <mat-icon class="cce-country-detail__stat-icon">eco</mat-icon>
+            <span class="cce-country-detail__stat-label">
+              {{ 'countries.detail.emissionReduction' | transloco }}
+              <span class="cce-mock-badge" [matTooltip]="mockHint()" matTooltipPosition="above">!</span>
+            </span>
+            <span class="cce-country-detail__stat-value">{{ cs.emissionReductionPct }}%</span>
+            <span class="cce-country-detail__stat-sub">{{ locale() === 'ar' ? 'المساهمة الفعلية' : 'Actual contribution' }}</span>
+          </div>
+        }
+
+        @if (countryMeta(); as meta) {
+          <!-- GDP per capita -->
+          <div class="cce-country-detail__stat-card">
+            <mat-icon class="cce-country-detail__stat-icon">payments</mat-icon>
+            <span class="cce-country-detail__stat-label">{{ 'countries.detail.gdpPerCapita' | transloco }}</span>
+            <span class="cce-country-detail__stat-value">${{ meta.gdpPerCapita | number:'1.1-1' }}</span>
+            <span class="cce-country-detail__stat-sub cce-country-detail__stat-sub--trend">
+              <mat-icon>trending_up</mat-icon> +{{ meta.gdpTrend }}% {{ locale() === 'ar' ? 'تقديرات 2025' : '2025 est.' }}
+            </span>
+          </div>
+
+          <!-- Energy density -->
+          <div class="cce-country-detail__stat-card">
+            <mat-icon class="cce-country-detail__stat-icon">bolt</mat-icon>
+            <span class="cce-country-detail__stat-label">
+              {{ 'countries.detail.energyDensity' | transloco }}
+              <span class="cce-mock-badge" [matTooltip]="mockHint()" matTooltipPosition="above">!</span>
+            </span>
+            <span class="cce-country-detail__stat-value">{{ meta.energyDensityPerMJ | number:'1.1-1' }} <span class="cce-country-detail__stat-unit">$/MJ</span></span>
+            <span class="cce-country-detail__stat-sub">{{ locale() === 'ar' ? 'مقارنة بالمتوسط العالمي (KAPSARC)' : 'vs. global avg (KAPSARC)' }}</span>
+          </div>
+        }
+      </div>
     }
 
-    <article class="cce-country-detail__section">
-      <h2>{{ 'kapsarc.title' | translate }}</h2>
-      @if (snapshot(); as snap) {
-        <cce-kapsarc-snapshot [snapshot]="snap" [locale]="locale()" />
-      } @else if (snapshotErrorKind()) {
-        <p class="cce-country-detail__kapsarc-error">
-          {{ 'kapsarc.error' | translate }}
-        </p>
-      } @else {
-        <p class="cce-country-detail__kapsarc-empty">
-          {{ 'kapsarc.unavailable' | translate }}
-        </p>
+    <!-- Entered profile content — always visible main sections -->
+    <div class="cce-country-detail__profile">
+      @if (description()) {
+        <section class="cce-country-detail__profile-card">
+          <h2 class="cce-country-detail__profile-heading">
+            <span class="cce-country-detail__profile-icon"><mat-icon aria-hidden="true">public</mat-icon></span>
+            {{ locale() === 'ar' ? 'وصف الدولة' : 'Country description' }}
+          </h2>
+          <div class="cce-country-detail__body" [innerHTML]="description()"></div>
+        </section>
       }
-    </article>
+      @if (keyInitiatives()) {
+        <section class="cce-country-detail__profile-card">
+          <h2 class="cce-country-detail__profile-heading">
+            <span class="cce-country-detail__profile-icon"><mat-icon aria-hidden="true">emoji_objects</mat-icon></span>
+            {{ locale() === 'ar' ? 'المبادرات الرئيسية' : 'Key initiatives' }}
+          </h2>
+          <div class="cce-country-detail__body" [innerHTML]="keyInitiatives()"></div>
+        </section>
+      }
+      @if (contactInfo(); as contact) {
+        <section class="cce-country-detail__profile-card">
+          <h2 class="cce-country-detail__profile-heading">
+            <span class="cce-country-detail__profile-icon"><mat-icon aria-hidden="true">contact_mail</mat-icon></span>
+            {{ locale() === 'ar' ? 'معلومات التواصل' : 'Contact information' }}
+          </h2>
+          <div class="cce-country-detail__body" [innerHTML]="contact"></div>
+        </section>
+      }
+      @if (p.ndcDocument; as ndc) {
+        <section class="cce-country-detail__profile-card">
+          <h2 class="cce-country-detail__profile-heading">
+            <span class="cce-country-detail__profile-icon"><mat-icon aria-hidden="true">description</mat-icon></span>
+            {{ locale() === 'ar' ? 'وثيقة المساهمة المحددة وطنياً (NDC)' : 'NDC document' }}
+          </h2>
+          <button type="button" class="cce-country-detail__ndc-link" (click)="viewNdc(ndc.assetId)">
+            <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+            {{ ndc.originalFileName }}
+          </button>
+        </section>
+      }
+    </div>
+
+    <!-- Tab bar -->
+    <div class="cce-country-detail__tabs">
+      @for (tab of tabList; track tab) {
+        <button
+          type="button"
+          class="cce-country-detail__tab"
+          [class.cce-country-detail__tab--active]="activeTab() === tab"
+          (click)="setTab(tab)"
+        >
+          {{ ('countries.detail.tab.' + tab) | transloco }}
+        </button>
+      }
+    </div>
+
+    <!-- Analytics tab -->
+    @if (activeTab() === 'analytics') {
+      <div class="cce-country-detail__analytics">
+        @if (snapshot()?.subScores; as sub) {
+          <div class="cce-country-detail__charts">
+
+            <!-- Radar chart -->
+            <div class="cce-country-detail__chart-card">
+              <h3 class="cce-country-detail__chart-title">
+                {{ 'countries.detail.chart.radial' | transloco }}
+                <span class="cce-mock-badge" [matTooltip]="mockHint()" matTooltipPosition="above">!</span>
+              </h3>
+              <p class="cce-country-detail__chart-sub">{{ 'countries.detail.chart.radialSub' | transloco }}</p>
+              <div class="cce-country-detail__radar-wrap">
+                <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" class="cce-country-detail__radar-svg">
+                  <!-- Grid rings -->
+                  @for (gridPath of radarGridLines(); track $index) {
+                    <path [attr.d]="gridPath" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1" />
+                  }
+                  <!-- Axis lines -->
+                  @for (axis of radarAxisLines(); track $index) {
+                    <line [attr.x1]="radarCx" [attr.y1]="radarCy" [attr.x2]="axis.x2" [attr.y2]="axis.y2" stroke="rgba(0,0,0,0.10)" stroke-width="1" />
+                  }
+                  <!-- Score polygon -->
+                  @if (radarPolygon()) {
+                    <polygon
+                      [attr.points]="radarPolygon()"
+                      style="fill: rgba(var(--color-brand-rgb), 0.18); stroke: var(--color-brand);"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                  }
+                  <!-- Score dots -->
+                  @for (axis of radarAxes(); track axis.labelKey) {
+                    <circle [attr.cx]="axis.x" [attr.cy]="axis.y" r="4" style="fill: var(--color-brand);" />
+                  }
+                  <!-- Axis labels -->
+                  @for (axis of radarAxes(); track axis.labelKey) {
+                    <text
+                      [attr.x]="axis.labelX"
+                      [attr.y]="axis.labelY + 4"
+                      text-anchor="middle"
+                      font-size="11"
+                      font-weight="600"
+                      style="fill: rgba(var(--color-text-primary-rgb), 0.75);"
+                    >{{ axis.labelKey | transloco }}</text>
+                  }
+                </svg>
+
+                <!-- Score legend -->
+                <ul class="cce-country-detail__radar-legend">
+                  @for (axis of radarAxes(); track axis.labelKey) {
+                    <li>
+                      <span class="cce-country-detail__radar-dot"></span>
+                      {{ axis.labelKey | transloco }}
+                      <span class="cce-country-detail__radar-score">({{ axis.score }}%)</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <!-- Trend line chart -->
+            <div class="cce-country-detail__chart-card">
+              <div class="cce-country-detail__chart-header">
+                <div>
+                  <h3 class="cce-country-detail__chart-title">
+                    {{ 'countries.detail.chart.trend' | transloco }}
+                    <span class="cce-mock-badge" [matTooltip]="mockHint()" matTooltipPosition="above">!</span>
+                  </h3>
+                  <p class="cce-country-detail__chart-sub">{{ 'countries.detail.chart.trendSub' | transloco }}</p>
+                </div>
+                <span class="cce-country-detail__chart-range-badge">{{ 'countries.detail.chart.years' | transloco }}</span>
+              </div>
+              <svg [attr.viewBox]="'0 0 ' + trendW + ' ' + trendH" class="cce-country-detail__trend-svg">
+                <!-- Fill area -->
+                @if (trendFill()) {
+                  <path [attr.d]="trendFill()" style="fill: rgba(var(--color-brand-mid-rgb), 0.10);" />
+                }
+                <!-- Line -->
+                @if (trendPolyline()) {
+                  <polyline [attr.points]="trendPolyline()" style="fill: none; stroke: var(--color-brand);" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+                }
+                <!-- Points -->
+                @for (p of trendPoints(); track p.year) {
+                  <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" style="fill: var(--color-brand); stroke: var(--white);" stroke-width="1.5" />
+                }
+                <!-- Year labels -->
+                @for (p of trendPoints(); track p.year) {
+                  <text [attr.x]="p.x" [attr.y]="trendH - 4" text-anchor="middle" font-size="9" style="fill: rgba(var(--color-text-primary-rgb), 0.50);">{{ p.year }}</text>
+                }
+              </svg>
+            </div>
+          </div>
+        }
+
+        <!-- Achievements -->
+        @if (achievements().length) {
+          <div class="cce-country-detail__achievements">
+            <h3 class="cce-country-detail__achievements-title">
+              {{ 'countries.detail.achievements' | transloco }}
+              <span class="cce-mock-badge" [matTooltip]="mockHint()" matTooltipPosition="above">!</span>
+            </h3>
+            <div class="cce-country-detail__achievement-cards">
+              @for (item of achievements(); track item.date) {
+                <div class="cce-country-detail__achievement-card">
+                  <mat-icon class="cce-country-detail__achievement-icon">open_in_new</mat-icon>
+                  <h4 class="cce-country-detail__achievement-name">
+                    {{ locale() === 'ar' ? item.titleAr : item.titleEn }}
+                  </h4>
+                  <p class="cce-country-detail__achievement-desc">
+                    {{ locale() === 'ar' ? item.descAr : item.descEn }}
+                  </p>
+                  <span class="cce-country-detail__achievement-date">
+                    <mat-icon>calendar_today</mat-icon>
+                    {{ item.date }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Experts tab -->
+    @if (activeTab() === 'experts') {
+      <div class="cce-country-detail__content-section cce-country-detail__content-section--empty">
+        <mat-icon>person_search</mat-icon>
+        <p>{{ locale() === 'ar' ? 'لا يوجد خبراء مسجلون بعد.' : 'No experts registered yet.' }}</p>
+      </div>
+    }
   }
 </section>

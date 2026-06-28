@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
@@ -52,7 +52,7 @@ describe('ResourcesListPage', () => {
     toast = { success: jest.fn(), error: jest.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [ResourcesListPage, TranslateModule.forRoot()],
+      imports: [ResourcesListPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),

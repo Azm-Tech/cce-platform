@@ -1,30 +1,46 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, computed, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, OnDestroy, computed, effect, inject, isDevMode, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
+import { CcePortalRole } from '@frontend/contracts';
+import { RealtimeEvent, RealtimeHubService, type NewPostPayload, type ReceiveNotificationPayload } from '@frontend/real-time';
 import { AuthService } from '../auth/auth.service';
-import { LocaleSwitcherComponent } from '../../locale-switcher/locale-switcher.component';
+import { LocaleSwitcherComponent } from '@frontend/i18n';
 import { NotificationsApiService } from '../../features/notifications/notifications-api.service';
 import { NotificationsDrawerComponent } from '../../features/notifications/notifications-drawer.component';
+import { NotificationToastService } from '../../features/notifications/notification-toast.service';
 import { SearchBoxComponent } from './search-box.component';
 import { PRIMARY_NAV, type NavGroup, type NavLink, type PrimaryNavItem } from './nav-config';
 
-const UNREAD_POLL_MS = 60_000;
+/**
+ * Slow reconciliation poll. Live `ReceiveNotification` pushes keep the badge
+ * current; this is only a safety net for events missed while disconnected.
+ */
+const UNREAD_RECONCILE_MS = 300_000;
 
 @Component({
   selector: 'cce-header',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, RouterLinkActive,
-    MatBadgeModule, MatButtonModule, MatIconModule, MatMenuModule,
-    TranslateModule, LocaleSwitcherComponent, SearchBoxComponent,
-  ],
+    RouterLink,
+    RouterLinkActive,
+    MatBadgeModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatMenuModule,
+    TranslocoModule,
+    LocaleSwitcherComponent,
+    SearchBoxComponent
+],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +50,9 @@ export class HeaderComponent implements OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly notificationsApi = inject(NotificationsApiService);
   private readonly router = inject(Router);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly notificationToast = inject(NotificationToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly nav = PRIMARY_NAV;
   readonly mobileMenuOpen = signal(false);
@@ -116,17 +135,32 @@ export class HeaderComponent implements OnDestroy {
     );
   }
   readonly isAuthenticated = this.auth.isAuthenticated;
+  readonly isStateRep = computed(() => this.auth.hasRole(CcePortalRole.StateRepresentative));
   readonly userLabel = computed(() => {
     const u = this.auth.currentUser();
-    return u?.displayNameEn ?? u?.userName ?? u?.email ?? '';
+    return u ? `${u.firstName} ${u.lastName}`.trim() : '';
   });
+  readonly userInitials = computed(() => {
+    const u = this.auth.currentUser();
+    if (!u) return '';
+    return ((u.firstName?.[0] ?? '') + (u.lastName?.[0] ?? '')).toUpperCase();
+  });
+  readonly userAvatarUrl = computed(() => this.auth.currentUser()?.avatarUrl?.trim() || null);
+  readonly userFirstName = computed(() => this.auth.currentUser()?.firstName ?? '');
+  readonly userEmail = computed(() => this.auth.currentUser()?.emailAddress ?? '');
   readonly unreadCount = signal(0);
   readonly badgeHidden = computed(() => this.unreadCount() === 0);
 
+  /** Dev-only realtime connection indicator. */
+  readonly isDev = isDevMode();
+  readonly connectionState = this.hub.connectionState;
+
   private pollTimer: ReturnType<typeof setInterval> | null = null;
+  /** Open notifications drawer, so live pushes can refresh it in place. */
+  private drawerRef: MatDialogRef<NotificationsDrawerComponent, void> | null = null;
 
   constructor() {
-    // Start / stop the unread-count poll based on auth state.
+    // Start / stop the unread-count reconciliation poll based on auth state.
     effect(() => {
       if (this.isAuthenticated()) {
         void this.refreshUnreadCount();
@@ -136,6 +170,26 @@ export class HeaderComponent implements OnDestroy {
         this.unreadCount.set(0);
       }
     });
+
+    // Live personal notifications. The push carries the rendered subject/body,
+    // so toast directly from it (the full list loads only when the drawer opens)
+    // and deep-link via metaData.postId.
+    this.hub
+      .on<ReceiveNotificationPayload>(RealtimeEvent.ReceiveNotification)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((n) => this.onLiveNotification(n));
+
+    // On community/topic pages the backend sends `NewPost` to the group instead of
+    // a personal `ReceiveNotification`, so toast on it too — this makes the toast
+    // appear everywhere. (The two events are mutually exclusive per push.)
+    this.hub
+      .on<NewPostPayload>(RealtimeEvent.NewPost)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) =>
+        this.notificationToast.showNewPost(ev.title, () =>
+          void this.router.navigate(['/community/posts', ev.postId]),
+        ),
+      );
 
     // Auto-close mobile menu AND any open mega-menu after every
     // successful navigation. Covers nav-link clicks, programmatic
@@ -210,6 +264,10 @@ export class HeaderComponent implements OnDestroy {
       },
     );
     ref.componentInstance.unreadCountChange.subscribe((n) => this.unreadCount.set(n));
+    this.drawerRef = ref;
+    ref.afterClosed().subscribe(() => {
+      if (this.drawerRef === ref) this.drawerRef = null;
+    });
     void ref.componentInstance.refresh();
   }
 
@@ -218,9 +276,23 @@ export class HeaderComponent implements OnDestroy {
     if (res.ok) this.unreadCount.set(res.value);
   }
 
+  /** Handle a live `ReceiveNotification` push: bump the badge, refresh the open
+   *  drawer, and toast from the pushed payload (deep-linking to the post if any). */
+  private onLiveNotification(n: ReceiveNotificationPayload): void {
+    void this.refreshUnreadCount();
+    void this.drawerRef?.componentInstance.refresh();
+    const postId = n.metaData?.postId ?? null;
+    this.notificationToast.show(
+      n,
+      postId
+        ? () => void this.router.navigate(['/community/posts', postId])
+        : () => this.openNotifications(),
+    );
+  }
+
   private startPoll(): void {
     if (this.pollTimer) return;
-    this.pollTimer = setInterval(() => void this.refreshUnreadCount(), UNREAD_POLL_MS);
+    this.pollTimer = setInterval(() => void this.refreshUnreadCount(), UNREAD_RECONCILE_MS);
   }
 
   private stopPoll(): void {

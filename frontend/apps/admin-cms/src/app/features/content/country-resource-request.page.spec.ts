@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { ContentApiService } from './content-api.service';
 import { CountryResourceRequestPage } from './country-resource-request.page';
@@ -19,7 +19,7 @@ describe('CountryResourceRequestPage', () => {
     rejectCountryResourceRequest = jest.fn();
     toast = { success: jest.fn(), error: jest.fn() };
     await TestBed.configureTestingModule({
-      imports: [CountryResourceRequestPage, TranslateModule.forRoot()],
+      imports: [CountryResourceRequestPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         {

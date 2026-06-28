@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 
 /**
@@ -14,17 +14,17 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'cce-sign-in-cta',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, TranslateModule],
+  imports: [MatButtonModule, TranslocoModule],
   template: `
     <div class="cce-sign-in-cta" role="status">
-      <p class="cce-sign-in-cta__message">{{ messageKey() | translate }}</p>
+      <p class="cce-sign-in-cta__message">{{ messageKey() | transloco }}</p>
       <button
         type="button"
         mat-flat-button
         color="primary"
         (click)="signIn()"
       >
-        {{ 'community.signInButton' | translate }}
+        {{ 'community.signInButton' | transloco }}
       </button>
     </div>
   `,

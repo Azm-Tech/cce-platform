@@ -19,10 +19,10 @@ export class InteractiveCityApiService {
   // ─── Anonymous-allowed ───
   async listTechnologies(): Promise<Result<CityTechnology[]>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<CityTechnology[]>('/api/interactive-city/technologies'),
+      const res = await firstValueFrom(
+        this.http.get<{ data: CityTechnology[] }>('/api/interactive-city/technologies'),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
     }
@@ -30,10 +30,10 @@ export class InteractiveCityApiService {
 
   async runScenario(req: RunRequest): Promise<Result<RunResult>> {
     try {
-      const value = await firstValueFrom(
-        this.http.post<RunResult>('/api/interactive-city/scenarios/run', req),
+      const res = await firstValueFrom(
+        this.http.post<{ data: RunResult }>('/api/interactive-city/scenarios/run', req),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
     }
@@ -42,10 +42,10 @@ export class InteractiveCityApiService {
   // ─── Authenticated ───
   async listMyScenarios(): Promise<Result<SavedScenario[]>> {
     try {
-      const value = await firstValueFrom(
-        this.http.get<SavedScenario[]>('/api/me/interactive-city/scenarios'),
+      const res = await firstValueFrom(
+        this.http.get<{ data: SavedScenario[] }>('/api/me/interactive-city/scenarios'),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
     }
@@ -53,10 +53,10 @@ export class InteractiveCityApiService {
 
   async saveScenario(req: SaveRequest): Promise<Result<SavedScenario>> {
     try {
-      const value = await firstValueFrom(
-        this.http.post<SavedScenario>('/api/me/interactive-city/scenarios', req),
+      const res = await firstValueFrom(
+        this.http.post<{ data: SavedScenario }>('/api/me/interactive-city/scenarios', req),
       );
-      return { ok: true, value };
+      return { ok: true, value: res.data };
     } catch (err) {
       return { ok: false, error: toFeatureError(err as HttpErrorResponse) };
     }

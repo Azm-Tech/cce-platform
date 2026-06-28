@@ -1,33 +1,35 @@
 <section class="cce-km-list">
   <!-- Unified page hero (shared component) -->
   <cce-workbench-hero
-    [eyebrow]="'knowledgeMaps.eyebrow' | translate"
-    [title]="'knowledgeMaps.title' | translate"
-    [subtitle]="'knowledgeMaps.subtitle' | translate"
+    [eyebrow]="'knowledgeMaps.eyebrow' | transloco"
+    [title]="'knowledgeMaps.title' | transloco"
+    [subtitle]="'knowledgeMaps.subtitle' | transloco"
   />
 
   <!-- Toolbar -->
   <div class="cce-km-list__toolbar">
     <div class="cce-km-list__search">
-      <mat-icon class="cce-km-list__search-icon" aria-hidden="true">search</mat-icon>
-      <input
-        type="search"
-        class="cce-km-list__search-input"
-        [placeholder]="'knowledgeMaps.searchPlaceholder' | translate"
-        [ngModel]="query()"
-        (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'knowledgeMaps.searchPlaceholder' | translate"
-      />
-      @if (query()) {
-        <button
-          type="button"
-          class="cce-km-list__search-clear"
-          [attr.aria-label]="'knowledgeMaps.clearSearch' | translate"
-          (click)="clearQuery()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
+      <div class="cce-km-list__search-inner">
+        <mat-icon class="cce-km-list__search-icon" aria-hidden="true">search</mat-icon>
+        <input
+          type="search"
+          class="cce-km-list__search-input"
+          [placeholder]="'knowledgeMaps.searchPlaceholder' | transloco"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event)"
+          [attr.aria-label]="'knowledgeMaps.searchPlaceholder' | transloco"
+        />
+        @if (query()) {
+          <button
+            type="button"
+            class="cce-km-list__search-clear"
+            [attr.aria-label]="'knowledgeMaps.clearSearch' | transloco"
+            (click)="clearQuery()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
     </div>
 
     @if (!loading() && rows().length > 0) {
@@ -47,10 +49,10 @@
     <div class="cce-km-list__error" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
       <div class="cce-km-list__error-text">
-        <strong>{{ ('errors.' + kind) | translate }}</strong>
+        <strong>{{ ('errors.' + kind) | transloco }}</strong>
       </div>
       <button mat-stroked-button type="button" (click)="retry()">
-        {{ 'errors.retry' | translate }}
+        {{ 'errors.retry' | transloco }}
       </button>
     </div>
   }
@@ -75,8 +77,8 @@
       <span class="cce-km-list__empty-art" aria-hidden="true">
         <mat-icon>account_tree</mat-icon>
       </span>
-      <h2>{{ 'knowledgeMaps.empty' | translate }}</h2>
-      <p>{{ 'knowledgeMaps.emptyDesc' | translate }}</p>
+      <h2>{{ 'knowledgeMaps.empty' | transloco }}</h2>
+      <p>{{ 'knowledgeMaps.emptyDesc' | transloco }}</p>
     </div>
   }
 
@@ -86,9 +88,9 @@
       <span class="cce-km-list__empty-art" aria-hidden="true">
         <mat-icon>search_off</mat-icon>
       </span>
-      <h2>{{ 'knowledgeMaps.filteredEmpty' | translate }}</h2>
+      <h2>{{ 'knowledgeMaps.filteredEmpty' | transloco }}</h2>
       <button mat-stroked-button type="button" (click)="clearQuery()">
-        {{ 'knowledgeMaps.clearSearch' | translate }}
+        {{ 'knowledgeMaps.clearSearch' | transloco }}
       </button>
     </div>
   }
@@ -111,7 +113,7 @@
               <mat-icon>{{ p.icon }}</mat-icon>
             </span>
             <span class="cce-km-list__card-band-tag">
-              {{ 'knowledgeMaps.title' | translate }}
+              {{ 'knowledgeMaps.title' | transloco }}
             </span>
           </div>
 
@@ -122,7 +124,7 @@
 
           <div class="cce-km-list__card-foot">
             <span class="cce-km-list__card-cta">
-              {{ 'knowledgeMaps.openMap' | translate }}
+              {{ 'knowledgeMaps.openMap' | transloco }}
               <mat-icon aria-hidden="true">arrow_forward</mat-icon>
             </span>
           </div>

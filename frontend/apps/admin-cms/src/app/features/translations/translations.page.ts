@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,8 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
-import { TranslateModule } from '@ngx-translate/core';
-import { MOCK_TRANSLATIONS, type TranslationEntry } from './translations-mock';
+import { TranslocoModule } from '@jsverse/transloco';
+import { MOCK_TRANSLATIONS, type TranslationEntry } from './testing/translations-mock';
 
 type Scope = 'all' | TranslationEntry['scope'];
 
@@ -33,7 +33,6 @@ type Scope = 'all' | TranslationEntry['scope'];
   selector: 'cce-translations',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatChipsModule,
@@ -41,8 +40,8 @@ type Scope = 'all' | TranslationEntry['scope'];
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
-  ],
+    TranslocoModule
+],
   templateUrl: './translations.page.html',
   styleUrl: './translations.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

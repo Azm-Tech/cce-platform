@@ -11,7 +11,7 @@
   grid-column: 1 / -1;
 }
 .cce-audit__error {
-  background: #fdecea; color: #b00020; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
+  background: var(--danger--50); color: var(--danger--600); padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem;
 }
 .cce-audit__accordion {
   display: block;

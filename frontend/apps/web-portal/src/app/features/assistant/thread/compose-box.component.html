@@ -1,7 +1,7 @@
 <form class="cce-compose" (submit)="$event.preventDefault(); send()">
   <div class="cce-compose__row">
     <label class="cce-compose__label" for="cce-compose-input">
-      {{ 'assistant.compose.placeholder' | translate }}
+      {{ 'assistant.compose.placeholder' | transloco }}
     </label>
     <textarea
       id="cce-compose-input"
@@ -10,7 +10,7 @@
       [cdkAutosizeMinRows]="1"
       [cdkAutosizeMaxRows]="6"
       [formControl]="textControl"
-      [placeholder]="'assistant.compose.placeholder' | translate"
+      [placeholder]="'assistant.compose.placeholder' | transloco"
       [maxlength]="maxLength"
       (keydown)="onKeydown($event)"
     ></textarea>
@@ -21,11 +21,11 @@
         mat-flat-button
         color="warn"
         class="cce-compose__action"
-        [attr.aria-label]="'assistant.compose.cancelLabel' | translate"
+        [attr.aria-label]="'assistant.compose.cancelLabel' | transloco"
         (click)="cancel()"
       >
         <mat-icon>stop</mat-icon>
-        {{ 'assistant.compose.cancel' | translate }}
+        {{ 'assistant.compose.cancel' | transloco }}
       </button>
     } @else {
       <button
@@ -33,11 +33,11 @@
         mat-flat-button
         color="primary"
         class="cce-compose__action"
-        [attr.aria-label]="'assistant.compose.sendLabel' | translate"
+        [attr.aria-label]="'assistant.compose.sendLabel' | transloco"
         [disabled]="!canSend()"
       >
         <mat-icon>send</mat-icon>
-        {{ 'assistant.compose.send' | translate }}
+        {{ 'assistant.compose.send' | transloco }}
       </button>
     }
   </div>
@@ -46,7 +46,7 @@
     <p class="cce-compose__count">
       {{
         'assistant.compose.charCount'
-          | translate: { count: value().length, max: maxLength }
+          | transloco: { count: value().length, max: maxLength }
       }}
     </p>
   }

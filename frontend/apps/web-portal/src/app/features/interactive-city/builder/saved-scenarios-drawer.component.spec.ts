@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -46,7 +46,7 @@ describe('SavedScenariosDrawerComponent', () => {
     dialog = { open: jest.fn() };
 
     TestBed.configureTestingModule({
-      imports: [SavedScenariosDrawerComponent, TranslateModule.forRoot()],
+      imports: [SavedScenariosDrawerComponent, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         ScenarioBuilderStore,

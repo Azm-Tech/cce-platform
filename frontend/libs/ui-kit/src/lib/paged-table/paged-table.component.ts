@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,9 +7,10 @@ import {
   Output,
 } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoPaginatorIntl } from './paged-table.intl';
 
 /**
  * Column descriptor for a paged-table row of type T.
@@ -38,13 +39,8 @@ export interface PagedTablePageChange {
 @Component({
   selector: 'cce-paged-table',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatProgressBarModule,
-    TranslateModule,
-  ],
+  imports: [MatTableModule, MatPaginatorModule, MatProgressBarModule, TranslocoModule],
+  providers: [{ provide: MatPaginatorIntl, useClass: TranslocoPaginatorIntl }],
   templateUrl: './paged-table.component.html',
   styleUrl: './paged-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +56,11 @@ export class PagedTableComponent<T> {
   @Input() loading = false;
 
   @Output() readonly pageChange = new EventEmitter<PagedTablePageChange>();
+  @Output() readonly rowClick = new EventEmitter<T>();
+
+  get isClickable(): boolean {
+    return this.rowClick.observed;
+  }
 
   get displayedColumns(): string[] {
     return this.columns.map((c) => c.key);

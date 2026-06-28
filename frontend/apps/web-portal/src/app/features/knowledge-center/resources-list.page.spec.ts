@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { KnowledgeApiService, type Result } from './knowledge-api.service';
 import type { PagedResult, ResourceCategory, ResourceListItem } from './knowledge.types';
@@ -43,7 +43,7 @@ describe('ResourcesListPage', () => {
     const localeStub = { locale: localeSig.asReadonly() };
 
     await TestBed.configureTestingModule({
-      imports: [ResourcesListPage, TranslateModule.forRoot()],
+      imports: [ResourcesListPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

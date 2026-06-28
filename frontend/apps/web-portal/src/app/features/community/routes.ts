@@ -16,4 +16,14 @@ export const COMMUNITY_ROUTES: Routes = [
     loadComponent: () =>
       import('./post-detail.page').then((m) => m.PostDetailPage),
   },
+  {
+    path: 'me',
+    loadComponent: () =>
+      import('./community-my-profile.page').then((m) => m.CommunityMyProfilePage),
+  },
+  {
+    path: 'users/:id',
+    loadComponent: () =>
+      import('./community-user-profile.page').then((m) => m.CommunityUserProfilePage),
+  },
 ];

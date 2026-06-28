@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,9 +10,10 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { RoleLabelPipe } from './role-label.pipe';
 import { IdentityApiService } from './identity-api.service';
-import { KNOWN_ROLES, type UserDetail } from './identity.types';
+import { KNOWN_ROLE_OPTIONS, type UserDetail } from './identity.types';
 
 export interface RoleAssignDialogData {
   userId: string;
@@ -27,21 +28,21 @@ export interface RoleAssignDialogData {
   selector: 'cce-role-assign-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
+    RoleLabelPipe,
   ],
   templateUrl: './role-assign.dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleAssignDialogComponent {
   private readonly api = inject(IdentityApiService);
-  readonly knownRoles = KNOWN_ROLES;
+  readonly knownRoleOptions = KNOWN_ROLE_OPTIONS;
   readonly selected = signal<string[]>([]);
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);

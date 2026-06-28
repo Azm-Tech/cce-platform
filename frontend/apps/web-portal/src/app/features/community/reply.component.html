@@ -1,114 +1,112 @@
 <article
   class="cce-reply"
   [class.cce-reply--accepted]="isAccepted()"
-  [class.cce-reply--highlighted]="isHighlighted()"
+  [class.cce-reply--child]="isChildReply()"
+  [class.cce-reply--has-children]="children().length > 0"
 >
-  <span class="cce-reply__avatar" aria-hidden="true">
-    {{ authorInitial(reply().authorId) }}
-  </span>
+  <!-- Avatar — inline-start (right in RTL), next to author name -->
+  <span class="cce-reply__avatar" aria-hidden="true">{{ avatarInitial() }}</span>
 
-  <div class="cce-reply__main">
-    <div class="cce-reply__bubble">
+  <!-- Body — inline-end side (left in RTL) -->
+  <div class="cce-reply__body">
+
+    <!-- Text block: badge + meta + content (8px apart) -->
+    <div class="cce-reply__text">
       @if (isAccepted()) {
-        <span class="cce-reply__accepted">
-          <mat-icon aria-hidden="true">check_circle</mat-icon>
-          {{ 'community.acceptedAnswer' | translate }}
+        <span class="cce-reply__accepted-badge">
+          <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+          {{ 'community.detail.resolvedTag' | transloco }}
         </span>
       }
 
-      <header class="cce-reply__head">
-        <span class="cce-reply__author-row">
-          <span class="cce-reply__author-name">
-            {{ 'community.detail.memberHandle' | translate }}
-          </span>
-          <span class="cce-reply__author-handle">
-            {{ authorHandle(reply().authorId) }}
-          </span>
+      <!-- Meta (RTL): author + expert badge at start (right), timestamp at end (left) -->
+      <div class="cce-reply__meta">
+        <div class="cce-reply__author-row">
+          <span class="cce-reply__author-name">{{ displayName() }}</span>
           @if (reply().isByExpert) {
-            <span class="cce-reply__expert">
-              <mat-icon aria-hidden="true">verified</mat-icon>
-              {{ 'community.expertBadge' | translate }}
-            </span>
+            <mat-icon
+              class="cce-reply__expert-icon"
+              svgIcon="badge-check"
+              aria-hidden="true"
+            ></mat-icon>
           }
-          @if (showLanguageBadge()) {
-            <span class="cce-reply__lang">
-              {{ 'community.languageBadge' | translate:{ locale: reply().locale } }}
-            </span>
-          }
-        </span>
-      </header>
-
-      <p class="cce-reply__content">{{ reply().content }}</p>
-
-      <footer class="cce-reply__foot">
+        </div>
         <time
           class="cce-reply__time"
           [attr.datetime]="reply().createdOn"
           [title]="reply().createdOn | date:'medium'"
         >{{ timeAgo(reply().createdOn) }}</time>
+      </div>
 
-        @if (markableForPostId(); as postId) {
-          <cce-mark-answer-button
-            [postId]="postId"
-            [replyId]="reply().id"
-            (marked)="answerMarked.emit()"
-          />
+      <!-- Content — @mentions rendered as interactive inline chips -->
+      <p class="cce-reply__content" dir="auto">
+        @for (part of contentParts(); track $index) {
+          @if (part.type === 'mention' && part.userId) {
+            <span
+              class="cce-reply__mention cce-reply__mention--linked"
+              role="button"
+              tabindex="0"
+              (click)="onMentionClick(part.userId)"
+              (keydown.enter)="onMentionClick(part.userId)"
+            >{{ part.value }}</span>
+          } @else if (part.type === 'mention') {
+            <span class="cce-reply__mention">{{ part.value }}</span>
+          } @else {
+            {{ part.value }}
+          }
         }
-      </footer>
+      </p>
     </div>
 
-    <!-- Action row: Like / Dislike / Reply -->
+    <!-- Actions: reply button + upvote widget, at inline-end (left in RTL) -->
     <div class="cce-reply__actions">
-      <cce-like-dislike-control
-        [entityId]="reply().id"
-        entityType="reply"
-        [compact]="true"
-      />
-      <button
-        type="button"
-        class="cce-reply__reply-btn"
-        (click)="onReplyClick()"
-      >
-        <mat-icon aria-hidden="true">reply</mat-icon>
-        <span>{{ 'community.detail.replyToCommentLabel' | translate }}</span>
-      </button>
+      @if (!isChildReply()) {
+        <button
+          type="button"
+          class="cce-reply__reply-btn"
+          (click)="onReplyClick()"
+        >
+          <mat-icon svgIcon="message-square-text" aria-hidden="true"></mat-icon>
+          {{ 'community.detail.actionReply' | transloco }}
+        </button>
+      }
+
+      <div class="cce-reply__vote" dir="ltr">
+        <span class="cce-reply__vote-score">{{ voteScore() }}</span>
+        <button
+          type="button"
+          class="cce-reply__vote-btn"
+          [class.cce-reply__vote-btn--active]="myVote() === 1"
+          [attr.aria-pressed]="myVote() === 1"
+          [attr.aria-label]="'community.detail.actionLike' | transloco"
+          [disabled]="voting()"
+          (click)="onVote()"
+        >
+          <mat-icon svgIcon="{{ myVote() === 1 ? 'arrow-big-up-fill' : 'arrow-big-up' }}" aria-hidden="true"></mat-icon>
+        </button>
+      </div>
+
+      @if (markableForPostId(); as postId) {
+        <cce-mark-answer-button
+          [postId]="postId"
+          [replyId]="reply().id"
+          (marked)="answerMarked.emit()"
+        />
+      }
     </div>
 
-    <!-- Inline composer — appears when this reply is the replyingTo
-         target (Twitter / FB style). -->
-    @if (isHighlighted() && postId() && isAuthenticated()) {
-      <div class="cce-reply__composer">
-        <cce-compose-reply-form
-          [postId]="postId()!"
-          [parentReplyId]="reply().id"
-          [parentHandle]="authorHandle(reply().authorId)"
-          (replyCreated)="replyCreated.emit()"
-          (cancelReply)="cancelReply.emit()"
-        />
-      </div>
-    }
-
-    <!-- Nested children (indented thread). -->
-    @if (children().length > 0) {
-      <div class="cce-reply__children">
-        @for (child of children(); track child.id) {
-          <cce-reply
-            [reply]="child"
-            [isAccepted]="acceptedReplyId() === child.id"
-            [acceptedReplyId]="acceptedReplyId()"
-            [canMarkAnswer]="canMarkAnswer()"
-            [postId]="postId()"
-            [replyingToId]="replyingToId()"
-            [isAuthenticated]="isAuthenticated()"
-            [markableForPostId]="canMarkAnswer() && acceptedReplyId() !== child.id ? postId() : null"
-            [children]="[]"
-            (answerMarked)="answerMarked.emit()"
-            (replyClicked)="replyClicked.emit($event)"
-            (replyCreated)="replyCreated.emit()"
-            (cancelReply)="cancelReply.emit()"
-          />
-        }
-      </div>
-    }
   </div>
 </article>
+
+@if (children().length > 0) {
+  <div class="cce-reply__children">
+    @for (child of children(); track child.id) {
+      <cce-reply
+        [reply]="child"
+        [participants]="participants()"
+        [isChildReply]="true"
+      />
+    }
+  </div>
+}
+

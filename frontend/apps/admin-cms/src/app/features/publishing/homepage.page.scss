@@ -1,0 +1,17 @@
+:host { display: block; padding: 1.5rem; }
+
+.cce-homepage-page__title {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.cce-homepage-page__tabs {
+  ::ng-deep .mat-mdc-tab-body,
+  ::ng-deep .mat-mdc-tab-body-content {
+    overflow: visible !important;
+  }
+  ::ng-deep .mat-mdc-tab-body-content {
+    padding-top: 1.5rem;
+  }
+}

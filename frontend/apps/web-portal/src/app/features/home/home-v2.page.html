@@ -1,0 +1,504 @@
+<div class="cce-home2">
+
+  @if (errorKind(); as kind) {
+    <div class="cce-home2__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
+  }
+
+  <!-- ══════════════════════════════════════════════════ VIDEO BANNER -->
+  <section class="cce-home2__video-banner">
+    @if (videoFileUrl(); as url) {
+      <video
+        class="cce-home2__video-full"
+        [src]="url"
+        controls
+        playsinline
+      ></video>
+    } @else if (videoEmbedUrl(); as url) {
+      <iframe
+        class="cce-home2__video-full"
+        [src]="url"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        title="CCE Platform video"
+      ></iframe>
+    } @else {
+      <div class="cce-home2__video-banner-placeholder">
+        <div class="cce-home2__video-play" aria-hidden="true"></div>
+      </div>
+    }
+  </section>
+
+  <!-- ═══════════════════════════════════════ HERO + SEARCH SPLIT -->
+  <section class="cce-home2__hero-search" [class.cce-home2__hero-search--ar]="isAr()">
+
+    <!-- Left: Search Panel -->
+    <div class="cce-home2__search-panel">
+      <p class="cce-home2__search-widget-title">{{ 'home.v2.search.widgetTitle' | transloco }}</p>
+      <form (ngSubmit)="submitSearch()" class="cce-home2__search-form">
+        <input
+          type="search"
+          class="cce-home2__search-input"
+          [attr.dir]="isAr() ? 'rtl' : 'ltr'"
+          [placeholder]="'home.v2.search.placeholder' | transloco"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+      </form>
+      <div class="cce-home2__search-cats" role="group">
+        @for (cat of searchCategories; track cat) {
+          <button
+            type="button"
+            class="cce-home2__cat-pill"
+            [class.cce-home2__cat-pill--active]="activeCategory() === cat"
+            (click)="setCategory(cat)"
+          >
+            {{ 'home.v2.search.cat.' + cat | transloco }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Right: Hero Panel -->
+    <div class="cce-home2__hero-panel">
+      <p class="cce-home2__eyebrow">{{ 'home.v2.hero.eyebrow' | transloco }}</p>
+      <h1 class="cce-home2__hero-title">{{ 'home.v2.hero.title' | transloco }}</h1>
+      @if (heroContent(); as content) {
+        <p class="cce-home2__hero-sub">{{ content }}</p>
+      } @else {
+        <p class="cce-home2__hero-sub">{{ 'home.v2.hero.subtitle' | transloco }}</p>
+      }
+      <div class="cce-home2__hero-actions">
+        <a routerLink="/knowledge-center" class="cce-home2__btn cce-home2__btn--primary">
+          {{ 'home.v2.hero.cta' | transloco }}
+        </a>
+        <a routerLink="/about" class="cce-home2__btn cce-home2__btn--ghost">
+          {{ 'home.v2.hero.learnMore' | transloco }}
+        </a>
+      </div>
+      <div class="cce-home2__hero-stats">
+        <div class="cce-home2__stat">
+          <span class="cce-home2__stat-value">1,380+</span>
+          <span class="cce-home2__stat-label">{{ 'home.v2.stats.resources' | transloco }}</span>
+        </div>
+        <div class="cce-home2__stat-sep"></div>
+        <div class="cce-home2__stat">
+          <span class="cce-home2__stat-value">500+</span>
+          <span class="cce-home2__stat-label">{{ 'home.v2.stats.experts' | transloco }}</span>
+        </div>
+        <div class="cce-home2__stat-sep"></div>
+        <div class="cce-home2__stat">
+          <span class="cce-home2__stat-value">63+</span>
+          <span class="cce-home2__stat-label">{{ 'home.v2.stats.countries' | transloco }}</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════ PLATFORM PILLARS (dark band) -->
+  <section class="cce-home2__pillars">
+    <div class="cce-home2__container">
+      <h2 class="cce-home2__section-title cce-home2__section-title--light">
+        {{ 'home.v2.features.title' | transloco }}
+      </h2>
+      <div class="cce-home2__pillars-grid">
+        <div class="cce-home2__pillar-card">
+          <div class="cce-home2__pillar-icon" aria-hidden="true">📊</div>
+          <h3 class="cce-home2__pillar-name">{{ 'home.v2.features.map.title' | transloco }}</h3>
+          <p class="cce-home2__pillar-body">{{ 'home.v2.features.map.body' | transloco }}</p>
+        </div>
+        <div class="cce-home2__pillar-card">
+          <div class="cce-home2__pillar-icon" aria-hidden="true">🔗</div>
+          <h3 class="cce-home2__pillar-name">{{ 'home.v2.features.knowledge.title' | transloco }}</h3>
+          <p class="cce-home2__pillar-body">{{ 'home.v2.features.knowledge.body' | transloco }}</p>
+        </div>
+        <div class="cce-home2__pillar-card">
+          <div class="cce-home2__pillar-icon" aria-hidden="true">💡</div>
+          <h3 class="cce-home2__pillar-name">{{ 'home.v2.features.community.title' | transloco }}</h3>
+          <p class="cce-home2__pillar-body">{{ 'home.v2.features.community.body' | transloco }}</p>
+        </div>
+        <div class="cce-home2__pillar-card">
+          <div class="cce-home2__pillar-icon" aria-hidden="true">🎓</div>
+          <h3 class="cce-home2__pillar-name">{{ 'home.v2.features.city.title' | transloco }}</h3>
+          <p class="cce-home2__pillar-body">{{ 'home.v2.features.city.body' | transloco }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ 4Rs INTERACTIVE FRAMEWORK -->
+  <section class="cce-home2__framework">
+    <div class="cce-home2__container">
+      <p class="cce-home2__eyebrow cce-home2__eyebrow--center">{{ 'home.v2.framework.eyebrow' | transloco }}</p>
+      <h2 class="cce-home2__section-title cce-home2__section-title--center">
+        {{ 'home.v2.framework.title' | transloco }}
+      </h2>
+      <p class="cce-home2__framework-subtitle">{{ 'home.v2.framework.subtitle' | transloco }}</p>
+      <div class="cce-home2__framework-tabs" role="tablist">
+        @for (tab of frameworkTabs; track tab) {
+          <button
+            type="button"
+            role="tab"
+            class="cce-home2__framework-tab"
+            [class.cce-home2__framework-tab--active]="activeTab() === tab"
+            [attr.aria-selected]="activeTab() === tab"
+            (click)="setTab(tab)"
+          >
+            {{ 'home.v2.framework.tab.' + tab | transloco }}
+          </button>
+        }
+      </div>
+      <div class="cce-home2__framework-content" role="tabpanel">
+        <div class="cce-home2__framework-text">
+          <h3 class="cce-home2__framework-sub">{{ currentTabSub() | transloco }}</h3>
+          <p class="cce-home2__framework-body">{{ currentTabBody() | transloco }}</p>
+          <a routerLink="/knowledge-center" class="cce-home2__btn cce-home2__btn--primary cce-home2__btn--mt">
+            {{ 'home.v2.framework.cta' | transloco }}
+          </a>
+        </div>
+        <div class="cce-home2__framework-visual" [attr.data-tab]="activeTab()" aria-hidden="true">
+          <div class="cce-home2__4r-shape cce-home2__4r-shape--a"></div>
+          <div class="cce-home2__4r-shape cce-home2__4r-shape--b"></div>
+          <div class="cce-home2__4r-shape cce-home2__4r-shape--c"></div>
+          <div class="cce-home2__4r-glow"></div>
+          <div class="cce-home2__4r-ring cce-home2__4r-ring--1"></div>
+          <div class="cce-home2__4r-ring cce-home2__4r-ring--2"></div>
+        </div>
+      </div>
+      @if (objective(); as text) {
+        <div class="cce-home2__objective">
+          <div class="cce-home2__objective-card">
+            <span class="cce-home2__objective-badge">
+              <span class="cce-home2__objective-badge-dot" aria-hidden="true"></span>
+              {{ 'home.v2.framework.objectiveTitle' | transloco }}
+            </span>
+            <p class="cce-home2__objective-text">{{ text }}</p>
+          </div>
+        </div>
+      }
+      @if (cceConcepts().length > 0) {
+        <div class="cce-home2__framework-block">
+          <h3 class="cce-home2__framework-block-title">{{ 'home.v2.framework.conceptsTitle' | transloco }}</h3>
+          <div class="cce-home2__concepts">
+            @for (concept of cceConcepts(); track concept) {
+              <span class="cce-home2__concept-chip">{{ concept }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ COMMUNITY CTA BANNER -->
+  <section class="cce-home2__community">
+    <div class="cce-home2__container cce-home2__community-inner">
+      <div>
+        <h2 class="cce-home2__section-title cce-home2__section-title--light">
+          {{ 'home.v2.community.title' | transloco }}
+        </h2>
+        <p class="cce-home2__community-sub">{{ 'home.v2.community.sub' | transloco }}</p>
+      </div>
+      <div class="cce-home2__community-card">
+        <p class="cce-home2__community-card-text">{{ 'home.v2.community.cardText' | transloco }}</p>
+        <div class="cce-home2__community-actions">
+          <a routerLink="/community" class="cce-home2__btn cce-home2__btn--primary">
+            {{ 'home.v2.community.joinCta' | transloco }}
+          </a>
+          <a routerLink="/register" class="cce-home2__btn cce-home2__btn--outline-light">
+            {{ 'home.v2.community.registerCta' | transloco }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════ MOBILE APP PROMOTION -->
+  <section class="cce-home2__app">
+    <div class="cce-home2__container cce-home2__app-inner">
+      <div class="cce-home2__app-copy">
+        <p class="cce-home2__eyebrow">{{ 'home.v2.app.eyebrow' | transloco }}</p>
+        <h2 class="cce-home2__section-title">{{ 'home.v2.app.title' | transloco }}</h2>
+        <p class="cce-home2__app-subtitle">{{ 'home.v2.app.subtitle' | transloco }}</p>
+        <ul class="cce-home2__app-features">
+          <li class="cce-home2__app-feature">
+            <span class="cce-home2__app-check" aria-hidden="true">✓</span>
+            {{ 'home.v2.app.feature1' | transloco }}
+          </li>
+          <li class="cce-home2__app-feature">
+            <span class="cce-home2__app-check" aria-hidden="true">✓</span>
+            {{ 'home.v2.app.feature2' | transloco }}
+          </li>
+          <li class="cce-home2__app-feature">
+            <span class="cce-home2__app-check" aria-hidden="true">✓</span>
+            {{ 'home.v2.app.feature3' | transloco }}
+          </li>
+          <li class="cce-home2__app-feature">
+            <span class="cce-home2__app-check" aria-hidden="true">✓</span>
+            {{ 'home.v2.app.feature4' | transloco }}
+          </li>
+        </ul>
+        <div class="cce-home2__app-stores">
+          <button type="button" class="cce-home2__store-btn">
+            {{ 'home.v2.app.appStore' | transloco }}
+          </button>
+          <button type="button" class="cce-home2__store-btn">
+            {{ 'home.v2.app.googlePlay' | transloco }}
+          </button>
+        </div>
+      </div>
+      <div class="cce-home2__app-phone" aria-hidden="true">
+        <div class="cce-home2__phone">
+          <div class="cce-home2__phone-notch"></div>
+          <div class="cce-home2__phone-screen">
+            <div class="cce-home2__phone-bar"></div>
+            <div class="cce-home2__phone-bar cce-home2__phone-bar--sm"></div>
+            <div class="cce-home2__phone-card"></div>
+            <div class="cce-home2__phone-bar cce-home2__phone-bar--sm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ FEATURED RESOURCES -->
+  <section class="cce-home2__resources">
+    <div class="cce-home2__container">
+      <div class="cce-home2__feed-header">
+        <div>
+          <p class="cce-home2__eyebrow">{{ 'home.v2.resources.eyebrow' | transloco }}</p>
+          <h2 class="cce-home2__section-title">{{ 'home.v2.resources.title' | transloco }}</h2>
+          @if (featuredResourcesIntro(); as intro) {
+            <p class="cce-home2__section-intro">{{ intro }}</p>
+          }
+        </div>
+        <a routerLink="/knowledge-center" class="cce-home2__view-all">
+          {{ 'home.v2.resources.viewAll' | transloco }}
+          <span class="cce-home2__view-all-arrow" aria-hidden="true">←</span>
+        </a>
+      </div>
+      <div class="cce-home2__resources-grid">
+        <div class="cce-home2__resource-card">
+          <span class="cce-home2__resource-label">{{ 'home.v2.resources.r1.label' | transloco }}</span>
+          <h3 class="cce-home2__resource-title">{{ 'home.v2.resources.r1.title' | transloco }}</h3>
+          <p class="cce-home2__resource-meta">{{ 'home.v2.resources.r1.meta' | transloco }}</p>
+          <div class="cce-home2__resource-foot">
+            <a routerLink="/knowledge-center" class="cce-home2__resource-cta">{{ 'home.v2.resources.read' | transloco }}</a>
+            <span class="cce-home2__resource-dl" aria-hidden="true">⬇</span>
+          </div>
+        </div>
+        <div class="cce-home2__resource-card">
+          <span class="cce-home2__resource-label">{{ 'home.v2.resources.r2.label' | transloco }}</span>
+          <h3 class="cce-home2__resource-title">{{ 'home.v2.resources.r2.title' | transloco }}</h3>
+          <p class="cce-home2__resource-meta">{{ 'home.v2.resources.r2.meta' | transloco }}</p>
+          <div class="cce-home2__resource-foot">
+            <a routerLink="/knowledge-center" class="cce-home2__resource-cta">{{ 'home.v2.resources.read' | transloco }}</a>
+            <span class="cce-home2__resource-dl" aria-hidden="true">⬇</span>
+          </div>
+        </div>
+        <div class="cce-home2__resource-card">
+          <span class="cce-home2__resource-label">{{ 'home.v2.resources.r3.label' | transloco }}</span>
+          <h3 class="cce-home2__resource-title">{{ 'home.v2.resources.r3.title' | transloco }}</h3>
+          <p class="cce-home2__resource-meta">{{ 'home.v2.resources.r3.meta' | transloco }}</p>
+          <div class="cce-home2__resource-foot">
+            <a routerLink="/knowledge-center" class="cce-home2__resource-cta">{{ 'home.v2.resources.read' | transloco }}</a>
+            <span class="cce-home2__resource-dl" aria-hidden="true">⬇</span>
+          </div>
+        </div>
+      </div>
+      <div class="cce-home2__resources-nav" aria-hidden="true">
+        <button type="button" class="cce-home2__resources-arrow">‹</button>
+        <div class="cce-home2__resources-dots">
+          <span class="cce-home2__resources-dot cce-home2__resources-dot--on"></span>
+          <span class="cce-home2__resources-dot"></span>
+          <span class="cce-home2__resources-dot"></span>
+        </div>
+        <button type="button" class="cce-home2__resources-arrow">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ GLOBAL NETWORK MAP -->
+  <section class="cce-home2__network">
+    <div class="cce-home2__container cce-home2__network-inner">
+      <div class="cce-home2__network-copy">
+        <p class="cce-home2__eyebrow cce-home2__eyebrow--light">{{ 'home.v2.networkMap.eyebrow' | transloco }}</p>
+        <h2 class="cce-home2__section-title cce-home2__section-title--light">
+          {{ 'home.v2.networkMap.title' | transloco }}
+        </h2>
+        <p class="cce-home2__network-sub">{{ 'home.v2.networkMap.sub' | transloco }}</p>
+        <div class="cce-home2__network-count">
+          @if (participatingCountries().length > 0) {
+            <span class="cce-home2__network-count-val">{{ participatingCountries().length }}+</span>
+          } @else {
+            <span class="cce-home2__network-count-val">{{ 'home.v2.networkMap.countriesCount' | transloco }}</span>
+          }
+          <span class="cce-home2__network-count-lbl">{{ 'home.v2.networkMap.countriesLabel' | transloco }}</span>
+        </div>
+        <a routerLink="/explore" class="cce-home2__btn cce-home2__btn--primary">
+          {{ 'home.v2.map.cta' | transloco }}
+        </a>
+      </div>
+      <div class="cce-home2__world-map" aria-hidden="true">
+        <!-- Dot markers at approximate continent/region positions -->
+        <span class="cce-home2__wdot" style="top:33%;left:14%"></span>
+        <span class="cce-home2__wdot" style="top:56%;left:22%"></span>
+        <span class="cce-home2__wdot" style="top:27%;left:46%"></span>
+        <span class="cce-home2__wdot cce-home2__wdot--hi" style="top:37%;left:53%"></span>
+        <span class="cce-home2__wdot cce-home2__wdot--hi" style="top:42%;left:57%"></span>
+        <span class="cce-home2__wdot" style="top:61%;left:51%"></span>
+        <span class="cce-home2__wdot" style="top:31%;left:67%"></span>
+        <span class="cce-home2__wdot cce-home2__wdot--hi" style="top:40%;left:73%"></span>
+        <span class="cce-home2__wdot" style="top:27%;left:82%"></span>
+        <span class="cce-home2__wdot" style="top:64%;left:83%"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ LATEST DISCUSSIONS & MEDIA -->
+  <section class="cce-home2__discussions">
+    <div class="cce-home2__container">
+      <div class="cce-home2__feed-header">
+        <div>
+          <p class="cce-home2__eyebrow">{{ 'home.v2.discussions.eyebrow' | transloco }}</p>
+          <h2 class="cce-home2__section-title">{{ 'home.v2.discussions.title' | transloco }}</h2>
+          @if (upcomingEventsIntro(); as intro) {
+            <p class="cce-home2__section-intro">{{ intro }}</p>
+          }
+        </div>
+        <span class="cce-home2__live-badge">{{ 'home.v2.discussions.updated' | transloco }}</span>
+      </div>
+      <div class="cce-home2__discussions-grid">
+        <!-- Left: media / latest event -->
+        <div class="cce-home2__disc-video">
+          <div class="cce-home2__disc-thumb">
+            <div class="cce-home2__disc-play-btn" aria-hidden="true"></div>
+          </div>
+          @if (firstEvent(); as event) {
+            <p class="cce-home2__disc-video-title">
+              {{ isAr() ? event.titleAr : event.titleEn }}
+            </p>
+          } @else {
+            <p class="cce-home2__disc-video-title">
+              {{ 'home.v2.discussions.videoTitle' | transloco }}
+            </p>
+          }
+        </div>
+        <!-- Right: discussions feed -->
+        <div class="cce-home2__disc-feed">
+          @if (news().length > 0) {
+            @for (article of news().slice(0, 3); track article.id) {
+              <div class="cce-home2__disc-item">
+                <span class="cce-home2__disc-dot" aria-hidden="true"></span>
+                <p class="cce-home2__disc-text">
+                  {{ isAr() ? article.titleAr : article.titleEn }}
+                </p>
+              </div>
+            }
+          } @else {
+            <div class="cce-home2__disc-item">
+              <span class="cce-home2__disc-dot" aria-hidden="true"></span>
+              <p class="cce-home2__disc-text">{{ 'home.v2.discussions.d1' | transloco }}</p>
+            </div>
+            <div class="cce-home2__disc-item">
+              <span class="cce-home2__disc-dot" aria-hidden="true"></span>
+              <p class="cce-home2__disc-text">{{ 'home.v2.discussions.d2' | transloco }}</p>
+            </div>
+            <div class="cce-home2__disc-item">
+              <span class="cce-home2__disc-dot" aria-hidden="true"></span>
+              <p class="cce-home2__disc-text">{{ 'home.v2.discussions.d3' | transloco }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════ PLATFORM IMPACT METRICS -->
+  <section class="cce-home2__metrics">
+    <div class="cce-home2__container">
+      <div class="cce-home2__metrics-grid">
+        <div class="cce-home2__metric">
+          <span class="cce-home2__metric-val">{{ 'home.v2.metrics.m1.value' | transloco }}</span>
+          <span class="cce-home2__metric-lbl">{{ 'home.v2.metrics.m1.label' | transloco }}</span>
+        </div>
+        <div class="cce-home2__metric">
+          <span class="cce-home2__metric-val">{{ 'home.v2.metrics.m2.value' | transloco }}</span>
+          <span class="cce-home2__metric-lbl">{{ 'home.v2.metrics.m2.label' | transloco }}</span>
+        </div>
+        <div class="cce-home2__metric">
+          <span class="cce-home2__metric-val">{{ 'home.v2.metrics.m3.value' | transloco }}</span>
+          <span class="cce-home2__metric-lbl">{{ 'home.v2.metrics.m3.label' | transloco }}</span>
+        </div>
+        <div class="cce-home2__metric">
+          <span class="cce-home2__metric-val">{{ 'home.v2.metrics.m4.value' | transloco }}</span>
+          <span class="cce-home2__metric-lbl">{{ 'home.v2.metrics.m4.label' | transloco }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════ NEWS -->
+  @if (news().length > 0) {
+    <section class="cce-home2__news">
+      <div class="cce-home2__container">
+        <div class="cce-home2__feed-header">
+          <div>
+            <p class="cce-home2__eyebrow">{{ 'home.v2.news.eyebrow' | transloco }}</p>
+            <h2 class="cce-home2__section-title">{{ 'home.v2.news.title' | transloco }}</h2>
+            @if (featuredNewsIntro(); as intro) {
+              <p class="cce-home2__feed-intro">{{ intro }}</p>
+            }
+          </div>
+          <a routerLink="/news" class="cce-home2__view-all">
+            {{ 'home.v2.news.viewAll' | transloco }}
+            <span class="cce-home2__view-all-arrow" aria-hidden="true">←</span>
+          </a>
+        </div>
+        <div class="cce-home2__news-grid">
+          @if (featuredNews(); as article) {
+            <div class="cce-home2__news-featured">
+              <cce-news-card [article]="article" [locale]="lang()" />
+            </div>
+          }
+          @if (remainingNews().length > 0) {
+            <div class="cce-home2__news-list">
+              @for (article of remainingNews(); track article.id) {
+                <cce-news-card [article]="article" [locale]="lang()" />
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ════════════════════════════════════════════════════ CTA -->
+  <section class="cce-home2__cta">
+    <div class="cce-home2__cta-glow" aria-hidden="true"></div>
+    <div class="cce-home2__container cce-home2__cta-inner">
+      <h2 class="cce-home2__cta-title">{{ 'home.v2.cta.title' | transloco }}</h2>
+      <p class="cce-home2__cta-sub">{{ 'home.v2.cta.sub' | transloco }}</p>
+      <div class="cce-home2__cta-actions">
+        <a routerLink="/register" class="cce-home2__btn cce-home2__btn--primary cce-home2__btn--lg">
+          {{ 'home.v2.cta.joinMember' | transloco }}
+        </a>
+        <a routerLink="/contact" class="cce-home2__btn cce-home2__btn--outline-light cce-home2__btn--lg">
+          {{ 'home.v2.cta.contact' | transloco }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ EVALUATION NUDGE (US018) -->
+  @if (!hasEvaluated()) {
+    <div class="cce-home2__eval-strip">
+      <mat-icon class="cce-home2__eval-icon" aria-hidden="true">star_rate</mat-icon>
+      <p class="cce-home2__eval-msg">{{ 'evaluation.nudge' | transloco }}</p>
+      <button type="button" mat-stroked-button class="cce-home2__eval-btn" (click)="openEvaluation()">
+        {{ 'evaluation.nudgeAction' | transloco }}
+      </button>
+    </div>
+  }
+
+</div>

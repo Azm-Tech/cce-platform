@@ -1,13 +1,18 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService } from '@frontend/i18n';
-import { WorkbenchHeroComponent } from '@frontend/ui-kit';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ToastService, WorkbenchHeroComponent } from '@frontend/ui-kit';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { NewsApiService } from './news-api.service';
 import { NewsCardComponent } from './news-card.component';
 import type { NewsArticle } from './news.types';
@@ -34,9 +39,18 @@ interface ActiveChip {
   selector: 'cce-news-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    MatIconModule, MatPaginatorModule, MatProgressBarModule,
-    TranslateModule, NewsCardComponent, WorkbenchHeroComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    TranslocoModule,
+    NewsCardComponent,
+    WorkbenchHeroComponent,
   ],
   templateUrl: './news-list.page.html',
   styleUrl: './news-list.page.scss',
@@ -47,7 +61,8 @@ export class NewsListPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
-  private readonly t = inject(TranslateService);
+  private readonly t = inject(TranslocoService);
+  private readonly toast = inject(ToastService);
 
   // ─── Search / view ──────────────────────────────────────
   readonly query = signal('');
@@ -59,6 +74,22 @@ export class NewsListPage implements OnInit {
   readonly dateTo = signal('');
   readonly sortOrder = signal<SortOrder>('newest');
   readonly filtersOpen = signal(false);
+
+  readonly sortOrderOptions = [
+    { value: 'newest' as const, label: 'Newest' },
+    { value: 'oldest' as const, label: 'Oldest' },
+  ];
+  readonly sortOrderSearch = new FormControl('');
+  private readonly sortOrderSearchValue = toSignal(this.sortOrderSearch.valueChanges, { initialValue: '' });
+  readonly filteredSortOrderOptions = computed(() => {
+    const q = (this.sortOrderSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.sortOrderOptions;
+    return this.sortOrderOptions.filter(o => o.label.toLowerCase().includes(q) || o.value.includes(q));
+  });
+
+  // ─── Follow ─────────────────────────────────────────────
+  readonly isFollowing = signal(false);
+  readonly followLoading = signal(false);
 
   // ─── Pagination + load state ────────────────────────────
   readonly page = signal(1);
@@ -97,7 +128,7 @@ export class NewsListPage implements OnInit {
       if (q) {
         const title = this.locale() === 'ar' ? a.titleAr : a.titleEn;
         const content = this.locale() === 'ar' ? a.contentAr : a.contentEn;
-        const hay = [title, content.replace(/<[^>]*>/g, ''), a.slug].join(' ').toLowerCase();
+        const hay = [title, content.replace(/<[^>]*>/g, '')].join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
@@ -129,17 +160,17 @@ export class NewsListPage implements OnInit {
     if (this.status() !== 'all') {
       chips.push({
         id: 'status',
-        label: this.t.instant(
+        label: this.t.translate(
           this.status() === 'featured'
             ? 'news.filters.statusFeatured'
             : 'news.filters.statusDraft',
         ),
       });
     }
-    if (this.dateFrom()) chips.push({ id: 'from', label: `${this.t.instant('news.filters.from')}: ${this.dateFrom()}` });
-    if (this.dateTo()) chips.push({ id: 'to', label: `${this.t.instant('news.filters.to')}: ${this.dateTo()}` });
+    if (this.dateFrom()) chips.push({ id: 'from', label: `${this.t.translate('news.filters.from')}: ${this.dateFrom()}` });
+    if (this.dateTo()) chips.push({ id: 'to', label: `${this.t.translate('news.filters.to')}: ${this.dateTo()}` });
     if (this.sortOrder() !== 'newest') {
-      chips.push({ id: 'sort', label: this.t.instant('news.filters.sortOldest') });
+      chips.push({ id: 'sort', label: this.t.translate('news.filters.sortOldest') });
     }
     return chips;
   });
@@ -158,7 +189,17 @@ export class NewsListPage implements OnInit {
     this.sortOrder.set(qp.get('sort') === 'oldest' ? 'oldest' : 'newest');
     this.query.set(qp.get('q') ?? '');
     this.viewMode.set(qp.get('view') === 'list' ? 'list' : 'grid');
+
+    const sortMatch = this.sortOrderOptions.find(o => o.value === this.sortOrder());
+    if (sortMatch) this.sortOrderSearch.setValue(sortMatch.label, { emitEvent: false });
+
     void this.load();
+    void this.api.getFollowStatus().then(following => this.isFollowing.set(following));
+  }
+
+  onSortOrderSelected(value: SortOrder, label: string): void {
+    this.setSort(value);
+    this.sortOrderSearch.setValue(label, { emitEvent: false });
   }
 
   // ─── Handlers ───────────────────────────────────────────
@@ -244,6 +285,20 @@ export class NewsListPage implements OnInit {
   clearQuery(): void {
     this.query.set('');
     this.syncUrl();
+  }
+
+  async toggleFollow(): Promise<void> {
+    const prev = this.isFollowing();
+    this.followLoading.set(true);
+    this.isFollowing.set(!prev);
+    const res = prev ? await this.api.unfollowNews() : await this.api.followNews();
+    this.followLoading.set(false);
+    if (res.ok) {
+      this.toast.success(prev ? 'news.unfollowSuccess' : 'news.followSuccess');
+    } else {
+      this.isFollowing.set(prev);
+      this.toast.error('errors.ERR005');
+    }
   }
 
   retry(): void {

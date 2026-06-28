@@ -1,0 +1,292 @@
+/* Post-detail dialog — admin community moderation */
+
+.cce-pd__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.cce-pd__header-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.cce-pd__close-btn {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+/* ─── Status chips ───────────────────────────────────────────── */
+.cce-pd__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &--question  { background: var(--primary--50);  color: var(--primary--700); }
+  &--info      { background: var(--neutrals--100); color: var(--neutrals--700); }
+  &--poll      { background: var(--secondary--50); color: var(--secondary--800); }
+  &--answered  { background: var(--success--50);  color: var(--success--700); }
+  &--discussion{ background: var(--neutrals--100); color: var(--neutrals--700); }
+  &--deleted   { background: var(--danger--50);   color: var(--danger--700);  }
+}
+
+.cce-pd__topic {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--neutrals--600);
+}
+
+.cce-pd__locale-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--neutrals--100);
+  color: var(--neutrals--600);
+}
+
+/* ─── Body ───────────────────────────────────────────────────── */
+.cce-pd__body {
+  max-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cce-pd__progress {
+  flex-shrink: 0;
+  --mdc-linear-progress-active-indicator-color: var(--color-brand);
+}
+
+.cce-pd__error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--danger--600-rgb), 0.2);
+  background: var(--danger--50);
+  color: var(--danger--800);
+  font-size: 0.875rem;
+
+  mat-icon { color: var(--danger--600); flex-shrink: 0; }
+}
+
+/* ─── Post meta row ──────────────────────────────────────────── */
+.cce-pd__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--neutrals--50);
+  border-radius: 8px;
+  border: 1px solid var(--neutrals--100);
+}
+
+.cce-pd__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--neutrals--600);
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--neutrals--400); }
+}
+
+/* ─── Post title + content ───────────────────────────────────── */
+.cce-pd__post-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--neutrals--900);
+  line-height: 1.4;
+}
+
+.cce-pd__content {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--neutrals--700);
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-inline-start: 3px solid var(--primary--200);
+  border-radius: 4px;
+}
+
+/* ─── Poll results (read-only) ───────────────────────────────── */
+.cce-pd__poll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cce-pd__poll-row {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--neutrals--200);
+  border-radius: 6px;
+}
+
+.cce-pd__poll-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: var(--primary--50);
+  z-index: 0;
+  transition: width 0.3s ease;
+}
+
+.cce-pd__poll-label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  color: var(--neutrals--900);
+}
+
+.cce-pd__poll-pct {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--neutrals--700);
+}
+
+.cce-pd__poll-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--neutrals--500);
+}
+
+.cce-pd__poll-meta-sep { color: var(--neutrals--300); }
+
+/* ─── Replies section ────────────────────────────────────────── */
+.cce-pd__replies-hd {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--neutrals--200);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.cce-pd__no-replies {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: var(--neutrals--500);
+  text-align: center;
+}
+
+/* ─── Reply card ─────────────────────────────────────────────── */
+.cce-pd__reply {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--neutrals--200);
+  border-radius: 8px;
+  background: var(--white);
+
+  &--accepted {
+    border-color: var(--success--200);
+    background: var(--success--50);
+  }
+}
+
+.cce-pd__reply-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cce-pd__reply-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--neutrals--800);
+}
+
+.cce-pd__expert-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--success--600);
+}
+
+.cce-pd__reply-date {
+  font-size: 0.75rem;
+  color: var(--neutrals--500);
+}
+
+.cce-pd__reply-votes {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: var(--neutrals--500);
+
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+}
+
+.cce-pd__accepted-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--success--700);
+  background: var(--success--100);
+  border-radius: 999px;
+  padding: 1px 8px;
+
+  mat-icon { font-size: 12px; width: 12px; height: 12px; }
+}
+
+.cce-pd__reply-delete {
+  margin-inline-start: auto;
+}
+
+.cce-pd__reply-content {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--neutrals--700);
+  white-space: pre-wrap;
+  word-break: break-word;
+}

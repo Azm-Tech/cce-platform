@@ -3,24 +3,18 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
-import { ToastService } from '@frontend/ui-kit';
-import { ApproveExpertDialogComponent, type ApproveExpertDialogData } from './approve-expert.dialog';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExpertApiService } from './expert-api.service';
 import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } from './expert.types';
-import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reject-expert.dialog';
+import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
+import type { Topic } from '../taxonomies/taxonomy.types';
 
-/**
- * Admin → Expert requests list. Filterable by status; per-row Approve/Reject
- * actions open dedicated dialogs (Tasks 2.2 + 2.3).
- */
 @Component({
   selector: 'cce-expert-requests-list',
   standalone: true,
@@ -31,11 +25,12 @@ import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reje
     RouterLink,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatSelectModule,
     MatTableModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './expert-requests-list.page.html',
   styleUrl: './expert-requests-list.page.scss',
@@ -43,22 +38,39 @@ import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reje
 })
 export class ExpertRequestsListPage implements OnInit {
   private readonly api = inject(ExpertApiService);
-  private readonly dialog = inject(MatDialog);
-  private readonly toast = inject(ToastService);
+  private readonly taxonomy = inject(TaxonomyApiService);
 
-  readonly displayedColumns = ['user', 'submitted', 'tags', 'status', 'actions'];
+  readonly displayedColumns = ['user', 'submitted', 'tags', 'cv', 'status', 'actions'];
   readonly statuses = EXPERT_STATUSES;
 
-  readonly statusFilter = signal<ExpertRegistrationStatus | ''>('Pending');
+  readonly statusFilter = signal<ExpertRegistrationStatus | ''>('');
   readonly page = signal(1);
   readonly pageSize = signal(20);
   readonly rows = signal<ExpertRequest[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);
+  private readonly topicsMap = signal<Map<string, Topic>>(new Map());
 
   ngOnInit(): void {
+    void this.loadTopics();
     void this.load();
+  }
+
+  private async loadTopics(): Promise<void> {
+    const res = await this.taxonomy.listTopics({ pageSize: 200 });
+    if (res.ok) {
+      this.topicsMap.set(new Map(res.value.items.map(t => [t.id, t])));
+    }
+  }
+
+  tagLabel(id: string): string {
+    const t = this.topicsMap().get(id);
+    return t ? (t.nameAr || t.nameEn || id) : id;
+  }
+
+  resolveTagNames(ids: string[]): string {
+    return ids.map(id => this.tagLabel(id)).join('، ');
   }
 
   async load(): Promise<void> {
@@ -90,23 +102,4 @@ export class ExpertRequestsListPage implements OnInit {
     void this.load();
   }
 
-  async approve(row: ExpertRequest): Promise<void> {
-    const data: ApproveExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
-    const ref = this.dialog.open(ApproveExpertDialogComponent, { data, width: '480px' });
-    const updated = await firstValueFrom(ref.afterClosed());
-    if (updated) {
-      this.toast.success('experts.approve.toast');
-      void this.load();
-    }
-  }
-
-  async reject(row: ExpertRequest): Promise<void> {
-    const data: RejectExpertDialogData = { requestId: row.id, requesterName: row.requestedByUserName };
-    const ref = this.dialog.open(RejectExpertDialogComponent, { data, width: '520px' });
-    const updated = await firstValueFrom(ref.afterClosed());
-    if (updated) {
-      this.toast.success('experts.reject.toast');
-      void this.load();
-    }
-  }
 }

@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cce-filter-rail',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <button type="button" mat-button class="cce-filter-rail__toggle" (click)="toggle()">
       <mat-icon>filter_list</mat-icon>
-      {{ 'filter.openButton' | translate }}
+      {{ 'filter.openButton' | transloco }}
     </button>
     <aside class="cce-filter-rail" [class.cce-filter-rail--open]="open()">
-      <h2 class="cce-filter-rail__title">{{ 'filter.title' | translate }}</h2>
+      <h2 class="cce-filter-rail__title">{{ 'filter.title' | transloco }}</h2>
       <ng-content />
     </aside>
   `,

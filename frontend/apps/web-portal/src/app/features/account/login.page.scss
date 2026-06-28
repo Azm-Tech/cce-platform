@@ -16,9 +16,9 @@
   padding-inline: clamp(1rem, 4vw, 2rem);
   min-height: calc(100vh - 80px);
   background:
-    radial-gradient(900px 400px at 15% 0%, rgba(15, 139, 108, 0.10), transparent 60%),
-    radial-gradient(800px 400px at 100% 100%, rgba(244, 163, 0, 0.08), transparent 55%),
-    linear-gradient(180deg, #fafafa 0%, #f1f5f4 100%);
+    radial-gradient(900px 400px at 15% 0%, rgba(var(--color-brand-mid-rgb), 0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(var(--color-accent-rgb), 0.08), transparent 55%),
+    linear-gradient(180deg, var(--neutrals--50) 0%, var(--primary--50) 100%);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -35,12 +35,12 @@
 }
 
 .cce-login__card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.12);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.12);
   border-radius: 18px;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 18px 44px -16px rgba(0, 48, 31, 0.18);
+    0 18px 44px -16px rgba(var(--color-brand-shadow-rgb), 0.18);
   padding: 2rem 2rem 1.75rem;
 }
 
@@ -55,14 +55,14 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #006c4f 0%, #14b88f 50%, #c8a045 100%);
-  box-shadow: 0 4px 10px -4px rgba(15, 139, 108, 0.55);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 50%, var(--color-accent) 100%);
+  box-shadow: 0 4px 10px -4px rgba(var(--color-brand-mid-rgb), 0.55);
 }
 .cce-login__brand-name {
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: 0.10em;
-  color: #006c4f;
+  color: var(--color-brand);
 }
 
 /* ─── Header ────────────────────────────────────────────── */
@@ -72,12 +72,12 @@
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.20;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 .cce-login__subtitle {
   margin: 0 0 1.5rem;
   font-size: 0.95rem;
-  color: rgba(28, 39, 36, 0.62);
+  color: rgba(var(--color-text-primary-rgb), 0.62);
   line-height: 1.50;
 }
 
@@ -86,12 +86,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+
+  input { outline: none; }
 }
 .cce-login__form .mat-mdc-form-field {
   width: 100%;
 }
 .cce-login__form mat-icon[matPrefix] {
-  color: rgba(15, 139, 108, 0.65);
+  color: rgba(var(--color-brand-mid-rgb), 0.65);
   margin-inline-end: 0.4rem;
 }
 
@@ -103,7 +105,7 @@
 .cce-login__forgot {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #006c4f;
+  color: var(--color-brand);
   text-decoration: none;
   &:hover { text-decoration: underline; }
 }
@@ -111,12 +113,28 @@
 .cce-login__error {
   margin: 0 0 0.6rem;
   padding: 0.55rem 0.75rem;
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid rgba(220, 38, 38, 0.20);
+  background: var(--danger--50);
+  color: var(--danger--700);
+  border: 1px solid rgba(var(--danger--500-rgb), 0.20);
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+.cce-login__unverified {
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--warning--50);
+  color: var(--warning--800);
+  border: 1px solid rgba(var(--warning--400-rgb), 0.25);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  p { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.5; }
+
+  button { width: 100%; border-color: rgba(var(--warning--400-rgb), 0.4) !important; color: var(--warning--800) !important; }
 }
 
 .cce-login__submit {
@@ -124,9 +142,9 @@
   border-radius: 999px !important;
   font-weight: 700 !important;
   letter-spacing: 0.02em;
-  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 60%, #14b88f 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 6px 18px -6px rgba(0, 108, 79, 0.45) !important;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 60%, var(--color-brand-accent) 100%) !important;
+  color: var(--white) !important;
+  box-shadow: 0 6px 18px -6px rgba(var(--color-brand-rgb), 0.45) !important;
   margin-top: 0.4rem;
   text-transform: uppercase !important;
   font-size: 0.85rem !important;
@@ -141,7 +159,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.16em;
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
   text-transform: uppercase;
 
   span { white-space: nowrap; }
@@ -166,7 +184,7 @@
   align-items: start;
   gap: 0.15rem 0.6rem;
   padding: 0.65rem 0.85rem;
-  background: #ffffff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 10px;
   cursor: pointer;
@@ -174,44 +192,44 @@
   transition: border-color 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
 
   &:hover {
-    border-color: #006c4f;
-    background: rgba(15, 139, 108, 0.04);
+    border-color: var(--color-brand);
+    background: rgba(var(--color-brand-mid-rgb), 0.04);
     transform: translateY(-1px);
   }
   &:focus-visible {
     outline: none;
-    border-color: #006c4f;
-    box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.20);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(var(--color-brand-mid-rgb), 0.20);
   }
 }
 .cce-login__role-dot {
   grid-row: 1 / span 2;
   align-self: stretch;
-  background: linear-gradient(180deg, #006c4f, #14b88f);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-accent));
   border-radius: 999px;
 }
 .cce-login__role[data-role="cce-expert"] .cce-login__role-dot {
-  background: linear-gradient(180deg, #7c3aed, #a78bfa);
+  background: linear-gradient(180deg, var(--info--500), var(--info--400));
 }
 .cce-login__role[data-role="cce-reviewer"] .cce-login__role-dot {
-  background: linear-gradient(180deg, #0891b2, #22d3ee);
+  background: linear-gradient(180deg, var(--tertiary--700), var(--tertiary--600));
 }
 .cce-login__role[data-role="cce-editor"] .cce-login__role-dot {
-  background: linear-gradient(180deg, #d97706, #fbbf24);
+  background: linear-gradient(180deg, var(--primary--500), var(--primary--400));
 }
 .cce-login__role[data-role="cce-admin"] .cce-login__role-dot {
-  background: linear-gradient(180deg, #dc2626, #f87171);
+  background: linear-gradient(180deg, var(--danger--500), var(--danger--400));
 }
 .cce-login__role-label {
   font-weight: 700;
   font-size: 0.88rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
   line-height: 1.2;
 }
 .cce-login__role-desc {
   font-size: 0.74rem;
   font-weight: 500;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   line-height: 1.30;
 }
 
@@ -220,14 +238,14 @@
   text-align: center;
   margin: 0;
   font-size: 0.92rem;
-  color: rgba(28, 39, 36, 0.65);
+  color: rgba(var(--color-text-primary-rgb), 0.65);
   padding-top: 1.25rem;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 .cce-login__register-link {
   margin-inline-start: 0.4rem;
   font-weight: 700;
-  color: #006c4f;
+  color: var(--color-brand);
   text-decoration: none;
   &:hover { text-decoration: underline; }
 }
@@ -238,7 +256,7 @@
   padding: 1.5rem 0 0.5rem;
   p {
     margin: 0 0 1rem;
-    color: rgba(28, 39, 36, 0.70);
+    color: rgba(var(--color-text-primary-rgb), 0.70);
   }
 }
 

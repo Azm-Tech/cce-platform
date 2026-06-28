@@ -1,31 +1,67 @@
 <div class="cce-user-detail__header">
   <a mat-button routerLink="/users">
-    <mat-icon>arrow_back</mat-icon>
-    {{ 'users.detail.back' | translate }}
+    <mat-icon>{{ localeService.locale() === 'ar' ? 'arrow_forward' : 'arrow_back' }}</mat-icon>
+    {{ 'users.detail.back' | transloco }}
   </a>
 </div>
 
 @if (loading()) {
-  <div class="cce-user-detail__status">{{ 'common.loading' | translate }}</div>
+  <mat-progress-bar mode="indeterminate" />
 }
 
 @if (error(); as err) {
-  <div class="cce-user-detail__error" role="alert">{{ ('errors.' + err.kind) | translate }}</div>
+  <div class="cce-user-detail__error" role="alert">{{ ('errors.' + err.kind) | transloco }}</div>
 }
 
 @if (user(); as u) {
   <mat-card class="cce-user-detail__card">
-    <mat-card-header>
-      <mat-card-title>{{ u.userName ?? u.email ?? u.id }}</mat-card-title>
-      <mat-card-subtitle>{{ u.email ?? '—' }}</mat-card-subtitle>
-    </mat-card-header>
+
+    <!-- Profile header -->
+    <div class="cce-user-detail__profile">
+      <div class="cce-user-detail__avatar">
+        @if (u.avatarUrl) {
+          <img [src]="u.avatarUrl" [alt]="u.userName ?? ''" />
+        } @else {
+          {{ initials() }}
+        }
+      </div>
+      <div class="cce-user-detail__profile-info">
+        <h2 class="cce-user-detail__name">{{ u.userName ?? u.email ?? u.id }}</h2>
+        <p class="cce-user-detail__email">{{ u.email ?? '—' }}</p>
+        <mat-chip-set>
+          <mat-chip [class]="u.isActive ? 'cce-chip--active' : 'cce-chip--inactive'">
+            {{ (u.isActive ? 'users.detail.status.active' : 'users.detail.status.inactive') | transloco }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+
+    <mat-divider />
+
     <mat-card-content>
       <dl class="cce-user-detail__list">
-        <dt>{{ 'users.detail.field.locale' | translate }}</dt>
-        <dd>{{ u.localePreference }}</dd>
-        <dt>{{ 'users.detail.field.knowledgeLevel' | translate }}</dt>
-        <dd>{{ u.knowledgeLevel }}</dd>
-        <dt>{{ 'users.detail.field.interests' | translate }}</dt>
+
+        <dt>{{ 'users.detail.field.roles' | transloco }}</dt>
+        <dd>
+          @if (u.roles.length) {
+            <mat-chip-set>
+              @for (r of u.roles; track r) {
+                <mat-chip>{{ r | roleLabel | transloco }}</mat-chip>
+              }
+            </mat-chip-set>
+          } @else { — }
+        </dd>
+
+        <dt>{{ 'users.detail.field.country' | transloco }}</dt>
+        <dd>{{ countryName() }}</dd>
+
+        <dt>{{ 'users.detail.field.locale' | transloco }}</dt>
+        <dd>{{ ('common.locale.' + u.localePreference) | transloco }}</dd>
+
+        <dt>{{ 'users.detail.field.knowledgeLevel' | transloco }}</dt>
+        <dd>{{ knowledgeLevelKey(u.knowledgeLevel) | transloco }}</dd>
+
+        <dt>{{ 'users.detail.field.interests' | transloco }}</dt>
         <dd>
           @if (u.interests.length) {
             <mat-chip-set>
@@ -33,38 +69,36 @@
                 <mat-chip>{{ i }}</mat-chip>
               }
             </mat-chip-set>
-          } @else {
-            —
-          }
+          } @else { — }
         </dd>
-        <dt>{{ 'users.detail.field.country' | translate }}</dt>
-        <dd>{{ u.countryId ?? '—' }}</dd>
-        <dt>{{ 'users.detail.field.roles' | translate }}</dt>
-        <dd>
-          @if (u.roles.length) {
-            <mat-chip-set>
-              @for (r of u.roles; track r) {
-                <mat-chip>{{ r }}</mat-chip>
-              }
-            </mat-chip-set>
-          } @else {
-            —
-          }
-        </dd>
-        <dt>{{ 'users.detail.field.isActive' | translate }}</dt>
-        <dd>{{ u.isActive ? '✓' : '✗' }}</dd>
+
       </dl>
     </mat-card-content>
+
+    <mat-divider />
+
     <mat-card-actions align="end">
       <button
         type="button"
-        mat-flat-button
-        color="primary"
-        *ccePermission="'Role.Assign'"
-        (click)="openRoleAssign()"
+        mat-stroked-button
+        *ccePermission="Permission.UserDelete"
+        [color]="u.isActive ? 'warn' : 'primary'"
+        (click)="toggleStatus()"
       >
-        {{ 'roleAssign.openButton' | translate }}
+        <mat-icon>{{ u.isActive ? 'block' : 'check_circle' }}</mat-icon>
+        {{ (u.isActive ? 'users.deactivate.button' : 'users.activate.button') | transloco }}
+      </button>
+      <button
+        type="button"
+        mat-button
+        color="warn"
+        *ccePermission="Permission.UserDelete"
+        (click)="deleteUser()"
+      >
+        <mat-icon>delete</mat-icon>
+        {{ 'users.delete.button' | transloco }}
       </button>
     </mat-card-actions>
+
   </mat-card>
 }

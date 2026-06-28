@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>{{ 'account.serviceRating.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'account.serviceRating.title' | transloco }}</h2>
 
 <mat-dialog-content>
-  <div class="cce-service-rating__stars" role="radiogroup" [attr.aria-label]="'account.serviceRating.title' | translate">
+  <div class="cce-service-rating__stars" role="radiogroup" [attr.aria-label]="'account.serviceRating.title' | transloco">
     @for (s of stars; track s) {
       <button
         type="button"
@@ -18,7 +18,7 @@
   </div>
 
   <mat-form-field appearance="outline" class="cce-service-rating__comment">
-    <mat-label>{{ 'account.serviceRating.commentLabel' | translate }}</mat-label>
+    <mat-label>{{ 'account.serviceRating.commentLabel' | transloco }}</mat-label>
     <textarea
       matInput
       [formControl]="comment"
@@ -29,14 +29,14 @@
 
   @if (errorKind()) {
     <div class="cce-service-rating__error" role="alert">
-      {{ ('errors.' + errorKind()) | translate }}
+      {{ ('errors.' + errorKind()) | transloco }}
     </div>
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()" [disabled]="submitting()">
-    {{ 'account.profile.cancelButton' | translate }}
+    {{ 'account.profile.cancelButton' | transloco }}
   </button>
   <button
     mat-flat-button
@@ -45,6 +45,6 @@
     [disabled]="!canSubmit()"
     (click)="submit()"
   >
-    {{ 'account.serviceRating.submitButton' | translate }}
+    {{ 'account.serviceRating.submitButton' | transloco }}
   </button>
 </mat-dialog-actions>

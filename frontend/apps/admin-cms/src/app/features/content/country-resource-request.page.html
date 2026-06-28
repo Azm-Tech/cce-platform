@@ -1,35 +1,104 @@
-<h1 class="cce-crr__title">{{ 'countryResourceRequest.title' | translate }}</h1>
+<div class="cce-crr">
+  <div class="cce-crr__header">
+    <h1>{{ 'countryRequest.title' | transloco }}</h1>
+  </div>
 
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>{{ 'countryResourceRequest.subtitle' | translate }}</mat-card-title>
-    <mat-card-subtitle>{{ 'countryResourceRequest.byIdNote' | translate }}</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-    <form [formGroup]="form" class="cce-crr__form">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'countryResourceRequest.requestId' | translate }}</mat-label>
-        <input matInput formControlName="requestId" autocomplete="off" />
-        @if (form.controls.requestId.touched && form.controls.requestId.invalid) {
-          <mat-error>{{ 'countryResourceRequest.invalidGuid' | translate }}</mat-error>
+  <mat-tab-group [selectedIndex]="tabIndex()" (selectedIndexChange)="onTabChange($event)" animationDuration="0" mat-align-tabs="start">
+    <mat-tab [label]="'countryRequest.tabs.resources' | transloco">
+      <ng-container *ngTemplateOutlet="tableBlock" />
+    </mat-tab>
+    <mat-tab [label]="'countryRequest.tabs.news' | transloco">
+      <ng-container *ngTemplateOutlet="tableBlock" />
+    </mat-tab>
+    <mat-tab [label]="'countryRequest.tabs.events' | transloco">
+      <ng-container *ngTemplateOutlet="tableBlock" />
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<ng-template #tableBlock>
+  <div class="cce-country-resource-request__filters" data-admin-filters>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'countryRequest.filter.status' | transloco }}</mat-label>
+      <mat-select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilter($event)">
+        @for (s of STATUSES; track s.value) {
+          <mat-option [value]="s.value">{{ s.label | transloco }}</mat-option>
         }
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'countryResourceRequest.notesAr' | translate }}</mat-label>
-        <textarea matInput formControlName="adminNotesAr" rows="3"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'countryResourceRequest.notesEn' | translate }}</mat-label>
-        <textarea matInput formControlName="adminNotesEn" rows="3"></textarea>
-      </mat-form-field>
-    </form>
-  </mat-card-content>
-  <mat-card-actions align="end">
-    <button type="button" mat-button color="warn" (click)="reject()" [disabled]="busy()">
-      {{ 'countryResourceRequest.reject.action' | translate }}
-    </button>
-    <button type="button" mat-flat-button color="primary" (click)="approve()" [disabled]="busy()">
-      {{ 'countryResourceRequest.approve.action' | translate }}
-    </button>
-  </mat-card-actions>
-</mat-card>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (errorKind(); as kind) {
+    <div class="cce-crr__error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+    </div>
+  }
+
+  @if (!loading() && !errorKind() && rows().length === 0) {
+    <div class="cce-crr__empty">
+      <mat-icon>inbox</mat-icon>
+      <span>{{ 'countryRequest.empty' | transloco }}</span>
+    </div>
+  }
+
+  @if (rows().length > 0) {
+    <div class="cce-crr__table-wrap">
+      <mat-table [dataSource]="rows()" class="cce-crr__table">
+        <ng-container matColumnDef="title">
+          <mat-header-cell *matHeaderCellDef>{{ 'countryRequest.col.title' | transloco }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="cce-crr__cell-title">
+              {{ row.proposedTitleEn ?? row.proposedTitleAr ?? '—' }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="submittedOn">
+          <mat-header-cell *matHeaderCellDef>{{ 'countryRequest.col.submittedOn' | transloco }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="cce-crr__cell-date">{{ row.submittedOn | date:'mediumDate' }}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef>{{ 'countryRequest.col.status' | transloco }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="cce-crr__chip cce-crr__chip--{{ statusKey(row.status) }}">
+              {{ ('countryRequest.status.' + statusKey(row.status)) | transloco }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <a mat-icon-button class="cce-crr__view-btn" [routerLink]="[row.id]" [attr.aria-label]="'common.view' | transloco">
+              <mat-icon class="mat-icon-rtl-mirror">chevron_right</mat-icon>
+            </a>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns" />
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns;"
+          class="cce-crr__row"
+          [class]="'cce-crr__row cce-crr__row--' + statusKey(row.status)"
+        />
+      </mat-table>
+
+      <mat-paginator
+        class="cce-crr__paginator"
+        [length]="total()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page() - 1"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+      />
+    </div>
+  }
+</ng-template>

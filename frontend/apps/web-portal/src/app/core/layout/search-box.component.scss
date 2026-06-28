@@ -34,8 +34,8 @@
 /* ─── Pill surface ────────────────────────────────────────── */
 ::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
   position: relative;
-  background: rgba(15, 139, 108, 0.05) !important;
-  border: 1px solid rgba(0, 108, 79, 0.14) !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.05) !important;
+  border: 1px solid rgba(var(--color-brand-rgb), 0.14) !important;
   border-radius: 999px !important;
   overflow: visible !important;
   height: 40px !important;
@@ -44,16 +44,16 @@
 }
 
 ::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--outlined:hover {
-  background: rgba(15, 139, 108, 0.08) !important;
-  border-color: rgba(0, 108, 79, 0.28) !important;
+  background: rgba(var(--color-brand-mid-rgb), 0.08) !important;
+  border-color: rgba(var(--color-brand-rgb), 0.28) !important;
 }
 
 /* Focus state: solid white surface + brand-green border + soft glow ring */
 ::ng-deep .cce-search-box .mdc-text-field--focused .mat-mdc-text-field-wrapper,
 ::ng-deep .cce-search-box .mat-mdc-text-field-wrapper.mdc-text-field--focused {
-  background: #ffffff !important;
-  border-color: #006c4f !important;
-  box-shadow: 0 0 0 3px rgba(15, 139, 108, 0.15) !important;
+  background: var(--white) !important;
+  border-color: var(--color-brand) !important;
+  box-shadow: 0 0 0 3px rgba(var(--color-brand-mid-rgb), 0.15) !important;
 }
 
 /* Hide Material's stock notched-outline so our border is the ONLY edge */
@@ -80,7 +80,7 @@
   padding: 0 !important;
 }
 ::ng-deep .cce-search-box mat-icon[matPrefix] {
-  color: rgba(0, 108, 79, 0.65);
+  color: rgba(var(--color-brand-rgb), 0.65);
   font-size: 18px;
   height: 18px;
   width: 18px;
@@ -103,8 +103,8 @@
   font-size: 0.9rem !important;
   font-weight: 500;
   line-height: 1.2 !important;
-  caret-color: #006c4f;
-  color: #1c2724;
+  caret-color: var(--color-brand);
+  color: var(--color-text-primary);
   padding: 0 !important;
   margin: 0 !important;
   height: auto !important;
@@ -113,7 +113,7 @@
   outline: none !important;
 }
 ::ng-deep .cce-search-box input.mat-mdc-input-element::placeholder {
-  color: rgba(28, 39, 36, 0.45);
+  color: rgba(var(--color-text-primary-rgb), 0.45);
   font-weight: 500;
   opacity: 1;
 }

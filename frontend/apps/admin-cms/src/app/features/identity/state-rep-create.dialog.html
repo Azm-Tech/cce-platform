@@ -1,26 +1,62 @@
-<h2 mat-dialog-title>{{ 'stateRep.create.title' | translate }}</h2>
+<h2 mat-dialog-title>{{ 'stateRep.create.title' | transloco }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-state-rep-create__form">
+
+    <!-- User autocomplete -->
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'stateRep.create.user' | translate }}</mat-label>
-      <input matInput formControlName="userId" autocomplete="off" />
+      <mat-label>{{ 'stateRep.create.user' | transloco }}</mat-label>
+      <input
+        matInput
+        [formControl]="userFilterCtrl"
+        [matAutocomplete]="userAuto"
+        [placeholder]="'stateRep.create.userSearch' | transloco"
+        autocomplete="off"
+      />
+      <mat-autocomplete #userAuto (optionSelected)="onUserSelected($event.option.value, $event.option.viewValue)">
+        @for (user of filteredUsers(); track user.id) {
+          <mat-option [value]="user.id">{{ user.userName ?? user.email }}</mat-option>
+        } @empty {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
       @if (form.controls.userId.touched && form.controls.userId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+        <mat-error>{{ 'stateRep.create.required' | transloco }}</mat-error>
       }
     </mat-form-field>
 
+    <!-- Country autocomplete (with flags) -->
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'stateRep.create.country' | translate }}</mat-label>
-      <input matInput formControlName="countryId" autocomplete="off" />
+      <mat-label>{{ 'stateRep.create.country' | transloco }}</mat-label>
+      <input
+        matInput
+        [formControl]="countryFilterCtrl"
+        [matAutocomplete]="countryAuto"
+        [placeholder]="'stateRep.create.countrySearch' | transloco"
+        autocomplete="off"
+      />
+      <mat-autocomplete #countryAuto (optionSelected)="onCountrySelected($event.option.value, $event.option.viewValue)">
+        @for (country of filteredCountries(); track country.id) {
+          <mat-option [value]="country.id">
+            <span class="cce-state-rep-create__cc-option">
+              @if (country.flagUrl) {
+                <img class="cce-state-rep-create__cc-flag" [src]="country.flagUrl" [alt]="" aria-hidden="true" />
+              }
+              {{ isAr() ? country.nameAr : country.nameEn }}
+            </span>
+          </mat-option>
+        } @empty {
+          <mat-option disabled>{{ 'common.noResults' | transloco }}</mat-option>
+        }
+      </mat-autocomplete>
       @if (form.controls.countryId.touched && form.controls.countryId.invalid) {
-        <mat-error>{{ 'stateRep.create.invalidGuid' | translate }}</mat-error>
+        <mat-error>{{ 'stateRep.create.required' | transloco }}</mat-error>
       }
     </mat-form-field>
 
     @if (errorKind(); as kind) {
       <div class="cce-state-rep-create__error" role="alert">
-        {{ ('errors.' + kind) | translate }}
+        {{ ('errors.' + kind) | transloco }}
       </div>
     }
   </form>
@@ -28,7 +64,7 @@
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
-    {{ 'common.actions.cancel' | translate }}
+    {{ 'common.actions.cancel' | transloco }}
   </button>
   <button
     type="button"
@@ -40,7 +76,7 @@
     @if (saving()) {
       <mat-spinner diameter="20" />
     } @else {
-      {{ 'stateRep.create.save' | translate }}
+      {{ 'stateRep.create.save' | transloco }}
     }
   </button>
 </mat-dialog-actions>

@@ -5,12 +5,13 @@
 // Nx's tsconfig path mappings DON'T apply to SCSS — Sass uses the `loadPaths` config from
 // project.json. Phase 09 already set loadPaths to include node_modules; we add libs path here.
 @use "../../../libs/ui-kit/src/lib/styles/dga-theme" as theme;
+@use "./fancy";
+
+// Quill editor CSS is NOT global — it's a lazy `quill` style bundle
+// (see project.json) loaded on demand by cce-rich-text-editor. Keeps
+// ~34K out of the render-blocking global bundle. (PERF001 A1)
 
 @include theme.cce-theme;
-
-// Bootstrap 5 — grid + utilities ONLY (per ADR-0003).
-// Per Phase 09 deviation, we use legacy @import inside a partial to side-step Sass module isolation.
-@import "./bootstrap-grid";
 
 // Document-level resets — make sure the brand-tinted gradient
 // (applied to <body> in `_fancy.scss`) covers the FULL viewport on
@@ -21,6 +22,13 @@
 // the browser's default white "canvas" beneath. `width: 100%` +
 // `overflow-x: clip` prevents 100vw children (full-bleed pages)
 // from forcing a horizontal scrollbar.
+// Suppress the browser's native focus ring on inputs inside Angular Material
+// form fields — Material renders its own focus indicator on the field wrapper.
+.mat-mdc-input-element:focus,
+.mat-mdc-input-element:focus-visible {
+  outline: none;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -29,7 +37,7 @@ html, body {
   // Tall content still grows beyond the viewport — `min-height`
   // means "at least this tall, but can grow" so the gradient
   // extends with the body box.
-  background: #fafafa; // base color — overridden by fancy.scss gradient
+  background: var(--neutrals--50); // base color — overridden by fancy.scss gradient
   overflow-x: hidden;
   overflow-x: clip;
 }
@@ -40,7 +48,7 @@ body { min-height: 100vh; }
 // Global polish layer — applies fancy animations, glass surfaces,
 // custom scrollbar, page transitions, Material upgrades. No per-page
 // changes required; every routed view inherits these.
-@import "./fancy";
+// (loaded via @use at the top of this file)
 
 // ─── Assistant dialog — RIGHT-SIDE SIDE SHEET ─────────────────
 // Anchored to the trailing edge of the viewport (right in LTR,
@@ -81,8 +89,8 @@ body { min-height: 100vh; }
   overflow: hidden !important;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    -28px 0 64px -16px rgba(0, 48, 31, 0.40),
-    -1px 0 0 rgba(0, 108, 79, 0.18) !important;
+    -28px 0 64px -16px rgba(var(--color-brand-shadow-rgb), 0.40),
+    -1px 0 0 rgba(var(--color-brand-rgb), 0.18) !important;
   height: 100vh !important;
   max-height: 100vh !important;
 }
@@ -90,8 +98,8 @@ body { min-height: 100vh; }
   border-radius: 0 22px 22px 0 !important;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    28px 0 64px -16px rgba(0, 48, 31, 0.40),
-    1px 0 0 rgba(0, 108, 79, 0.18) !important;
+    28px 0 64px -16px rgba(var(--color-brand-shadow-rgb), 0.40),
+    1px 0 0 rgba(var(--color-brand-rgb), 0.18) !important;
 }
 .cce-assistant-dialog-panel .mat-mdc-dialog-surface {
   border-radius: inherit !important;
@@ -102,7 +110,7 @@ body { min-height: 100vh; }
 /* Backdrop tone: lighter than default scrim so the page is still
    visible behind the sheet (it's a side panel, not a takeover). */
 .cdk-overlay-backdrop.cce-assistant-dialog-backdrop {
-  background: rgba(0, 48, 31, 0.30);
+  background: rgba(var(--color-brand-shadow-rgb), 0.30);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
@@ -123,40 +131,96 @@ body { min-height: 100vh; }
    Used by News, Community Topics, and Events list pages so they
    share one toolbar / grid / skeleton / empty-state / error
    language. Keep these classes minimal — modern and restrained.
-   Brand palette: deep green #006c4f, mid green #14b88f, gold #c8a045
+   Brand palette: deep green var(--color-brand), mid green var(--color-brand-accent), gold var(--color-accent)
    ───────────────────────────────────────────────────────────── */
 
 .cce-list-toolbar {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 1.25rem;
   flex-wrap: wrap;
+  background: var(--white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+
+  /* Single height token — every interactive child shares this exact value */
+  --toolbar-h: 44px;
+
+  /* Unified design tokens for all mat-form-fields inside the toolbar */
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: rgba(0, 0, 0, 0.2);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 0, 0, 0.32);
+  --mdc-outlined-text-field-focus-outline-color: var(--color-brand);
+  --mat-select-arrow-foreground-color: rgba(var(--color-text-primary-rgb), 0.55);
+
+  /* Suppress hint/error space under mat-form-fields */
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+  /* Force the outlined field wrapper to exactly --toolbar-h */
+  .mat-mdc-text-field-wrapper {
+    height: var(--toolbar-h);
+    box-sizing: border-box;
+  }
+
+  /* The inner flex container must fill the wrapper so align-items:center works */
+  .mat-mdc-form-field-flex {
+    height: 100%;
+    align-items: center;
+  }
+
+  /* Vertically center the input content inside the fixed-height wrapper */
+  .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 0;
+  }
 }
 
+/* Search field stretches; sort stays compact */
+.cce-list-toolbar__search-field {
+  flex: 1 1 220px;
+  min-width: 180px;
+
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(var(--color-brand-rgb), 0.05);
+  }
+}
+.cce-list-toolbar__sort {
+  width: 150px;
+  flex-shrink: 0;
+}
+
+/* Outer pill — block (not flex) so overflow:hidden clips to border-radius in all browsers */
 .cce-list-toolbar__search {
-  position: relative;
   flex: 1 1 280px;
   min-width: 200px;
   max-width: 540px;
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
   border-radius: 999px;
-  padding-inline-start: 0.95rem;
-  padding-inline-end: 0.4rem;
+  overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .cce-list-toolbar__search:focus-within {
-  border-color: #006c4f;
-  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.14);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.14);
+}
+/* Inner flex row — layout only, no background */
+.cce-list-toolbar__search-inner {
+  display: flex;
+  align-items: center;
+  padding-inline-start: 0.95rem;
+  padding-inline-end: 0.4rem;
 }
 .cce-list-toolbar__search-icon {
   font-size: 18px !important;
   width: 18px !important;
   height: 18px !important;
-  color: rgba(0, 108, 79, 0.7);
+  color: rgba(var(--color-brand-rgb), 0.7);
   margin-inline-end: 0.4rem;
 }
 .cce-list-toolbar__search-input {
@@ -164,13 +228,15 @@ body { min-height: 100vh; }
   min-width: 0;
   border: none;
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   padding: 0.65rem 0;
   font: inherit;
   font-size: 0.95rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
-.cce-list-toolbar__search-input::placeholder { color: rgba(28, 39, 36, 0.45); }
+.cce-list-toolbar__search-input::placeholder { color: rgba(var(--color-text-primary-rgb), 0.45); }
 .cce-list-toolbar__search-input::-webkit-search-cancel-button { display: none; }
 
 .cce-list-toolbar__search-clear {
@@ -183,12 +249,12 @@ body { min-height: 100vh; }
   background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   transition: background 0.15s ease, color 0.15s ease;
 }
 .cce-list-toolbar__search-clear:hover {
-  background: rgba(0, 108, 79, 0.08);
-  color: #006c4f;
+  background: rgba(var(--color-brand-rgb), 0.08);
+  color: var(--color-brand);
 }
 .cce-list-toolbar__search-clear mat-icon {
   font-size: 18px !important;
@@ -203,28 +269,30 @@ body { min-height: 100vh; }
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.7);
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.18);
-  padding: 0.55rem 0.95rem;
-  border-radius: 999px;
+  color: rgba(var(--color-text-primary-rgb), 0.7);
+  background: var(--white);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0 0.95rem;
+  height: 44px;
+  box-sizing: border-box;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
-.cce-list-toolbar__chip:hover { color: #006c4f; border-color: rgba(0, 108, 79, 0.36); }
+.cce-list-toolbar__chip:hover { color: var(--color-brand); border-color: rgba(0, 0, 0, 0.32); }
 .cce-list-toolbar__chip mat-icon {
   font-size: 16px !important;
   width: 16px !important;
   height: 16px !important;
 }
 .cce-list-toolbar__chip--active {
-  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 100%);
+  color: var(--white);
   border-color: transparent;
-  box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+  box-shadow: 0 6px 14px -8px rgba(var(--color-brand-rgb), 0.55);
 }
-.cce-list-toolbar__chip--active:hover { color: #ffffff; }
+.cce-list-toolbar__chip--active:hover { color: var(--white); }
 
 .cce-list-toolbar__date {
   display: inline-flex;
@@ -232,15 +300,15 @@ body { min-height: 100vh; }
   gap: 0.4rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1c2724;
-  background: #ffffff;
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  color: var(--color-text-primary);
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
 }
 .cce-list-toolbar__date > span {
   font-weight: 700;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -251,7 +319,7 @@ body { min-height: 100vh; }
   background: transparent;
   font: inherit;
   font-size: 0.86rem;
-  color: #1c2724;
+  color: var(--color-text-primary);
   padding: 0;
   min-width: 110px;
 }
@@ -267,8 +335,8 @@ body { min-height: 100vh; }
   height: 18px;
   padding: 0 5px;
   border-radius: 999px;
-  background: #006c4f;
-  color: #ffffff;
+  background: var(--color-brand);
+  color: var(--white);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -280,30 +348,36 @@ body { min-height: 100vh; }
   margin-inline-start: auto;
   font-size: 0.84rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   white-space: nowrap;
 }
 
-/* ─── Grid (wider min track for horizontal cards) ─────────── */
+/* ─── Grid: always 3 cards per row at desktop, 2 at tablet, 1 at phone. */
 .cce-list-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
   margin-bottom: 1.25rem;
+  align-items: stretch;
 }
+@media (max-width: 1000px) { .cce-list-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px)  { .cce-list-grid { grid-template-columns: minmax(0, 1fr); } }
 
-/* `--list` modifier collapses the grid to a single full-width column,
- * which lets users switch from a 3-up grid to a stacked list. */
+/* `--list` modifier: single-column stack of horizontal cards
+ * (image on the start, content beside it). Cards detect the parent
+ * class via :host-context() in their own SCSS and re-flow. */
 .cce-list-grid--list {
   grid-template-columns: 1fr;
 }
+@media (max-width: 1000px) { .cce-list-grid--list { grid-template-columns: 1fr; } }
+@media (max-width: 640px)  { .cce-list-grid--list { grid-template-columns: 1fr; } }
 
-/* View-mode toggle pill (Grid ↔ List) used in list-page toolbars. */
+/* View-mode toggle (Grid ↔ List) — geometric 8px to match toolbar rhythm */
 .cce-list-toolbar__view {
   display: inline-flex;
-  background: rgba(0, 108, 79, 0.06);
-  border: 1px solid rgba(0, 108, 79, 0.14);
-  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
   padding: 3px;
 }
 .cce-list-toolbar__view-btn {
@@ -312,11 +386,11 @@ body { min-height: 100vh; }
   justify-content: center;
   border: none;
   background: transparent;
-  color: rgba(28, 39, 36, 0.65);
-  width: 34px;
-  height: 30px;
+  color: rgba(var(--color-text-primary-rgb), 0.65);
+  width: 38px;
+  height: 38px;
   padding: 0;
-  border-radius: 999px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
 }
@@ -325,45 +399,59 @@ body { min-height: 100vh; }
   width: 18px !important;
   height: 18px !important;
 }
-.cce-list-toolbar__view-btn:hover { color: #006c4f; }
+.cce-list-toolbar__view-btn:hover { color: var(--color-brand); }
 .cce-list-toolbar__view-btn--active {
-  background: #ffffff;
-  color: #006c4f;
-  box-shadow: 0 2px 6px -2px rgba(0, 108, 79, 0.35);
+  background: var(--white);
+  color: var(--color-brand);
+  box-shadow: 0 2px 6px -2px rgba(var(--color-brand-rgb), 0.35);
 }
 
 /* ─── Skeleton (matches horizontal 75/25 card shape) ──────── */
+/* Skeleton matches the vertical card shape:
+   [ 16:9 image shimmer ]
+   [ body: meta + title×2 + excerpt×2 ]
+   [ footer bar ] */
 .cce-list-skeleton {
-  background: #ffffff;
-  border: 1px solid rgba(0, 60, 44, 0.06);
-  border-radius: 16px;
+  background: var(--white);
+  border: 1px solid rgba(var(--color-brand-shadow-rgb), 0.06);
+  border-radius: 14px;
   overflow: hidden;
-  display: grid;
-  /* Match the cards: 25/75, image (band) leading. */
-  grid-template-columns: 1fr 3fr;
-  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-.cce-list-skeleton__lines {
+.cce-list-skeleton__media {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(90deg, var(--primary--50) 0%, var(--primary--100) 50%, var(--primary--50) 100%);
+  background-size: 200% 100%;
+  animation: cceListShimmer 1.6s linear infinite;
+  flex-shrink: 0;
+}
+.cce-list-skeleton__body {
+  flex: 1;
   padding: 1rem 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  justify-content: center;
+  gap: 0.55rem;
 }
-.cce-list-skeleton__band {
-  background: linear-gradient(90deg, #eef5f1 0%, #e2efe9 50%, #eef5f1 100%);
-  background-size: 200% 100%;
-  animation: cceListShimmer 1.6s linear infinite;
+.cce-list-skeleton__foot {
+  height: 42px;
+  border-top: 1px solid rgba(var(--color-brand-shadow-rgb), 0.06);
+  background: var(--primary--50);
+  flex-shrink: 0;
 }
 .cce-list-skeleton__line {
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #eef0ee 0%, #e2e7e4 50%, #eef0ee 100%);
+  background: linear-gradient(90deg, var(--neutrals--100) 0%, var(--neutrals--200) 50%, var(--neutrals--100) 100%);
   background-size: 200% 100%;
   animation: cceListShimmer 1.6s linear infinite;
+  width: 100%;
 }
-.cce-list-skeleton__line--lg { height: 16px; width: 80%; }
-.cce-list-skeleton__line--sm { height: 10px; width: 35%; }
+.cce-list-skeleton__line--meta  { width: 48%; height: 9px; margin-bottom: 0.15rem; }
+.cce-list-skeleton__line--title { height: 15px; }
+.cce-list-skeleton__line--short   { width: 62%; }
+.cce-list-skeleton__line--shorter { width: 78%; }
 
 @keyframes cceListShimmer {
   0%   { background-position: 100% 0; }
@@ -374,17 +462,17 @@ body { min-height: 100vh; }
 .cce-list-empty {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: #fbfdfb;
-  border: 1px dashed rgba(0, 108, 79, 0.22);
+  background: var(--primary--50);
+  border: 1px dashed rgba(var(--color-brand-rgb), 0.22);
   border-radius: 18px;
-  color: rgba(28, 39, 36, 0.7);
+  color: rgba(var(--color-text-primary-rgb), 0.7);
   margin-bottom: 1.25rem;
 }
 .cce-list-empty h2 {
   margin: 0.85rem 0 0.4rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1c2724;
+  color: var(--color-text-primary);
 }
 .cce-list-empty p {
   margin: 0;
@@ -398,8 +486,8 @@ body { min-height: 100vh; }
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 108, 79, 0.08);
-  color: #006c4f;
+  background: rgba(var(--color-brand-rgb), 0.08);
+  color: var(--color-brand);
 }
 .cce-list-empty__art mat-icon {
   font-size: 28px !important;
@@ -409,30 +497,30 @@ body { min-height: 100vh; }
 .cce-list-empty--filter button { margin-top: 0.85rem; }
 
 .cce-list-error {
-  background: linear-gradient(180deg, #fff5f4 0%, #ffece9 100%);
-  color: #8a1f0d;
+  background: linear-gradient(180deg, var(--danger--50) 0%, var(--danger--50) 100%);
+  color: var(--danger--800);
   padding: 0.9rem 1.1rem;
   border-radius: 14px;
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  border: 1px solid rgba(176, 0, 32, 0.15);
+  border: 1px solid rgba(var(--danger--600-rgb), 0.15);
   flex-wrap: wrap;
 }
-.cce-list-error mat-icon { color: #b00020; }
+.cce-list-error mat-icon { color: var(--danger--600); }
 .cce-list-error span { flex: 1 1 auto; min-width: 0; }
 .cce-list-error button {
-  border: 1px solid rgba(176, 0, 32, 0.4);
+  border: 1px solid rgba(var(--danger--600-rgb), 0.4);
   background: transparent;
-  color: #8a1f0d;
+  color: var(--danger--800);
   font: inherit;
   font-weight: 600;
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
   cursor: pointer;
 }
-.cce-list-error button:hover { background: rgba(176, 0, 32, 0.06); }
+.cce-list-error button:hover { background: rgba(var(--danger--600-rgb), 0.06); }
 
 /* ─── Expandable filter panel ─────────────────────────────
  * Lives directly under the toolbar. Becomes visible when the
@@ -442,9 +530,9 @@ body { min-height: 100vh; }
 
 .cce-list-filters {
   background:
-    radial-gradient(700px 200px at 0% 0%, rgba(20, 184, 143, 0.08), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
-  border: 1px solid rgba(0, 108, 79, 0.12);
+    radial-gradient(700px 200px at 0% 0%, rgba(var(--color-brand-accent-rgb), 0.08), transparent 60%),
+    linear-gradient(180deg, var(--white) 0%, var(--primary--50) 100%);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.12);
   border-radius: 16px;
   padding: 1.1rem 1.25rem;
   margin-bottom: 1rem;
@@ -474,7 +562,7 @@ body { min-height: 100vh; }
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   margin: 0;
   padding: 0;
   display: inline-flex;
@@ -485,14 +573,14 @@ body { min-height: 100vh; }
   font-size: 14px !important;
   width: 14px !important;
   height: 14px !important;
-  color: #006c4f;
+  color: var(--color-brand);
 }
 
 /* Segmented pill group */
 .cce-list-filters__seg {
   display: inline-flex;
-  background: rgba(0, 108, 79, 0.06);
-  border: 1px solid rgba(0, 108, 79, 0.14);
+  background: rgba(var(--color-brand-rgb), 0.06);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.14);
   border-radius: 999px;
   padding: 3px;
   flex-wrap: wrap;
@@ -507,17 +595,17 @@ body { min-height: 100vh; }
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(28, 39, 36, 0.7);
+  color: rgba(var(--color-text-primary-rgb), 0.7);
   white-space: nowrap;
   transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
-.cce-list-filters__seg-btn:hover { color: #006c4f; }
+.cce-list-filters__seg-btn:hover { color: var(--color-brand); }
 .cce-list-filters__seg-btn--active {
-  background: linear-gradient(135deg, #006c4f 0%, #0f8b6c 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 14px -8px rgba(0, 108, 79, 0.55);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-mid) 100%);
+  color: var(--white);
+  box-shadow: 0 6px 14px -8px rgba(var(--color-brand-rgb), 0.55);
 }
-.cce-list-filters__seg-btn--active:hover { color: #ffffff; }
+.cce-list-filters__seg-btn--active:hover { color: var(--white); }
 
 /* Date row */
 .cce-list-filters__date-row {
@@ -535,11 +623,11 @@ body { min-height: 100vh; }
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
 }
 .cce-list-filters__date input {
-  border: 1px solid rgba(0, 108, 79, 0.18);
-  background: #ffffff;
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
+  background: var(--white);
   border-radius: 12px;
   padding: 0.55rem 0.7rem;
   font: inherit;
@@ -547,13 +635,13 @@ body { min-height: 100vh; }
   font-weight: 500;
   letter-spacing: normal;
   text-transform: none;
-  color: #1c2724;
+  color: var(--color-text-primary);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .cce-list-filters__date input:focus {
   outline: none;
-  border-color: #006c4f;
-  box-shadow: 0 0 0 3px rgba(0, 108, 79, 0.14);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(var(--color-brand-rgb), 0.14);
 }
 
 /* ─── Active filter chips strip ───────────────────────────
@@ -572,7 +660,7 @@ body { min-height: 100vh; }
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(28, 39, 36, 0.55);
+  color: rgba(var(--color-text-primary-rgb), 0.55);
   margin-inline-end: 0.25rem;
 }
 .cce-list-active__chip {
@@ -581,9 +669,9 @@ body { min-height: 100vh; }
   gap: 0.3rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #006c4f;
-  background: rgba(0, 108, 79, 0.08);
-  border: 1px solid rgba(0, 108, 79, 0.18);
+  color: var(--color-brand);
+  background: rgba(var(--color-brand-rgb), 0.08);
+  border: 1px solid rgba(var(--color-brand-rgb), 0.18);
   padding: 0.28rem 0.4rem 0.28rem 0.7rem;
   border-radius: 999px;
 }
@@ -599,10 +687,10 @@ body { min-height: 100vh; }
   background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  color: #006c4f;
+  color: var(--color-brand);
   transition: background 0.15s ease;
 }
-.cce-list-active__chip-x:hover { background: rgba(0, 108, 79, 0.18); }
+.cce-list-active__chip-x:hover { background: rgba(var(--color-brand-rgb), 0.18); }
 .cce-list-active__chip-x mat-icon {
   font-size: 14px !important;
   width: 14px !important;
@@ -613,14 +701,14 @@ body { min-height: 100vh; }
   font: inherit;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #b00020;
+  color: var(--danger--600);
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 0.3rem 0.5rem;
   border-radius: 999px;
 }
-.cce-list-active__clear:hover { background: rgba(176, 0, 32, 0.06); }
+.cce-list-active__clear:hover { background: rgba(var(--danger--600-rgb), 0.06); }
 
 @media (prefers-reduced-motion: reduce) {
   .cce-list-filters { animation: none; }
@@ -630,4 +718,149 @@ body { min-height: 100vh; }
 @media (prefers-reduced-motion: reduce) {
   .cce-list-skeleton__band,
   .cce-list-skeleton__line { animation: none; }
+}
+
+/* ── Global input height: 48px (Material default: 56px) ───── */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-height: 48px;
+  --mat-form-field-container-height: 48px;
+  --mat-form-field-container-vertical-padding: 12px;
+}
+
+/* ── User profile card (header dropdown) ────────────────────── */
+.cce-user-menu {
+  .mat-mdc-menu-panel {
+    min-width: 290px !important;
+    max-width: 320px !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+    border: 1px solid rgba(var(--color-brand-rgb), 0.12) !important;
+    box-shadow: 0 28px 56px -18px rgba(var(--color-brand-shadow-rgb), 0.30) !important;
+  }
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+    padding-block: 0 !important;
+  }
+  .mat-mdc-menu-item {
+    min-height: 44px !important;
+    font-size: 0.92rem !important;
+    .mat-icon {
+      color: rgba(var(--color-text-primary-rgb), 0.50);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transition: color 0.18s ease;
+    }
+    &:hover .mat-icon { color: var(--color-brand); }
+    &:hover { background: rgba(var(--color-brand-mid-rgb), 0.06) !important; }
+  }
+}
+
+.cce-user-card {
+  padding: 1.2rem 1.25rem 1.1rem;
+  background: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand) 70%, var(--color-brand-mid) 100%);
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 2px solid rgba(255, 255, 255, 0.30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__email {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.62);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__role {
+    margin-top: 0.3rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.14rem 0.52rem;
+    background: rgba(var(--color-accent-rgb), 0.22);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.42);
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 700;
+    color: var(--color-accent-light);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+}
+
+.cce-user-menu__section-label {
+  display: block;
+  padding: 0.55rem 1rem 0.1rem;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(var(--color-text-primary-rgb), 0.38);
+  pointer-events: none;
+}
+
+.cce-user-menu__signout {
+  --mdc-list-list-item-label-text-color: var(--danger--600) !important;
+  .mat-icon { color: var(--danger--600) !important; }
+  &:hover { background: rgba(var(--danger--600-rgb), 0.05) !important; }
+}
+
+
+/* ─── Dialog: no padding (evaluation + preferences) ─────────────────────── */
+.cce-dialog-no-padding .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px !important;
+}
+.cce-dialog-no-padding .mat-mdc-dialog-content {
+  padding: 1.25rem 1.5rem !important;
+  max-height: 65vh;
+}
+.cce-dialog-no-padding .mat-mdc-dialog-actions {
+  padding: 0.75rem 1.5rem 1.25rem !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }

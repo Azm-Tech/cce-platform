@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, effect, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { CITY_TYPES, targetYearBounds, type CityType } from '../interactive-city.types';
 import { ScenarioBuilderStore } from './scenario-builder-store.service';
 
@@ -18,10 +18,10 @@ import { ScenarioBuilderStore } from './scenario-builder-store.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './scenario-header.component.html',
   styleUrl: './scenario-header.component.scss',
@@ -34,6 +34,14 @@ export class ScenarioHeaderComponent implements OnInit {
 
   readonly cityTypes = CITY_TYPES;
   readonly yearBounds = targetYearBounds();
+
+  readonly cityTypeSearch = new FormControl('');
+  private readonly cityTypeSearchValue = toSignal(this.cityTypeSearch.valueChanges, { initialValue: '' });
+  readonly filteredCityTypes = computed(() => {
+    const q = (this.cityTypeSearchValue() ?? '').trim().toLowerCase();
+    if (!q) return this.cityTypes;
+    return this.cityTypes.filter(c => c.toLowerCase().includes(q));
+  });
 
   readonly form = this.fb.nonNullable.group({
     name: this.store.name(),
@@ -51,7 +59,14 @@ export class ScenarioHeaderComponent implements OnInit {
       };
       // emitEvent:false avoids re-triggering the form → store path.
       this.form.patchValue(next, { emitEvent: false });
+      this.cityTypeSearch.setValue(this.store.cityType(), { emitEvent: false });
     });
+  }
+
+  onCityTypeSelected(value: CityType): void {
+    this.form.controls.cityType.setValue(value, { emitEvent: false });
+    this.cityTypeSearch.setValue(value, { emitEvent: false });
+    this.store.setCityType(value);
   }
 
   ngOnInit(): void {

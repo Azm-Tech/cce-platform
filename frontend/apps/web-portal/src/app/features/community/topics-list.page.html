@@ -1,189 +1,305 @@
-<section class="cce-topics-list">
-  <cce-workbench-hero
-    [eyebrow]="'community.eyebrow' | translate"
-    [title]="'community.title' | translate"
-    [subtitle]="'community.subtitle' | translate"
-  />
+<div class="cp-page">
+  <div class="cp-layout">
 
-  <!-- ─── Toolbar ─────────────────────────────────────────── -->
-  <div class="cce-list-toolbar">
-    <div class="cce-list-toolbar__search">
-      <mat-icon class="cce-list-toolbar__search-icon" aria-hidden="true">search</mat-icon>
-      <input
-        type="search"
-        class="cce-list-toolbar__search-input"
-        [placeholder]="'community.searchPlaceholder' | translate"
-        [ngModel]="query()"
-        (ngModelChange)="onQueryChange($event)"
-        [attr.aria-label]="'community.searchPlaceholder' | translate"
-      />
-      @if (query()) {
-        <button
-          type="button"
-          class="cce-list-toolbar__search-clear"
-          [attr.aria-label]="'community.clearSearch' | translate"
-          (click)="clearQuery()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </div>
+    <!-- ════════════════════════════════════════════════════════════
+         SIDEBAR  (right column in RTL)
+    ═══════════════════════════════════════════════════════════════ -->
+    <aside class="cp-sidebar">
 
-    <button
-      type="button"
-      class="cce-list-toolbar__chip"
-      [class.cce-list-toolbar__chip--active]="filtersOpen() || activeChips().length > 0"
-      [attr.aria-pressed]="filtersOpen()"
-      [attr.aria-expanded]="filtersOpen()"
-      aria-controls="cce-topics-filters"
-      (click)="toggleFilters()"
-    >
-      <mat-icon aria-hidden="true">tune</mat-icon>
-      {{ 'community.filters.open' | translate }}
-      @if (activeChips().length > 0) {
-        <span class="cce-list-toolbar__chip-badge">{{ activeChips().length }}</span>
-      }
-    </button>
-
-    <div class="cce-list-toolbar__view" role="group" aria-label="View density">
-      <button
-        type="button"
-        class="cce-list-toolbar__view-btn"
-        [class.cce-list-toolbar__view-btn--active]="viewMode() === 'grid'"
-        [attr.aria-pressed]="viewMode() === 'grid'"
-        aria-label="Grid view"
-        (click)="setViewMode('grid')"
-      >
-        <mat-icon>grid_view</mat-icon>
-      </button>
-      <button
-        type="button"
-        class="cce-list-toolbar__view-btn"
-        [class.cce-list-toolbar__view-btn--active]="viewMode() === 'list'"
-        [attr.aria-pressed]="viewMode() === 'list'"
-        aria-label="List view"
-        (click)="setViewMode('list')"
-      >
-        <mat-icon>view_agenda</mat-icon>
-      </button>
-    </div>
-
-    @if (!loading() && rows().length > 0) {
-      <span class="cce-list-toolbar__count">
-        {{ filtered().length }} / {{ rows().length }}
-      </span>
-    }
-  </div>
-
-  <!-- ─── Filter panel (collapsible) ──────────────────────── -->
-  <div id="cce-topics-filters" class="cce-list-filters" [hidden]="!filtersOpen()">
-    <fieldset class="cce-list-filters__group">
-      <legend class="cce-list-filters__legend">
-        <mat-icon aria-hidden="true">sort</mat-icon>
-        {{ 'community.filters.sort' | translate }}
-      </legend>
-      <div class="cce-list-filters__seg">
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'default'"
-                (click)="setSort('default')">
-          {{ 'community.filters.sortDefault' | translate }}
-        </button>
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alpha'"
-                (click)="setSort('alpha')">
-          {{ 'community.filters.sortAlpha' | translate }}
-        </button>
-        <button type="button" class="cce-list-filters__seg-btn"
-                [class.cce-list-filters__seg-btn--active]="sortOrder() === 'alphaReverse'"
-                (click)="setSort('alphaReverse')">
-          {{ 'community.filters.sortAlphaReverse' | translate }}
-        </button>
-      </div>
-    </fieldset>
-  </div>
-
-  <!-- ─── Active filter chips ─────────────────────────────── -->
-  @if (activeChips().length > 0) {
-    <div class="cce-list-active" role="status">
-      <span class="cce-list-active__label">{{ 'community.filters.active' | translate }}:</span>
-      @for (chip of activeChips(); track chip.id) {
-        <span class="cce-list-active__chip">
-          {{ chip.label }}
-          <button
-            type="button"
-            class="cce-list-active__chip-x"
-            [attr.aria-label]="'community.clearSearch' | translate"
-            (click)="removeChip(chip.id)"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </span>
-      }
-      <button type="button" class="cce-list-active__clear" (click)="clearAllFilters()">
-        {{ 'community.filters.clearAll' | translate }}
-      </button>
-    </div>
-  }
-
-  @if (loading() && rows().length > 0) {
-    <mat-progress-bar mode="indeterminate" class="cce-topics-list__progress" />
-  }
-
-  <!-- ─── Error ───────────────────────────────────────────── -->
-  @if (errorKind(); as kind) {
-    <div class="cce-list-error" role="alert">
-      <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ ('errors.' + kind) | translate }}</span>
-      <button type="button" (click)="retry()">{{ 'errors.retry' | translate }}</button>
-    </div>
-  }
-
-  <!-- ─── Skeleton ────────────────────────────────────────── -->
-  @if (loading() && rows().length === 0) {
-    <div class="cce-list-grid" aria-busy="true">
-      @for (s of skeletons; track $index) {
-        <div class="cce-list-skeleton">
-          <div class="cce-list-skeleton__band"></div>
-          <div class="cce-list-skeleton__lines">
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--sm"></div>
-            <div class="cce-list-skeleton__line cce-list-skeleton__line--lg"></div>
-            <div class="cce-list-skeleton__line"></div>
+      <!-- ── Current user profile card (authenticated only) ────── -->
+      @if (isAuthenticated()) {
+        <div class="cp-profile-card">
+          <div class="cp-profile-card__avatar">{{ userInitial() }}</div>
+          <div class="cp-profile-card__info">
+            <h2 class="cp-profile-card__name">{{ userFullName() }}</h2>
+            @if (isExpert()) {
+              <span class="cp-profile-card__badge">
+                <mat-icon svgIcon="badge-check" aria-hidden="true"></mat-icon>
+                {{ 'community.expertBadge' | transloco }}
+              </span>
+            }
           </div>
+
+          <div class="cp-profile-card__stats">
+            <div class="cp-profile-card__stat">
+              <strong>0</strong>
+              <span>{{ 'community.profile.followers' | transloco }}</span>
+            </div>
+            <div class="cp-profile-card__stat-divider"></div>
+            <div class="cp-profile-card__stat">
+              <strong>0</strong>
+              <span>{{ 'community.profile.following' | transloco }}</span>
+            </div>
+            <div class="cp-profile-card__stat-divider"></div>
+            <div class="cp-profile-card__stat">
+              <strong>{{ userPostCount() }}</strong>
+              <span>{{ 'community.profile.posts' | transloco }}</span>
+            </div>
+          </div>
+
+          <a class="cp-profile-card__link" routerLink="/community/me">
+            {{ 'community.profile.myProfile' | transloco }}
+            <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+          </a>
+
+          <button type="button" class="cp-btn-primary" (click)="openNewPost()">
+            {{ 'community.profile.newPost' | transloco }}
+            <mat-icon svgIcon="square-plus" aria-hidden="true"></mat-icon>
+          </button>
+        </div>
+
+        <div class="cp-sidebar-divider"></div>
+      }
+
+      <!-- ── Topics menu ────────────────────────────────────────── -->
+      <div class="cp-sidebar-topics">
+        <h3 class="cp-sidebar-topics__title">{{ 'community.topicsTitle' | transloco }}</h3>
+
+        @if (topicsLoading()) {
+          <ul class="cp-topics-list cp-topics-skel" aria-hidden="true">
+            @for (s of topicSkeletons; track $index) {
+              <li class="cp-topic-skel">
+                <div class="cp-skel cp-topic-skel__label"></div>
+                <div class="cp-skel cp-topic-skel__badge"></div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <ul class="cp-topics-list" role="list">
+            <li class="cp-topic-item" [class.cp-topic-item--active]="!topicFilter()">
+              <button type="button" class="cp-topic-item__main" (click)="setTopicFilter(null)">
+                <span class="cp-topic-item__label">{{ 'community.filter.allCategories' | transloco }}</span>
+                <span class="cp-topic-item__badge">{{ allTopicsCount() }}</span>
+              </button>
+            </li>
+            @for (topic of topicSummaries(); track topic.id) {
+              <li class="cp-topic-item" [class.cp-topic-item--active]="topicFilter() === topic.id">
+                <button type="button" class="cp-topic-item__main" (click)="setTopicFilter(topic.id)">
+                  <span class="cp-topic-item__label">{{ topicSummaryName(topic) }}</span>
+                  <span class="cp-topic-item__badge">{{ topic.postsCount }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="cp-topic-item__follow"
+                  [class.cp-topic-item__follow--active]="isTopicFollowed(topic.id)"
+                  [attr.aria-label]="(isTopicFollowed(topic.id) ? 'community.unfollowTopic' : 'community.followTopic') | transloco"
+                  (click)="toggleTopicFollow(topic.id)"
+                >
+                  <mat-icon svgIcon="{{ isTopicFollowed(topic.id) ? 'bookmark-check' : 'bookmark' }}" aria-hidden="true"></mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="cp-sidebar-divider"></div>
+
+      <!-- ── Community roles accordion (Figma 40003381-80373) ─────── -->
+      @if (roles().length > 0) {
+        <div class="cp-roles">
+          <h3 class="cp-roles__title">{{ 'community.rules.title' | transloco }}</h3>
+          @for (role of roles(); track role.key) {
+            <div class="cp-roles__item" [class.cp-roles__item--open]="expandedRoleKeys().has(role.key)">
+              <button
+                type="button"
+                class="cp-roles__trigger"
+                [attr.aria-expanded]="expandedRoleKeys().has(role.key)"
+                (click)="toggleRole(role.key)"
+              >
+                <span class="cp-roles__name">{{ roleName(role) }}</span>
+                <mat-icon svgIcon="chevron-down" class="cp-roles__chevron" aria-hidden="true"></mat-icon>
+              </button>
+              @if (expandedRoleKeys().has(role.key) && roleDescription(role)) {
+                <p class="cp-roles__desc">{{ roleDescription(role) }}</p>
+              }
+            </div>
+          }
         </div>
       }
-    </div>
-  }
 
-  <!-- ─── Empty (no data) ─────────────────────────────────── -->
-  @if (empty()) {
-    <div class="cce-list-empty">
-      <span class="cce-list-empty__art" aria-hidden="true">
-        <mat-icon>forum</mat-icon>
-      </span>
-      <h2>{{ 'community.empty.topics' | translate }}</h2>
-      <p>{{ 'community.emptyDesc' | translate }}</p>
-    </div>
-  }
+      <!-- ── Legal Footer ────────────────────────────────────────── -->
+      <footer class="cp-sidebar-footer">
+        <div class="cp-sidebar-footer__copyright">
+          {{ 'community.footer.copyright' | transloco }}
+        </div>
+        <div class="cp-sidebar-footer__links">
+          <a routerLink="/privacy" class="cp-sidebar-footer__link">{{ 'community.footer.privacy' | transloco }}</a>
+          <a routerLink="/terms" class="cp-sidebar-footer__link">{{ 'community.footer.terms' | transloco }}</a>
+        </div>
+      </footer>
 
-  <!-- ─── Filtered empty ──────────────────────────────────── -->
-  @if (filteredEmpty()) {
-    <div class="cce-list-empty cce-list-empty--filter">
-      <span class="cce-list-empty__art" aria-hidden="true">
-        <mat-icon>search_off</mat-icon>
-      </span>
-      <h2>{{ 'community.filteredEmpty' | translate }}</h2>
-      <button type="button" class="cce-list-toolbar__chip" (click)="clearQuery()">
-        {{ 'community.clearSearch' | translate }}
-      </button>
-    </div>
-  }
+    </aside>
 
-  <!-- ─── Cards ───────────────────────────────────────────── -->
-  @if (!loading() && filtered().length > 0) {
-    <div class="cce-list-grid" [class.cce-list-grid--list]="viewMode() === 'list'">
-      @for (topic of filtered(); track topic.id) {
-        <cce-topic-card [topic]="topic" [locale]="locale()" />
+
+    <!-- ════════════════════════════════════════════════════════════
+         MAIN FEED  (left column in RTL)
+    ═══════════════════════════════════════════════════════════════ -->
+    <main class="cp-feed">
+
+      <!-- ── Page title ─────────────────────────────────────────── -->
+      <h1 class="cp-page-title">{{ 'community.pageTitle' | transloco }}</h1>
+
+      <!-- ── Search bar ─────────────────────────────────────────── -->
+      <div class="cp-search">
+        <mat-icon svgIcon="search" class="cp-search__icon" aria-hidden="true"></mat-icon>
+        <input
+          type="search"
+          [dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+          class="cp-search__input"
+          [placeholder]="'community.searchPlaceholder' | transloco"
+          [value]="searchQuery()"
+          (input)="onSearchChange($any($event.target).value)"
+          [attr.aria-label]="'community.searchPlaceholder' | transloco"
+        />
+        @if (searchQuery()) {
+          <button type="button" class="cp-search__clear" (click)="clearSearch()">
+            <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+          </button>
+        }
+      </div>
+
+      <!-- ── Filter bar: sort tabs (inline-start) + type menu (inline-end) ── -->
+      <div class="cp-filter-bar">
+
+        <!-- Sort tabs — inline-start -->
+        <nav class="cp-sort-tabs" role="tablist">
+          @for (opt of sortOptions; track opt.key) {
+            <button
+              type="button"
+              role="tab"
+              class="cp-sort-tab"
+              [class.cp-sort-tab--active]="sort() === opt.key"
+              [attr.aria-selected]="sort() === opt.key"
+              (click)="setSort(opt.key)"
+            >
+              {{ opt.labelKey | transloco }}
+              <mat-icon [svgIcon]="sortIcons[opt.key]" aria-hidden="true"></mat-icon>
+            </button>
+          }
+        </nav>
+
+        <!-- Dropdowns container — inline-end -->
+        <div class="cp-filter-dropdowns">
+          <!-- Post type dropdown -->
+          <button type="button" class="cp-category-btn" [matMenuTriggerFor]="typeMenu">
+            <span>{{ currentTypeLabel() | transloco }}</span>
+            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+          </button>
+          <mat-menu #typeMenu="matMenu">
+            @for (opt of typeOptions; track opt.value) {
+              <button mat-menu-item (click)="setTypeFilter(opt.value)">
+                {{ opt.labelKey | transloco }}
+              </button>
+            }
+          </mat-menu>
+        </div>
+
+      </div>
+
+      <!-- ── Error ─────────────────────────────────────────────── -->
+      @if (feedError(); as kind) {
+        <div class="cp-error" role="alert">
+          <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+          <span>{{ ('errors.' + kind) | transloco }}</span>
+          <button type="button" class="cp-error__retry" (click)="retry()">
+            {{ 'errors.retry' | transloco }}
+          </button>
+        </div>
       }
-    </div>
-  }
-</section>
+
+      <!-- ── Posts skeleton ────────────────────────────────────── -->
+      @if (postsLoading() && posts().length === 0) {
+        @for (s of postSkeletons; track $index) {
+          <div class="cp-card-skel" aria-hidden="true">
+            <div class="cp-card-skel__header">
+              <div class="cp-card-skel__chips">
+                <div class="cp-skel cp-skel--chip"></div>
+                <div class="cp-skel cp-skel--chip"></div>
+              </div>
+              <div class="cp-card-skel__meta">
+                <div class="cp-skel cp-skel--name"></div>
+                <div class="cp-skel cp-skel--sm"></div>
+              </div>
+              <div class="cp-card-skel__avatar"></div>
+            </div>
+            <div class="cp-skel cp-skel--title"></div>
+            <div class="cp-skel cp-skel--body"></div>
+            <div class="cp-skel cp-skel--body cp-skel--body-short"></div>
+          </div>
+        }
+      }
+
+      <!-- ── Reload progress bar ────────────────────────────────── -->
+      @if (postsLoading() && posts().length > 0) {
+        <div class="cp-progress" role="progressbar">
+          <div class="cp-progress__bar"></div>
+        </div>
+      }
+
+      <!-- ── Empty state ───────────────────────────────────────── -->
+      @if (!postsLoading() && !feedError() && filteredPosts().length === 0 && posts().length === 0) {
+        <div class="cp-empty">
+          <mat-icon svgIcon="messages-square" aria-hidden="true"></mat-icon>
+          <p>{{ 'community.empty.topics' | transloco }}</p>
+        </div>
+      }
+
+      <!-- ── New-posts pill (live) ──────────────────────────────── -->
+      @if (newPostCount() > 0) {
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          class="cp-newposts"
+          (click)="showNewPosts()"
+        >
+          <mat-icon svgIcon="chevron-up" aria-hidden="true"></mat-icon>
+          {{ 'community.newPostsPill' | transloco:{ count: newPostCount() } }}
+        </button>
+      }
+
+      <!-- ── Post cards ─────────────────────────────────────────── -->
+      @if (filteredPosts().length > 0) {
+        <div class="cp-feed__list">
+          @for (post of filteredPosts(); track post.id) {
+            <cce-post-summary [post]="post" [topicName]="getTopicName(post)" />
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <nav class="cp-pagination" aria-label="pagination">
+            <button
+              type="button"
+              class="cp-pagination__btn"
+              aria-label="previous"
+              [disabled]="currentPage() === 1"
+              (click)="setPage(currentPage() - 1)"
+            >
+              <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+            </button>
+            @for (n of pageNumbers(); track n) {
+              <button
+                type="button"
+                class="cp-pagination__num"
+                [class.cp-pagination__num--active]="currentPage() === n"
+                (click)="setPage(n)"
+              >{{ n }}</button>
+            }
+            <button
+              type="button"
+              class="cp-pagination__btn"
+              aria-label="next"
+              [disabled]="currentPage() === totalPages()"
+              (click)="setPage(currentPage() + 1)"
+            >
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+            </button>
+          </nav>
+        }
+      }
+
+    </main>
+
+  </div>
+</div>

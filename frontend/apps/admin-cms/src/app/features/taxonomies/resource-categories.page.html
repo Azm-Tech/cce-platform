@@ -1,42 +1,42 @@
 <div class="cce-tax-list__header">
-  <h1>{{ 'taxonomies.category.title' | translate }}</h1>
+  <h1>{{ 'taxonomies.category.title' | transloco }}</h1>
   <button type="button" mat-flat-button color="primary"
     *ccePermission="'Resource.Center.Upload'" (click)="openCreate()">
     <mat-icon>add</mat-icon>
-    {{ 'taxonomies.category.create.openButton' | translate }}
+    {{ 'taxonomies.category.create.openButton' | transloco }}
   </button>
 </div>
 
 @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 @if (errorKind(); as kind) {
-  <div class="cce-tax-list__error" role="alert">{{ ('errors.' + kind) | translate }}</div>
+  <div class="cce-tax-list__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>
 }
 
 <table mat-table [dataSource]="rows()" class="cce-tax-list__table">
   <ng-container matColumnDef="nameEn">
-    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.name' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.name' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.nameEn }}</td>
   </ng-container>
   <ng-container matColumnDef="slug">
-    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.slug' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.slug' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.slug }}</td>
   </ng-container>
   <ng-container matColumnDef="orderIndex">
-    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.order' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.order' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.orderIndex }}</td>
   </ng-container>
   <ng-container matColumnDef="isActive">
-    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.active' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.active' | transloco }}</th>
     <td mat-cell *matCellDef="let r">{{ r.isActive ? '✓' : '—' }}</td>
   </ng-container>
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.actions' | translate }}</th>
+    <th mat-header-cell *matHeaderCellDef>{{ 'taxonomies.col.actions' | transloco }}</th>
     <td mat-cell *matCellDef="let r">
       <button type="button" mat-button *ccePermission="'Resource.Center.Upload'" (click)="openEdit(r)">
-        {{ 'taxonomies.category.edit.openButton' | translate }}
+        {{ 'taxonomies.category.edit.openButton' | transloco }}
       </button>
       <button type="button" mat-button color="warn" *ccePermission="'Resource.Center.Upload'" (click)="delete(r)">
-        {{ 'taxonomies.category.delete.openButton' | translate }}
+        {{ 'taxonomies.category.delete.openButton' | transloco }}
       </button>
     </td>
   </ng-container>

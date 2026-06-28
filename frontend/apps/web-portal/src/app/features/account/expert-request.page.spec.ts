@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AccountApiService, type Result } from './account-api.service';
 import type { ExpertRequestStatus } from './account.types';
 import { ExpertRequestPage } from './expert-request.page';
@@ -52,7 +52,7 @@ describe('ExpertRequestPage', () => {
     localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [ExpertRequestPage, TranslateModule.forRoot()],
+      imports: [ExpertRequestPage, TranslocoModule.forRoot()],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),

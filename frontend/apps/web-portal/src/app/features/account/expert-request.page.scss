@@ -14,20 +14,20 @@
   p { margin: 0; }
 }
 
-.cce-expert-request__banner--pending { background: #fff3cd; color: #856404; }
-.cce-expert-request__banner--approved { background: #d4edda; color: #155724; }
-.cce-expert-request__banner--rejected { background: #fdecea; color: #b00020; }
+.cce-expert-request__banner--pending { background: var(--warning--100); color: var(--warning--700); }
+.cce-expert-request__banner--approved { background: var(--success--100); color: var(--success--800); }
+.cce-expert-request__banner--rejected { background: var(--danger--50); color: var(--danger--600); }
 
 .cce-expert-request__error {
-  background: #fdecea;
-  color: #b00020;
+  background: var(--danger--50);
+  color: var(--danger--600);
   padding: 0.75rem 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
 }
 
 .cce-expert-request__form {
-  background: #fff;
+  background: var(--white);
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
@@ -42,4 +42,155 @@
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.cce-expert-request__cv-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.cce-expert-request__cv-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid rgba(var(--color-brand-rgb), 0.5);
+  color: var(--color-brand);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover { background: rgba(var(--color-brand-rgb), 0.06); }
+
+  &--busy {
+    cursor: default;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.38);
+    width: 200px;
+
+    mat-progress-bar { width: 100%; }
+  }
+}
+
+.cce-expert-request__cv-icon {
+  font-family: 'Material Icons';
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cce-expert-request__cv-check {
+  color: var(--success--800);
+  font-weight: 700;
+}
+
+.cce-expert-request__details {
+  background: var(--white);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cce-expert-request__details-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0.75rem;
+}
+
+.cce-expert-request__detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cce-expert-request__detail-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cce-expert-request__detail-value {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.8);
+  white-space: pre-wrap;
+}
+
+.cce-expert-request__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cce-expert-request__tag {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  background: rgba(var(--color-brand-rgb), 0.08);
+  color: var(--color-brand);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.cce-expert-request__topics-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.cce-expert-request__topics-label {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cce-expert-request__topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cce-expert-request__topic-chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: transparent;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  line-height: 1.4;
+
+  &:hover {
+    border-color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.05);
+    color: var(--color-brand);
+  }
+
+  &--on {
+    border-color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.1);
+    color: var(--color-brand);
+    font-weight: 600;
+  }
 }

@@ -1,7 +1,9 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -10,15 +12,24 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { RealtimeEvent, RealtimeHubService, type ContentModeratedPayload } from '@frontend/real-time';
+import { AuthService } from '../../core/auth/auth.service';
 import { EnvService } from '../../core/env.service';
 import { CommunityModerationApiService, type TopicLite } from './community-moderation-api.service';
 import {
-  ADMIN_POST_STATUSES,
+  PostDetailDialogComponent,
+  type PostDetailDialogData,
+  type PostDetailDialogResult,
+} from './post-detail-dialog.component';
+import {
+  ADMIN_POST_TYPE_FILTERS,
+  POST_TYPE_PARAM,
   type AdminPostRow,
-  type AdminPostStatus,
+  type AdminPostTypeFilter,
+  type PostTypeKind,
 } from './admin-post.types';
 
 const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -42,7 +53,7 @@ const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
     MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule,
     MatMenuModule, MatPaginatorModule, MatProgressBarModule, MatSelectModule,
     MatTooltipModule,
-    TranslateModule,
+    TranslocoModule,
   ],
   templateUrl: './community-moderation.page.html',
   styleUrl: './community-moderation.page.scss',
@@ -54,8 +65,12 @@ export class CommunityModerationPage implements OnInit {
   private readonly confirm = inject(ConfirmDialogService);
   private readonly localeService = inject(LocaleService);
   private readonly envService = inject(EnvService);
+  private readonly dialog = inject(MatDialog);
+  private readonly hub = inject(RealtimeHubService);
+  private readonly auth = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  readonly statuses = ADMIN_POST_STATUSES;
+  readonly typeFilters = ADMIN_POST_TYPE_FILTERS;
   readonly locale = this.localeService.locale;
 
   // ─── List state ──────────────────────────────────────────
@@ -67,7 +82,7 @@ export class CommunityModerationPage implements OnInit {
 
   // ─── Filters ─────────────────────────────────────────────
   readonly search = signal('');
-  readonly status = signal<AdminPostStatus>('all');
+  readonly typeFilter = signal<AdminPostTypeFilter>('all');
   readonly localeFilter = signal<'' | 'ar' | 'en'>('');
   readonly topicId = signal<string>('');
   readonly page = signal(1);
@@ -87,18 +102,57 @@ export class CommunityModerationPage implements OnInit {
     void this.api.listTopicsLite().then((res) => {
       if (res.ok) this.topics.set(res.value);
     });
+    this.listenForModeration();
     await this.load();
+  }
+
+  /** Live moderation channel: another moderator acted → toast + refresh the list.
+   *  (The hub auto-joins the `moderation` room for users with the moderator claim.) */
+  private listenForModeration(): void {
+    this.hub
+      .on<ContentModeratedPayload>(RealtimeEvent.ContentModerated)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ev) => {
+        // Skip our own action — the local delete flow already toasted + reloaded.
+        if (ev.moderatorId && ev.moderatorId === this.auth.currentUser()?.id) return;
+        this.toast.success('communityModeration.toastModerated');
+        void this.load();
+      });
   }
 
   topicNameOf(row: AdminPostRow): string {
     return this.locale() === 'ar' ? row.topicNameAr : row.topicNameEn;
   }
 
-  /** First 140 chars of `content` for the table cell — full content
-   *  is shown in the row tooltip. */
+  /** Post title for the table cell, falling back to a content excerpt
+   *  when the row carries no title (e.g. plain discussion posts). */
+  titleOf(row: AdminPostRow): string {
+    const title = row.title?.trim();
+    if (title) return title;
+    return this.excerptOf(row);
+  }
+
+  /** First 140 chars of `content` — used as a fallback title and the row tooltip. */
   excerptOf(row: AdminPostRow): string {
-    const stripped = row.content.replace(/\s+/g, ' ').trim();
+    const stripped = (row.content ?? '').replace(/\s+/g, ' ').trim();
     return stripped.length > 140 ? stripped.slice(0, 140) + '…' : stripped;
+  }
+
+  /** Normalized post type for chip rendering — derived from `type`,
+   *  falling back to the answerable heuristic when the field is absent. */
+  postTypeKind(row: AdminPostRow): PostTypeKind {
+    const t = (row.type ?? '').toLowerCase();
+    if (t.includes('poll')) return 'poll';
+    if (t.includes('quest') || (!t && (row.isAnswerable || row.isAnswered))) return 'question';
+    return 'info';
+  }
+
+  postTypeIcon(kind: PostTypeKind): string {
+    switch (kind) {
+      case 'question': return 'help_outline';
+      case 'poll': return 'bar_chart';
+      default: return 'info';
+    }
   }
 
   /**
@@ -167,12 +221,13 @@ export class CommunityModerationPage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorKind.set(null);
+    const type = this.typeFilter();
     const res = await this.api.listPosts({
       page: this.page(),
       pageSize: this.pageSize(),
       topicId: this.topicId() || undefined,
       search: this.search().trim() || undefined,
-      status: this.status(),
+      postType: type === 'all' ? undefined : POST_TYPE_PARAM[type],
       locale: this.localeFilter() || undefined,
     });
     this.loading.set(false);
@@ -190,8 +245,8 @@ export class CommunityModerationPage implements OnInit {
     this.page.set(1);
     void this.load();
   }
-  onStatus(value: AdminPostStatus): void {
-    this.status.set(value);
+  onType(value: AdminPostTypeFilter): void {
+    this.typeFilter.set(value);
     this.page.set(1);
     void this.load();
   }
@@ -212,7 +267,7 @@ export class CommunityModerationPage implements OnInit {
   }
   clearFilters(): void {
     this.search.set('');
-    this.status.set('all');
+    this.typeFilter.set('all');
     this.localeFilter.set('');
     this.topicId.set('');
     this.page.set(1);
@@ -262,6 +317,24 @@ export class CommunityModerationPage implements OnInit {
     } else {
       this.toast.error(`errors.${res.error.kind}`);
     }
+  }
+
+  openDetail(row: AdminPostRow): void {
+    const ref = this.dialog.open<
+      PostDetailDialogComponent,
+      PostDetailDialogData,
+      PostDetailDialogResult
+    >(PostDetailDialogComponent, {
+      data: { row },
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      panelClass: 'cce-post-detail-dialog',
+    });
+    ref.afterClosed().subscribe((result) => {
+      if (result?.postDeleted) void this.load();
+    });
   }
 
   retry(): void { void this.load(); }

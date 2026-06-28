@@ -10,7 +10,7 @@
 
 .cce-events-list__progress {
   margin-bottom: 1rem;
-  --mdc-linear-progress-active-indicator-color: #006c4f;
+  --mdc-linear-progress-active-indicator-color: var(--color-brand);
 }
 
 mat-paginator {

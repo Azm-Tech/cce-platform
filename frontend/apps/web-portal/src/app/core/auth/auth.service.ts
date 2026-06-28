@@ -1,52 +1,107 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { AuthApiService, AuthUser, TokenPair } from './auth-api.service';
+import { ToastService } from '@frontend/ui-kit';
+import { CcePortalRole } from '@frontend/contracts';
 
-export interface CurrentUser {
-  id: string;
-  email: string | null;
-  userName: string | null;
-  displayNameAr: string | null;
-  displayNameEn: string | null;
-  avatarUrl: string | null;
-  countryId: string | null;
-  isExpert: boolean;
-}
+export type CurrentUser = AuthUser;
+
+const REFRESH_TOKEN_KEY = 'cce_rt';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
-  private readonly _currentUser = signal<CurrentUser | null>(null);
-  readonly currentUser = this._currentUser.asReadonly();
-  readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  private readonly authApi = inject(AuthApiService);
+  private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
-  /** Bootstraps from /api/me. Tolerates 401 (anonymous) silently. Call from APP_INITIALIZER. */
+  private readonly _currentUser = signal<CurrentUser | null>(null);
+  private readonly _accessToken = signal<string | null>(null);
+  private _refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private _refreshInFlight: Promise<void> | null = null;
+
+  readonly currentUser = this._currentUser.asReadonly();
+  readonly accessToken = this._accessToken.asReadonly();
+  readonly isAuthenticated = computed(() => this._currentUser() !== null);
+  readonly roles = computed(() => this._currentUser()?.roles ?? []);
+
+  hasRole(role: CcePortalRole): boolean {
+    return this._currentUser()?.roles.includes(role) ?? false;
+  }
+
+  hasAnyRole(...roles: CcePortalRole[]): boolean {
+    return roles.some((r) => this.hasRole(r));
+  }
+
+  setSession(tokens: TokenPair): void {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
+    this._accessToken.set(tokens.accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+    this._currentUser.set(tokens.user);
+    const delay = new Date(tokens.accessTokenExpiresAtUtc).getTime() - Date.now() - 60_000;
+    if (delay > 0) {
+      this._refreshTimer = setTimeout(() => void this.refresh(), delay);
+    }
+  }
+
+  /** Bootstraps session from stored refresh token. Called from APP_INITIALIZER and auth interceptor. */
   async refresh(): Promise<void> {
-    try {
-      const me = await firstValueFrom(this.http.get<CurrentUser>('/api/me'));
-      this._currentUser.set(me);
-    } catch {
+    if (this._refreshInFlight) return this._refreshInFlight;
+    this._refreshInFlight = this._doRefresh().finally(() => {
+      this._refreshInFlight = null;
+    });
+    return this._refreshInFlight;
+  }
+
+  private async _doRefresh(): Promise<void> {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    if (!refreshToken) {
       this._currentUser.set(null);
+      return;
+    }
+    try {
+      const tokens = await firstValueFrom(this.authApi.refresh(refreshToken));
+      this.setSession(tokens);
+    } catch {
+      this._accessToken.set(null);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      this._currentUser.set(null);
+    }
+  }
+
+  /** Navigates to the login page, preserving returnUrl for post-login redirect. */
+  signIn(returnUrl = '/'): void {
+    void this.router.navigate(['/login'], {
+      queryParams: returnUrl && returnUrl !== '/login' ? { returnUrl } : undefined,
+    });
+  }
+
+  async signOut(): Promise<void> {
+    if (this._refreshTimer !== null) {
+      clearTimeout(this._refreshTimer);
+      this._refreshTimer = null;
+    }
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    try {
+      if (refreshToken) {
+        await firstValueFrom(this.authApi.logout(refreshToken));
+      }
+      this.toast.success('account.logout.successMessage');
+    } catch {
+      this.toast.error('account.logout.errorMessage');
+    } finally {
+      this._accessToken.set(null);
+      this._currentUser.set(null);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      void this.router.navigate(['/']);
     }
   }
 
   /** Public test helper. Not for application code. */
   _setUserForTest(user: CurrentUser | null): void {
     this._currentUser.set(user);
-  }
-
-  /** Full-page navigation to BFF login. SPA does NOT exchange tokens itself. */
-  signIn(returnUrl: string = window.location.pathname + window.location.search): void {
-    window.location.assign(`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`);
-  }
-
-  /** Full-page POST is overkill; use a tiny form to satisfy POST + browser redirect. */
-  async signOut(): Promise<void> {
-    try {
-      await firstValueFrom(this.http.post('/auth/logout', {}));
-    } finally {
-      this._currentUser.set(null);
-      window.location.assign('/');
-    }
   }
 }

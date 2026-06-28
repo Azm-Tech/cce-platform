@@ -16,13 +16,25 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class CountryApiService {
   private readonly http = inject(HttpClient);
 
-  async listCountries(opts: { page?: number; pageSize?: number; search?: string; isActive?: boolean } = {}): Promise<Result<PagedResult<Country>>> {
+  async listCountries(opts: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sortBy?: 0 | 1 | 2;
+    sortOrder?: 0 | 1;
+    isCceCountry?: boolean;
+  } = {}): Promise<Result<PagedResult<Country>>> {
     let params = new HttpParams();
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
     if (opts.search) params = params.set('search', opts.search);
-    if (opts.isActive !== undefined) params = params.set('isActive', String(opts.isActive));
-    return this.run(() => firstValueFrom(this.http.get<PagedResult<Country>>('/api/admin/countries', { params })));
+    if (opts.sortBy !== undefined) params = params.set('sortBy', opts.sortBy);
+    if (opts.sortOrder !== undefined) params = params.set('sortOrder', opts.sortOrder);
+    if (opts.isCceCountry !== undefined) params = params.set('isCceCountry', String(opts.isCceCountry));
+    // /api/admin/* responses are auto-unwrapped by the envelope interceptor.
+    return this.run(() =>
+      firstValueFrom(this.http.get<PagedResult<Country>>('/api/admin/countries', { params })),
+    );
   }
 
   async getCountry(id: string): Promise<Result<Country>> {

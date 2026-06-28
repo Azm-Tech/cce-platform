@@ -5,7 +5,7 @@ import { signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { LocaleService } from '@frontend/i18n';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import type { PagedResult, PublicPost, PublicTopic } from './community.types';
@@ -21,11 +21,15 @@ const TOPIC: PublicTopic = {
 };
 
 const POST: PublicPost = {
-  id: 'p1', topicId: 't1', authorId: 'u1',
+  id: 'p1', communityId: 'c1', topicId: 't1',
+  type: 'Info',
+  title: 'Test', author: { id: 'u1', name: 'Alice', avatarUrl: null, isExpert: false, postsCount: 0, followerCount: 0 },
   content: 'Hello', locale: 'en',
-  isAnswerable: true,
-  answeredReplyId: null,
-  createdOn: '2026-04-29T12:00:00Z',
+  isAnswerable: true, answeredReplyId: null,
+  upvoteCount: 0, downvoteCount: 0, commentsCount: 0,
+  attachmentIds: [], createdOn: '2026-04-29T12:00:00Z',
+  topicNameAr: null, topicNameEn: null,
+  isWatchlisted: false, voteStatus: 0,
 };
 
 function ok<T>(value: T): Result<T> {
@@ -54,7 +58,7 @@ describe('TopicDetailPage', () => {
     const localeSig = signal<'ar' | 'en'>('en');
 
     await TestBed.configureTestingModule({
-      imports: [TopicDetailPage, TranslateModule.forRoot()],
+      imports: [TopicDetailPage, TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } })],
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
@@ -84,10 +88,17 @@ describe('TopicDetailPage', () => {
     page = fixture.componentInstance;
   }
 
-  it('init: getTopicBySlug then listPosts called with the resolved id', async () => {
-    await setup('one');
+  /** Triggers ngOnInit and drains its floating async load() chain. */
+  async function flush(): Promise<void> {
     fixture.detectChanges();
     await fixture.whenStable();
+    await new Promise<void>((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+  }
+
+  it('init: getTopicBySlug then listPosts called with the resolved id', async () => {
+    await setup('one');
+    await flush();
     expect(getTopicBySlug).toHaveBeenCalledWith('one');
     expect(listPosts).toHaveBeenCalledWith('t1', { page: 1, pageSize: 20 });
     expect(page.topic()?.id).toBe('t1');
@@ -97,24 +108,21 @@ describe('TopicDetailPage', () => {
   it('404 on getTopicBySlug renders the not-found block', async () => {
     await setup('missing');
     getTopicBySlug.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.notFound()).toBe(true);
     expect(page.topic()).toBeNull();
   });
 
   it('topicName + topicDescription pull localized fields', async () => {
     await setup('one');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     expect(page.topicName()).toBe('Topic');
     expect(page.topicDescription()).toBe('Description');
   });
 
   it('paginator change re-fires listPosts with new page+pageSize', async () => {
     await setup('one');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     listPosts.mockClear();
     await page.onPage({ pageIndex: 1, pageSize: 50, length: 1, previousPageIndex: 0 });
     expect(page.page()).toBe(2);
@@ -124,18 +132,17 @@ describe('TopicDetailPage', () => {
 
   it('openComposeDialog opens MatDialog with topic id payload', async () => {
     await setup('one');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     page.openComposeDialog();
     expect(dialogOpen).toHaveBeenCalled();
     const args = dialogOpen.mock.calls[0];
-    expect(args[1].data).toEqual({ topicId: 't1' });
+    expect(args[1].data.preselectedTopicId).toBe('t1');
+    expect(args[1].data.topics.map((t: PublicTopic) => t.id)).toEqual(['t1']);
   });
 
   it('successful compose closes dialog with submitted -> reloads posts', async () => {
     await setup('one');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await flush();
     page.openComposeDialog();
     listPosts.mockClear();
     afterClosed$.next({ submitted: true, postId: 'p2' });

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth/auth.service';
 import { ToastService } from '@frontend/ui-kit';
 import { ReportsApiService, type Result } from './reports-api.service';
@@ -27,7 +27,7 @@ describe('ReportsPage', () => {
     download = jest.fn();
     toast = { success: jest.fn(), error: jest.fn() };
     await TestBed.configureTestingModule({
-      imports: [ReportsPage, TranslateModule.forRoot()],
+      imports: [ReportsPage, TranslocoModule.forRoot()],
       providers: [
         provideNoopAnimations(),
         provideHttpClient(),
