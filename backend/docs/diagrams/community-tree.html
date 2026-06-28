@@ -1,0 +1,581 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Community Module — Full Architecture Tree</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; padding: 24px; }
+  h1 { color: #f0f6fc; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 12px; margin-bottom: 28px; }
+
+  /* Flow diagram */
+  .flow { display: flex; align-items: center; gap: 0; margin-bottom: 32px; flex-wrap: wrap; gap: 6px; }
+  .flow-box { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 8px 14px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .flow-box.domain  { border-color: #388bfd; color: #79c0ff; }
+  .flow-box.app     { border-color: #3fb950; color: #7ee787; }
+  .flow-box.infra   { border-color: #d29922; color: #e3b341; }
+  .flow-box.api     { border-color: #bc4c00; color: #ffa657; }
+  .flow-box.redis   { border-color: #a371f7; color: #d2a8ff; }
+  .flow-box.signalr { border-color: #f85149; color: #ff7b72; }
+  .arrow { color: #484f58; font-size: 16px; }
+
+  /* Grid layout */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+  /* Section cards */
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+  .card-header { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .card-header.domain  { background: #0d2045; color: #79c0ff; border-bottom: 1px solid #1c3a6e; }
+  .card-header.app     { background: #0a2618; color: #7ee787; border-bottom: 1px solid #1a4530; }
+  .card-header.infra   { background: #271c06; color: #e3b341; border-bottom: 1px solid #4a3000; }
+  .card-header.api     { background: #200f00; color: #ffa657; border-bottom: 1px solid #5c2a00; }
+  .card-header.redis   { background: #1a0f30; color: #d2a8ff; border-bottom: 1px solid #3d1f78; }
+  .card-body { padding: 12px 14px; }
+
+  /* Tree nodes */
+  .tree { list-style: none; }
+  .tree li { padding: 2px 0; line-height: 1.6; }
+  .tree li::before { content: ''; }
+  .group { font-weight: 600; color: #c9d1d9; margin-top: 8px; margin-bottom: 2px; font-size: 11.5px; }
+  .group:first-child { margin-top: 0; }
+  .item { padding-left: 14px; color: #8b949e; font-size: 11.5px; position: relative; }
+  .item::before { content: '├─ '; color: #30363d; position: absolute; left: 0; }
+  .item.last::before { content: '└─ '; color: #30363d; position: absolute; left: 0; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 4px; vertical-align: middle; letter-spacing: .3px; }
+  .b-event  { background: #1f4b2a; color: #7ee787; }
+  .b-redis  { background: #2d1b69; color: #d2a8ff; }
+  .b-sigr   { background: #3d0c0c; color: #ff7b72; }
+  .b-query  { background: #0d2045; color: #79c0ff; }
+  .b-cmd    { background: #271c06; color: #e3b341; }
+  .b-notif  { background: #1c1a00; color: #f0c000; }
+  .file { color: #58a6ff; font-weight: 500; }
+  .dim { color: #484f58; }
+  .note { color: #8b949e; font-style: italic; font-size: 10.5px; }
+
+  /* Event flow section */
+  .flow-section { margin-bottom: 28px; }
+  .flow-section h2 { color: #f0f6fc; font-size: 13px; font-weight: 700; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #21262d; }
+  .event-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; padding: 10px; background: #161b22; border: 1px solid #21262d; border-radius: 6px; }
+  .event-trigger { min-width: 180px; }
+  .event-name { font-weight: 600; color: #e3b341; font-size: 11.5px; }
+  .event-source { color: #8b949e; font-size: 10.5px; }
+  .event-arrow { color: #30363d; font-size: 18px; padding-top: 2px; }
+  .event-consumers { flex: 1; }
+  .consumer-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11px; }
+  .consumer-item:last-child { margin-bottom: 0; }
+  .consumer-name { font-weight: 600; color: #ffa657; }
+  .consumer-effect { color: #8b949e; }
+
+  /* Wide card */
+  .card.wide { grid-column: 1 / -1; }
+
+  /* Endpoint table */
+  .ep-table { width: 100%; border-collapse: collapse; font-size: 11px; overflow-x: auto; display: block; }
+  .ep-table th { text-align: left; padding: 6px 10px; background: #1c2128; color: #8b949e; font-weight: 600; border-bottom: 1px solid #30363d; white-space: nowrap; }
+  .ep-table td { padding: 5px 10px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .ep-table tr:last-child td { border-bottom: none; }
+  .method { font-weight: 700; font-size: 10px; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
+  .get  { background: #0a2618; color: #7ee787; }
+  .post { background: #0d2045; color: #79c0ff; }
+  .put  { background: #271c06; color: #e3b341; }
+  .del  { background: #3d0c0c; color: #ff7b72; }
+  .patch { background: #1a0f30; color: #d2a8ff; }
+  .ep-route { color: #f0f6fc; font-family: monospace; font-size: 10.5px; }
+  .ep-handler { color: #8b949e; }
+  .ep-auth { font-size: 9.5px; padding: 1px 5px; border-radius: 10px; }
+  .auth-anon { background: #1a1a1a; color: #484f58; }
+  .auth-req  { background: #0a1f0a; color: #388bfd; }
+  .auth-perm { background: #0d1f40; color: #d2a8ff; font-size: 9px; }
+</style>
+
+<h1>Community Module — Full Architecture Tree</h1>
+<p class="subtitle">CCE Backend · Clean Architecture + DDD + CQRS · ~230 files</p>
+
+<!-- Main event flow -->
+<div class="flow-section">
+  <h2>Integration Event Flow</h2>
+
+  <div class="event-row">
+    <div class="event-trigger">
+      <div class="event-name">PostCreatedEvent</div>
+      <div class="event-source">Post.Publish() → PostCreatedBusPublisher</div>
+      <div class="event-source" style="margin-top:2px">→ PostCreatedIntegrationEvent</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name">FeedConsumer</span><span class="consumer-effect">→ fan-out postId to followers' Redis sorted sets · updates community feed + hot leaderboard · celebrity/expert bypassed</span></div>
+      <div class="consumer-item"><span class="consumer-name">SignalRConsumer</span><span class="consumer-effect">→ broadcasts NewPost to community:{id} + topic:{id} SignalR groups</span></div>
+      <div class="consumer-item"><span class="consumer-name">NotificationConsumer</span><span class="consumer-effect">→ dispatches NotificationMessage to topic + community followers (excludes author)</span></div>
+    </div>
+  </div>
+
+  <div class="event-row">
+    <div class="event-trigger">
+      <div class="event-name">PostVotedEvent</div>
+      <div class="event-source">Post.Vote() → PostVotedBusPublisher</div>
+      <div class="event-source" style="margin-top:2px">→ VoteCreatedIntegrationEvent</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name">VoteConsumer</span><span class="consumer-effect">→ absolute SetPostMetaAsync (idempotent) in Redis · updates hot leaderboard score</span></div>
+    </div>
+  </div>
+
+  <div class="event-row">
+    <div class="event-trigger">
+      <div class="event-name">ReplyCreatedEvent</div>
+      <div class="event-source">PostReply.CreateRoot/Child() → ReplyCreatedBusPublisher</div>
+      <div class="event-source" style="margin-top:2px">→ ReplyCreatedIntegrationEvent</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name">ReplyCountConsumer</span><span class="consumer-effect">→ updates post:{id}:meta replyCount in Redis (reads existing meta first)</span></div>
+      <div class="consumer-item"><span class="consumer-name">NotificationConsumer</span><span class="consumer-effect">→ notifies post author + post followers of new reply</span></div>
+      <div class="consumer-item"><span class="consumer-name">SignalRConsumer</span><span class="consumer-effect">→ broadcasts NewReply to post:{id} group</span></div>
+    </div>
+  </div>
+
+  <div class="event-row">
+    <div class="event-trigger">
+      <div class="event-name">CommentCountChangedEvent</div>
+      <div class="event-source">PostReply operations → CommentCountChangedBusPublisher</div>
+      <div class="event-source" style="margin-top:2px">→ CommentCountChangedIntegrationEvent</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name">ReplyCountConsumer</span><span class="consumer-effect">→ syncs CommentsCount to Redis meta hash</span></div>
+    </div>
+  </div>
+
+  <div class="event-row">
+    <div class="event-trigger">
+      <div class="event-name">CommunityJoinRequestedEvent</div>
+      <div class="event-source">Community.RegisterJoinRequest() → CommunityJoinRequestedBusPublisher</div>
+      <div class="event-source" style="margin-top:2px">→ CommunityJoinRequestedIntegrationEvent</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name">NotificationConsumer</span><span class="consumer-effect">→ notifies community moderators of pending join request</span></div>
+    </div>
+  </div>
+
+  <div class="event-row" style="border-color:#2d1b69">
+    <div class="event-trigger">
+      <div class="event-name" style="color:#d2a8ff">CastPollVote (no bus event)</div>
+      <div class="event-source">option.IncrementVotes() + SaveChanges (synchronous)</div>
+      <div class="event-source" style="margin-top:2px">→ SignalR only (PollResultsChanged)</div>
+    </div>
+    <div class="event-arrow">→</div>
+    <div class="event-consumers">
+      <div class="consumer-item"><span class="consumer-name" style="color:#d2a8ff">ICommunityRealtimePublisher</span><span class="consumer-effect">→ PublishToPostAsync(PollResultsChanged) via SignalR · no Redis cache · counts always fresh from SQL</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Layer cards -->
+<div class="grid">
+
+  <!-- DOMAIN -->
+  <div class="card">
+    <div class="card-header domain">🧱 Domain — CCE.Domain/Community/</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Aggregate Roots</li>
+        <li class="item"><span class="file">Community.cs</span> <span class="note">members, posts, followers counters; Create/Update/Visibility</span></li>
+        <li class="item"><span class="file">Post.cs</span> <span class="note">Info/Question/Poll; Draft→Published; UpvoteCount, Score (hot rank)</span></li>
+        <li class="item"><span class="file">PostReply.cs</span> <span class="note">threaded via ThreadPath; max depth 8; vote counters</span></li>
+        <li class="item"><span class="file">Topic.cs</span> <span class="note">hierarchy via ParentId; bilingual; slug</span></li>
+        <li class="item last"><span class="file">Poll.cs</span> <span class="note">1:1 with PostType.Poll; 2–10 options; IsClosed(clock)</span></li>
+
+        <li class="group">Entities / Value Objects</li>
+        <li class="item"><span class="file">PollOption.cs</span> <span class="note">label, sortOrder, VoteCount (denormalized); IncrementVotes()</span></li>
+        <li class="item"><span class="file">PollVote.cs</span> <span class="note">(PollId, PollOptionId, UserId)</span></li>
+        <li class="item"><span class="file">PostVote.cs</span> <span class="note">(PostId, UserId, Direction Up/Down)</span></li>
+        <li class="item"><span class="file">PostAttachment.cs</span> <span class="note">FK → AssetFile</span></li>
+        <li class="item"><span class="file">PostFollow.cs</span> <span class="note">user watches post</span></li>
+        <li class="item"><span class="file">CommunityMembership.cs</span> <span class="note">role: Member/Moderator/Owner</span></li>
+        <li class="item"><span class="file">CommunityFollow.cs</span></li>
+        <li class="item"><span class="file">CommunityJoinRequest.cs</span> <span class="note">Pending/Approved/Rejected</span></li>
+        <li class="item"><span class="file">UserFollow.cs</span></li>
+        <li class="item last"><span class="file">TopicFollow.cs</span></li>
+
+        <li class="group">Domain Events</li>
+        <li class="item"><span class="file">PostCreatedEvent</span> <span class="badge b-event">fires on Publish()</span></li>
+        <li class="item"><span class="file">PostVotedEvent</span> <span class="badge b-event">fires on Vote()</span></li>
+        <li class="item"><span class="file">ReplyCreatedEvent</span> <span class="badge b-event">fires on CreateRoot/Child()</span></li>
+        <li class="item"><span class="file">CommentCountChangedEvent</span></li>
+        <li class="item last"><span class="file">CommunityJoinRequestedEvent</span></li>
+
+        <li class="group">Enums</li>
+        <li class="item">PostType <span class="dim">Info=0 Question=1 Poll=2</span></li>
+        <li class="item">PostStatus <span class="dim">Draft Published Deleted</span></li>
+        <li class="item">CommunityVisibility <span class="dim">Public Private</span></li>
+        <li class="item last">VoteDirection <span class="dim">Up Down</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- APPLICATION — COMMANDS -->
+  <div class="card">
+    <div class="card-header app">⚡ Application — Commands (28)</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Post Lifecycle</li>
+        <li class="item"><span class="file">CreatePostCommand</span> → Response&lt;Guid&gt; <span class="badge b-event">→ PostCreatedEvent</span></li>
+        <li class="item"><span class="file">UpdateDraftCommand</span></li>
+        <li class="item"><span class="file">PublishPostCommand</span> <span class="badge b-event">→ PostCreatedEvent</span></li>
+        <li class="item"><span class="file">DeleteDraftCommand</span></li>
+        <li class="item last"><span class="file">SoftDeletePostCommand</span></li>
+
+        <li class="group">Replies</li>
+        <li class="item"><span class="file">CreateReplyCommand</span> <span class="badge b-event">→ ReplyCreatedEvent</span></li>
+        <li class="item"><span class="file">EditReplyCommand</span></li>
+        <li class="item"><span class="file">SoftDeleteReplyCommand</span></li>
+        <li class="item last"><span class="file">MarkPostAnsweredCommand</span></li>
+
+        <li class="group">Voting</li>
+        <li class="item"><span class="file">VotePostCommand</span> <span class="badge b-event">→ PostVotedEvent</span></li>
+        <li class="item"><span class="file">VoteReplyCommand</span></li>
+        <li class="item last"><span class="file">CastPollVoteCommand</span> <span class="badge b-sigr">→ PollResultsChanged</span></li>
+
+        <li class="group">Community</li>
+        <li class="item"><span class="file">CreateCommunityCommand</span></li>
+        <li class="item"><span class="file">UpdateCommunityCommand</span></li>
+        <li class="item"><span class="file">ChangeCommunityVisibilityCommand</span></li>
+        <li class="item"><span class="file">JoinCommunityCommand</span> <span class="badge b-event">→ CommunityJoinRequestedEvent</span></li>
+        <li class="item last"><span class="file">LeaveCommunityCommand</span></li>
+
+        <li class="group">Follows</li>
+        <li class="item"><span class="file">SetCommunityFollowCommand</span></li>
+        <li class="item"><span class="file">SetPostFollowCommand</span></li>
+        <li class="item"><span class="file">SetTopicFollowCommand</span></li>
+        <li class="item last"><span class="file">SetUserFollowCommand</span></li>
+
+        <li class="group">Topics / Moderation</li>
+        <li class="item"><span class="file">CreateTopicCommand</span></li>
+        <li class="item"><span class="file">UpdateTopicCommand</span></li>
+        <li class="item"><span class="file">DeleteTopicCommand</span></li>
+        <li class="item"><span class="file">ApproveJoinRequestCommand</span></li>
+        <li class="item last"><span class="file">RejectJoinRequestCommand</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- APPLICATION — QUERIES -->
+  <div class="card">
+    <div class="card-header app">🔍 Application — Queries (25)</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Feed (hydrated via FeedHydratorService)</li>
+        <li class="item"><span class="file">ListCommunityFeedQuery</span> <span class="badge b-redis">Redis + SQL fallback</span></li>
+        <li class="item last"><span class="file">ListUserFeedQuery</span> <span class="badge b-redis">Redis sorted set + expert SQL merge</span></li>
+
+        <li class="group">Posts</li>
+        <li class="item"><span class="file">GetPublicPostByIdQuery</span> → PostDetailDto + PollSummaryDto</li>
+        <li class="item"><span class="file">ListPublicPostsInTopicQuery</span> → PublicPostDto + PollSummaryDto</li>
+        <li class="item"><span class="file">ListAdminPostsQuery</span> <span class="dim">(internal)</span></li>
+        <li class="item"><span class="file">ListMyDraftsQuery</span></li>
+        <li class="item"><span class="file">ListFeaturedPostsQuery</span></li>
+        <li class="item last"><span class="file">GetPostShareLinkQuery</span></li>
+
+        <li class="group">Replies</li>
+        <li class="item"><span class="file">ListPublicPostRepliesQuery</span></li>
+        <li class="item last"><span class="file">GetReplyThreadQuery</span></li>
+
+        <li class="group">Polls</li>
+        <li class="item last"><span class="file">GetPollResultsQuery</span> → PollResultsDto</li>
+
+        <li class="group">Communities</li>
+        <li class="item"><span class="file">ListPublicCommunitiesQuery</span></li>
+        <li class="item"><span class="file">GetCommunityBySlugQuery</span></li>
+        <li class="item"><span class="file">GetCommunityUserProfileQuery</span></li>
+        <li class="item last"><span class="file">GetCommunityRolesQuery</span></li>
+
+        <li class="group">Topics</li>
+        <li class="item"><span class="file">ListPublicTopicsQuery</span></li>
+        <li class="item"><span class="file">ListPublicTopicsPaginatedQuery</span></li>
+        <li class="item last"><span class="file">GetPublicTopicBySlugQuery</span></li>
+
+        <li class="group">User-Centric</li>
+        <li class="item"><span class="file">ListMyMentionsQuery</span></li>
+        <li class="item"><span class="file">GetMyFollowsQuery</span></li>
+        <li class="item"><span class="file">GetMyTopicsQuery</span></li>
+        <li class="item last"><span class="file">ListExpertLeaderboardQuery</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="card">
+    <div class="card-header app">🔧 Application — Shared Services</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Feed Hydration</li>
+        <li class="item"><span class="file">FeedHydratorService.cs</span></li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">HydrateAsync(orderedIds, userId, topicFilter)</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Step 1: JOIN posts+community+author+topic+expert</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Step 2: Redis batch (concurrent)</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Step 3: Attachments</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Step 4: Tags</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Step 5: Watchlist + votes (auth only)</li>
+        <li class="item last dim" style="padding-left:24px; font-size:10.5px">Step 6: Polls via PollHydrator (conditional)</li>
+
+        <li class="group">Poll Hydration</li>
+        <li class="item"><span class="file">PollHydrator.cs</span> <span class="note">static; shared by all 3 paths</span></li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">FetchAsync(db, clock, pollPostIds, userId)</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">Batch polls + options in one query</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">User voted options (auth only, one batch)</li>
+        <li class="item last dim" style="padding-left:24px; font-size:10.5px">Applies resultsVisible gate server-side</li>
+
+        <li class="group">Domain → Bus Bridges (Event Handlers)</li>
+        <li class="item"><span class="file">PostCreatedBusPublisher</span> → PostCreatedIntegrationEvent</li>
+        <li class="item"><span class="file">PostVotedBusPublisher</span> → VoteCreatedIntegrationEvent</li>
+        <li class="item"><span class="file">ReplyCreatedBusPublisher</span> → ReplyCreatedIntegrationEvent</li>
+        <li class="item"><span class="file">CommentCountChangedBusPublisher</span> → CommentCountChangedIntegrationEvent</li>
+        <li class="item last"><span class="file">CommunityJoinRequestedBusPublisher</span> → CommunityJoinRequestedIntegrationEvent</li>
+
+        <li class="group">Interfaces (Application)</li>
+        <li class="item"><span class="file">ICommunityRepository</span></li>
+        <li class="item"><span class="file">IPostRepository</span></li>
+        <li class="item"><span class="file">IReplyRepository</span></li>
+        <li class="item"><span class="file">IPollRepository</span></li>
+        <li class="item"><span class="file">ICommunityVoteRepository</span></li>
+        <li class="item"><span class="file">ICommunityAccessGuard</span></li>
+        <li class="item"><span class="file">ICommunityReadService</span></li>
+        <li class="item"><span class="file">IRedisFeedStore</span> <span class="badge b-redis">Redis</span></li>
+        <li class="item last"><span class="file">ICommunityRealtimePublisher</span> <span class="badge b-sigr">SignalR</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- INFRASTRUCTURE -->
+  <div class="card">
+    <div class="card-header infra">⚙️ Infrastructure — Consumers (MassTransit)</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">FeedConsumer <span class="badge b-cmd">PostCreatedIntegrationEvent</span></li>
+        <li class="item">Checks author FollowerCount vs CelebrityThreshold (10 000)</li>
+        <li class="item">Normal: AddToUserFeedBatchAsync → followers' Redis sorted sets</li>
+        <li class="item">Expert/celebrity: skip personal fan-out (SQL merge at read time)</li>
+        <li class="item last">Always: community feed + hot leaderboard</li>
+
+        <li class="group">VoteConsumer <span class="badge b-cmd">VoteCreatedIntegrationEvent</span></li>
+        <li class="item">SetPostMetaAsync (absolute, idempotent — never HINCRBY)</li>
+        <li class="item last">AddToHotLeaderboardAsync (updates ranking score)</li>
+
+        <li class="group">ReplyCountConsumer <span class="badge b-cmd">CommentCountChangedIntegrationEvent</span></li>
+        <li class="item">Reads existing meta first (preserves upvote/downvote counts)</li>
+        <li class="item last">Updates replyCount in Redis meta hash</li>
+
+        <li class="group">SignalRConsumer <span class="badge b-cmd">PostCreatedIntegrationEvent</span></li>
+        <li class="item last">Broadcasts NewPost to community:{id} + topic:{id} groups</li>
+
+        <li class="group">NotificationConsumer <span class="badge b-cmd">PostCreated / ReplyCreated / JoinRequested</span></li>
+        <li class="item">New post → notify topic + community followers</li>
+        <li class="item">New reply → notify post author + post followers</li>
+        <li class="item last">Join request → notify community moderators</li>
+
+        <li class="group">ContentNotificationConsumer</li>
+        <li class="item last">Mention-based notifications for @-mentioned users</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- INFRASTRUCTURE — Repos / Services -->
+  <div class="card">
+    <div class="card-header infra">⚙️ Infrastructure — Repositories & Services</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">EF Core Repositories</li>
+        <li class="item"><span class="file">CommunityRepository</span> → ICommunityRepository</li>
+        <li class="item"><span class="file">PostRepository</span> → IPostRepository</li>
+        <li class="item"><span class="file">ReplyRepository</span> → IReplyRepository</li>
+        <li class="item"><span class="file">PollRepository</span> → IPollRepository</li>
+        <li class="item last"><span class="file">CommunityVoteRepository</span> → ICommunityVoteRepository</li>
+
+        <li class="group">Services</li>
+        <li class="item"><span class="file">CommunityAccessGuard</span> → checks membership, visibility, mod status</li>
+        <li class="item"><span class="file">CommunityReadService</span> → heavy fan-out queries (follower IDs, voter IDs)</li>
+        <li class="item"><span class="file">CommunityWriteService</span> → bulk increments (PostCount, VoteCounts)</li>
+        <li class="item last"><span class="file">CommunityModerationService</span> → soft-delete, approve/reject</li>
+
+        <li class="group">Realtime</li>
+        <li class="item"><span class="file">CommunityRealtimePublisher</span> <span class="badge b-sigr">SignalR</span></li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">PublishToPostAsync → post:{id} group</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">PublishToCommunityAsync → community:{id} group</li>
+        <li class="item dim" style="padding-left:24px; font-size:10.5px">PublishToTopicAsync → topic:{id} group</li>
+        <li class="item last dim" style="padding-left:24px; font-size:10.5px">PublishToModeratorsAsync → moderation group</li>
+
+        <li class="group">EF Configurations</li>
+        <li class="item">CommunityConfiguration, CommunityMembershipConfiguration</li>
+        <li class="item">PostConfiguration (indexes: CommunityId+Status, Score DESC)</li>
+        <li class="item">PostVoteConfiguration (unique: PostId+UserId+Direction)</li>
+        <li class="item">PostReplyConfiguration (index: ThreadPath for subtree queries)</li>
+        <li class="item last">PollConfiguration, PollOptionConfiguration, PollVoteConfiguration</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DTOs -->
+  <div class="card">
+    <div class="card-header app">📦 Application — DTOs</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Feed DTOs</li>
+        <li class="item"><span class="file">CommunityFeedItemDto</span> <span class="note">community + user feed; includes PollSummaryDto?</span></li>
+        <li class="item"><span class="file">PublicPostDto</span> <span class="note">topic listing; includes PollSummaryDto?</span></li>
+        <li class="item last"><span class="file">PostDetailDto</span> <span class="note">single post; includes PollSummaryDto?</span></li>
+
+        <li class="group">Poll DTOs</li>
+        <li class="item"><span class="file">PollSummaryDto</span> <span class="note">embedded in feed/listing items</span></li>
+        <li class="item"><span class="file">FeedPollOptionDto</span> <span class="note">Id, Label, VoteCount, Percentage, UserVoted</span></li>
+        <li class="item last"><span class="file">PollResultsDto</span> <span class="note">dedicated detail endpoint</span></li>
+
+        <li class="group">Author / User</li>
+        <li class="item"><span class="file">PostAuthorDto</span> <span class="note">name, IsExpert, FollowerCount, IsFollowed</span></li>
+        <li class="item"><span class="file">CommunityUserProfileDto</span></li>
+        <li class="item last"><span class="file">ExpertLeaderboardEntryDto</span></li>
+
+        <li class="group">Community / Topic</li>
+        <li class="item"><span class="file">CommunityDto</span></li>
+        <li class="item"><span class="file">CommunityRoleDto</span></li>
+        <li class="item"><span class="file">PublicTopicDto</span></li>
+        <li class="item last"><span class="file">PublicTopicItemDto</span></li>
+
+        <li class="group">User-Centric</li>
+        <li class="item"><span class="file">MyFollowsDto</span> <span class="note">union: posts + topics + communities + users</span></li>
+        <li class="item"><span class="file">MyDraftDto</span></li>
+        <li class="item"><span class="file">MyMentionDto</span></li>
+        <li class="item last"><span class="file">JoinRequestDto</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ENDPOINTS — EXTERNAL -->
+  <div class="card wide">
+    <div class="card-header api">🌐 API External — CCE.Api.External/Endpoints/</div>
+    <div class="card-body" style="overflow-x:auto">
+      <table class="ep-table">
+        <thead>
+          <tr><th>Method</th><th>Route</th><th>Handler / Action</th><th>Auth</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/feed</td><td class="ep-handler">ListCommunityFeedQuery · Redis + SQL · FeedHydratorService</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/feed/user</td><td class="ep-handler">ListUserFeedQuery · Redis sorted set + expert SQL merge</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/communities</td><td class="ep-handler">ListPublicCommunitiesQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/{communityId}/by-slug/{slug}</td><td class="ep-handler">GetCommunityBySlugQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/{communityId}/user-profile</td><td class="ep-handler">GetCommunityUserProfileQuery</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/roles</td><td class="ep-handler">GetCommunityRolesQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/experts/leaderboard</td><td class="ep-handler">ListExpertLeaderboardQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/posts/{id}</td><td class="ep-handler">GetPublicPostByIdQuery → PostDetailDto + PollSummaryDto</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/posts/{id}/replies</td><td class="ep-handler">ListPublicPostRepliesQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/posts/{id}/share-link</td><td class="ep-handler">GetPostShareLinkQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/polls/{id}/results</td><td class="ep-handler">GetPollResultsQuery → PollResultsDto</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/reply-thread/{replyId}</td><td class="ep-handler">GetReplyThreadQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/topics</td><td class="ep-handler">ListPublicTopicsQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/topics/paginated</td><td class="ep-handler">ListPublicTopicsPaginatedQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/topics/slug/{slug}</td><td class="ep-handler">GetPublicTopicBySlugQuery</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/topics/{topicId}/posts</td><td class="ep-handler">ListPublicPostsInTopicQuery → PublicPostDto + PollSummaryDto · UserVoted via GetUserId()</td><td><span class="ep-auth auth-anon">Anonymous</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/drafts</td><td class="ep-handler">ListMyDraftsQuery</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/mentions</td><td class="ep-handler">ListMyMentionsQuery</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/follows/me</td><td class="ep-handler">GetMyFollowsQuery</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/community/topics/me</td><td class="ep-handler">GetMyTopicsQuery</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts</td><td class="ep-handler">CreatePostCommand (type, title, content, locale, tagIds, attachments, poll, saveAsDraft)</td><td><span class="ep-auth auth-perm">Community_Post_Create</span></td></tr>
+          <tr><td><span class="method put">PUT</span></td><td class="ep-route">/api/community/posts/{id}/draft</td><td class="ep-handler">UpdateDraftCommand</td><td><span class="ep-auth auth-perm">Community_Post_Create</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts/{id}/publish</td><td class="ep-handler">PublishPostCommand → PostCreatedEvent → fan-out</td><td><span class="ep-auth auth-perm">Community_Post_Create</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/community/posts/{id}/draft</td><td class="ep-handler">DeleteDraftCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/community/posts/{id}</td><td class="ep-handler">SoftDeletePostCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts/{id}/replies</td><td class="ep-handler">CreateReplyCommand → ReplyCreatedEvent → notifications</td><td><span class="ep-auth auth-perm">Community_Reply_Create</span></td></tr>
+          <tr><td><span class="method put">PUT</span></td><td class="ep-route">/api/community/replies/{id}</td><td class="ep-handler">EditReplyCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/community/replies/{id}</td><td class="ep-handler">SoftDeleteReplyCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts/{id}/vote</td><td class="ep-handler">VotePostCommand → PostVotedEvent → VoteConsumer → Redis</td><td><span class="ep-auth auth-perm">Community_Post_Vote</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/community/posts/{id}/vote</td><td class="ep-handler">VotePostCommand (unvote)</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/replies/{id}/vote</td><td class="ep-handler">VoteReplyCommand</td><td><span class="ep-auth auth-perm">Community_Reply_Vote</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/polls/{id}/vote</td><td class="ep-handler">CastPollVoteCommand → IncrementVotes() sync → SignalR PollResultsChanged</td><td><span class="ep-auth auth-perm">Community_Poll_Vote</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts/{id}/mark-answered</td><td class="ep-handler">MarkPostAnsweredCommand (sets AnsweredReplyId)</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/communities/{id}/follow</td><td class="ep-handler">SetCommunityFollowCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/posts/{id}/follow</td><td class="ep-handler">SetPostFollowCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/topics/{id}/follow</td><td class="ep-handler">SetTopicFollowCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/users/{id}/follow</td><td class="ep-handler">SetUserFollowCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/communities/{id}/join</td><td class="ep-handler">JoinCommunityCommand → auto-join public / request private → CommunityJoinRequestedEvent</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/community/communities/{id}/leave</td><td class="ep-handler">LeaveCommunityCommand</td><td><span class="ep-auth auth-req">Authenticated</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ENDPOINTS — INTERNAL -->
+  <div class="card wide">
+    <div class="card-header api">🔒 API Internal — CCE.Api.Internal/Endpoints/</div>
+    <div class="card-body" style="overflow-x:auto">
+      <table class="ep-table">
+        <thead>
+          <tr><th>Method</th><th>Route</th><th>Handler / Action</th><th>Permission</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/admin/community/communities</td><td class="ep-handler">CreateCommunityCommand</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+          <tr><td><span class="method put">PUT</span></td><td class="ep-route">/api/admin/community/communities/{id}</td><td class="ep-handler">UpdateCommunityCommand</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+          <tr><td><span class="method patch">PATCH</span></td><td class="ep-route">/api/admin/community/communities/{id}/visibility</td><td class="ep-handler">ChangeCommunityVisibilityCommand</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/admin/community/posts</td><td class="ep-handler">ListAdminPostsQuery (status/locale/search/topic filters)</td><td><span class="ep-auth auth-perm">Community_Post_Moderate</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/admin/community/posts/{id}</td><td class="ep-handler">SoftDeletePostCommand (moderation)</td><td><span class="ep-auth auth-perm">Community_Post_Moderate</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/admin/community/replies/{id}</td><td class="ep-handler">SoftDeleteReplyCommand (moderation)</td><td><span class="ep-auth auth-perm">Community_Post_Moderate</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/admin/community/topics</td><td class="ep-handler">CreateTopicCommand</td><td><span class="ep-auth auth-perm">Community_Topic_Create</span></td></tr>
+          <tr><td><span class="method put">PUT</span></td><td class="ep-route">/api/admin/community/topics/{id}</td><td class="ep-handler">UpdateTopicCommand</td><td><span class="ep-auth auth-perm">Community_Topic_Create</span></td></tr>
+          <tr><td><span class="method del">DEL</span></td><td class="ep-route">/api/admin/community/topics/{id}</td><td class="ep-handler">DeleteTopicCommand</td><td><span class="ep-auth auth-perm">Community_Topic_Create</span></td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="ep-route">/api/admin/community/join-requests</td><td class="ep-handler">ListJoinRequestsQuery</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/admin/community/join-requests/{id}/approve</td><td class="ep-handler">ApproveJoinRequestCommand</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="ep-route">/api/admin/community/join-requests/{id}/reject</td><td class="ep-handler">RejectJoinRequestCommand</td><td><span class="ep-auth auth-perm">Community_Community_Create</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REDIS KEY SPACE -->
+  <div class="card">
+    <div class="card-header redis">🔴 Redis Key Space</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Feed Sorted Sets (score = publishedOn unix ms)</li>
+        <li class="item"><span class="file">feed:user:{userId}</span> — personalized feed (fan-out from FeedConsumer)</li>
+        <li class="item last"><span class="file">feed:community:{communityId}</span> — community public feed</li>
+
+        <li class="group">Hot Leaderboard</li>
+        <li class="item last"><span class="file">leaderboard:hot:{communityId}</span> — sorted by Vote.Hot() score</li>
+
+        <li class="group">Post Metadata Hash</li>
+        <li class="item"><span class="file">post:{postId}:meta</span> — {upvotes, downvotes, score, replyCount}</li>
+        <li class="item dim" style="padding-left:14px; font-size:10.5px">Written by VoteConsumer (absolute set, idempotent)</li>
+        <li class="item last dim" style="padding-left:14px; font-size:10.5px">replyCount updated by ReplyCountConsumer</li>
+
+        <li class="group">NOT cached in Redis</li>
+        <li class="item">Poll vote counts — always fresh from SQL</li>
+        <li class="item last">PollOption.VoteCount — denormalized in SQL, updated synchronously</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SignalR Groups -->
+  <div class="card">
+    <div class="card-header redis" style="background:#1a0a0a; color:#ff7b72; border-color:#3d0c0c">📡 SignalR Groups & Events</div>
+    <div class="card-body">
+      <ul class="tree">
+        <li class="group">Groups</li>
+        <li class="item"><span class="file">post:{postId}</span> — users viewing a specific post</li>
+        <li class="item"><span class="file">community:{communityId}</span> — community members</li>
+        <li class="item"><span class="file">topic:{topicId}</span> — topic followers</li>
+        <li class="item last"><span class="file">moderation</span> — moderators / admins</li>
+
+        <li class="group">Events Published</li>
+        <li class="item"><span class="file">NewPost</span> → community:{id} + topic:{id}</li>
+        <li class="item"><span class="file">PostVoted</span> → post:{id}</li>
+        <li class="item"><span class="file">NewReply</span> → post:{id}</li>
+        <li class="item"><span class="file">ReplyVoted</span> → post:{id}</li>
+        <li class="item last"><span class="file">PollResultsChanged</span> → post:{id} (direct, no bus)</li>
+
+        <li class="group">Infrastructure</li>
+        <li class="item">Redis backplane (StackExchange.Redis)</li>
+        <li class="item last">Graceful degradation on RedisException</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

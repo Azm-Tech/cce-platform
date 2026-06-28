@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SignalR Notification Test Harness</title>
+<script src="https://unpkg.com/@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; color: #333; }
+  h1 { font-size: 1.4rem; margin-bottom: 16px; }
+  h2 { font-size: 1rem; margin-bottom: 8px; }
+  .panel { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .panel-title { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: #666; margin-bottom: 10px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 8px; }
+  .row label { font-size: 0.8rem; color: #555; display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 140px; }
+  .row input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; font-family: monospace; width: 100%; }
+  .row input:focus { outline: none; border-color: #4a90d9; }
+  button { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.82rem; font-weight: 500; background: #e8e8e8; color: #333; transition: background 0.15s; }
+  button:hover { background: #d0d0d0; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #4a90d9; color: #fff; }
+  .btn-primary:hover { background: #357abd; }
+  .btn-danger { background: #d9534f; color: #fff; }
+  .btn-danger:hover { background: #c9302c; }
+  .btn-success { background: #5cb85c; color: #fff; }
+  .btn-success:hover { background: #4cae4c; }
+  .btn-warning { background: #f0ad4e; color: #fff; }
+  .btn-warning:hover { background: #eea236; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
+  .badge-connected { background: #d4edda; color: #155724; }
+  .badge-disconnected { background: #f8d7da; color: #721c24; }
+  .status-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; }
+  #log { background: #1e1e1e; color: #d4d4d4; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.78rem; padding: 12px; border-radius: 6px; height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+  .log-entry { margin-bottom: 3px; }
+  .log-time { color: #6a9955; }
+  .log-event { color: #569cd6; }
+  .log-payload { color: #ce9178; }
+  .log-info { color: #9cdcfe; }
+  .log-error { color: #f48771; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .subsection { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+</style>
+</head>
+<body>
+
+<h1>SignalR Notification Test Harness</h1>
+
+<div class="status-bar">
+  <span>Status:</span>
+  <span class="badge badge-disconnected" id="connectionStatus">Disconnected</span>
+  <span id="connectionIdLabel" style="font-size:0.8rem;color:#888;"></span>
+</div>
+
+  <div class="panel">
+  <div class="panel-title">Connection</div>
+  <div class="row">
+    <label>Mode
+      <span style="display:flex;gap:4px;margin-top:2px">
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#e8e8e8">
+          <input type="radio" name="mode" value="dev" checked onchange="toggleMode()" /> Dev (5001)
+        </label>
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#fff">
+          <input type="radio" name="mode" value="internal5002" onchange="toggleMode()" /> Internal (5002)
+        </label>
+        <label class="mode-option" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:0.82rem;background:#fff">
+          <input type="radio" name="mode" value="prod" onchange="toggleMode()" /> Prod
+        </label>
+      </span>
+    </label>
+    <label>Server URL<input id="serverUrl" value="" placeholder="/hubs/notifications on same origin" /></label>
+    <label>JWT Token <small style="color:#999">(blank = use cookie)</small><input id="jwtToken" placeholder="dev:cce-user or real JWT" /></label>
+    <label>Dev Role<select id="devRole" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:0.85rem">
+      <option value="cce-super-admin">cce-super-admin</option>
+      <option value="cce-admin">cce-admin</option>
+      <option value="cce-content-manager">cce-content-manager</option>
+      <option value="cce-reviewer">cce-reviewer</option>
+      <option value="cce-expert">cce-expert</option>
+      <option value="cce-user" selected>cce-user</option>
+      <option value="cce-state-representative">cce-state-representative</option>
+    </select></label>
+  </div>
+  <div class="actions">
+    <button id="btnDevSignIn">Dev Sign-In</button>
+    <button class="btn-primary" id="btnConnect">Connect</button>
+    <button class="btn-danger" id="btnDisconnect" disabled>Disconnect</button>
+    <button id="btnClearLog">Clear Log</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Rooms</div>
+  <div class="row">
+    <label>Post ID<input id="postId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+    <label>Community ID<input id="communityId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+    <label>Topic ID<input id="topicId" placeholder="00000000-0000-0000-0000-000000000000" /></label>
+  </div>
+  <div class="actions" style="margin-bottom:4px">
+    <button class="btn-success" id="btnSubscribe">Subscribe(post)</button>
+    <button class="btn-warning" id="btnUnsubscribe">Unsubscribe(post)</button>
+    <button class="btn-success" id="btnSubscribeCommunity">SubscribeCommunity</button>
+    <button class="btn-warning" id="btnUnsubscribeCommunity">UnsubscribeCommunity</button>
+    <button class="btn-success" id="btnSubscribeTopic">SubscribeTopic</button>
+    <button class="btn-warning" id="btnUnsubscribeTopic">UnsubscribeTopic</button>
+  </div>
+  <div class="subsection">
+    <div style="font-size:0.8rem; color:#888; margin-bottom:6px">Typing Indicators</div>
+    <div class="actions">
+      <button id="btnStartTyping">StartTyping</button>
+      <button id="btnStopTyping">StopTyping</button>
+    </div>
+  </div>
+  <div class="subsection">
+    <div style="font-size:0.8rem; color:#888; margin-bottom:6px">
+      Catch-up (Phase 3) — <span id="lastEvent" style="color:#aaa">(no events yet)</span>
+    </div>
+    <div class="row">
+      <label>Since (ISO 8601)<input id="catchUpSince" placeholder="auto-filled from last occurredOn" /></label>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="btnCatchUp">Fetch /posts/{id}/activity</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Event Log <span id="eventCount" style="font-weight:normal;color:#999;margin-left:8px">0 events</span></div>
+  <div id="log">Waiting for connection...</div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  let connection = null;
+  let eventCount = 0;
+
+  // Phase 1 envelope tracking — eventId for dedup, occurredOn for ordering + Phase 3 since cursor.
+  let lastEventId = null;
+  let lastEventTime = null;
+  let sinceEdited = false;  // user-typed-into-since-field flag (don't auto-overwrite once edited)
+
+  const PROD_URL = 'https://cce-external-api.runasp.net';
+  const INTERNAL_URL = 'http://localhost:5002';
+
+  const $ = id => document.getElementById(id);
+  const logEl = $('log');
+  const eventCountEl = $('eventCount');
+  const lastEventEl = $('lastEvent');
+  const catchUpSinceEl = $('catchUpSince');
+
+  // Stop auto-filling the since field once the user manually edits it.
+  catchUpSinceEl.addEventListener('input', function() { sinceEdited = true; });
+
+  window.toggleMode = function() {
+    var mode = document.querySelector('input[name="mode"]:checked').value;
+    $('serverUrl').value = mode === 'prod' ? PROD_URL
+                         : mode === 'internal5002' ? INTERNAL_URL
+                         : '';
+    // Dev sign-in is also available on the Internal API (Auth:DevMode=true).
+    $('btnDevSignIn').disabled = (mode === 'prod');
+    $('devRole').disabled = (mode === 'prod');
+  };
+
+  function updateLastEvent() {
+    if (!lastEventId) {
+      lastEventEl.textContent = '(no events yet)';
+      return;
+    }
+    var shortId = lastEventId.slice(0, 8);
+    lastEventEl.textContent = 'last: ' + shortId + ' @ ' + lastEventTime;
+    if (!sinceEdited) catchUpSinceEl.value = lastEventTime || '';
+  }
+
+  function log(type, eventName, payload) {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour12: false }) + '.' + String(now.getMilliseconds()).padStart(3, '0');
+    const line = document.createElement('div');
+    line.className = 'log-entry';
+    const typeClass = type === 'error' ? 'log-error' : type === 'info' ? 'log-info' : type === 'event' ? 'log-event' : 'log-payload';
+    line.innerHTML = '<span class="log-time">[' + time + ']</span> <span class="' + typeClass + '">' + eventName + '</span>' + (payload ? ' ' + syntaxHighlight(payload) : '');
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+    if (type !== 'info') {
+      eventCount++;
+      eventCountEl.textContent = eventCount + ' events';
+    }
+  }
+
+  function syntaxHighlight(obj) {
+    var json = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 1);
+    return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"([^"]+)":/g, '<span style="color:#9cdcfe">"$1"</span>:')
+      .replace(/"([^"]+)"/g, '<span style="color:#ce9178">"$1"</span>')
+      .replace(/\b(true|false|null)\b/g, '<span style="color:#569cd6">$1</span>')
+      .replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#b5cea8">$1</span>');
+  }
+
+  function setStatus(connected, connectionId) {
+    var badge = $('connectionStatus');
+    var idLabel = $('connectionIdLabel');
+    if (connected) {
+      badge.textContent = 'Connected';
+      badge.className = 'badge badge-connected';
+      idLabel.textContent = 'ConnectionId: ' + (connectionId || '');
+      $('btnConnect').disabled = true;
+      $('btnDisconnect').disabled = false;
+      $('serverUrl').disabled = true;
+      $('jwtToken').disabled = true;
+    } else {
+      badge.textContent = 'Disconnected';
+      badge.className = 'badge badge-disconnected';
+      idLabel.textContent = '';
+      $('btnConnect').disabled = false;
+      $('btnDisconnect').disabled = true;
+      $('serverUrl').disabled = false;
+      $('jwtToken').disabled = false;
+    }
+  }
+
+  function getGuid(id) {
+    var val = $(id).value.trim();
+    if (!val) throw new Error(id.replace('Id','') + ' ID is required');
+    return val;
+  }
+
+  var events = [
+    'ReceiveNotification', 'NewReply', 'VoteChanged', 'PollResultsChanged',
+    'NewPost', 'PostModerated', 'ContentModerated', 'PresenceChanged', 'TypingChanged'
+  ];
+
+  $('btnDevSignIn').addEventListener('click', async function() {
+    var baseUrl = $('serverUrl').value.trim() || '';
+    var role = $('devRole').value;
+    try {
+      var res = await fetch(baseUrl + '/dev/sign-in?role=' + encodeURIComponent(role), {
+        credentials: 'same-origin'
+      });
+      if (!res.ok) {
+        var text = await res.text();
+        log('error', 'Dev sign-in failed (' + res.status + ')', text);
+        return;
+      }
+      var data = await res.json();
+      log('info', 'Signed in as ' + role, data);
+    } catch (err) {
+      log('error', 'Dev sign-in error', err.message);
+    }
+  });
+
+  $('btnConnect').addEventListener('click', async function() {
+    if (connection) return;
+
+    var url = ($('serverUrl').value.trim().replace(/\/+$/, '') || '') + '/hubs/notifications';
+    var token = $('jwtToken').value.trim();
+
+    var options = {};
+
+    if (token) {
+      options.accessTokenFactory = function() { return token; };
+    }
+
+    connection = new signalR.HubConnectionBuilder()
+      .withUrl(url, options)
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+      .build();
+
+    events.forEach(function(evt) {
+      connection.on(evt, function(envelope) {
+        // Phase 1 contract: every push is wrapped in { eventId, occurredOn, payload }.
+        // Unwrap so the log shows the inner payload; record eventId/occurredOn for
+        // dedup + Phase 3 catch-up cursor. Fallback: dump the raw arg if an old
+        // (non-enveloped) server was hit so the harness still works after a rollback.
+        if (envelope && typeof envelope === 'object'
+            && 'eventId' in envelope && 'occurredOn' in envelope && 'payload' in envelope) {
+          lastEventId = envelope.eventId;
+          lastEventTime = envelope.occurredOn;
+          updateLastEvent();
+          var shortId = envelope.eventId.slice(0, 8);
+          log('event', evt + '  [eid ' + shortId + ']', envelope.payload);
+          log('info', '  ↳ eventId=' + envelope.eventId + '  occurredOn=' + envelope.occurredOn);
+        } else {
+          log('event', evt, envelope);
+        }
+      });
+    });
+
+    connection.onreconnecting(function() {
+      log('info', 'Connection reconnecting...');
+      setStatus(false);
+    });
+
+    connection.onreconnected(function(connectionId) {
+      log('info', 'Reconnected as ' + connectionId);
+      setStatus(true, connectionId);
+    });
+
+    connection.onclose(function(err) {
+      log(err ? 'error' : 'info', 'Connection closed' + (err ? ': ' + err.message : ''));
+      setStatus(false);
+      connection = null;
+    });
+
+    try {
+      await connection.start();
+      log('info', 'Connected to ' + url);
+      setStatus(true, connection.connectionId);
+    } catch (err) {
+      log('error', 'Connection failed', err.message);
+      connection = null;
+      setStatus(false);
+    }
+  });
+
+  $('btnDisconnect').addEventListener('click', async function() {
+    if (!connection) return;
+    try {
+      await connection.stop();
+    } catch (err) {
+      log('error', 'Disconnect error', err.message);
+    }
+    connection = null;
+    setStatus(false);
+  });
+
+  $('btnClearLog').addEventListener('click', function() {
+    logEl.innerHTML = '';
+    eventCount = 0;
+    eventCountEl.textContent = '0 events';
+  });
+
+  $('btnSubscribe').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('Subscribe', getGuid('postId')); log('info', 'Subscribe(' + $('postId').value.trim() + ')'); }
+    catch (e) { log('error', 'Subscribe failed', e.message); }
+  });
+
+  $('btnUnsubscribe').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('Unsubscribe', getGuid('postId')); log('info', 'Unsubscribe(' + $('postId').value.trim() + ')'); }
+    catch (e) { log('error', 'Unsubscribe failed', e.message); }
+  });
+
+  $('btnSubscribeCommunity').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('SubscribeCommunity', getGuid('communityId')); log('info', 'SubscribeCommunity(' + $('communityId').value.trim() + ')'); }
+    catch (e) { log('error', 'SubscribeCommunity failed', e.message); }
+  });
+
+  $('btnUnsubscribeCommunity').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('UnsubscribeCommunity', getGuid('communityId')); log('info', 'UnsubscribeCommunity(' + $('communityId').value.trim() + ')'); }
+    catch (e) { log('error', 'UnsubscribeCommunity failed', e.message); }
+  });
+
+  $('btnSubscribeTopic').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('SubscribeTopic', getGuid('topicId')); log('info', 'SubscribeTopic(' + $('topicId').value.trim() + ')'); }
+    catch (e) { log('error', 'SubscribeTopic failed', e.message); }
+  });
+
+  $('btnUnsubscribeTopic').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('UnsubscribeTopic', getGuid('topicId')); log('info', 'UnsubscribeTopic(' + $('topicId').value.trim() + ')'); }
+    catch (e) { log('error', 'UnsubscribeTopic failed', e.message); }
+  });
+
+  $('btnStartTyping').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('StartTyping', getGuid('postId')); log('info', 'StartTyping(' + $('postId').value.trim() + ')'); }
+    catch (e) { log('error', 'StartTyping failed', e.message); }
+  });
+
+  $('btnStopTyping').addEventListener('click', function() {
+    if (!connection) { log('error', 'Not connected'); return; }
+    try { connection.invoke('StopTyping', getGuid('postId')); log('info', 'StopTyping(' + $('postId').value.trim() + ')'); }
+    catch (e) { log('error', 'StopTyping failed', e.message); }
+  });
+
+  // Phase 3 — reconnect catch-up. Calls the GetPostActivity endpoint with the since cursor
+  // (auto-filled from the last enveloped event's occurredOn; user can override). Note the
+  // endpoint is AllowAnonymous, so no Authorization header is needed. When pointing at the
+  // Internal API (port 5002) the fetch is cross-origin — if it fails with a CORS error,
+  // either serve the harness from the Internal API's own wwwroot or open it directly.
+  $('btnCatchUp').addEventListener('click', async function() {
+    var postId = $('postId').value.trim();
+    if (!postId) { log('error', 'Post ID required for catch-up'); return; }
+    var baseUrl = $('serverUrl').value.trim().replace(/\/+$/, '');
+    var since = ($('catchUpSince').value.trim() || lastEventTime || '');
+    if (!since) { log('error', 'No since cursor — connect and receive at least one event first, or type a timestamp'); return; }
+    var url = baseUrl + '/api/community/posts/' + encodeURIComponent(postId)
+            + '/activity?since=' + encodeURIComponent(since);
+    log('info', 'GET ' + url);
+    try {
+      var res = await fetch(url, { credentials: 'same-origin' });
+      var body = await res.text();
+      if (!res.ok) { log('error', 'Catch-up ' + res.status, body); return; }
+      var data = JSON.parse(body);
+      // Standard Response<T> envelope: { success, code, data, errors, ... }
+      var payload = data && data.data ? data.data : data;
+      var newCount = payload && payload.newReplies ? payload.newReplies.length : 0;
+      log('event', 'Catch-up result', payload);
+      log('info', '  ↳ ' + newCount + ' new replies, upvote=' + (payload ? payload.upvoteCount : '?') + ', score=' + (payload ? payload.score : '?'));
+    } catch (err) { log('error', 'Catch-up error', err.message); }
+  });
+
+  log('info', 'Ready. Enter your connection details and click Connect.');
+})();
+</script>
+</body>
+</html>

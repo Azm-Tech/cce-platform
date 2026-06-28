@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Realtime;
 using CCE.Application.Common.Sanitization;
+using CCE.Application.Community.Services;
 using CCE.Application.Messages;
 using CCE.Application.Identity;
-
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
@@ -17,7 +16,7 @@ namespace CCE.Application.Community.Commands.CreateReply;
 
 /// <summary>
 /// US029 write path (§A.1): fetch the post (+ parent for nesting), build a root/child reply with a
-/// materialized thread path, persist validated @mentions, and commit once via the context (UoW).
+/// materialized thread path, persist validated @mentions via MentionService, and commit once via the context (UoW).
 /// </summary>
 public sealed class CreateReplyCommandHandler
     : IRequestHandler<CreateReplyCommand, Response<Guid>>
@@ -31,12 +30,13 @@ public sealed class CreateReplyCommandHandler
     private readonly ICommunityRealtimePublisher _realtime;
     private readonly INotificationMessageDispatcher _dispatcher;
     private readonly IUserRepository _userRepo;
+    private readonly IMentionService _mentions;
 
     public CreateReplyCommandHandler(
         IReplyRepository repo, ICceDbContext db, ICurrentUserAccessor currentUser,
         IHtmlSanitizer sanitizer, ISystemClock clock, MessageFactory msg,
         ICommunityRealtimePublisher realtime, INotificationMessageDispatcher dispatcher,
-        IUserRepository userRepo)
+        IUserRepository userRepo, IMentionService mentions)
     {
         _repo = repo;
         _db = db;
@@ -47,12 +47,14 @@ public sealed class CreateReplyCommandHandler
         _realtime = realtime;
         _dispatcher = dispatcher;
         _userRepo = userRepo;
+        _mentions = mentions;
     }
 
     public async Task<Response<Guid>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
     {
         var authorId = _currentUser.GetUserId();
-        if (authorId is null || authorId == Guid.Empty) return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
+        if (authorId is null || authorId == Guid.Empty)
+            return _msg.Unauthorized<Guid>(MessageKeys.Identity.NOT_AUTHENTICATED);
 
         var post = await _repo.GetPostAsync(request.PostId, cancellationToken).ConfigureAwait(false);
         if (post is null) return _msg.NotFound<Guid>(MessageKeys.Community.POST_NOT_FOUND);
@@ -74,8 +76,10 @@ public sealed class CreateReplyCommandHandler
 
         _repo.AddReply(reply);
 
-        var mentioned = await PersistMentionsAsync(
-            post.CommunityId, reply.Id, authorId.Value, request.MentionedUserIds, cancellationToken)
+        var snippet = content.Length > 120 ? content[..120] : content;
+        var mentioned = await _mentions.ExtractAndPersistAsync(
+            content, MentionSourceType.Reply, reply.Id, post.Id, post.CommunityId,
+            snippet, authorId.Value, cancellationToken)
             .ConfigureAwait(false);
 
         // Raise the domain event on the Post aggregate; the bridge handler (ReplyCreatedBusPublisher)
@@ -109,36 +113,21 @@ public sealed class CreateReplyCommandHandler
             }, cancellationToken)
             .ConfigureAwait(false);
 
-        // Notify mentioned users (InApp) after the commit.
         foreach (var userId in mentioned)
         {
             await _dispatcher.DispatchAsync(new NotificationMessage(
                 TemplateCode: "COMMUNITY_MENTION",
                 RecipientUserId: userId,
                 EventType: NotificationEventType.CommunityUserMentioned,
-                Channels: [NotificationChannel.InApp],
-                MetaData: new Dictionary<string, string> { ["postId"] = post.Id.ToString(), ["replyId"] = reply.Id.ToString() },
+                Channels: [NotificationChannel.InApp, NotificationChannel.Push],
+                MetaData: new Dictionary<string, string>
+                {
+                    ["postId"] = post.Id.ToString(),
+                    ["replyId"] = reply.Id.ToString(),
+                },
                 Locale: request.Locale), cancellationToken).ConfigureAwait(false);
         }
 
         return _msg.Ok(reply.Id, MessageKeys.General.SUCCESS_CREATED);
-    }
-
-    private async Task<IReadOnlyList<Guid>> PersistMentionsAsync(
-        Guid communityId, Guid replyId, Guid authorId,
-        IReadOnlyList<Guid> mentionedUserIds, CancellationToken ct)
-    {
-        var candidates = mentionedUserIds
-            .Where(id => id != Guid.Empty && id != authorId) // drop self-mentions
-            .Distinct()
-            .ToList();
-        if (candidates.Count == 0) return System.Array.Empty<Guid>();
-
-        var visible = await _repo.FilterVisibleUsersAsync(communityId, candidates, ct).ConfigureAwait(false);
-        foreach (var userId in visible)
-        {
-            _repo.AddMention(Mention.Create(MentionSourceType.Reply, replyId, userId, authorId, _clock));
-        }
-        return visible;
     }
 }

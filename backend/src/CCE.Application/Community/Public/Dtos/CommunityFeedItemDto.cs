@@ -30,4 +30,9 @@ public sealed record CommunityFeedItemDto(
     bool IsExpert,
     bool IsWatchlisted,
     int VoteStatus,
-    PollSummaryDto? Poll);  // null for Info/Question posts
+    PollSummaryDto? Poll,   // null for Info/Question posts
+    // ── Search-only fields — null/false on all normal feed responses ──────────────────
+    string? TitleHighlight = null,  // <em>-wrapped matched title fragment
+    string? BodyHighlight  = null,  // <em>-wrapped matched content excerpt
+    bool MatchedInReply    = false, // true when match was found in a reply, not the post body
+    string? ReplyExcerpt   = null); // highlighted reply fragment; null when MatchedInReply = false

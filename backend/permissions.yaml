@@ -200,6 +200,13 @@ groups:
     Send:
       description: Send manual/admin notifications
       roles: [cce-super-admin, cce-admin]
+    DeviceToken:
+      Register:
+        description: Register or refresh a device push token for the authenticated user
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-state-representative, cce-reviewer, cce-expert, cce-user]
+      Delete:
+        description: Unregister a device push token for the authenticated user
+        roles: [cce-super-admin, cce-admin, cce-content-manager, cce-state-representative, cce-reviewer, cce-expert, cce-user]
   Audit:
     Read:
       description: Query the audit-event log
@@ -242,4 +249,11 @@ groups:
   Lookup:
     Manage:
       description: Manage lookup tables (nationalities, country phone codes)
+      roles: [cce-super-admin]
+  Permission:
+    Read:
+      description: View permission catalog and role-permission matrix
+      roles: [cce-super-admin]
+    Manage:
+      description: Toggle role-permission assignments
       roles: [cce-super-admin]
