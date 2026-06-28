@@ -9,6 +9,7 @@ using CCE.Domain.InteractiveMaps;
 using CCE.Domain.KnowledgeMaps;
 using CCE.Domain.Media;
 using CCE.Domain.Notifications;
+using CCE.Domain.CommunityLaws;
 using CCE.Domain.PlatformSettings;
 using CCE.Domain.Surveys;
 using CCE.Domain.Verification;
@@ -87,6 +88,7 @@ public interface ICceDbContext
     IQueryable<PoliciesSettings> PoliciesSettings { get; }
     IQueryable<KnowledgePartner> KnowledgePartners { get; }
     IQueryable<PolicySection> PolicySections { get; }
+    IQueryable<CommunityLawSection> CommunityLawSections { get; }
 
     // ─── Verification ───
     IQueryable<OtpVerification> OtpVerifications { get; }

@@ -200,6 +200,20 @@ groups:
     Send:
       description: Send manual/admin notifications
       roles: [cce-super-admin, cce-admin]
+    DeviceToken:
+      Register:
+        description: Register a device token for push notifications
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
+      Delete:
+        description: Unregister/unlink a device token
+        roles: [cce-user, cce-expert, cce-content-manager, cce-state-representative, cce-reviewer, cce-admin, cce-super-admin]
+  Permission:
+    Read:
+      description: List and view available permissions
+      roles: [cce-super-admin, cce-admin]
+    Manage:
+      description: Create/update/delete permissions
+      roles: [cce-super-admin, cce-admin]
   Audit:
     Read:
       description: Query the audit-event log
@@ -243,3 +257,7 @@ groups:
     Manage:
       description: Manage lookup tables (nationalities, country phone codes)
       roles: [cce-super-admin]
+  CommunityLaws:
+    Manage:
+      description: Manage community law sections (create/update/delete/reorder)
+      roles: [cce-super-admin, cce-admin, cce-content-manager]

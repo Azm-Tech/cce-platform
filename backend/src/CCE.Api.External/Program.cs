@@ -135,6 +135,7 @@ app.MapStateRepresentativeEndpoints();
 app.MapRedisAdminEndpoints();
 app.MapUserInterestEndpoints();
 app.MapInterestTopicPublicEndpoints();
+app.MapCommunityLawsPublicEndpoints();
 
 app.MapGet("/health", async (IMediator mediator) =>
 {

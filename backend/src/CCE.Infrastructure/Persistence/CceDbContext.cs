@@ -4,6 +4,7 @@ using CCE.Application.Common.Interfaces;
 using CCE.Domain.Audit;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
+using CCE.Domain.CommunityLaws;
 using CCE.Domain.Content;
 using CCE.Domain.Country;
 using CCE.Domain.Evaluation;
@@ -132,6 +133,7 @@ public sealed class CceDbContext
     public DbSet<PoliciesSettings> PoliciesSettings => Set<PoliciesSettings>();
     public DbSet<KnowledgePartner> KnowledgePartners => Set<KnowledgePartner>();
     public DbSet<PolicySection> PolicySections => Set<PolicySection>();
+    public DbSet<CommunityLawSection> CommunityLawSections => Set<CommunityLawSection>();
 
     // ─── ICceDbContext (read-only queryables — no tracking) ───
     IQueryable<User> ICceDbContext.Users => Users.AsNoTracking();
@@ -194,6 +196,7 @@ public sealed class CceDbContext
     IQueryable<PoliciesSettings> ICceDbContext.PoliciesSettings => PoliciesSettings.AsNoTracking();
     IQueryable<KnowledgePartner> ICceDbContext.KnowledgePartners => KnowledgePartners.AsNoTracking();
     IQueryable<PolicySection> ICceDbContext.PolicySections => PolicySections.AsNoTracking();
+    IQueryable<CommunityLawSection> ICceDbContext.CommunityLawSections => CommunityLawSections.AsNoTracking();
     IQueryable<OtpVerification> ICceDbContext.OtpVerifications => OtpVerifications.AsNoTracking();
     IQueryable<UserVerification> ICceDbContext.UserVerifications => UserVerifications.AsNoTracking();
     IQueryable<ServiceEvaluation> ICceDbContext.ServiceEvaluations => ServiceEvaluations.AsNoTracking();
