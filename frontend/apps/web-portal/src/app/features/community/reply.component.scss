@@ -9,7 +9,9 @@ $n-600: var(--neutrals--600);
 $n-900: var(--neutrals--900);
 $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
-:host { display: block; }
+:host {
+  display: block;
+}
 
 .cce-reply {
   display: flex;
@@ -126,6 +128,27 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   text-align: start;
 }
 
+/* Inline @mention chip */
+.cce-reply__mention {
+  display: inline;
+  color: $p-500;
+  font-weight: 600;
+  background: $p-50;
+  padding: 1px 4px;
+  border-radius: 4px;
+
+  &--linked {
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--primary--100);
+      outline: none;
+    }
+  }
+}
+
 /* Actions row: upvote box, hugged to inline-end (left in RTL) by the body */
 .cce-reply__actions {
   display: flex;
@@ -180,15 +203,15 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 4px;
   border: none;
   background: transparent;
-  font-size: 14px;
-  font-weight: 600;
-  color: $n-500;
+  font-size: 18px;
+  font-weight: 700;
+  color: $n-600;
   font-family: $font;
   cursor: pointer;
   padding: 4px 8px;
   transition: color 0.12s;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
 
   &:hover { color: $p-500; }
 }
@@ -198,9 +221,74 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   margin-top: 8px;
 }
 
+/*
+ * Parent article: loses divider + draws the vertical segment from its own
+ * avatar center down to its own bottom edge only (not through child content).
+ *
+ * top: 40px = 24px padding-block-start + 16px (half of 32px avatar)
+ * inset-inline-start: 15px = avatar-center column in RTL (32px ÷ 2 − 1px)
+ */
+.cce-reply--has-children {
+  position: relative;
+  border-bottom: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 15px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: $n-300;
+    border-radius: 1px;
+    pointer-events: none;
+  }
+}
+
 /* Nested children */
 .cce-reply__children {
-  margin-top: 4px;
-  padding-inline-start: 12px;
-  border-inline-start: 2px solid $n-200;
+  margin-top: 0;
+  padding-inline-start: 32px;
+}
+
+/*
+ * For threads with multiple children: every non-last child host extends
+ * the vertical line from its own arm level down to its bottom, bridging
+ * the gap to the next sibling's L-shape.
+ *
+ * inset-inline-start: -17px mirrors the L-shape position: child-host right
+ * edge is at 32px from parent right → 32 − 17 = 15px from parent right. ✓
+ */
+.cce-reply__children > cce-reply:not(:last-child) {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -17px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: $n-300;
+    pointer-events: none;
+  }
+}
+
+/* L-shaped connector arm on each child — vertical segment from child top
+ * to the arm level, then a horizontal arm pointing to the child's avatar.
+ * Height is fixed at 40px so the line always ends exactly at the arm. */
+.cce-reply--child {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -17px;
+    top: 0;
+    width: 15px;
+    height: 40px;  /* 24px top-padding + 16px = half of 32px avatar */
+    border-inline-start: 2px solid $n-300;
+    border-bottom: 2px solid $n-300;
+    border-bottom-right-radius: 8px;
+  }
 }

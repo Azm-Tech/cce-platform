@@ -123,7 +123,6 @@ export class CommunityUserProfilePage implements OnInit {
   readonly postSkeletons = Array.from({ length: 4 });
 
   readonly sortOptions: { key: FeedSort; labelKey: string }[] = [
-    { key: 0, labelKey: 'community.filter.sortHot' },
     { key: 1, labelKey: 'community.filter.sortNewest' },
     { key: 2, labelKey: 'community.filter.sortTop' },
     { key: 3, labelKey: 'community.filter.sortMostReplied' },
@@ -132,7 +131,7 @@ export class CommunityUserProfilePage implements OnInit {
   readonly sortIcons: Record<FeedSort, string> = {
     0: 'flame',
     1: 'calendar',
-    2: 'chevron-up',
+    2: 'arrow-big-up',
     3: 'messages-square',
   };
 

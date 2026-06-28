@@ -1,6 +1,8 @@
 <article
   class="cce-reply"
   [class.cce-reply--accepted]="isAccepted()"
+  [class.cce-reply--child]="isChildReply()"
+  [class.cce-reply--has-children]="children().length > 0"
 >
   <!-- Avatar — inline-start (right in RTL), next to author name -->
   <span class="cce-reply__avatar" aria-hidden="true">{{ avatarInitial() }}</span>
@@ -36,12 +38,39 @@
         >{{ timeAgo(reply().createdOn) }}</time>
       </div>
 
-      <!-- Content -->
-      <p class="cce-reply__content" dir="auto">{{ reply().content }}</p>
+      <!-- Content — @mentions rendered as interactive inline chips -->
+      <p class="cce-reply__content" dir="auto">
+        @for (part of contentParts(); track $index) {
+          @if (part.type === 'mention' && part.userId) {
+            <span
+              class="cce-reply__mention cce-reply__mention--linked"
+              role="button"
+              tabindex="0"
+              (click)="onMentionClick(part.userId)"
+              (keydown.enter)="onMentionClick(part.userId)"
+            >{{ part.value }}</span>
+          } @else if (part.type === 'mention') {
+            <span class="cce-reply__mention">{{ part.value }}</span>
+          } @else {
+            {{ part.value }}
+          }
+        }
+      </p>
     </div>
 
-    <!-- Actions: upvote widget (count + arrow) + mark-answer, at inline-end (left in RTL) -->
+    <!-- Actions: reply button + upvote widget, at inline-end (left in RTL) -->
     <div class="cce-reply__actions">
+      @if (!isChildReply()) {
+        <button
+          type="button"
+          class="cce-reply__reply-btn"
+          (click)="onReplyClick()"
+        >
+          <mat-icon svgIcon="message-square-text" aria-hidden="true"></mat-icon>
+          {{ 'community.detail.actionReply' | transloco }}
+        </button>
+      }
+
       <div class="cce-reply__vote" dir="ltr">
         <span class="cce-reply__vote-score">{{ voteScore() }}</span>
         <button
@@ -68,3 +97,16 @@
 
   </div>
 </article>
+
+@if (children().length > 0) {
+  <div class="cce-reply__children">
+    @for (child of children(); track child.id) {
+      <cce-reply
+        [reply]="child"
+        [participants]="participants()"
+        [isChildReply]="true"
+      />
+    }
+  </div>
+}
+

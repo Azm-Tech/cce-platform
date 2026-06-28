@@ -174,7 +174,41 @@
       <!-- Filter bar -->
       <div class="cup__filter-bar">
 
-        <!-- Sort tabs — inline-start (RIGHT in RTL) -->
+        <!-- Dropdowns — inline-start (RIGHT in RTL) -->
+        <div class="cup__filter-dropdowns">
+
+          <!-- Type/category dropdown (كل الفئات) — rightmost in RTL -->
+          <button type="button" class="cup__filter-btn" [matMenuTriggerFor]="typeMenu">
+            <span>{{ currentTypeLabel() | transloco }}</span>
+            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+          </button>
+          <mat-menu #typeMenu="matMenu">
+            @for (opt of typeOptions; track opt.value) {
+              <button mat-menu-item (click)="setTypeFilter(opt.value)">
+                {{ opt.labelKey | transloco }}
+              </button>
+            }
+          </mat-menu>
+
+          <!-- Topics dropdown (كل المواضيع) -->
+          <button type="button" class="cup__filter-btn" [matMenuTriggerFor]="topicMenu">
+            <span>{{ isTopicFilterKey() ? ('community.filter.allTopics' | transloco) : currentTopicLabel() }}</span>
+            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+          </button>
+          <mat-menu #topicMenu="matMenu">
+            <button mat-menu-item (click)="setTopicFilter(null)">
+              {{ 'community.filter.allTopics' | transloco }}
+            </button>
+            @for (t of topicsList(); track t.id) {
+              <button mat-menu-item (click)="setTopicFilter(t.id)">
+                {{ topicLabel(t) }}
+              </button>
+            }
+          </mat-menu>
+
+        </div>
+
+        <!-- Sort chips — inline-end (LEFT in RTL) -->
         <nav class="cup__sort-tabs" role="tablist">
           @for (opt of sortOptions; track opt.key) {
             <button
@@ -191,39 +225,6 @@
           }
         </nav>
 
-        <!-- Dropdowns — inline-end (LEFT in RTL) -->
-        <div class="cup__filter-dropdowns">
-
-          <!-- Topics dropdown -->
-          <button type="button" class="cup__filter-btn" [matMenuTriggerFor]="topicMenu">
-            <span>{{ isTopicFilterKey() ? ('community.filter.allTopics' | transloco) : currentTopicLabel() }}</span>
-            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
-          </button>
-          <mat-menu #topicMenu="matMenu">
-            <button mat-menu-item (click)="setTopicFilter(null)">
-              {{ 'community.filter.allTopics' | transloco }}
-            </button>
-            @for (t of topicsList(); track t.id) {
-              <button mat-menu-item (click)="setTopicFilter(t.id)">
-                {{ topicLabel(t) }}
-              </button>
-            }
-          </mat-menu>
-
-          <!-- Type dropdown -->
-          <button type="button" class="cup__filter-btn" [matMenuTriggerFor]="typeMenu">
-            <span>{{ currentTypeLabel() | transloco }}</span>
-            <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
-          </button>
-          <mat-menu #typeMenu="matMenu">
-            @for (opt of typeOptions; track opt.value) {
-              <button mat-menu-item (click)="setTypeFilter(opt.value)">
-                {{ opt.labelKey | transloco }}
-              </button>
-            }
-          </mat-menu>
-
-        </div>
       </div>
 
       <!-- Feed error -->

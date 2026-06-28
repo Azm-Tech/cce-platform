@@ -46,19 +46,89 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 6px;
 }
 
+/* Relative positioner — holds textarea + floating mention picker */
+.cce-compose-reply__mention-anchor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* @mention picker dropdown */
+.cce-compose-reply__mention-drop {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  z-index: 100;
+  background: var(--white);
+  border: 1px solid $n-200;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+  overflow: hidden;
+}
+
+/* Each mention suggestion row */
+.cce-compose-reply__mention-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  transition: background 0.12s;
+
+  &:hover,
+  &:focus-visible { background: $p-50; outline: none; }
+}
+
+/* Avatar circle */
+.cce-compose-reply__mention-avatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  &--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $p-500;
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: $font;
+  }
+}
+
+/* Name label inside suggestion */
+.cce-compose-reply__mention-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $n-900;
+  font-family: $font;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .cce-compose-reply__textarea {
   width: 100%;
-  min-height: 136px;
-  padding: 16px;
+  min-height: 48px;
+  padding-block: 8px;
+  padding-inline: 10px;
   border: 1px solid $n-300;
   background: var(--white);
-  font-size: 20px;       // 20px Body XL (matches design field text)
+  font-size: 20px;
   color: $n-900;
   font-family: $font;
   resize: vertical;
   outline: none;
   box-sizing: border-box;
-  line-height: 1.6;       // 32px
+  line-height: 1.6;
 
   &::placeholder { color: var(--neutrals--400); }
   &:focus { border-color: $p-500; }

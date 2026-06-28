@@ -42,6 +42,7 @@ import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
 import { ReplyComponent } from './reply.component';
 import type {
   CommunityUserProfile,
+  MentionUser,
   PollOptionResult,
   PostPoll,
   PublicPost,
@@ -187,19 +188,69 @@ export class PostDetailPage implements OnInit, OnDestroy {
     return this.currentUserId() === this.authorId();
   });
 
+  /** Deduplicated list of thread participants for the @mention picker.
+   *  Excludes the current user (you don't mention yourself). */
+  readonly threadParticipants = computed<MentionUser[]>(() => {
+    const p = this.post();
+    const rs = this.replies();
+    const currentUserId = this.currentUserId();
+    const seen = new Set<string>();
+    const users: MentionUser[] = [];
+
+    const authorId = p?.author?.id ?? p?.authorId ?? null;
+    const authorName = (p?.author?.name ?? p?.authorName ?? '').trim();
+    if (authorId && authorName && authorId !== currentUserId) {
+      seen.add(authorId);
+      users.push({ id: authorId, name: authorName, avatarUrl: p?.author?.avatarUrl ?? null });
+    }
+
+    for (const r of rs) {
+      const rName = r.authorName?.trim() ?? '';
+      if (!r.authorId || !rName || seen.has(r.authorId) || r.authorId === currentUserId) continue;
+      seen.add(r.authorId);
+      users.push({ id: r.authorId, name: rName, avatarUrl: null });
+    }
+
+    return users;
+  });
+
   readonly postShowLangBadge = computed(() => {
     const p = this.post();
     return !!p && p.locale !== this.localeService.locale();
   });
 
-  /** Replies are flat (no reply-on-reply); the accepted answer is hoisted first. */
-  readonly orderedReplies = computed(() => {
-    const p = this.post();
+  /** The reply the user is currently replying to (drives the compose form chip). */
+  readonly replyingTo = signal<{ id: string; authorName: string | null } | null>(null);
+
+  /** Two-level reply tree: top-level replies with their children pre-grouped.
+   *  The accepted answer is hoisted to the top of the list. */
+  readonly replyTree = computed(() => {
     const rs = this.replies();
-    if (!p?.answeredReplyId) return rs;
-    const accepted = rs.find((r) => r.id === p.answeredReplyId);
-    if (!accepted) return rs;
-    return [accepted, ...rs.filter((r) => r.id !== accepted.id)];
+    const p = this.post();
+
+    const topLevel: PublicPostReply[] = [];
+    const childMap = new Map<string, PublicPostReply[]>();
+
+    for (const r of rs) {
+      if (!r.parentReplyId) {
+        topLevel.push(r);
+      } else {
+        const arr = childMap.get(r.parentReplyId) ?? [];
+        arr.push(r);
+        childMap.set(r.parentReplyId, arr);
+      }
+    }
+
+    // Hoist accepted answer to the top
+    if (p?.answeredReplyId) {
+      const idx = topLevel.findIndex((r) => r.id === p.answeredReplyId);
+      if (idx > 0) {
+        const [accepted] = topLevel.splice(idx, 1);
+        topLevel.unshift(accepted);
+      }
+    }
+
+    return topLevel.map((r) => ({ reply: r, children: childMap.get(r.id) ?? [] }));
   });
 
   readonly authorFollowerCount = computed(
@@ -363,7 +414,36 @@ export class PostDetailPage implements OnInit, OnDestroy {
     if (res.ok) {
       this.replies.set(res.value.items);
       this.total.set(Number(res.value.total));
+      void this.loadChildReplies();
     }
+  }
+
+  /** Fetch child replies for top-level replies that have childCount > 0 but
+   *  whose children were not returned by listReplies (backend paginates
+   *  top-level only and excludes nested replies from the flat list). */
+  private async loadChildReplies(): Promise<void> {
+    const rs = this.replies();
+    const returnedParentIds = new Set(
+      rs.filter(r => r.parentReplyId).map(r => r.parentReplyId!),
+    );
+    const needsChildren = rs.filter(
+      r => !r.parentReplyId && (r.childCount ?? 0) > 0 && !returnedParentIds.has(r.id),
+    );
+    if (needsChildren.length === 0) return;
+
+    const results = await Promise.all(needsChildren.map(r => this.api.getReplyThread(r.id)));
+    const children: PublicPostReply[] = [];
+    for (const res of results) {
+      if (res.ok) {
+        children.push(...res.value.items.filter(r => r.parentReplyId));
+      }
+    }
+    if (children.length === 0) return;
+
+    this.replies.update(existing => {
+      const existingIds = new Set(existing.map(r => r.id));
+      return [...existing, ...children.filter(r => !existingIds.has(r.id))];
+    });
   }
 
   private applyVoteChanged(ev: VoteChangedPayload, postId: string): void {
@@ -452,6 +532,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
       if (repliesRes.ok) {
         this.replies.set(repliesRes.value.items);
         this.total.set(Number(repliesRes.value.total));
+        void this.loadChildReplies();
       }
     } catch {
       this.errorKind.set('server');
@@ -477,10 +558,12 @@ export class PostDetailPage implements OnInit, OnDestroy {
     if (res.ok) {
       this.replies.set(res.value.items);
       this.total.set(Number(res.value.total));
+      void this.loadChildReplies();
     }
   }
 
   async onReplyCreated(): Promise<void> {
+    this.replyingTo.set(null);
     const p = this.post();
     if (!p) return;
     this.page.set(1);
@@ -488,7 +571,13 @@ export class PostDetailPage implements OnInit, OnDestroy {
     if (res.ok) {
       this.replies.set(res.value.items);
       this.total.set(Number(res.value.total));
+      await this.loadChildReplies();
     }
+  }
+
+  onReplyToReply(r: { id: string; authorName: string | null }): void {
+    this.replyingTo.set(r);
+    this.focusComposer();
   }
 
   async onAnswerMarked(): Promise<void> {
