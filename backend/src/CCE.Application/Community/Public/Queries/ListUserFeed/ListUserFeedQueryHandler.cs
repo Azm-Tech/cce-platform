@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
@@ -13,17 +13,14 @@ using MediatR;
 namespace CCE.Application.Community.Public.Queries.ListUserFeed;
 
 /// <summary>
-/// Handles <see cref="ListUserFeedQuery"/>. Hybrid fan-out read strategy:
+/// Handles <see cref="ListUserFeedQuery"/>. Two-path fanout-read strategy:
 /// <list type="number">
-///   <item>When <c>communityId</c> is specified and the user follows that community, serve from
-///     community-level Redis keys (<c>feed:community:{communityId}</c> / <c>hot:{communityId}</c>).
-///     A <c>topicId</c> filter is applied by over-fetching a wider window from Redis and letting
-///     <see cref="FeedHydratorService"/> filter in SQL — no Redis schema change required.</item>
-///   <item>Otherwise, read personal IDs+timestamps from <c>feed:user:{userId}</c> (Redis), merge
-///     expert/celebrity posts from SQL, page the merged ID list first, then hydrate only the
-///     returned page — avoiding the cost of hydrating the entire window.</item>
-///   <item>Fall back to a pure SQL query when Redis is cold, filters exceed Redis coverage, or the
-///     community is not followed.</item>
+///   <item>Read personal IDs+timestamps from <c>feed:user:{userId}</c> (Redis), merge
+///     expert/celebrity posts from SQL, optionally filter the merged ID pool in SQL
+///     for communityId/topicId/postType, page, then hydrate only the returned page.
+///     Requires Newest sort and no tag filters.</item>
+///   <item>Fall back to a pure SQL query when Redis is cold, tag filters are active,
+///     or sort is not Newest.</item>
 /// </list>
 /// </summary>
 public sealed class ListUserFeedQueryHandler
@@ -67,95 +64,25 @@ public sealed class ListUserFeedQueryHandler
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
-        // ─── Redis fast-path: community-scoped — reuse community Redis keys when the user
-        //     follows the community. TopicId is handled by over-fetching and filtering inside
-        //     FeedHydratorService so no Redis key layout change is needed.
-        var canUseCommunityRedis = tagIds.Count == 0
-            && request.CommunityId.HasValue
-            && followedCommunityIds.Contains(request.CommunityId.Value)
-            && request.PostType is null
-            && (request.Sort == PostFeedSort.Hot || request.Sort == PostFeedSort.Newest);
-
-        if (canUseCommunityRedis)
-        {
-            var communityId = request.CommunityId!.Value;
-            var hasTopic = request.TopicId.HasValue;
-
-            // Over-fetch when topicId is active: a 5× window handles topics that cover ≥20% of
-            // the community's posts. Capped at 500 to bound the SQL IN-clause size. Topics
-            // narrower than that fall through to SQL for accurate pagination.
-            var fetchPage = hasTopic ? 1 : page;
-            var fetchSize = hasTopic ? System.Math.Min(page * pageSize * 5, 500) : pageSize;
-
-            var ids = request.Sort == PostFeedSort.Hot
-                ? (await _feedStore.GetHotPostsAsync(communityId, fetchPage, fetchSize, cancellationToken).ConfigureAwait(false)).ToList()
-                : (await _feedStore.GetCommunityFeedAsync(communityId, fetchPage, fetchSize, cancellationToken).ConfigureAwait(false)).ToList();
-
-            if (ids.Count > 0)
-            {
-                // Fix A: use a scoped SQL count when topicId is active — PostCount is the full
-                // community total and ignores the topic filter, causing inflated pagination.
-                long total;
-                if (hasTopic)
-                {
-                    total = await (
-                        from p in _db.Posts
-                        join c in _db.Communities on p.CommunityId equals c.Id
-                        where p.CommunityId == communityId
-                            && p.TopicId == request.TopicId!.Value
-                            && p.Status == PostStatus.Published
-                            && c.IsActive && c.Visibility == CommunityVisibility.Public
-                        select p.Id)
-                        .LongCountAsync(cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                else
-                {
-                    total = await _db.Communities
-                        .Where(c => c.Id == communityId)
-                        .Select(c => c.PostCount)
-                        .SingleAsync(cancellationToken)
-                        .ConfigureAwait(false);
-                }
-
-                var hydrated = await _hydratorService
-                    .HydrateAsync(ids, userId, request.TopicId, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (!hasTopic)
-                {
-                    return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
-                        MessageKeys.General.ITEMS_LISTED);
-                }
-
-                // topicId active: page the in-memory filtered result.
-                var skip = (page - 1) * pageSize;
-                if (skip < hydrated.Count)
-                {
-                    return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(
-                            hydrated.Skip(skip).Take(pageSize).ToList(), page, pageSize, total),
-                        MessageKeys.General.ITEMS_LISTED);
-                }
-                // Window exhausted for this page — fall through to SQL.
-            }
-            // Redis cold or window exhausted — fall through to SQL.
-        }
-
-        // ─── Redis fast-path: personal feed (no filters, Newest sort) ───
-        var canUsePersonalRedis = tagIds.Count == 0
-            && request.CommunityId is null
-            && request.TopicId is null
-            && request.PostType is null
-            && request.Sort == PostFeedSort.Newest;
+        // ─── Redis fast-path: personal feed (fanout-read) ───
+        // FeedConsumer fans out ALL followed entities (user/community/topic) into
+        // feed:user:{userId}, so this key is the canonical personal feed store.
+        // Condition: Newest sort (Redis is time-ordered) + no tag filters (tags need SQL JOIN).
+        // communityId / topicId / postType are handled by filtering the merged ID pool in SQL.
+        var canUsePersonalRedis = tagIds.Count == 0 && request.Sort == PostFeedSort.Newest;
 
         if (canUsePersonalRedis)
         {
-            // Fetch IDs+timestamps (Redis scores = publishedOn Unix time) so the ID list can be
-            // paged before hydrating, avoiding loading more post rows than the page requires.
-            // Fix D: cap raised from 1 000 to 2 000 so pages up to ~199 (pageSize 10) are reachable.
-            var redisLimit = System.Math.Min(page * pageSize + pageSize, 2_000);
+            var hasEntityFilter = request.CommunityId.HasValue
+                || request.TopicId.HasValue
+                || request.PostType.HasValue;
+
+            // Over-fetch a 5× window when entity filters are active so that after SQL filtering
+            // the requested page is reachable. Capped at 2 000 to bound the IN-clause size.
+            var redisLimit = hasEntityFilter
+                ? System.Math.Min(page * pageSize * 5, 2_000)
+                : System.Math.Min(page * pageSize + pageSize, 2_000);
+
             var personalEntries = await _feedStore
                 .GetUserFeedWithScoresAsync(userId, redisLimit, cancellationToken)
                 .ConfigureAwait(false);
@@ -195,8 +122,7 @@ public sealed class ListUserFeedQueryHandler
 
             if (personalEntries.Count > 0 || expertEntries.Count > 0)
             {
-                // Deduplicate: a post that appears in both the personal Redis feed and the expert
-                // SQL result keeps its Redis timestamp (already the canonical publish time).
+                // Deduplicate: a post in both personal Redis and expert SQL keeps its Redis timestamp.
                 var personalSet = personalEntries.ToDictionary(e => e.PostId, e => e.PublishedOn);
                 var merged = personalEntries
                     .Select(e => (e.PostId, e.PublishedOn))
@@ -206,19 +132,37 @@ public sealed class ListUserFeedQueryHandler
                     .OrderByDescending(e => e.PublishedOn)
                     .ToList();
 
-                var pagedIds = merged
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(e => e.PostId)
-                    .ToList();
+                long total;
+                System.Collections.Generic.List<(System.Guid PostId, System.DateTimeOffset PublishedOn)> filteredMerged;
 
-                if (pagedIds.Count > 0)
+                if (hasEntityFilter)
                 {
-                    var hydrated = await _hydratorService
-                        .HydrateAsync(pagedIds, userId, null, cancellationToken)
+                    // Filter the merged ID pool in SQL — one cheap round-trip, no cartesian product.
+                    // Preserves Newest ordering by retaining the merged list's sort after intersection.
+                    var mergedIds = merged.Select(e => e.PostId).ToList();
+                    var filteredIds = await (
+                        from p in _db.Posts
+                        join c in _db.Communities on p.CommunityId equals c.Id
+                        where mergedIds.Contains(p.Id)
+                            && p.Status == PostStatus.Published
+                            && c.IsActive && c.Visibility == CommunityVisibility.Public
+                        select p)
+                        .WhereIf(request.CommunityId.HasValue, p => p.CommunityId == request.CommunityId!.Value)
+                        .WhereIf(request.TopicId.HasValue,     p => p.TopicId     == request.TopicId!.Value)
+                        .WhereIf(request.PostType.HasValue,    p => p.Type        == request.PostType!.Value)
+                        .Select(p => p.Id)
+                        .ToListAsyncEither(cancellationToken)
                         .ConfigureAwait(false);
-                    // Fix C: expert posts are not fanned into personal Redis feeds, so the two sets
-                    // are disjoint by design — true total is redisTotal + full expert post count.
+
+                    var filteredSet = filteredIds.ToHashSet();
+                    filteredMerged = merged.Where(e => filteredSet.Contains(e.PostId)).ToList();
+                    total = filteredMerged.Count;
+                }
+                else
+                {
+                    filteredMerged = merged;
+                    // Fix C: expert posts are not fanned into personal Redis — sets are disjoint
+                    // by design, so true total is redisTotal + full expert post count.
                     var redisTotal = await _feedStore
                         .GetUserFeedCountAsync(userId, cancellationToken)
                         .ConfigureAwait(false);
@@ -230,14 +174,28 @@ public sealed class ListUserFeedQueryHandler
                                 && expertUserIds.Contains(p.AuthorId))
                             .LongCountAsync(cancellationToken)
                             .ConfigureAwait(false);
+                    total = redisTotal + expertTotal;
+                }
+
+                var pagedIds = filteredMerged
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(e => e.PostId)
+                    .ToList();
+
+                if (pagedIds.Count > 0)
+                {
+                    var hydrated = await _hydratorService
+                        .HydrateAsync(pagedIds, userId, null, cancellationToken)
+                        .ConfigureAwait(false);
                     return _msg.Ok(
-                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, redisTotal + expertTotal),
+                        new PagedResult<CommunityFeedItemDto>(hydrated, page, pageSize, total),
                         MessageKeys.General.ITEMS_LISTED);
                 }
             }
         }
 
-        // ─── SQL fallback: Redis cold, filters require SQL, or community not followed ───
+        // ─── SQL fallback: Redis cold, tag filters active, or non-Newest sort ───
         return await FallbackSqlAsync(
             userId, followedCommunityIds, followedUserIds,
             tagIds, request.CommunityId, request.TopicId, request.PostType, request.Sort,
@@ -283,8 +241,7 @@ public sealed class ListUserFeedQueryHandler
                 MessageKeys.General.ITEMS_LISTED);
         }
 
-        // Fix E: use JOIN instead of correlated Communities.Any() per post row, matching the
-        // pattern already used in the community feed SQL path.
+        // Fix E: use JOIN instead of correlated Communities.Any() per post row.
         var query = (
             from p in _db.Posts
             join c in _db.Communities on p.CommunityId equals c.Id
