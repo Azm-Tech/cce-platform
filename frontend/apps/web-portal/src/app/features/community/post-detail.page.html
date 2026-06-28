@@ -423,6 +423,8 @@
           <div class="cce-post-detail__compose" #composer>
             <cce-compose-reply-form
               [postId]="p.id"
+              [parentReply]="replyingTo()"
+              (cancelParent)="replyingTo.set(null)"
               (replyCreated)="onReplyCreated()"
             />
           </div>
@@ -461,12 +463,15 @@
             </div>
           }
 
-          @for (r of orderedReplies(); track r.id) {
+          @for (item of replyTree(); track item.reply.id) {
             <cce-reply
-              [reply]="r"
-              [isAccepted]="r.id === p.answeredReplyId"
-              [markableForPostId]="canMarkAnswer() && r.id !== p.answeredReplyId ? p.id : null"
+              [reply]="item.reply"
+              [children]="item.children"
+              [participants]="threadParticipants()"
+              [isAccepted]="item.reply.id === p.answeredReplyId"
+              [markableForPostId]="canMarkAnswer() && item.reply.id !== p.answeredReplyId ? p.id : null"
               (answerMarked)="onAnswerMarked()"
+              (replyToReply)="onReplyToReply($event)"
             />
           }
 

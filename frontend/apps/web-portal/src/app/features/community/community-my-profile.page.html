@@ -166,6 +166,16 @@
       >
         {{ 'community.profile.followedTopics' | transloco }}
       </button>
+      <button
+        type="button"
+        role="tab"
+        class="cmp__tab"
+        [class.cmp__tab--active]="activeTab() === 'my-mentions'"
+        [attr.aria-selected]="activeTab() === 'my-mentions'"
+        (click)="setTab('my-mentions')"
+      >
+        {{ 'community.profile.myMentions' | transloco }}
+      </button>
     </nav>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
@@ -526,6 +536,115 @@
               </div>
             }
           }
+        }
+
+      </div>
+    }
+
+    <!-- ── TAB: My Mentions ──────────────────────────────────────────────────── -->
+    @if (activeTab() === 'my-mentions') {
+      <div class="cmp__feed">
+
+        <!-- Error -->
+        @if (mentionsError(); as kind) {
+          <div class="cmp__feed-error" role="alert">
+            <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
+            <button type="button" (click)="loadMyMentions()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        }
+
+        <!-- Skeleton -->
+        @if (mentionsLoading() && mentions().length === 0) {
+          @for (s of postSkeletons; track $index) {
+            <div class="cmp__mention-item cmp__mention-item--skel" aria-hidden="true">
+              <div class="cmp-skel cmp-skel--avatar-sm"></div>
+              <div class="cmp__mention-skel-body">
+                <div class="cmp-skel cmp-skel--name"></div>
+                <div class="cmp-skel cmp-skel--body"></div>
+              </div>
+            </div>
+          }
+        }
+
+        <!-- Progress bar while paginating -->
+        @if (mentionsLoading() && mentions().length > 0) {
+          <div class="cmp__progress" aria-hidden="true">
+            <div class="cmp__progress-bar"></div>
+          </div>
+        }
+
+        <!-- Mentions list -->
+        @if (!mentionsLoading() || mentions().length > 0) {
+          @if (mentions().length === 0 && !mentionsLoading()) {
+            <div class="cmp__empty">
+              <mat-icon class="cmp__empty-icon" svgIcon="at-sign" aria-hidden="true"></mat-icon>
+              <div class="cmp__empty-text">
+                <p class="cmp__empty-title">{{ 'community.mentions.empty' | transloco }}</p>
+              </div>
+            </div>
+          } @else {
+            <ul class="cmp__mentions-list">
+              @for (item of mentions(); track item.id) {
+                <li class="cmp__mention-item" (click)="navigateToMention(item)" role="button" tabindex="0"
+                  (keydown.enter)="navigateToMention(item)">
+                  @if (item.mentionedByAvatarUrl) {
+                    <img class="cmp__mention-avatar" [src]="item.mentionedByAvatarUrl" [alt]="item.mentionedByName" />
+                  } @else {
+                    <span class="cmp__mention-avatar cmp__mention-avatar--initials" aria-hidden="true">
+                      {{ item.mentionedByName.charAt(0).toUpperCase() }}
+                    </span>
+                  }
+                  <div class="cmp__mention-body">
+                    <p class="cmp__mention-meta">
+                      {{ 'community.mentions.mentionedBy' | transloco:{ name: item.mentionedByName } }}
+                    </p>
+                    <p class="cmp__mention-snippet">{{ item.snippet }}</p>
+                  </div>
+                  <span class="cmp__mention-time">{{ mentionTimeAgo(item.createdOn) }}</span>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        <!-- Pagination -->
+        @if (mentionsTotalPages() > 1) {
+          <nav class="cmp__pagination" aria-label="pagination">
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="mentionsPage() === 1"
+              (click)="setMentionsPage(mentionsPage() - 1)"
+              aria-label="previous"
+            >
+              <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+            </button>
+
+            <div class="cmp__pagination-pages">
+              @for (n of mentionsPageNums(); track n; let i = $index) {
+                @if (i > 0 && n - mentionsPageNums()[i - 1] > 1) {
+                  <span class="cmp__pagination-ellipsis">…</span>
+                }
+                <button
+                  type="button"
+                  class="cmp__pagination-num"
+                  [class.cmp__pagination-num--active]="n === mentionsPage()"
+                  (click)="setMentionsPage(n)"
+                >{{ n }}</button>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="mentionsPage() === mentionsTotalPages()"
+              (click)="setMentionsPage(mentionsPage() + 1)"
+              aria-label="next"
+            >
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+            </button>
+          </nav>
         }
 
       </div>

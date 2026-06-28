@@ -138,6 +138,8 @@ export interface PublicPostReply {
   postId: string;
   authorId: string;
   authorName: string | null;
+  /** Added in the mentions sprint — may be absent on older API versions. */
+  authorAvatarUrl?: string | null;
   content: string | null;
   locale: string | null;
   parentReplyId: string | null;
@@ -146,6 +148,9 @@ export interface PublicPostReply {
   childCount: number;
   upvoteCount: number;
   createdOn: string;
+  /** Ordered by first occurrence in `content`. Used for positional @mention
+   *  resolution — the nth @token maps to the nth unique user in this array. */
+  mentionedUsers?: MentionUser[] | null;
 }
 
 // ── Poll ──────────────────────────────────────────────────────────────────────
@@ -268,11 +273,44 @@ export interface CreateReplyPayload {
   content: string;
   locale: string;
   parentReplyId?: string | null;
-  mentionedUserIds?: string[] | null;
 }
 
 export interface EditReplyPayload {
   content: string;
+}
+
+/** Participant available for @mention in the reply composer,
+ *  and the shape returned inside `PublicPostReply.mentionedUsers`. */
+export interface MentionUser {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  /** Available when the backend includes it — used for the popup expert badge
+   *  before the full profile is fetched. */
+  isExpert?: boolean;
+}
+
+/** Shape returned by GET /api/community/communities/{id}/mentionable-users */
+export interface MentionableUser {
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  isFollowed: boolean;
+  isMember: boolean;
+}
+
+/** One item from GET /api/me/mentions */
+export interface MentionItem {
+  id: string;
+  sourceType: 'Reply' | 'Post';
+  sourceId: string;
+  postId: string;
+  communityId: string;
+  mentionedByUserId: string;
+  mentionedByName: string;
+  mentionedByAvatarUrl: string | null;
+  snippet: string;
+  createdOn: string;
 }
 
 export interface MarkAnswerPayload {

@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -14,16 +14,17 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
 import { FollowDirective } from '../follows/follow.directive';
+import { timeAgo } from './lib/social-helpers';
 import { CommunityApiService } from './community-api.service';
 import { CommunityStateService } from './community-state.service';
 import { PostSummaryComponent } from './post-summary.component';
 import { ComposePostDialogComponent } from './compose-post-dialog.component';
 import { CommunityFollowingDialogComponent } from './community-following-dialog.component';
-import type { CommunityTopicSummary, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
+import type { CommunityTopicSummary, CommunityUserProfile, MentionItem, PostType, PublicPost, PublicTopic } from './community.types';
 
 /** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
 type FeedSort = 0 | 1 | 2 | 3;
-type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics';
+type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics' | 'my-mentions';
 
 @Component({
   selector: 'cce-community-my-profile-page',
@@ -39,6 +40,7 @@ export class CommunityMyProfilePage implements OnInit {
   private readonly communityState = inject(CommunityStateService);
   private readonly localeService = inject(LocaleService);
   private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   // ── Profile ────────────────────────────────────────────────────────────────
   readonly profile = signal<CommunityUserProfile | null>(null);
@@ -114,6 +116,15 @@ export class CommunityMyProfilePage implements OnInit {
   readonly communityTopics = signal<CommunityTopicSummary[]>([]);
   readonly topicsLoading = signal(false);
   readonly topicsError = signal<string | null>(null);
+
+  // ── My Mentions tab ───────────────────────────────────────────────────────
+  readonly mentions = signal<MentionItem[]>([]);
+  readonly mentionsLoading = signal(false);
+  readonly mentionsError = signal<string | null>(null);
+  readonly mentionsPage = signal(1);
+  readonly mentionsTotal = signal(0);
+  readonly mentionsTotalPages = computed(() => Math.max(1, Math.ceil(this.mentionsTotal() / 20)));
+  readonly mentionsPageNums = computed(() => this.buildPageNums(this.mentionsTotalPages(), this.mentionsPage()));
 
   // ── Shared ────────────────────────────────────────────────────────────────
   readonly topicsList = computed(() => Array.from(this.topicsMap().values()).slice(0, 20));
@@ -197,6 +208,9 @@ export class CommunityMyProfilePage implements OnInit {
     }
     if (tab === 'followed-topics' && this.communityTopics().length === 0 && !this.topicsLoading()) {
       void this.loadFollowedTopics();
+    }
+    if (tab === 'my-mentions' && this.mentions().length === 0 && !this.mentionsLoading()) {
+      void this.loadMyMentions();
     }
   }
 
@@ -309,6 +323,32 @@ export class CommunityMyProfilePage implements OnInit {
   topicSummaryName(t: CommunityTopicSummary): string {
     return (this.locale() === 'ar' ? t.nameAr ?? t.nameEn : t.nameEn ?? t.nameAr) ?? '';
   }
+
+  // ── My Mentions ───────────────────────────────────────────────────────────
+  async loadMyMentions(): Promise<void> {
+    this.mentionsLoading.set(true);
+    this.mentionsError.set(null);
+    const res = await this.api.getMyMentions({ page: this.mentionsPage(), pageSize: 20 });
+    this.mentionsLoading.set(false);
+    if (res.ok) {
+      this.mentions.set(res.value.items);
+      this.mentionsTotal.set(res.value.total);
+    } else {
+      this.mentionsError.set(res.error.kind);
+    }
+  }
+
+  setMentionsPage(n: number): void {
+    this.mentionsPage.set(n);
+    void this.loadMyMentions();
+  }
+
+  navigateToMention(item: MentionItem): void {
+    const fragment = item.sourceType === 'Reply' ? `reply-${item.sourceId}` : `post-${item.postId}`;
+    void this.router.navigate(['/community/posts', item.postId], { fragment });
+  }
+
+  mentionTimeAgo(iso: string): string { return timeAgo(iso, this.locale()); }
 
   // ── Shared helpers ────────────────────────────────────────────────────────
   getTopicName(post: PublicPost): string | null {

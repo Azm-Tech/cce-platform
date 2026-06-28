@@ -12,6 +12,8 @@ import type {
   EditReplyPayload,
   FeaturedPost,
   MarkAnswerPayload,
+  MentionableUser,
+  MentionItem,
   PagedResult,
   PollInputPayload,
   PollResults,
@@ -379,11 +381,42 @@ export class CommunityApiService {
 
   // ── Community user profile ────────────────────────────────────────────────
 
+  async getMentionableUsers(
+    communityId: string,
+    q: string,
+    limit = 10,
+  ): Promise<Result<MentionableUser[]>> {
+    const params = new HttpParams().set('q', q).set('limit', limit);
+    return this.run(async () =>
+      unwrap<MentionableUser[]>(
+        await firstValueFrom(
+          this.http.get<{ data?: MentionableUser[] }>(
+            `/api/community/communities/${encodeURIComponent(communityId)}/mentionable-users`,
+            { params },
+          ),
+        ),
+      ) ?? [],
+    );
+  }
+
   async getCommunityUser(userId: string): Promise<Result<CommunityUserProfile>> {
     return this.run(async () =>
       unwrap<CommunityUserProfile>(
         await firstValueFrom(
           this.http.get<{ data?: CommunityUserProfile }>(`/api/community/users/${encodeURIComponent(userId)}`),
+        ),
+      ),
+    );
+  }
+
+  async getMyMentions(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<MentionItem>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<MentionItem>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<MentionItem> }>('/api/me/mentions', { params }),
         ),
       ),
     );

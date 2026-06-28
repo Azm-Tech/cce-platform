@@ -894,6 +894,89 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   line-height: 1;
 }
 
+// ── My Mentions ────────────────────────────────────────────────────────────────
+.cmp__mentions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cmp__mention-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid $n-200;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover { background-color: $n-50; }
+
+  &--skel {
+    pointer-events: none;
+    cursor: default;
+    &:hover { background-color: transparent; }
+  }
+}
+
+.cmp__mention-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $p-100;
+    color: $p-600;
+    font-weight: 700;
+    font-size: 16px;
+  }
+}
+
+.cmp__mention-skel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cmp__mention-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmp__mention-meta {
+  font-size: 14px;
+  color: $n-600;
+  margin: 0 0 4px;
+}
+
+.cmp__mention-snippet {
+  font-size: 14px;
+  color: $n-900;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmp__mention-time {
+  font-size: 12px;
+  color: $n-500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-block-start: 2px;
+}
+
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 768px) {
   .cmp__header { flex-direction: column; padding: 20px; gap: 16px; }
