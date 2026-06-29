@@ -35,4 +35,5 @@ public sealed record CommunityFeedItemDto(
     string? TitleHighlight = null,  // <em>-wrapped matched title fragment
     string? BodyHighlight  = null,  // <em>-wrapped matched content excerpt
     bool MatchedInReply    = false, // true when match was found in a reply, not the post body
-    string? ReplyExcerpt   = null); // highlighted reply fragment; null when MatchedInReply = false
+    string? ReplyExcerpt   = null,  // highlighted reply fragment; null when MatchedInReply = false
+    string? MainImageUrl   = null); // public URL of the first image attachment; null when post has no images

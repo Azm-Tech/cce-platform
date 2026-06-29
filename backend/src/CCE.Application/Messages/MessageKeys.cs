@@ -189,13 +189,16 @@ public static class MessageKeys
 
     public static class Media
     {
-        public const string MEDIA_FILE_NOT_FOUND = "MEDIA_FILE_NOT_FOUND";
-        public const string INVALID_FILE_TYPE = "INVALID_FILE_TYPE";
-        public const string FILE_TOO_LARGE = "FILE_TOO_LARGE";
-        public const string EMPTY_FILE = "EMPTY_FILE";
-        public const string MEDIA_UPLOADED = "MEDIA_UPLOADED";
-        public const string MEDIA_UPDATED = "MEDIA_UPDATED";
-        public const string MEDIA_DELETED = "MEDIA_DELETED";
+        public const string MEDIA_FILE_NOT_FOUND   = "MEDIA_FILE_NOT_FOUND";
+        public const string INVALID_FILE_TYPE      = "INVALID_FILE_TYPE";
+        public const string FILE_TOO_LARGE         = "FILE_TOO_LARGE";
+        public const string EMPTY_FILE             = "EMPTY_FILE";
+        public const string MEDIA_UPLOADED         = "MEDIA_UPLOADED";
+        public const string MEDIA_UPDATED          = "MEDIA_UPDATED";
+        public const string MEDIA_DELETED          = "MEDIA_DELETED";
+        public const string IMAGE_LIMIT_EXCEEDED   = "IMAGE_LIMIT_EXCEEDED";
+        public const string VIDEO_LIMIT_EXCEEDED   = "VIDEO_LIMIT_EXCEEDED";
+        public const string FILE_LIMIT_EXCEEDED    = "FILE_LIMIT_EXCEEDED";
     }
 
     public static class Verification

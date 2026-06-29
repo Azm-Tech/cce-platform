@@ -45,33 +45,40 @@ public sealed class DemoUsersSeeder : ISeeder
     {
         foreach (var (email, password, role, firstName, lastName) in Users)
         {
-            var existing = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
-            if (existing is not null)
+            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            if (user is null)
             {
-                _logger.LogInformation("Demo user {Email} already exists — skipping.", email);
-                continue;
+                user = User.RegisterLocal(firstName, lastName, email, "Demo", "CCE", "", _clock);
+                user.EmailConfirmed = true;
+
+                var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
+                if (!createResult.Succeeded)
+                {
+                    var errors = string.Join(", ", createResult.Errors.Select(static e => e.Description));
+                    _logger.LogError("Failed to create demo user {Email}: {Errors}", email, errors);
+                    continue;
+                }
+
+                _logger.LogInformation("Created demo user {Email}.", email);
             }
 
-            var user = User.RegisterLocal(firstName, lastName, email, "Demo", "CCE", "", _clock);
-            user.EmailConfirmed = true;
-
-            var createResult = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
-            if (!createResult.Succeeded)
+            var currentRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+            if (!currentRoles.Contains(role))
             {
-                var errors = string.Join(", ", createResult.Errors.Select(static e => e.Description));
-                _logger.LogError("Failed to create demo user {Email}: {Errors}", email, errors);
-                continue;
-            }
-
-            var roleResult = await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
-            if (!roleResult.Succeeded)
-            {
-                var errors = string.Join(", ", roleResult.Errors.Select(static e => e.Description));
-                _logger.LogError("Failed to assign role {Role} to {Email}: {Errors}", role, email, errors);
+                var roleResult = await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
+                if (!roleResult.Succeeded)
+                {
+                    var errors = string.Join(", ", roleResult.Errors.Select(static e => e.Description));
+                    _logger.LogError("Failed to assign role {Role} to {Email}: {Errors}", role, email, errors);
+                }
+                else
+                {
+                    _logger.LogInformation("Assigned role {Role} to user {Email}.", role, email);
+                }
             }
             else
             {
-                _logger.LogInformation("Created demo user {Email} with role {Role}.", email, role);
+                _logger.LogInformation("User {Email} already has role {Role} — skipping.", email, role);
             }
         }
     }

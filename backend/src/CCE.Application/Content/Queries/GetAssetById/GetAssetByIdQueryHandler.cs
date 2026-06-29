@@ -31,9 +31,7 @@ public sealed class GetAssetByIdQueryHandler : IRequestHandler<GetAssetByIdQuery
         if (asset is null)
             return _msg.NotFound<AssetFileDto>(MessageKeys.Content.ASSET_NOT_FOUND);
 
-        var publicUrl = asset.Url.StartsWith("http", System.StringComparison.OrdinalIgnoreCase)
-            ? asset.Url
-            : _storage.GetPublicUrl(asset.Url).ToString();
+        var publicUrl = _storage.GetPublicUrl(asset.Url).ToString();
 
         return _msg.Ok(new AssetFileDto(
             asset.Id,

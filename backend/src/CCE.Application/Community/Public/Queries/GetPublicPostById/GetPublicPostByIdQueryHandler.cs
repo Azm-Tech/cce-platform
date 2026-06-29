@@ -1,8 +1,11 @@
-﻿using CCE.Application.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CCE.Application.Common;
 using CCE.Application.Community;
 using CCE.Application.Community.Public.Dtos;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
+using CCE.Application.Content;
 using CCE.Application.Messages;
 
 using CCE.Domain.Common;
@@ -17,13 +20,15 @@ public sealed class GetPublicPostByIdQueryHandler
 {
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
+    private readonly IFileStorage _storage;
     private readonly MessageFactory _msg;
     private readonly ISystemClock _clock;
 
-    public GetPublicPostByIdQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, MessageFactory msg, ISystemClock clock)
+    public GetPublicPostByIdQueryHandler(ICceDbContext db, IRedisFeedStore feedStore, IFileStorage storage, MessageFactory msg, ISystemClock clock)
     {
         _db = db;
         _feedStore = feedStore;
+        _storage = storage;
         _msg = msg;
         _clock = clock;
     }
@@ -66,12 +71,21 @@ public sealed class GetPublicPostByIdQueryHandler
         if (raw is null)
             return _msg.NotFound<PostDetailDto>(MessageKeys.Community.POST_NOT_FOUND);
 
-        // Attachments — separate query to avoid cartesian explosion with the JOIN above.
-        var attachmentIds = await _db.PostAttachments.AsNoTracking()
-            .Where(a => a.PostId == raw.Id)
-            .Select(a => a.AssetFileId)
+        // Attachments — JOIN AssetFiles for full media metadata; separate query avoids cartesian with the JOIN above.
+        var attachmentRows = await (
+            from a in _db.PostAttachments.AsNoTracking()
+            join af in _db.AssetFiles.AsNoTracking() on a.AssetFileId equals af.Id
+            where a.PostId == raw.Id
+            orderby a.SortOrder
+            select new { a.AssetFileId, a.Kind, af.MimeType, af.Url,
+                         af.SizeBytes, af.OriginalFileName, a.SortOrder, a.MetadataJson })
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
+
+        var media = attachmentRows.Select(r => new PostMediaItemDto(
+            r.AssetFileId, r.Kind, r.MimeType,
+            _storage.GetPublicUrl(r.Url).ToString(),
+            r.SizeBytes, r.OriginalFileName, r.SortOrder, r.MetadataJson)).ToList();
 
         // Redis meta — fired before the user-specific EF queries so it runs concurrently.
         var metaTask = _feedStore.GetPostMetaAsync(raw.Id, cancellationToken);
@@ -114,7 +128,7 @@ public sealed class GetPublicPostByIdQueryHandler
             meta?.Upvotes   ?? raw.UpvoteCount,
             meta?.Downvotes ?? raw.DownvoteCount,
             meta?.ReplyCount ?? raw.CommentsCount,
-            attachmentIds,
+            media,
             raw.CreatedOn,
             raw.TopicNameAr ?? string.Empty,
             raw.TopicNameEn ?? string.Empty,

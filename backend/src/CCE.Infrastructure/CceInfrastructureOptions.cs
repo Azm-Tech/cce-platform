@@ -26,8 +26,21 @@ public sealed class CceInfrastructureOptions
     /// <summary>
     /// Allowed MIME types for asset uploads. Defaults to a curated PDF/image/video/zip whitelist.
     /// </summary>
-    public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } =
-        new[] { "application/pdf", "image/png", "image/jpeg", "image/svg+xml", "video/mp4", "application/zip" };
+    public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } = new[]
+    {
+        // Images
+        "image/jpeg", "image/png", "image/webp",
+        // Video
+        "video/mp4", "video/quicktime",
+        // Documents
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    };
 
     /// <summary>Root directory for media file storage. When under wwwroot/, files are also served as static content.</summary>
     public string MediaUploadsRoot { get; init; } = "./wwwroot/media/";

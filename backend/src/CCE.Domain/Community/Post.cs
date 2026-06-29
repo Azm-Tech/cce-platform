@@ -17,7 +17,7 @@ public sealed class Post : AggregateRoot<System.Guid>
 {
     public const int MaxContentLength = 8000;
     public const int MaxTitleLength = 150;
-    public const int MaxAttachments = 10;
+    public const int MaxAttachments = 9; // 5 images + 1 video + 3 documents
 
     private readonly List<Tag> _tags = new();
     private readonly List<PostAttachment> _attachments = new();
