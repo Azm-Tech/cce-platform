@@ -1,13 +1,10 @@
 using CCE.Api.Common.Extensions;
-using CCE.Application.InteractiveMaps.Commands.CreateInteractiveMap;
 using CCE.Application.InteractiveMaps.Commands.CreateInteractiveMapNode;
-using CCE.Application.InteractiveMaps.Commands.DeleteInteractiveMap;
 using CCE.Application.InteractiveMaps.Commands.DeleteInteractiveMapNode;
 using CCE.Application.InteractiveMaps.Commands.UpdateInteractiveMap;
 using CCE.Application.InteractiveMaps.Commands.UpdateInteractiveMapNode;
-using CCE.Application.InteractiveMaps.Queries.GetInteractiveMapById;
+using CCE.Application.InteractiveMaps.Queries.GetCurrentInteractiveMap;
 using CCE.Application.InteractiveMaps.Queries.ListInteractiveMapNodes;
-using CCE.Application.InteractiveMaps.Queries.ListInteractiveMaps;
 using CCE.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -23,63 +20,25 @@ public static class InteractiveMapEndpoints
         var maps = app.MapGroup("/api/admin/interactive-maps").WithTags("InteractiveMaps");
 
         maps.MapGet("", async (
-            int? page, int? pageSize, bool? isActive,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var query = new ListInteractiveMapsQuery(
-                Page: page ?? 1,
-                PageSize: pageSize ?? 20,
-                IsActive: isActive);
-            var response = await mediator.Send(query, cancellationToken).ConfigureAwait(false);
+            var response = await mediator.Send(new GetCurrentInteractiveMapQuery(), cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.InteractiveMap_Manage)
-        .WithName("ListInteractiveMaps");
+        .WithName("GetCurrentInteractiveMap");
 
-        maps.MapGet("/{id:guid}", async (
-            System.Guid id,
-            IMediator mediator, CancellationToken cancellationToken) =>
-        {
-            var response = await mediator.Send(new GetInteractiveMapByIdQuery(id), cancellationToken).ConfigureAwait(false);
-            return response.ToHttpResult();
-        })
-        .RequireAuthorization(Permissions.InteractiveMap_Manage)
-        .WithName("GetInteractiveMapById");
-
-        maps.MapPost("", async (
-            CreateInteractiveMapRequest body,
-            IMediator mediator, CancellationToken cancellationToken) =>
-        {
-            var cmd = new CreateInteractiveMapCommand(
-                body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn);
-            var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
-            return response.ToCreatedHttpResult();
-        })
-        .RequireAuthorization(Permissions.InteractiveMap_Manage)
-        .WithName("CreateInteractiveMap");
-
-        maps.MapPut("/{id:guid}", async (
-            System.Guid id,
+        maps.MapPut("", async (
             UpdateInteractiveMapRequest body,
             IMediator mediator, CancellationToken cancellationToken) =>
         {
             var cmd = new UpdateInteractiveMapCommand(
-                id, body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn, body.IsActive);
+                body.NameAr, body.NameEn, body.DescriptionAr, body.DescriptionEn);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
         })
         .RequireAuthorization(Permissions.InteractiveMap_Manage)
         .WithName("UpdateInteractiveMap");
-
-        maps.MapDelete("/{id:guid}", async (
-            System.Guid id,
-            IMediator mediator, CancellationToken cancellationToken) =>
-        {
-            var response = await mediator.Send(new DeleteInteractiveMapCommand(id), cancellationToken).ConfigureAwait(false);
-            return response.ToNoContentHttpResult();
-        })
-        .RequireAuthorization(Permissions.InteractiveMap_Manage)
-        .WithName("DeleteInteractiveMap");
 
         // ─── Nodes ───
 
@@ -142,18 +101,11 @@ public static class InteractiveMapEndpoints
     }
 }
 
-public sealed record CreateInteractiveMapRequest(
-    string NameAr,
-    string NameEn,
-    string? DescriptionAr,
-    string? DescriptionEn);
-
 public sealed record UpdateInteractiveMapRequest(
     string NameAr,
     string NameEn,
     string? DescriptionAr,
-    string? DescriptionEn,
-    bool IsActive);
+    string? DescriptionEn);
 
 public sealed record CreateInteractiveMapNodeRequest(
     string NameAr,

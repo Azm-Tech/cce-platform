@@ -1,30 +1,30 @@
-﻿using CCE.Application.Common;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CCE.Application.InteractiveMaps.Public.Queries.GetInteractiveMapById;
+namespace CCE.Application.InteractiveMaps.Public.Queries.GetCurrentInteractiveMap;
 
-internal sealed class GetPublicInteractiveMapByIdQueryHandler
-    : IRequestHandler<GetPublicInteractiveMapByIdQuery, Response<PublicInteractiveMapDto>>
+internal sealed class GetCurrentInteractiveMapQueryHandler
+    : IRequestHandler<GetCurrentInteractiveMapQuery, Response<PublicInteractiveMapDto>>
 {
     private readonly ICceDbContext _db;
     private readonly MessageFactory _msg;
 
-    public GetPublicInteractiveMapByIdQueryHandler(ICceDbContext db, MessageFactory msg)
+    public GetCurrentInteractiveMapQueryHandler(ICceDbContext db, MessageFactory msg)
     {
         _db = db;
         _msg = msg;
     }
 
     public async Task<Response<PublicInteractiveMapDto>> Handle(
-        GetPublicInteractiveMapByIdQuery request,
+        GetCurrentInteractiveMapQuery request,
         CancellationToken cancellationToken)
     {
         var map = await _db.InteractiveMaps
-            .Where(m => m.Id == request.Id && m.IsActive)
+            .Where(m => m.IsActive)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
