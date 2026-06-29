@@ -143,6 +143,11 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
             community?.DecrementPosts();
         }
 
+        // Stage outbox events BEFORE the save so they commit atomically with the DB changes.
+        // Publishing after SaveChanges would stage an outbox row that is never committed (lost).
+        await StageOutboxEventsAsync(evt, status, score, post.AuthorId, post.Locale, autoRejected, ctx, ct)
+            .ConfigureAwait(false);
+
         await ctx.Db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         if (autoRejected)
@@ -151,7 +156,6 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
             await ctx.FeedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, ct).ConfigureAwait(false);
         }
 
-        await PublishIfActionableAsync(evt, status, score, ctx, ct).ConfigureAwait(false);
         LogOutcome(evt, status);
     }
 
@@ -197,12 +201,14 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
             author?.DecrementCommentsCount();
         }
 
+        await StageOutboxEventsAsync(evt, status, score, reply.AuthorId, reply.Locale, autoRejected, ctx, ct)
+            .ConfigureAwait(false);
+
         await ctx.Db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         if (autoRejected)
             await ctx.SearchClient.DeleteAsync(SearchableType.CommunityReplies, reply.Id, ct).ConfigureAwait(false);
 
-        await PublishIfActionableAsync(evt, status, score, ctx, ct).ConfigureAwait(false);
         LogOutcome(evt, status);
     }
 
@@ -229,21 +235,30 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
         return (score, ModerationPhase.Ai, _aiProvider.ProviderName);
     }
 
-    // ── Notify admins on flagged/rejected outcomes ─────────────────────────
+    // ── Stage moderation outbox events ─────────────────────────────────────
+    // Called BEFORE SaveChanges so each Publish writes an outbox_message row that commits in the
+    // same transaction as the moderation result (publishing after the save would be lost).
 
-    private static Task PublishIfActionableAsync(
+    private static async Task StageOutboxEventsAsync(
         ContentModerationRequestedIntegrationEvent evt,
         ModerationStatus status,
         ModerationScore score,
+        System.Guid authorId,
+        string locale,
+        bool autoRejected,
         ModerationContext ctx,
         CancellationToken ct)
     {
-        if (status is not (ModerationStatus.Flagged or ModerationStatus.Rejected))
-            return Task.CompletedTask;
+        // Moderator alert — flagged or rejected.
+        if (status is ModerationStatus.Flagged or ModerationStatus.Rejected)
+            await ctx.Publisher.PublishAsync(new ContentFlaggedIntegrationEvent(
+                evt.ContentId, evt.ContentType, status,
+                score.Category, score.Reason, ctx.Clock.UtcNow), ct).ConfigureAwait(false);
 
-        return ctx.Publisher.PublishAsync(new ContentFlaggedIntegrationEvent(
-            evt.ContentId, evt.ContentType, status,
-            score.Category, score.Reason, ctx.Clock.UtcNow), ct);
+        // Author takedown notice — only when content was actually removed.
+        if (autoRejected)
+            await ctx.Publisher.PublishAsync(new ContentRejectedIntegrationEvent(
+                evt.ContentId, evt.ContentType, authorId, locale), ct).ConfigureAwait(false);
     }
 
     private void LogOutcome(ContentModerationRequestedIntegrationEvent evt, ModerationStatus status)

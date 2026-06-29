@@ -101,6 +101,7 @@ public static class MessagingServiceExtensions
                 x.AddConsumer<CCE.Infrastructure.Moderation.ContentModerationConsumer,
                               CCE.Infrastructure.Moderation.ContentModerationConsumerDefinition>();
                 x.AddConsumer<ContentFlaggedNotificationConsumer, ContentFlaggedNotificationConsumerDefinition>();
+                x.AddConsumer<ContentRejectedAuthorNotificationConsumer, ContentRejectedAuthorNotificationConsumerDefinition>();
                 x.AddConsumer<NotificationConsumer, NotificationConsumerDefinition>();
                 x.AddConsumer<ContentNotificationConsumer, ContentNotificationConsumerDefinition>();
                 x.AddConsumer<SignalRConsumer, SignalRConsumerDefinition>();

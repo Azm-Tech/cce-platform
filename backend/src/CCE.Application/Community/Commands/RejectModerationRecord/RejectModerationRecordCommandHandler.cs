@@ -1,5 +1,7 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Messaging;
+using CCE.Application.Common.Messaging.IntegrationEvents;
 using CCE.Application.Messages;
 using CCE.Application.Search;
 using CCE.Domain.Common;
@@ -19,6 +21,7 @@ public sealed class RejectModerationRecordCommandHandler
     private readonly ISystemClock _clock;
     private readonly ISearchClient _search;
     private readonly IRedisFeedStore _feedStore;
+    private readonly IIntegrationEventPublisher _publisher;
     private readonly MessageFactory _msg;
 
     public RejectModerationRecordCommandHandler(
@@ -29,6 +32,7 @@ public sealed class RejectModerationRecordCommandHandler
         ISystemClock clock,
         ISearchClient search,
         IRedisFeedStore feedStore,
+        IIntegrationEventPublisher publisher,
         MessageFactory msg)
     {
         _db       = db;
@@ -38,6 +42,7 @@ public sealed class RejectModerationRecordCommandHandler
         _clock    = clock;
         _search   = search;
         _feedStore = feedStore;
+        _publisher = publisher;
         _msg      = msg;
     }
 
@@ -85,6 +90,12 @@ public sealed class RejectModerationRecordCommandHandler
                     .FirstOrDefaultAsync(c => c.Id == post.CommunityId, cancellationToken)
                     .ConfigureAwait(false);
                 community?.DecrementPosts();
+
+                // Notify the author their content was taken down (staged in the outbox,
+                // committed by the SaveChanges below). Only on a real takedown transition.
+                await _publisher.PublishAsync(new ContentRejectedIntegrationEvent(
+                    post.Id, ContentModerationRequestedIntegrationEvent.ContentTypes.Post,
+                    post.AuthorId, post.Locale), cancellationToken).ConfigureAwait(false);
             }
 
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -115,6 +126,10 @@ public sealed class RejectModerationRecordCommandHandler
                     .FirstOrDefaultAsync(u => u.Id == reply.AuthorId, cancellationToken)
                     .ConfigureAwait(false);
                 author?.DecrementCommentsCount();
+
+                await _publisher.PublishAsync(new ContentRejectedIntegrationEvent(
+                    reply.Id, ContentModerationRequestedIntegrationEvent.ContentTypes.Reply,
+                    reply.AuthorId, reply.Locale), cancellationToken).ConfigureAwait(false);
             }
 
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

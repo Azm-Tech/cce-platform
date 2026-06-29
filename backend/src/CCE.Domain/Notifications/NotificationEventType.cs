@@ -20,4 +20,5 @@ public enum NotificationEventType
     TopicNewPost = 15,
     CommunityNewPost = 16,
     CommunityUserMentioned = 17,
+    CommunityContentRejected = 18,
 }
