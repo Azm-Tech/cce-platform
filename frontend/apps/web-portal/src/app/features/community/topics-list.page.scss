@@ -304,7 +304,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 // ── Community roles accordion (Figma 40003381-80373) ─────────────────────────
-.cp-roles {
+.cp-laws {
   padding: 24px 24px 0;
   border-top: 1px solid $n-200;
 
@@ -339,7 +339,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     gap: 12px;
     text-align: start;
 
-    &:hover .cp-roles__name {
+    &:hover .cp-laws__name {
       color: $p-600;
     }
   }
@@ -374,6 +374,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     color: $n-600;
     font-family: $font;
     text-align: start;
+    white-space: pre-line;
     margin: 0;
     padding-bottom: 18px;
   }

@@ -49,13 +49,14 @@ function ok<T>(value: T): Result<T> {
 describe('TopicsListPage', () => {
   let fixture: ComponentFixture<TopicsListPage>;
   let page: TopicsListPage;
-  let api: { listTopics: jest.Mock; listFeedPosts: jest.Mock; getCommunityUser: jest.Mock };
+  let api: { listTopics: jest.Mock; listFeedPosts: jest.Mock; getCommunityUser: jest.Mock; getCommunityLaws: jest.Mock };
 
   beforeEach(async () => {
     api = {
       listTopics: jest.fn().mockResolvedValue(ok([T1, T2])),
       listFeedPosts: jest.fn().mockResolvedValue(ok({ items: [P1], total: 1 })),
       getCommunityUser: jest.fn().mockResolvedValue({ ok: false, error: { kind: 'not_found' } }),
+      getCommunityLaws: jest.fn().mockResolvedValue(ok([])),
     };
 
     await TestBed.configureTestingModule({

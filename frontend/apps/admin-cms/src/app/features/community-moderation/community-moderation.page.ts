@@ -25,12 +25,19 @@ import {
   type PostDetailDialogResult,
 } from './post-detail-dialog.component';
 import {
+  CommunityLawSectionDialogComponent,
+  type CommunityLawSectionFormData,
+} from './community-law-section.dialog';
+import {
   ADMIN_POST_TYPE_FILTERS,
   POST_TYPE_PARAM,
   type AdminPostRow,
   type AdminPostTypeFilter,
+  type CommunityLawSectionDto,
   type PostTypeKind,
 } from './admin-post.types';
+
+type ModerationSegment = 'posts' | 'laws';
 
 const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -92,6 +99,16 @@ export class CommunityModerationPage implements OnInit {
   readonly quickReplyId = signal<string>('');
   readonly quickReplyError = signal<boolean>(false);
   readonly busy = signal(false);
+
+  // ─── Segment switcher (Posts | Community Laws) ───────────
+  readonly activeSegment = signal<ModerationSegment>('posts');
+
+  // ─── Community Laws state ────────────────────────────────
+  readonly laws = signal<CommunityLawSectionDto[]>([]);
+  readonly lawsLoading = signal(false);
+  readonly lawsError = signal<string | null>(null);
+  readonly lawsBusy = signal(false);
+  private lawsLoaded = false;
 
   readonly empty = computed(
     () => !this.loading() && this.rows().length === 0 && !this.errorKind(),
@@ -338,4 +355,80 @@ export class CommunityModerationPage implements OnInit {
   }
 
   retry(): void { void this.load(); }
+
+  // ─── Segment switching ──────────────────────────────────
+  setSegment(seg: ModerationSegment): void {
+    if (this.activeSegment() === seg) return;
+    this.activeSegment.set(seg);
+    if (seg === 'laws' && !this.lawsLoaded && !this.lawsLoading()) {
+      void this.loadLaws();
+    }
+  }
+
+  // ─── Community Laws ─────────────────────────────────────
+  lawTitle(s: CommunityLawSectionDto): string {
+    return (this.locale() === 'ar' ? s.titleAr ?? s.titleEn : s.titleEn ?? s.titleAr) ?? '';
+  }
+
+  lawContent(s: CommunityLawSectionDto): string {
+    return (this.locale() === 'ar' ? s.contentAr ?? s.contentEn : s.contentEn ?? s.contentAr) ?? '';
+  }
+
+  async loadLaws(): Promise<void> {
+    this.lawsLoading.set(true);
+    this.lawsError.set(null);
+    const res = await this.api.listLaws();
+    this.lawsLoading.set(false);
+    this.lawsLoaded = true;
+    if (res.ok) this.laws.set(res.value);
+    else this.lawsError.set(res.error.kind);
+  }
+
+  openLawDialog(section?: CommunityLawSectionDto): void {
+    const ref = this.dialog.open<CommunityLawSectionDialogComponent, CommunityLawSectionFormData, true | null>(
+      CommunityLawSectionDialogComponent,
+      { data: { section }, width: '760px', maxWidth: '96vw', autoFocus: false },
+    );
+    ref.afterClosed().subscribe((saved) => {
+      if (saved) {
+        this.toast.success('communityModeration.laws.saved');
+        void this.loadLaws();
+      }
+    });
+  }
+
+  async deleteLaw(section: CommunityLawSectionDto): Promise<void> {
+    if (!(await this.confirm.confirm({
+      titleKey: 'communityModeration.laws.deleteTitle',
+      messageKey: 'communityModeration.laws.deleteConfirm',
+      confirmKey: 'communityModeration.laws.delete',
+      cancelKey: 'common.actions.cancel',
+    }))) return;
+    this.lawsBusy.set(true);
+    const res = await this.api.deleteSection(section.id);
+    this.lawsBusy.set(false);
+    if (res.ok) {
+      this.toast.success('communityModeration.laws.deleted');
+      await this.loadLaws();
+    } else {
+      this.toast.error(`errors.${res.error.kind}`);
+    }
+  }
+
+  /** Move a section up (-1) or down (+1) by swapping orderIndex with its neighbor. */
+  async moveLaw(section: CommunityLawSectionDto, direction: -1 | 1): Promise<void> {
+    if (this.lawsBusy()) return;
+    const list = this.laws();
+    const i = list.findIndex((l) => l.id === section.id);
+    const j = i + direction;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    const a = list[i];
+    const b = list[j];
+    this.lawsBusy.set(true);
+    const r1 = await this.api.reorderSection(a.id, b.orderIndex);
+    const r2 = r1.ok ? await this.api.reorderSection(b.id, a.orderIndex) : r1;
+    this.lawsBusy.set(false);
+    if (r2.ok) await this.loadLaws();
+    else this.toast.error(`errors.${r2.error.kind}`);
+  }
 }

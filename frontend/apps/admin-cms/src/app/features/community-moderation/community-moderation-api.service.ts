@@ -2,7 +2,14 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
-import type { AdminPostDetail, AdminPostReply, AdminPostRow } from './admin-post.types';
+import type {
+  AdminPostDetail,
+  AdminPostReply,
+  AdminPostRow,
+  CommunityLawSectionDto,
+  CreateCommunityLawSectionRequest,
+  UpdateCommunityLawSectionRequest,
+} from './admin-post.types';
 
 interface PagedResult<T> {
   items: T[];
@@ -109,6 +116,54 @@ export class CommunityModerationApiService {
         this.http.get<PagedResult<TopicLite>>('/api/admin/topics', { params }),
       );
       return res.items;
+    });
+  }
+
+  // ── Community Laws ──────────────────────────────────────────────────────────
+  // `/api/admin/*` responses are auto-unwrapped by the envelope interceptor, so
+  // these type the inner shape directly (no `.data`).
+
+  /** Ordered list of community-law sections. */
+  async listLaws(): Promise<Result<CommunityLawSectionDto[]>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<CommunityLawSectionDto[]>('/api/admin/community-laws'),
+      );
+      const laws = res ?? [];
+      return [...laws].sort((a, b) => a.orderIndex - b.orderIndex);
+    });
+  }
+
+  async createSection(body: CreateCommunityLawSectionRequest): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(this.http.post<void>('/api/admin/community-laws/sections', body));
+    });
+  }
+
+  async updateSection(id: string, body: UpdateCommunityLawSectionRequest): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.put<void>(`/api/admin/community-laws/sections/${encodeURIComponent(id)}`, body),
+      );
+    });
+  }
+
+  async deleteSection(id: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.delete<void>(`/api/admin/community-laws/sections/${encodeURIComponent(id)}`),
+      );
+    });
+  }
+
+  async reorderSection(id: string, orderIndex: number): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.put<void>(
+          `/api/admin/community-laws/sections/${encodeURIComponent(id)}/order`,
+          { orderIndex },
+        ),
+      );
     });
   }
 

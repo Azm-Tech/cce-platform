@@ -1,0 +1,56 @@
+<h2 mat-dialog-title class="law-form-dialog__title">
+  {{ (isEdit ? 'communityModeration.laws.formTitle.edit' : 'communityModeration.laws.formTitle.create') | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="law-form">
+
+    <!-- Language eyebrow -->
+    <div class="law-form__lang-eyebrow" aria-hidden="true">
+      <span class="law-form__lang-tag" dir="rtl">العربية</span>
+      <span class="law-form__lang-tag">English</span>
+    </div>
+
+    <!-- Title row -->
+    <div class="law-form__bilingual-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.laws.titleAr' | transloco }}</mat-label>
+        <input matInput formControlName="titleAr" dir="rtl" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.laws.titleEn' | transloco }}</mat-label>
+        <input matInput formControlName="titleEn" />
+      </mat-form-field>
+    </div>
+
+    <!-- Content row -->
+    <div class="law-form__bilingual-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.laws.contentAr' | transloco }}</mat-label>
+        <textarea matInput formControlName="contentAr" rows="6" dir="rtl"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'communityModeration.laws.contentEn' | transloco }}</mat-label>
+        <textarea matInput formControlName="contentEn" rows="6"></textarea>
+      </mat-form-field>
+    </div>
+
+    @if (errorKind(); as kind) {
+      <div class="law-form__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ ('errors.' + kind) | transloco }}
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()" [disabled]="saving()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="primary"
+    (click)="save()" [disabled]="saving() || form.invalid">
+    {{ (isEdit ? 'common.actions.save' : 'common.actions.create') | transloco }}
+  </button>
+</mat-dialog-actions>

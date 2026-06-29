@@ -37,6 +37,17 @@ export interface CommunityRole {
   capabilities: string[];
 }
 
+// ── Community Laws ───────────────────────────────────────────────────────────────
+/** Ordered community-law section from GET /api/community-laws. */
+export interface CommunityLawSection {
+  id: string;
+  titleAr: string | null;
+  titleEn: string | null;
+  contentAr: string | null;
+  contentEn: string | null;
+  orderIndex: number;
+}
+
 // ── Topic ─────────────────────────────────────────────────────────────────────
 export interface PublicTopic {
   id: string;

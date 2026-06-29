@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   CommunityDto,
+  CommunityLawSection,
   CommunityRole,
   CommunityTopicSummary,
   CommunityUserProfile,
@@ -103,6 +104,18 @@ export class CommunityApiService {
         this.http.get<{ data?: CommunityRole[] } | CommunityRole[]>('/api/community/roles'),
       );
       return unwrap<CommunityRole[]>(res) ?? [];
+    });
+  }
+
+  // ── Community Laws ──────────────────────────────────────────────────────────
+
+  async getCommunityLaws(): Promise<Result<CommunityLawSection[]>> {
+    return this.run(async () => {
+      const res = await firstValueFrom(
+        this.http.get<{ data?: CommunityLawSection[] } | CommunityLawSection[]>('/api/community-laws'),
+      );
+      const laws = unwrap<CommunityLawSection[]>(res) ?? [];
+      return [...laws].sort((a, b) => a.orderIndex - b.orderIndex);
     });
   }
 

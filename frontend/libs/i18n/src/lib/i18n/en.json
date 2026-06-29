@@ -1546,6 +1546,32 @@
     "quick": {
       "title": "Quick action — delete a reply by ID",
       "help": "Paste the GUID of any reply to soft-delete it without finding its parent post in the table."
+    },
+    "tab": {
+      "posts": "Posts",
+      "laws": "Community Laws"
+    },
+    "laws": {
+      "add": "Add section",
+      "empty": "No law sections yet",
+      "emptyCta": "Add the first section",
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "contentAr": "Content (Arabic)",
+      "contentEn": "Content (English)",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete section",
+      "deleteConfirm": "Delete this section?",
+      "saved": "Section saved",
+      "deleted": "Section deleted",
+      "sectionsCount": "{{count}} sections",
+      "formTitle": {
+        "create": "Add law section",
+        "edit": "Edit law section"
+      }
     }
   },
   "countries": {

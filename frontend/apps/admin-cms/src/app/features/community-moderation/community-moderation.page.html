@@ -1,5 +1,31 @@
 <h1>{{ 'communityModeration.title' | transloco }}</h1>
 
+<!-- ─── Segment switcher: Posts | Community Laws ─────────────── -->
+<div class="cce-cm__seg" role="tablist">
+  <button
+    type="button"
+    role="tab"
+    class="cce-cm__seg-btn"
+    [class.cce-cm__seg-btn--active]="activeSegment() === 'posts'"
+    [attr.aria-selected]="activeSegment() === 'posts'"
+    (click)="setSegment('posts')"
+  >
+    {{ 'communityModeration.tab.posts' | transloco }}
+  </button>
+  <button
+    type="button"
+    role="tab"
+    class="cce-cm__seg-btn"
+    [class.cce-cm__seg-btn--active]="activeSegment() === 'laws'"
+    [attr.aria-selected]="activeSegment() === 'laws'"
+    (click)="setSegment('laws')"
+  >
+    {{ 'communityModeration.tab.laws' | transloco }}
+  </button>
+</div>
+
+@if (activeSegment() === 'posts') {
+
 <!-- ─── Filter toolbar ─────────────────────────────────────── -->
 <div class="cce-cm__filters" data-admin-filters>
   <mat-form-field appearance="outline" class="cce-cm__filter cce-cm__filter--search">
@@ -254,3 +280,108 @@
     </div>
   </div>
 </details>
+
+}
+
+<!-- ═══ Community Laws ════════════════════════════════════════ -->
+@if (activeSegment() === 'laws') {
+  <section class="cce-cm-laws">
+
+    <!-- Header: count + add -->
+    <div class="cce-cm-laws__bar">
+      <span class="cce-cm-laws__count">
+        {{ 'communityModeration.laws.sectionsCount' | transloco:{ count: laws().length } }}
+      </span>
+      <button type="button" mat-flat-button color="primary" (click)="openLawDialog()">
+        <mat-icon>add</mat-icon>
+        {{ 'communityModeration.laws.add' | transloco }}
+      </button>
+    </div>
+
+    @if (lawsLoading()) {
+      <mat-progress-bar mode="indeterminate" class="cce-cm-laws__progress" />
+    }
+
+    @if (lawsError(); as kind) {
+      <div class="cce-cm-laws__error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ ('errors.' + kind) | transloco }}</span>
+        <button type="button" mat-stroked-button (click)="loadLaws()">
+          {{ 'common.actions.retry' | transloco }}
+        </button>
+      </div>
+    }
+
+    @if (!lawsLoading() && !lawsError()) {
+      @if (laws().length === 0) {
+        <div class="cce-cm-laws__empty">
+          <mat-icon>gavel</mat-icon>
+          <p>{{ 'communityModeration.laws.empty' | transloco }}</p>
+          <button type="button" mat-flat-button color="primary" (click)="openLawDialog()">
+            {{ 'communityModeration.laws.emptyCta' | transloco }}
+          </button>
+        </div>
+      } @else {
+        <ul class="cce-cm-laws__list">
+          @for (law of laws(); track law.id; let i = $index; let first = $first; let last = $last) {
+            <li class="cce-cm-laws__card">
+              <div class="cce-cm-laws__order">
+                <button
+                  type="button"
+                  class="cce-cm-laws__move"
+                  [disabled]="first || lawsBusy()"
+                  [attr.aria-label]="'communityModeration.laws.moveUp' | transloco"
+                  [matTooltip]="'communityModeration.laws.moveUp' | transloco"
+                  (click)="moveLaw(law, -1)"
+                >
+                  <mat-icon>keyboard_arrow_up</mat-icon>
+                </button>
+                <span class="cce-cm-laws__index">{{ i + 1 }}</span>
+                <button
+                  type="button"
+                  class="cce-cm-laws__move"
+                  [disabled]="last || lawsBusy()"
+                  [attr.aria-label]="'communityModeration.laws.moveDown' | transloco"
+                  [matTooltip]="'communityModeration.laws.moveDown' | transloco"
+                  (click)="moveLaw(law, 1)"
+                >
+                  <mat-icon>keyboard_arrow_down</mat-icon>
+                </button>
+              </div>
+
+              <div class="cce-cm-laws__body">
+                <div class="cce-cm-laws__titles">
+                  <span class="cce-cm-laws__title-ar" dir="rtl">{{ law.titleAr || '—' }}</span>
+                  <span class="cce-cm-laws__title-en">{{ law.titleEn || '—' }}</span>
+                </div>
+                <p class="cce-cm-laws__excerpt">{{ lawContent(law) }}</p>
+              </div>
+
+              <div class="cce-cm-laws__actions">
+                <button
+                  type="button"
+                  class="cce-cm-laws__icon-btn"
+                  [attr.aria-label]="'communityModeration.laws.edit' | transloco"
+                  [matTooltip]="'communityModeration.laws.edit' | transloco"
+                  (click)="openLawDialog(law)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  class="cce-cm-laws__icon-btn cce-cm-laws__icon-btn--danger"
+                  [disabled]="lawsBusy()"
+                  [attr.aria-label]="'communityModeration.laws.delete' | transloco"
+                  [matTooltip]="'communityModeration.laws.delete' | transloco"
+                  (click)="deleteLaw(law)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+}

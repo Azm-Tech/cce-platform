@@ -95,23 +95,23 @@
 
       <div class="cp-sidebar-divider"></div>
 
-      <!-- ── Community roles accordion (Figma 40003381-80373) ─────── -->
-      @if (roles().length > 0) {
-        <div class="cp-roles">
-          <h3 class="cp-roles__title">{{ 'community.rules.title' | transloco }}</h3>
-          @for (role of roles(); track role.key) {
-            <div class="cp-roles__item" [class.cp-roles__item--open]="expandedRoleKeys().has(role.key)">
+      <!-- ── Community laws accordion (GET /api/community-laws) ────── -->
+      @if (laws().length > 0) {
+        <div class="cp-laws">
+          <h3 class="cp-laws__title">{{ 'community.rules.title' | transloco }}</h3>
+          @for (law of laws(); track law.id) {
+            <div class="cp-laws__item" [class.cp-laws__item--open]="expandedLawIds().has(law.id)">
               <button
                 type="button"
-                class="cp-roles__trigger"
-                [attr.aria-expanded]="expandedRoleKeys().has(role.key)"
-                (click)="toggleRole(role.key)"
+                class="cp-laws__trigger"
+                [attr.aria-expanded]="expandedLawIds().has(law.id)"
+                (click)="toggleLaw(law.id)"
               >
-                <span class="cp-roles__name">{{ roleName(role) }}</span>
-                <mat-icon svgIcon="chevron-down" class="cp-roles__chevron" aria-hidden="true"></mat-icon>
+                <span class="cp-laws__name">{{ lawTitle(law) }}</span>
+                <mat-icon svgIcon="chevron-down" class="cp-laws__chevron" aria-hidden="true"></mat-icon>
               </button>
-              @if (expandedRoleKeys().has(role.key) && roleDescription(role)) {
-                <p class="cp-roles__desc">{{ roleDescription(role) }}</p>
+              @if (expandedLawIds().has(law.id) && lawContent(law)) {
+                <p class="cp-laws__desc">{{ lawContent(law) }}</p>
               }
             </div>
           }

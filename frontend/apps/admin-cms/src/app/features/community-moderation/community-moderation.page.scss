@@ -377,3 +377,205 @@
 @media (prefers-reduced-motion: reduce) {
   .cce-cm__table tbody tr { transition: none; }
 }
+
+/* ─── Segment switcher (Posts | Community Laws) ─────────────── */
+.cce-cm__seg {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin-block: 0.75rem 1.25rem;
+  background: var(--neutrals--100);
+  border-radius: 999px;
+}
+
+.cce-cm__seg-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neutrals--600);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover:not(&--active) { color: var(--neutrals--900); }
+
+  &--active {
+    background: var(--white);
+    color: var(--color-brand);
+    box-shadow: 0 1px 3px rgba(var(--color-brand-shadow-rgb), 0.18);
+  }
+
+  &:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+}
+
+/* ─── Community Laws manager ────────────────────────────────── */
+.cce-cm-laws {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cce-cm-laws__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cce-cm-laws__count {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--neutrals--600);
+}
+
+.cce-cm-laws__progress { border-radius: 2px; }
+
+.cce-cm-laws__error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--danger--50);
+  color: var(--danger--800);
+  border-radius: 8px;
+  flex-wrap: wrap;
+
+  mat-icon { color: var(--danger--600); }
+  span { flex: 1 1 auto; min-width: 0; }
+}
+
+.cce-cm-laws__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--neutrals--400);
+
+  mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: var(--neutrals--200); }
+  p { margin: 0; font-size: 0.95rem; }
+}
+
+.cce-cm-laws__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cce-cm-laws__card {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--white);
+  border: 1px solid var(--neutrals--100);
+  border-radius: 12px;
+}
+
+.cce-cm-laws__order {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.cce-cm-laws__index {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--neutrals--500);
+  font-variant-numeric: tabular-nums;
+}
+
+.cce-cm-laws__move {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--neutrals--200);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--neutrals--600);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) { border-color: var(--color-brand); color: var(--color-brand); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.cce-cm-laws__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.cce-cm-laws__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cce-cm-laws__title-ar {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neutrals--900);
+}
+
+.cce-cm-laws__title-en {
+  font-size: 0.85rem;
+  color: var(--neutrals--500);
+}
+
+.cce-cm-laws__excerpt {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--neutrals--600);
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cce-cm-laws__actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.cce-cm-laws__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--neutrals--600);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &:hover:not(:disabled) { background: var(--neutrals--100); color: var(--color-brand); }
+  &--danger:hover:not(:disabled) { color: var(--danger--600); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

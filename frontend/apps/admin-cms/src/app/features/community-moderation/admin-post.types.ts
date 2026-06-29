@@ -92,3 +92,23 @@ export const POST_TYPE_PARAM: Record<Exclude<AdminPostTypeFilter, 'all'>, 0 | 1 
 
 /** Normalized post type kind for chip rendering. */
 export type PostTypeKind = 'info' | 'question' | 'poll';
+
+// ── Community Laws ──────────────────────────────────────────────────────────
+/** Ordered community-law section from GET /api/admin/community-laws. */
+export interface CommunityLawSectionDto {
+  id: string;
+  titleAr: string | null;
+  titleEn: string | null;
+  contentAr: string | null;
+  contentEn: string | null;
+  orderIndex: number;
+}
+
+export interface CreateCommunityLawSectionRequest {
+  titleAr: string | null;
+  titleEn: string | null;
+  contentAr: string | null;
+  contentEn: string | null;
+}
+
+export type UpdateCommunityLawSectionRequest = CreateCommunityLawSectionRequest;

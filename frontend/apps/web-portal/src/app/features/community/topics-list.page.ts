@@ -34,7 +34,7 @@ import {
   type ComposePostDialogData,
   type ComposePostDialogResult,
 } from './compose-post-dialog.component';
-import type { CommunityRole, CommunityTopicSummary, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
+import type { CommunityLawSection, CommunityTopicSummary, CommunityUserProfile, PostType, PublicPost, PublicTopic } from './community.types';
 
 /** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
 type FeedSort = 0 | 1 | 2 | 3;
@@ -63,8 +63,8 @@ export class TopicsListPage implements OnInit, OnDestroy {
 
   readonly posts = signal<PublicPost[]>([]);
   readonly topicsMap = signal<Map<string, PublicTopic>>(new Map());
-  readonly roles = signal<CommunityRole[]>([]);
-  readonly expandedRoleKeys = signal<Set<string>>(new Set());
+  readonly laws = signal<CommunityLawSection[]>([]);
+  readonly expandedLawIds = signal<Set<string>>(new Set());
   readonly userProfile = signal<CommunityUserProfile | null>(null);
   readonly topicsLoading = signal(true);
   readonly postsLoading = signal(true);
@@ -186,7 +186,7 @@ export class TopicsListPage implements OnInit, OnDestroy {
     void this.loadTopics();
     void this.loadFeed();
     void this.loadUserProfile();
-    void this.loadRoles();
+    void this.loadLaws();
     void this.initRealtime();
   }
 
@@ -231,26 +231,26 @@ export class TopicsListPage implements OnInit, OnDestroy {
     void this.loadFeed();
   }
 
-  private async loadRoles(): Promise<void> {
-    const res = await this.api.listRoles();
-    if (res.ok) this.roles.set(res.value);
+  private async loadLaws(): Promise<void> {
+    const res = await this.api.getCommunityLaws();
+    if (res.ok) this.laws.set(res.value);
   }
 
-  toggleRole(key: string): void {
-    this.expandedRoleKeys.update((prev) => {
+  toggleLaw(id: string): void {
+    this.expandedLawIds.update((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
 
-  roleName(role: CommunityRole): string {
-    return (this.locale() === 'ar' ? role.nameAr ?? role.nameEn : role.nameEn ?? role.nameAr) ?? role.key;
+  lawTitle(law: CommunityLawSection): string {
+    return (this.locale() === 'ar' ? law.titleAr ?? law.titleEn : law.titleEn ?? law.titleAr) ?? '';
   }
 
-  roleDescription(role: CommunityRole): string {
-    return (this.locale() === 'ar' ? role.descriptionAr ?? role.descriptionEn : role.descriptionEn ?? role.descriptionAr) ?? '';
+  lawContent(law: CommunityLawSection): string {
+    return (this.locale() === 'ar' ? law.contentAr ?? law.contentEn : law.contentEn ?? law.contentAr) ?? '';
   }
 
   private async loadUserProfile(): Promise<void> {
@@ -379,6 +379,6 @@ export class TopicsListPage implements OnInit, OnDestroy {
     void this.loadTopics();
     void this.loadFeed();
     void this.loadUserProfile();
-    void this.loadRoles();
+    void this.loadLaws();
   }
 }
