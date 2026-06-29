@@ -534,10 +534,13 @@ input[type="radio"]:not(.mat-mdc-input-element) {
   cursor: pointer;
 }
 
-/* Native search clear button — branded */
+/* Hide the browser's native search clear (✕). Every search field renders its
+   own styled clear button, so the native one only duplicated/overlapped the
+   text (especially in RTL). */
 input[type="search"]::-webkit-search-cancel-button {
-  filter: hue-rotate(120deg) saturate(0.8);
-  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 /* ── Form layout — better label/group spacing ──────────── */

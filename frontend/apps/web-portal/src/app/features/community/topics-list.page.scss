@@ -477,7 +477,7 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
   &__icon {
     position: absolute;
-    inset-inline-end: 13px;
+    inset-inline-end: 16px;
     color: $n-500;
     font-size: 20px;
     width: 20px;
@@ -489,7 +489,11 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   &__input {
     width: 100%;
     height: 64px;
-    padding: 8px 48px 8px 16px;
+    /* Search icon + clear button both sit at the END (inline-end); the text
+       fills from the start. Reserve room on the end side only. */
+    padding-block: 8px;
+    padding-inline-start: 16px;
+    padding-inline-end: 76px;
     background: var(--white);
     border: 1px solid $n-200;
     border-radius: 0;
@@ -502,11 +506,14 @@ $font: 'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 
     &::placeholder { color: $n-500; }
     &:focus { border-color: $p-500; }
+
+    /* Hide the browser's native search clear control — we render our own. */
+    &::-webkit-search-cancel-button { appearance: none; }
   }
 
   &__clear {
     position: absolute;
-    inset-inline-start: 12px;
+    inset-inline-end: 44px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -452,7 +452,7 @@ export class CommunityApiService {
     if (opts.sort) params = params.set('sort', opts.sort);
     if (opts.topicId) params = params.set('topicId', opts.topicId);
     if (opts.type !== undefined && opts.type !== null) params = params.set('postType', opts.type);
-    if (opts.search?.trim()) params = params.set('search', opts.search.trim());
+    if (opts.search?.trim()) params = params.set('searchTerm', opts.search.trim());
     if (opts.authorId) params = params.set('authorId', opts.authorId);
     if (opts.isWatchlisted !== undefined) params = params.set('isWatchlisted', opts.isWatchlisted);
     return this.run(async () =>
