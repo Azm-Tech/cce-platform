@@ -34,6 +34,26 @@ const RICH_TOOLBAR: QuillModules = {
   ],
 };
 
+// Allowed content formats — deliberately EXCLUDES `color` and `background`
+// (font/bg colours) so they can never enter the content, even via paste or
+// pre-existing HTML. Must list every format the toolbar above can produce.
+const RICH_FORMATS: string[] = [
+  'header',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'code-block',
+  'list',
+  'indent',
+  'align',
+  'script',
+  'direction',
+  'link',
+  'image',
+];
+
 @Component({
   selector: 'cce-rich-text-editor',
   standalone: true,
@@ -50,6 +70,7 @@ const RICH_TOOLBAR: QuillModules = {
       }
       <quill-editor
         [modules]="modules"
+        [formats]="formats"
         [placeholder]="placeholder"
         [readOnly]="isDisabled"
         [ngModel]="value"
@@ -224,6 +245,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, OnInit {
   private quill: Quill | null = null;
 
   readonly modules: QuillModules = RICH_TOOLBAR;
+  readonly formats: string[] = RICH_FORMATS;
 
   /** Wire the toolbar image button to upload-then-insert-URL when an
    *  `imageUploader` is supplied. */
