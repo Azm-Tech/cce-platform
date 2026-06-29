@@ -13,7 +13,7 @@ import type {
   FeaturedPost,
   MarkAnswerPayload,
   MentionableUser,
-  MentionItem,
+  MyCommentItem,
   PagedResult,
   PollInputPayload,
   PollResults,
@@ -413,20 +413,39 @@ export class CommunityApiService {
     );
   }
 
-  async getMyMentions(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<MentionItem>>> {
+  async getMyComments(
+    opts: { page?: number; pageSize?: number; sort?: 'newest' | 'oldest' } = {},
+  ): Promise<Result<PagedResult<MyCommentItem>>> {
     let params = new HttpParams();
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    params = params.set('sort', opts.sort ?? 'newest');
     return this.run(async () =>
-      unwrapPaged<MentionItem>(
+      unwrapPaged<MyCommentItem>(
         await firstValueFrom(
-          this.http.get<{ data?: PagedResult<MentionItem> }>('/api/me/mentions', { params }),
+          this.http.get<{ data?: PagedResult<MyCommentItem> }>('/api/me/comments', { params }),
         ),
       ),
     );
   }
 
   // ── Feed ──────────────────────────────────────────────────────────────────
+
+  /** Posts authored by users the current user follows. */
+  async getMyFeed(
+    opts: { page?: number; pageSize?: number } = {},
+  ): Promise<Result<PagedResult<PublicPost>>> {
+    let params = new HttpParams();
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(async () =>
+      unwrapPaged<PublicPost>(
+        await firstValueFrom(
+          this.http.get<{ data?: PagedResult<PublicPost> }>('/api/me/feed', { params }),
+        ),
+      ),
+    );
+  }
 
   async getFeaturedPosts(opts: { page?: number; pageSize?: number } = {}): Promise<Result<PagedResult<FeaturedPost>>> {
     let params = new HttpParams();

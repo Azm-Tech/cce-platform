@@ -170,11 +170,21 @@
         type="button"
         role="tab"
         class="cmp__tab"
-        [class.cmp__tab--active]="activeTab() === 'my-mentions'"
-        [attr.aria-selected]="activeTab() === 'my-mentions'"
-        (click)="setTab('my-mentions')"
+        [class.cmp__tab--active]="activeTab() === 'following-feed'"
+        [attr.aria-selected]="activeTab() === 'following-feed'"
+        (click)="setTab('following-feed')"
       >
-        {{ 'community.profile.myMentions' | transloco }}
+        {{ 'community.profile.followingFeed' | transloco }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="cmp__tab"
+        [class.cmp__tab--active]="activeTab() === 'my-comments'"
+        [attr.aria-selected]="activeTab() === 'my-comments'"
+        (click)="setTab('my-comments')"
+      >
+        {{ 'community.profile.myComments' | transloco }}
       </button>
     </nav>
 
@@ -541,96 +551,95 @@
       </div>
     }
 
-    <!-- ── TAB: My Mentions ──────────────────────────────────────────────────── -->
-    @if (activeTab() === 'my-mentions') {
+    <!-- ── TAB: Following Feed (posts from users I follow) ──────────────────── -->
+    @if (activeTab() === 'following-feed') {
       <div class="cmp__feed">
 
         <!-- Error -->
-        @if (mentionsError(); as kind) {
+        @if (followingFeedError(); as kind) {
           <div class="cmp__feed-error" role="alert">
             <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
             <span>{{ ('errors.' + kind) | transloco }}</span>
-            <button type="button" (click)="loadMyMentions()">{{ 'errors.retry' | transloco }}</button>
+            <button type="button" (click)="loadFollowingFeed()">{{ 'errors.retry' | transloco }}</button>
           </div>
         }
 
         <!-- Skeleton -->
-        @if (mentionsLoading() && mentions().length === 0) {
+        @if (followingFeedLoading() && followingFeedPosts().length === 0) {
           @for (s of postSkeletons; track $index) {
-            <div class="cmp__mention-item cmp__mention-item--skel" aria-hidden="true">
-              <div class="cmp-skel cmp-skel--avatar-sm"></div>
-              <div class="cmp__mention-skel-body">
-                <div class="cmp-skel cmp-skel--name"></div>
-                <div class="cmp-skel cmp-skel--body"></div>
+            <div class="cmp__card-skel" aria-hidden="true">
+              <div class="cmp__card-skel-header">
+                <div class="cmp-skel cmp-skel--avatar-sm"></div>
+                <div class="cmp__card-skel-meta">
+                  <div class="cmp-skel cmp-skel--name"></div>
+                  <div class="cmp-skel cmp-skel--sm"></div>
+                </div>
+                <div class="cmp__card-skel-chips">
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                  <div class="cmp-skel cmp-skel--chip"></div>
+                </div>
               </div>
+              <div class="cmp-skel cmp-skel--title"></div>
+              <div class="cmp-skel cmp-skel--body"></div>
+              <div class="cmp-skel cmp-skel--body cmp-skel--body-short"></div>
             </div>
           }
         }
 
-        <!-- Progress bar while paginating -->
-        @if (mentionsLoading() && mentions().length > 0) {
+        <!-- Progress bar -->
+        @if (followingFeedLoading() && followingFeedPosts().length > 0) {
           <div class="cmp__progress" aria-hidden="true">
             <div class="cmp__progress-bar"></div>
           </div>
         }
 
-        <!-- Mentions list -->
-        @if (!mentionsLoading() || mentions().length > 0) {
-          @if (mentions().length === 0 && !mentionsLoading()) {
+        <!-- Posts list -->
+        @if (!followingFeedLoading() || followingFeedPosts().length > 0) {
+          @if (followingFeedPosts().length === 0 && !followingFeedLoading()) {
             <div class="cmp__empty">
-              <mat-icon class="cmp__empty-icon" svgIcon="at-sign" aria-hidden="true"></mat-icon>
-              <div class="cmp__empty-text">
-                <p class="cmp__empty-title">{{ 'community.mentions.empty' | transloco }}</p>
+              <div class="cmp__empty-head">
+                <mat-icon class="cmp__empty-icon" svgIcon="file-plus" aria-hidden="true"></mat-icon>
+                <div class="cmp__empty-text">
+                  <p class="cmp__empty-title">{{ 'community.profile.noPosts' | transloco }}</p>
+                  <p class="cmp__empty-desc">{{ 'community.profile.noPostsDesc' | transloco }}</p>
+                </div>
               </div>
+              <a routerLink="/community" class="cmp__empty-cta cmp__empty-cta--outline">
+                {{ 'community.profile.browseCommunity' | transloco }}
+              </a>
             </div>
           } @else {
-            <ul class="cmp__mentions-list">
-              @for (item of mentions(); track item.id) {
-                <li class="cmp__mention-item" (click)="navigateToMention(item)" role="button" tabindex="0"
-                  (keydown.enter)="navigateToMention(item)">
-                  @if (item.mentionedByAvatarUrl) {
-                    <img class="cmp__mention-avatar" [src]="item.mentionedByAvatarUrl" [alt]="item.mentionedByName" />
-                  } @else {
-                    <span class="cmp__mention-avatar cmp__mention-avatar--initials" aria-hidden="true">
-                      {{ item.mentionedByName.charAt(0).toUpperCase() }}
-                    </span>
-                  }
-                  <div class="cmp__mention-body">
-                    <p class="cmp__mention-meta">
-                      {{ 'community.mentions.mentionedBy' | transloco:{ name: item.mentionedByName } }}
-                    </p>
-                    <p class="cmp__mention-snippet">{{ item.snippet }}</p>
-                  </div>
-                  <span class="cmp__mention-time">{{ mentionTimeAgo(item.createdOn) }}</span>
-                </li>
+            <div class="cmp__posts-list">
+              @for (post of followingFeedPosts(); track post.id) {
+                <cce-post-summary [post]="post" [topicName]="getTopicName(post)" />
               }
-            </ul>
+            </div>
           }
         }
 
         <!-- Pagination -->
-        @if (mentionsTotalPages() > 1) {
+        @if (followingFeedTotalPages() > 1) {
           <nav class="cmp__pagination" aria-label="pagination">
             <button
               type="button"
               class="cmp__pagination-btn"
-              [disabled]="mentionsPage() === 1"
-              (click)="setMentionsPage(mentionsPage() - 1)"
+              [disabled]="followingFeedPage() === 1"
+              (click)="setFollowingFeedPage(followingFeedPage() - 1)"
               aria-label="previous"
             >
               <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
             </button>
 
             <div class="cmp__pagination-pages">
-              @for (n of mentionsPageNums(); track n; let i = $index) {
-                @if (i > 0 && n - mentionsPageNums()[i - 1] > 1) {
+              @for (n of followingFeedPageNums(); track n; let i = $index) {
+                @if (i > 0 && n - followingFeedPageNums()[i - 1] > 1) {
                   <span class="cmp__pagination-ellipsis">…</span>
                 }
                 <button
                   type="button"
                   class="cmp__pagination-num"
-                  [class.cmp__pagination-num--active]="n === mentionsPage()"
-                  (click)="setMentionsPage(n)"
+                  [class.cmp__pagination-num--active]="n === followingFeedPage()"
+                  (click)="setFollowingFeedPage(n)"
                 >{{ n }}</button>
               }
             </div>
@@ -638,8 +647,154 @@
             <button
               type="button"
               class="cmp__pagination-btn"
-              [disabled]="mentionsPage() === mentionsTotalPages()"
-              (click)="setMentionsPage(mentionsPage() + 1)"
+              [disabled]="followingFeedPage() === followingFeedTotalPages()"
+              (click)="setFollowingFeedPage(followingFeedPage() + 1)"
+              aria-label="next"
+            >
+              <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+            </button>
+          </nav>
+        }
+
+      </div>
+    }
+
+    <!-- ── TAB: My Comments ──────────────────────────────────────────────────── -->
+    @if (activeTab() === 'my-comments') {
+      <div class="cmp__feed">
+
+        <!-- Error -->
+        @if (commentsError(); as kind) {
+          <div class="cmp__feed-error" role="alert">
+            <mat-icon svgIcon="circle-x" aria-hidden="true"></mat-icon>
+            <span>{{ ('errors.' + kind) | transloco }}</span>
+            <button type="button" (click)="loadMyComments()">{{ 'errors.retry' | transloco }}</button>
+          </div>
+        }
+
+        <!-- Skeleton -->
+        @if (commentsLoading() && comments().length === 0) {
+          @for (s of postSkeletons; track $index) {
+            <div class="cmp__comment-card cmp__comment-card--skel" aria-hidden="true">
+              <div class="cmp-skel cmp-skel--name"></div>
+              <div class="cmp-skel cmp-skel--body"></div>
+            </div>
+          }
+        }
+
+        <!-- Progress bar while paginating -->
+        @if (commentsLoading() && comments().length > 0) {
+          <div class="cmp__progress" aria-hidden="true">
+            <div class="cmp__progress-bar"></div>
+          </div>
+        }
+
+        <!-- Comments list -->
+        @if (!commentsLoading() || comments().length > 0) {
+          @if (comments().length === 0 && !commentsLoading()) {
+            <div class="cmp__empty">
+              <mat-icon class="cmp__empty-icon" svgIcon="messages-square" aria-hidden="true"></mat-icon>
+              <div class="cmp__empty-text">
+                <p class="cmp__empty-title">{{ 'community.comments.empty' | transloco }}</p>
+              </div>
+            </div>
+          } @else {
+            <!-- Header bar: count (inline-start) + sort (inline-end) -->
+            <div class="cmp__comments-bar">
+              <button type="button" class="cmp__comments-sort" [matMenuTriggerFor]="commentSortMenu">
+                <span>{{ ('community.comments.sort.' + commentsSort()) | transloco }}</span>
+                <mat-icon svgIcon="chevron-down" aria-hidden="true"></mat-icon>
+              </button>
+              <mat-menu #commentSortMenu="matMenu">
+                <button mat-menu-item type="button" (click)="setCommentsSort('newest')">
+                  {{ 'community.comments.sort.newest' | transloco }}
+                </button>
+                <button mat-menu-item type="button" (click)="setCommentsSort('oldest')">
+                  {{ 'community.comments.sort.oldest' | transloco }}
+                </button>
+              </mat-menu>
+              <span class="cmp__comments-count">
+                {{ 'community.comments.count' | transloco:{ count: commentsTotal() } }}
+              </span>
+            </div>
+
+            <ul class="cmp__comments-list">
+              @for (item of comments(); track item.id) {
+                <li class="cmp__comment-card">
+                  <!-- Header: reply icon + "Comment on post:" + post title + author -->
+                  <div class="cmp__comment-head">
+                    <mat-icon class="cmp__comment-reply-icon" svgIcon="reply" aria-hidden="true"></mat-icon>
+                    <span class="cmp__comment-on">{{ 'community.comments.onPost' | transloco }}</span>
+                    <a
+                      class="cmp__comment-post-link"
+                      role="link"
+                      tabindex="0"
+                      (click)="navigateToComment(item)"
+                      (keydown.enter)="navigateToComment(item)"
+                      [title]="item.postTitle"
+                    >{{ item.postTitle }}</a>
+                    @if (item.postAuthorName) {
+                      <span class="cmp__comment-author">
+                        {{ 'community.comments.byAuthor' | transloco:{ name: item.postAuthorName } }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Comment body -->
+                  <p class="cmp__comment-body" dir="auto">{{ item.content }}</p>
+
+                  <!-- Footer: time (inline-start) + actions (inline-end) -->
+                  <div class="cmp__comment-foot">
+                    <span class="cmp__comment-time">{{ commentTimeAgo(item.createdOn) }}</span>
+                    <div class="cmp__comment-actions">
+                      <button type="button" class="cmp__comment-view" (click)="navigateToComment(item)">
+                        <mat-icon svgIcon="arrow-left" aria-hidden="true"></mat-icon>
+                        <span>{{ 'community.comments.viewInPost' | transloco }}</span>
+                      </button>
+                      <div class="cmp__comment-upvote" aria-hidden="true">
+                        <span class="cmp__comment-upvote-count">{{ item.upvoteCount }}</span>
+                        <mat-icon svgIcon="arrow-big-up"></mat-icon>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        <!-- Pagination -->
+        @if (commentsTotalPages() > 1) {
+          <nav class="cmp__pagination" aria-label="pagination">
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="commentsPage() === 1"
+              (click)="setCommentsPage(commentsPage() - 1)"
+              aria-label="previous"
+            >
+              <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+            </button>
+
+            <div class="cmp__pagination-pages">
+              @for (n of commentsPageNums(); track n; let i = $index) {
+                @if (i > 0 && n - commentsPageNums()[i - 1] > 1) {
+                  <span class="cmp__pagination-ellipsis">…</span>
+                }
+                <button
+                  type="button"
+                  class="cmp__pagination-num"
+                  [class.cmp__pagination-num--active]="n === commentsPage()"
+                  (click)="setCommentsPage(n)"
+                >{{ n }}</button>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="cmp__pagination-btn"
+              [disabled]="commentsPage() === commentsTotalPages()"
+              (click)="setCommentsPage(commentsPage() + 1)"
               aria-label="next"
             >
               <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>

@@ -20,11 +20,12 @@ import { CommunityStateService } from './community-state.service';
 import { PostSummaryComponent } from './post-summary.component';
 import { ComposePostDialogComponent } from './compose-post-dialog.component';
 import { CommunityFollowingDialogComponent } from './community-following-dialog.component';
-import type { CommunityTopicSummary, CommunityUserProfile, MentionItem, PostType, PublicPost, PublicTopic } from './community.types';
+import type { CommunityTopicSummary, CommunityUserProfile, MyCommentItem, PostType, PublicPost, PublicTopic } from './community.types';
 
 /** Matches PostFeedSort backend enum: Hot=0, Newest=1, TopVoted=2, MostCommented=3 */
 type FeedSort = 0 | 1 | 2 | 3;
-type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics' | 'my-mentions';
+type ProfileTab = 'posts' | 'followed-posts' | 'followed-topics' | 'following-feed' | 'my-comments';
+type CommentSort = 'newest' | 'oldest';
 
 @Component({
   selector: 'cce-community-my-profile-page',
@@ -110,6 +111,15 @@ export class CommunityMyProfilePage implements OnInit {
   readonly feedTotalPages = computed(() => Math.max(1, Math.ceil(this.feedTotal() / 10)));
   readonly feedPageNums = computed(() => this.buildPageNums(this.feedTotalPages(), this.feedPage()));
 
+  // ── Following Feed tab (posts from users I follow — GET /api/me/feed) ──────
+  readonly followingFeedPosts = signal<PublicPost[]>([]);
+  readonly followingFeedLoading = signal(false);
+  readonly followingFeedError = signal<string | null>(null);
+  readonly followingFeedPage = signal(1);
+  readonly followingFeedTotal = signal(0);
+  readonly followingFeedTotalPages = computed(() => Math.max(1, Math.ceil(this.followingFeedTotal() / 10)));
+  readonly followingFeedPageNums = computed(() => this.buildPageNums(this.followingFeedTotalPages(), this.followingFeedPage()));
+
   // ── Followed Topics tab ───────────────────────────────────────────────────
   // Lists ALL community topics (with post counts); each row carries a follow
   // toggle whose state comes from the FollowsStoreService via [cceFollow].
@@ -117,14 +127,15 @@ export class CommunityMyProfilePage implements OnInit {
   readonly topicsLoading = signal(false);
   readonly topicsError = signal<string | null>(null);
 
-  // ── My Mentions tab ───────────────────────────────────────────────────────
-  readonly mentions = signal<MentionItem[]>([]);
-  readonly mentionsLoading = signal(false);
-  readonly mentionsError = signal<string | null>(null);
-  readonly mentionsPage = signal(1);
-  readonly mentionsTotal = signal(0);
-  readonly mentionsTotalPages = computed(() => Math.max(1, Math.ceil(this.mentionsTotal() / 20)));
-  readonly mentionsPageNums = computed(() => this.buildPageNums(this.mentionsTotalPages(), this.mentionsPage()));
+  // ── My Comments tab ───────────────────────────────────────────────────────
+  readonly comments = signal<MyCommentItem[]>([]);
+  readonly commentsLoading = signal(false);
+  readonly commentsError = signal<string | null>(null);
+  readonly commentsPage = signal(1);
+  readonly commentsTotal = signal(0);
+  readonly commentsSort = signal<CommentSort>('newest');
+  readonly commentsTotalPages = computed(() => Math.max(1, Math.ceil(this.commentsTotal() / 20)));
+  readonly commentsPageNums = computed(() => this.buildPageNums(this.commentsTotalPages(), this.commentsPage()));
 
   // ── Shared ────────────────────────────────────────────────────────────────
   readonly topicsList = computed(() => Array.from(this.topicsMap().values()).slice(0, 20));
@@ -209,8 +220,11 @@ export class CommunityMyProfilePage implements OnInit {
     if (tab === 'followed-topics' && this.communityTopics().length === 0 && !this.topicsLoading()) {
       void this.loadFollowedTopics();
     }
-    if (tab === 'my-mentions' && this.mentions().length === 0 && !this.mentionsLoading()) {
-      void this.loadMyMentions();
+    if (tab === 'following-feed' && this.followingFeedPosts().length === 0 && !this.followingFeedLoading()) {
+      void this.loadFollowingFeed();
+    }
+    if (tab === 'my-comments' && this.comments().length === 0 && !this.commentsLoading()) {
+      void this.loadMyComments();
     }
   }
 
@@ -307,6 +321,25 @@ export class CommunityMyProfilePage implements OnInit {
     void this.loadFollowedPosts();
   }
 
+  // ── Following Feed (posts from users I follow) ────────────────────────────
+  async loadFollowingFeed(): Promise<void> {
+    this.followingFeedLoading.set(true);
+    this.followingFeedError.set(null);
+    const res = await this.api.getMyFeed({ page: this.followingFeedPage(), pageSize: 10 });
+    this.followingFeedLoading.set(false);
+    if (res.ok) {
+      this.followingFeedPosts.set(res.value.items);
+      this.followingFeedTotal.set(res.value.total);
+    } else {
+      this.followingFeedError.set(res.error.kind);
+    }
+  }
+
+  setFollowingFeedPage(n: number): void {
+    this.followingFeedPage.set(n);
+    void this.loadFollowingFeed();
+  }
+
   // ── Followed Topics ───────────────────────────────────────────────────────
   async loadFollowedTopics(): Promise<void> {
     this.topicsLoading.set(true);
@@ -324,31 +357,41 @@ export class CommunityMyProfilePage implements OnInit {
     return (this.locale() === 'ar' ? t.nameAr ?? t.nameEn : t.nameEn ?? t.nameAr) ?? '';
   }
 
-  // ── My Mentions ───────────────────────────────────────────────────────────
-  async loadMyMentions(): Promise<void> {
-    this.mentionsLoading.set(true);
-    this.mentionsError.set(null);
-    const res = await this.api.getMyMentions({ page: this.mentionsPage(), pageSize: 20 });
-    this.mentionsLoading.set(false);
+  // ── My Comments ───────────────────────────────────────────────────────────
+  async loadMyComments(): Promise<void> {
+    this.commentsLoading.set(true);
+    this.commentsError.set(null);
+    const res = await this.api.getMyComments({
+      page: this.commentsPage(),
+      pageSize: 20,
+      sort: this.commentsSort(),
+    });
+    this.commentsLoading.set(false);
     if (res.ok) {
-      this.mentions.set(res.value.items);
-      this.mentionsTotal.set(res.value.total);
+      this.comments.set(res.value.items);
+      this.commentsTotal.set(res.value.total);
     } else {
-      this.mentionsError.set(res.error.kind);
+      this.commentsError.set(res.error.kind);
     }
   }
 
-  setMentionsPage(n: number): void {
-    this.mentionsPage.set(n);
-    void this.loadMyMentions();
+  setCommentsPage(n: number): void {
+    this.commentsPage.set(n);
+    void this.loadMyComments();
   }
 
-  navigateToMention(item: MentionItem): void {
-    const fragment = item.sourceType === 'Reply' ? `reply-${item.sourceId}` : `post-${item.postId}`;
-    void this.router.navigate(['/community/posts', item.postId], { fragment });
+  setCommentsSort(s: CommentSort): void {
+    if (this.commentsSort() === s) return;
+    this.commentsSort.set(s);
+    this.commentsPage.set(1);
+    void this.loadMyComments();
   }
 
-  mentionTimeAgo(iso: string): string { return timeAgo(iso, this.locale()); }
+  navigateToComment(item: MyCommentItem): void {
+    void this.router.navigate(['/community/posts', item.postId], { fragment: `reply-${item.id}` });
+  }
+
+  commentTimeAgo(iso: string): string { return timeAgo(iso, this.locale()); }
 
   // ── Shared helpers ────────────────────────────────────────────────────────
   getTopicName(post: PublicPost): string | null {

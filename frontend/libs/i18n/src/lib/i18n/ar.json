@@ -2159,10 +2159,6 @@
     "replyCharCount": "{{current}}/{{max}}",
     "replyPlaceholder": "اكتب تعليقك...",
     "sendReply": "إرسال التعليق",
-    "mentions": {
-      "empty": "لا توجد إشعارات بعد",
-      "mentionedBy": "ذكرك {{name}}"
-    },
     "mention": {
       "followedBadge": "تتابعه",
       "memberBadge": "عضو"
@@ -2183,7 +2179,6 @@
       "myPosts": "منشوراتي",
       "followedPosts": "منشورات أتابعها",
       "followedTopics": "مواضيع أتابعها",
-      "myMentions": "إشعاراتي",
       "registerExpert": "التسجيل كخبير",
       "myProfile": "ملفي الشخصي",
       "newPost": "انشاء منشور جديد",
@@ -2200,7 +2195,9 @@
       "searchPostsPlaceholder": "ابحث في المنشورات...",
       "noPosts": "لا توجد منشورات تتابعها",
       "topicsNotice": "ستصلك إشعارات بالمنشورات الجديدة في المواضيع التي تتابعها.",
-      "noTopics": "لا توجد مواضيع متاحة بعد."
+      "noTopics": "لا توجد مواضيع متاحة بعد.",
+      "myComments": "تعليقاتي",
+      "followingFeed": "منشورات من أتابعهم"
     },
     "anonymousAuthor": "مستخدم مجهول",
     "share": "شارك",
@@ -2243,6 +2240,20 @@
         "next": "التالي",
         "download": "تنزيل"
       }
+    },
+    "comments": {
+      "empty": "لا توجد تعليقات بعد",
+      "count": "{{count}} تعليق",
+      "onPost": "تعليق على منشور:",
+      "byAuthor": "بواسطة {{name}}",
+      "viewInPost": "عرض في المنشور",
+      "sort": {
+        "newest": "الأحدث أولاً",
+        "oldest": "الأقدم أولاً"
+      }
+    },
+    "mentions": {
+      "empty": "لا توجد إشعارات بعد"
     }
   },
   "knowledgeMaps": {

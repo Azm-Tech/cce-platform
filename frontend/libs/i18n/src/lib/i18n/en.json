@@ -2159,10 +2159,6 @@
     "replyCharCount": "{{current}}/{{max}}",
     "replyPlaceholder": "Write your comment…",
     "sendReply": "Send comment",
-    "mentions": {
-      "empty": "No mentions yet",
-      "mentionedBy": "{{name}} mentioned you"
-    },
     "mention": {
       "followedBadge": "Following",
       "memberBadge": "Member"
@@ -2183,7 +2179,6 @@
       "myPosts": "My posts",
       "followedPosts": "Posts I follow",
       "followedTopics": "Topics I follow",
-      "myMentions": "My Mentions",
       "registerExpert": "Register as expert",
       "myProfile": "My Profile",
       "newPost": "Create new post",
@@ -2200,7 +2195,9 @@
       "searchPostsPlaceholder": "Search posts...",
       "noPosts": "No posts you follow yet",
       "topicsNotice": "You'll be notified of new posts in the topics you follow.",
-      "noTopics": "No topics available yet."
+      "noTopics": "No topics available yet.",
+      "myComments": "My Comments",
+      "followingFeed": "Following Feed"
     },
     "anonymousAuthor": "Anonymous",
     "share": "Share",
@@ -2243,6 +2240,20 @@
         "next": "Next",
         "download": "Download"
       }
+    },
+    "comments": {
+      "empty": "No comments yet",
+      "count": "{{count}} comments",
+      "onPost": "Comment on post:",
+      "byAuthor": "by {{name}}",
+      "viewInPost": "View in post",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first"
+      }
+    },
+    "mentions": {
+      "empty": "No mentions yet"
     }
   },
   "knowledgeMaps": {

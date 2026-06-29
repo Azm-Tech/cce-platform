@@ -319,17 +319,15 @@ export interface MentionableUser {
   isMember: boolean;
 }
 
-/** One item from GET /api/me/mentions */
-export interface MentionItem {
+/** One item from GET /api/me/comments — a comment the current user authored. */
+export interface MyCommentItem {
+  /** The reply/comment id — used as the in-post anchor "reply-{id}". */
   id: string;
-  sourceType: 'Reply' | 'Post';
-  sourceId: string;
   postId: string;
-  communityId: string;
-  mentionedByUserId: string;
-  mentionedByName: string;
-  mentionedByAvatarUrl: string | null;
-  snippet: string;
+  postTitle: string;
+  postAuthorName: string | null;
+  content: string;
+  upvoteCount: number;
   createdOn: string;
 }
 
