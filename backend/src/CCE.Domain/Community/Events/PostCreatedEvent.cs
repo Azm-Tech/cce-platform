@@ -9,4 +9,5 @@ public sealed record PostCreatedEvent(
     System.Guid AuthorId,
     string Locale,
     string Title,
+    string Content,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

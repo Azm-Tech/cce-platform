@@ -55,6 +55,10 @@ public sealed class Post : AggregateRoot<System.Guid>
     public System.Guid? AnsweredReplyId { get; private set; }
     public System.DateTimeOffset? PublishedOn { get; private set; }
 
+    public ModerationStatus ModerationStatus { get; private set; } = ModerationStatus.Pending;
+
+    public void SetModerationStatus(ModerationStatus status) => ModerationStatus = status;
+
     public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
     public IReadOnlyCollection<PostAttachment> Attachments => _attachments.AsReadOnly();
 
@@ -121,7 +125,7 @@ public sealed class Post : AggregateRoot<System.Guid>
 
         Status = PostStatus.Published;
         PublishedOn = clock.UtcNow;
-        RaiseDomainEvent(new PostCreatedEvent(Id, CommunityId, TopicId, AuthorId, Locale, Title!, PublishedOn.Value));
+        RaiseDomainEvent(new PostCreatedEvent(Id, CommunityId, TopicId, AuthorId, Locale, Title!, Content ?? string.Empty, PublishedOn.Value));
     }
 
     /// <summary>Edits a draft's title/content. Rejected once published (use the moderation/edit path).</summary>
@@ -146,11 +150,11 @@ public sealed class Post : AggregateRoot<System.Guid>
     }
 
     /// <summary>Adds a media/document attachment. Enforces the per-post cap (<see cref="MaxAttachments"/>).</summary>
-    public void AddAttachment(System.Guid assetFileId, AttachmentKind kind, int sortOrder, string? metadataJson)
+    public void AddAttachment(System.Guid mediaFileId, AttachmentKind kind, int sortOrder, string? metadataJson)
     {
         if (_attachments.Count >= MaxAttachments)
             throw new DomainException($"A post may have at most {MaxAttachments} attachments.");
-        _attachments.Add(PostAttachment.Create(Id, assetFileId, kind, sortOrder, metadataJson));
+        _attachments.Add(PostAttachment.Create(Id, mediaFileId, kind, sortOrder, metadataJson));
     }
 
     /// <summary>
@@ -189,10 +193,10 @@ public sealed class Post : AggregateRoot<System.Guid>
     /// </summary>
     public void RegisterReply(
         System.Guid replyId, System.Guid? parentReplyId, System.Guid authorId,
-        string contentSnippet, ISystemClock clock)
+        string contentSnippet, string content, ISystemClock clock)
     {
         RaiseDomainEvent(new ReplyCreatedEvent(
-            replyId, Id, parentReplyId, authorId, contentSnippet, clock.UtcNow));
+            replyId, Id, parentReplyId, authorId, contentSnippet, content, clock.UtcNow));
     }
 
     public void MarkAnswered(System.Guid replyId)

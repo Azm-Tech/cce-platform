@@ -13,4 +13,5 @@ public sealed record ReplyCreatedEvent(
     System.Guid? ParentReplyId,
     System.Guid AuthorId,
     string ContentSnippet,
+    string Content,
     System.DateTimeOffset OccurredOn) : IDomainEvent;

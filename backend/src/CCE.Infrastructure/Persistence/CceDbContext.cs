@@ -89,6 +89,7 @@ public sealed class CceDbContext
     public DbSet<CommunityMembership> CommunityMemberships => Set<CommunityMembership>();
     public DbSet<CommunityJoinRequest> CommunityJoinRequests => Set<CommunityJoinRequest>();
     public DbSet<CommunityFollow> CommunityFollows => Set<CommunityFollow>();
+    public DbSet<ModerationRecord> ModerationRecords => Set<ModerationRecord>();
 
     // ─── Knowledge Maps ───
     public DbSet<KnowledgeMap> KnowledgeMaps => Set<KnowledgeMap>();
@@ -173,6 +174,7 @@ public sealed class CceDbContext
     IQueryable<CommunityMembership> ICceDbContext.CommunityMemberships => CommunityMemberships.AsNoTracking();
     IQueryable<CommunityJoinRequest> ICceDbContext.CommunityJoinRequests => CommunityJoinRequests.AsNoTracking();
     IQueryable<CommunityFollow> ICceDbContext.CommunityFollows => CommunityFollows.AsNoTracking();
+    IQueryable<ModerationRecord> ICceDbContext.ModerationRecords => ModerationRecords.AsNoTracking();
     IQueryable<NotificationTemplate> ICceDbContext.NotificationTemplates => NotificationTemplates.AsNoTracking();
     IQueryable<UserNotification> ICceDbContext.UserNotifications => UserNotifications.AsNoTracking();
     IQueryable<NotificationLog> ICceDbContext.NotificationLogs => NotificationLogs.AsNoTracking();

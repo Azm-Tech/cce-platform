@@ -3,7 +3,7 @@ using CCE.Domain.Community;
 namespace CCE.Application.Community.Public.Dtos;
 
 public sealed record PostMediaItemDto(
-    System.Guid    AssetFileId,
+    System.Guid    MediaFileId,
     AttachmentKind Kind,
     string         MimeType,
     string         Url,

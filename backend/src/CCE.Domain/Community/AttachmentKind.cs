@@ -4,5 +4,6 @@ namespace CCE.Domain.Community;
 public enum AttachmentKind
 {
     Media = 0,
-    Document = 1,
+    Document = 1
+ 
 }

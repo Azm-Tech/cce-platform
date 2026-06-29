@@ -339,6 +339,69 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.ToTable("mentions", (string)null);
                 });
 
+            modelBuilder.Entity("CCE.Domain.Community.ModerationRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("category");
+
+                    b.Property<Guid>("ContentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("content_id");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_on");
+
+                    b.Property<string>("Phase")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
+                        .HasColumnName("phase");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("provider");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("reason");
+
+                    b.Property<Guid?>("ReviewedById")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("reviewed_by_id");
+
+                    b.Property<float?>("Score")
+                        .HasColumnType("real")
+                        .HasColumnName("score");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_moderation_record");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("ix_moderation_record_status");
+
+                    b.HasIndex("ContentType", "ContentId")
+                        .HasDatabaseName("ix_moderation_record_content");
+
+                    b.ToTable("moderation_record", (string)null);
+                });
+
             modelBuilder.Entity("CCE.Domain.Community.Poll", b =>
                 {
                     b.Property<Guid>("Id")
@@ -514,6 +577,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(2)")
                         .HasColumnName("locale");
 
+                    b.Property<int>("ModerationStatus")
+                        .HasColumnType("int")
+                        .HasColumnName("moderation_status");
+
                     b.Property<DateTimeOffset?>("PublishedOn")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("published_on");
@@ -584,13 +651,13 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AssetFileId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("asset_file_id");
-
                     b.Property<int>("Kind")
                         .HasColumnType("int")
                         .HasColumnName("kind");
+
+                    b.Property<Guid>("MediaFileId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("media_file_id");
 
                     b.Property<string>("MetadataJson")
                         .HasColumnType("nvarchar(max)")
@@ -607,8 +674,8 @@ namespace CCE.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_post_attachments");
 
-                    b.HasIndex("AssetFileId")
-                        .HasDatabaseName("ix_post_attachments_asset_file_id");
+                    b.HasIndex("MediaFileId")
+                        .HasDatabaseName("ix_post_attachments_media_file_id");
 
                     b.HasIndex("PostId", "SortOrder")
                         .HasDatabaseName("ix_post_attachment_post_sort");
@@ -709,6 +776,10 @@ namespace CCE.Infrastructure.Persistence.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("nvarchar(2)")
                         .HasColumnName("locale");
+
+                    b.Property<int>("ModerationStatus")
+                        .HasColumnType("int")
+                        .HasColumnName("moderation_status");
 
                     b.Property<Guid?>("ParentReplyId")
                         .HasColumnType("uniqueidentifier")
@@ -4755,12 +4826,12 @@ namespace CCE.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("CCE.Domain.Community.PostAttachment", b =>
                 {
-                    b.HasOne("CCE.Domain.Content.AssetFile", null)
+                    b.HasOne("CCE.Domain.Media.MediaFile", null)
                         .WithMany()
-                        .HasForeignKey("AssetFileId")
+                        .HasForeignKey("MediaFileId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_post_attachments_asset_files_asset_file_id");
+                        .HasConstraintName("fk_post_attachments_media_files_media_file_id");
 
                     b.HasOne("CCE.Domain.Community.Post", null)
                         .WithMany("Attachments")

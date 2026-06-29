@@ -85,7 +85,7 @@ public sealed class CreateReplyCommandHandler
         // Raise the domain event on the Post aggregate; the bridge handler (ReplyCreatedBusPublisher)
         // stages the integration event into the EF outbox during this same SaveChanges (atomic).
         post.RegisterReply(reply.Id, reply.ParentReplyId, authorId.Value,
-            content[..System.Math.Min(content.Length, 200)], _clock);
+            content.Length > 120 ? content[..120] : content, content, _clock);
 
         // Increment the denormalized comment count atomically with the reply persistence.
         post.IncrementCommentsCount(_clock);

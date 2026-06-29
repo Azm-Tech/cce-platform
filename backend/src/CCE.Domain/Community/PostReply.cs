@@ -31,6 +31,10 @@ public sealed class PostReply : SoftDeletableEntity<System.Guid>
     public string ThreadPath { get; private set; } = string.Empty;
     public int ChildCount { get; private set; }
 
+    public ModerationStatus ModerationStatus { get; private set; } = ModerationStatus.Pending;
+
+    public void SetModerationStatus(ModerationStatus status) => ModerationStatus = status;
+
     // ─── Denormalized vote counters (source of truth = ReplyVote rows) ───
     public int UpvoteCount { get; private set; }
     public int DownvoteCount { get; private set; }

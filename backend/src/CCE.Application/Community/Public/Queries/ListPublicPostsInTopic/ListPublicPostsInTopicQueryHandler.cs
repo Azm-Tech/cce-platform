@@ -60,11 +60,11 @@ public sealed class ListPublicPostsInTopicQueryHandler
 
         var attachmentsByPost = (await _db.PostAttachments
             .Where(a => postIds.Contains(a.PostId))
-            .Select(a => new { a.PostId, a.AssetFileId })
+            .Select(a => new { a.PostId, a.MediaFileId })
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false))
             .GroupBy(a => a.PostId)
-            .ToDictionary(g => g.Key, g => g.Select(a => a.AssetFileId).ToList());
+            .ToDictionary(g => g.Key, g => g.Select(a => a.MediaFileId).ToList());
 
         // Poll data — batch fetch; UserVoted populated when caller is authenticated.
         var pollPostIds  = items.Where(p => p.Type == PostType.Poll).Select(p => p.Id).ToList();

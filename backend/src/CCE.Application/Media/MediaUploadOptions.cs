@@ -10,11 +10,17 @@ public sealed class MediaUploadOptions
 
     public IReadOnlyList<string> AllowedMimeTypes { get; init; } = new[]
     {
-        "image/png", "image/jpeg", "image/gif", "image/svg+xml", "image/webp",
-        "video/mp4", "video/webm",
-        "application/pdf", "text/csv", "text/plain", "application/zip",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        // Images
+        "image/jpeg", "image/jpg", "image/png", "image/webp",
+        // Video
+        "video/mp4", "video/quicktime",
+        // Documents
+        "application/pdf",
+        "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-excel", "application/msword"
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     };
 }

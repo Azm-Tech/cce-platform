@@ -68,6 +68,7 @@ public interface ICceDbContext
     IQueryable<CommunityMembership> CommunityMemberships { get; }
     IQueryable<CommunityJoinRequest> CommunityJoinRequests { get; }
     IQueryable<CommunityFollow> CommunityFollows { get; }
+    IQueryable<CCE.Domain.Community.ModerationRecord> ModerationRecords { get; }
     IQueryable<NotificationTemplate> NotificationTemplates { get; }
     IQueryable<UserNotification> UserNotifications { get; }
     IQueryable<NotificationLog> NotificationLogs { get; }
