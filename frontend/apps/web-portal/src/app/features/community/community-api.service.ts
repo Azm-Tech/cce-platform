@@ -179,11 +179,15 @@ export class CommunityApiService {
   }
 
   async createPost(payload: CreatePostPayload): Promise<Result<{ id: string }>> {
-    return this.run(async () =>
-      unwrap<{ id: string }>(
-        await firstValueFrom(this.http.post<{ data?: { id: string } }>('/api/community/posts', payload)),
-      ),
-    );
+    return this.run(async () => {
+      // The API returns `data` as either the new id string or a { id } object.
+      const data = unwrap<string | { id: string }>(
+        await firstValueFrom(
+          this.http.post<{ data?: string | { id: string } }>('/api/community/posts', payload),
+        ),
+      );
+      return typeof data === 'string' ? { id: data } : data;
+    });
   }
 
   async updateDraft(postId: string, payload: UpdateDraftPayload): Promise<Result<void>> {

@@ -1,0 +1,59 @@
+<!-- Images grid -->
+@if (images().length > 0) {
+  <div class="cce-gallery__images" [attr.data-count]="images().length">
+    @for (img of images(); track img.id; let i = $index) {
+      <button
+        type="button"
+        class="cce-gallery__image"
+        (click)="openLightbox(img)"
+      >
+        <img [src]="img.url" [alt]="img.name" loading="lazy" />
+      </button>
+    }
+  </div>
+}
+
+<!-- Video -->
+@if (video(); as v) {
+  <div class="cce-gallery__video">
+    <video controls preload="metadata" [src]="v.url"></video>
+  </div>
+}
+
+<!-- Files -->
+@if (files().length > 0) {
+  <div class="cce-gallery__files">
+    @for (f of files(); track f.id) {
+      <a
+        class="cce-gallery__file"
+        [href]="f.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        [download]="f.name"
+      >
+        <span class="cce-gallery__file-icon" aria-hidden="true">
+          <mat-icon [svgIcon]="fileIcon(f.ext)"></mat-icon>
+        </span>
+        <span class="cce-gallery__file-info">
+          <span class="cce-gallery__file-name" [title]="f.name">{{ f.name }}</span>
+          @if (formatFileSize(f.sizeBytes); as size) {
+            <span class="cce-gallery__file-size">{{ size }}</span>
+          }
+        </span>
+        <span class="cce-gallery__file-dl" aria-hidden="true">
+          <mat-icon svgIcon="download"></mat-icon>
+        </span>
+      </a>
+    }
+  </div>
+}
+
+<!-- Lightbox -->
+@if (lightboxIndex() !== null) {
+  <cce-media-lightbox
+    [images]="lightboxImages()"
+    [index]="lightboxIndex()!"
+    (closed)="closeLightbox()"
+    (indexChange)="setLightboxIndex($event)"
+  />
+}

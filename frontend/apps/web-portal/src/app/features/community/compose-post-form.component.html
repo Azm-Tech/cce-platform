@@ -162,58 +162,101 @@
   <div class="cpf__field">
     <span class="cpf__label">{{ 'community.compose.attachmentsLabel' | transloco }}</span>
 
-    <button
-      type="button"
-      class="cpf__dropzone"
-      [class.cpf__dropzone--over]="dragOver()"
-      (click)="fileInput.click()"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave()"
-      (drop)="onDrop($event)"
-    >
-      <span class="cpf__dropzone-cta">
-        <mat-icon svgIcon="upload" aria-hidden="true"></mat-icon>
-        {{ 'community.compose.attachmentAdd' | transloco }}
-      </span>
-      <span class="cpf__dropzone-hint">{{ 'community.compose.attachmentHint' | transloco }}</span>
-      <span class="cpf__dropzone-formats">{{ 'community.compose.attachmentFormats' | transloco }}</span>
-    </button>
+    <!-- Three scoped pickers: Images / Video / Files -->
+    <div class="cpf__media-pickers">
+      <button
+        type="button"
+        class="cpf__media-picker"
+        [disabled]="imagesFull()"
+        (click)="imageInput.click()"
+      >
+        <mat-icon svgIcon="image" aria-hidden="true"></mat-icon>
+        <span class="cpf__media-picker-label">{{ 'community.compose.media.imagesLabel' | transloco }}</span>
+        <span class="cpf__media-picker-hint">{{ 'community.compose.media.imagesHint' | transloco }}</span>
+      </button>
+      <input
+        #imageInput type="file" hidden multiple
+        accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+        (change)="onFilesPicked($event)"
+      />
 
-    <input
-      #fileInput
-      type="file"
-      hidden
-      multiple
-      accept="image/jpeg,image/png,application/pdf,.doc,.docx"
-      (change)="onFilesPicked($event)"
-    />
+      <button
+        type="button"
+        class="cpf__media-picker"
+        [disabled]="videoFull()"
+        (click)="videoInput.click()"
+      >
+        <mat-icon svgIcon="video" aria-hidden="true"></mat-icon>
+        <span class="cpf__media-picker-label">{{ 'community.compose.media.videoLabel' | transloco }}</span>
+        <span class="cpf__media-picker-hint">{{ 'community.compose.media.videoHint' | transloco }}</span>
+      </button>
+      <input
+        #videoInput type="file" hidden
+        accept="video/mp4,video/quicktime,.mp4,.mov"
+        (change)="onFilesPicked($event)"
+      />
+
+      <button
+        type="button"
+        class="cpf__media-picker"
+        [disabled]="filesFull()"
+        (click)="fileInput.click()"
+      >
+        <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
+        <span class="cpf__media-picker-label">{{ 'community.compose.media.filesLabel' | transloco }}</span>
+        <span class="cpf__media-picker-hint">{{ 'community.compose.media.filesHint' | transloco }}</span>
+      </button>
+      <input
+        #fileInput type="file" hidden multiple
+        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+        (change)="onFilesPicked($event)"
+      />
+    </div>
 
     @if (attachmentError(); as err) {
       <span class="cpf__attachment-error">{{ err | transloco }}</span>
     }
-
     @if (uploading()) {
       <span class="cpf__attachment-uploading">{{ 'community.compose.attachmentUploading' | transloco }}</span>
     }
 
-    @for (att of attachments(); track att.assetFileId) {
+    <!-- Image thumbnails -->
+    @if (images().length > 0) {
+      <div class="cpf__thumbs">
+        @for (att of images(); track att.assetFileId) {
+          <div class="cpf__thumb">
+            <img [src]="att.previewUrl" [alt]="att.fileName" />
+            <button
+              type="button"
+              class="cpf__thumb-remove"
+              [attr.aria-label]="'community.compose.media.remove' | transloco"
+              (click)="removeAttachment(att.assetFileId)"
+            >
+              <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Video + file chips -->
+    @for (att of videos().concat(files()); track att.assetFileId) {
       <div class="cpf__attachment">
         <span class="cpf__attachment-icon" aria-hidden="true">
-          <mat-icon [svgIcon]="attachmentIcon(att.kind)"></mat-icon>
+          <mat-icon [svgIcon]="categoryIcon(att.category)"></mat-icon>
         </span>
         <span class="cpf__attachment-info">
           <span class="cpf__attachment-name" [title]="att.fileName">{{ att.fileName }}</span>
           <span class="cpf__attachment-size">{{ formatFileSize(att.sizeBytes) }}</span>
         </span>
-        <span class="cpf__attachment-badge">{{ 'community.compose.attachmentUploaded' | transloco }}</span>
         <button
           type="button"
           class="cpf__attachment-delete"
-          [attr.aria-label]="'community.compose.attachmentDelete' | transloco"
+          [attr.aria-label]="'community.compose.media.remove' | transloco"
           (click)="removeAttachment(att.assetFileId)"
         >
           <mat-icon svgIcon="trash-2" aria-hidden="true"></mat-icon>
-          {{ 'community.compose.attachmentDelete' | transloco }}
+          {{ 'community.compose.media.remove' | transloco }}
         </button>
       </div>
     }

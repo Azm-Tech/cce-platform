@@ -2087,7 +2087,20 @@
       "pollAnonymous": "تصويت مجهول",
       "pollShowResults": "إظهار النتائج قبل الإغلاق",
       "submit": "نشر",
-      "toast": "تم إنشاء المنشور."
+      "toast": "تم إنشاء المنشور.",
+      "media": {
+        "imagesLabel": "الصور",
+        "videoLabel": "فيديو",
+        "filesLabel": "الملفات",
+        "imagesHint": "حتى 5 صور · 5 ميجابايت لكل صورة · JPG, PNG, WEBP",
+        "videoHint": "فيديو واحد · 100 ميجابايت · MP4, MOV",
+        "filesHint": "حتى 3 ملفات · 10 ميجابايت لكل ملف · PDF, DOC, PPT, XLS",
+        "errorBadType": "نوع ملف غير مدعوم",
+        "errorTooLarge": "حجم الملف يتجاوز الحد المسموح",
+        "errorTooMany": "تم الوصول للحد الأقصى من المرفقات",
+        "errorVideoExists": "يُسمح بفيديو واحد لكل منشور",
+        "remove": "إزالة"
+      }
     },
     "reply": {
       "placeholder": "اكتب ردًا…",
@@ -2222,6 +2235,14 @@
       "copyright": "جميع الحقوق محفوظة © 2026",
       "privacy": "سياسة الخصوصية",
       "terms": "الشروط والأحكام"
+    },
+    "post": {
+      "media": {
+        "close": "إغلاق",
+        "prev": "السابق",
+        "next": "التالي",
+        "download": "تنزيل"
+      }
     }
   },
   "knowledgeMaps": {

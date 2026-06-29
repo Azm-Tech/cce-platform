@@ -7,7 +7,12 @@ import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 export interface MediaAsset {
   id: string;
   url: string;
-  storageKey: string;
+  storageKey?: string;
+  /** Present on GET /api/assets/{id} — used to resolve name/type/size for display. */
+  originalFileName?: string;
+  mimeType?: string;
+  sizeBytes?: number;
+  virusScanStatus?: string;
 }
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureError };

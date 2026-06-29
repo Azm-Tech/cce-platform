@@ -7,7 +7,6 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ToastService } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { AuthService } from '../../core/auth/auth.service';
-import { MediaApiService } from '../../core/media/media-api.service';
 import { CommunityApiService } from './community-api.service';
 import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
@@ -106,16 +105,11 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
         }
       </a>
 
-      <!-- ── Optional attachment chip ─────────────────────────────────── -->
-      @if (hasAttachment()) {
-        <div class="pc__attachment">
-          <mat-icon svgIcon="file-text" aria-hidden="true"></mat-icon>
-          <span class="pc__attachment-name">{{ attachmentName() }}</span>
-          <span class="pc__attachment-size">{{ attachmentSize() }}</span>
-          <button type="button" class="pc__attachment-dl" aria-label="download" (click)="downloadAttachment()">
-            <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
-          </button>
-        </div>
+      <!-- ── Main image (feed thumbnail) ──────────────────────────────── -->
+      @if (post().mainImageUrl; as img) {
+        <a class="pc__media" [routerLink]="['/community', 'posts', post().id]">
+          <img [src]="img" alt="" loading="lazy" />
+        </a>
       }
 
       <hr class="pc__divider" aria-hidden="true" />
@@ -188,7 +182,6 @@ export class PostSummaryComponent {
   private readonly authPrompt = inject(CommunityAuthPromptService);
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
-  private readonly media = inject(MediaApiService);
 
   readonly post = input.required<PublicPost>();
   readonly topicName = input<string | null>(null);
@@ -271,42 +264,6 @@ export class PostSummaryComponent {
     return rest.length > 240 ? rest.slice(0, 240) + '…' : rest;
   });
 
-  readonly hasAttachment = computed(() => (this.post().attachmentIds?.length ?? 0) > 0);
-
-  readonly attachmentMeta = computed(() => {
-    const ids = this.post().attachmentIds;
-    if (!ids || ids.length === 0) return { name: '', size: '' };
-    const firstId = ids[0];
-    if (this.post().authorName?.includes('Reem') || this.post().authorName?.includes('ريم')) {
-      return {
-        name: 'Carbon_Dashboard_Guide.pdf',
-        size: '2.8 MB',
-      };
-    }
-    if (this.post().authorName?.includes('Salem') || this.post().authorName?.includes('سالم')) {
-      return {
-        name: 'CCE_Annual_Report_2025.pdf',
-        size: '4.5 MB',
-      };
-    }
-    const isAr = this.locale() === 'ar';
-    return {
-      name: firstId ? `Attachment_${firstId.slice(-6)}.pdf` : (isAr ? 'ملف_مرفق.pdf' : 'attachment.pdf'),
-      size: '2.0 MB',
-    };
-  });
-
-  readonly attachmentName = computed(() => this.attachmentMeta().name);
-  readonly attachmentSize = computed(() => this.attachmentMeta().size);
-
-  /** Download the first attachment via the asset endpoint (blob → save). */
-  async downloadAttachment(): Promise<void> {
-    if (!this.authPrompt.requireAuth('community.authDialog.messageDownload')) return;
-    const id = this.post().attachmentIds?.[0];
-    if (!id) return;
-    const res = await this.media.downloadAsset(id, this.attachmentName() || undefined);
-    if (!res.ok) this.toast.error('errors.' + res.error.kind);
-  }
 
   readonly postTypeLabelKey = computed(() => {
     const map: Record<string, string> = {

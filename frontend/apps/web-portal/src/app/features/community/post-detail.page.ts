@@ -32,11 +32,11 @@ import {
   type VoteChangedPayload,
 } from '@frontend/real-time';
 import { AuthService } from '../../core/auth/auth.service';
-import { MediaApiService } from '../../core/media/media-api.service';
 import { FollowDirective } from '../follows/follow.directive';
 import { CommunityApiService } from './community-api.service';
 import { CommunityAuthPromptService } from './community-auth-prompt.service';
 import { ComposeReplyFormComponent } from './compose-reply-form.component';
+import { PostMediaGalleryComponent } from './post-media-gallery.component';
 import { SharePostDialogComponent, type SharePostDialogData } from './share-post-dialog.component';
 import { authorHandle, authorInitial, timeAgo } from './lib/social-helpers';
 import { ReplyComponent } from './reply.component';
@@ -61,6 +61,7 @@ import type {
     FollowDirective,
     ComposeReplyFormComponent,
     ReplyComponent,
+    PostMediaGalleryComponent,
   ],
   templateUrl: './post-detail.page.html',
   styleUrl: './post-detail.page.scss',
@@ -75,7 +76,6 @@ export class PostDetailPage implements OnInit, OnDestroy {
   private readonly toast = inject(ToastService);
   private readonly dialog = inject(MatDialog);
   private readonly hub = inject(RealtimeHubService);
-  private readonly media = inject(MediaApiService);
   private readonly destroyRef = inject(DestroyRef);
   /** Post id this page joined the realtime `post:{id}` group for. */
   private subscribedPostId: string | null = null;
@@ -277,24 +277,6 @@ export class PostDetailPage implements OnInit, OnDestroy {
     return authorInitial(id);
   }
 
-  formatFileSize(bytes: number | null | undefined): string {
-    if (bytes == null || bytes === 0) return '';
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  }
-
-  attachmentIcon(kind: number): string {
-    return kind === 0 ? 'image' : 'description';
-  }
-
-  /** Download via the asset endpoint (blob → save) — direct `url` links fail for
-   *  cross-origin / auth-gated assets. */
-  async downloadAttachment(att: { assetFileId: string; fileName: string | null }): Promise<void> {
-    if (!this.authPrompt.requireAuth('community.authDialog.messageDownload')) return;
-    const res = await this.media.downloadAsset(att.assetFileId, att.fileName ?? undefined);
-    if (!res.ok) this.toast.error('errors.' + res.error.kind);
-  }
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');

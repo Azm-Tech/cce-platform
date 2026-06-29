@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   computed,
   inject,
@@ -26,6 +27,12 @@ import { MediaApiService } from '../../core/media/media-api.service';
 import { CommunityApiService } from './community-api.service';
 import { CommunityStateService } from './community-state.service';
 import type { AttachmentKind, CreatePostPayload, PostType, PublicTopic } from './community.types';
+import {
+  ATTACHMENT_RULES,
+  kindForCategory,
+  validateAddition,
+  type MediaCategory,
+} from './lib/attachment-rules';
 
 interface ComposePostFormShape {
   title: FormControl<string>;
@@ -40,15 +47,16 @@ interface UploadedAttachment {
   assetFileId: string;
   fileName: string;
   sizeBytes: number;
+  mimeType: string;
   kind: AttachmentKind;
+  category: MediaCategory;
+  /** Object URL for image thumbnails; revoked on remove/destroy. */
+  previewUrl?: string;
 }
 
 export interface ComposePostSubmittedEvent {
   postId: string;
 }
-
-const MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024; // 3 MB
-const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc'];
 
 @Component({
   selector: 'cce-compose-post-form',
@@ -66,7 +74,7 @@ const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc'];
   // Default required — rendered inside dialog overlay, OnPush breaks Transloco
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ComposePostFormComponent implements OnInit {
+export class ComposePostFormComponent implements OnInit, OnDestroy {
   private readonly api = inject(CommunityApiService);
   private readonly communityState = inject(CommunityStateService);
   private readonly toast = inject(ToastService);
@@ -89,7 +97,15 @@ export class ComposePostFormComponent implements OnInit {
   readonly attachments = signal<UploadedAttachment[]>([]);
   readonly uploading = signal(false);
   readonly attachmentError = signal<string | null>(null);
-  readonly dragOver = signal(false);
+
+  // Per-category limits (exposed to the template for hints + disabled state).
+  readonly rules = ATTACHMENT_RULES;
+  readonly images = computed(() => this.attachments().filter((a) => a.category === 'image'));
+  readonly videos = computed(() => this.attachments().filter((a) => a.category === 'video'));
+  readonly files = computed(() => this.attachments().filter((a) => a.category === 'file'));
+  readonly imagesFull = computed(() => this.images().length >= ATTACHMENT_RULES.image.maxCount);
+  readonly videoFull = computed(() => this.videos().length >= ATTACHMENT_RULES.video.maxCount);
+  readonly filesFull = computed(() => this.files().length >= ATTACHMENT_RULES.file.maxCount);
 
   // Poll (type === Poll) — managed outside the reactive form, validated manually.
   readonly pollOptions = signal<string[]>(['', '']);
@@ -187,44 +203,34 @@ export class ComposePostFormComponent implements OnInit {
     input.value = '';
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.dragOver.set(true);
-  }
-
-  onDragLeave(): void {
-    this.dragOver.set(false);
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.dragOver.set(false);
-    void this.handleFiles(event.dataTransfer?.files ?? null);
-  }
-
   private async handleFiles(list: FileList | null): Promise<void> {
     if (!list || list.length === 0) return;
     this.attachmentError.set(null);
     for (const file of Array.from(list)) {
-      const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-      if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        this.attachmentError.set('community.compose.attachmentBadType');
-        continue;
-      }
-      if (file.size > MAX_ATTACHMENT_BYTES) {
-        this.attachmentError.set('community.compose.attachmentTooLarge');
+      // Validate against the running staged set so a batch can't exceed caps.
+      const check = validateAddition(this.attachments(), file);
+      if (!check.ok) {
+        this.attachmentError.set(check.errorKey);
         continue;
       }
       this.uploading.set(true);
       const res = await this.media.uploadAsset(file);
       this.uploading.set(false);
       if (res.ok) {
-        // kind: 0 = Media (inline image/video), 1 = Document (downloadable).
-        const isMedia = file.type.startsWith('image/') || file.type.startsWith('video/');
-        const kind: AttachmentKind = isMedia ? 0 : 1;
+        const category = check.category;
+        const previewUrl =
+          category === 'image' ? URL.createObjectURL(file) : undefined;
         this.attachments.update((a) => [
           ...a,
-          { assetFileId: res.value.id, fileName: file.name, sizeBytes: file.size, kind },
+          {
+            assetFileId: res.value.id,
+            fileName: file.name,
+            sizeBytes: file.size,
+            mimeType: file.type,
+            kind: kindForCategory(category),
+            category,
+            previewUrl,
+          },
         ]);
       } else {
         this.attachmentError.set('errors.' + res.error.kind);
@@ -233,11 +239,24 @@ export class ComposePostFormComponent implements OnInit {
   }
 
   removeAttachment(assetFileId: string): void {
-    this.attachments.update((a) => a.filter((x) => x.assetFileId !== assetFileId));
+    this.attachments.update((a) => {
+      const target = a.find((x) => x.assetFileId === assetFileId);
+      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      return a.filter((x) => x.assetFileId !== assetFileId);
+    });
   }
 
-  attachmentIcon(kind: AttachmentKind): string {
-    return kind === 0 ? 'image' : 'file-text';
+  ngOnDestroy(): void {
+    for (const a of this.attachments()) {
+      if (a.previewUrl) URL.revokeObjectURL(a.previewUrl);
+    }
+  }
+
+  /** mat-icon name for a category chip. */
+  categoryIcon(category: MediaCategory): string {
+    if (category === 'image') return 'image';
+    if (category === 'video') return 'video';
+    return 'file-text';
   }
 
   formatFileSize(bytes: number): string {
@@ -251,7 +270,11 @@ export class ComposePostFormComponent implements OnInit {
   async triggerSubmit(): Promise<void> {
     if (!this.canSubmit() || this.submitting()) return;
     const v = this.form.getRawValue();
-    const atts = this.attachments();
+    // Deterministic order: images, then the video, then files.
+    const order: Record<MediaCategory, number> = { image: 0, video: 1, file: 2 };
+    const atts = [...this.attachments()].sort(
+      (a, b) => order[a.category] - order[b.category],
+    );
     const payload: CreatePostPayload = {
       communityId: this.communityState.communityId() ?? '',
       topicId: v.topicId,
@@ -261,7 +284,13 @@ export class ComposePostFormComponent implements OnInit {
       locale: this.postLocale(),
       isAnswerable: v.isAnswerable,
       attachments: atts.length
-        ? atts.map((a, i) => ({ assetFileId: a.assetFileId, kind: a.kind, sortOrder: i }))
+        ? atts.map((a, i) => ({
+            assetFileId: a.assetFileId,
+            kind: a.kind,
+            sortOrder: i,
+            mimeType: a.mimeType,
+            sizeBytes: a.sizeBytes,
+          }))
         : null,
       poll: this.isPoll
         ? CommunityApiService.buildPollPayload({

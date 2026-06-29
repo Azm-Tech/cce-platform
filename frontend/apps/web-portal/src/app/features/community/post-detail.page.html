@@ -215,75 +215,9 @@
             <p class="cce-post-detail__body" dir="auto">{{ p.content }}</p>
           }
 
-          <!-- ── Attachments ──────────────────────────────────── -->
-          @if (p.attachments && p.attachments.length > 0) {
-            @for (att of p.attachments; track att.id) {
-              @if (att.kind === 0 && att.url) {
-                <!-- Media (kind 0): render inline; click to open full size -->
-                <a
-                  [href]="att.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="cce-post-detail__attachment-media"
-                >
-                  <img [src]="att.url" [alt]="att.fileName || ''" loading="lazy" />
-                </a>
-              } @else {
-              <div class="cce-post-detail__attachment-card">
-                <!-- icon: file type badge (inline-start / right in RTL) -->
-                <div class="cce-post-detail__attachment-icon-wrap" aria-hidden="true">
-                  <mat-icon>{{ attachmentIcon(att.kind) }}</mat-icon>
-                </div>
-                <!-- file info: name + size -->
-                <div class="cce-post-detail__attachment-info">
-                  <span class="cce-post-detail__attachment-filename" [title]="att.fileName || ''">
-                    {{ att.fileName || ('community.detail.unnamedFile' | transloco) }}
-                  </span>
-                  @if (att.fileSizeBytes) {
-                    <span class="cce-post-detail__attachment-size">
-                      {{ formatFileSize(att.fileSizeBytes) }}
-                    </span>
-                  }
-                </div>
-                <!-- download action (inline-end / left in RTL) — via the asset API -->
-                @if (att.assetFileId) {
-                  <button
-                    type="button"
-                    class="cce-post-detail__attachment-dl"
-                    (click)="downloadAttachment(att)"
-                    [attr.aria-label]="'community.detail.attachments' | transloco"
-                  >
-                    <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
-                  </button>
-                } @else {
-                  <span class="cce-post-detail__attachment-dl cce-post-detail__attachment-dl--inactive" aria-hidden="true">
-                    <mat-icon svgIcon="download"></mat-icon>
-                  </span>
-                }
-              </div>
-              }
-            }
-          } @else if (p.attachmentIds && p.attachmentIds.length > 0) {
-            @for (attId of p.attachmentIds; track attId) {
-              <div class="cce-post-detail__attachment-card">
-                <div class="cce-post-detail__attachment-icon-wrap" aria-hidden="true">
-                  <mat-icon>description</mat-icon>
-                </div>
-                <div class="cce-post-detail__attachment-info">
-                  <span class="cce-post-detail__attachment-filename">
-                    {{ 'community.detail.unnamedFile' | transloco }}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  class="cce-post-detail__attachment-dl"
-                  (click)="downloadAttachment({ assetFileId: attId, fileName: null })"
-                  [attr.aria-label]="'community.detail.attachments' | transloco"
-                >
-                  <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
-                </button>
-              </div>
-            }
+          <!-- ── Media (images / video / files) ──────────────── -->
+          @if (p.media && p.media.length > 0) {
+            <cce-post-media-gallery [media]="p.media" [locale]="locale()" />
           }
 
           <!-- ── Poll (type === 'Poll') ───────────────────────── -->

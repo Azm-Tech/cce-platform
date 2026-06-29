@@ -2087,7 +2087,20 @@
       "pollAnonymous": "Anonymous voting",
       "pollShowResults": "Show results before closing",
       "submit": "Publish",
-      "toast": "Post created."
+      "toast": "Post created.",
+      "media": {
+        "imagesLabel": "Images",
+        "videoLabel": "Video",
+        "filesLabel": "Files",
+        "imagesHint": "Up to 5 · 5MB each · JPG, PNG, WEBP",
+        "videoHint": "1 video · 100MB · MP4, MOV",
+        "filesHint": "Up to 3 · 10MB each · PDF, DOC, PPT, XLS",
+        "errorBadType": "Unsupported file type",
+        "errorTooLarge": "File exceeds the size limit",
+        "errorTooMany": "Attachment limit reached",
+        "errorVideoExists": "Only one video per post",
+        "remove": "Remove"
+      }
     },
     "reply": {
       "placeholder": "Write a reply…",
@@ -2222,6 +2235,14 @@
       "copyright": "All Rights Reserved © 2026",
       "privacy": "Privacy Policy",
       "terms": "Terms and Conditions"
+    },
+    "post": {
+      "media": {
+        "close": "Close",
+        "prev": "Previous",
+        "next": "Next",
+        "download": "Download"
+      }
     }
   },
   "knowledgeMaps": {

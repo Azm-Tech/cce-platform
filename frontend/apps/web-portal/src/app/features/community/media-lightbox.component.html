@@ -1,0 +1,41 @@
+@if (current(); as img) {
+  <div
+    class="cce-lightbox"
+    role="dialog"
+    aria-modal="true"
+    (click)="onBackdrop($event)"
+  >
+    <button
+      type="button"
+      class="cce-lightbox__btn cce-lightbox__close"
+      [attr.aria-label]="'community.post.media.close' | transloco"
+      (click)="onClose()"
+    >
+      <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+    </button>
+
+    @if (hasMultiple()) {
+      <button
+        type="button"
+        class="cce-lightbox__btn cce-lightbox__nav cce-lightbox__nav--prev"
+        [attr.aria-label]="'community.post.media.prev' | transloco"
+        (click)="prev()"
+      >
+        <mat-icon svgIcon="chevron-right" aria-hidden="true"></mat-icon>
+      </button>
+    }
+
+    <img class="cce-lightbox__img" [src]="img.url" [alt]="img.name" />
+
+    @if (hasMultiple()) {
+      <button
+        type="button"
+        class="cce-lightbox__btn cce-lightbox__nav cce-lightbox__nav--next"
+        [attr.aria-label]="'community.post.media.next' | transloco"
+        (click)="next()"
+      >
+        <mat-icon svgIcon="chevron-left" aria-hidden="true"></mat-icon>
+      </button>
+    }
+  </div>
+}

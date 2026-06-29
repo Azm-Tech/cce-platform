@@ -7,7 +7,7 @@ export type PostType = 0 | 1 | 2;
 /** 1 = upvote, -1 = downvote, 0 = remove/neutral */
 export type VoteDirection = 1 | -1 | 0;
 
-/** 0 = document, 1 = image */
+/** 0 = inline media (image/video), 1 = document */
 export type AttachmentKind = 0 | 1;
 
 /** 0 = public, 1 = private */
@@ -72,6 +72,18 @@ export interface PostAttachment {
   metadataJson: string | null;
 }
 
+/** Resolved post media returned (with public URL) by the post detail endpoint. */
+export interface PostMedia {
+  assetFileId: string;
+  /** Server category: "media" (image/video) or "document". */
+  kind: string;
+  mimeType: string | null;
+  url: string;
+  sizeBytes: number | null;
+  originalFileName: string | null;
+  sortOrder: number;
+}
+
 export interface PostAuthor {
   id: string;
   name: string | null;
@@ -105,6 +117,10 @@ export interface PublicPost {
   attachmentIds: string[];
   /** Full attachment objects — populated by the post detail endpoint. */
   attachments?: PostAttachment[] | null;
+  /** Resolved media objects (with public URLs) — post detail endpoint. */
+  media?: PostMedia[] | null;
+  /** First image's public URL — feed/list endpoint, shown as the post thumbnail. */
+  mainImageUrl?: string | null;
   tagIds?: string[];
   createdOn: string;
   topicNameAr: string | null;
@@ -242,6 +258,10 @@ export interface PostAttachmentPayload {
   kind: AttachmentKind;
   sortOrder: number;
   metadataJson?: string | null;
+  /** Original file MIME type — used by the API for server-side validation. */
+  mimeType?: string | null;
+  /** Original file size in bytes — used by the API for server-side validation. */
+  sizeBytes?: number | null;
 }
 
 export interface CreatePostPayload {
