@@ -29,7 +29,6 @@ internal sealed class UpdateInteractiveMapCommandHandler
         CancellationToken cancellationToken)
     {
         var mapId = await _db.InteractiveMaps
-            .IgnoreQueryFilters()
             .Select(m => m.Id)
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
