@@ -2,7 +2,12 @@ namespace CCE.Application.Reports.Dtos;
 
 public sealed record CountryProfilesReportDto(
     Guid Id,
-    string CountryName,
+    string CountryNameAr,
+    string CountryNameEn,
+    string? DescriptionAr,
+    string? DescriptionEn,
+    string? KeyInitiativesAr,
+    string? KeyInitiativesEn,
     int? Population,
     decimal? Area,
     decimal? GdpPerCapita,

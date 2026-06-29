@@ -41,7 +41,12 @@ internal sealed class GetCountryProfilesReportQueryHandler(
         var paged = await query.ToPagedResultAsync(
             x => new CountryProfilesReportDto(
                 x.p != null ? x.p.Id : x.c.Id,
+                x.c.NameAr,
                 x.c.NameEn,
+                x.p != null ? x.p.DescriptionAr : null,
+                x.p != null ? x.p.DescriptionEn : null,
+                x.p != null ? x.p.KeyInitiativesAr : null,
+                x.p != null ? x.p.KeyInitiativesEn : null,
                 x.p != null ? x.p.Population : null,
                 x.p != null ? x.p.AreaSqKm : null,
                 x.p != null ? x.p.GdpPerCapita : null,

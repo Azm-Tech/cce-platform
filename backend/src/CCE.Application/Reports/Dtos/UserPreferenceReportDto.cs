@@ -1,9 +1,13 @@
+using CCE.Domain.Identity;
+
 namespace CCE.Application.Reports.Dtos;
 
 public sealed record UserPreferenceReportDto(
     Guid Id,
-    List<Guid> AreasOfInterest,
-    int KnowledgeLevel,
+    List<AreaOfInterestDto> AreasOfInterest,
+    KnowledgeLevel KnowledgeLevel,
     string SectorOfWork,
-    Guid? CountryId
+    Guid? CountryId,
+    string? CountryNameAr,
+    string? CountryNameEn
 );

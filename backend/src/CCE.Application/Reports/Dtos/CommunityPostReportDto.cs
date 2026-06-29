@@ -1,9 +1,11 @@
+using CCE.Domain.Community;
+
 namespace CCE.Application.Reports.Dtos;
 
 public sealed record CommunityPostReportDto(
     Guid Id,
     string? PostTitle,
     string? PostContent,
-    int PostType,
+    PostType PostType,
     DateTimeOffset CreatedAt
 );

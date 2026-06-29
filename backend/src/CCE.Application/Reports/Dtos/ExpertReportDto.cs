@@ -6,13 +6,12 @@ public sealed record ExpertReportDto(
     string FirstName,
     string LastName,
     string? Email,
-    string JobTitle,
-    string OrganizationName,
-    string CvDescriptionEn,
-    string CvDescriptionAr,
-    string? CvAttachmentUrl,
-    string CvFileFormat,
+    string? JobTitle,
+    string? OrganizationName,
+    string BioAr,
+    string BioEn,
+    string AcademicTitleAr,
+    string AcademicTitleEn,
     List<string> ExpertiseTopics,
-    int Status,
-    DateTimeOffset SubmittedAt
+    DateTimeOffset ApprovedOn
 );
