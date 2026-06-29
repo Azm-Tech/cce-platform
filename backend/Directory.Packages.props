@@ -29,6 +29,9 @@
     <PackageVersion Include="HtmlSanitizer" Version="9.0.886" />
     <PackageVersion Include="Meilisearch" Version="0.15.5" />
   </ItemGroup>
+  <ItemGroup Label="Firebase push notifications">
+    <PackageVersion Include="FirebaseAdmin" Version="3.1.0" />
+  </ItemGroup>
   <ItemGroup Label="Email transport (SMTP)">
     <PackageVersion Include="MailKit" Version="4.8.0" />
   </ItemGroup>

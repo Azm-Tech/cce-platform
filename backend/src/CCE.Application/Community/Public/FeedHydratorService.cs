@@ -3,8 +3,10 @@ using System.Linq;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Pagination;
 using CCE.Application.Community.Public.Dtos;
+using CCE.Application.Content;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
+using CCE.Application.Community;
 
 namespace CCE.Application.Community.Public;
 
@@ -14,26 +16,30 @@ namespace CCE.Application.Community.Public;
 /// The visibility guard (published + public active community) is re-applied so stale
 /// Redis IDs drop out without leaking deleted or unpublished posts.
 ///
-/// Query plan (5 round-trips instead of the original 8):
+/// Query plan (5 round-trips, 6 when the caller is authenticated):
 ///   1. One JOIN query: posts + community visibility guard + author + topic + expert status.
-///   2. Attachments (separate to avoid cartesian with the JOIN above).
-///   3. Tags (separate, many-to-many).
-///   4. Post follows batch (skipped when anonymous).
-///   5. Post votes batch  (skipped when anonymous).
-///   Redis batch is fired after step 1 and awaited after step 5 — runs concurrently
-///   with steps 2-5 because it uses a different connection.
+///   2. Attachments JOIN AssetFiles (separate to avoid cartesian with step 1).
+///   3. Tags via SelectMany on the many-to-many join (separate for the same reason).
+///   4. Post follows + votes batch (one block, skipped when anonymous).
+///   5. Poll data (skipped when no Poll-type posts on the page).
+///   Redis meta is fired after step 1 and awaited just before the final map. It runs on
+///   its own connection so it makes progress during the EF await gaps — partial overlap,
+///   not true parallelism (DbContext is single-threaded). The net gain is that the Redis
+///   RTT is mostly hidden behind steps 2-5 rather than being a serial addition.
 /// </summary>
 public sealed class FeedHydratorService
 {
     private readonly ICceDbContext _db;
     private readonly IRedisFeedStore _feedStore;
     private readonly ISystemClock _clock;
+    private readonly IFileStorage _storage;
 
-    public FeedHydratorService(ICceDbContext db, IRedisFeedStore feedStore, ISystemClock clock)
+    public FeedHydratorService(ICceDbContext db, IRedisFeedStore feedStore, ISystemClock clock, IFileStorage storage)
     {
         _db = db;
         _feedStore = feedStore;
         _clock = clock;
+        _storage = storage;
     }
 
     public async Task<IReadOnlyList<CommunityFeedItemDto>> HydrateAsync(
@@ -85,27 +91,41 @@ public sealed class FeedHydratorService
         // ── Step 2 (concurrent): Redis batch — different connection, runs alongside EF ──
         var hotMetaTask = _feedStore.GetPostsMetaBatchAsync(postIds, ct);
 
-        // ── Step 3: Attachments ──────────────────────────────────────────────────────────
-        var attachmentsByPost = (await _db.PostAttachments
-            .Where(a => postIds.Contains(a.PostId))
-            .Select(a => new { a.PostId, a.AssetFileId })
-            .ToListAsyncEither(ct)
-            .ConfigureAwait(false))
+        // ── Step 2: Attachments — JOIN AssetFiles to get Url+MimeType for main-image resolution
+        var attachmentRows = await (
+            from a in _db.PostAttachments
+            join af in _db.AssetFiles on a.AssetFileId equals af.Id
+            where postIds.Contains(a.PostId)
+            select new { a.PostId, a.AssetFileId, a.Kind, a.SortOrder, af.Url, af.MimeType }
+        ).ToListAsyncEither(ct).ConfigureAwait(false);
+
+        var attachmentsByPost = attachmentRows
             .GroupBy(a => a.PostId)
             .ToDictionary(
                 g => g.Key,
-                g => (IReadOnlyList<System.Guid>)g.Select(a => a.AssetFileId).ToList());
+                g => (IReadOnlyList<System.Guid>)g.OrderBy(a => a.SortOrder).Select(a => a.AssetFileId).ToList());
 
-        // ── Step 4: Tags ─────────────────────────────────────────────────────────────────
+        // First image per post (lowest SortOrder, Kind=Media, image MIME type).
+        // GetPublicUrl is pure string concatenation (CDN base + key) — no I/O, safe to call per-item.
+        var mainImageByPost = attachmentRows
+            .Where(a => a.Kind == AttachmentKind.Media
+                     && PostAttachmentPolicy.ImageMimeTypes.Contains(a.MimeType))
+            .GroupBy(a => a.PostId)
+            .ToDictionary(g => g.Key,
+                g => _storage.GetPublicUrl(g.OrderBy(a => a.SortOrder).First().Url).ToString());
+
+        // ── Step 3: Tags — SelectMany through the M2M join; avoids a ToList() inside an EF projection
         var tagsByPost = (await _db.Posts
             .Where(p => postIds.Contains(p.Id))
-            .Select(p => new { p.Id, TagIds = p.Tags.Select(tag => tag.Id).ToList() })
+            .SelectMany(p => p.Tags, (p, t) => new { PostId = p.Id, TagId = t.Id })
             .ToListAsyncEither(ct)
             .ConfigureAwait(false))
-            .ToDictionary(x => x.Id, x => (IReadOnlyList<System.Guid>)x.TagIds);
+            .GroupBy(x => x.PostId)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<System.Guid>)g.Select(x => x.TagId).ToList());
 
-        // ── Step 5: User-specific batch lookups (skipped when anonymous) ─────────────────
+        // ── Step 4: User-specific batch lookups (one block, skipped when anonymous) ───────
         var watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>();
+        var voteByPost = new System.Collections.Generic.Dictionary<System.Guid, int>();
         if (userId.HasValue)
         {
             watchlistedPostIds = new System.Collections.Generic.HashSet<System.Guid>(
@@ -114,11 +134,7 @@ public sealed class FeedHydratorService
                     .Select(pf => pf.PostId)
                     .ToListAsyncEither(ct)
                     .ConfigureAwait(false));
-        }
 
-        var voteByPost = new System.Collections.Generic.Dictionary<System.Guid, int>();
-        if (userId.HasValue)
-        {
             voteByPost = (await _db.PostVotes
                 .Where(pv => postIds.Contains(pv.PostId) && pv.UserId == userId.Value)
                 .Select(pv => new { pv.PostId, pv.Value })
@@ -130,7 +146,7 @@ public sealed class FeedHydratorService
         // Collect Redis result (has been running concurrently since step 2).
         var hotMeta = await hotMetaTask.ConfigureAwait(false);
 
-        // ── Step 6: Poll data (skipped when no Poll-type posts on this page) ────────────
+        // ── Step 5: Poll data (skipped when no Poll-type posts on this page) ────────────
         var pollPostIds  = enriched.Where(e => e.Type == PostType.Poll).Select(e => e.Id).ToList();
         var pollsByPostId = await PollHydrator.FetchAsync(_db, _clock, pollPostIds, userId, ct)
             .ConfigureAwait(false);
@@ -167,7 +183,8 @@ public sealed class FeedHydratorService
                     e.IsExpert,
                     watchlistedPostIds.Contains(e.Id),
                     voteByPost.GetValueOrDefault(e.Id, 0),
-                    pollsByPostId.GetValueOrDefault(e.Id));
+                    pollsByPostId.GetValueOrDefault(e.Id),
+                    MainImageUrl: mainImageByPost.GetValueOrDefault(e.Id));
             })
             .ToList();
     }

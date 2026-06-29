@@ -59,5 +59,9 @@ public sealed class LocalFileStorage : IFileStorage
 
     // Local storage serves files from wwwroot/media/ at /media/{key}.
     public System.Uri GetPublicUrl(string storageKey)
-        => new($"/media/{storageKey}", System.UriKind.Relative);
+    {
+        if (storageKey.StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
+            return new System.Uri(storageKey);
+        return new System.Uri($"/media/{storageKey}", System.UriKind.Relative);
+    }
 }

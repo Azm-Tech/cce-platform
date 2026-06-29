@@ -16,6 +16,7 @@ using CCE.Application.Community.Public.Queries.ListExpertLeaderboard;
 using CCE.Application.Community.Public.Queries.ListMyDrafts;
 using CCE.Application.Community.Public.Queries.GetMyTopics;
 using CCE.Application.Community.Public.Queries.ListMyMentions;
+using CCE.Application.Community.Public.Queries.ListMyReplies;
 using CCE.Application.Community.Public.Queries.GetMentionableUsers;
 using CCE.Application.Community.Public.Queries.ListUserFeed;
 using CCE.Application.Community.Public.Queries.SearchCommunityPosts;
@@ -295,6 +296,17 @@ public static class CommunityPublicEndpoints
                 new ListMyMentionsQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
             return result.ToHttpResult();
         }).WithName("ListMyMentions");
+
+        // GET /api/me/replies — caller's own replies across all posts (flat, newest first)
+        var meReplies = app.MapGroup("/api/me/replies").WithTags("Community").RequireAuthorization();
+        meReplies.MapGet("", async (
+            int? page, int? pageSize,
+            ICurrentUserAccessor currentUser, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new ListMyRepliesQuery(page ?? 1, pageSize ?? 20), ct).ConfigureAwait(false);
+            return result.ToHttpResult();
+        }).WithName("ListMyReplies");
 
         // GET /api/me/topics — topics followed by the caller
         var meTopics = app.MapGroup("/api/me/topics").WithTags("Community").RequireAuthorization();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CCE.Domain.Community;
 
 namespace CCE.Application.Community.Public.Dtos;
@@ -21,7 +22,7 @@ public sealed record PostDetailDto(
     int UpvoteCount,
     int DownvoteCount,
     int CommentsCount,
-    System.Collections.Generic.IReadOnlyList<System.Guid> AttachmentIds,
+    IReadOnlyList<PostMediaItemDto> Media,
     System.DateTimeOffset CreatedOn,
     string TopicNameAr,
     string TopicNameEn,

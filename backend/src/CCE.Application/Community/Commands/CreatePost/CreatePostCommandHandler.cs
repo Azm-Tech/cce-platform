@@ -90,34 +90,8 @@ public sealed class CreatePostCommandHandler
             post.SetTags(tags);
         }
 
-        if (request.Attachments.Count > 0)
-        {
-            if (request.Attachments.Count > Post.MaxAttachments)
-                return _msg.BusinessRule<Guid>(MessageKeys.Media.FILE_TOO_LARGE);
-
-            var assetIds = request.Attachments.Select(a => a.AssetFileId).Distinct().ToList();
-            var assets = (await _repo.GetAssetsAsync(assetIds, cancellationToken).ConfigureAwait(false))
-                .ToDictionary(a => a.Id);
-
-            foreach (var att in request.Attachments)
-            {
-                if (!assets.TryGetValue(att.AssetFileId, out var asset))
-                    return _msg.NotFound<Guid>(MessageKeys.Content.ASSET_NOT_FOUND);
-                if (asset.VirusScanStatus != Domain.Content.VirusScanStatus.Clean)
-                    return _msg.BusinessRule<Guid>(MessageKeys.Content.ASSET_NOT_CLEAN);
-
-                var allowed = att.Kind == Domain.Community.AttachmentKind.Media
-                    ? PostAttachmentPolicy.MediaMimeTypes
-                    : PostAttachmentPolicy.DocumentMimeTypes;
-                if (!allowed.Contains(asset.MimeType))
-                    return _msg.BusinessRule<Guid>(MessageKeys.Media.INVALID_FILE_TYPE);
-                if (att.Kind == Domain.Community.AttachmentKind.Document
-                    && asset.SizeBytes > PostAttachmentPolicy.MaxDocumentSizeBytes)
-                    return _msg.BusinessRule<Guid>(MessageKeys.Media.FILE_TOO_LARGE);
-
-                post.AddAttachment(att.AssetFileId, att.Kind, att.SortOrder, att.MetadataJson);
-            }
-        }
+        foreach (var att in request.Attachments)
+            post.AddAttachment(att.AssetFileId, att.Kind, att.SortOrder, att.MetadataJson);
 
         if (request.Type == PostType.Poll)
         {
