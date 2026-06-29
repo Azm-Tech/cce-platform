@@ -100,6 +100,7 @@ public static class MessagingServiceExtensions
                 // POST /api/admin/community/{id}/hot-leaderboard/rebuild
                 x.AddConsumer<CCE.Infrastructure.Moderation.ContentModerationConsumer,
                               CCE.Infrastructure.Moderation.ContentModerationConsumerDefinition>();
+                x.AddConsumer<ContentFlaggedNotificationConsumer, ContentFlaggedNotificationConsumerDefinition>();
                 x.AddConsumer<NotificationConsumer, NotificationConsumerDefinition>();
                 x.AddConsumer<ContentNotificationConsumer, ContentNotificationConsumerDefinition>();
                 x.AddConsumer<SignalRConsumer, SignalRConsumerDefinition>();

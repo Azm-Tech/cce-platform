@@ -21,8 +21,11 @@ internal sealed class ModerationRecordConfiguration : IEntityTypeConfiguration<M
         builder.Property(e => e.Reason).HasMaxLength(512);
         builder.Property(e => e.CreatedOn).IsRequired();
 
-        builder.HasIndex(e => new { e.ContentType, e.ContentId })
-            .HasDatabaseName("ix_moderation_record_content");
+        // Covering index for the "latest record per content" admin-queue query
+        // (NOT EXISTS later record). Including CreatedOn lets SQL Server resolve the
+        // anti-join as an index seek instead of scanning the whole audit log.
+        builder.HasIndex(e => new { e.ContentType, e.ContentId, e.CreatedOn })
+            .HasDatabaseName("ix_moderation_record_content_created");
 
         builder.HasIndex(e => e.Status)
             .HasDatabaseName("ix_moderation_record_status");

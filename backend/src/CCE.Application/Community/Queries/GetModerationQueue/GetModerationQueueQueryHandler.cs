@@ -34,7 +34,15 @@ public sealed class GetModerationQueueQueryHandler
             System.Enum.TryParse<ModerationContentType>(request.ContentType, ignoreCase: true, out var ct)
             ? (ModerationContentType?)ct : null;
 
-        var query = _db.ModerationRecords
+        // Keep only the latest record per (ContentType, ContentId). Resolution appends a new
+        // (immutable) record, so the queue must reflect the most recent decision — otherwise an
+        // already-handled item's stale "Flagged" AI record would linger in ?status=Flagged forever.
+        var records = _db.ModerationRecords;
+        var query = records
+            .Where(r => !records.Any(later =>
+                later.ContentType == r.ContentType &&
+                later.ContentId   == r.ContentId &&
+                later.CreatedOn   >  r.CreatedOn))
             .WhereIf(statusFilter.HasValue,      r => r.Status      == statusFilter!.Value)
             .WhereIf(contentTypeFilter.HasValue, r => r.ContentType == contentTypeFilter!.Value)
             .OrderByDescending(r => r.CreatedOn);

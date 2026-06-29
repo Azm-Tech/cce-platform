@@ -1,8 +1,11 @@
-﻿using CCE.Application.Common;
+using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Messaging;
+using CCE.Application.Common.Messaging.IntegrationEvents;
 using CCE.Application.Common.Sanitization;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
+using CCE.Domain.Community;
 using MediatR;
 
 namespace CCE.Application.Community.Commands.EditReply;
@@ -14,6 +17,7 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
     private readonly ICommunityWriteService _service;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly IHtmlSanitizer _sanitizer;
+    private readonly IIntegrationEventPublisher _publisher;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _msg;
 
@@ -21,12 +25,14 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
         ICommunityWriteService service,
         ICurrentUserAccessor currentUser,
         IHtmlSanitizer sanitizer,
+        IIntegrationEventPublisher publisher,
         ISystemClock clock,
         MessageFactory msg)
     {
         _service = service;
         _currentUser = currentUser;
         _sanitizer = sanitizer;
+        _publisher = publisher;
         _clock = clock;
         _msg = msg;
     }
@@ -55,6 +61,17 @@ public sealed class EditReplyCommandHandler : IRequestHandler<EditReplyCommand, 
 
         var sanitized = _sanitizer.Sanitize(request.Content);
         reply.EditContent(sanitized, userId, _clock);
+
+        // Edited content must be re-moderated: reset to Pending (so the consumer's idempotency guard
+        // re-analyses it) and re-queue the moderation request via the outbox — atomic with the save
+        // below. Otherwise a user could edit approved content into a violation undetected.
+        reply.SetModerationStatus(ModerationStatus.Pending);
+        await _publisher.PublishAsync(new ContentModerationRequestedIntegrationEvent(
+            reply.Id,
+            ContentModerationRequestedIntegrationEvent.ContentTypes.Reply,
+            sanitized,
+            reply.Locale), cancellationToken).ConfigureAwait(false);
+
         await _service.UpdateReplyAsync(reply, cancellationToken).ConfigureAwait(false);
         return _msg.Ok(MessageKeys.General.SUCCESS_OPERATION);
     }

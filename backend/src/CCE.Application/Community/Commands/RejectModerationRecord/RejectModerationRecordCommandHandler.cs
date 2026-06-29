@@ -57,18 +57,24 @@ public sealed class RejectModerationRecordCommandHandler
 
         var humanRecord = ModerationRecord.CreateHuman(
             existing.ContentType, existing.ContentId,
-            ModerationStatus.Rejected, request.Reason, reviewerId);
+            ModerationStatus.Rejected, request.Reason, reviewerId, _clock);
         _db.Add(humanRecord);
 
         if (existing.ContentType == ModerationContentType.Post)
         {
             var post = await _postRepo.GetIncludingDeletedAsync(existing.ContentId, cancellationToken)
                 .ConfigureAwait(false);
-            if (post is not null)
+            if (post is null)
+                return _msg.NotFound<VoidData>(MessageKeys.Community.POST_NOT_FOUND);
+
+            post.SetModerationStatus(ModerationStatus.Rejected);
+
+            // Only adjust counters on a real transition (visible → removed). A reject on
+            // already-deleted content (e.g. AI auto-rejected it first) must not decrement again.
+            var wasDeleted = post.IsDeleted;
+            if (!wasDeleted)
             {
-                post.SetModerationStatus(ModerationStatus.Rejected);
-                if (!post.IsDeleted)
-                    post.SoftDelete(reviewerId, _clock);
+                post.SoftDelete(reviewerId, _clock);
 
                 var author = await _db.Users
                     .FirstOrDefaultAsync(u => u.Id == post.AuthorId, cancellationToken)
@@ -79,22 +85,27 @@ public sealed class RejectModerationRecordCommandHandler
                     .FirstOrDefaultAsync(c => c.Id == post.CommunityId, cancellationToken)
                     .ConfigureAwait(false);
                 community?.DecrementPosts();
-
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-                await _search.DeleteAsync(SearchableType.CommunityPosts, post.Id, cancellationToken).ConfigureAwait(false);
-                await _feedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, cancellationToken).ConfigureAwait(false);
             }
+
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // Idempotent side effects — safe to run even if the content was already removed.
+            await _search.DeleteAsync(SearchableType.CommunityPosts, post.Id, cancellationToken).ConfigureAwait(false);
+            await _feedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, cancellationToken).ConfigureAwait(false);
         }
         else
         {
             var reply = await _service.FindReplyAsync(existing.ContentId, cancellationToken)
                 .ConfigureAwait(false);
-            if (reply is not null)
+            if (reply is null)
+                return _msg.NotFound<VoidData>(MessageKeys.Community.REPLY_NOT_FOUND);
+
+            reply.SetModerationStatus(ModerationStatus.Rejected);
+
+            var wasDeleted = reply.IsDeleted;
+            if (!wasDeleted)
             {
-                reply.SetModerationStatus(ModerationStatus.Rejected);
-                if (!reply.IsDeleted)
-                    reply.SoftDelete(reviewerId, _clock);
+                reply.SoftDelete(reviewerId, _clock);
 
                 var parentPost = await _postRepo.GetIncludingDeletedAsync(reply.PostId, cancellationToken)
                     .ConfigureAwait(false);
@@ -104,11 +115,11 @@ public sealed class RejectModerationRecordCommandHandler
                     .FirstOrDefaultAsync(u => u.Id == reply.AuthorId, cancellationToken)
                     .ConfigureAwait(false);
                 author?.DecrementCommentsCount();
-
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-                await _search.DeleteAsync(SearchableType.CommunityReplies, reply.Id, cancellationToken).ConfigureAwait(false);
             }
+
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            await _search.DeleteAsync(SearchableType.CommunityReplies, reply.Id, cancellationToken).ConfigureAwait(false);
         }
 
         return _msg.Ok(MessageKeys.General.SUCCESS_UPDATED);

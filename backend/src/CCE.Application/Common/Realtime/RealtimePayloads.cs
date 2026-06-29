@@ -30,6 +30,13 @@ public sealed record PostModeratedRealtime(
 public sealed record ContentModeratedRealtime(
     string ContentType, System.Guid ContentId, System.Guid PostId, System.Guid ModeratorId, string Action);
 
+/// <summary>
+/// Moderation-room event: the AI pipeline flagged or rejected content (no human moderator).
+/// <paramref name="Status"/> is the <c>ModerationStatus</c> name ("Flagged" | "Rejected").
+/// </summary>
+public sealed record ContentFlaggedRealtime(
+    string ContentType, System.Guid ContentId, string Status, string? Category, string? Reason);
+
 /// <summary>Viewer count for a post changed (presence).</summary>
 public sealed record PresenceChangedRealtime(System.Guid PostId, int Viewers);
 

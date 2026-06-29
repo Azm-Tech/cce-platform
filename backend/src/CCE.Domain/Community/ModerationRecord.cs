@@ -18,7 +18,8 @@ public sealed class ModerationRecord : Entity<System.Guid>
         float? score,
         string? category,
         string? reason,
-        System.Guid? reviewedById) : base(id)
+        System.Guid? reviewedById,
+        System.DateTimeOffset createdOn) : base(id)
     {
         ContentType  = contentType;
         ContentId    = contentId;
@@ -29,7 +30,7 @@ public sealed class ModerationRecord : Entity<System.Guid>
         Category     = category;
         Reason       = reason;
         ReviewedById = reviewedById;
-        CreatedOn    = System.DateTimeOffset.UtcNow;
+        CreatedOn    = createdOn;
     }
 
     public ModerationContentType ContentType  { get; private set; }
@@ -55,14 +56,16 @@ public sealed class ModerationRecord : Entity<System.Guid>
         string? provider,
         float? score,
         string? category,
-        string? reason)
-        => new(System.Guid.NewGuid(), contentType, contentId, status, phase, provider, score, category, reason, null);
+        string? reason,
+        ISystemClock clock)
+        => new(System.Guid.NewGuid(), contentType, contentId, status, phase, provider, score, category, reason, null, clock.UtcNow);
 
     public static ModerationRecord CreateHuman(
         ModerationContentType contentType,
         System.Guid contentId,
         ModerationStatus status,
         string? reason,
-        System.Guid reviewedById)
-        => new(System.Guid.NewGuid(), contentType, contentId, status, "human", null, null, null, reason, reviewedById);
+        System.Guid reviewedById,
+        ISystemClock clock)
+        => new(System.Guid.NewGuid(), contentType, contentId, status, "human", null, null, null, reason, reviewedById, clock.UtcNow);
 }

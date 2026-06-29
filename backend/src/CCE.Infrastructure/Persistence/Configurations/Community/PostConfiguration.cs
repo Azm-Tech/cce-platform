@@ -22,6 +22,9 @@ internal sealed class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasIndex(p => new { p.AuthorId, p.CreatedOn }).HasDatabaseName("ix_post_author_created");
         builder.HasIndex(p => new { p.AuthorId, p.Status }).HasDatabaseName("ix_post_author_status");
         builder.HasIndex(p => p.Score).IsDescending().HasDatabaseName("ix_post_score");
+        // Drives a content-centric moderation queue (filter posts by current status) instead of
+        // scanning the append-only audit log.
+        builder.HasIndex(p => p.ModerationStatus).HasDatabaseName("ix_post_moderation_status");
         builder.HasMany(p => p.Tags).WithMany().UsingEntity(j => j.ToTable("post_tag"));
         builder.Property(p => p.ViewCount).HasDefaultValue(0);
         builder.Property(p => p.ShareCount).HasDefaultValue(0);

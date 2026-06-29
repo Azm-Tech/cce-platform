@@ -16,6 +16,7 @@ public static class RealtimeEvents
     public const string NewPost = "NewPost";
     public const string PostModerated = "PostModerated";
     public const string ContentModerated = "ContentModerated";
+    public const string ContentFlagged = "ContentFlagged";
     public const string PresenceChanged = "PresenceChanged";
     public const string TypingChanged = "TypingChanged";
 }

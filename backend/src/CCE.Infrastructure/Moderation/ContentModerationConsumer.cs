@@ -23,6 +23,12 @@ namespace CCE.Infrastructure.Moderation;
 /// </list>
 /// On Rejected: soft-deletes content, removes from Meilisearch and Redis community feed.
 /// On Flagged: leaves content visible, notifies admins via <see cref="ContentFlaggedIntegrationEvent"/>.
+///
+/// <para>
+/// Idempotent under at-least-once delivery: content is moderated only while its
+/// <c>ModerationStatus</c> is <see cref="ModerationStatus.Pending"/>. A redelivered message
+/// finds a non-Pending status and is skipped — no second AI call, audit row, or counter change.
+/// </para>
 /// </summary>
 public sealed class ContentModerationConsumer : IConsumer<ContentModerationRequestedIntegrationEvent>
 {
@@ -78,10 +84,6 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
             "ContentModerationConsumer: analysing {ContentType} {ContentId}",
             evt.ContentType, evt.ContentId);
 
-        var (score, phase, provider) = await AnalyseContentAsync(evt.ContentId, evt.Content, ct)
-            .ConfigureAwait(false);
-        var status = ResolveStatus(score, phase);
-
         await using var scope = _scopeFactory.CreateAsyncScope();
         var ctx = new ModerationContext(
             Db:                scope.ServiceProvider.GetRequiredService<ICceDbContext>(),
@@ -92,27 +94,116 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
             Publisher:         scope.ServiceProvider.GetRequiredService<IIntegrationEventPublisher>(),
             Clock:             scope.ServiceProvider.GetRequiredService<ISystemClock>());
 
-        var record = ModerationRecord.CreateAutomated(
-            isPost ? ModerationContentType.Post : ModerationContentType.Reply,
-            evt.ContentId, status, phase, provider,
-            score.Confidence, score.Category, score.Reason);
-        ctx.Db.Add(record);
+        if (isPost)
+            await ProcessPostAsync(evt, ctx, ct).ConfigureAwait(false);
+        else
+            await ProcessReplyAsync(evt, ctx, ct).ConfigureAwait(false);
+    }
 
-        // Process content mutations + counter decrements; capture communityId for feed removal.
-        var rejectedCommunityId = isPost
-            ? await HandlePostAsync(evt.ContentId, status, ctx, ct).ConfigureAwait(false)
-            : await HandleReplyAsync(evt.ContentId, status, ctx, ct).ConfigureAwait(false);
+    // ── Post pipeline ──────────────────────────────────────────────────────
 
-        // ── Single transactional save ──────────────────────────────────────
+    private async Task ProcessPostAsync(
+        ContentModerationRequestedIntegrationEvent evt, ModerationContext ctx, CancellationToken ct)
+    {
+        var post = await ctx.ModerationService.FindPostAsync(evt.ContentId, ct).ConfigureAwait(false);
+        if (post is null)
+        {
+            _logger.LogWarning("ContentModerationConsumer: post {ContentId} no longer exists; skipping", evt.ContentId);
+            return;
+        }
+
+        if (post.ModerationStatus != ModerationStatus.Pending)
+        {
+            _logger.LogInformation(
+                "ContentModerationConsumer: post {ContentId} already moderated ({Status}); skipping (idempotent)",
+                evt.ContentId, post.ModerationStatus);
+            return;
+        }
+
+        var (score, phase, provider) = await AnalyseContentAsync(evt.ContentId, evt.Content, ct).ConfigureAwait(false);
+        var status = ResolveStatus(score, phase);
+
+        ctx.Db.Add(ModerationRecord.CreateAutomated(
+            ModerationContentType.Post, evt.ContentId, status, phase, provider,
+            score.Confidence, score.Category, score.Reason, ctx.Clock));
+
+        post.SetModerationStatus(status);
+
+        var autoRejected = status == ModerationStatus.Rejected && _opts.AutoRejectOnViolation;
+        if (autoRejected && !post.IsDeleted)
+        {
+            post.SoftDelete(SystemActorId, ctx.Clock);
+
+            var author = await ctx.Db.Users
+                .FirstOrDefaultAsync(u => u.Id == post.AuthorId, ct).ConfigureAwait(false);
+            author?.DecrementPostsCount();
+
+            var community = await ctx.Db.Communities
+                .FirstOrDefaultAsync(c => c.Id == post.CommunityId, ct).ConfigureAwait(false);
+            community?.DecrementPosts();
+        }
+
         await ctx.Db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        // ── Side effects after commit (search, feed, notifications) ────────
-        await RunSideEffectsAsync(isPost, status, evt, rejectedCommunityId, score, ctx, ct)
-            .ConfigureAwait(false);
+        if (autoRejected)
+        {
+            await ctx.SearchClient.DeleteAsync(SearchableType.CommunityPosts, post.Id, ct).ConfigureAwait(false);
+            await ctx.FeedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, ct).ConfigureAwait(false);
+        }
 
-        _logger.LogInformation(
-            "ContentModerationConsumer: {ContentType} {ContentId} → {Status}",
-            evt.ContentType, evt.ContentId, status);
+        await PublishIfActionableAsync(evt, status, score, ctx, ct).ConfigureAwait(false);
+        LogOutcome(evt, status);
+    }
+
+    // ── Reply pipeline ─────────────────────────────────────────────────────
+
+    private async Task ProcessReplyAsync(
+        ContentModerationRequestedIntegrationEvent evt, ModerationContext ctx, CancellationToken ct)
+    {
+        var reply = await ctx.ModerationService.FindReplyAsync(evt.ContentId, ct).ConfigureAwait(false);
+        if (reply is null)
+        {
+            _logger.LogWarning("ContentModerationConsumer: reply {ContentId} no longer exists; skipping", evt.ContentId);
+            return;
+        }
+
+        if (reply.ModerationStatus != ModerationStatus.Pending)
+        {
+            _logger.LogInformation(
+                "ContentModerationConsumer: reply {ContentId} already moderated ({Status}); skipping (idempotent)",
+                evt.ContentId, reply.ModerationStatus);
+            return;
+        }
+
+        var (score, phase, provider) = await AnalyseContentAsync(evt.ContentId, evt.Content, ct).ConfigureAwait(false);
+        var status = ResolveStatus(score, phase);
+
+        ctx.Db.Add(ModerationRecord.CreateAutomated(
+            ModerationContentType.Reply, evt.ContentId, status, phase, provider,
+            score.Confidence, score.Category, score.Reason, ctx.Clock));
+
+        reply.SetModerationStatus(status);
+
+        var autoRejected = status == ModerationStatus.Rejected && _opts.AutoRejectOnViolation;
+        if (autoRejected && !reply.IsDeleted)
+        {
+            reply.SoftDelete(SystemActorId, ctx.Clock);
+
+            var parentPost = await ctx.PostRepo.GetIncludingDeletedAsync(reply.PostId, ct).ConfigureAwait(false);
+            parentPost?.DecrementCommentsCount(ctx.Clock);
+
+            var author = await ctx.Db.Users
+                .FirstOrDefaultAsync(u => u.Id == reply.AuthorId, ct).ConfigureAwait(false);
+            author?.DecrementCommentsCount();
+        }
+
+        await ctx.Db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        if (autoRejected)
+            await ctx.SearchClient.DeleteAsync(SearchableType.CommunityReplies, reply.Id, ct).ConfigureAwait(false);
+
+        await PublishIfActionableAsync(evt, status, score, ctx, ct).ConfigureAwait(false);
+        LogOutcome(evt, status);
     }
 
     // ── Phase 1 + 2 ────────────────────────────────────────────────────────
@@ -138,97 +229,27 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
         return (score, ModerationPhase.Ai, _aiProvider.ProviderName);
     }
 
-    // ── Post mutation + counter decrements ─────────────────────────────────
-    // Returns the post's CommunityId when auto-rejected (needed for feed removal), null otherwise.
+    // ── Notify admins on flagged/rejected outcomes ─────────────────────────
 
-    private async Task<System.Guid?> HandlePostAsync(
-        System.Guid contentId, ModerationStatus status, ModerationContext ctx, CancellationToken ct)
-    {
-        var post = await ctx.ModerationService.FindPostAsync(contentId, ct).ConfigureAwait(false);
-        if (post is null) return null;
-
-        post.SetModerationStatus(status);
-
-        if (status != ModerationStatus.Rejected || !_opts.AutoRejectOnViolation)
-            return null;
-
-        post.SoftDelete(SystemActorId, ctx.Clock);
-
-        var author = await ctx.Db.Users
-            .FirstOrDefaultAsync(u => u.Id == post.AuthorId, ct).ConfigureAwait(false);
-        author?.DecrementPostsCount();
-
-        var community = await ctx.Db.Communities
-            .FirstOrDefaultAsync(c => c.Id == post.CommunityId, ct).ConfigureAwait(false);
-        community?.DecrementPosts();
-
-        return post.CommunityId;
-    }
-
-    // ── Reply mutation + counter decrements ────────────────────────────────
-
-    private async Task<System.Guid?> HandleReplyAsync(
-        System.Guid contentId, ModerationStatus status, ModerationContext ctx, CancellationToken ct)
-    {
-        var reply = await ctx.ModerationService.FindReplyAsync(contentId, ct).ConfigureAwait(false);
-        if (reply is null) return null;
-
-        reply.SetModerationStatus(status);
-
-        if (status != ModerationStatus.Rejected || !_opts.AutoRejectOnViolation)
-            return null;
-
-        reply.SoftDelete(SystemActorId, ctx.Clock);
-
-        var parentPost = await ctx.PostRepo
-            .GetIncludingDeletedAsync(reply.PostId, ct).ConfigureAwait(false);
-        parentPost?.DecrementCommentsCount(ctx.Clock);
-
-        var author = await ctx.Db.Users
-            .FirstOrDefaultAsync(u => u.Id == reply.AuthorId, ct).ConfigureAwait(false);
-        author?.DecrementCommentsCount();
-
-        return null;
-    }
-
-    // ── Side effects (execute after DB commit) ─────────────────────────────
-
-    private async Task RunSideEffectsAsync(
-        bool isPost,
-        ModerationStatus status,
+    private static Task PublishIfActionableAsync(
         ContentModerationRequestedIntegrationEvent evt,
-        System.Guid? rejectedCommunityId,
+        ModerationStatus status,
         ModerationScore score,
         ModerationContext ctx,
         CancellationToken ct)
     {
-        if (status == ModerationStatus.Rejected && _opts.AutoRejectOnViolation)
-        {
-            if (isPost && rejectedCommunityId.HasValue)
-            {
-                await ctx.SearchClient
-                    .DeleteAsync(SearchableType.CommunityPosts, evt.ContentId, ct)
-                    .ConfigureAwait(false);
-                await ctx.FeedStore
-                    .RemovePostFromAllFeedsAsync(rejectedCommunityId.Value, evt.ContentId, ct)
-                    .ConfigureAwait(false);
-            }
-            else if (!isPost)
-            {
-                await ctx.SearchClient
-                    .DeleteAsync(SearchableType.CommunityReplies, evt.ContentId, ct)
-                    .ConfigureAwait(false);
-            }
-        }
+        if (status is not (ModerationStatus.Flagged or ModerationStatus.Rejected))
+            return Task.CompletedTask;
 
-        if (status is ModerationStatus.Flagged or ModerationStatus.Rejected)
-        {
-            await ctx.Publisher.PublishAsync(new ContentFlaggedIntegrationEvent(
-                evt.ContentId, evt.ContentType, status,
-                score.Category, score.Reason, ctx.Clock.UtcNow), ct)
-                .ConfigureAwait(false);
-        }
+        return ctx.Publisher.PublishAsync(new ContentFlaggedIntegrationEvent(
+            evt.ContentId, evt.ContentType, status,
+            score.Category, score.Reason, ctx.Clock.UtcNow), ct);
     }
+
+    private void LogOutcome(ContentModerationRequestedIntegrationEvent evt, ModerationStatus status)
+        => _logger.LogInformation(
+            "ContentModerationConsumer: {ContentType} {ContentId} → {Status}",
+            evt.ContentType, evt.ContentId, status);
 
     // ── Decision table ─────────────────────────────────────────────────────
 
