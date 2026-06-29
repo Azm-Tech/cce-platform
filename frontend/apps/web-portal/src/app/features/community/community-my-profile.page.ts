@@ -388,7 +388,7 @@ export class CommunityMyProfilePage implements OnInit {
   }
 
   navigateToComment(item: MyCommentItem): void {
-    void this.router.navigate(['/community/posts', item.postId], { fragment: `reply-${item.id}` });
+    void this.router.navigate(['/community/posts', item.postId], { fragment: `reply-${item.replyId}` });
   }
 
   commentTimeAgo(iso: string): string { return timeAgo(iso, this.locale()); }

@@ -8,6 +8,9 @@
     <span class="cmp__back-label">{{ 'community.detail.backToCommunity' | transloco }}</span>
   </a>
 
+  <!-- Content (capped at 1024px); the back button above stays full-width -->
+  <div class="cmp__content">
+
   <!-- ── Skeleton ──────────────────────────────────────────────────────────── -->
   @if (loading()) {
     <div class="cmp__card">
@@ -719,9 +722,9 @@
             </div>
 
             <ul class="cmp__comments-list">
-              @for (item of comments(); track item.id) {
+              @for (item of comments(); track item.replyId) {
                 <li class="cmp__comment-card">
-                  <!-- Header: reply icon + "Comment on post:" + post title + author -->
+                  <!-- Header: reply icon + "Comment on post:" + post title -->
                   <div class="cmp__comment-head">
                     <mat-icon class="cmp__comment-reply-icon" svgIcon="reply" aria-hidden="true"></mat-icon>
                     <span class="cmp__comment-on">{{ 'community.comments.onPost' | transloco }}</span>
@@ -733,29 +736,24 @@
                       (keydown.enter)="navigateToComment(item)"
                       [title]="item.postTitle"
                     >{{ item.postTitle }}</a>
-                    @if (item.postAuthorName) {
-                      <span class="cmp__comment-author">
-                        {{ 'community.comments.byAuthor' | transloco:{ name: item.postAuthorName } }}
-                      </span>
-                    }
                   </div>
 
                   <!-- Comment body -->
                   <p class="cmp__comment-body" dir="auto">{{ item.content }}</p>
 
-                  <!-- Footer: time (inline-start) + actions (inline-end) -->
+                  <!-- Footer (RTL): actions on the right (inline-start), time on the left -->
                   <div class="cmp__comment-foot">
-                    <span class="cmp__comment-time">{{ commentTimeAgo(item.createdOn) }}</span>
                     <div class="cmp__comment-actions">
-                      <button type="button" class="cmp__comment-view" (click)="navigateToComment(item)">
-                        <mat-icon svgIcon="arrow-left" aria-hidden="true"></mat-icon>
-                        <span>{{ 'community.comments.viewInPost' | transloco }}</span>
-                      </button>
                       <div class="cmp__comment-upvote" aria-hidden="true">
                         <span class="cmp__comment-upvote-count">{{ item.upvoteCount }}</span>
                         <mat-icon svgIcon="arrow-big-up"></mat-icon>
                       </div>
+                      <button type="button" class="cmp__comment-view" (click)="navigateToComment(item)">
+                        <mat-icon svgIcon="arrow-left" aria-hidden="true"></mat-icon>
+                        <span>{{ 'community.comments.viewInPost' | transloco }}</span>
+                      </button>
                     </div>
+                    <span class="cmp__comment-time">{{ commentTimeAgo(item.createdOn) }}</span>
                   </div>
                 </li>
               }
@@ -807,4 +805,5 @@
 
   }
 
+  </div>
 </div>

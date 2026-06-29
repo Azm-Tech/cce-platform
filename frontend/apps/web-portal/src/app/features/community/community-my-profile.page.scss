@@ -26,6 +26,14 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   gap: 0;
 }
 
+/* Page content capped at 1024px and centered; the back button (sibling
+   above) intentionally stays full-width / at the page edge. */
+.cmp__content {
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+}
+
 /* ── Back to community ──────────────────────────────────────────────────────── */
 .cmp__back-btn {
   display: flex;
@@ -308,6 +316,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   justify-content: space-around;
   border-bottom: 1px solid $n-200;
   margin-top: 32px;
+  margin-bottom: 28px;
 }
 
 .cmp__tab {
@@ -332,6 +341,10 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
     color: $p-500;
     font-weight: 700;
     border-bottom-color: var(--secondary--500);
+    /* Thicker underline than the inactive tabs; keep its baseline on the
+       nav border by compensating the extra 2px in margin-bottom. */
+    border-bottom-width: 4px;
+    margin-bottom: -3px;
   }
 
   &:focus-visible { outline: 2px solid $p-500; outline-offset: -2px; }
@@ -952,7 +965,7 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start; /* RTL: pack to the right (inline-start) */
   gap: 6px;
 }
 
@@ -1040,7 +1053,6 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   mat-icon { font-size: 22px; width: 22px; height: 22px; }
   &:hover { border-color: $p-500; color: $p-500; }
 }
-:host-context([dir="rtl"]) .cmp__comment-view mat-icon { transform: scaleX(-1); }
 
 .cmp__comment-upvote {
   display: inline-flex;

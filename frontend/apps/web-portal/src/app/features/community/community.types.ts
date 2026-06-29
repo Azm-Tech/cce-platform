@@ -320,14 +320,18 @@ export interface MentionableUser {
 }
 
 /** One item from GET /api/me/comments — a comment the current user authored. */
+/** One item from GET /api/me/replies — a reply/comment the current user authored. */
 export interface MyCommentItem {
-  /** The reply/comment id — used as the in-post anchor "reply-{id}". */
-  id: string;
+  /** The reply/comment id — used as the in-post anchor "reply-{replyId}". */
+  replyId: string;
   postId: string;
   postTitle: string;
-  postAuthorName: string | null;
+  /** The reply author (the current user). */
+  authorId: string;
+  authorName: string | null;
   content: string;
   upvoteCount: number;
+  downvoteCount: number;
   createdOn: string;
 }
 

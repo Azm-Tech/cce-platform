@@ -423,7 +423,7 @@ export class CommunityApiService {
     return this.run(async () =>
       unwrapPaged<MyCommentItem>(
         await firstValueFrom(
-          this.http.get<{ data?: PagedResult<MyCommentItem> }>('/api/me/comments', { params }),
+          this.http.get<{ data?: PagedResult<MyCommentItem> }>('/api/me/replies', { params }),
         ),
       ),
     );
