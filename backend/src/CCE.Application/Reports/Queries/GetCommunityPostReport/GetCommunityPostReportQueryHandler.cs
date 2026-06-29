@@ -29,7 +29,7 @@ internal sealed class GetCommunityPostReportQueryHandler(
                 p.Id,
                 p.Title,
                 p.Content,
-                (int)p.Type,
+                p.Type,
                 p.CreatedOn),
             q.Page,
             q.PageSize,

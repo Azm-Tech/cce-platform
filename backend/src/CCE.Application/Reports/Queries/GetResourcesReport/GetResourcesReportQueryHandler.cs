@@ -18,7 +18,7 @@ internal sealed class GetResourcesReportQueryHandler(
     {
         var query = from r in _db.Resources
                     join cat in _db.ResourceCategories on r.CategoryId equals cat.Id
-                    select new { r, CategoryName = cat.NameEn };
+                    select new { r, CategoryNameAr = cat.NameAr, CategoryNameEn = cat.NameEn };
 
         if (q.From.HasValue)
             query = query.Where(x => x.r.CreatedOn >= q.From.Value);
@@ -48,11 +48,14 @@ internal sealed class GetResourcesReportQueryHandler(
 
         var dtos = items.Select(x => new ResourcesReportDto(
             x.r.Id,
+            x.r.TitleAr,
             x.r.TitleEn,
+            x.r.DescriptionAr,
             x.r.DescriptionEn,
             x.r.CategoryId,
-            x.CategoryName,
-            (int)x.r.ResourceType,
+            x.CategoryNameAr,
+            x.CategoryNameEn,
+            x.r.ResourceType,
             countryMap.GetValueOrDefault(x.r.Id, []),
             x.r.CreatedOn
         )).ToList();

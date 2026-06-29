@@ -5,7 +5,7 @@ public sealed record UserRegistrationReportUserDto(
     string FirstName,
     string LastName,
     string? Email,
-    string JobTitle,
-    string OrganizationName,
+    string? JobTitle,
+    string? OrganizationName,
     string? PhoneNumber
 );

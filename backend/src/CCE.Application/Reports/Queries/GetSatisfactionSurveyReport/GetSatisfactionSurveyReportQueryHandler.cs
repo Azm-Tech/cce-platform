@@ -10,24 +10,34 @@ namespace CCE.Application.Reports.Queries.GetSatisfactionSurveyReport;
 internal sealed class GetSatisfactionSurveyReportQueryHandler(
     ICceDbContext _db,
     MessageFactory _msg)
-    : IRequestHandler<GetSatisfactionSurveyReportQuery, Response<List<SatisfactionSurveyReportDto>>>
+    : IRequestHandler<GetSatisfactionSurveyReportQuery, Response<PagedResult<SatisfactionSurveyReportDto>>>
 {
-    public async Task<Response<List<SatisfactionSurveyReportDto>>> Handle(
+    public async Task<Response<PagedResult<SatisfactionSurveyReportDto>>> Handle(
         GetSatisfactionSurveyReportQuery q, CancellationToken ct)
     {
-        var items = await _db.ServiceEvaluations
-            .OrderByDescending(e => e.CreatedOn)
-            .Select(e => new SatisfactionSurveyReportDto(
+        var query = _db.ServiceEvaluations.AsQueryable();
+
+        if (q.From.HasValue)
+            query = query.Where(e => e.CreatedOn >= q.From.Value);
+        if (q.To.HasValue)
+            query = query.Where(e => e.CreatedOn <= q.To.Value);
+
+        query = query.OrderByDescending(e => e.CreatedOn);
+
+        var paged = await query.ToPagedResultAsync(
+            e => new SatisfactionSurveyReportDto(
                 e.Id,
-                (int)e.OverallSatisfaction,
-                (int)e.EaseOfUse,
-                (int)e.ContentSuitability,
+                e.OverallSatisfaction,
+                e.EaseOfUse,
+                e.ContentSuitability,
                 e.Feedback,
                 e.UserId,
-                e.CreatedOn))
-            .ToListAsyncEither(ct)
+                e.CreatedOn),
+            q.Page,
+            q.PageSize,
+            ct)
             .ConfigureAwait(false);
 
-        return _msg.Ok(items, MessageKeys.General.ITEMS_LISTED);
+        return _msg.Ok(paged, MessageKeys.General.ITEMS_LISTED);
     }
 }

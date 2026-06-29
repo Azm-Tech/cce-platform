@@ -159,33 +159,53 @@ public static class ReportEndpoints
         .RequireAuthorization(Permissions.Report_CountryProfiles)
         .WithName("CountryProfilesReport");
 
-        reports.MapGet("/user-registration", async (ISender sender) =>
+        reports.MapGet("/user-registration", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
         {
-            var result = await sender.Send(new GetUserRegistrationReportQuery());
+            var result = await sender.Send(new GetUserRegistrationReportQuery(from, to, page, pageSize));
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Report_UserRegistrations)
         .WithName("UserRegistrationReport");
 
-        reports.MapGet("/satisfaction-survey", async (ISender sender) =>
+        reports.MapGet("/satisfaction-survey", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
         {
-            var result = await sender.Send(new GetSatisfactionSurveyReportQuery());
+            var result = await sender.Send(new GetSatisfactionSurveyReportQuery(from, to, page, pageSize));
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Report_SatisfactionSurvey)
         .WithName("SatisfactionSurveyReportJson");
 
-        reports.MapGet("/user-preferences", async (ISender sender) =>
+        reports.MapGet("/user-preferences", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
         {
-            var result = await sender.Send(new GetUserPreferenceReportQuery());
+            var result = await sender.Send(new GetUserPreferenceReportQuery(from, to, page, pageSize));
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Report_UserPreferences)
         .WithName("UserPreferenceReport");
 
-        reports.MapGet("/experts", async (ISender sender) =>
+        reports.MapGet("/experts", async (
+            ISender sender,
+            DateTimeOffset? from,
+            DateTimeOffset? to,
+            int page = 1,
+            int pageSize = 20) =>
         {
-            var result = await sender.Send(new GetExpertReportQuery());
+            var result = await sender.Send(new GetExpertReportQuery(from, to, page, pageSize));
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.Report_Experts)

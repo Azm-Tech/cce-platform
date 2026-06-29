@@ -17,7 +17,7 @@ internal sealed class GetEventsReportQueryHandler(
     {
         var query = from e in _db.Events
                     join t in _db.Topics on e.TopicId equals t.Id
-                    select new { e, TopicName = t.NameEn };
+                    select new { e, TopicNameAr = t.NameAr, TopicNameEn = t.NameEn };
 
         if (q.From.HasValue)
             query = query.Where(x => x.e.StartsOn >= q.From.Value);
@@ -29,10 +29,14 @@ internal sealed class GetEventsReportQueryHandler(
         var paged = await query.ToPagedResultAsync(
             x => new EventsReportDto(
                 x.e.Id,
+                x.e.TitleAr,
                 x.e.TitleEn,
+                x.e.DescriptionAr,
                 x.e.DescriptionEn,
+                x.e.LocationAr,
                 x.e.LocationEn,
-                x.TopicName,
+                x.TopicNameAr,
+                x.TopicNameEn,
                 x.e.StartsOn,
                 x.e.EndsOn,
                 x.e.FeaturedImageUrl,
