@@ -36,15 +36,13 @@ export interface PagedResult<T> {
   total: number;
 }
 
-export interface CreateInteractiveMapRequest {
+/** Body for `PUT /api/admin/interactive-maps` — metadata only; `isActive` is
+ *  no longer part of the update contract. */
+export interface UpdateInteractiveMapRequest {
   nameAr: string | null;
   nameEn: string | null;
   descriptionAr: string | null;
   descriptionEn: string | null;
-}
-
-export interface UpdateInteractiveMapRequest extends CreateInteractiveMapRequest {
-  isActive: boolean;
 }
 
 export interface CreateInteractiveMapNodeRequest {

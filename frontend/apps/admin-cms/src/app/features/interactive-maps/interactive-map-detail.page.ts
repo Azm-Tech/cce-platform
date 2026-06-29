@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,9 +9,17 @@ import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { InteractiveMapsApiService } from './interactive-maps-api.service';
+import { InteractiveMapFormDialogComponent } from './interactive-map-form.dialog';
 import { InteractiveMapNodeFormDialogComponent } from './interactive-map-node-form.dialog';
 import type { InteractiveMapDto, InteractiveMapNodeDto } from './interactive-maps.types';
 
+/**
+ * Editor for the single Interactive Map the system owns.
+ *
+ * There is no map list and no map creation/deletion — the map is seeded
+ * server-side and resolved here via `getCurrentMap()`. This page edits the
+ * map's metadata ("Edit details") and performs full CRUD on its nodes.
+ */
 @Component({
   selector: 'cce-interactive-map-detail',
   standalone: true,
@@ -33,8 +40,6 @@ export class InteractiveMapDetailPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
 
   readonly mapId = signal('');
   readonly map = signal<InteractiveMapDto | null>(null);
@@ -45,18 +50,26 @@ export class InteractiveMapDetailPage implements OnInit {
   readonly treeNodes = computed(() => this.buildTreeOrder(this.nodes()));
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.mapId.set(id);
-    void this.loadMap(id);
-    void this.loadNodes();
+    void this.reload();
   }
 
-  private async loadMap(id: string): Promise<void> {
-    const res = await this.api.getMap(id);
-    if (res.ok) this.map.set(res.value);
+  /** Resolve the single map, then load its nodes. */
+  async reload(): Promise<void> {
+    this.loading.set(true);
+    this.errorKind.set(null);
+    const res = await this.api.getCurrentMap();
+    if (!res.ok) {
+      this.loading.set(false);
+      this.errorKind.set(res.error.kind);
+      return;
+    }
+    this.map.set(res.value);
+    this.mapId.set(res.value.id);
+    await this.loadNodes();
   }
 
   async loadNodes(): Promise<void> {
+    if (!this.mapId()) return;
     this.loading.set(true);
     this.errorKind.set(null);
     const res = await this.api.listNodes(this.mapId(), { page: 1, pageSize: 200 });
@@ -65,6 +78,21 @@ export class InteractiveMapDetailPage implements OnInit {
       this.nodes.set(res.value.items);
     } else {
       this.errorKind.set(res.error.kind);
+    }
+  }
+
+  /** Edit the single map's metadata (name/description/active) — never creates. */
+  async editDetails(): Promise<void> {
+    const current = this.map();
+    if (!current) return;
+    const ref = this.dialog.open(InteractiveMapFormDialogComponent, {
+      data: { map: current },
+      width: '640px',
+    });
+    if (await firstValueFrom(ref.afterClosed())) {
+      this.toast.success('interactiveMaps.toast.updated');
+      const res = await this.api.getCurrentMap();
+      if (res.ok) this.map.set(res.value);
     }
   }
 
@@ -106,10 +134,6 @@ export class InteractiveMapDetailPage implements OnInit {
     } else {
       this.toast.error(`errors.${res.error.kind}`);
     }
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/interactive-maps']);
   }
 
   private buildTreeOrder(nodes: InteractiveMapNodeDto[]): InteractiveMapNodeDto[] {

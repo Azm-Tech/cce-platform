@@ -4,7 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { toFeatureError, type FeatureError } from '@frontend/ui-kit';
 import type {
   CreateInteractiveMapNodeRequest,
-  CreateInteractiveMapRequest,
   InteractiveMapDto,
   InteractiveMapNodeDto,
   PagedResult,
@@ -18,39 +17,24 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class InteractiveMapsApiService {
   private readonly http = inject(HttpClient);
 
-  // ── Maps ────────────────────────────────────────────────────────────────────
+  // ── Map (single) ──────────────────────────────────────────────────────────────
 
-  async listMaps(opts: { page?: number; pageSize?: number; isActive?: boolean } = {}): Promise<Result<PagedResult<InteractiveMapDto>>> {
-    let params = new HttpParams();
-    if (opts.page !== undefined) params = params.set('page', opts.page);
-    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
-    if (opts.isActive !== undefined) params = params.set('isActive', String(opts.isActive));
+  /**
+   * The system has exactly one Interactive Map. `GET /api/admin/interactive-maps`
+   * returns that single map directly (the backend made this a singleton — there
+   * is no id and the old `/{id}` route was removed). Response is auto-unwrapped
+   * by the admin envelope interceptor, so the inner DTO is typed directly.
+   */
+  async getCurrentMap(): Promise<Result<InteractiveMapDto>> {
     return this.run(() =>
-      firstValueFrom(this.http.get<PagedResult<InteractiveMapDto>>('/api/admin/interactive-maps', { params })),
+      firstValueFrom(this.http.get<InteractiveMapDto>('/api/admin/interactive-maps')),
     );
   }
 
-  async getMap(id: string): Promise<Result<InteractiveMapDto>> {
+  /** Updates the single map's metadata — `PUT /api/admin/interactive-maps` (no id). */
+  async updateMap(body: UpdateInteractiveMapRequest): Promise<Result<void>> {
     return this.run(() =>
-      firstValueFrom(this.http.get<InteractiveMapDto>(`/api/admin/interactive-maps/${encodeURIComponent(id)}`)),
-    );
-  }
-
-  async createMap(body: CreateInteractiveMapRequest): Promise<Result<void>> {
-    return this.run(() =>
-      firstValueFrom(this.http.post<void>('/api/admin/interactive-maps', body)),
-    );
-  }
-
-  async updateMap(id: string, body: UpdateInteractiveMapRequest): Promise<Result<void>> {
-    return this.run(() =>
-      firstValueFrom(this.http.put<void>(`/api/admin/interactive-maps/${encodeURIComponent(id)}`, body)),
-    );
-  }
-
-  async deleteMap(id: string): Promise<Result<void>> {
-    return this.run(() =>
-      firstValueFrom(this.http.delete<void>(`/api/admin/interactive-maps/${encodeURIComponent(id)}`)),
+      firstValueFrom(this.http.put<void>('/api/admin/interactive-maps', body)),
     );
   }
 

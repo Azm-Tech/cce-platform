@@ -63,7 +63,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { labelKey: 'nav.resources', route: '/resources', permission: CcePermission.ResourceCenterUpload, icon: 'description' },
       { labelKey: 'nav.taxonomies', route: '/taxonomies', permission: CcePermission.ResourceCenterUpload, icon: 'category' },
-      { labelKey: 'nav.interactiveMaps', route: '/interactive-maps', permission: CcePermission.PageEdit, icon: 'account_tree' },
+      { labelKey: 'nav.interactiveMap', route: '/interactive-maps', permission: CcePermission.PageEdit, icon: 'account_tree' },
       { labelKey: 'nav.countryResourceRequests', route: '/country-resource-requests', permission: CcePermission.ResourceCountryApprove, icon: 'flag' },
       { labelKey: 'nav.countries', route: '/countries', permission: CcePermission.CountryProfileUpdate, icon: 'public' },
     ],

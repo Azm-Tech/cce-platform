@@ -35,14 +35,6 @@
       </mat-form-field>
     </div>
 
-    <!-- Status (edit only) -->
-    @if (isEdit) {
-      <div class="im-form__divider"></div>
-      <mat-checkbox formControlName="isActive" class="im-form__checkbox">
-        {{ 'interactiveMaps.form.isActive' | transloco }}
-      </mat-checkbox>
-    }
-
     @if (errorKind(); as kind) {
       <div class="im-form__error" role="alert">
         <mat-icon>error_outline</mat-icon>

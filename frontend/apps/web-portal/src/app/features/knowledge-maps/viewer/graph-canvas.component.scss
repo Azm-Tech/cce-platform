@@ -11,21 +11,29 @@
   overflow: hidden;
 }
 
-/* ─── Dark canvas — flat surface-dark (#002645), matches Figma ─── */
+/* ─── Dark canvas — navy + subtle technical grid + ambient glow (Figma) ─── */
 .cce-graph-canvas {
   width: 100%;
-  height: 68vh;
-  min-height: 520px;
-  /* Flat dark navy with a faint central glow behind the root node. */
+  height: 72vh;
+  min-height: 560px;
+  /* Layered: soft central ambient light · faint grid (h + v lines) · navy base. */
   background:
     radial-gradient(
-      circle at 50% 48%,
-      rgba(var(--color-brand-rgb), 0.12) 0%,
-      transparent 55%
+      circle at 50% 46%,
+      rgba(var(--color-brand-rgb), 0.2) 0%,
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(var(--color-brand-rgb), 0.07) 0 1px,
+      transparent 1px 44px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(var(--color-brand-rgb), 0.07) 0 1px,
+      transparent 1px 44px
     ),
     var(--primary--950);
-  border: 1px solid var(--color-brand-darker);
-  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -91,116 +99,6 @@
   margin: 0.1rem 0;
 }
 
-/* ─── Legend — dark glass panel, bottom-leading corner ──────── */
-.cce-graph-legend {
-  position: absolute;
-  bottom: 1rem;
-  inset-inline-start: 1rem;
-  z-index: 5;
-  width: 210px;
-  max-width: calc(100% - 2rem);
-  background: rgba(var(--color-brand-dark-rgb), 0.8);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.22);
-  border-radius: 14px;
-  padding: 0.7rem 0.9rem 0.85rem;
-  box-shadow: 0 8px 24px rgba(var(--color-brand-dark-rgb), 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.cce-graph-legend__title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0 0 0.55rem;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-brand);
-
-  mat-icon {
-    font-size: 13px !important;
-    width: 13px !important;
-    height: 13px !important;
-  }
-}
-
-.cce-graph-legend__group {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-
-  & + & {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(var(--color-brand-rgb), 0.14);
-  }
-
-  dt {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(var(--color-brand-rgb), 0.55);
-    margin-bottom: 0.15rem;
-  }
-
-  dd {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-    font-size: 0.8rem;
-    color: rgba(var(--white-rgb, 255,255,255), 0.78);
-  }
-}
-
-/* Node swatches — navy fill + blue ring + blue glow, sized by level */
-.cce-graph-legend__node {
-  display: inline-block;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  background: var(--color-brand-dark);
-  border: 1.5px solid var(--color-brand);
-  box-shadow: 0 0 6px rgba(var(--color-brand-rgb), 0.6);
-
-  &--root {
-    width: 20px;
-    height: 20px;
-    background: var(--primary--950);
-    box-shadow: 0 0 9px rgba(var(--color-brand-rgb), 0.7);
-  }
-
-  &--tech {
-    width: 13px;
-    height: 13px;
-  }
-
-  &--sector {
-    width: 17px;
-    height: 17px;
-  }
-
-  &--subtopic {
-    width: 10px;
-    height: 10px;
-  }
-}
-
-/* Edge swatch — thin solid faint blue connector */
-.cce-graph-legend__edge {
-  display: inline-block;
-  width: 26px;
-  height: 0;
-  flex: 0 0 auto;
-  border-radius: 999px;
-
-  &--parent  { border-top: 1.5px solid rgba(var(--color-brand-rgb), 0.5); }
-  &--related { border-top: 1.5px dashed rgba(var(--color-brand-rgb), 0.5); }
-  &--required { border-top: 1.5px dashed var(--color-accent); opacity: 0.65; }
-}
 
 /* ─── All-dimmed empty state — dark overlay ─────────────────── */
 .cce-graph-canvas__empty {
@@ -277,7 +175,6 @@
 /* ─── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 540px) {
   .cce-graph-controls__btn { width: 32px; height: 32px; }
-  .cce-graph-legend { width: 180px; padding: 0.6rem 0.75rem 0.75rem; }
 }
 
 /* ─── Reduced-motion ─────────────────────────────────────────── */

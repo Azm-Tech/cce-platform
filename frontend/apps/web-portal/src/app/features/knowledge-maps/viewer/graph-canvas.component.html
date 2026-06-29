@@ -42,43 +42,6 @@
     </button>
   </div>
 
-  <!-- ─── Legend — always visible at the bottom-leading corner ─── -->
-  <aside class="cce-graph-legend" role="region"
-         [attr.aria-label]="'knowledgeMaps.graph.legendTitle' | transloco">
-    <h3 class="cce-graph-legend__title">
-      <mat-icon aria-hidden="true">info</mat-icon>
-      {{ 'knowledgeMaps.graph.legendTitle' | transloco }}
-    </h3>
-
-    <dl class="cce-graph-legend__group">
-      <dt>{{ 'knowledgeMaps.filter.title' | transloco }}</dt>
-      <dd>
-        <span class="cce-graph-legend__node cce-graph-legend__node--root" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.level.-1' | transloco }}
-      </dd>
-      <dd>
-        <span class="cce-graph-legend__node cce-graph-legend__node--sector" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.level.0' | transloco }}
-      </dd>
-      <dd>
-        <span class="cce-graph-legend__node cce-graph-legend__node--tech" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.level.1' | transloco }}
-      </dd>
-      <dd>
-        <span class="cce-graph-legend__node cce-graph-legend__node--subtopic" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.level.2' | transloco }}
-      </dd>
-    </dl>
-
-    <dl class="cce-graph-legend__group">
-      <dt>{{ 'knowledgeMaps.graph.connections' | transloco }}</dt>
-      <dd>
-        <span class="cce-graph-legend__edge cce-graph-legend__edge--parent" aria-hidden="true"></span>
-        {{ 'knowledgeMaps.detail.childLink' | transloco }}
-      </dd>
-    </dl>
-  </aside>
-
   <!-- ─── All-dimmed empty state ─── -->
   @if (allDimmed()) {
     <div class="cce-graph-canvas__empty" role="status">

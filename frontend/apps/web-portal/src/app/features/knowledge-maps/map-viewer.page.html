@@ -1,10 +1,4 @@
 <section class="cce-map-viewer">
-  <!-- Back link as a branded pill -->
-  <a class="cce-map-viewer__back" routerLink="/knowledge-maps">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'knowledgeMaps.backToList' | transloco }}
-  </a>
-
   <!-- Slim top progress bar -->
   @if (store.loading()) {
     <mat-progress-bar mode="indeterminate" class="cce-map-viewer__progress" />
@@ -18,10 +12,10 @@
       </span>
       <h1>{{ 'knowledgeMaps.notFound' | transloco }}</h1>
       <p>{{ 'knowledgeMaps.notFoundDesc' | transloco }}</p>
-      <a mat-flat-button color="primary" routerLink="/knowledge-maps">
-        <mat-icon>arrow_back</mat-icon>
-        {{ 'knowledgeMaps.backToList' | transloco }}
-      </a>
+      <button mat-flat-button color="primary" type="button" (click)="retry()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'errors.retry' | transloco }}
+      </button>
     </div>
   } @else if (store.errorKind()) {
     <div class="cce-map-viewer__error" role="alert">
@@ -33,115 +27,47 @@
     </div>
   }
 
-  <cce-tabs-bar
-    [tabs]="store.openTabs()"
-    [activeId]="store.activeId()"
-    [locale]="locale()"
-    (tabSelected)="onTabSelected($event)"
-    (tabClosed)="onTabClosed($event)"
-  />
-
-  @if (store.activeTab(); as tab) {
+  @if (store.map(); as map) {
     <header class="cce-map-viewer__header">
-      <div class="cce-map-viewer__header-text">
-        <span class="cce-map-viewer__header-eyebrow">
-          <mat-icon aria-hidden="true">account_tree</mat-icon>
-          {{ 'knowledgeMaps.title' | transloco }}
-        </span>
-        <h1>{{ locale() === 'ar' ? tab.metadata.nameAr : tab.metadata.nameEn }}</h1>
-        <p>{{ locale() === 'ar' ? tab.metadata.descriptionAr : tab.metadata.descriptionEn }}</p>
+      <span class="cce-map-viewer__header-eyebrow">
+        <mat-icon aria-hidden="true">account_tree</mat-icon>
+        {{ 'knowledgeMaps.title' | transloco }}
+      </span>
+      <h1>{{ 'knowledgeMaps.heading' | transloco }}</h1>
+      <p>{{ 'knowledgeMaps.subtitle' | transloco }}</p>
 
-        <ul class="cce-map-viewer__meta" role="list">
-          <li>
-            <mat-icon aria-hidden="true">scatter_plot</mat-icon>
-            <strong>{{ tab.nodes.length }}</strong>
-            <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
-          </li>
-          <li>
-            <mat-icon aria-hidden="true">tab</mat-icon>
-            <strong>{{ store.openTabs().length }}</strong>
-            <span>{{ 'knowledgeMaps.metaTabs' | transloco }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="cce-map-viewer__actions">
-        <div
-          class="cce-map-viewer__view-toggle"
-          role="group"
-          [attr.aria-label]="'knowledgeMaps.viewMode.graph' | transloco"
-        >
-          <button
-            type="button"
-            class="cce-map-viewer__view-toggle-btn"
-            [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'graph'"
-            [attr.aria-label]="'knowledgeMaps.viewMode.graph' | transloco"
-            [attr.aria-pressed]="store.viewMode() === 'graph'"
-            (click)="onSetViewMode('graph')"
-          >
-            <mat-icon>account_tree</mat-icon>
-            <span>{{ 'knowledgeMaps.viewMode.graph' | transloco }}</span>
-          </button>
-          <button
-            type="button"
-            class="cce-map-viewer__view-toggle-btn"
-            [class.cce-map-viewer__view-toggle-btn--active]="store.viewMode() === 'list'"
-            [attr.aria-label]="'knowledgeMaps.viewMode.list' | transloco"
-            [attr.aria-pressed]="store.viewMode() === 'list'"
-            (click)="onSetViewMode('list')"
-          >
-            <mat-icon>list</mat-icon>
-            <span>{{ 'knowledgeMaps.viewMode.list' | transloco }}</span>
-          </button>
-        </div>
-        <cce-export-menu
-          class="cce-map-viewer__export"
-          (formatChosen)="onExportFormat($event)"
-        />
-      </div>
+      <ul class="cce-map-viewer__meta" role="list">
+        <li>
+          <mat-icon aria-hidden="true">scatter_plot</mat-icon>
+          <strong>{{ store.nodes().length }}</strong>
+          <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
+        </li>
+      </ul>
     </header>
 
-    <cce-search-and-filters
-      [searchTerm]="store.searchTerm()"
-      [filters]="store.filters()"
-      (searchTermChange)="onSearchTermChange($event)"
-      (filtersChange)="onFiltersChange($event)"
-    />
+    <div class="cce-map-viewer__stage" [class.cce-map-viewer__stage--panel]="!!store.selectedNode()">
+      <cce-graph-canvas
+        class="cce-map-viewer__canvas"
+        [nodes]="store.nodes()"
+        [locale]="locale()"
+        [mirrored]="mirrored()"
+        [selectedId]="store.selectedNodeId()"
+        [panelOpen]="!!store.selectedNode()"
+        (nodeClick)="onNodeClick($event)"
+      />
 
-    <div class="cce-map-viewer__stage">
-      @if (store.viewMode() === 'graph') {
-        <cce-graph-canvas
-          class="cce-map-viewer__canvas"
-          [nodes]="tab.nodes"
+      @if (store.selectedNode()) {
+        <cce-node-detail-panel
+          class="cce-map-viewer__drawer"
+          [node]="store.selectedNode()"
+          [allNodes]="allNodes()"
+          [details]="store.nodeDetails()"
+          [loading]="store.detailsLoading()"
           [locale]="locale()"
-          [mirrored]="mirrored()"
-          [selectedId]="store.selectedNodeId()"
-          [dimmedIds]="store.dimmedIds()"
-          (nodeClick)="onNodeClick($event)"
-          (selectionChange)="onSelectionChange($event)"
-          (clearFiltersRequest)="onClearFilters()"
-        />
-      } @else {
-        <cce-list-view
-          class="cce-map-viewer__canvas"
-          [nodes]="tab.nodes"
-          [locale]="locale()"
-          [selectedId]="store.selectedNodeId()"
-          [dimmedIds]="store.dimmedIds()"
-          (nodeSelected)="onNodeClick($event)"
+          (closed)="onPanelClosed()"
+          (linkActivated)="onPanelLink($event)"
         />
       }
-
-      <cce-node-detail-panel
-        class="cce-map-viewer__drawer"
-        [node]="store.selectedNode()"
-        [allNodes]="allNodes()"
-        [details]="store.nodeDetails()"
-        [loading]="store.detailsLoading()"
-        [locale]="locale()"
-        (closed)="onPanelClosed()"
-        (linkActivated)="onPanelLink($event)"
-      />
     </div>
   }
 </section>

@@ -42,7 +42,7 @@ export function buildStylesheet(): StylesheetJson {
   const cLabel       = token('--tertiary--500',    '#c9e8fb'); // label text
 
   const glowBrand = tokenAlpha('--color-brand-rgb', 0.60, 'rgba(66,133,242,0.60)');
-  const lineBrand = tokenAlpha('--color-brand-rgb', 0.35, 'rgba(66,133,242,0.35)');
+  const lineBrand = tokenAlpha('--color-brand-rgb', 0.62, 'rgba(66,133,242,0.62)');
 
   return [
     // ─── Base node — dark circle, blue ring, blue glow, inner icon ────
@@ -51,7 +51,7 @@ export function buildStylesheet(): StylesheetJson {
       style: {
         'shape': 'ellipse',
         'background-color': cNodeFill,
-        'border-width': 1.5,
+        'border-width': 2,
         'border-color': cBrand,
         'border-opacity': 1,
         // Soft blue halo (Figma drop-shadow 0 0 20 rgba(blue,.6))
@@ -65,8 +65,9 @@ export function buildStylesheet(): StylesheetJson {
         // Cytoscape IGNORES background-width and the icon fills the whole node.
         'background-image': 'data(iconUrl)',
         'background-fit': 'none' as const,
-        'background-width': '46%',
-        'background-height': '46%',
+        // Figma: inner icon is ~50% of the node circle (52/104, 32/62).
+        'background-width': '50%',
+        'background-height': '50%',
         'background-position-x': '50%',
         'background-position-y': '50%',
         'background-image-opacity': 1,
@@ -77,40 +78,43 @@ export function buildStylesheet(): StylesheetJson {
         'text-halign': 'center' as const,
         'text-margin-y': 10,
         'color': cLabel,
-        'font-size': 13,
+        'font-size': 14,
         'font-weight': 600,
         'text-outline-width': 0,
         'text-wrap': 'wrap' as const,
-        'text-max-width': 110,
-        'width': 64,
-        'height': 64,
+        'text-max-width': 120,
+        'width': 62,
+        'height': 62,
       },
     },
 
-    // ─── Inner icon scales up slightly on the small leaf nodes ───────
+    // ─── Level 2 — leaf topic (Figma: 62 px node, 18 px roman label) ─
     {
       selector: 'node[level = 2]',
       style: {
-        'width': 64,
-        'height': 64,
-        'font-size': 12,
+        'width': 62,
+        'height': 62,
+        'font-size': 14,
         'font-weight': 500,
-        'text-max-width': 96,
-        'text-margin-y': 9,
+        // Narrow wrap so multi-word labels break onto 2 lines (Figma).
+        'text-max-width': 86,
+        'text-margin-y': 10,
       },
     },
 
-    // ─── Level 1 — category ("4 R's"): large prominent node ──────────
+    // ─── Level 1 — main branch (Figma: 104 px node, 20 px bold label) ─
     {
       selector: 'node[level = 1]',
       style: {
         'width': 104,
         'height': 104,
-        'font-size': 15,
+        'font-size': 17,
         'font-weight': 700,
-        'text-max-width': 130,
-        'text-margin-y': 12,
-        'shadow-blur': 26,
+        'text-max-width': 110,
+        'text-margin-y': 13,
+        'border-width': 2.5,
+        'shadow-blur': 42,
+        'shadow-opacity': 0.8,
       },
     },
 
@@ -128,21 +132,23 @@ export function buildStylesheet(): StylesheetJson {
       },
     },
 
-    // ─── Level -1 — synthetic central map root (hero node) ───────────
+    // ─── Level -1 — synthetic central map root (Figma: 193 px hero) ──
     {
       selector: 'node[level = -1]',
       style: {
-        'width': 150,
-        'height': 150,
+        'width': 190,
+        'height': 190,
         'background-color': cSurfaceDark,
-        'border-width': 2,
+        // Thicker, prominent ring + strongest halo — the central hero (Figma).
+        'border-width': 3.5,
         'border-color': cBrand,
-        'shadow-blur': 40,
+        'shadow-blur': 64,
         'shadow-color': cBrand,
-        'shadow-opacity': 0.7,
-        'background-width': '46%',
-        'background-height': '46%',
-        'font-size': 18,
+        'shadow-opacity': 0.95,
+        // Larger CO₂ glyph filling more of the circle (Figma).
+        'background-width': '52%',
+        'background-height': '52%',
+        'font-size': 20,
         'font-weight': 800,
         'text-max-width': 170,
         'text-margin-y': 16,
@@ -177,14 +183,21 @@ export function buildStylesheet(): StylesheetJson {
       style: { 'opacity': 0.18 },
     },
 
-    // ─── Edge — thin SOLID faint blue parent→child connector ─────────
+    // ─── Edge — dashed, glowing blue parent→child connector (Figma) ──
     {
       selector: 'edge',
       style: {
-        'width': 1.5,
+        'width': 1.75,
         'curve-style': 'bezier' as const,
         'line-color': lineBrand,
-        'line-style': 'solid' as const,
+        'line-style': 'dashed' as const,
+        'line-dash-pattern': [6, 5],
+        // Soft blue halo along the connector — the Figma "glowing line" look.
+        'shadow-blur': 9,
+        'shadow-color': cBrand,
+        'shadow-opacity': 0.55,
+        'shadow-offset-x': 0,
+        'shadow-offset-y': 0,
         'target-arrow-shape': 'none' as const,
         'opacity': 1,
       },

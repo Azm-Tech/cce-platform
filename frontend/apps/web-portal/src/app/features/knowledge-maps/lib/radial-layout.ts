@@ -30,7 +30,7 @@ export interface RadialLayoutOptions {
 
 export type PositionMap = Record<string, { x: number; y: number }>;
 
-const DEFAULT_RING_GAP = 240;
+const DEFAULT_RING_GAP = 260;
 const DEFAULT_START_ANGLE = -Math.PI / 2; // first branch points "up"
 
 export function computeRadialPositions(

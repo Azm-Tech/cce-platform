@@ -451,7 +451,7 @@
     "homepageSettings": "Homepage Settings",
     "aboutSettings": "About Settings",
     "policiesSettings": "Policies & Terms",
-    "interactiveMaps": "Interactive Maps"
+    "interactiveMap": "Interactive Map"
   },
   "header": {
     "signIn": "Sign in",
@@ -2284,17 +2284,16 @@
   },
   "knowledgeMaps": {
     "title": "Knowledge maps",
-    "subtitle": "Visual atlases that connect technologies, sectors, and sub-topics across the carbon circular economy.",
+    "heading": "Knowledge Maps",
+    "subtitle": "Explore the concepts and technologies of the circular carbon economy through an interactive knowledge map. Pick any topic to see its definition, sources, and latest related news.",
     "eyebrow": "KNOWLEDGE MAPS · ATLAS",
     "comingSoon": "Detailed graph view coming in Sub-7. Today: browse the available maps.",
     "searchPlaceholder": "Search maps by name or topic…",
     "filteredEmpty": "No maps match your search.",
     "clearSearch": "Clear",
     "openMap": "Open map",
-    "backToList": "All knowledge maps",
     "metaNodes": "Nodes",
     "metaEdges": "Connections",
-    "metaTabs": "Open tabs",
     "notFoundDesc": "The map you're looking for may have been moved or removed.",
     "empty": "No knowledge maps available yet.",
     "emptyDesc": "Maps published by the editorial team will appear here.",
@@ -2796,6 +2795,10 @@
   },
   "interactiveMaps": {
     "pageTitle": "Interactive Maps",
+    "editor": {
+      "eyebrow": "Interactive Map",
+      "editDetails": "Edit details"
+    },
     "createBtn": "New Map",
     "col": {
       "nameEn": "Name (EN)",
@@ -2825,6 +2828,7 @@
     },
     "nodes": {
       "pageTitle": "Map Nodes",
+      "title": "Nodes",
       "createBtn": "Add Node",
       "col": {
         "level": "Level",

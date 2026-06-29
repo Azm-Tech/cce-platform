@@ -6,48 +6,12 @@
 
 :host {
   display: block;
-  max-width: 1400px;
-  margin-inline: auto;
-  /* Whole viewer sits on flat dark navy (#002645), matching the Figma frame. */
+  /* Full-bleed flat dark navy (#002645) — matches the Figma frame exactly:
+     no card border, no radius, no glow. The graph is the hero. */
   background: var(--primary--950);
-  border: 1px solid var(--color-brand-darker);
-  border-radius: 24px;
-  margin-block: 1.25rem;
-  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 2.5vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);
+  /* Tighter top padding so the header sits near the top (Figma). */
+  padding: clamp(0.75rem, 1.6vw, 1.5rem) clamp(1rem, 2.5vw, 4rem) clamp(1.5rem, 3vw, 3rem);
 }
-
-/* ─── Branded back-pill ─────────────────────────────────── */
-.cce-map-viewer__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-  padding: 0.45rem 0.95rem;
-  background: var(--color-brand-dark);
-  color: var(--tertiary--500);
-  border-radius: 999px;
-  font-size: 0.86rem;
-  font-weight: 600;
-  text-decoration: none;
-  border: 1px solid var(--color-brand-darker);
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.18s ease;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    transition: transform 0.18s ease;
-  }
-
-  &:hover {
-    background: rgba(var(--color-brand-rgb), 0.1);
-    border-color: rgba(var(--color-brand-rgb), 0.3);
-
-    mat-icon { transform: translateX(-2px); }
-  }
-}
-:host-context([dir="rtl"]) .cce-map-viewer__back mat-icon { transform: scaleX(-1); }
-:host-context([dir="rtl"]) .cce-map-viewer__back:hover mat-icon { transform: translateX(-2px) scaleX(-1); }
 
 .cce-map-viewer__progress {
   margin-bottom: 1rem;
@@ -128,17 +92,7 @@
   background: transparent;
   border: 0;
   padding: 0;
-  margin: 0.5rem 0 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.cce-map-viewer__header-text {
-  flex: 1 1 auto;
-  min-width: 0;
+  margin: 0.25rem 0 1.5rem;
 
   h1 {
     margin: 0 0 0.5rem;
@@ -211,89 +165,35 @@
   }
 }
 
-/* ─── Action cluster ─────────────────────────────────────── */
-.cce-map-viewer__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.cce-map-viewer__view-toggle {
-  display: inline-flex;
-  background: rgba(var(--color-brand-dark-rgb), 0.65);
-  border: 1px solid rgba(var(--color-brand-rgb), 0.22);
-  border-radius: 999px;
-  padding: 3px;
-}
-
-.cce-map-viewer__view-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  border: none;
-  background: transparent;
-  color: rgba(var(--color-brand-rgb), 0.65);
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
-
-  mat-icon {
-    font-size: 17px;
-    width: 17px;
-    height: 17px;
-  }
-
-  &:hover { color: var(--color-brand); }
-
-  &--active {
-    background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-accent) 100%);
-    color: var(--white);
-    box-shadow: 0 4px 12px -6px rgba(var(--color-brand-rgb), 0.6);
-
-    &:hover { color: var(--white); }
-  }
-}
-
-/* The "Search nodes…" + filter chips bar lives in its own
-   component but we want a small gap between it and the canvas. */
-cce-search-and-filters { display: block; margin-bottom: 1rem; }
-
-/* ─── Stage: canvas with an overlaying detail drawer ─────── */
+/* ─── Stage: graph + detail drawer side-by-side ──────────────
+ * When a node is selected the drawer joins the flex row on the trailing
+ * (inline-end) edge and the graph shrinks into the remaining space —
+ * matching the Figma "panel open → graph shifts" composition. The graph
+ * canvas re-fits itself (see GraphCanvasComponent panelOpen). */
 .cce-map-viewer__stage {
   position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
 }
 
-.cce-map-viewer__canvas { display: block; min-width: 0; }
+.cce-map-viewer__canvas { flex: 1 1 auto; min-width: 0; display: block; }
 
-/* Drawer overlays the trailing edge of the stage. When no node is
- * selected the panel renders nothing, so the overlay never blocks the
- * canvas. */
 .cce-map-viewer__drawer {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-end: 0;
+  flex: 0 0 auto;
   z-index: 6;
-  max-width: 100%;
   display: block;
 }
 
-/* On narrow screens, drop the toggle button text and just show icons
- * so the toolbar doesn't wrap awkwardly. */
-@media (max-width: 540px) {
-  .cce-map-viewer__view-toggle-btn span { display: none; }
-  .cce-map-viewer__view-toggle-btn { padding: 0.45rem 0.6rem; }
-}
-
-/* ─── Reduced-motion ─────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  .cce-map-viewer__back,
-  .cce-map-viewer__back mat-icon,
-  .cce-map-viewer__view-toggle-btn {
-    transition: none;
+/* On narrow screens there isn't room for both — the drawer overlays the
+ * trailing edge instead of pushing the graph. */
+@media (max-width: 900px) {
+  .cce-map-viewer__stage { gap: 0; }
+  .cce-map-viewer__drawer {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    max-width: 100%;
   }
 }
+

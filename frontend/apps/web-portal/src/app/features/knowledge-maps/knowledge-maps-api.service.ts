@@ -10,17 +10,14 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: FeatureErro
 export class KnowledgeMapsApiService {
   private readonly http = inject(HttpClient);
 
-  async listMaps(): Promise<Result<InteractiveMap[]>> {
-    return this.run(() =>
-      firstValueFrom(this.http.get<{ data: InteractiveMap[] }>('/api/interactive-maps'))
-        .then((res) => res.data),
-    );
-  }
-
-  async getMap(id: string): Promise<Result<InteractiveMap>> {
+  /** Loads the single active interactive map (with its nodes). The system
+   *  holds exactly one map, so `GET /api/interactive-maps` now returns that
+   *  one map directly (`data` is a single object, not a list — backend made
+   *  it a singleton; the old `/{id}` route was removed). */
+  async getCurrentMap(): Promise<Result<InteractiveMap>> {
     return this.run(() =>
       firstValueFrom(
-        this.http.get<{ data: InteractiveMap }>(`/api/interactive-maps/${encodeURIComponent(id)}`),
+        this.http.get<{ data: InteractiveMap }>('/api/interactive-maps'),
       ).then((res) => res.data),
     );
   }

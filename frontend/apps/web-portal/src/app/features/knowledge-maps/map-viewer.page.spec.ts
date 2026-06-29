@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { TranslocoTestingModule } from '@jsverse/transloco';
@@ -29,31 +29,24 @@ function ok<T>(value: T): Result<T> {
   return { ok: true, value };
 }
 
-interface RouteSnapshot {
-  paramMap: { get: jest.Mock };
-  queryParams: Record<string, string | undefined>;
-}
-
 interface RouteFixture {
-  snapshot: RouteSnapshot;
-  paramMap: import('rxjs').Observable<unknown>;
+  snapshot: { queryParams: Record<string, string | undefined> };
 }
 
 describe('MapViewerPage', () => {
   let fixture: ComponentFixture<MapViewerPage>;
   let page: MapViewerPage;
-  let getMap: jest.Mock;
+  let getCurrentMap: jest.Mock;
+  let getNodeDetails: jest.Mock;
 
-  async function setup(opts: { id?: string | null; query?: Record<string, string> } = {}) {
-    getMap = jest.fn().mockResolvedValue(ok(MAP));
+  async function setup(opts: { query?: Record<string, string> } = {}) {
+    getCurrentMap = jest.fn().mockResolvedValue(ok(MAP));
+    getNodeDetails = jest.fn().mockResolvedValue(
+      ok({ node: NODE, topic: null, resources: [], news: [], events: [], posts: [] }),
+    );
 
-    const { of } = await import('rxjs');
     const routeFixture: RouteFixture = {
-      snapshot: {
-        paramMap: { get: jest.fn(() => opts.id ?? 'm1') },
-        queryParams: opts.query ?? {},
-      },
-      paramMap: of({ get: (_key: string) => opts.id ?? 'm1' }),
+      snapshot: { queryParams: opts.query ?? {} },
     };
 
     await TestBed.configureTestingModule({
@@ -62,9 +55,9 @@ describe('MapViewerPage', () => {
         TranslocoTestingModule.forRoot({ langs: { en: {}, ar: {} }, translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' } }),
       ],
       providers: [
-        provideRouter([]),
         provideNoopAnimations(),
-        { provide: KnowledgeMapsApiService, useValue: { getMap } },
+        { provide: Router, useValue: { navigate: jest.fn() } },
+        { provide: KnowledgeMapsApiService, useValue: { getCurrentMap, getNodeDetails } },
         { provide: ActivatedRoute, useValue: routeFixture },
         { provide: LocaleService, useValue: { locale: signal<'ar' | 'en'>('en').asReadonly() } },
       ],
@@ -74,34 +67,27 @@ describe('MapViewerPage', () => {
     page = fixture.componentInstance;
   }
 
-  it('init with valid id calls store.openTab(id) and renders the active tab header', async () => {
-    await setup({ id: 'm1' });
+  it('init calls store.loadMap() and renders the map header', async () => {
+    await setup();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(getMap).toHaveBeenCalledWith('m1');
+    expect(getCurrentMap).toHaveBeenCalled();
     const html = fixture.nativeElement.textContent ?? '';
     expect(html).toContain('Map');
   });
 
-  it('hydrates URL query params (q, type, view, node) into the store before opening', async () => {
-    await setup({
-      id: 'm1',
-      query: { q: 'carbon', type: '1', view: 'list', node: 'n1' },
-    });
-    fixture.detectChanges();
-    await fixture.whenStable();
+  it('deep-links ?node=<id> by selecting that node after the map loads', async () => {
+    await setup({ query: { node: 'n1' } });
+    await page.ngOnInit();
 
-    expect(page.store.searchTerm()).toBe('carbon');
-    expect(Array.from(page.store.filters())).toEqual([1]);
-    expect(page.store.viewMode()).toBe('list');
     expect(page.store.selectedNodeId()).toBe('n1');
   });
 
-  it('404 on getMap renders the not-found block', async () => {
-    await setup({ id: 'missing' });
-    getMap.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
+  it('404 on getCurrentMap renders the not-found block', async () => {
+    await setup();
+    getCurrentMap.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -112,8 +98,8 @@ describe('MapViewerPage', () => {
   });
 
   it('non-404 error renders the error banner with a retry button', async () => {
-    await setup({ id: 'm1' });
-    getMap.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
+    await setup();
+    getCurrentMap.mockResolvedValueOnce({ ok: false, error: { kind: 'server' } });
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -124,7 +110,7 @@ describe('MapViewerPage', () => {
   });
 
   it('retry() calls store.retry()', async () => {
-    await setup({ id: 'm1' });
+    await setup();
     fixture.detectChanges();
     await fixture.whenStable();
     const spy = jest.spyOn(page.store, 'retry');

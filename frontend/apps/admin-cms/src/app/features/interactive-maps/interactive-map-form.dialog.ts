@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +18,6 @@ interface MapForm {
   nameEn: FormControl<string>;
   descriptionAr: FormControl<string>;
   descriptionEn: FormControl<string>;
-  isActive: FormControl<boolean>;
 }
 
 @Component({
@@ -28,7 +26,6 @@ interface MapForm {
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
@@ -57,29 +54,21 @@ export class InteractiveMapFormDialogComponent {
       nameEn: new FormControl(m?.nameEn ?? '', { nonNullable: true, validators: [Validators.required] }),
       descriptionAr: new FormControl(m?.descriptionAr ?? '', { nonNullable: true }),
       descriptionEn: new FormControl(m?.descriptionEn ?? '', { nonNullable: true }),
-      isActive: new FormControl(m?.isActive ?? true, { nonNullable: true }),
     });
   }
 
+  // The system owns a single, pre-seeded map — this dialog only ever EDITS it.
   async save(): Promise<void> {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid || !this.data.map) { this.form.markAllAsTouched(); return; }
     this.saving.set(true);
     this.errorKind.set(null);
     const v = this.form.getRawValue();
-    const res = this.isEdit && this.data.map
-      ? await this.api.updateMap(this.data.map.id, {
-          nameAr: v.nameAr || null,
-          nameEn: v.nameEn || null,
-          descriptionAr: v.descriptionAr || null,
-          descriptionEn: v.descriptionEn || null,
-          isActive: v.isActive,
-        })
-      : await this.api.createMap({
-          nameAr: v.nameAr || null,
-          nameEn: v.nameEn || null,
-          descriptionAr: v.descriptionAr || null,
-          descriptionEn: v.descriptionEn || null,
-        });
+    const res = await this.api.updateMap({
+      nameAr: v.nameAr || null,
+      nameEn: v.nameEn || null,
+      descriptionAr: v.descriptionAr || null,
+      descriptionEn: v.descriptionEn || null,
+    });
     this.saving.set(false);
     if (res.ok) this.ref.close(true);
     else this.errorKind.set(res.error.kind);

@@ -25,27 +25,9 @@ describe('KnowledgeMapsApiService', () => {
 
   afterEach(() => http.verify());
 
-  it('listMaps GETs /api/interactive-maps', async () => {
-    const promise = sut.listMaps();
+  it('getCurrentMap GETs /api/interactive-maps', async () => {
+    const promise = sut.getCurrentMap();
     const req = http.expectOne('/api/interactive-maps');
-    expect(req.request.method).toBe('GET');
-    req.flush({ data: [SAMPLE] });
-    const res = await promise;
-    expect(res.ok).toBe(true);
-    if (res.ok) expect(res.value).toEqual([SAMPLE]);
-  });
-
-  it('returns server error on 500', async () => {
-    const promise = sut.listMaps();
-    http.expectOne('/api/interactive-maps').flush('', { status: 500, statusText: 'Server Error' });
-    const res = await promise;
-    expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.error.kind).toBe('server');
-  });
-
-  it('getMap GETs /api/interactive-maps/{id}', async () => {
-    const promise = sut.getMap('m1');
-    const req = http.expectOne('/api/interactive-maps/m1');
     expect(req.request.method).toBe('GET');
     req.flush({ data: SAMPLE });
     const res = await promise;
@@ -53,20 +35,20 @@ describe('KnowledgeMapsApiService', () => {
     if (res.ok) expect(res.value.id).toBe('m1');
   });
 
-  it('getMap returns not-found on 404', async () => {
-    const promise = sut.getMap('missing');
+  it('getCurrentMap returns not-found on 404', async () => {
+    const promise = sut.getCurrentMap();
     http
-      .expectOne('/api/interactive-maps/missing')
+      .expectOne('/api/interactive-maps')
       .flush('', { status: 404, statusText: 'Not Found' });
     const res = await promise;
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.error.kind).toBe('not-found');
   });
 
-  it('getMap returns server error on 500', async () => {
-    const promise = sut.getMap('m1');
+  it('getCurrentMap returns server error on 500', async () => {
+    const promise = sut.getCurrentMap();
     http
-      .expectOne('/api/interactive-maps/m1')
+      .expectOne('/api/interactive-maps')
       .flush('', { status: 500, statusText: 'Server Error' });
     const res = await promise;
     expect(res.ok).toBe(false);

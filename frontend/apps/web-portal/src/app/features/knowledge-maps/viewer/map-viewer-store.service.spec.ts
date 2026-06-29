@@ -28,30 +28,28 @@ function ok<T>(value: T): Result<T> {
 
 describe('MapViewerStore', () => {
   let sut: MapViewerStore;
-  let getMap: jest.Mock;
+  let getCurrentMap: jest.Mock;
 
   beforeEach(() => {
-    getMap = jest.fn().mockResolvedValue(ok(MAP));
+    getCurrentMap = jest.fn().mockResolvedValue(ok(MAP));
 
     TestBed.configureTestingModule({
       providers: [
         MapViewerStore,
-        { provide: KnowledgeMapsApiService, useValue: { getMap } },
+        { provide: KnowledgeMapsApiService, useValue: { getCurrentMap } },
       ],
     });
     sut = TestBed.inject(MapViewerStore);
   });
 
-  it('openTab calls api.getMap(id) and lands the tab with a synthetic root + embedded nodes', async () => {
-    await sut.openTab('m1');
-    expect(getMap).toHaveBeenCalledWith('m1');
-    expect(sut.openTabs()).toHaveLength(1);
-    expect(sut.activeId()).toBe('m1');
-    expect(sut.activeTab()?.metadata).toEqual(MAP);
+  it('loadMap calls api.getCurrentMap and lands the map with a synthetic root + embedded nodes', async () => {
+    await sut.loadMap();
+    expect(getCurrentMap).toHaveBeenCalled();
+    expect(sut.map()).toEqual(MAP);
 
     // A synthetic root (the map itself, level -1) is prepended, and any
     // parentless node is re-parented onto it.
-    const nodes = sut.activeTab()!.nodes;
+    const nodes = sut.nodes();
     expect(nodes).toHaveLength(3);
     expect(nodes[0].id).toBe('m1__root');
     expect(nodes[0].level).toBe(-1);
@@ -60,43 +58,19 @@ describe('MapViewerStore', () => {
     expect(nodes.find((n) => n.id === 'n2')?.parentId).toBe('n1');
   });
 
-  it('openTab failure on getMap (404) sets errorKind and notFound computed', async () => {
-    getMap.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
-    await sut.openTab('missing');
+  it('loadMap failure on getCurrentMap (404) sets errorKind and notFound computed', async () => {
+    getCurrentMap.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });
+    await sut.loadMap();
     expect(sut.errorKind()).toBe('not-found');
     expect(sut.notFound()).toBe(true);
-    expect(sut.openTabs()).toHaveLength(0);
+    expect(sut.map()).toBeNull();
+    expect(sut.nodes()).toHaveLength(0);
   });
 
-  it('opening an already-open tab just switches active without re-fetching', async () => {
-    await sut.openTab('m1');
-    getMap.mockClear();
-    await sut.openTab('m1');
-    expect(getMap).not.toHaveBeenCalled();
-    expect(sut.activeId()).toBe('m1');
-  });
-
-  it('closeTab removes the tab and falls back to the last remaining as active', async () => {
-    await sut.openTab('m1');
-    getMap.mockResolvedValueOnce(ok({ ...MAP, id: 'm2', nodes: [] }));
-    await sut.openTab('m2');
-    expect(sut.activeId()).toBe('m2');
-    sut.closeTab('m2');
-    expect(sut.openTabs()).toHaveLength(1);
-    expect(sut.activeId()).toBe('m1');
-  });
-
-  it('closeTab on the last tab leaves activeId null', async () => {
-    await sut.openTab('m1');
-    sut.closeTab('m1');
-    expect(sut.openTabs()).toHaveLength(0);
-    expect(sut.activeId()).toBeNull();
-  });
-
-  it('selectNode + selectedNode computed resolves the node in the active tab', async () => {
-    await sut.openTab('m1');
+  it('selectNode + selectedNode computed resolves the node in the loaded map', async () => {
+    await sut.loadMap();
     sut.selectNode('n1');
-    // N1 is re-parented onto the synthetic root during openTab.
+    // N1 is re-parented onto the synthetic root during loadMap.
     expect(sut.selectedNode()?.id).toBe('n1');
     expect(sut.selectedNode()?.parentId).toBe('m1__root');
     sut.selectNode(null);
@@ -112,27 +86,21 @@ describe('MapViewerStore', () => {
     expect(sut.viewMode()).toBe('list');
   });
 
-  it('openTabs computed mirrors the underlying tabs map size', async () => {
-    expect(sut.openTabs()).toHaveLength(0);
-    await sut.openTab('m1');
-    expect(sut.openTabs()).toHaveLength(1);
+  it('map is null before loadMap is called', () => {
+    expect(sut.map()).toBeNull();
+    expect(sut.nodes()).toHaveLength(0);
   });
 
-  it('activeTab is null when no tab has been opened', () => {
-    expect(sut.activeTab()).toBeNull();
-  });
-
-  it('retry() re-runs openTab on the current active id', async () => {
-    await sut.openTab('m1');
-    getMap.mockClear();
-    // already open — retry() short-circuits via the already-open path
+  it('retry() re-runs loadMap', async () => {
+    await sut.loadMap();
+    getCurrentMap.mockClear();
     await sut.retry();
-    expect(sut.activeId()).toBe('m1');
-    expect(getMap).not.toHaveBeenCalled();
+    expect(getCurrentMap).toHaveBeenCalled();
+    expect(sut.map()).toEqual(MAP);
   });
 
   it('dimmedIds is empty when no filter is active', async () => {
-    await sut.openTab('m1');
+    await sut.loadMap();
     expect(sut.searchTerm()).toBe('');
     expect(sut.filters().size).toBe(0);
     expect(sut.dimmedIds().size).toBe(0);
@@ -140,7 +108,7 @@ describe('MapViewerStore', () => {
   });
 
   it('search term narrows matchedIds and dims the rest', async () => {
-    await sut.openTab('m1');
+    await sut.loadMap();
     sut.setSearch('Tech 1');
     expect(sut.matchedIds().has('n1')).toBe(true);
     expect(sut.matchedIds().has('n2')).toBe(false);
@@ -149,7 +117,7 @@ describe('MapViewerStore', () => {
   });
 
   it('level filter dims nodes outside the filter set', async () => {
-    await sut.openTab('m1');
+    await sut.loadMap();
     // root is level -1, N1 level 0, N2 level 1 — filter to level 2 dims all three
     sut.setFilters([2]);
     expect(sut.matchedIds().size).toBe(0);

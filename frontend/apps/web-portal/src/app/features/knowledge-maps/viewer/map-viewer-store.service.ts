@@ -3,34 +3,28 @@ import { KnowledgeMapsApiService } from '../knowledge-maps-api.service';
 import { nodeMatches } from '../lib/search';
 import type { InteractiveMap, InteractiveMapNode, NodeDetails } from '../knowledge-maps.types';
 
-export interface ViewerTab {
-  id: string;
-  metadata: InteractiveMap;
-  nodes: InteractiveMapNode[];
-  loadedAt: number;
-}
-
 export type ViewMode = 'graph' | 'list';
 
 /**
  * Signal-driven state container for the map viewer.
  *
- * Provided at the route component level (`providers: [MapViewerStore]`),
- * so each route activation gets a fresh instance. Holds open tabs,
- * the active tab, the selected node, search + filter state, view
- * mode, and the multi-select for export.
+ * The system holds a single interactive map, so the store loads that one
+ * map (via `getCurrentMap()`) and exposes its metadata + nodes directly —
+ * no tabs, no active id. Provided at the route component level
+ * (`providers: [MapViewerStore]`) so each activation gets a fresh instance.
+ * Holds the loaded map, the selected node, search + filter state, and the
+ * view mode.
  */
 @Injectable()
 export class MapViewerStore {
   private readonly api = inject(KnowledgeMapsApiService);
 
-  private readonly _tabsById = signal<Map<string, ViewerTab>>(new Map());
-  private readonly _activeId = signal<string | null>(null);
+  private readonly _map = signal<InteractiveMap | null>(null);
+  private readonly _nodes = signal<InteractiveMapNode[]>([]);
   private readonly _selectedNodeId = signal<string | null>(null);
   private readonly _searchTerm = signal('');
   private readonly _filters = signal<Set<number>>(new Set());
   private readonly _viewMode = signal<ViewMode>('graph');
-  private readonly _selection = signal<Set<string>>(new Set());
   private readonly _loading = signal(false);
   private readonly _errorKind = signal<string | null>(null);
   private readonly _nodeDetails = signal<NodeDetails | null>(null);
@@ -38,54 +32,43 @@ export class MapViewerStore {
   private readonly detailsCache = new Map<string, NodeDetails>();
 
   // ─── Read-only signal accessors ───
-  readonly tabsById = this._tabsById.asReadonly();
-  readonly activeId = this._activeId.asReadonly();
+  readonly map = this._map.asReadonly();
+  readonly nodes = this._nodes.asReadonly();
   readonly selectedNodeId = this._selectedNodeId.asReadonly();
   readonly searchTerm = this._searchTerm.asReadonly();
   readonly filters = this._filters.asReadonly();
   readonly viewMode = this._viewMode.asReadonly();
-  readonly selection = this._selection.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly errorKind = this._errorKind.asReadonly();
   readonly nodeDetails = this._nodeDetails.asReadonly();
   readonly detailsLoading = this._detailsLoading.asReadonly();
 
   // ─── Computed ───
-  readonly openTabs = computed(() => Array.from(this._tabsById().values()));
-  readonly activeTab = computed<ViewerTab | null>(() => {
-    const id = this._activeId();
-    return id ? (this._tabsById().get(id) ?? null) : null;
-  });
   readonly selectedNode = computed<InteractiveMapNode | null>(() => {
-    const tab = this.activeTab();
     const sid = this._selectedNodeId();
-    if (!tab || !sid) return null;
-    return tab.nodes.find((n) => n.id === sid) ?? null;
+    if (!sid) return null;
+    return this._nodes().find((n) => n.id === sid) ?? null;
   });
   readonly notFound = computed(() => this._errorKind() === 'not-found');
 
-  /** Set of node ids matching the current search term + level filters in the active tab. */
+  /** Set of node ids matching the current search term + level filters. */
   readonly matchedIds = computed<ReadonlySet<string>>(() => {
-    const tab = this.activeTab();
-    if (!tab) return new Set();
     const term = this._searchTerm();
     const filters = this._filters();
     const matched = new Set<string>();
-    for (const n of tab.nodes) {
+    for (const n of this._nodes()) {
       if (nodeMatches(n, term, filters)) matched.add(n.id);
     }
     return matched;
   });
 
   readonly dimmedIds = computed<ReadonlySet<string>>(() => {
-    const tab = this.activeTab();
-    if (!tab) return new Set();
     if (!this._searchTerm().trim() && this._filters().size === 0) {
       return new Set();
     }
     const matched = this.matchedIds();
     const dimmed = new Set<string>();
-    for (const n of tab.nodes) {
+    for (const n of this._nodes()) {
       if (!matched.has(n.id)) dimmed.add(n.id);
     }
     return dimmed;
@@ -93,15 +76,11 @@ export class MapViewerStore {
 
   // ─── Actions ───
 
-  /** Loads map (with embedded nodes) and sets the tab active. */
-  async openTab(id: string): Promise<void> {
-    if (this._tabsById().has(id)) {
-      this._activeId.set(id);
-      return;
-    }
+  /** Loads the single map (with embedded nodes) and a synthetic root. */
+  async loadMap(): Promise<void> {
     this._loading.set(true);
     this._errorKind.set(null);
-    const mapRes = await this.api.getMap(id);
+    const mapRes = await this.api.getCurrentMap();
     this._loading.set(false);
     if (!mapRes.ok) {
       this._errorKind.set(mapRes.error.kind);
@@ -112,7 +91,7 @@ export class MapViewerStore {
     // Synthesize the map itself as the central root node (level = -1).
     // The API returns nameAr/nameEn on the map object — this IS the Figma
     // center node. Nodes from mapData.nodes that have no parentId connect to it.
-    const rootId = `${id}__root`;
+    const rootId = `${mapData.id}__root`;
     const syntheticRoot: InteractiveMapNode = {
       id: rootId,
       nameAr: mapData.nameAr.trim(),
@@ -124,41 +103,28 @@ export class MapViewerStore {
       topicId: '',
       tags: [],
     };
-    const nodes: InteractiveMapNode[] = [
-      syntheticRoot,
-      ...mapData.nodes.map((n) => (!n.parentId ? { ...n, parentId: rootId } : n)),
-    ];
+    const reparented = mapData.nodes.map((n) =>
+      !n.parentId ? { ...n, parentId: rootId } : n,
+    );
 
-    const tab: ViewerTab = {
-      id,
-      metadata: mapData,
-      nodes,
-      loadedAt: Date.now(),
+    // The radial layout places the root's children by array order
+    // (1→top-right, 2→bottom-right, 3→bottom-left, 4→top-left). Order the
+    // main branches to match the Figma reading layout (RTL): top-right =
+    // Reduction, bottom-right = Removal, bottom-left = Recycling, top-left =
+    // Reuse. Unknown names keep their original relative order (other maps).
+    const BRANCH_ORDER = ['Reduction', 'Removal', 'Recycling', 'Reuse'];
+    const branchRank = (n: InteractiveMapNode): number => {
+      const i = BRANCH_ORDER.indexOf(n.nameEn ?? '');
+      return i === -1 ? BRANCH_ORDER.length : i;
     };
-    this._tabsById.update((m) => {
-      const next = new Map(m);
-      next.set(id, tab);
-      return next;
-    });
-    this._activeId.set(id);
-  }
+    const branches = reparented
+      .filter((n) => n.parentId === rootId)
+      .sort((a, b) => branchRank(a) - branchRank(b));
+    const leaves = reparented.filter((n) => n.parentId !== rootId);
+    const nodes: InteractiveMapNode[] = [syntheticRoot, ...branches, ...leaves];
 
-  closeTab(id: string): void {
-    this._tabsById.update((m) => {
-      const next = new Map(m);
-      next.delete(id);
-      return next;
-    });
-    if (this._activeId() === id) {
-      const remaining = Array.from(this._tabsById().keys());
-      this._activeId.set(remaining[remaining.length - 1] ?? null);
-    }
-  }
-
-  setActive(id: string): void {
-    if (!this._tabsById().has(id)) return;
-    this._activeId.set(id);
-    this._selectedNodeId.set(null);
+    this._map.set(mapData);
+    this._nodes.set(nodes);
   }
 
   selectNode(id: string | null): void {
@@ -210,13 +176,7 @@ export class MapViewerStore {
     this._viewMode.set(mode);
   }
 
-  setSelection(ids: ReadonlySet<string>): void {
-    this._selection.set(new Set(ids));
-  }
-
-  retry(): Promise<void> | void {
-    const id = this._activeId();
-    if (id) return this.openTab(id);
-    return undefined;
+  retry(): Promise<void> {
+    return this.loadMap();
   }
 }

@@ -45,6 +45,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
   readonly mirrored = input<boolean>(false);
   readonly selectedId = input<string | null>(null);
   readonly dimmedIds = input<ReadonlySet<string>>(new Set());
+  /** When the detail drawer opens/closes the canvas resizes — re-fit the graph. */
+  readonly panelOpen = input<boolean>(false);
 
   readonly nodeClick = output<string>();
   readonly selectionChange = output<ReadonlySet<string>>();
@@ -93,6 +95,19 @@ export class GraphCanvasComponent implements AfterViewInit, OnDestroy {
     effect(() => {
       this.mirrored();
       this.shouldRefit = true;
+    });
+
+    // ─── Drawer open/close resizes the canvas → resize + re-fit ──────
+    effect(() => {
+      this.panelOpen();
+      const cy = this.cy;
+      if (!cy) return;
+      // Defer so the flex layout settles (canvas has its new width) first.
+      requestAnimationFrame(() => {
+        if (!this.cy) return;
+        this.cy.resize();
+        this.cy.fit(undefined, 40);
+      });
     });
 
     // ─── Effect 2: apply selectedId input ───
