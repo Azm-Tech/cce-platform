@@ -16,5 +16,6 @@ internal sealed class PostReplyConfiguration : IEntityTypeConfiguration<PostRepl
         builder.HasIndex(r => new { r.PostId, r.Score }).HasDatabaseName("ix_post_reply_post_score");
         builder.HasIndex(r => r.ParentReplyId).HasDatabaseName("ix_post_reply_parent_id");
         builder.HasIndex(r => r.ThreadPath).HasDatabaseName("ix_post_reply_thread_path");
+        builder.HasIndex(r => r.ModerationStatus).HasDatabaseName("ix_post_reply_moderation_status");
     }
 }

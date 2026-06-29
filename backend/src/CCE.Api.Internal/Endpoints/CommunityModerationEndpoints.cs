@@ -1,14 +1,17 @@
 using CCE.Api.Common.Extensions;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Community.Commands.ApproveJoinRequest;
+using CCE.Application.Community.Commands.ApproveModerationRecord;
 using CCE.Application.Community.Commands.ChangeCommunityVisibility;
 using CCE.Application.Community.Commands.CreateCommunity;
 using CCE.Application.Community.Commands.RejectJoinRequest;
+using CCE.Application.Community.Commands.RejectModerationRecord;
 using CCE.Application.Community.Commands.SoftDeletePost;
 using CCE.Application.Community.Commands.SoftDeleteReply;
 using CCE.Application.Community.Commands.UpdateCommunity;
 using CCE.Application.Community.Public.Queries.GetPublicPostById;
 using CCE.Application.Community.Public.Queries.ListPublicPostReplies;
+using CCE.Application.Community.Queries.GetModerationQueue;
 using CCE.Application.Community.Queries.ListAdminPosts;
 using CCE.Application.Community.Queries.ListJoinRequests;
 using CCE.Domain;
@@ -24,6 +27,44 @@ public static class CommunityModerationEndpoints
     public static IEndpointRouteBuilder MapCommunityModerationEndpoints(this IEndpointRouteBuilder app)
     {
         var moderation = app.MapGroup("/api/admin/community").WithTags("CommunityModeration");
+
+        // ─── AI Moderation Queue ───
+        moderation.MapGet("/moderation/queue", async (
+            string? status,
+            string? contentType,
+            int? page,
+            int? pageSize,
+            IMediator mediator,
+            CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new GetModerationQueueQuery(status, contentType, page ?? 1, pageSize ?? 20), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Community_Post_Moderate)
+        .WithName("GetModerationQueue");
+
+        moderation.MapPost("/moderation/{recordId:guid}/approve", async (
+            System.Guid recordId, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new ApproveModerationRecordCommand(recordId), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Community_Post_Moderate)
+        .WithName("ApproveModerationRecord");
+
+        moderation.MapPost("/moderation/{recordId:guid}/reject", async (
+            System.Guid recordId, RejectModerationRequest? body, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(
+                new RejectModerationRecordCommand(recordId, body?.Reason), ct)
+                .ConfigureAwait(false);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.Community_Post_Moderate)
+        .WithName("RejectModerationRecord");
 
         // GET /api/admin/community/posts — paginated moderation list.
         // Supports query params: ?page=&pageSize=&topicId=&search=&status=&locale=
@@ -139,3 +180,5 @@ public static class CommunityModerationEndpoints
         return app;
     }
 }
+
+public sealed record RejectModerationRequest(string? Reason);

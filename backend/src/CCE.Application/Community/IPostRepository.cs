@@ -13,6 +13,12 @@ public interface IPostRepository
     Task<Post?> GetAsync(Guid id, CancellationToken ct);
 
     /// <summary>
+    /// Returns the post regardless of its <c>IsDeleted</c> state.
+    /// Use in moderation flows that must load soft-deleted content (restore / counter update).
+    /// </summary>
+    Task<Post?> GetIncludingDeletedAsync(Guid id, CancellationToken ct);
+
+    /// <summary>
     /// Lightweight scalar lookup used by the SignalR hub's <c>Subscribe</c> path — returns only the
     /// <see cref="Post.CommunityId"/> (untracked, no <c>Tags</c> include) so access checks don't pay
     /// the cost of hydrating a full trackable aggregate.

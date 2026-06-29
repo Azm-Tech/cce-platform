@@ -277,6 +277,29 @@ public static class DependencyInjection
         // Interactive City
         services.AddScoped<ICityScenarioService, CityScenarioService>();
 
+        // Community moderation — AI provider selected by Moderation:Provider in appsettings.
+        services.Configure<CCE.Infrastructure.Moderation.ModerationOptions>(
+            configuration.GetSection(CCE.Infrastructure.Moderation.ModerationOptions.SectionName));
+        services.AddSingleton<CCE.Application.Community.Moderation.IRuleBasedPreFilter,
+            CCE.Infrastructure.Moderation.RuleBasedPreFilter>();
+        var moderationProvider = (configuration["Moderation:Provider"] ?? "None")
+            .Trim().ToLowerInvariant();
+        switch (moderationProvider)
+        {
+            case "ollama":
+                services.AddHttpClient<CCE.Application.Community.Moderation.IAiModerationProvider,
+                    CCE.Infrastructure.Moderation.OllamaModerationProvider>();
+                break;
+            case "openaicompatible":
+                services.AddHttpClient<CCE.Application.Community.Moderation.IAiModerationProvider,
+                    CCE.Infrastructure.Moderation.OpenAiCompatibleModerationProvider>();
+                break;
+            default:
+                services.AddSingleton<CCE.Application.Community.Moderation.IAiModerationProvider,
+                    CCE.Infrastructure.Moderation.NullAiModerationProvider>();
+                break;
+        }
+
         // Messaging (MassTransit + EF outbox) — transport selected by Messaging:Transport in appsettings.
         // InMemory by default (no broker); set to RabbitMQ in production. Consumers run only where
         // registerConsumers=true (CCE.Worker); APIs/Seeder publish-only via the outbox.

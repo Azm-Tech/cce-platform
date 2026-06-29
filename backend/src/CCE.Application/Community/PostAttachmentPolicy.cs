@@ -22,7 +22,7 @@ public static class PostAttachmentPolicy
     // ── MIME allow-lists ────────────────────────────────────────────────────
     public static readonly IReadOnlySet<string> ImageMimeTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "image/jpeg", "image/png", "image/webp",
+        "image/jpeg", "image/jpg", "image/png", "image/webp",
     };
 
     public static readonly IReadOnlySet<string> VideoMimeTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

@@ -216,6 +216,14 @@ public sealed class NotificationTemplateSeeder : ISeeder
             "أشار إليك أحد المستخدمين في رد.",
             "A user mentioned you in a reply."),
 
+        // Community — author's content removed by moderation (InApp). Generic copy by design:
+        // never expose the AI category/score that triggered the takedown.
+        new("CONTENT_REJECTED", NotificationChannel.InApp,
+            "تمت إزالة المحتوى الخاص بك",
+            "Your content was removed",
+            "تمت إزالة منشور أو رد قمت بنشره لمخالفته إرشادات المجتمع.",
+            "A post or reply you published was removed because it violated the community guidelines."),
+
         // OTP verification — Email + SMS (channel chosen at runtime)
         new("OTP_VERIFICATION", NotificationChannel.Email,
             "رمز التحقق",

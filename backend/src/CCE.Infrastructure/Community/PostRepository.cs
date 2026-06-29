@@ -16,6 +16,10 @@ public sealed class PostRepository : IPostRepository
     public Task<Post?> GetAsync(Guid id, CancellationToken ct)
         => _db.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.Id == id, ct);
 
+    public Task<Post?> GetIncludingDeletedAsync(Guid id, CancellationToken ct)
+        => _db.Posts.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+
     public Task<Guid?> GetCommunityIdAsync(Guid id, CancellationToken ct)
         => _db.Posts.AsNoTracking()
             .Where(p => p.Id == id)

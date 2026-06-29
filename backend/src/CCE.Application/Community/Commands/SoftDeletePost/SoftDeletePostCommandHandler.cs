@@ -67,7 +67,7 @@ public sealed class SoftDeletePostCommandHandler : IRequestHandler<SoftDeletePos
             community?.DecrementPosts();
         }
 
-        await _service.UpdatePostAsync(post, cancellationToken).ConfigureAwait(false);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         // Remove the deleted post from Redis immediately so pagination totals stay accurate.
         // Personal feed:user:{*} keys self-heal at 24h TTL — there is no reverse index to enumerate them.

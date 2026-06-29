@@ -98,6 +98,10 @@ public static class MessagingServiceExtensions
                 // RankingConsumer removed: it was a second writer to hot:{communityId} causing a
                 // dual-writer race with VoteConsumer. Leaderboard recovery is now an admin command:
                 // POST /api/admin/community/{id}/hot-leaderboard/rebuild
+                x.AddConsumer<CCE.Infrastructure.Moderation.ContentModerationConsumer,
+                              CCE.Infrastructure.Moderation.ContentModerationConsumerDefinition>();
+                x.AddConsumer<ContentFlaggedNotificationConsumer, ContentFlaggedNotificationConsumerDefinition>();
+                x.AddConsumer<ContentRejectedAuthorNotificationConsumer, ContentRejectedAuthorNotificationConsumerDefinition>();
                 x.AddConsumer<NotificationConsumer, NotificationConsumerDefinition>();
                 x.AddConsumer<ContentNotificationConsumer, ContentNotificationConsumerDefinition>();
                 x.AddConsumer<SignalRConsumer, SignalRConsumerDefinition>();

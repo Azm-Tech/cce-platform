@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCE Moderation Pipeline</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:     #0D1720;
+  --surf:    #132030;
+  --surf-hi: #192C44;
+  --bdr:     #223348;
+  --teal:    #25B89A;
+  --teal-g:  rgba(37,184,154,.12);
+  --amber:   #EEA030;
+  --amber-g: rgba(238,160,48,.10);
+  --red:     #E04850;
+  --red-g:   rgba(224,72,80,.10);
+  --green:   #34CF7A;
+  --green-g: rgba(52,207,122,.10);
+  --slate:   #56789A;
+  --txt:     #E2EDF7;
+  --txt-d:   #5A7898;
+  --txt-dd:  #2E4A62;
+  --mono: 'SF Mono','Cascadia Code',Consolas,'Courier New',monospace;
+  --sans: system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--txt);
+  font-family: var(--sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+code {
+  font-family: var(--mono);
+  font-size: .83em;
+  background: var(--surf-hi);
+  color: var(--teal);
+  padding: .1em .32em;
+  border-radius: 3px;
+}
+
+/* ── HEADER ─────────────────────────────────────── */
+.hdr {
+  padding: 2.5rem 2.5rem 2rem;
+  border-bottom: 1px solid var(--bdr);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap;
+}
+.hdr-eye {
+  font-family: var(--mono);
+  font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: .55rem;
+}
+.hdr h1 {
+  font-size: clamp(1.5rem,3.5vw,2.2rem);
+  font-weight: 700; letter-spacing: -.025em; line-height: 1.15;
+  text-wrap: balance;
+}
+.hdr-sub { margin-top: .4rem; font-size: .84rem; color: var(--txt-d); max-width: 54ch; }
+.hdr-meta {
+  font-family: var(--mono); font-size: .67rem; color: var(--txt-dd);
+  text-align: right; line-height: 1.8; flex-shrink: 0;
+}
+.hdr-meta span { display: block; }
+
+/* ── VISIBILITY CALLOUT ──────────────────────────── */
+.callout {
+  margin: 1.25rem 2.5rem;
+  background: var(--teal-g);
+  border: 1px solid rgba(37,184,154,.22);
+  border-left: 3px solid var(--teal);
+  border-radius: 5px;
+  padding: .8rem 1.1rem;
+  font-size: .8rem; color: var(--txt-d);
+  display: flex; gap: .75rem; align-items: flex-start;
+}
+.callout strong { color: var(--teal); }
+
+/* ── FLOW CONTAINER ──────────────────────────────── */
+.flow {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 2.5rem 4rem;
+}
+
+/* ── STAGE ───────────────────────────────────────── */
+.stage {
+  display: flex; gap: 0;
+  position: relative;
+}
+.stage + .stage { margin-top: 0; }
+
+.s-lbl {
+  width: 6.5rem; flex-shrink: 0;
+  padding: 1.75rem 1.25rem 0 0;
+  text-align: right;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.s-n {
+  font-family: var(--mono); font-size: 1.2rem; font-weight: 700;
+  color: var(--txt-dd); line-height: 1; margin-bottom: .3rem;
+}
+.s-tag {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--teal); opacity: .7;
+}
+
+.s-body {
+  flex: 1;
+  padding: 1.5rem 0 1.5rem 2rem;
+  border-left: 2px solid var(--bdr);
+  position: relative;
+}
+/* dot on the spine */
+.s-body::before {
+  content: '';
+  position: absolute;
+  left: -5px; top: 2rem;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 0 3px rgba(37,184,154,.18), 0 0 10px rgba(37,184,154,.35);
+}
+
+/* connector gap between stages */
+.gap-stage { height: .5rem; }
+
+/* ── NODE CARD ───────────────────────────────────── */
+.nd {
+  background: var(--surf);
+  border: 1px solid var(--bdr);
+  border-radius: 6px;
+  padding: .85rem 1rem;
+}
+.nd + .nd { margin-top: .6rem; }
+
+.nd.t-teal   { border-top: 2px solid var(--teal); }
+.nd.t-amber  { border-top: 2px solid var(--amber); }
+.nd.t-red    { border-top: 2px solid var(--red); }
+.nd.t-green  { border-top: 2px solid var(--green); }
+.nd.ghost    { opacity: .5; border-style: dashed; }
+
+.nd-eye {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt-d); margin-bottom: .28rem;
+}
+.nd-title {
+  font-size: .93rem; font-weight: 600; color: var(--txt); margin-bottom: .12rem;
+}
+.nd-mono {
+  font-family: var(--mono); font-size: .76rem; color: var(--teal); margin-bottom: .1rem;
+}
+.nd-body {
+  font-size: .78rem; color: var(--txt-d); line-height: 1.55; margin-top: .22rem;
+}
+.nd-row {
+  display: flex; gap: .6rem; flex-wrap: wrap;
+}
+.nd-row > .nd { flex: 1; min-width: 175px; }
+
+/* ── PHASE BOX ───────────────────────────────────── */
+.ph {
+  background: var(--surf-hi);
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.ph + .ph { margin-top: .6rem; }
+.ph-eye {
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--txt-d); margin-bottom: .55rem;
+}
+.ph-h { font-size: .88rem; font-weight: 600; margin-bottom: .6rem; }
+
+/* ── RULE GRID ───────────────────────────────────── */
+.rg { display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem; }
+.rc { border-radius: 5px; padding: .6rem .65rem; border: 1px solid; }
+.rc.flag { border-color: rgba(238,160,48,.3); background: var(--amber-g); }
+.rc.pass { border-color: rgba(37,184,154,.3); background: var(--teal-g); }
+.rc-s {
+  font-family: var(--mono); font-size: .57rem; letter-spacing: .1em;
+  text-transform: uppercase; font-weight: 700; margin-bottom: .32rem;
+}
+.rc.flag .rc-s { color: var(--amber); }
+.rc.pass .rc-s { color: var(--teal); }
+.rc-b { font-size: .75rem; color: var(--txt-d); }
+.rc-c { font-family: var(--mono); font-size: .65rem; color: var(--txt-dd); margin-top: .18rem; }
+
+/* ── PILL ────────────────────────────────────────── */
+.pill {
+  display: inline-flex; align-items: center; gap: .28rem;
+  padding: .18rem .5rem; border-radius: 100px;
+  font-family: var(--mono); font-size: .63rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+}
+.pill::before { content: '●'; font-size: .45em; }
+.pill.ap { background: var(--green-g); color: var(--green); border: 1px solid rgba(52,207,122,.28); }
+.pill.fl { background: var(--amber-g); color: var(--amber); border: 1px solid rgba(238,160,48,.28); }
+.pill.rj { background: var(--red-g);   color: var(--red);   border: 1px solid rgba(224,72,80,.28); }
+.pill.pd { background: rgba(86,120,154,.12); color: var(--slate); border: 1px solid rgba(86,120,154,.22); }
+
+/* ── DECISION TABLE ──────────────────────────────── */
+.dt { width: 100%; border-collapse: collapse; font-size: .8rem; margin-top: .6rem; }
+.dt th {
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt-d); text-align: left; padding: .38rem .65rem; border-bottom: 1px solid var(--bdr);
+}
+.dt td {
+  padding: .38rem .65rem; border-bottom: 1px solid rgba(34,51,72,.55);
+  vertical-align: middle; color: var(--txt-d);
+}
+.dt td:first-child { color: var(--txt); font-size: .78rem; }
+.dt tr:last-child td { border-bottom: none; }
+.dt .phase { font-family: var(--mono); font-size: .62rem; color: var(--txt-dd); }
+
+/* ── OUTCOME CARDS ───────────────────────────────── */
+.oc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .6rem; }
+.oc { border-radius: 6px; padding: .9rem 1rem; border: 1px solid; }
+.oc.ap { border-color: rgba(52,207,122,.25); background: var(--green-g); }
+.oc.fl { border-color: rgba(238,160,48,.25);  background: var(--amber-g); }
+.oc.rj { border-color: rgba(224,72,80,.25);   background: var(--red-g); }
+.oc-hd { margin-bottom: .6rem; }
+.oc-li { list-style: none; }
+.oc-li li {
+  font-size: .75rem; color: var(--txt-d);
+  display: flex; align-items: flex-start; gap: .38rem;
+  line-height: 1.5; margin-bottom: .18rem;
+}
+.oc.ap .oc-li li::before { content: '→'; color: var(--green); flex-shrink: 0; }
+.oc.fl .oc-li li::before { content: '→'; color: var(--amber); flex-shrink: 0; }
+.oc.rj .oc-li li::before { content: '→'; color: var(--red);   flex-shrink: 0; }
+
+/* ── ENDPOINT TAG ────────────────────────────────── */
+.ep {
+  font-family: var(--mono); font-size: .68rem;
+  background: var(--surf-hi); border: 1px solid var(--bdr); border-radius: 4px;
+  padding: .2rem .55rem; color: var(--teal); display: inline-block; margin-bottom: .3rem;
+}
+.m { font-size: .57rem; font-weight: 700; opacity: .8; margin-right: .28rem; }
+
+/* ── TEST RESULTS ────────────────────────────────── */
+.tr-wrap { overflow-x: auto; }
+.tr { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.tr th {
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt-d); padding: .38rem .7rem; border-bottom: 1px solid var(--bdr); text-align: left;
+}
+.tr td { padding: .42rem .7rem; border-bottom: 1px solid rgba(34,51,72,.5); vertical-align: middle; color: var(--txt-d); }
+.tr tr:last-child td { border-bottom: none; }
+.tr .mn { font-family: var(--mono); font-size: .72rem; color: var(--txt-d); }
+.tr .hi { color: var(--txt); }
+.tr .note { font-size: .72rem; color: var(--txt-dd); }
+
+/* ── FOOTER ──────────────────────────────────────── */
+.pg-ft {
+  max-width: 960px; margin: 0 auto; padding: 1.25rem 2.5rem 3rem;
+  border-top: 1px solid var(--bdr);
+  display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center;
+}
+.legend { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: .4rem; font-size: .72rem; color: var(--txt-dd); }
+.ldot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pg-ft-right { margin-left: auto; font-family: var(--mono); font-size: .65rem; color: var(--txt-dd); }
+
+/* ── ANIMATED PULSE ──────────────────────────────── */
+@keyframes pulse-down {
+  0%   { top: 2rem; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: calc(100% - 2rem); opacity: 0; }
+}
+.spine-pulse {
+  position: absolute;
+  left: -6px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 12px var(--teal), 0 0 4px var(--teal);
+  pointer-events: none;
+  animation: pulse-down 4s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .hdr { padding: 1.5rem 1.25rem; }
+  .callout { margin: 1rem 1.25rem; }
+  .flow { padding: 1rem 1.25rem 3rem; }
+  .s-lbl { width: 4rem; }
+  .s-n { font-size: .9rem; }
+  .rg { grid-template-columns: 1fr 1fr; }
+  .oc-grid { grid-template-columns: 1fr; }
+  .nd-row { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spine-pulse { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────── -->
+<header class="hdr">
+  <div class="hdr-left">
+    <p class="hdr-eye">CCE Platform · Community Module</p>
+    <h1>Content Moderation Pipeline</h1>
+    <p class="hdr-sub">Two-phase automated analysis (rule filter → AI) followed by a human review queue. Async from publish; content surfaces immediately and is retracted only on violation.</p>
+  </div>
+  <div class="hdr-meta">
+    <span>Transport · MassTransit InMemory / RabbitMQ</span>
+    <span>AI Provider · Groq llama-3.1-8b-instant</span>
+    <span>Outbox · EF Core + SQL Server</span>
+  </div>
+</header>
+
+<!-- ── VISIBILITY MODEL ─────────────────────────────────── -->
+<div class="callout">
+  <div>
+    <strong>Surface → Retract model.</strong>
+    Content is visible immediately on publish. The consumer runs ~1–2 s later and retracts only if a rule or AI verdict fires. This is honest — we catch violations quickly after, not before they surface. Feed and search queries carry no <code>ModerationStatus</code> predicate; only Rejected content is evicted explicitly.
+  </div>
+</div>
+
+<!-- ── FLOW ─────────────────────────────────────────────── -->
+<main class="flow">
+
+  <!-- 01 PUBLISH -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">01</span><span class="s-tag">Publish</span></div>
+    <div class="s-body">
+      <div class="nd-row">
+        <div class="nd t-teal">
+          <div class="nd-eye">External API · CreatePostCommand</div>
+          <div class="nd-title">POST /api/community/posts</div>
+          <div class="nd-mono">SaveAsDraft = false → Publish()</div>
+          <div class="nd-body">Author submits title, full body, locale, tagIds. Command handler creates the post as Draft, then immediately calls <code>Post.Publish()</code> to transition Published.</div>
+        </div>
+        <div class="nd">
+          <div class="nd-eye">Domain · Post aggregate</div>
+          <div class="nd-title">Post.Publish()</div>
+          <div class="nd-mono">raises PostCreatedEvent</div>
+          <div class="nd-body">Validates title + content. Raises domain event with <strong>full content body</strong> — not just the title. <code>PostCreatedEvent.Content</code> is what reaches the consumer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 02 EVENT DISPATCH -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">02</span><span class="s-tag">Dispatch</span></div>
+    <div class="s-body">
+      <div class="nd t-teal" style="margin-bottom:.6rem">
+        <div class="nd-eye">EF Core Interceptor · SavingChangesAsync · Pre-commit</div>
+        <div class="nd-title">DomainEventDispatcher</div>
+        <div class="nd-body">Drains domain events from all tracked aggregates and publishes via MediatR <em>before</em> the SQL transaction commits. Any outbox rows added by the handlers are included in the same <code>SaveChanges</code>, making event delivery atomic with the aggregate write.</div>
+      </div>
+      <div class="nd-row">
+        <div class="nd t-teal">
+          <div class="nd-eye">MediatR Handler · moderation path</div>
+          <div class="nd-title">PostModerationRequestedBusPublisher</div>
+          <div class="nd-mono">INotificationHandler&lt;PostCreatedEvent&gt;</div>
+          <div class="nd-body">Stages <code>ContentModerationRequestedIntegrationEvent</code> carrying PostId, <code>"post"</code>, full body, locale into the EF outbox.</div>
+        </div>
+        <div class="nd ghost">
+          <div class="nd-eye">MediatR Handlers · other fan-out</div>
+          <div class="nd-title">Feed · Notifications · SignalR</div>
+          <div class="nd-mono">PostCreatedIntegrationEvent</div>
+          <div class="nd-body">Parallel fan-out to follower feeds, notification consumers, real-time SignalR hub. Runs concurrently with moderation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 03 TRANSPORT -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">03</span><span class="s-tag">Transport</span></div>
+    <div class="s-body">
+      <div class="nd-row">
+        <div class="nd t-teal">
+          <div class="nd-eye">EF Core Outbox · SQL Server</div>
+          <div class="nd-title">outbox_message</div>
+          <div class="nd-body">Message row committed atomically with the post in a single SQL transaction. No dual-write, no lost-message window — the message exists only if the post exists.</div>
+        </div>
+        <div class="nd">
+          <div class="nd-eye">MassTransit · QueryDelay = 1 s</div>
+          <div class="nd-title">BusOutboxDeliveryService</div>
+          <div class="nd-body">Polls <code>outbox_message</code> every second, stamps <code>sent_time</code>, and relays rows to the bus. Dev → InMemory. Prod → RabbitMQ. Same code, different transport.</div>
+        </div>
+      </div>
+      <div style="margin-top:.5rem; font-size:.74rem; color:var(--txt-dd);">
+        ⚠ InMemory limitation: two API processes sharing the same DB both run <code>BusOutboxDeliveryService</code>. Occasional delivery to the wrong process causes silent message loss in dev. Not present with RabbitMQ.
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 04 CONSUMER -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">04</span><span class="s-tag">Consumer</span></div>
+    <div class="s-body">
+
+      <div class="nd t-teal" style="margin-bottom:.75rem; position:relative; overflow:hidden;">
+        <div class="nd-eye">MassTransit Consumer · ConcurrentMessageLimit = 5 · Retry: 2 s → 10 s → 30 s</div>
+        <div class="nd-title">ContentModerationConsumer</div>
+        <div class="nd-body">Receives <code>ContentModerationRequestedIntegrationEvent</code>. Phase 1 fires unconditionally; Phase 2 (AI) fires only if Phase 1 passes. Scope is created <em>after</em> both phases — the DB commit from step 01 has completed by then, so <code>FindPostAsync</code> returns the live row.</div>
+        <div class="spine-pulse"></div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ph">
+        <div class="ph-eye">Phase 1 · Rule-Based Pre-filter · No API call · Always runs</div>
+        <div class="ph-h">RuleBasedPreFilter.ShouldFlag(content)</div>
+        <div class="rg">
+          <div class="rc flag">
+            <div class="rc-s">Flagged</div>
+            <div class="rc-b">content.Length &lt; 5</div>
+            <div class="rc-c">"content-too-short"</div>
+          </div>
+          <div class="rc flag">
+            <div class="rc-s">Flagged</div>
+            <div class="rc-b">URL-only body</div>
+            <div class="rc-c">^(https?://\S+\s*)+$</div>
+          </div>
+          <div class="rc flag">
+            <div class="rc-s">Flagged</div>
+            <div class="rc-b">Denylist keyword</div>
+            <div class="rc-c">Moderation:DenyList[]</div>
+          </div>
+          <div class="rc pass">
+            <div class="rc-s">Pass → Phase 2</div>
+            <div class="rc-b">No rule matched</div>
+            <div class="rc-c">Escalate to AI</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ph">
+        <div class="ph-eye">Phase 2 · AI Provider · Groq API · Skipped if Phase 1 flagged</div>
+        <div class="ph-h">OpenAiCompatibleModerationProvider</div>
+        <div class="nd-row" style="margin-bottom:.55rem">
+          <div class="nd" style="min-width:140px">
+            <div class="nd-eye">Model</div>
+            <div class="nd-mono" style="font-size:.73rem">llama-3.1-8b-instant</div>
+          </div>
+          <div class="nd" style="min-width:220px">
+            <div class="nd-eye">Endpoint</div>
+            <div class="nd-mono" style="font-size:.7rem">api.groq.com/openai/v1/<br>chat/completions</div>
+          </div>
+          <div class="nd" style="min-width:180px">
+            <div class="nd-eye">Returns</div>
+            <div class="nd-mono" style="font-size:.72rem">ModerationScore {<br>&nbsp;IsSafe, Confidence,<br>&nbsp;Category, Reason }</div>
+          </div>
+        </div>
+        <div style="font-size:.76rem; color:var(--txt-d); line-height:1.55">
+          JSON response stripped of markdown fences, then parsed.
+          HTTP 429 → <code>rate-limited</code>.
+          Malformed JSON → <code>parse-error</code>.
+          Both resolve to <span class="pill fl">Flagged</span> — human reviews edge cases, never silent approval.
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 05 DECISION -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">05</span><span class="s-tag">Decision</span></div>
+    <div class="s-body">
+      <div class="nd t-teal">
+        <div class="nd-eye">Status Resolution · ResolveStatus(score, phase)</div>
+        <div class="nd-title">Decision Table</div>
+        <div style="overflow-x:auto">
+          <table class="dt">
+            <thead>
+              <tr><th>Condition</th><th>Phase</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rule filter matched</td>
+                <td class="phase">rule</td>
+                <td><span class="pill fl">Flagged</span></td>
+              </tr>
+              <tr>
+                <td>AI: IsSafe = true, confidence ≥ 0.6</td>
+                <td class="phase">ai</td>
+                <td><span class="pill ap">Approved</span></td>
+              </tr>
+              <tr>
+                <td>AI: IsSafe = true, confidence &lt; 0.6</td>
+                <td class="phase">ai</td>
+                <td><span class="pill fl">Flagged</span> — uncertain</td>
+              </tr>
+              <tr>
+                <td>AI: spam or hate, confidence ≥ 0.7</td>
+                <td class="phase">ai</td>
+                <td><span class="pill rj">Rejected</span></td>
+              </tr>
+              <tr>
+                <td>AI: explicit or harassment, any confidence</td>
+                <td class="phase">ai</td>
+                <td><span class="pill fl">Flagged</span> — human review</td>
+              </tr>
+              <tr>
+                <td>AI: parse-error or rate-limited</td>
+                <td class="phase">ai</td>
+                <td><span class="pill fl">Flagged</span> — degraded path</td>
+              </tr>
+              <tr>
+                <td>Provider = None (AI disabled)</td>
+                <td class="phase">—</td>
+                <td><span class="pill ap">Approved</span> — rule still runs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:.55rem; font-size:.74rem; color:var(--txt-dd)">
+          Only <code>spam</code> and <code>hate</code> with high confidence auto-Reject. Everything else escalates to Flagged for human review, minimising false-positive auto-removals.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 06 PERSIST -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">06</span><span class="s-tag">Persist</span></div>
+    <div class="s-body">
+      <div class="nd-row">
+        <div class="nd t-teal">
+          <div class="nd-eye">Audit Log · Append-only · Never updated</div>
+          <div class="nd-title">ModerationRecord</div>
+          <div class="nd-body">One row per decision event: ContentType, ContentId, Status, Phase (rule / ai / human), Provider, Score, Category, Reason, ReviewedById, CreatedOn. Indexed on <code>(ContentType, ContentId)</code> and <code>Status</code>.</div>
+        </div>
+        <div class="nd">
+          <div class="nd-eye">Domain · post or reply</div>
+          <div class="nd-title">SetModerationStatus(status)</div>
+          <div class="nd-body">Updates <code>moderation_status</code> column on the content row. Both the record and the status update are written in a single <code>db.SaveChangesAsync()</code>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 07 OUTCOMES -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">07</span><span class="s-tag">Outcomes</span></div>
+    <div class="s-body">
+      <div class="oc-grid" style="margin-bottom:.45rem">
+        <div class="oc ap">
+          <div class="oc-hd"><span class="pill ap">Approved</span></div>
+          <ul class="oc-li">
+            <li>Content stays visible in feed and search</li>
+            <li>No further automated action</li>
+          </ul>
+        </div>
+        <div class="oc fl">
+          <div class="oc-hd"><span class="pill fl">Flagged</span></div>
+          <ul class="oc-li">
+            <li>Content stays visible (surface model)</li>
+            <li>ContentFlaggedIntegrationEvent → admin notified</li>
+            <li>Enters human review queue</li>
+          </ul>
+        </div>
+        <div class="oc rj">
+          <div class="oc-hd"><span class="pill rj">Rejected</span></div>
+          <ul class="oc-li">
+            <li>post.SoftDelete() — IsDeleted = true</li>
+            <li>Meilisearch: DeleteAsync(CommunityPosts)</li>
+            <li>Redis: RemoveFromAllFeeds(communityId)</li>
+            <li>ContentFlaggedIntegrationEvent published</li>
+          </ul>
+        </div>
+      </div>
+      <div style="font-size:.73rem; color:var(--txt-dd)">
+        Auto-reject fires only when <code>Moderation:AutoRejectOnViolation = true</code>. Default is false — flagged content stays visible until a human confirms.
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage"></div>
+
+  <!-- 08 HUMAN REVIEW -->
+  <div class="stage">
+    <div class="s-lbl"><span class="s-n">08</span><span class="s-tag">Human<br>Review</span></div>
+    <div class="s-body">
+      <div class="nd t-teal" style="margin-bottom:.6rem">
+        <div class="nd-eye">Internal Admin API · Requires Permissions.Community_Post_Moderate</div>
+        <div class="nd-title">Moderation Queue</div>
+        <div class="ep"><span class="m">GET</span>/api/admin/community/moderation/queue?status=Flagged&amp;pageSize=20</div>
+        <div class="nd-body">Returns paginated ModerationRecord rows with content preview, auto-decision details, confidence score, and category. Reviewers work from the Flagged bucket down.</div>
+      </div>
+      <div class="nd-row">
+        <div class="nd t-green">
+          <div class="nd-eye">Admin Action · Approve</div>
+          <div class="nd-title">Human Approve</div>
+          <div class="ep"><span class="m">POST</span>/api/admin/community/moderation/{id}/approve</div>
+          <ul class="oc-li" style="margin-top:.45rem">
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--green)">→</span>Appends ModerationRecord (phase=human, Approved, ReviewedById)</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--green)">→</span>IsDeleted = false (restore if auto-rejected)</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--green)">→</span>Re-indexes post to Meilisearch</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); line-height:1.5"><span style="color:var(--green)">→</span>ModerationStatus = Approved</li>
+          </ul>
+        </div>
+        <div class="nd t-red">
+          <div class="nd-eye">Admin Action · Reject</div>
+          <div class="nd-title">Human Reject</div>
+          <div class="ep"><span class="m">POST</span>/api/admin/community/moderation/{id}/reject</div>
+          <ul class="oc-li" style="margin-top:.45rem">
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--red)">→</span>Appends ModerationRecord (phase=human, Rejected, reason)</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--red)">→</span>post.SoftDelete()</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); margin-bottom:.18rem; line-height:1.5"><span style="color:var(--red)">→</span>Meilisearch: DeleteAsync</li>
+            <li style="display:flex; gap:.38rem; font-size:.76rem; color:var(--txt-d); line-height:1.5"><span style="color:var(--red)">→</span>Redis: RemoveFromAllFeeds</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-stage" style="height:2rem"></div>
+
+  <!-- TEST RESULTS -->
+  <div style="background:var(--surf); border:1px solid var(--bdr); border-radius:8px; padding:1.1rem 1.25rem; margin-top:.5rem; border-left:3px solid var(--teal)">
+    <div style="font-family:var(--mono); font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--teal); margin-bottom:.75rem; opacity:.8">Verified · End-to-End Test Run · 2026-06-29</div>
+    <div class="tr-wrap">
+      <table class="tr">
+        <thead>
+          <tr>
+            <th>Content</th>
+            <th>Body</th>
+            <th>Auto Result</th>
+            <th>Provider · Phase</th>
+            <th>Human Action</th>
+            <th>Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="hi">Post A</td>
+            <td class="mn">Urban biodiversity article</td>
+            <td><span class="pill ap">Approved</span></td>
+            <td class="mn">openai-compatible · ai · conf=0.99</td>
+            <td class="note">—</td>
+            <td><span class="pill ap">Approved</span></td>
+          </tr>
+          <tr>
+            <td class="hi">Post B</td>
+            <td class="mn">URL-only spam body</td>
+            <td><span class="pill fl">Flagged</span></td>
+            <td class="mn">rule · url-only</td>
+            <td class="note">Admin rejected</td>
+            <td><span class="pill rj">Rejected</span> + evicted</td>
+          </tr>
+          <tr>
+            <td class="hi">Post C</td>
+            <td class="mn">"lol" (3 chars)</td>
+            <td><span class="pill fl">Flagged</span></td>
+            <td class="mn">rule · content-too-short</td>
+            <td class="note">Admin approved</td>
+            <td><span class="pill ap">Approved</span></td>
+          </tr>
+          <tr>
+            <td class="hi">Post D</td>
+            <td class="mn">Spam keyword body</td>
+            <td><span class="pill pd">Pending</span></td>
+            <td class="mn">InMemory transport drop</td>
+            <td class="note">—</td>
+            <td class="note">Dev artifact — won't occur on RabbitMQ</td>
+          </tr>
+          <tr>
+            <td class="hi">Reply on A</td>
+            <td class="mn">Thoughtful follow-up (156 chars)</td>
+            <td><span class="pill ap">Approved</span></td>
+            <td class="mn">openai-compatible · ai · conf=0.99</td>
+            <td class="note">—</td>
+            <td><span class="pill ap">Approved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer class="pg-ft">
+  <div class="legend">
+    <div class="leg"><div class="ldot" style="background:var(--teal)"></div>Pipeline signal</div>
+    <div class="leg"><div class="ldot" style="background:var(--green)"></div>Approved</div>
+    <div class="leg"><div class="ldot" style="background:var(--amber)"></div>Flagged — human review</div>
+    <div class="leg"><div class="ldot" style="background:var(--red)"></div>Rejected + evicted</div>
+    <div class="leg"><div class="ldot" style="background:var(--slate)"></div>Pending / unknown</div>
+  </div>
+  <div class="pg-ft-right">CCE Platform · Clean Architecture + DDD + CQRS</div>
+</footer>
+
+</body>
+</html>

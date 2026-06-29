@@ -29,7 +29,7 @@ public sealed class CceInfrastructureOptions
     public IReadOnlyList<string> AllowedAssetMimeTypes { get; init; } = new[]
     {
         // Images
-        "image/jpeg", "image/png", "image/webp",
+        "image/jpeg", "image/jpg", "image/png", "image/webp",
         // Video
         "video/mp4", "video/quicktime",
         // Documents

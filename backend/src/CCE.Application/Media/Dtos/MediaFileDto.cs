@@ -14,13 +14,4 @@ public sealed record MediaFileDto(
     string? AltTextAr,
     string? AltTextEn,
     System.Guid UploadedById,
-    System.DateTimeOffset UploadedOn)
-{
-    internal static MediaFileDto FromEntity(CCE.Domain.Media.MediaFile entity) => new(
-        entity.Id, entity.StorageKey, entity.Url,
-        entity.OriginalFileName, entity.MimeType, entity.SizeBytes,
-        entity.TitleAr, entity.TitleEn,
-        entity.DescriptionAr, entity.DescriptionEn,
-        entity.AltTextAr, entity.AltTextEn,
-        entity.UploadedById, entity.UploadedOn);
-}
+    System.DateTimeOffset UploadedOn);

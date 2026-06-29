@@ -91,22 +91,22 @@ public sealed class FeedHydratorService
         // ── Step 2 (concurrent): Redis batch — different connection, runs alongside EF ──
         var hotMetaTask = _feedStore.GetPostsMetaBatchAsync(postIds, ct);
 
-        // ── Step 2: Attachments — JOIN AssetFiles to get Url+MimeType for main-image resolution
+        // ── Step 2: Attachments — JOIN MediaFiles to get Url+MimeType for main-image resolution
         var attachmentRows = await (
             from a in _db.PostAttachments
-            join af in _db.AssetFiles on a.AssetFileId equals af.Id
+            join mf in _db.MediaFiles on a.MediaFileId equals mf.Id
             where postIds.Contains(a.PostId)
-            select new { a.PostId, a.AssetFileId, a.Kind, a.SortOrder, af.Url, af.MimeType }
+            select new { a.PostId, a.MediaFileId, a.Kind, a.SortOrder, mf.Url, mf.MimeType }
         ).ToListAsyncEither(ct).ConfigureAwait(false);
 
         var attachmentsByPost = attachmentRows
             .GroupBy(a => a.PostId)
             .ToDictionary(
                 g => g.Key,
-                g => (IReadOnlyList<System.Guid>)g.OrderBy(a => a.SortOrder).Select(a => a.AssetFileId).ToList());
+                g => (IReadOnlyList<System.Guid>)g.OrderBy(a => a.SortOrder).Select(a => a.MediaFileId).ToList());
 
         // First image per post (lowest SortOrder, Kind=Media, image MIME type).
-        // GetPublicUrl is pure string concatenation (CDN base + key) — no I/O, safe to call per-item.
+        // MediaFile.Url stores the storage key — wrap through GetPublicUrl for the full URL.
         var mainImageByPost = attachmentRows
             .Where(a => a.Kind == AttachmentKind.Media
                      && PostAttachmentPolicy.ImageMimeTypes.Contains(a.MimeType))

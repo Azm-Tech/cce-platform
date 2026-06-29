@@ -62,11 +62,10 @@ internal sealed class UploadMediaCommandHandler
         var storageKey = await _fileStorage.SaveAsync(buffer, request.FileName, ct, request.ContentType)
             .ConfigureAwait(false);
 
-        var url = _fileStorage.GetPublicUrl(storageKey).ToString();
-
+        // Store the storage key (not the public URL) — construct at read time for provider portability.
         var mediaFile = MediaFile.Create(
             storageKey,
-            url,
+            storageKey,
             request.FileName,
             request.ContentType,
             request.FileSize,
@@ -82,7 +81,8 @@ internal sealed class UploadMediaCommandHandler
         _db.Add(mediaFile);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
+        var publicUrl = _fileStorage.GetPublicUrl(mediaFile.Url).ToString();
+        var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, publicUrl);
         return _msg.Ok(dto, MessageKeys.Media.MEDIA_UPLOADED);
     }
 }

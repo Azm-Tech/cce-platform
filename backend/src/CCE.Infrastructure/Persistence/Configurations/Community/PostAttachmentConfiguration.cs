@@ -1,5 +1,5 @@
 using CCE.Domain.Community;
-using CCE.Domain.Content;
+using CCE.Domain.Media;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +13,6 @@ internal sealed class PostAttachmentConfiguration : IEntityTypeConfiguration<Pos
         builder.Property(a => a.Id).ValueGeneratedNever();
         builder.Property(a => a.Kind).HasConversion<int>();
         builder.HasIndex(a => new { a.PostId, a.SortOrder }).HasDatabaseName("ix_post_attachment_post_sort");
-        builder.HasOne<AssetFile>().WithMany().HasForeignKey(a => a.AssetFileId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<MediaFile>().WithMany().HasForeignKey(a => a.MediaFileId).OnDelete(DeleteBehavior.Restrict);
     }
 }

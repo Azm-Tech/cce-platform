@@ -40,7 +40,8 @@ internal sealed class DeleteMediaCommandHandler
         _db.Delete(mediaFile);
         await _db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, mediaFile.Url);
+        var publicUrl = _fileStorage.GetPublicUrl(mediaFile.Url).ToString();
+        var dto = new MediaFileBriefDto(mediaFile.Id, mediaFile.StorageKey, publicUrl);
         return _msg.Ok(dto, MessageKeys.Media.MEDIA_DELETED);
     }
 }

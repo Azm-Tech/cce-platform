@@ -71,19 +71,19 @@ public sealed class GetPublicPostByIdQueryHandler
         if (raw is null)
             return _msg.NotFound<PostDetailDto>(MessageKeys.Community.POST_NOT_FOUND);
 
-        // Attachments — JOIN AssetFiles for full media metadata; separate query avoids cartesian with the JOIN above.
+        // Attachments — JOIN MediaFiles for full media metadata; separate query avoids cartesian with the JOIN above.
         var attachmentRows = await (
             from a in _db.PostAttachments.AsNoTracking()
-            join af in _db.AssetFiles.AsNoTracking() on a.AssetFileId equals af.Id
+            join mf in _db.MediaFiles.AsNoTracking() on a.MediaFileId equals mf.Id
             where a.PostId == raw.Id
             orderby a.SortOrder
-            select new { a.AssetFileId, a.Kind, af.MimeType, af.Url,
-                         af.SizeBytes, af.OriginalFileName, a.SortOrder, a.MetadataJson })
+            select new { a.MediaFileId, a.Kind, mf.MimeType, mf.Url,
+                         mf.SizeBytes, mf.OriginalFileName, a.SortOrder, a.MetadataJson })
             .ToListAsyncEither(cancellationToken)
             .ConfigureAwait(false);
 
         var media = attachmentRows.Select(r => new PostMediaItemDto(
-            r.AssetFileId, r.Kind, r.MimeType,
+            r.MediaFileId, r.Kind, r.MimeType,
             _storage.GetPublicUrl(r.Url).ToString(),
             r.SizeBytes, r.OriginalFileName, r.SortOrder, r.MetadataJson)).ToList();
 
