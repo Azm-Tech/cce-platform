@@ -129,6 +129,9 @@ public static class SystemCode
     public const string ERR057 = "ERR057"; // Knowledge partner not found
     public const string ERR058 = "ERR058"; // Policy section not found
 
+    // ─── Community Laws Errors ───
+    public const string ERR131 = "ERR131"; // Community law section not found
+
     // ─── Lookups Errors ───
     public const string ERR130 = "ERR130"; // Country code not found
 
@@ -252,6 +255,12 @@ public static class SystemCode
     public const string CON047 = "CON047"; // Notification template updated
     public const string CON087 = "CON087"; // Device token registered
     public const string CON088 = "CON088"; // Device token deleted
+
+    // ─── Community Laws Success ───
+    public const string CON089 = "CON089"; // Community law section created
+    public const string CON090 = "CON090"; // Community law section updated
+    public const string CON091 = "CON091"; // Community law section deleted
+    public const string CON092 = "CON092"; // Community law content updated
 
     // ─── Lookups Success ───
     public const string CON070 = "CON070"; // Lookup created

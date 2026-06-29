@@ -801,6 +801,28 @@ OTP_UNAUTHORIZED:
   ar: "غير مصرح لك بالتحقق من هذا الرمز"
   en: "You are not authorized to verify this code"
 
+# ─── Community Laws ───
+
+SECTION_NOT_FOUND:
+  ar: "قسم القوانين المجتمعية غير موجود"
+  en: "Community law section not found"
+
+SECTION_CREATED:
+  ar: "تم إنشاء قسم القوانين المجتمعية بنجاح"
+  en: "Community law section created successfully"
+
+SECTION_UPDATED:
+  ar: "تم تحديث قسم القوانين المجتمعية بنجاح"
+  en: "Community law section updated successfully"
+
+SECTION_DELETED:
+  ar: "تم حذف قسم القوانين المجتمعية بنجاح"
+  en: "Community law section deleted successfully"
+
+CONTENT_REORDERED:
+  ar: "تم إعادة ترتيب المحتوى بنجاح"
+  en: "Content reordered successfully"
+
 # ─── Content / Community / Platform Settings ───
 
 TAG_NOT_FOUND:

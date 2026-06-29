@@ -250,6 +250,10 @@ groups:
     Manage:
       description: Manage lookup tables (nationalities, country phone codes)
       roles: [cce-super-admin]
+  CommunityLaws:
+    Manage:
+      description: Manage community law sections (create/update/delete/reorder)
+      roles: [cce-super-admin, cce-admin, cce-content-manager]
   Permission:
     Read:
       description: View permission catalog and role-permission matrix

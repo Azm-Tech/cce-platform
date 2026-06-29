@@ -173,6 +173,15 @@ public static class MessageKeys
         public const string EDGE_NOT_FOUND = "EDGE_NOT_FOUND";
     }
 
+    public static class CommunityLaws
+    {
+        public const string SECTION_NOT_FOUND = "SECTION_NOT_FOUND";
+        public const string SECTION_CREATED = "SECTION_CREATED";
+        public const string SECTION_UPDATED = "SECTION_UPDATED";
+        public const string SECTION_DELETED = "SECTION_DELETED";
+        public const string CONTENT_REORDERED = "CONTENT_REORDERED";
+    }
+
     public static class PlatformSettings
     {
         public const string HOMEPAGE_SETTINGS_NOT_FOUND = "HOMEPAGE_SETTINGS_NOT_FOUND";

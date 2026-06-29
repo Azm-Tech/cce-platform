@@ -118,6 +118,9 @@ public static class SystemCodeMap
         // ─── InterestTopic Errors ───
         ["INTEREST_TOPIC_NOT_FOUND"] = SystemCode.ERR114,
 
+        // ─── Community Laws Errors ───
+        ["SECTION_NOT_FOUND"] = SystemCode.ERR131,
+
         // ─── Platform Settings Errors ───
         ["HOMEPAGE_SETTINGS_NOT_FOUND"] = SystemCode.ERR053,
         ["ABOUT_SETTINGS_NOT_FOUND"] = SystemCode.ERR054,
@@ -250,6 +253,12 @@ public static class SystemCodeMap
         ["INTERACTIVE_MAP_NODE_CREATED"] = SystemCode.CON153,
         ["INTERACTIVE_MAP_NODE_UPDATED"] = SystemCode.CON154,
         ["INTERACTIVE_MAP_NODE_DELETED"] = SystemCode.CON155,
+
+        // ─── Community Laws Success ───
+        ["SECTION_CREATED"] = SystemCode.CON089,
+        ["SECTION_UPDATED"] = SystemCode.CON090,
+        ["SECTION_DELETED"] = SystemCode.CON091,
+        ["CONTENT_REORDERED"] = SystemCode.CON092,
 
         // ─── Content / Community / Platform Success ───
         ["NEWSLETTER_SUBSCRIBED"] = SystemCode.CON084,
