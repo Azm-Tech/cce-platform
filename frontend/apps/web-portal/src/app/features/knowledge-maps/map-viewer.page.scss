@@ -6,11 +6,40 @@
 
 :host {
   display: block;
-  /* Full-bleed flat dark navy (#002645) — matches the Figma frame exactly:
-     no card border, no radius, no glow. The graph is the hero. */
-  background: var(--primary--950);
+  /* Break out of the portal shell's 1500px padded `<main>` so the navy +
+     grid is FULL-BLEED edge-to-edge (Figma). `margin-block` cancels the
+     shell's padding-block (1.5rem top / 2rem bottom) so the page sits flush
+     under the header and against the footer. */
+  /* border-box so `width: 100vw` INCLUDES the inline padding — otherwise the
+     host is 100vw + padding wide and overflows off the left edge (clipping
+     the graph controls). */
+  box-sizing: border-box;
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  margin-block: -1.5rem -2rem;
+  /* Full-bleed dark navy with the technical grid spanning the WHOLE page
+     (header + graph), matching the Figma. The grid lives here so it shows
+     behind the header too; the canvas itself is transparent. */
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(var(--color-brand-rgb), 0.07) 0 1px,
+      transparent 1px 44px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(var(--color-brand-rgb), 0.07) 0 1px,
+      transparent 1px 44px
+    ),
+    var(--primary--950);
   /* Tighter top padding so the header sits near the top (Figma). */
   padding: clamp(0.75rem, 1.6vw, 1.5rem) clamp(1rem, 2.5vw, 4rem) clamp(1.5rem, 3vw, 3rem);
+}
+
+/* The shell uses a smaller padding-block on phones — match it so the
+   full-bleed cancel stays exact. */
+@media (max-width: 600px) {
+  :host { margin-block: -1rem -1.5rem; }
 }
 
 .cce-map-viewer__progress {
@@ -165,19 +194,27 @@
   }
 }
 
-/* ─── Stage: graph + detail drawer side-by-side ──────────────
+/* ─── Layout: details drawer as a full-height column beside the content ──
  * When a node is selected the drawer joins the flex row on the trailing
- * (inline-end) edge and the graph shrinks into the remaining space —
- * matching the Figma "panel open → graph shifts" composition. The graph
- * canvas re-fits itself (see GraphCanvasComponent panelOpen). */
-.cce-map-viewer__stage {
+ * (inline-end → LEFT in RTL) edge, spanning the FULL height beside the
+ * header + graph (Figma drawer-open frame). The content column (header +
+ * graph) shrinks into the remaining space; the graph re-fits itself
+ * (GraphCanvasComponent panelOpen). */
+.cce-map-viewer__layout {
   position: relative;
   display: flex;
   align-items: stretch;
   gap: 1rem;
 }
 
-.cce-map-viewer__canvas { flex: 1 1 auto; min-width: 0; display: block; }
+.cce-map-viewer__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cce-map-viewer__stage { position: relative; }
+
+.cce-map-viewer__canvas { display: block; min-width: 0; }
 
 .cce-map-viewer__drawer {
   flex: 0 0 auto;
@@ -186,9 +223,9 @@
 }
 
 /* On narrow screens there isn't room for both — the drawer overlays the
- * trailing edge instead of pushing the graph. */
+ * trailing edge instead of pushing the content. */
 @media (max-width: 900px) {
-  .cce-map-viewer__stage { gap: 0; }
+  .cce-map-viewer__layout { gap: 0; }
   .cce-map-viewer__drawer {
     position: absolute;
     inset-block: 0;

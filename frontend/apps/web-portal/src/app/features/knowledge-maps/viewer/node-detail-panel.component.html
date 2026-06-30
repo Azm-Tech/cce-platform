@@ -58,9 +58,9 @@
                 class="cce-node-detail__row"
                 (click)="onLink('resource', r.id)"
               >
-                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
-                  chevron_left
-                </mat-icon>
+                <span class="cce-node-detail__tag">
+                  {{ resourceTypeKey(r.resourceType) | transloco }}
+                </span>
                 <span class="cce-node-detail__row-main">
                   <span class="cce-node-detail__row-title">{{ titleOf(r) }}</span>
                   <span class="cce-node-detail__row-meta">
@@ -68,9 +68,9 @@
                     {{ formatDate(r.publishedOn) }}
                   </span>
                 </span>
-                <span class="cce-node-detail__tag">
-                  {{ resourceTypeKey(r.resourceType) | transloco }}
-                </span>
+                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
+                  chevron_left
+                </mat-icon>
               </button>
             }
           </section>
@@ -89,9 +89,15 @@
                 class="cce-node-detail__row"
                 (click)="onLink(item.kind, item.id)"
               >
-                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
-                  chevron_left
-                </mat-icon>
+                @if (item.featuredImageUrl) {
+                  <img class="cce-node-detail__thumb" [src]="item.featuredImageUrl" alt="" />
+                } @else {
+                  <span class="cce-node-detail__thumb cce-node-detail__thumb--placeholder">
+                    <mat-icon aria-hidden="true">
+                      {{ item.kind === 'news' ? 'article' : 'event' }}
+                    </mat-icon>
+                  </span>
+                }
                 <span class="cce-node-detail__row-main">
                   <span class="cce-node-detail__row-kind">
                     {{ (item.kind === 'news'
@@ -104,15 +110,9 @@
                     {{ formatDate(item.date) }}
                   </span>
                 </span>
-                @if (item.featuredImageUrl) {
-                  <img class="cce-node-detail__thumb" [src]="item.featuredImageUrl" alt="" />
-                } @else {
-                  <span class="cce-node-detail__thumb cce-node-detail__thumb--placeholder">
-                    <mat-icon aria-hidden="true">
-                      {{ item.kind === 'news' ? 'article' : 'event' }}
-                    </mat-icon>
-                  </span>
-                }
+                <mat-icon class="cce-node-detail__row-chevron" aria-hidden="true">
+                  chevron_left
+                </mat-icon>
               </button>
             }
           </section>

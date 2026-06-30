@@ -28,33 +28,39 @@
   }
 
   @if (store.map(); as map) {
-    <header class="cce-map-viewer__header">
-      <span class="cce-map-viewer__header-eyebrow">
-        <mat-icon aria-hidden="true">account_tree</mat-icon>
-        {{ 'knowledgeMaps.title' | transloco }}
-      </span>
-      <h1>{{ 'knowledgeMaps.heading' | transloco }}</h1>
-      <p>{{ 'knowledgeMaps.subtitle' | transloco }}</p>
+    <!-- Layout: details drawer is a full-height left column (RTL) beside the
+         content column (header + graph); content fills the rest. -->
+    <div class="cce-map-viewer__layout" [class.cce-map-viewer__layout--panel]="!!store.selectedNode()">
+      <div class="cce-map-viewer__content">
+        <header class="cce-map-viewer__header">
+          <span class="cce-map-viewer__header-eyebrow">
+            <mat-icon aria-hidden="true">account_tree</mat-icon>
+            {{ 'knowledgeMaps.title' | transloco }}
+          </span>
+          <h1>{{ 'knowledgeMaps.heading' | transloco }}</h1>
+          <p>{{ 'knowledgeMaps.subtitle' | transloco }}</p>
 
-      <ul class="cce-map-viewer__meta" role="list">
-        <li>
-          <mat-icon aria-hidden="true">scatter_plot</mat-icon>
-          <strong>{{ store.nodes().length }}</strong>
-          <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
-        </li>
-      </ul>
-    </header>
+          <ul class="cce-map-viewer__meta" role="list">
+            <li>
+              <mat-icon aria-hidden="true">scatter_plot</mat-icon>
+              <strong>{{ store.nodes().length }}</strong>
+              <span>{{ 'knowledgeMaps.metaNodes' | transloco }}</span>
+            </li>
+          </ul>
+        </header>
 
-    <div class="cce-map-viewer__stage" [class.cce-map-viewer__stage--panel]="!!store.selectedNode()">
-      <cce-graph-canvas
-        class="cce-map-viewer__canvas"
-        [nodes]="store.nodes()"
-        [locale]="locale()"
-        [mirrored]="mirrored()"
-        [selectedId]="store.selectedNodeId()"
-        [panelOpen]="!!store.selectedNode()"
-        (nodeClick)="onNodeClick($event)"
-      />
+        <div class="cce-map-viewer__stage">
+          <cce-graph-canvas
+            class="cce-map-viewer__canvas"
+            [nodes]="store.nodes()"
+            [locale]="locale()"
+            [mirrored]="mirrored()"
+            [selectedId]="store.selectedNodeId()"
+            [panelOpen]="!!store.selectedNode()"
+            (nodeClick)="onNodeClick($event)"
+          />
+        </div>
+      </div>
 
       @if (store.selectedNode()) {
         <cce-node-detail-panel

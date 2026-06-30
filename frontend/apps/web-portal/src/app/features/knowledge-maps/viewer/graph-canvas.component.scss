@@ -11,29 +11,21 @@
   overflow: hidden;
 }
 
-/* ─── Dark canvas — navy + subtle technical grid + ambient glow (Figma) ─── */
+/* ─── Canvas — transparent so the PAGE grid (on :host) shows through; only a
+   soft central ambient glow sits around the graph. ─── */
 .cce-graph-canvas {
   width: 100%;
   height: 72vh;
   min-height: 560px;
-  /* Layered: soft central ambient light · faint grid (h + v lines) · navy base. */
-  background:
-    radial-gradient(
-      circle at 50% 46%,
-      rgba(var(--color-brand-rgb), 0.2) 0%,
-      transparent 60%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(var(--color-brand-rgb), 0.07) 0 1px,
-      transparent 1px 44px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(var(--color-brand-rgb), 0.07) 0 1px,
-      transparent 1px 44px
-    ),
-    var(--primary--950);
+  /* Sized as an ellipse that fades to transparent BEFORE the canvas edges
+     (50% wide reaches the sides, 42% tall stays clear of top/bottom) so the
+     glow never cuts off at an edge — which previously left a faint line at
+     the header boundary. */
+  background: radial-gradient(
+    50% 42% at 50% 50%,
+    rgba(var(--color-brand-rgb), 0.18) 0%,
+    transparent 100%
+  );
   overflow: hidden;
 }
 

@@ -190,7 +190,9 @@
   width: 20px;
   height: 20px;
 }
-:host-context([dir="rtl"]) .cce-node-detail__row-chevron { transform: scaleX(-1); }
+/* The chevron points toward the inline-end (the "open" direction): left in
+   RTL (default — chevron_left as-is), right in LTR (flip it). */
+:host-context([dir="ltr"]) .cce-node-detail__row-chevron { transform: scaleX(-1); }
 
 .cce-node-detail__row-main {
   flex: 1 1 auto;
