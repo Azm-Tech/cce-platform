@@ -53,9 +53,19 @@ public sealed class UpdateNewsCommandHandler : IRequestHandler<UpdateNewsCommand
 
         if (request.TagIds is not null)
         {
-            var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
+            var requested = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
                 .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
-            news.SetTags(tags);
+            // Tags load detached (ICceDbContext is AsNoTracking). Reuse the instances already tracked
+            // via Include(n => n.Tags); attach the genuinely-new ones as Unchanged. This avoids both
+            // the pk_tags INSERT (PK violation) and the "instance already tracked" error on re-link.
+            var current = news.Tags.ToDictionary(t => t.Id);
+            var resolved = new System.Collections.Generic.List<Tag>(requested.Count);
+            foreach (var tag in requested)
+            {
+                if (current.TryGetValue(tag.Id, out var tracked)) { resolved.Add(tracked); }
+                else { _db.Attach(tag); resolved.Add(tag); }
+            }
+            news.SetTags(resolved);
         }
 
         _db.SetExpectedRowVersion(news, expectedRowVersion);

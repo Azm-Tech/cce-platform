@@ -56,9 +56,18 @@ public sealed class UpdateEventCommandHandler : IRequestHandler<UpdateEventComma
 
         if (request.TagIds is not null)
         {
-            var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
+            var requested = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
                 .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
-            ev.SetTags(tags);
+            // Reuse tag instances already tracked via Include(e => e.Tags); attach the rest as
+            // Unchanged so EF writes only event_tag rows (avoids pk_tags INSERT and double-tracking).
+            var current = ev.Tags.ToDictionary(t => t.Id);
+            var resolved = new System.Collections.Generic.List<Tag>(requested.Count);
+            foreach (var tag in requested)
+            {
+                if (current.TryGetValue(tag.Id, out var tracked)) { resolved.Add(tracked); }
+                else { _db.Attach(tag); resolved.Add(tag); }
+            }
+            ev.SetTags(resolved);
         }
 
         _db.SetExpectedRowVersion(ev, expectedRowVersion);

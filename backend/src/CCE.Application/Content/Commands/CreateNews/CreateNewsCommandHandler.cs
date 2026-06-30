@@ -58,6 +58,10 @@ public sealed class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand
         {
             var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
                 .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+            // Tags load detached (ICceDbContext exposes DbSets AsNoTracking). Attach as Unchanged so
+            // EF only writes the news_tag join rows — without this it tries to INSERT the existing
+            // tags and hits a PK violation on pk_tags.
+            foreach (var tag in tags) _db.Attach(tag);
             news.SetTags(tags);
         }
 

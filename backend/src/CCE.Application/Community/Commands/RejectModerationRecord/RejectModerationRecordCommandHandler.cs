@@ -2,6 +2,7 @@ using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
 using CCE.Application.Common.Messaging;
 using CCE.Application.Common.Messaging.IntegrationEvents;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Messages;
 using CCE.Application.Search;
 using CCE.Domain.Common;
@@ -22,6 +23,7 @@ public sealed class RejectModerationRecordCommandHandler
     private readonly ISearchClient _search;
     private readonly IRedisFeedStore _feedStore;
     private readonly IIntegrationEventPublisher _publisher;
+    private readonly ICommunityRealtimePublisher _realtime;
     private readonly MessageFactory _msg;
 
     public RejectModerationRecordCommandHandler(
@@ -33,6 +35,7 @@ public sealed class RejectModerationRecordCommandHandler
         ISearchClient search,
         IRedisFeedStore feedStore,
         IIntegrationEventPublisher publisher,
+        ICommunityRealtimePublisher realtime,
         MessageFactory msg)
     {
         _db       = db;
@@ -43,6 +46,7 @@ public sealed class RejectModerationRecordCommandHandler
         _search   = search;
         _feedStore = feedStore;
         _publisher = publisher;
+        _realtime = realtime;
         _msg      = msg;
     }
 
@@ -103,6 +107,18 @@ public sealed class RejectModerationRecordCommandHandler
             // Idempotent side effects — safe to run even if the content was already removed.
             await _search.DeleteAsync(SearchableType.CommunityPosts, post.Id, cancellationToken).ConfigureAwait(false);
             await _feedStore.RemovePostFromAllFeedsAsync(post.CommunityId, post.Id, cancellationToken).ConfigureAwait(false);
+
+            // Realtime: tell viewers (post + community rooms) it was removed, and moderators who did it.
+            // Only on a real takedown — re-rejecting already-removed content needs no broadcast.
+            if (!wasDeleted)
+            {
+                var removed = RealtimeEnvelope.Wrap(new PostModeratedRealtime(post.Id, null, "Rejected"));
+                await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.PostModerated, removed, cancellationToken).ConfigureAwait(false);
+                await _realtime.PublishToCommunityAsync(post.CommunityId, RealtimeEvents.PostModerated, removed, cancellationToken).ConfigureAwait(false);
+
+                var moderated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Post", post.Id, post.Id, reviewerId, "Rejected"));
+                await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, moderated, cancellationToken).ConfigureAwait(false);
+            }
         }
         else
         {
@@ -135,6 +151,15 @@ public sealed class RejectModerationRecordCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             await _search.DeleteAsync(SearchableType.CommunityReplies, reply.Id, cancellationToken).ConfigureAwait(false);
+
+            if (!wasDeleted)
+            {
+                var removed = RealtimeEnvelope.Wrap(new PostModeratedRealtime(reply.PostId, reply.Id, "Rejected"));
+                await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.PostModerated, removed, cancellationToken).ConfigureAwait(false);
+
+                var moderated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Reply", reply.Id, reply.PostId, reviewerId, "Rejected"));
+                await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, moderated, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         return _msg.Ok(MessageKeys.General.SUCCESS_UPDATED);
