@@ -8,6 +8,9 @@ import type {
   AdminPostRow,
   CommunityLawSectionDto,
   CreateCommunityLawSectionRequest,
+  ModerationContentType,
+  ModerationQueueItem,
+  ModerationStatus,
   UpdateCommunityLawSectionRequest,
 } from './admin-post.types';
 
@@ -116,6 +119,61 @@ export class CommunityModerationApiService {
         this.http.get<PagedResult<TopicLite>>('/api/admin/topics', { params }),
       );
       return res.items;
+    });
+  }
+
+  // ── Moderation queue ────────────────────────────────────────────────────────
+
+  /** Paginated moderation queue (latest record per content).
+   *  The API filters on a capitalized `status` (Flagged|Pending|Approved|Rejected)
+   *  and a lowercase `contentType` (post|reply); items come back with lowercase
+   *  string `status`/`contentType`. */
+  async listModerationQueue(opts: {
+    status?: ModerationStatus;
+    contentType?: ModerationContentType;
+    page?: number;
+    pageSize?: number;
+  } = {}): Promise<Result<PagedResult<ModerationQueueItem>>> {
+    let params = new HttpParams();
+    if (opts.status) {
+      params = params.set('status', opts.status.charAt(0).toUpperCase() + opts.status.slice(1));
+    }
+    if (opts.contentType) params = params.set('contentType', opts.contentType);
+    if (opts.page !== undefined) params = params.set('page', opts.page);
+    if (opts.pageSize !== undefined) params = params.set('pageSize', opts.pageSize);
+    return this.run(() =>
+      firstValueFrom(
+        this.http.get<PagedResult<ModerationQueueItem>>(
+          '/api/admin/community/moderation/queue',
+          { params },
+        ),
+      ),
+    );
+  }
+
+  /** Approve a moderation record → restores content, re-indexes, re-adds to feed. */
+  async approveModeration(recordId: string): Promise<Result<void>> {
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post<void>(
+          `/api/admin/community/moderation/${encodeURIComponent(recordId)}/approve`,
+          {},
+        ),
+      );
+    });
+  }
+
+  /** Reject a moderation record → soft-deletes content, removes from search/feed,
+   *  notifies the author. `reason` is optional. */
+  async rejectModeration(recordId: string, reason?: string): Promise<Result<void>> {
+    const body = reason && reason.trim() ? { reason: reason.trim() } : {};
+    return this.run(async () => {
+      await firstValueFrom(
+        this.http.post<void>(
+          `/api/admin/community/moderation/${encodeURIComponent(recordId)}/reject`,
+          body,
+        ),
+      );
     });
   }
 

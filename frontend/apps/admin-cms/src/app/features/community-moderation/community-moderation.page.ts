@@ -29,15 +29,25 @@ import {
   type CommunityLawSectionFormData,
 } from './community-law-section.dialog';
 import {
+  ModerationRejectDialogComponent,
+  type ModerationRejectDialogData,
+  type ModerationRejectDialogResult,
+} from './moderation-reject.dialog';
+import {
   ADMIN_POST_TYPE_FILTERS,
+  MODERATION_CONTENT_TYPES,
+  MODERATION_STATUSES,
   POST_TYPE_PARAM,
   type AdminPostRow,
   type AdminPostTypeFilter,
   type CommunityLawSectionDto,
+  type ModerationContentType,
+  type ModerationQueueItem,
+  type ModerationStatus,
   type PostTypeKind,
 } from './admin-post.types';
 
-type ModerationSegment = 'posts' | 'laws';
+type ModerationSegment = 'posts' | 'queue' | 'laws';
 
 const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -100,8 +110,26 @@ export class CommunityModerationPage implements OnInit {
   readonly quickReplyError = signal<boolean>(false);
   readonly busy = signal(false);
 
-  // ─── Segment switcher (Posts | Community Laws) ───────────
+  // ─── Segment switcher (Posts | Moderation Queue | Community Laws) ─
   readonly activeSegment = signal<ModerationSegment>('posts');
+
+  // ─── Moderation queue state ──────────────────────────────
+  readonly queueStatuses = MODERATION_STATUSES;
+  readonly queueContentTypes = MODERATION_CONTENT_TYPES;
+  readonly queueRows = signal<ModerationQueueItem[]>([]);
+  readonly queueTotal = signal(0);
+  readonly queueLoading = signal(false);
+  readonly queueError = signal<string | null>(null);
+  readonly queueBusy = signal(false);
+  readonly queueStatus = signal<ModerationStatus | ''>('flagged');
+  readonly queueType = signal<ModerationContentType | ''>('');
+  readonly queuePage = signal(1);
+  readonly queuePageSize = signal(20);
+  private queueLoaded = false;
+
+  readonly queueEmpty = computed(
+    () => !this.queueLoading() && this.queueRows().length === 0 && !this.queueError(),
+  );
 
   // ─── Community Laws state ────────────────────────────────
   readonly laws = signal<CommunityLawSectionDto[]>([]);
@@ -134,6 +162,7 @@ export class CommunityModerationPage implements OnInit {
         if (ev.moderatorId && ev.moderatorId === this.auth.currentUser()?.id) return;
         this.toast.success('communityModeration.toastModerated');
         void this.load();
+        if (this.queueLoaded) void this.loadQueue();
       });
   }
 
@@ -363,6 +392,107 @@ export class CommunityModerationPage implements OnInit {
     if (seg === 'laws' && !this.lawsLoaded && !this.lawsLoading()) {
       void this.loadLaws();
     }
+    if (seg === 'queue' && !this.queueLoaded && !this.queueLoading()) {
+      void this.loadQueue();
+    }
+  }
+
+  // ─── Moderation queue ───────────────────────────────────
+  async loadQueue(): Promise<void> {
+    this.queueLoading.set(true);
+    this.queueError.set(null);
+    const res = await this.api.listModerationQueue({
+      status: this.queueStatus() || undefined,
+      contentType: this.queueType() || undefined,
+      page: this.queuePage(),
+      pageSize: this.queuePageSize(),
+    });
+    this.queueLoading.set(false);
+    this.queueLoaded = true;
+    if (res.ok) {
+      this.queueRows.set(res.value.items);
+      this.queueTotal.set(res.value.total);
+    } else {
+      this.queueError.set(res.error.kind);
+    }
+  }
+
+  onQueueStatus(value: ModerationStatus | ''): void {
+    this.queueStatus.set(value);
+    this.queuePage.set(1);
+    void this.loadQueue();
+  }
+  onQueueType(value: ModerationContentType | ''): void {
+    this.queueType.set(value);
+    this.queuePage.set(1);
+    void this.loadQueue();
+  }
+  onQueuePage(e: PageEvent): void {
+    this.queuePage.set(e.pageIndex + 1);
+    this.queuePageSize.set(e.pageSize);
+    void this.loadQueue();
+  }
+  clearQueueFilters(): void {
+    this.queueStatus.set('flagged');
+    this.queueType.set('');
+    this.queuePage.set(1);
+    void this.loadQueue();
+  }
+
+  /** Open the flagged content on the public portal (posts only — replies
+   *  carry no parent id in the queue item, so the preview is the context). */
+  queueItemUrl(item: ModerationQueueItem): string | null {
+    if (item.contentType !== 'post') return null;
+    const base = this.envService.env.webPortalUrl;
+    if (!base) return null;
+    return `${base.replace(/\/+$/, '')}/community/posts/${item.contentId}`;
+  }
+  openQueueItem(item: ModerationQueueItem): void {
+    const url = this.queueItemUrl(item);
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  async approve(item: ModerationQueueItem): Promise<void> {
+    if (!(await this.confirm.confirm({
+      titleKey: 'communityModeration.queue.approve.title',
+      messageKey: 'communityModeration.queue.approve.message',
+      confirmKey: 'communityModeration.queue.approve.confirm',
+      cancelKey: 'common.actions.cancel',
+    }))) return;
+    this.queueBusy.set(true);
+    const res = await this.api.approveModeration(item.recordId);
+    this.queueBusy.set(false);
+    if (res.ok) {
+      this.toast.success('communityModeration.queue.approve.toast');
+      await this.loadQueue();
+    } else {
+      this.toast.error(`errors.${res.error.kind}`);
+    }
+  }
+
+  reject(item: ModerationQueueItem): void {
+    const ref = this.dialog.open<
+      ModerationRejectDialogComponent,
+      ModerationRejectDialogData,
+      ModerationRejectDialogResult | null
+    >(ModerationRejectDialogComponent, {
+      data: { contentPreview: item.contentPreview },
+      width: '520px',
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+    ref.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      this.queueBusy.set(true);
+      const res = await this.api.rejectModeration(item.recordId, result.reason);
+      this.queueBusy.set(false);
+      if (res.ok) {
+        this.toast.success('communityModeration.queue.reject.toast');
+        await this.loadQueue();
+      } else {
+        this.toast.error(`errors.${res.error.kind}`);
+      }
+    });
   }
 
   // ─── Community Laws ─────────────────────────────────────

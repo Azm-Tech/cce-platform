@@ -1,0 +1,32 @@
+.mod-reject__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.mod-reject {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+  min-width: min(440px, 80vw);
+}
+
+/* Read-only preview of the content under review. */
+.mod-reject__preview {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(var(--color-text-primary-rgb), 0.05);
+  border: 1px solid rgba(var(--color-text-primary-rgb), 0.12);
+  color: rgba(var(--color-text-primary-rgb), 0.75);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-height: 6.5rem;
+  overflow: auto;
+  word-break: break-word;
+}
+
+.mod-reject__field {
+  width: 100%;
+}

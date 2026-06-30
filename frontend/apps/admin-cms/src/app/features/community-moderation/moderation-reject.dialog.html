@@ -1,0 +1,31 @@
+<h2 mat-dialog-title class="mod-reject__title">
+  {{ 'communityModeration.queue.reject.title' | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="mod-reject">
+    @if (data.contentPreview) {
+      <p class="mod-reject__preview" dir="auto">{{ data.contentPreview }}</p>
+    }
+
+    <mat-form-field appearance="outline" class="mod-reject__field">
+      <mat-label>{{ 'communityModeration.queue.reject.reasonLabel' | transloco }}</mat-label>
+      <textarea
+        matInput
+        formControlName="reason"
+        rows="4"
+        [placeholder]="'communityModeration.queue.reject.reasonPlaceholder' | transloco"
+      ></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+  <button type="button" mat-flat-button color="warn" (click)="confirm()">
+    <mat-icon>block</mat-icon>
+    {{ 'communityModeration.queue.reject.confirm' | transloco }}
+  </button>
+</mat-dialog-actions>

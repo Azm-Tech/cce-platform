@@ -278,6 +278,51 @@
     background: rgba(var(--danger--600-rgb), 0.08);
     border-color: rgba(var(--danger--600-rgb), 0.2);
   }
+
+  // Content-type chips (queue): post = neutral, reply = brand
+  &--post {
+    color: rgba(var(--color-text-primary-rgb), 0.72);
+    background: rgba(var(--color-text-primary-rgb), 0.06);
+    border-color: rgba(var(--color-text-primary-rgb), 0.12);
+  }
+  &--reply {
+    color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.08);
+    border-color: rgba(var(--color-brand-rgb), 0.2);
+  }
+
+  // Moderation-status chips
+  &--mod-flagged {
+    color: var(--warning--700);
+    background: rgba(var(--color-accent-rgb), 0.14);
+    border-color: rgba(var(--color-accent-rgb), 0.32);
+  }
+  &--mod-pending {
+    color: rgba(var(--color-text-primary-rgb), 0.7);
+    background: rgba(var(--color-text-primary-rgb), 0.06);
+    border-color: rgba(var(--color-text-primary-rgb), 0.14);
+  }
+  &--mod-approved {
+    color: var(--success--700);
+    background: rgba(var(--success--600-rgb), 0.1);
+    border-color: rgba(var(--success--600-rgb), 0.28);
+  }
+  &--mod-rejected {
+    color: var(--danger--800);
+    background: rgba(var(--danger--600-rgb), 0.08);
+    border-color: rgba(var(--danger--600-rgb), 0.2);
+  }
+}
+
+/* Approve action button — success accent (distinct from the warn reject). */
+.cce-cm__approve {
+  color: var(--success--700);
+}
+
+/* AI score, shown next to the category. */
+.cce-cm__score {
+  color: rgba(var(--color-text-primary-rgb), 0.55);
+  font-variant-numeric: tabular-nums;
 }
 
 .cce-cm__locale-chip {

@@ -112,3 +112,32 @@ export interface CreateCommunityLawSectionRequest {
 }
 
 export type UpdateCommunityLawSectionRequest = CreateCommunityLawSectionRequest;
+
+// ── Moderation queue ─────────────────────────────────────────────────────────
+// NOTE: the swagger types `contentType`/`status` as integers, but the live API
+// returns lowercase strings (verified against live data). Type them as unions.
+
+export type ModerationContentType = 'post' | 'reply';
+export type ModerationStatus = 'flagged' | 'pending' | 'approved' | 'rejected';
+
+export const MODERATION_STATUSES: readonly ModerationStatus[] = [
+  'flagged', 'pending', 'approved', 'rejected',
+] as const;
+export const MODERATION_CONTENT_TYPES: readonly ModerationContentType[] = ['post', 'reply'] as const;
+
+/** One moderation-queue record (latest per content) from
+ *  GET /api/admin/community/moderation/queue. `provider`/`score`/`category`
+ *  are present on AI records and null on human ones. */
+export interface ModerationQueueItem {
+  recordId: string;
+  contentType: ModerationContentType;
+  contentId: string;
+  status: ModerationStatus;
+  phase: string | null;
+  provider: string | null;
+  score: number | null;
+  category: string | null;
+  reason: string | null;
+  createdOn: string;
+  contentPreview: string | null;
+}

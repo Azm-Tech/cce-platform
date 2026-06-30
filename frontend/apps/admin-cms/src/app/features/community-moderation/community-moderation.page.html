@@ -16,6 +16,16 @@
     type="button"
     role="tab"
     class="cce-cm__seg-btn"
+    [class.cce-cm__seg-btn--active]="activeSegment() === 'queue'"
+    [attr.aria-selected]="activeSegment() === 'queue'"
+    (click)="setSegment('queue')"
+  >
+    {{ 'communityModeration.tab.queue' | transloco }}
+  </button>
+  <button
+    type="button"
+    role="tab"
+    class="cce-cm__seg-btn"
     [class.cce-cm__seg-btn--active]="activeSegment() === 'laws'"
     [attr.aria-selected]="activeSegment() === 'laws'"
     (click)="setSegment('laws')"
@@ -280,6 +290,170 @@
     </div>
   </div>
 </details>
+
+}
+
+<!-- ═══ Moderation Queue ══════════════════════════════════════ -->
+@if (activeSegment() === 'queue') {
+
+  <!-- Filter toolbar -->
+  <div class="cce-cm__filters" data-admin-filters>
+    <mat-form-field appearance="outline" class="cce-cm__filter">
+      <mat-label>{{ 'communityModeration.queue.filter.status' | transloco }}</mat-label>
+      <mat-select [ngModel]="queueStatus()" (ngModelChange)="onQueueStatus($event)">
+        <mat-option value="">{{ 'communityModeration.queue.filter.allStatuses' | transloco }}</mat-option>
+        @for (s of queueStatuses; track s) {
+          <mat-option [value]="s">{{ ('communityModeration.queue.chip.' + s) | transloco }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cce-cm__filter">
+      <mat-label>{{ 'communityModeration.queue.filter.type' | transloco }}</mat-label>
+      <mat-select [ngModel]="queueType()" (ngModelChange)="onQueueType($event)">
+        <mat-option value="">{{ 'communityModeration.queue.filter.allTypes' | transloco }}</mat-option>
+        @for (t of queueContentTypes; track t) {
+          <mat-option [value]="t">{{ ('communityModeration.queue.contentType.' + t) | transloco }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button type="button" mat-stroked-button class="cce-cm__filter-clear" (click)="clearQueueFilters()">
+      <mat-icon>refresh</mat-icon>
+      {{ 'communityModeration.filter.clear' | transloco }}
+    </button>
+  </div>
+
+  @if (queueLoading()) {
+    <mat-progress-bar mode="indeterminate" class="cce-cm__progress" />
+  }
+  @if (queueError(); as kind) {
+    <div class="cce-cm__error" data-admin-error role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ ('errors.' + kind) | transloco }}</span>
+      <button type="button" mat-stroked-button (click)="loadQueue()">
+        {{ 'errors.retry' | transloco }}
+      </button>
+    </div>
+  }
+  @if (queueEmpty()) {
+    <div class="cce-cm__empty">
+      <span class="cce-cm__empty-art" aria-hidden="true">
+        <mat-icon>verified_user</mat-icon>
+      </span>
+      <p>{{ 'communityModeration.queue.empty' | transloco }}</p>
+    </div>
+  }
+
+  @if (!queueEmpty() && !queueError()) {
+    <div class="cce-cm__table-wrap">
+      <table class="cce-cm__table">
+        <thead>
+          <tr>
+            <th>{{ 'communityModeration.queue.col.status' | transloco }}</th>
+            <th>{{ 'communityModeration.queue.col.type' | transloco }}</th>
+            <th>{{ 'communityModeration.queue.col.content' | transloco }}</th>
+            <th>{{ 'communityModeration.queue.col.category' | transloco }}</th>
+            <th>{{ 'communityModeration.queue.col.source' | transloco }}</th>
+            <th>{{ 'communityModeration.queue.col.createdOn' | transloco }}</th>
+            <th class="cce-cm__col-actions">{{ 'communityModeration.col.actions' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of queueRows(); track item.recordId) {
+            <tr>
+              <td>
+                <span class="cce-cm__chip cce-cm__chip--mod-{{ item.status }}">
+                  {{ ('communityModeration.queue.chip.' + item.status) | transloco }}
+                </span>
+              </td>
+              <td>
+                <span class="cce-cm__chip cce-cm__chip--{{ item.contentType }}">
+                  <mat-icon aria-hidden="true">{{ item.contentType === 'reply' ? 'reply' : 'article' }}</mat-icon>
+                  {{ ('communityModeration.queue.contentType.' + item.contentType) | transloco }}
+                </span>
+              </td>
+              <td class="cce-cm__col-content">
+                @if (queueItemUrl(item); as url) {
+                  <a
+                    class="cce-cm__excerpt cce-cm__excerpt--link"
+                    [href]="url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [matTooltip]="item.contentPreview || ''"
+                    matTooltipPosition="below"
+                    (click)="openQueueItem(item); $event.preventDefault()"
+                  >
+                    {{ item.contentPreview || '—' }}
+                    <mat-icon class="cce-cm__excerpt-icon" aria-hidden="true">open_in_new</mat-icon>
+                  </a>
+                } @else {
+                  <span class="cce-cm__excerpt" [matTooltip]="item.contentPreview || ''" matTooltipPosition="below">
+                    {{ item.contentPreview || '—' }}
+                  </span>
+                }
+                <span class="cce-cm__id" [matTooltip]="item.contentId">{{ item.contentId.slice(0, 8) }}</span>
+              </td>
+              <td class="cce-cm__col-topic">
+                @if (item.category) {
+                  {{ item.category }}@if (item.score !== null) { <span class="cce-cm__score">· {{ item.score | number:'1.0-2' }}</span> }
+                } @else { — }
+              </td>
+              <td class="cce-cm__col-topic">{{ item.phase || item.provider || '—' }}</td>
+              <td class="cce-cm__col-date">{{ item.createdOn | date:'mediumDate' }}</td>
+              <td class="cce-cm__col-actions">
+                <div class="cce-cm__row-actions">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    class="cce-cm__approve"
+                    [matTooltip]="'communityModeration.queue.action.approve' | transloco"
+                    [attr.aria-label]="'communityModeration.queue.action.approve' | transloco"
+                    [disabled]="queueBusy()"
+                    (click)="approve(item)"
+                  >
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    [matTooltip]="'communityModeration.queue.action.reject' | transloco"
+                    [attr.aria-label]="'communityModeration.queue.action.reject' | transloco"
+                    [disabled]="queueBusy()"
+                    (click)="reject(item)"
+                  >
+                    <mat-icon>block</mat-icon>
+                  </button>
+                  @if (queueItemUrl(item)) {
+                    <a
+                      mat-icon-button
+                      [href]="queueItemUrl(item)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      [matTooltip]="'communityModeration.action.viewOnPortal' | transloco"
+                      [attr.aria-label]="'communityModeration.action.viewOnPortal' | transloco"
+                      (click)="openQueueItem(item); $event.preventDefault()"
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </a>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="queueTotal()"
+      [pageIndex]="queuePage() - 1"
+      [pageSize]="queuePageSize()"
+      [pageSizeOptions]="[10, 20, 50, 100]"
+      (page)="onQueuePage($event)"
+    />
+  }
 
 }
 

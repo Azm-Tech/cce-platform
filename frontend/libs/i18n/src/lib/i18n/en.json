@@ -1549,7 +1549,52 @@
     },
     "tab": {
       "posts": "Posts",
+      "queue": "Moderation Queue",
       "laws": "Community Laws"
+    },
+    "queue": {
+      "empty": "Nothing in the moderation queue for these filters.",
+      "filter": {
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "type": "Content type",
+        "allTypes": "All types"
+      },
+      "contentType": {
+        "post": "Post",
+        "reply": "Reply"
+      },
+      "chip": {
+        "flagged": "Flagged",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "col": {
+        "status": "Status",
+        "type": "Type",
+        "content": "Content",
+        "category": "Category",
+        "source": "Source",
+        "createdOn": "Flagged on"
+      },
+      "action": {
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "approve": {
+        "title": "Approve content",
+        "message": "Approve this content? It will be restored, re-indexed, and added back to the feed.",
+        "confirm": "Approve",
+        "toast": "Content approved."
+      },
+      "reject": {
+        "title": "Reject content",
+        "reasonLabel": "Reason (optional)",
+        "reasonPlaceholder": "Why is this being rejected? The author is notified.",
+        "confirm": "Reject",
+        "toast": "Content rejected."
+      }
     },
     "laws": {
       "add": "Add section",
