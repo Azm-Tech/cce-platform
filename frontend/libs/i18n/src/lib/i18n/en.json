@@ -451,7 +451,7 @@
     "homepageSettings": "Homepage Settings",
     "aboutSettings": "About Settings",
     "policiesSettings": "Policies & Terms",
-    "interactiveMap": "Interactive Map"
+    "interactiveMap": "Knowledge Map"
   },
   "header": {
     "signIn": "Sign in",
@@ -2839,10 +2839,23 @@
     "ctaBody": "Set your interests and knowledge level to get tailored content."
   },
   "interactiveMaps": {
-    "pageTitle": "Interactive Maps",
+    "pageTitle": "Knowledge Maps",
     "editor": {
-      "eyebrow": "Interactive Map",
+      "eyebrow": "Knowledge Map",
       "editDetails": "Edit details"
+    },
+    "iconPicker": {
+      "title": "Choose icon",
+      "tab": { "library": "Library", "upload": "Upload" },
+      "searchPlaceholder": "Search icons…",
+      "searchEmpty": "No icons match your search.",
+      "uploadHint": "Upload a custom icon (SVG or PNG).",
+      "useThisIcon": "Use this icon",
+      "chooseIcon": "Choose icon",
+      "change": "Change",
+      "clear": "Remove icon",
+      "noIcon": "No icon",
+      "customIcon": "Custom icon"
     },
     "createBtn": "New Map",
     "col": {
@@ -2850,11 +2863,11 @@
       "nameAr": "Name (AR)",
       "isActive": "Active",
       "actions": "Actions",
-      "nodes": "Nodes"
+      "nodes": "Elements"
     },
     "form": {
-      "createTitle": "Create Interactive Map",
-      "editTitle": "Edit Interactive Map",
+      "createTitle": "Create Knowledge Map",
+      "editTitle": "Edit Knowledge Map",
       "nameAr": "Name (Arabic)",
       "nameEn": "Name (English)",
       "descriptionAr": "Description (Arabic)",
@@ -2868,51 +2881,50 @@
     },
     "delete": {
       "title": "Delete Map",
-      "message": "Are you sure you want to delete this map? All its nodes will also be deleted.",
+      "message": "Are you sure you want to delete this map? All its elements will also be deleted.",
       "confirm": "Delete"
     },
     "nodes": {
-      "pageTitle": "Map Nodes",
-      "title": "Nodes",
-      "createBtn": "Add Node",
+      "pageTitle": "Map Elements",
+      "title": "Elements",
+      "createBtn": "Add Element",
       "col": {
         "level": "Level",
         "category": "Category",
         "topicId": "Topic ID",
-        "node": "Node",
+        "node": "Element",
         "status": "Status"
       },
       "form": {
-        "createTitle": "Add Node",
-        "editTitle": "Edit Node",
+        "createTitle": "Add Element",
+        "editTitle": "Edit Element",
         "level": "Level",
-        "iconKey": "Icon Key",
+        "iconKey": "Icon",
         "category": "Category (number)",
         "categoryNameAr": "Category Name (AR)",
         "categoryNameEn": "Category Name (EN)",
-        "parentId": "Parent Node",
+        "parentId": "Parent Element",
         "noParent": "None (root)",
         "topicId": "Topic",
         "sectionIdentity": "Identity",
         "sectionHierarchy": "Hierarchy",
         "sectionClassification": "Classification",
         "sectionTopic": "Topic",
-        "sectionStatus": "Status",
-        "iconKeyHint": "Material icon name, e.g. star"
+        "sectionStatus": "Status"
       },
       "toast": {
-        "created": "Node created.",
-        "updated": "Node updated.",
-        "deleted": "Node deleted."
+        "created": "Element created.",
+        "updated": "Element updated.",
+        "deleted": "Element deleted."
       },
       "delete": {
-        "title": "Delete Node",
-        "message": "Are you sure you want to delete this node?",
+        "title": "Delete Element",
+        "message": "Are you sure you want to delete this element?",
         "confirm": "Delete"
       },
-      "empty": "No nodes in this map yet."
+      "empty": "No elements in this map yet."
     },
-    "manageNodes": "Manage Nodes",
-    "empty": "No interactive maps yet. Create one to get started."
+    "manageNodes": "Manage Elements",
+    "empty": "No knowledge maps yet. Create one to get started."
   }
 }

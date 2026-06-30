@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="icon-picker__title">
+  {{ 'interactiveMaps.iconPicker.title' | transloco }}
+</h2>
+
+<!-- Segment switcher: Library | Upload -->
+<div class="icon-picker__seg" role="tablist">
+  <button
+    type="button" role="tab" class="icon-picker__seg-btn"
+    [class.icon-picker__seg-btn--active]="segment() === 'library'"
+    [attr.aria-selected]="segment() === 'library'"
+    (click)="setSegment('library')"
+  >
+    {{ 'interactiveMaps.iconPicker.tab.library' | transloco }}
+  </button>
+  <button
+    type="button" role="tab" class="icon-picker__seg-btn"
+    [class.icon-picker__seg-btn--active]="segment() === 'upload'"
+    [attr.aria-selected]="segment() === 'upload'"
+    (click)="setSegment('upload')"
+  >
+    {{ 'interactiveMaps.iconPicker.tab.upload' | transloco }}
+  </button>
+</div>
+
+<mat-dialog-content>
+  @if (segment() === 'library') {
+    <mat-form-field appearance="outline" class="icon-picker__search">
+      <mat-label>{{ 'interactiveMaps.iconPicker.searchPlaceholder' | transloco }}</mat-label>
+      <input matInput type="search" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    @if (filtered().length === 0) {
+      <p class="icon-picker__empty">{{ 'interactiveMaps.iconPicker.searchEmpty' | transloco }}</p>
+    } @else {
+      <ul class="icon-picker__grid">
+        @for (key of filtered(); track key) {
+          <li>
+            <button
+              type="button"
+              class="icon-picker__cell"
+              [class.icon-picker__cell--active]="isCurrent(key)"
+              [attr.aria-pressed]="isCurrent(key)"
+              [title]="prettify(key)"
+              (click)="select(key)"
+            >
+              <span class="icon-picker__tile">
+                <img [src]="preview(key)" alt="" />
+              </span>
+              <span class="icon-picker__name">{{ prettify(key) }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    <div class="icon-picker__upload">
+      <p class="icon-picker__hint">{{ 'interactiveMaps.iconPicker.uploadHint' | transloco }}</p>
+      <cce-asset-upload accept=".svg,.png" (uploaded)="onUploaded($event)" />
+
+      @if (uploadedUrl(); as url) {
+        <div class="icon-picker__upload-preview">
+          <span class="icon-picker__tile icon-picker__tile--light">
+            <img [src]="url" alt="" />
+          </span>
+          <button type="button" mat-flat-button color="primary" (click)="useUploaded()">
+            <mat-icon>check</mat-icon>
+            {{ 'interactiveMaps.iconPicker.useThisIcon' | transloco }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-button (click)="cancel()">
+    {{ 'common.actions.cancel' | transloco }}
+  </button>
+</mat-dialog-actions>

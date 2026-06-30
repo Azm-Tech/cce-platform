@@ -2,16 +2,23 @@ import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } fr
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { firstValueFrom } from 'rxjs';
 import { TranslocoModule } from '@jsverse/transloco';
+import { iconDataUri, isCustomIconUrl } from '@frontend/ui-kit';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
 import type { Topic } from '../taxonomies/taxonomy.types';
 import { InteractiveMapsApiService } from './interactive-maps-api.service';
+import {
+  InteractiveMapIconPickerDialogComponent,
+  type IconPickerData,
+} from './interactive-map-icon-picker.dialog';
 import type { InteractiveMapNodeDto } from './interactive-maps.types';
 
 export interface InteractiveMapNodeFormData {
@@ -25,9 +32,6 @@ interface NodeForm {
   nameEn: FormControl<string>;
   iconKey: FormControl<string>;
   level: FormControl<number>;
-  category: FormControl<string>;
-  categoryNameAr: FormControl<string>;
-  categoryNameEn: FormControl<string>;
   parentId: FormControl<string>;
   topicId: FormControl<string>;
   isActive: FormControl<boolean>;
@@ -46,6 +50,7 @@ interface NodeForm {
     MatInputModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     TranslocoModule,
   ],
   templateUrl: './interactive-map-node-form.dialog.html',
@@ -55,6 +60,7 @@ interface NodeForm {
 export class InteractiveMapNodeFormDialogComponent implements OnInit {
   private readonly api = inject(InteractiveMapsApiService);
   private readonly taxonomyApi = inject(TaxonomyApiService);
+  private readonly dialog = inject(MatDialog);
 
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
@@ -79,9 +85,6 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
       nameEn: new FormControl(n?.nameEn ?? '', { nonNullable: true, validators: [Validators.required] }),
       iconKey: new FormControl(n?.iconKey ?? '', { nonNullable: true }),
       level: new FormControl(n?.level ?? 0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-      category: new FormControl(n?.category != null ? String(n.category) : '', { nonNullable: true }),
-      categoryNameAr: new FormControl(n?.categoryNameAr ?? '', { nonNullable: true }),
-      categoryNameEn: new FormControl(n?.categoryNameEn ?? '', { nonNullable: true }),
       parentId: new FormControl(n?.parentId ?? '', { nonNullable: true }),
       topicId: new FormControl(n?.topicId ?? '', { nonNullable: true, validators: [Validators.required] }),
       isActive: new FormControl(n?.isActive ?? true, { nonNullable: true }),
@@ -94,6 +97,41 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
     if (res.ok) this.topics.set(res.value.items);
   }
 
+  // ── Icon picker ───────────────────────────────────────────────────────────
+  /** Image source for the current icon (registry key or uploaded URL), or null. */
+  iconPreview(): string | null {
+    const key = this.form.controls.iconKey.value;
+    return key ? iconDataUri(key) : null;
+  }
+  /** Whether the current icon is an uploaded file (vs a library key). */
+  iconIsCustom(): boolean { return isCustomIconUrl(this.form.controls.iconKey.value); }
+  /** Display label for the current icon: prettified key, "Custom", or empty. */
+  iconLabel(): string {
+    const key = this.form.controls.iconKey.value;
+    if (!key) return '';
+    if (isCustomIconUrl(key)) return '';
+    const s = key.replace(/-/g, ' ');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  async openIconPicker(): Promise<void> {
+    const ref = this.dialog.open<
+      InteractiveMapIconPickerDialogComponent,
+      IconPickerData,
+      string | undefined
+    >(InteractiveMapIconPickerDialogComponent, {
+      data: { current: this.form.controls.iconKey.value || null },
+      width: '640px',
+      maxWidth: '96vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+    });
+    const result = await firstValueFrom(ref.afterClosed());
+    if (typeof result === 'string') this.form.controls.iconKey.setValue(result);
+  }
+
+  clearIcon(): void { this.form.controls.iconKey.setValue(''); }
+
   async save(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.saving.set(true);
@@ -104,9 +142,10 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
       nameEn: v.nameEn || null,
       iconKey: v.iconKey || null,
       level: v.level,
-      category: v.category !== '' ? Number(v.category) : null,
-      categoryNameAr: v.categoryNameAr || null,
-      categoryNameEn: v.categoryNameEn || null,
+      // Category is unused metadata and no longer editable — always sent null.
+      category: null,
+      categoryNameAr: null,
+      categoryNameEn: null,
       parentId: v.parentId || null,
       topicId: v.topicId,
     };

@@ -451,7 +451,7 @@
     "homepageSettings": "إعدادات الصفحة الرئيسية",
     "aboutSettings": "إعدادات حول المنصة",
     "policiesSettings": "السياسات والشروط",
-    "interactiveMap": "الخريطة التفاعلية"
+    "interactiveMap": "الخريطة المعرفية"
   },
   "header": {
     "signIn": "تسجيل الدخول",
@@ -2839,10 +2839,23 @@
     "ctaBody": "حدد اهتماماتك ومستوى معرفتك للحصول على محتوى مخصص."
   },
   "interactiveMaps": {
-    "pageTitle": "الخرائط التفاعلية",
+    "pageTitle": "الخرائط المعرفية",
     "editor": {
-      "eyebrow": "الخريطة التفاعلية",
+      "eyebrow": "الخريطة المعرفية",
       "editDetails": "تعديل التفاصيل"
+    },
+    "iconPicker": {
+      "title": "اختيار الأيقونة",
+      "tab": { "library": "المكتبة", "upload": "رفع" },
+      "searchPlaceholder": "ابحث عن أيقونة…",
+      "searchEmpty": "لا توجد أيقونات تطابق بحثك.",
+      "uploadHint": "ارفع أيقونة مخصصة (SVG أو PNG).",
+      "useThisIcon": "استخدام هذه الأيقونة",
+      "chooseIcon": "اختيار أيقونة",
+      "change": "تغيير",
+      "clear": "إزالة الأيقونة",
+      "noIcon": "لا توجد أيقونة",
+      "customIcon": "أيقونة مخصصة"
     },
     "createBtn": "خريطة جديدة",
     "col": {
@@ -2850,11 +2863,11 @@
       "nameAr": "الاسم (عربي)",
       "isActive": "نشط",
       "actions": "الإجراءات",
-      "nodes": "العقد"
+      "nodes": "العناصر"
     },
     "form": {
       "createTitle": "إنشاء خريطة تفاعلية",
-      "editTitle": "تعديل الخريطة التفاعلية",
+      "editTitle": "تعديل الخريطة المعرفية",
       "nameAr": "الاسم (عربي)",
       "nameEn": "الاسم (إنجليزي)",
       "descriptionAr": "الوصف (عربي)",
@@ -2862,57 +2875,56 @@
       "isActive": "نشط"
     },
     "toast": {
-      "created": "تم إنشاء الخريطة التفاعلية.",
-      "updated": "تم تحديث الخريطة التفاعلية.",
-      "deleted": "تم حذف الخريطة التفاعلية."
+      "created": "تم إنشاء الخريطة المعرفية.",
+      "updated": "تم تحديث الخريطة المعرفية.",
+      "deleted": "تم حذف الخريطة المعرفية."
     },
     "delete": {
       "title": "حذف الخريطة",
-      "message": "هل أنت متأكد من حذف هذه الخريطة؟ سيتم حذف جميع عقدها أيضاً.",
+      "message": "هل أنت متأكد من حذف هذه الخريطة؟ سيتم حذف جميع عناصرها أيضاً.",
       "confirm": "حذف"
     },
     "nodes": {
-      "pageTitle": "عقد الخريطة",
-      "title": "العُقد",
-      "createBtn": "إضافة عقدة",
+      "pageTitle": "عناصر الخريطة",
+      "title": "العناصر",
+      "createBtn": "إضافة عنصر",
       "col": {
         "level": "المستوى",
         "category": "الفئة",
         "topicId": "معرّف الموضوع",
-        "node": "العقدة",
+        "node": "العنصر",
         "status": "الحالة"
       },
       "form": {
-        "createTitle": "إضافة عقدة",
-        "editTitle": "تعديل العقدة",
+        "createTitle": "إضافة عنصر",
+        "editTitle": "تعديل العنصر",
         "level": "المستوى",
-        "iconKey": "مفتاح الأيقونة",
+        "iconKey": "الأيقونة",
         "category": "الفئة (رقم)",
         "categoryNameAr": "اسم الفئة (عربي)",
         "categoryNameEn": "اسم الفئة (إنجليزي)",
-        "parentId": "العقدة الأب",
+        "parentId": "العنصر الأب",
         "noParent": "لا يوجد (جذر)",
         "topicId": "الموضوع",
         "sectionIdentity": "الهوية",
         "sectionHierarchy": "التسلسل الهرمي",
         "sectionClassification": "التصنيف",
         "sectionTopic": "الموضوع",
-        "sectionStatus": "الحالة",
-        "iconKeyHint": "اسم أيقونة Material، مثال: star"
+        "sectionStatus": "الحالة"
       },
       "toast": {
-        "created": "تم إنشاء العقدة.",
-        "updated": "تم تحديث العقدة.",
-        "deleted": "تم حذف العقدة."
+        "created": "تم إنشاء العنصر.",
+        "updated": "تم تحديث العنصر.",
+        "deleted": "تم حذف العنصر."
       },
       "delete": {
-        "title": "حذف العقدة",
-        "message": "هل أنت متأكد من حذف هذه العقدة؟",
+        "title": "حذف العنصر",
+        "message": "هل أنت متأكد من حذف هذا العنصر؟",
         "confirm": "حذف"
       },
-      "empty": "لا توجد عقد في هذه الخريطة بعد."
+      "empty": "لا توجد عناصر في هذه الخريطة بعد."
     },
-    "manageNodes": "إدارة العقد",
+    "manageNodes": "إدارة العناصر",
     "empty": "لا توجد خرائط تفاعلية بعد. أنشئ واحدة للبدء."
   }
 }

@@ -1,0 +1,132 @@
+.icon-picker__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* Segment switcher (Library | Upload) — custom pills, matching the page. */
+.icon-picker__seg {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin: 0 0 0.75rem;
+  border-radius: 999px;
+  background: rgba(var(--color-text-primary-rgb), 0.05);
+}
+.icon-picker__seg-btn {
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  color: rgba(var(--color-text-primary-rgb), 0.65);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &--active {
+    background: var(--color-brand);
+    color: var(--white);
+  }
+}
+
+.icon-picker__search {
+  width: 100%;
+}
+
+.icon-picker__empty {
+  margin: 1.5rem 0;
+  text-align: center;
+  color: rgba(var(--color-text-primary-rgb), 0.6);
+}
+
+/* Responsive icon grid. */
+.icon-picker__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.icon-picker__cell {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover { background: rgba(var(--color-brand-rgb), 0.06); }
+  &:focus-visible {
+    outline: 2px solid rgba(var(--color-brand-rgb), 0.5);
+    outline-offset: 2px;
+  }
+  &--active {
+    border-color: var(--color-brand);
+    background: rgba(var(--color-brand-rgb), 0.08);
+  }
+}
+
+/* Dark "node" tile so the cyan line icon reads (matches the map). */
+.icon-picker__tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-brand-dark);
+  border: 1px solid var(--color-brand);
+  flex: 0 0 auto;
+
+  img { width: 30px; height: 30px; }
+
+  /* Uploaded icons render with their own colours — use a neutral tile. */
+  &--light {
+    background: var(--neutrals--50);
+    border-color: var(--neutrals--300);
+  }
+}
+
+.icon-picker__name {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-align: center;
+  color: rgba(var(--color-text-primary-rgb), 0.7);
+  word-break: break-word;
+}
+
+/* Upload tab */
+.icon-picker__upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: min(420px, 80vw);
+  padding-top: 0.25rem;
+}
+.icon-picker__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(var(--color-text-primary-rgb), 0.65);
+}
+.icon-picker__upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-picker__seg-btn,
+  .icon-picker__cell { transition: none; }
+}

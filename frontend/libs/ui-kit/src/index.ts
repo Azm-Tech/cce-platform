@@ -12,6 +12,7 @@ export * from './lib/http/api-envelope.interceptor';
 export * from './lib/validators/password.validators';
 export * from './lib/rich-text-editor/rich-text-editor.component';
 export { provideCceIcons } from './lib/icons/provide-icons';
+export * from './lib/map-icons/map-icons';
 
 // SCSS theme entry-point: import via @use "@cce/ui-kit/styles/dga-theme" with mixin `cce-theme`.
 

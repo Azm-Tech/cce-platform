@@ -6,14 +6,14 @@
       <div class="im-card__body">
         <div class="im-card__heading">
           <span class="im-card__eyebrow">{{ 'interactiveMaps.editor.eyebrow' | transloco }}</span>
-          <h1 class="im-card__title">{{ m.nameEn || m.nameAr || '—' }}</h1>
+          <h1 class="im-card__title">{{ mapTitle(m) }}</h1>
           @if (m.nameAr && m.nameEn) {
-            <span class="im-card__title-ar" dir="rtl">{{ m.nameAr }}</span>
+            <span class="im-card__title-ar" [dir]="altDir()">{{ mapTitleAlt(m) }}</span>
           }
         </div>
 
-        @if (m.descriptionEn || m.descriptionAr) {
-          <p class="im-card__desc">{{ m.descriptionEn || m.descriptionAr }}</p>
+        @if (mapDesc(m)) {
+          <p class="im-card__desc">{{ mapDesc(m) }}</p>
         }
 
         <span class="im-card__status"
@@ -88,7 +88,6 @@
         <!-- Column header row -->
         <div class="im-tree__head" aria-hidden="true">
           <span class="im-tree__head-node">{{ 'interactiveMaps.nodes.col.node' | transloco }}</span>
-          <span class="im-tree__head-category">{{ 'interactiveMaps.nodes.col.category' | transloco }}</span>
           <span class="im-tree__head-status">{{ 'interactiveMaps.nodes.col.status' | transloco }}</span>
           <span class="im-tree__head-actions"></span>
         </div>
@@ -111,28 +110,18 @@
 
               <!-- Node name + icon-key chip -->
               <div class="im-tree__name">
-                <span class="im-tree__name-en">{{ node.nameEn ?? '—' }}</span>
+                <span class="im-tree__name-en">{{ nodeName(node) }}</span>
                 <span class="im-tree__name-meta">
-                  @if (node.nameAr) {
-                    <span class="im-tree__name-ar" dir="rtl">{{ node.nameAr }}</span>
+                  @if (nodeNameAlt(node)) {
+                    <span class="im-tree__name-ar" [dir]="altDir()">{{ nodeNameAlt(node) }}</span>
                   }
-                  @if (node.iconKey) {
+                  @if (nodeIcon(node); as iconSrc) {
                     <span class="im-tree__icon-chip">
-                      <mat-icon aria-hidden="true">image</mat-icon>{{ node.iconKey }}
+                      <span class="im-tree__icon-tile"><img [src]="iconSrc" alt="" /></span>
+                      {{ nodeIconLabel(node) || ('interactiveMaps.iconPicker.customIcon' | transloco) }}
                     </span>
                   }
                 </span>
-              </div>
-
-              <!-- Category -->
-              <div class="im-tree__category">
-                @if (node.categoryNameEn || node.categoryNameAr) {
-                  <span class="im-tree__category-badge">{{ node.categoryNameEn ?? node.categoryNameAr }}</span>
-                } @else if (node.category !== null && node.category !== undefined) {
-                  <span class="im-tree__category-badge im-tree__category-badge--raw">{{ node.category }}</span>
-                } @else {
-                  <span class="im-tree__category-none">—</span>
-                }
               </div>
 
               <!-- Status dot -->

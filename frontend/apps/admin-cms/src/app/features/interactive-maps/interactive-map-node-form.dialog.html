@@ -48,36 +48,34 @@
       </div>
     </div>
 
-    <!-- ── Section: Classification ───────────────────── -->
+    <!-- ── Section: Icon ─────────────────────────────── -->
     <div class="im-node-section">
-      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionClassification' | transloco }}</h3>
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.iconKey' | transloco }}</h3>
 
-      <div class="im-node-form__row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.iconKey' | transloco }}</mat-label>
-          <input matInput formControlName="iconKey" />
-          <mat-hint>{{ 'interactiveMaps.nodes.form.iconKeyHint' | transloco }}</mat-hint>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.category' | transloco }}</mat-label>
-          <input matInput type="number" formControlName="category" />
-        </mat-form-field>
-      </div>
-
-      <!-- Category name — lang eyebrow -->
-      <div class="im-node-form__lang-eyebrow im-node-form__lang-eyebrow--sub" aria-hidden="true">
-        <span class="im-node-form__lang-tag" dir="rtl">العربية</span>
-        <span class="im-node-form__lang-tag">English</span>
-      </div>
-      <div class="im-node-form__row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.categoryNameAr' | transloco }}</mat-label>
-          <input matInput formControlName="categoryNameAr" dir="rtl" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.categoryNameEn' | transloco }}</mat-label>
-          <input matInput formControlName="categoryNameEn" />
-        </mat-form-field>
+      <!-- Icon picker trigger (library or uploaded icon) -->
+      <div class="im-node-icon__control">
+        <span class="im-node-icon__preview" [class.im-node-icon__preview--empty]="!iconPreview()">
+          @if (iconPreview(); as src) {
+            <img [src]="src" alt="" />
+          } @else {
+            <mat-icon aria-hidden="true">image</mat-icon>
+          }
+        </span>
+        <span class="im-node-icon__name">
+          {{ iconLabel() || (iconIsCustom() ? ('interactiveMaps.iconPicker.customIcon' | transloco) : ('interactiveMaps.iconPicker.noIcon' | transloco)) }}
+        </span>
+        <button type="button" mat-stroked-button (click)="openIconPicker()">
+          <mat-icon>palette</mat-icon>
+          {{ (iconPreview() ? 'interactiveMaps.iconPicker.change' : 'interactiveMaps.iconPicker.chooseIcon') | transloco }}
+        </button>
+        @if (iconPreview()) {
+          <button type="button" mat-icon-button
+            [matTooltip]="'interactiveMaps.iconPicker.clear' | transloco"
+            [attr.aria-label]="'interactiveMaps.iconPicker.clear' | transloco"
+            (click)="clearIcon()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </div>
     </div>
 

@@ -6,7 +6,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { LocaleService } from '@frontend/i18n';
+import { ConfirmDialogService, ToastService, iconDataUri, isCustomIconUrl } from '@frontend/ui-kit';
 import { PermissionDirective } from '../../core/auth/permission.directive';
 import { InteractiveMapsApiService } from './interactive-maps-api.service';
 import { InteractiveMapFormDialogComponent } from './interactive-map-form.dialog';
@@ -40,6 +41,10 @@ export class InteractiveMapDetailPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  private readonly localeService = inject(LocaleService);
+
+  /** Active UI language — drives which localized name/content is primary. */
+  readonly locale = this.localeService.locale;
 
   readonly mapId = signal('');
   readonly map = signal<InteractiveMapDto | null>(null);
@@ -48,6 +53,32 @@ export class InteractiveMapDetailPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
 
   readonly treeNodes = computed(() => this.buildTreeOrder(this.nodes()));
+
+  // ── Localized display: primary follows the selected language, falling back
+  //    to the other language; `*Alt` returns the other language (shown small). ──
+  private primary(ar: string | null, en: string | null): string {
+    return (this.locale() === 'ar' ? ar || en : en || ar) ?? '';
+  }
+  private alt(ar: string | null, en: string | null): string {
+    return (this.locale() === 'ar' ? en : ar) ?? '';
+  }
+  /** Direction for the small secondary (alt-language) line. */
+  readonly altDir = computed<'rtl' | 'ltr'>(() => (this.locale() === 'ar' ? 'ltr' : 'rtl'));
+
+  mapTitle(m: InteractiveMapDto): string { return this.primary(m.nameAr, m.nameEn) || '—'; }
+  mapTitleAlt(m: InteractiveMapDto): string { return this.alt(m.nameAr, m.nameEn); }
+  mapDesc(m: InteractiveMapDto): string { return this.primary(m.descriptionAr, m.descriptionEn); }
+
+  nodeName(n: InteractiveMapNodeDto): string { return this.primary(n.nameAr, n.nameEn) || '—'; }
+  nodeNameAlt(n: InteractiveMapNodeDto): string { return this.alt(n.nameAr, n.nameEn); }
+
+  // ── Node icon preview (registry key or uploaded URL) ──
+  nodeIcon(n: InteractiveMapNodeDto): string | null {
+    return n.iconKey ? iconDataUri(n.iconKey) : null;
+  }
+  nodeIconLabel(n: InteractiveMapNodeDto): string {
+    return n.iconKey && !isCustomIconUrl(n.iconKey) ? n.iconKey : '';
+  }
 
   ngOnInit(): void {
     void this.reload();
