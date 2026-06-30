@@ -915,6 +915,16 @@ $layout-gap:   32px;
   white-space: nowrap;
 }
 
+/* Vertical divider isolating the downvote count from the upvote count. */
+.cce-post-detail__vote-sep {
+  width: 1px;
+  height: 20px;
+  flex-shrink: 0;
+  align-self: center;
+  margin-inline-start: 16px;
+  background: $border;
+}
+
 /* ─── Replies card ──────────────────────────────────────────── */
 .cce-post-detail__replies-card {
   background: $white;

@@ -315,8 +315,10 @@
                   [disabled]="voting()"
                   (click)="onVote(-1)"
                 >
-                  <mat-icon svgIcon="arrow-big-down" aria-hidden="true"></mat-icon>
+                  <mat-icon svgIcon="{{ myVote() === -1 ? 'arrow-big-down-fill' : 'arrow-big-down' }}" aria-hidden="true"></mat-icon>
                 </button>
+                <span class="cce-post-detail__vote-score cce-post-detail__vote-score--down">{{ downScore() }}</span>
+                <span class="cce-post-detail__vote-sep" aria-hidden="true"></span>
                 <span class="cce-post-detail__vote-score">{{ voteScore() }}</span>
                 <button
                   type="button"

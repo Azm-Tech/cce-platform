@@ -168,11 +168,19 @@ export class PostDetailPage implements OnInit, OnDestroy {
     return '';
   });
 
-  // BC001: only upvotes shown publicly; +1 for an in-flight optimistic upvote
+  // Upvote count + the user's own in-flight optimistic upvote.
   readonly voteScore = computed(() => {
     const p = this.post();
     if (!p) return 0;
     return p.upvoteCount + (this.myVote() === 1 ? 1 : 0);
+  });
+
+  // Downvote count + the user's own in-flight optimistic downvote (shown beside
+  // the downvote icon). Upvotes never change it and vice-versa.
+  readonly downScore = computed(() => {
+    const p = this.post();
+    if (!p) return 0;
+    return p.downvoteCount + (this.myVote() === -1 ? 1 : 0);
   });
 
   readonly authorDisplayInitial = computed(() => {
@@ -377,10 +385,18 @@ export class PostDetailPage implements OnInit, OnDestroy {
     const res = await this.api.getPostActivity(p.id, this.hub.lastEventTime);
     if (!res.ok) return;
     const a = res.value;
-    // Authoritative count includes the user's own vote — drop the optimistic +1.
-    const optimistic = this.myVote() === 1 ? 1 : 0;
+    // Authoritative counts include the user's own vote — drop the optimistic +1
+    // (kept separate per direction so up/down stay independent).
+    const optimisticUp = this.myVote() === 1 ? 1 : 0;
+    const optimisticDown = this.myVote() === -1 ? 1 : 0;
     this.post.update((cur) =>
-      cur ? { ...cur, upvoteCount: Math.max(0, a.upvoteCount - optimistic) } : cur,
+      cur
+        ? {
+            ...cur,
+            upvoteCount: Math.max(0, a.upvoteCount - optimisticUp),
+            downvoteCount: Math.max(0, a.downvoteCount - optimisticDown),
+          }
+        : cur,
     );
     if (a.poll) this.applyPollResults(a.poll);
     if ((a.newReplies?.length ?? 0) > 0 || a.replyCount !== this.total()) {
@@ -430,11 +446,18 @@ export class PostDetailPage implements OnInit, OnDestroy {
 
   private applyVoteChanged(ev: VoteChangedPayload, postId: string): void {
     if (ev.postId === postId) {
-      // The authoritative count already includes the user's own vote, so subtract
-      // the optimistic +1 that `voteScore` adds while `myVote === 1`.
-      const optimistic = this.myVote() === 1 ? 1 : 0;
+      // The authoritative counts already include the user's own vote, so subtract
+      // the optimistic +1 that `voteScore`/`downScore` add for the current vote.
+      const optimisticUp = this.myVote() === 1 ? 1 : 0;
+      const optimisticDown = this.myVote() === -1 ? 1 : 0;
       this.post.update((p) =>
-        p ? { ...p, upvoteCount: Math.max(0, ev.upvoteCount - optimistic) } : p,
+        p
+          ? {
+              ...p,
+              upvoteCount: Math.max(0, ev.upvoteCount - optimisticUp),
+              downvoteCount: Math.max(0, ev.downvoteCount - optimisticDown),
+            }
+          : p,
       );
     } else if (ev.replyId) {
       this.replies.update((rs) =>
@@ -506,8 +529,21 @@ export class PostDetailPage implements OnInit, OnDestroy {
         this.topicsMap.set(map);
       }
       if (postRes.ok) {
-        this.post.set(postRes.value);
-        this.poll.set(postRes.value.poll ?? null);
+        const post = postRes.value;
+        // Seed the user's current vote so the up/down icon reflects voteStatus
+        // on load (1 = upvoted, -1 = downvoted, 0 = none).
+        const vs = ((post.voteStatus ?? 0) as VoteDirection);
+        this.myVote.set(vs);
+        // Invariant: stored counts EXCLUDE the user's own vote — `voteScore` /
+        // `downScore` re-add it based on the current vote (same as the activity
+        // refresh). The API counts include it, so strip the self-vote here to
+        // avoid an off-by-one in the displayed numbers.
+        this.post.set({
+          ...post,
+          upvoteCount: Math.max(0, post.upvoteCount - (vs === 1 ? 1 : 0)),
+          downvoteCount: Math.max(0, post.downvoteCount - (vs === -1 ? 1 : 0)),
+        });
+        this.poll.set(post.poll ?? null);
       } else {
         this.errorKind.set(postRes.error.kind);
       }

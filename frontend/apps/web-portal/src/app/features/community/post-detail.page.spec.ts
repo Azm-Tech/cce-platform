@@ -119,6 +119,31 @@ describe('PostDetailPage', () => {
     expect(page.replies()).toHaveLength(2);
   });
 
+  it('seeds myVote from voteStatus on load (upvoted) and keeps the score correct', async () => {
+    await setup({ user: USER_AUTHOR });
+    getPost.mockResolvedValueOnce(ok({ ...POST, voteStatus: 1, upvoteCount: 5 }));
+    await flush();
+    // Icon reflects the user's existing upvote…
+    expect(page.myVote()).toBe(1);
+    // …and the displayed score equals the API's count (stored count strips the
+    // self-vote, voteScore re-adds it).
+    expect(page.voteScore()).toBe(5);
+    expect(page.post()?.upvoteCount).toBe(4);
+  });
+
+  it('seeds myVote from voteStatus on load (downvoted): upvote score untouched, downScore correct', async () => {
+    await setup({ user: USER_AUTHOR });
+    getPost.mockResolvedValueOnce(ok({ ...POST, voteStatus: -1, upvoteCount: 5, downvoteCount: 3 }));
+    await flush();
+    expect(page.myVote()).toBe(-1);
+    // Upvote count unaffected by a downvote.
+    expect(page.voteScore()).toBe(5);
+    expect(page.post()?.upvoteCount).toBe(5);
+    // Downvote count reflects the API total (stored strips self, downScore re-adds).
+    expect(page.downScore()).toBe(3);
+    expect(page.post()?.downvoteCount).toBe(2);
+  });
+
   it('404 on getPost renders not-found block', async () => {
     await setup({ user: USER_AUTHOR });
     getPost.mockResolvedValueOnce({ ok: false, error: { kind: 'not-found' } });

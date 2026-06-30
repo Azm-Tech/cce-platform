@@ -355,6 +355,14 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   padding-inline: 4px;
 }
 
+/* Vertical divider isolating the downvote count from the upvote count. */
+.pc__vote-sep {
+  width: 1px;
+  height: 18px;
+  flex-shrink: 0;
+  background: $n-300;
+}
+
 @media (max-width: 600px) {
   .pc { padding: 16px; }
   .pc__title { font-size: 18px; line-height: 26px; }

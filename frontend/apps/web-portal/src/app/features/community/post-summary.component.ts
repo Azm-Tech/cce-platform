@@ -129,8 +129,13 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
               aria-label="downvote"
               (click)="vote(-1)"
             >
-              <mat-icon svgIcon="arrow-big-down" aria-hidden="true"></mat-icon>
+              <mat-icon
+                svgIcon="{{ voteStatus() === -1 ? 'arrow-big-down-fill' : 'arrow-big-down' }}"
+                aria-hidden="true"
+              ></mat-icon>
             </button>
+            <span class="pc__vote-count pc__vote-count--down">{{ displayDownCount() }}</span>
+            <span class="pc__vote-sep" aria-hidden="true"></span>
             <span class="pc__vote-count">{{ displayVoteCount() }}</span>
             <button
               type="button"
@@ -139,7 +144,10 @@ function timeAgo(dateStr: string | null | undefined, locale: string): string {
               aria-label="upvote"
               (click)="vote(1)"
             >
-              <mat-icon svgIcon="arrow-big-up" aria-hidden="true"></mat-icon>
+              <mat-icon
+                svgIcon="{{ voteStatus() === 1 ? 'arrow-big-up-fill' : 'arrow-big-up' }}"
+                aria-hidden="true"
+              ></mat-icon>
             </button>
           </div>
 
@@ -194,26 +202,38 @@ export class PostSummaryComponent {
 
   // ── Vote state ────────────────────────────────────────────────────────────
   private readonly _voteStatus = signal<number | null>(null);
-  private readonly _voteCountDelta = signal(0);
 
   readonly voteStatus = computed(() => this._voteStatus() ?? this.post().voteStatus ?? 0);
 
+  /**
+   * Displayed count is the UPVOTE count only (BC001) — downvotes never change
+   * it. `post().upvoteCount` from the API includes the user's own upvote, so we
+   * strip the original self-upvote to get a stable base, then re-add it based
+   * on the user's CURRENT vote. Result: upvoting ±1, downvoting/clearing a
+   * downvote = no change.
+   */
   readonly displayVoteCount = computed(() => {
-    const base = this.post().upvoteCount ?? 0;
-    return base + this._voteCountDelta();
+    const p = this.post();
+    const baseWithoutSelf = (p.upvoteCount ?? 0) - (p.voteStatus === 1 ? 1 : 0);
+    return baseWithoutSelf + (this.voteStatus() === 1 ? 1 : 0);
+  });
+
+  /** Downvote count (shown beside the downvote icon) — same self-exclusion model
+   *  as the upvote count; upvotes never change it and vice-versa. */
+  readonly displayDownCount = computed(() => {
+    const p = this.post();
+    const baseWithoutSelf = (p.downvoteCount ?? 0) - (p.voteStatus === -1 ? 1 : 0);
+    return baseWithoutSelf + (this.voteStatus() === -1 ? 1 : 0);
   });
 
   async vote(dir: 1 | -1): Promise<void> {
     if (!this.authPrompt.requireAuth('community.authDialog.messageVote')) return;
     const current = this.voteStatus();
     const newDir = current === dir ? 0 : dir;
-    const delta = newDir - current;
-    this._voteStatus.set(newDir);
-    this._voteCountDelta.update((d) => d + delta);
+    this._voteStatus.set(newDir);   // optimistic; displayVoteCount derives from it
     const res = await this.communityApi.votePost(this.post().id, newDir);
     if (!res.ok) {
       this._voteStatus.set(current);
-      this._voteCountDelta.update((d) => d - delta);
     }
   }
 
