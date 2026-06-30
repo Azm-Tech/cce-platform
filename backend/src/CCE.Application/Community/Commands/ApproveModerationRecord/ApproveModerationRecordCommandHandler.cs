@@ -1,5 +1,6 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.Common.Realtime;
 using CCE.Application.Messages;
 using CCE.Domain.Common;
 using CCE.Domain.Community;
@@ -15,6 +16,7 @@ public sealed class ApproveModerationRecordCommandHandler
     private readonly ICommunityModerationService _service;
     private readonly IPostRepository _postRepo;
     private readonly IRedisFeedStore _feedStore;
+    private readonly ICommunityRealtimePublisher _realtime;
     private readonly ICurrentUserAccessor _currentUser;
     private readonly ISystemClock _clock;
     private readonly MessageFactory _msg;
@@ -24,6 +26,7 @@ public sealed class ApproveModerationRecordCommandHandler
         ICommunityModerationService service,
         IPostRepository postRepo,
         IRedisFeedStore feedStore,
+        ICommunityRealtimePublisher realtime,
         ICurrentUserAccessor currentUser,
         ISystemClock clock,
         MessageFactory msg)
@@ -32,6 +35,7 @@ public sealed class ApproveModerationRecordCommandHandler
         _service  = service;
         _postRepo = postRepo;
         _feedStore = feedStore;
+        _realtime = realtime;
         _currentUser = currentUser;
         _clock    = clock;
         _msg      = msg;
@@ -91,6 +95,14 @@ public sealed class ApproveModerationRecordCommandHandler
                 var publishedOn = post.PublishedOn ?? post.CreatedOn;
                 await _feedStore.AddToCommunityFeedAsync(post.CommunityId, post.Id, publishedOn, cancellationToken).ConfigureAwait(false);
                 await _feedStore.AddToHotLeaderboardAsync(post.CommunityId, post.Id, post.Score, cancellationToken).ConfigureAwait(false);
+
+                // Realtime: content is back — tell viewers (post + community) and moderators.
+                var restored = RealtimeEnvelope.Wrap(new PostModeratedRealtime(post.Id, null, "Restored"));
+                await _realtime.PublishToPostAsync(post.Id, RealtimeEvents.PostModerated, restored, cancellationToken).ConfigureAwait(false);
+                await _realtime.PublishToCommunityAsync(post.CommunityId, RealtimeEvents.PostModerated, restored, cancellationToken).ConfigureAwait(false);
+
+                var moderated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Post", post.Id, post.Id, reviewerId, "Restored"));
+                await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, moderated, cancellationToken).ConfigureAwait(false);
             }
         }
         else
@@ -120,6 +132,15 @@ public sealed class ApproveModerationRecordCommandHandler
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             await _service.ReIndexReplyAsync(existing.ContentId, cancellationToken).ConfigureAwait(false);
+
+            if (wasDeleted)
+            {
+                var restored = RealtimeEnvelope.Wrap(new PostModeratedRealtime(reply.PostId, reply.Id, "Restored"));
+                await _realtime.PublishToPostAsync(reply.PostId, RealtimeEvents.PostModerated, restored, cancellationToken).ConfigureAwait(false);
+
+                var moderated = RealtimeEnvelope.Wrap(new ContentModeratedRealtime("Reply", reply.Id, reply.PostId, reviewerId, "Restored"));
+                await _realtime.PublishToModeratorsAsync(RealtimeEvents.ContentModerated, moderated, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         return _msg.Ok(MessageKeys.General.SUCCESS_UPDATED);

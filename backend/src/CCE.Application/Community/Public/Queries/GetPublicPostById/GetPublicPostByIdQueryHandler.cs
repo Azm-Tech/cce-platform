@@ -56,6 +56,7 @@ public sealed class GetPublicPostByIdQueryHandler
                 AuthorId      = u.Id,
                 AuthorFirst   = u.FirstName,
                 AuthorLast    = u.LastName,
+                AuthorEmail   = u.Email,
                 u.AvatarUrl, u.PostsCount, u.FollowerCount,
                 p.Type, p.Title, p.Content, p.Locale,
                 p.IsAnswerable, p.AnsweredReplyId,
@@ -119,6 +120,8 @@ public sealed class GetPublicPostByIdQueryHandler
         var pollSummary = pollsByPost.GetValueOrDefault(raw.Id);
 
         var authorName = $"{raw.AuthorFirst} {raw.AuthorLast}".Trim();
+        if (string.IsNullOrWhiteSpace(authorName))
+            authorName = raw.AuthorEmail ?? string.Empty;
         var dto = new PostDetailDto(
             raw.Id, raw.CommunityId, raw.TopicId,
             new PostAuthorDto(raw.AuthorId, authorName, raw.AvatarUrl, raw.IsExpert,

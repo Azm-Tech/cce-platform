@@ -36,7 +36,9 @@ public sealed class ContentModerationConsumer : IConsumer<ContentModerationReque
     private static readonly System.Guid SystemActorId =
         System.Guid.Parse("00000000-0000-0000-0000-000000000001");
 
-    private const float SafeConfidenceThreshold   = 0.6f;
+    // Only confidently-safe content auto-approves; safe-but-uncertain (< 0.75) is sent to human
+    // review instead of slipping through. Raised from 0.6 to reduce false-negatives.
+    private const float SafeConfidenceThreshold   = 0.75f;
     private const float RejectConfidenceThreshold = 0.7f;
 
     private readonly IServiceScopeFactory _scopeFactory;

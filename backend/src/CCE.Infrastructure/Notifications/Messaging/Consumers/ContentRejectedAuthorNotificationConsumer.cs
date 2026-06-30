@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CCE.Application.Common.Messaging.IntegrationEvents;
 using CCE.Application.Notifications.Messages;
 using CCE.Domain.Notifications;
@@ -35,6 +36,13 @@ public sealed class ContentRejectedAuthorNotificationConsumer : IConsumer<Conten
             TemplateCode: TemplateCode,
             RecipientUserId: evt.AuthorId,
             EventType: NotificationEventType.CommunityContentRejected,
+            // Parity with the other notifications (post-created/reply): the client builds the
+            // notification's link/render from MetaData, so always supply the content identifiers.
+            MetaData: new Dictionary<string, string>
+            {
+                ["contentId"]   = evt.ContentId.ToString(),
+                ["contentType"] = evt.ContentType,
+            },
             Channels: new[] { NotificationChannel.InApp },
             Locale: string.IsNullOrWhiteSpace(evt.Locale) ? "en" : evt.Locale),
             context.CancellationToken).ConfigureAwait(false);

@@ -64,10 +64,26 @@ public sealed class OllamaModerationProvider : IAiModerationProvider
 
     internal static string BuildPrompt(string content)
         => $$"""
-            You are a content moderator. Reply ONLY with valid JSON and nothing else.
-            Example: {"safe":true,"confidence":0.95,"category":"safe","reason":""}
+            You are a strict content moderator for an online knowledge community.
+            Respond with ONLY a JSON object and nothing else.
+            Schema: {"safe":<true|false>,"confidence":<0.0-1.0>,"category":"<safe|spam|hate|explicit|harassment>","reason":"<short>"}
 
-            Categories: safe, spam, hate, explicit, harassment
+            Category definitions:
+            - spam: advertising/promotion, scams, "buy now" pitches, prize/lottery/giveaway bait, get-rich-quick, repeated keywords, or content that is mostly links.
+            - hate: attacks or dehumanizes people based on a protected trait (race, religion, nationality, gender, etc.).
+            - explicit: sexual or pornographic content.
+            - harassment: targeted insults, threats, or bullying of a specific person.
+            - safe: none of the above.
+
+            Rules:
+            - If the content shows ANY clear sign of a violation, set safe=false and choose that category. Do NOT default to safe when unsure — lower the confidence instead.
+            - confidence reflects how certain you are of the classification.
+
+            Examples:
+            Content: Buy cheap meds now!!! Click here to win a huge prize, limited time offer!
+            {"safe":false,"confidence":0.96,"category":"spam","reason":"promotional scam with prize bait"}
+            Content: Urban biodiversity supports sustainable cities and improves air quality for residents.
+            {"safe":true,"confidence":0.97,"category":"safe","reason":""}
 
             Classify this content:
             {{content}}

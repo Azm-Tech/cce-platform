@@ -55,6 +55,9 @@ public sealed class CreateEventCommandHandler : IRequestHandler<CreateEventComma
         {
             var tags = await _db.Tags.Where(t => request.TagIds.Contains(t.Id))
                 .ToListAsyncEither(cancellationToken).ConfigureAwait(false);
+            // Tags load detached (ICceDbContext exposes DbSets AsNoTracking). Attach as Unchanged so
+            // EF only writes the event_tag join rows instead of INSERTing existing tags (PK violation).
+            foreach (var tag in tags) _db.Attach(tag);
             ev.SetTags(tags);
         }
 
