@@ -32,8 +32,9 @@ export function buildElements(
     },
   }));
 
+  const nodeIds = new Set(nodes.map((n) => n.id));
   const edgeElements: ElementDefinition[] = nodes
-    .filter((n) => n.parentId)
+    .filter((n) => n.parentId && nodeIds.has(n.parentId))
     .map((n) => ({
       group: 'edges',
       data: {

@@ -221,28 +221,9 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   margin-top: 8px;
 }
 
-/*
- * Parent article: loses divider + draws the vertical segment from its own
- * avatar center down to its own bottom edge only (not through child content).
- *
- * top: 40px = 24px padding-block-start + 16px (half of 32px avatar)
- * inset-inline-start: 15px = avatar-center column in RTL (32px ÷ 2 − 1px)
- */
+/* Parent loses border-bottom when it owns children so the thread flows unbroken */
 .cce-reply--has-children {
-  position: relative;
   border-bottom: none;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset-inline-start: 15px;
-    top: 40px;
-    bottom: 0;
-    width: 2px;
-    background: $n-300;
-    border-radius: 1px;
-    pointer-events: none;
-  }
 }
 
 /* Nested children */
@@ -252,31 +233,29 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
 }
 
 /*
- * For threads with multiple children: every non-last child host extends
- * the vertical line from its own arm level down to its bottom, bridging
- * the gap to the next sibling's L-shape.
+ * Thread connector line — anchored to :host so it spans from the parent avatar
+ * center all the way through the children without clipping issues.
  *
- * inset-inline-start: -17px mirrors the L-shape position: child-host right
- * edge is at 32px from parent right → 32 − 17 = 15px from parent right. ✓
+ * top: 40px  = 24px (article padding-top) + 16px (half of 32px avatar) = avatar center
+ * inset-inline-start: 15px = avatar center column (32px ÷ 2 − 1px = 15px from inline-start)
  */
-.cce-reply__children > cce-reply:not(:last-child) {
+:host(.cce-reply-host--threaded) {
   position: relative;
 
   &::after {
     content: '';
     position: absolute;
-    inset-inline-start: -17px;
-    top: 40px;
-    bottom: 0;
+    inset-inline-start: 15px;
+    top: 58px;
+    bottom: 20px;
     width: 2px;
     background: $n-300;
+    border-radius: 1px;
     pointer-events: none;
   }
 }
 
-/* L-shaped connector arm on each child — vertical segment from child top
- * to the arm level, then a horizontal arm pointing to the child's avatar.
- * Height is fixed at 40px so the line always ends exactly at the arm. */
+/* L-shaped connector arm on each child — curves from the vertical line to the avatar */
 .cce-reply--child {
   position: relative;
 

@@ -82,13 +82,17 @@ export class NodeDetailPanelComponent {
   readonly description = computed(() => {
     const d = this.details();
     if (!d) return '';
-    return this.locale() === 'ar' ? d.topic.descriptionAr : d.topic.descriptionEn;
+    const descAr = d.topic?.descriptionAr || d.node?.descriptionAr || '';
+    const descEn = d.topic?.descriptionEn || d.node?.descriptionEn || '';
+    return this.locale() === 'ar' ? descAr : descEn;
   });
 
   readonly topicName = computed(() => {
     const d = this.details();
     if (!d) return '';
-    return this.locale() === 'ar' ? d.topic.nameAr : d.topic.nameEn;
+    const nameAr = d.topic?.nameAr || d.node?.titleAr || d.node?.nameAr || '';
+    const nameEn = d.topic?.nameEn || d.node?.titleEn || d.node?.nameEn || '';
+    return this.locale() === 'ar' ? nameAr : nameEn;
   });
 
   /** Related sections are capped at 3 items each (Resources / News / Events). */
@@ -104,7 +108,7 @@ export class NodeDetailPanelComponent {
     const d = this.details();
     if (!d) return [];
     const cap = NodeDetailPanelComponent.MAX_RELATED;
-    const news: NewsEventRow[] = d.news.slice(0, cap).map((n: NodeDetailNews) => ({
+    const news: NewsEventRow[] = (d.news ?? []).slice(0, cap).map((n: NodeDetailNews) => ({
       kind: 'news',
       id: n.id,
       titleAr: n.titleAr,
@@ -112,7 +116,7 @@ export class NodeDetailPanelComponent {
       date: n.publishedOn,
       featuredImageUrl: n.featuredImageUrl,
     }));
-    const events: NewsEventRow[] = d.events.slice(0, cap).map((e: NodeDetailEvent) => ({
+    const events: NewsEventRow[] = (d.events ?? []).slice(0, cap).map((e: NodeDetailEvent) => ({
       kind: 'event',
       id: e.id,
       titleAr: e.titleAr,

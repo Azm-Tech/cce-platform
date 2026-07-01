@@ -5,6 +5,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LocaleService } from '@frontend/i18n';
 import { ToastService } from '@frontend/ui-kit';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Subject } from 'rxjs';
+import { MediaApiService } from '../../core/media/media-api.service';
 import { CommunityApiService, type Result } from './community-api.service';
 import { CommunityStateService } from './community-state.service';
 import { ComposePostFormComponent } from './compose-post-form.component';
@@ -40,10 +42,19 @@ describe('ComposePostFormComponent', () => {
   let component: ComposePostFormComponent;
   let createPost: jest.Mock;
   let toastSuccess: jest.Mock;
-
+  let uploadFileWithProgress: jest.Mock;
+  let uploadSubject: Subject<any>;
+  beforeAll(() => {
+    if (typeof window !== 'undefined') {
+      window.URL.createObjectURL = jest.fn().mockReturnValue('mock-url');
+      window.URL.revokeObjectURL = jest.fn();
+    }
+  });
   async function setup(localeStart: 'ar' | 'en' = 'en') {
     createPost = jest.fn().mockResolvedValue(ok({ id: 'p2' }));
     toastSuccess = jest.fn();
+    uploadSubject = new Subject<any>();
+    uploadFileWithProgress = jest.fn().mockReturnValue(uploadSubject.asObservable());
     const localeSig = signal<'ar' | 'en'>(localeStart);
 
     await TestBed.configureTestingModule({
@@ -60,6 +71,7 @@ describe('ComposePostFormComponent', () => {
         { provide: CommunityStateService, useValue: { communityId: signal('c1') } },
         { provide: LocaleService, useValue: { locale: localeSig.asReadonly() } },
         { provide: ToastService, useValue: { success: toastSuccess, error: jest.fn() } },
+        { provide: MediaApiService, useValue: { uploadFileWithProgress } },
       ],
     }).compileComponents();
 
@@ -143,6 +155,75 @@ describe('ComposePostFormComponent', () => {
     await component.triggerSubmit();
     expect(component.errorKind()).toBe('server');
     expect(submittedSpy).not.toHaveBeenCalled();
+  });
+
+  it('disables submit button while uploading media files and enables after success', async () => {
+    await setup('en');
+    component.form.patchValue({
+      title: VALID_TITLE,
+      content: VALID_CONTENT,
+      locale: 'en',
+    });
+
+    const fileList = {
+      length: 1,
+      item: () => null,
+      0: new File(['image-data'], 'image.png', { type: 'image/png' }),
+    } as unknown as FileList;
+
+    // Trigger handleFiles
+    const handlePromise = (component as any).handleFiles(fileList);
+    
+    // Check uploading state
+    expect(component.canSubmit()).toBe(false);
+
+    // Complete upload successfully
+    uploadSubject.next({ progress: 100, asset: { id: 'media-1', url: '/media/1' } });
+    uploadSubject.complete();
+
+    await handlePromise;
+
+    expect(component.canSubmit()).toBe(true);
+    expect(component.attachments()[0].status).toBe('success');
+    expect(component.attachments()[0].assetFileId).toBe('media-1');
+  });
+
+  it('sets error state on attachments if media upload fails', async () => {
+    await setup('en');
+    const fileList = {
+      length: 1,
+      item: () => null,
+      0: new File(['image-data'], 'image.png', { type: 'image/png' }),
+    } as unknown as FileList;
+
+    const handlePromise = (component as any).handleFiles(fileList);
+
+    // Fail the upload
+    uploadSubject.next({ progress: 0, error: { kind: 'server', message: 'error' } });
+    uploadSubject.complete();
+
+    await handlePromise;
+
+    expect(component.attachments()[0].status).toBe('error');
+    expect(component.attachments()[0].error).toBe('errors.server');
+  });
+
+  it('cancelUpload terminates subscription and removes the attachment', async () => {
+    await setup('en');
+    const fileList = {
+      length: 1,
+      item: () => null,
+      0: new File(['image-data'], 'image.png', { type: 'image/png' }),
+    } as unknown as FileList;
+
+    const handlePromise = (component as any).handleFiles(fileList);
+
+    const stagedId = component.attachments()[0].id;
+    component.cancelUpload(stagedId);
+
+    await handlePromise;
+
+    expect(component.attachments()).toHaveLength(0);
   });
 });
 

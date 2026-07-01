@@ -201,4 +201,38 @@ describe('NodeDetailPanelComponent', () => {
     component.onEscape();
     expect(closed).toBe(true);
   });
+
+  it('safely handles missing topic and posts in details, using node fallbacks', () => {
+    const detailsWithoutTopic: NodeDetails = {
+      node: {
+        id: 'n1',
+        nameAr: 'كفاءة الطاقة',
+        nameEn: 'Energy Efficiency',
+        iconKey: 'factory',
+        topicId: 't1',
+        titleAr: 'عنوان بديل',
+        titleEn: 'Alternative Title',
+        descriptionAr: 'وصف بديل للطرفيات',
+        descriptionEn: 'Alternative description from node',
+      },
+      resources: [],
+      news: [],
+      events: [],
+    };
+    
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('details', detailsWithoutTopic);
+    fixture.componentRef.setInput('locale', 'en');
+    fixture.detectChanges();
+
+    expect(component.description()).toBe('Alternative description from node');
+    expect(component.topicName()).toBe('Alternative Title');
+    expect(component.posts()).toEqual([]);
+    
+    // Switch to Arabic
+    fixture.componentRef.setInput('locale', 'ar');
+    fixture.detectChanges();
+    expect(component.description()).toBe('وصف بديل للطرفيات');
+    expect(component.topicName()).toBe('عنوان بديل');
+  });
 });

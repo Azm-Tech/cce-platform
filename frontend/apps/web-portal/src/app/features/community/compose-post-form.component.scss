@@ -352,3 +352,132 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
   &:hover { color: var(--danger--500); }
 }
+
+.cpf__color-error {
+  color: var(--danger--500) !important;
+}
+
+// Overlay on uploading/error thumbnails
+.cpf__thumb-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--white);
+  gap: 4px;
+
+  ::ng-deep .mat-mdc-progress-spinner {
+    circle {
+      stroke: var(--white) !important;
+    }
+  }
+
+  &--error {
+    background: rgba(254, 242, 242, 0.95);
+    color: var(--danger--700, #b91c1c);
+    border: 1px solid var(--danger--200);
+    border-radius: 8px;
+    padding: 4px;
+    text-align: center;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.cpf__thumb-progress-text {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: $font;
+}
+
+.cpf__thumb-cancel {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--white);
+  cursor: pointer;
+
+  mat-icon { font-size: 12px; width: 12px; height: 12px; }
+  &:hover { background: rgba(0, 0, 0, 0.7); }
+}
+
+.cpf__thumb-error-text {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: $font;
+  line-height: 1.2;
+}
+
+// Chips progress and error
+.cpf__attachment--uploading {
+  border-style: dashed;
+  background: var(--white);
+}
+
+.cpf__attachment--error {
+  border-color: var(--danger--200);
+  background: var(--danger--50);
+}
+
+.cpf__attachment-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+
+  mat-progress-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+  }
+}
+
+.cpf__attachment-progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: $p-600;
+  font-family: $font;
+}
+
+.cpf__attachment-error-msg {
+  font-size: 13px;
+  color: var(--danger--600);
+  font-weight: 600;
+  font-family: $font;
+}
+
+.cpf__attachment-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $n-500;
+  cursor: pointer;
+  transition: background-color 0.13s, color 0.13s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover {
+    background: $n-200;
+    color: $n-800;
+  }
+}

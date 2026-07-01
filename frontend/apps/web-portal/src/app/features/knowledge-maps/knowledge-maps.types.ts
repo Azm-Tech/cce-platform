@@ -72,10 +72,20 @@ export interface NodeDetailPost {
 }
 
 export interface NodeDetails {
-  node: { id: string; nameAr: string; nameEn: string; iconKey: string; topicId: string };
-  topic: NodeDetailTopic;
+  node: {
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    iconKey: string;
+    topicId: string;
+    titleAr?: string | null;
+    titleEn?: string | null;
+    descriptionAr?: string | null;
+    descriptionEn?: string | null;
+  };
+  topic?: NodeDetailTopic | null;
   resources: NodeDetailResource[];
   news: NodeDetailNews[];
   events: NodeDetailEvent[];
-  posts: NodeDetailPost[];
+  posts?: NodeDetailPost[] | null;
 }

@@ -65,4 +65,15 @@ describe('buildElements', () => {
     const edges = out.filter((e) => e.group === 'edges');
     expect(edges).toHaveLength(0);
   });
+
+  it('does not create edges when parentId is not present in the nodes list', () => {
+    const orphan: InteractiveMapNode = {
+      ...N1,
+      id: 'orphan',
+      parentId: 'non-existent-parent-id',
+    };
+    const out = buildElements([orphan], { locale: 'en' });
+    const edges = out.filter((e) => e.group === 'edges');
+    expect(edges).toHaveLength(0);
+  });
 });

@@ -216,48 +216,98 @@
     @if (attachmentError(); as err) {
       <span class="cpf__attachment-error">{{ err | transloco }}</span>
     }
-    @if (uploading()) {
-      <span class="cpf__attachment-uploading">{{ 'community.compose.attachmentUploading' | transloco }}</span>
-    }
 
     <!-- Image thumbnails -->
     @if (images().length > 0) {
       <div class="cpf__thumbs">
-        @for (att of images(); track att.assetFileId) {
-          <div class="cpf__thumb">
+        @for (att of images(); track att.id) {
+          <div class="cpf__thumb" [class.cpf__thumb--uploading]="att.status === 'uploading'" [class.cpf__thumb--error]="att.status === 'error'">
             <img [src]="att.previewUrl" [alt]="att.fileName" />
-            <button
-              type="button"
-              class="cpf__thumb-remove"
-              [attr.aria-label]="'community.compose.media.remove' | transloco"
-              (click)="removeAttachment(att.assetFileId)"
-            >
-              <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
-            </button>
+            
+            @if (att.status === 'uploading') {
+              <div class="cpf__thumb-overlay">
+                <mat-progress-spinner mode="determinate" [value]="att.progress" diameter="28"></mat-progress-spinner>
+                <span class="cpf__thumb-progress-text">{{ att.progress }}%</span>
+                <button
+                  type="button"
+                  class="cpf__thumb-cancel"
+                  [attr.aria-label]="'community.compose.media.cancel' | transloco"
+                  (click)="cancelUpload(att.id)"
+                >
+                  <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+                </button>
+              </div>
+            } @else if (att.status === 'error') {
+              <div class="cpf__thumb-overlay cpf__thumb-overlay--error">
+                <mat-icon svgIcon="circle-alert" aria-hidden="true" class="cpf__color-error"></mat-icon>
+                <span class="cpf__thumb-error-text">{{ 'errors.uploadFailed' | transloco }}</span>
+                <button
+                  type="button"
+                  class="cpf__thumb-remove"
+                  [attr.aria-label]="'community.compose.media.remove' | transloco"
+                  (click)="removeAttachment(att.id)"
+                >
+                  <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+                </button>
+              </div>
+            } @else {
+              <button
+                type="button"
+                class="cpf__thumb-remove"
+                [attr.aria-label]="'community.compose.media.remove' | transloco"
+                (click)="removeAttachment(att.id)"
+              >
+                <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+              </button>
+            }
           </div>
         }
       </div>
     }
 
     <!-- Video + file chips -->
-    @for (att of videos().concat(files()); track att.assetFileId) {
-      <div class="cpf__attachment">
+    @for (att of videos().concat(files()); track att.id) {
+      <div class="cpf__attachment" [class.cpf__attachment--uploading]="att.status === 'uploading'" [class.cpf__attachment--error]="att.status === 'error'">
         <span class="cpf__attachment-icon" aria-hidden="true">
-          <mat-icon [svgIcon]="categoryIcon(att.category)"></mat-icon>
+          @if (att.status === 'error') {
+            <mat-icon svgIcon="circle-alert" class="cpf__color-error" aria-hidden="true"></mat-icon>
+          } @else {
+            <mat-icon [svgIcon]="categoryIcon(att.category)" aria-hidden="true"></mat-icon>
+          }
         </span>
         <span class="cpf__attachment-info">
           <span class="cpf__attachment-name" [title]="att.fileName">{{ att.fileName }}</span>
-          <span class="cpf__attachment-size">{{ formatFileSize(att.sizeBytes) }}</span>
+          @if (att.status === 'uploading') {
+            <div class="cpf__attachment-progress-container">
+              <mat-progress-bar mode="determinate" [value]="att.progress"></mat-progress-bar>
+              <span class="cpf__attachment-progress-text">{{ att.progress }}%</span>
+            </div>
+          } @else if (att.status === 'error') {
+            <span class="cpf__attachment-error-msg">{{ att.error | transloco }}</span>
+          } @else {
+            <span class="cpf__attachment-size">{{ formatFileSize(att.sizeBytes) }}</span>
+          }
         </span>
-        <button
-          type="button"
-          class="cpf__attachment-delete"
-          [attr.aria-label]="'community.compose.media.remove' | transloco"
-          (click)="removeAttachment(att.assetFileId)"
-        >
-          <mat-icon svgIcon="trash-2" aria-hidden="true"></mat-icon>
-          {{ 'community.compose.media.remove' | transloco }}
-        </button>
+        @if (att.status === 'uploading') {
+          <button
+            type="button"
+            class="cpf__attachment-cancel"
+            [attr.aria-label]="'community.compose.media.cancel' | transloco"
+            (click)="cancelUpload(att.id)"
+          >
+            <mat-icon svgIcon="x" aria-hidden="true"></mat-icon>
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="cpf__attachment-delete"
+            [attr.aria-label]="'community.compose.media.remove' | transloco"
+            (click)="removeAttachment(att.id)"
+          >
+            <mat-icon svgIcon="trash-2" aria-hidden="true"></mat-icon>
+            {{ 'community.compose.media.remove' | transloco }}
+          </button>
+        }
       </div>
     }
   </div>
