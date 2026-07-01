@@ -20,7 +20,10 @@ internal sealed class InteractiveMapNodeConfiguration : IEntityTypeConfiguration
         builder.Property(n => n.Category);
         builder.Property(n => n.CategoryNameAr).HasMaxLength(128);
         builder.Property(n => n.CategoryNameEn).HasMaxLength(128);
-        builder.Property(n => n.Level).IsRequired();
+        builder.Property(n => n.TitleAr).HasMaxLength(512);
+        builder.Property(n => n.TitleEn).HasMaxLength(512);
+        builder.Property(n => n.DescriptionAr).HasColumnType("nvarchar(max)");
+        builder.Property(n => n.DescriptionEn).HasColumnType("nvarchar(max)");
         builder.Property(n => n.TopicId).IsRequired();
         builder.Property(n => n.IsActive).IsRequired();
 

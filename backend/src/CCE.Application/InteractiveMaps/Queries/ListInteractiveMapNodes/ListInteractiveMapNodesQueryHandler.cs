@@ -29,8 +29,7 @@ internal sealed class ListInteractiveMapNodesQueryHandler
             .Include(n => n.Tags)
             .Where(n => n.InteractiveMapId == request.MapId)
             .WhereIf(request.IsActive.HasValue, n => n.IsActive == request.IsActive!.Value)
-            .OrderBy(n => n.Category)
-            .ThenBy(n => n.Level);
+            .OrderBy(n => n.Category);
 
         var result = await query.ToPagedResultAsync(request.Page, request.PageSize, cancellationToken).ConfigureAwait(false);
         return _msg.Ok(result.Map(MapToDto), MessageKeys.General.ITEMS_LISTED);
@@ -45,7 +44,10 @@ internal sealed class ListInteractiveMapNodesQueryHandler
         n.Category,
         n.CategoryNameAr,
         n.CategoryNameEn,
-        n.Level,
+        n.TitleAr,
+        n.TitleEn,
+        n.DescriptionAr,
+        n.DescriptionEn,
         n.ParentId,
         n.TopicId,
         n.IsActive,

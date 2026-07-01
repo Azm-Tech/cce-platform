@@ -11,7 +11,6 @@ public sealed record PublicInteractiveMapNodeDto(
     int? Category,
     string? CategoryNameAr,
     string? CategoryNameEn,
-    int Level,
     System.Guid? ParentId,
     System.Guid TopicId,
     System.Collections.Generic.IReadOnlyList<InteractiveMapTagDto> Tags)
@@ -19,6 +18,6 @@ public sealed record PublicInteractiveMapNodeDto(
     internal static PublicInteractiveMapNodeDto FromEntity(InteractiveMapNode n) => new(
         n.Id, n.NameAr, n.NameEn, n.IconKey,
         n.Category, n.CategoryNameAr, n.CategoryNameEn,
-        n.Level, n.ParentId, n.TopicId,
+        n.ParentId, n.TopicId,
         n.Tags.Select(t => new InteractiveMapTagDto(t.Id, t.NameAr, t.NameEn)).ToList());
 }

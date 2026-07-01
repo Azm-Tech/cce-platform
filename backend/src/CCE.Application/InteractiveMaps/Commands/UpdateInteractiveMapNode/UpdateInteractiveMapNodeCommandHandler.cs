@@ -32,15 +32,18 @@ internal sealed class UpdateInteractiveMapNodeCommandHandler
             return _msg.NotFound<VoidData>(MessageKeys.InteractiveMaps.NODE_NOT_FOUND);
 
         entity.UpdateDetails(
-            request.NameAr,
-            request.NameEn,
-            request.IconKey,
-            request.Category,
-            request.CategoryNameAr,
-            request.CategoryNameEn,
-            request.Level,
-            request.ParentId,
-            request.TopicId);
+            nameAr: request.NameAr,
+            nameEn: request.NameEn,
+            iconKey: request.IconKey,
+            category: request.Category,
+            categoryNameAr: request.CategoryNameAr,
+            categoryNameEn: request.CategoryNameEn,
+            titleAr: request.TitleAr,
+            titleEn: request.TitleEn,
+            descriptionAr: request.DescriptionAr,
+            descriptionEn: request.DescriptionEn,
+            parentId: request.ParentId,
+            topicId: request.TopicId);
 
         if (request.IsActive)
             entity.Activate();

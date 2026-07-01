@@ -17,7 +17,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         int? category,
         string? categoryNameAr,
         string? categoryNameEn,
-        int level,
+        string? titleAr,
+        string? titleEn,
+        string? descriptionAr,
+        string? descriptionEn,
         System.Guid? parentId,
         System.Guid topicId) : base(id)
     {
@@ -28,7 +31,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         Category = category;
         CategoryNameAr = categoryNameAr;
         CategoryNameEn = categoryNameEn;
-        Level = level;
+        TitleAr = titleAr;
+        TitleEn = titleEn;
+        DescriptionAr = descriptionAr;
+        DescriptionEn = descriptionEn;
         ParentId = parentId;
         TopicId = topicId;
         IsActive = true;
@@ -48,7 +54,13 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
 
     public string? CategoryNameEn { get; private set; }
 
-    public int Level { get; private set; }
+    public string? TitleAr { get; private set; }
+
+    public string? TitleEn { get; private set; }
+
+    public string? DescriptionAr { get; private set; }
+
+    public string? DescriptionEn { get; private set; }
 
     public System.Guid? ParentId { get; private set; }
 
@@ -66,7 +78,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         int? category,
         string? categoryNameAr,
         string? categoryNameEn,
-        int level,
+        string? titleAr,
+        string? titleEn,
+        string? descriptionAr,
+        string? descriptionEn,
         System.Guid? parentId,
         System.Guid topicId)
     {
@@ -86,7 +101,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
             category: category,
             categoryNameAr: categoryNameAr,
             categoryNameEn: categoryNameEn,
-            level: level,
+            titleAr: titleAr,
+            titleEn: titleEn,
+            descriptionAr: descriptionAr,
+            descriptionEn: descriptionEn,
             parentId: parentId,
             topicId: topicId);
     }
@@ -98,7 +116,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         int? category,
         string? categoryNameAr,
         string? categoryNameEn,
-        int level,
+        string? titleAr,
+        string? titleEn,
+        string? descriptionAr,
+        string? descriptionEn,
         System.Guid? parentId,
         System.Guid topicId)
     {
@@ -115,7 +136,10 @@ public sealed class InteractiveMapNode : Entity<System.Guid>
         Category = category;
         CategoryNameAr = categoryNameAr;
         CategoryNameEn = categoryNameEn;
-        Level = level;
+        TitleAr = titleAr;
+        TitleEn = titleEn;
+        DescriptionAr = descriptionAr;
+        DescriptionEn = descriptionEn;
         ParentId = parentId;
         TopicId = topicId;
     }

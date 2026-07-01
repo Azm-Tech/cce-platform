@@ -25,7 +25,7 @@ public static class InteractiveMapEndpoints
 
         // GET /api/interactive-maps/nodes/{nodeId}/details
         // Returns the side-panel details when a user clicks a map node:
-        // node info + linked topic + top-5 news, events, posts, and resources.
+        // node info + top-5 news, events, and resources.
         maps.MapGet("/nodes/{nodeId:guid}/details", async (
             System.Guid nodeId,
             IMediator mediator, CancellationToken cancellationToken) =>

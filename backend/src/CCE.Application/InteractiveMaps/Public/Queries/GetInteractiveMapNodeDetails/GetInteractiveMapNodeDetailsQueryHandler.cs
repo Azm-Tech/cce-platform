@@ -2,7 +2,6 @@
 using CCE.Application.Common.Interfaces;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
-using CCE.Domain.Community;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,18 +46,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
 
         var hasTags = nodeTagIds.Count > 0;
 
-        // ─── 2. Resolve the linked topic ───
-        var topic = await _db.Topics
-            .AsNoTracking()
-            .Where(t => t.Id == node.TopicId && t.IsActive)
-            .Select(t => new { t.Id, t.NameAr, t.NameEn, t.DescriptionAr, t.DescriptionEn, t.Slug, t.IconUrl })
-            .FirstOrDefaultAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        if (topic is null)
-            return _msg.NotFound<MapNodeDetailsDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
-
-        // ─── 3. News — top N by topic or tags, newest first ───
+        // ─── 2. News — top N by topic or tags, newest first ───
         var news = await _db.News
             .AsNoTracking()
             .Where(n => n.PublishedOn != null)
@@ -69,7 +57,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // ─── 4. Events — upcoming by topic or tags, soonest first ───
+        // ─── 3. Events — upcoming by topic or tags, soonest first ───
         var now = DateTimeOffset.UtcNow;
         var events = await _db.Events
             .AsNoTracking()
@@ -81,18 +69,7 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // ─── 5. Posts — published by topic or tags, hottest first ───
-        var posts = await _db.Posts
-            .AsNoTracking()
-            .Where(p => p.Status == PostStatus.Published)
-            .Where(p => p.TopicId == node.TopicId || (hasTags && p.Tags.Any(t => nodeTagIds.Contains(t.Id))))
-            .OrderByDescending(p => p.Score)
-            .Take(SliceSize)
-            .Select(p => new MapNodePostDto(p.Id, p.Type, p.Title, p.Content, p.CommentsCount, p.CreatedOn))
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        // ─── 6. Resources — top N recently published (Resource has no TopicId FK) ───
+        // ─── 4. Resources — top N recently published ───
         var categoryIds = await _db.Resources
             .AsNoTracking()
             .Where(r => r.PublishedOn != null)
@@ -123,14 +100,12 @@ internal sealed class GetInteractiveMapNodeDetailsQueryHandler
             })
             .ToList();
 
-        // ─── 7. Assemble ───
+        // ─── 5. Assemble ───
         var dto = new MapNodeDetailsDto(
-            Node: new MapNodeSummaryDto(node.Id, node.NameAr, node.NameEn, node.IconKey, node.TopicId),
-            Topic: new MapNodeTopicDto(topic.Id, topic.NameAr, topic.NameEn, topic.DescriptionAr, topic.DescriptionEn, topic.Slug, topic.IconUrl),
+            Node: new MapNodeSummaryDto(node.Id, node.NameAr, node.NameEn, node.IconKey, null, null, null, null, node.TopicId),
             Resources: resources,
             News: news,
-            Events: events,
-            Posts: posts);
+            Events: events);
 
         return _msg.Ok(dto, MessageKeys.General.ITEMS_LISTED);
     }

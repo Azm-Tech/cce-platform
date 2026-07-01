@@ -1,7 +1,9 @@
 using CCE.Application.Common;
 using CCE.Application.Common.Interfaces;
+using CCE.Application.InteractiveMaps.Dtos;
 using CCE.Application.InteractiveMaps.Public.Dtos;
 using CCE.Application.Messages;
+using CCE.Domain.InteractiveMaps;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,17 +34,20 @@ internal sealed class GetCurrentInteractiveMapQueryHandler
             return _msg.NotFound<PublicInteractiveMapDto>(MessageKeys.InteractiveMaps.MAP_NOT_FOUND);
 
         var nodes = await _db.InteractiveMapNodes
-            .Include(n => n.Tags)
+            .AsNoTracking()
             .Where(n => n.InteractiveMapId == map.Id && n.IsActive)
             .OrderBy(n => n.Category)
-            .ThenBy(n => n.Level)
+            .Select(n => new PublicInteractiveMapNodeDto(
+                n.Id, n.NameAr, n.NameEn, n.IconKey,
+                n.Category, n.CategoryNameAr, n.CategoryNameEn,
+                n.ParentId, n.TopicId,
+                n.Tags.Select(t => new InteractiveMapTagDto(t.Id, t.NameAr, t.NameEn)).ToList()))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return _msg.Ok(
-            PublicInteractiveMapDto.FromEntity(
-                map,
-                nodes.Select(PublicInteractiveMapNodeDto.FromEntity).ToList()),
+            new PublicInteractiveMapDto(
+                map.Id, map.NameAr, map.NameEn, map.DescriptionAr, map.DescriptionEn, nodes),
             MessageKeys.General.ITEMS_LISTED);
     }
 }
