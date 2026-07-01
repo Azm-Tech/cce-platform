@@ -144,6 +144,12 @@
     border-block-end: 1px solid var(--neutrals--100);
   }
 
+  &__bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   &__bar-title {
     display: inline-flex;
     align-items: center;
@@ -229,7 +235,72 @@
     transition: background 120ms ease;
 
     &:last-child { border-block-end: none; }
-    &:hover { background: var(--neutrals--50); }
+    &:hover { background: var(--neutrals--100); }
+
+    &--root {
+      background: var(--neutrals--50);
+      border-block-end-color: var(--neutrals--100);
+
+      &:hover { background: var(--neutrals--100); }
+    }
+  }
+
+  /* Chevron collapse toggle */
+  &__collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.625rem;
+    height: 1.625rem;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--neutrals--400);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 120ms ease, color 120ms ease;
+
+    &:hover {
+      background: var(--neutrals--200);
+      color: var(--neutrals--700);
+    }
+  }
+
+  &__chevron {
+    font-size: 1.125rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    transition: transform 200ms ease;
+    transform: rotate(-90deg); // collapsed LTR: points right
+
+    &--rtl { transform: rotate(90deg); }  // collapsed RTL: points left
+
+    &--expanded { transform: rotate(0deg) !important; } // expanded: points down
+  }
+
+  &__collapse-spacer {
+    display: inline-block;
+    width: 1.625rem;
+    flex-shrink: 0;
+  }
+
+  /* "N items" chip shown on collapsed roots */
+  &__child-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(var(--color-brand-rgb), 0.1);
+    color: var(--color-brand);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &::before { content: '+'; }
   }
 
   &__indent {

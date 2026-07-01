@@ -2937,7 +2937,9 @@
         "message": "Are you sure you want to delete this element?",
         "confirm": "Delete"
       },
-      "empty": "No elements in this map yet."
+      "empty": "No elements in this map yet.",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all"
     },
     "manageNodes": "Manage Elements",
     "empty": "No knowledge maps yet. Create one to get started."

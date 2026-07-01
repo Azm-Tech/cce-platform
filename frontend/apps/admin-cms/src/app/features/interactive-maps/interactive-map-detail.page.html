@@ -58,19 +58,28 @@
   @if (!loading() && !errorKind() && map()) {
     <section class="im-tree__panel">
 
-      <!-- Section header: count + add -->
+      <!-- Section header: count + expand-all + add -->
       <div class="im-tree__bar">
         <div class="im-tree__bar-title">
           <mat-icon aria-hidden="true">account_tree</mat-icon>
           <span>{{ 'interactiveMaps.nodes.title' | transloco }}</span>
           <span class="im-tree__count">{{ treeNodes().length }}</span>
         </div>
-        @if (treeNodes().length > 0) {
-          <button type="button" mat-flat-button color="primary" *ccePermission="'Page.Edit'" (click)="openCreate()">
-            <mat-icon>add</mat-icon>
-            {{ 'interactiveMaps.nodes.createBtn' | transloco }}
-          </button>
-        }
+        <div class="im-tree__bar-controls">
+          @if (hasCollapsibleRoots()) {
+            <button type="button" mat-icon-button
+              [matTooltip]="(allExpanded() ? 'interactiveMaps.nodes.collapseAll' : 'interactiveMaps.nodes.expandAll') | transloco"
+              (click)="toggleAll()">
+              <mat-icon>{{ allExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+            </button>
+          }
+          @if (treeNodes().length > 0) {
+            <button type="button" mat-flat-button color="primary" *ccePermission="'Page.Edit'" (click)="openCreate()">
+              <mat-icon>add</mat-icon>
+              {{ 'interactiveMaps.nodes.createBtn' | transloco }}
+            </button>
+          }
+        </div>
       </div>
 
       @if (treeNodes().length === 0) {
@@ -94,12 +103,27 @@
 
         <!-- Tree rows -->
         <ul class="im-tree__list">
-          @for (node of treeNodes(); track node.id) {
-            <li class="im-tree__row" [style.--lvl]="node.level">
+          @for (node of visibleNodes(); track node.id) {
+            <li class="im-tree__row"
+              [class.im-tree__row--root]="node.parentId === null"
+              [style.--lvl]="node.level">
 
-              <!-- Indent + level badge -->
+              <!-- Indent + collapse toggle + level badge -->
               <div class="im-tree__indent">
-                @if (node.level > 0) {
+                @if (node.parentId === null && isParent(node.id)) {
+                  <button type="button" class="im-tree__collapse-btn"
+                    [class.im-tree__collapse-btn--expanded]="isExpanded(node.id)"
+                    [attr.aria-expanded]="isExpanded(node.id)"
+                    (click)="toggleCollapse(node.id)">
+                    <mat-icon class="im-tree__chevron"
+                      [class.im-tree__chevron--expanded]="isExpanded(node.id)"
+                      [class.im-tree__chevron--rtl]="locale() === 'ar'">
+                      keyboard_arrow_down
+                    </mat-icon>
+                  </button>
+                } @else if (node.parentId === null) {
+                  <span class="im-tree__collapse-spacer" aria-hidden="true"></span>
+                } @else {
                   <span class="im-tree__connector" aria-hidden="true"></span>
                 }
                 <span class="im-tree__level-badge"
@@ -108,7 +132,7 @@
                 </span>
               </div>
 
-              <!-- Node name + icon-key chip -->
+              <!-- Node name + icon-key chip + collapsed child count -->
               <div class="im-tree__name">
                 <span class="im-tree__name-en">{{ nodeName(node) }}</span>
                 <span class="im-tree__name-meta">
@@ -120,6 +144,9 @@
                       <span class="im-tree__icon-tile"><img [src]="iconSrc" alt="" /></span>
                       {{ nodeIconLabel(node) || ('interactiveMaps.iconPicker.customIcon' | transloco) }}
                     </span>
+                  }
+                  @if (node.parentId === null && isParent(node.id) && !isExpanded(node.id)) {
+                    <span class="im-tree__child-count">{{ childCount(node.id) }}</span>
                   }
                 </span>
               </div>

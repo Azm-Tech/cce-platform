@@ -14,6 +14,7 @@ import { InteractiveMapFormDialogComponent } from './interactive-map-form.dialog
 import { InteractiveMapNodeFormDialogComponent } from './interactive-map-node-form.dialog';
 import type { InteractiveMapDto, InteractiveMapNodeDto } from './interactive-maps.types';
 
+
 /**
  * Editor for the single Interactive Map the system owns.
  *
@@ -53,6 +54,75 @@ export class InteractiveMapDetailPage implements OnInit {
   readonly errorKind = signal<string | null>(null);
 
   readonly treeNodes = computed(() => this.buildTreeOrder(this.nodes()));
+
+  // ── Collapse / expand state ──────────────────────────────────────────────
+  /** IDs of level-0 roots that are currently expanded; all others are collapsed. */
+  readonly expandedRoots = signal<Set<string>>(new Set());
+
+  /** Set of node IDs that have at least one direct child. */
+  readonly parentIds = computed(() => {
+    const set = new Set<string>();
+    for (const n of this.nodes()) {
+      if (n.parentId) set.add(n.parentId);
+    }
+    return set;
+  });
+
+  /** Direct child count per node ID (for the collapsed-badge). */
+  readonly directChildCounts = computed(() => {
+    const counts = new Map<string, number>();
+    for (const n of this.nodes()) {
+      if (n.parentId) counts.set(n.parentId, (counts.get(n.parentId) ?? 0) + 1);
+    }
+    return counts;
+  });
+
+  readonly visibleNodes = computed(() => {
+    const all = this.treeNodes();
+    const expanded = this.expandedRoots();
+    // Fast path: nothing expanded — show root nodes only (parentId === null).
+    if (expanded.size === 0) return all.filter((n) => n.parentId === null);
+    const parentMap = new Map(all.map((n) => [n.id, n.parentId]));
+    return all.filter((node) => {
+      if (node.parentId === null) return true; // root nodes always show
+      let current: string | null = node.parentId;
+      while (current != null) {
+        const grandParent = parentMap.get(current);
+        if (grandParent === null) return expanded.has(current); // current is a root
+        if (grandParent === undefined) return true;             // orphan reference
+        current = grandParent;
+      }
+      return true;
+    });
+  });
+
+  readonly hasCollapsibleRoots = computed(() =>
+    this.treeNodes().some((n) => n.parentId === null && this.parentIds().has(n.id)),
+  );
+
+  readonly allExpanded = computed(() => {
+    const collapsible = this.treeNodes().filter((n) => n.parentId === null && this.parentIds().has(n.id));
+    return collapsible.length > 0 && collapsible.every((n) => this.expandedRoots().has(n.id));
+  });
+
+  isExpanded(id: string): boolean { return this.expandedRoots().has(id); }
+  isParent(id: string): boolean { return this.parentIds().has(id); }
+  childCount(id: string): number { return this.directChildCounts().get(id) ?? 0; }
+
+  toggleCollapse(id: string): void {
+    this.expandedRoots.update((set) => {
+      const next = new Set(set);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  toggleAll(): void {
+    const roots = this.treeNodes()
+      .filter((n) => n.parentId === null && this.parentIds().has(n.id))
+      .map((n) => n.id);
+    this.expandedRoots.set(this.allExpanded() ? new Set() : new Set(roots));
+  }
 
   // ── Localized display: primary follows the selected language, falling back
   //    to the other language; `*Alt` returns the other language (shown small). ──
