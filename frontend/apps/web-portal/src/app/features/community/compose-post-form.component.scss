@@ -376,8 +376,8 @@ $font:  'Helvetica Neue LT Arabic', 'Cairo', sans-serif;
   }
 
   &--error {
-    background: rgba(254, 242, 242, 0.95);
-    color: var(--danger--700, #b91c1c);
+    background: rgba(var(--danger--50-rgb), 0.95);
+    color: var(--danger--700);
     border: 1px solid var(--danger--200);
     border-radius: 8px;
     padding: 4px;
