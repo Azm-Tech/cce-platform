@@ -1,4 +1,3 @@
-using CCE.Domain.Community;
 using CCE.Domain.Content;
 
 namespace CCE.Application.InteractiveMaps.Public.Dtos;
@@ -8,11 +7,9 @@ namespace CCE.Application.InteractiveMaps.Public.Dtos;
 /// </summary>
 public sealed record MapNodeDetailsDto(
     MapNodeSummaryDto Node,
-    MapNodeTopicDto Topic,
     IReadOnlyList<MapNodeResourceDto> Resources,
     IReadOnlyList<MapNodeNewsDto> News,
-    IReadOnlyList<MapNodeEventDto> Events,
-    IReadOnlyList<MapNodePostDto> Posts);
+    IReadOnlyList<MapNodeEventDto> Events);
 
 /// <summary>Core fields of the clicked node.</summary>
 public sealed record MapNodeSummaryDto(
@@ -20,17 +17,11 @@ public sealed record MapNodeSummaryDto(
     string NameAr,
     string NameEn,
     string IconKey,
+    string? TitleAr,
+    string? TitleEn,
+    string? DescriptionAr,
+    string? DescriptionEn,
     System.Guid TopicId);
-
-/// <summary>Topic linked to the node.</summary>
-public sealed record MapNodeTopicDto(
-    System.Guid Id,
-    string NameAr,
-    string NameEn,
-    string DescriptionAr,
-    string DescriptionEn,
-    string Slug,
-    string? IconUrl);
 
 /// <summary>Slim resource card — top N recently published.</summary>
 public sealed record MapNodeResourceDto(
@@ -58,12 +49,3 @@ public sealed record MapNodeEventDto(
     System.DateTimeOffset StartsOn,
     System.DateTimeOffset EndsOn,
     string? FeaturedImageUrl);
-
-/// <summary>Slim post card — published posts filtered by the node's topic.</summary>
-public sealed record MapNodePostDto(
-    System.Guid Id,
-    PostType Type,
-    string? Title,
-    string? Content,
-    int CommentsCount,
-    System.DateTimeOffset CreatedOn);

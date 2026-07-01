@@ -28,16 +28,19 @@ internal sealed class CreateInteractiveMapNodeCommandHandler
         CancellationToken cancellationToken)
     {
         var entity = InteractiveMapNode.Create(
-            request.InteractiveMapId,
-            request.NameAr,
-            request.NameEn,
-            request.IconKey,
-            request.Category,
-            request.CategoryNameAr,
-            request.CategoryNameEn,
-            request.Level,
-            request.ParentId,
-            request.TopicId);
+            interactiveMapId: request.InteractiveMapId,
+            nameAr: request.NameAr,
+            nameEn: request.NameEn,
+            iconKey: request.IconKey,
+            category: request.Category,
+            categoryNameAr: request.CategoryNameAr,
+            categoryNameEn: request.CategoryNameEn,
+            titleAr: request.TitleAr,
+            titleEn: request.TitleEn,
+            descriptionAr: request.DescriptionAr,
+            descriptionEn: request.DescriptionEn,
+            parentId: request.ParentId,
+            topicId: request.TopicId);
 
         await _repo.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

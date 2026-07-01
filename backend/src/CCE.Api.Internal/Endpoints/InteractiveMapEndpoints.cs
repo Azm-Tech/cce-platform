@@ -64,7 +64,8 @@ public static class InteractiveMapEndpoints
         {
             var cmd = new CreateInteractiveMapNodeCommand(
                 mapId, body.NameAr, body.NameEn, body.IconKey, body.Category,
-                body.CategoryNameAr, body.CategoryNameEn, body.Level,
+                body.CategoryNameAr, body.CategoryNameEn,
+                body.TitleAr, body.TitleEn, body.DescriptionAr, body.DescriptionEn,
                 body.ParentId, body.TopicId);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToCreatedHttpResult();
@@ -79,7 +80,8 @@ public static class InteractiveMapEndpoints
         {
             var cmd = new UpdateInteractiveMapNodeCommand(
                 mapId, id, body.NameAr, body.NameEn, body.IconKey, body.Category,
-                body.CategoryNameAr, body.CategoryNameEn, body.Level,
+                body.CategoryNameAr, body.CategoryNameEn,
+                body.TitleAr, body.TitleEn, body.DescriptionAr, body.DescriptionEn,
                 body.ParentId, body.TopicId, body.IsActive);
             var response = await mediator.Send(cmd, cancellationToken).ConfigureAwait(false);
             return response.ToHttpResult();
@@ -114,7 +116,10 @@ public sealed record CreateInteractiveMapNodeRequest(
     int? Category,
     string? CategoryNameAr,
     string? CategoryNameEn,
-    int Level,
+    string? TitleAr,
+    string? TitleEn,
+    string? DescriptionAr,
+    string? DescriptionEn,
     System.Guid? ParentId,
     System.Guid TopicId);
 
@@ -125,7 +130,10 @@ public sealed record UpdateInteractiveMapNodeRequest(
     int? Category,
     string? CategoryNameAr,
     string? CategoryNameEn,
-    int Level,
+    string? TitleAr,
+    string? TitleEn,
+    string? DescriptionAr,
+    string? DescriptionEn,
     System.Guid? ParentId,
     System.Guid TopicId,
     bool IsActive);

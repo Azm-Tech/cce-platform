@@ -12,7 +12,10 @@ public sealed record UpdateInteractiveMapNodeCommand(
     int? Category,
     string? CategoryNameAr,
     string? CategoryNameEn,
-    int Level,
+    string? TitleAr,
+    string? TitleEn,
+    string? DescriptionAr,
+    string? DescriptionEn,
     System.Guid? ParentId,
     System.Guid TopicId,
     bool IsActive) : IRequest<Response<VoidData>>;
