@@ -2,10 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  OnDestroy,
+  OnInit,
   computed,
+  inject,
   input,
   output,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -27,7 +31,9 @@ export interface LightboxImage {
   styleUrl: './media-lightbox.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MediaLightboxComponent {
+export class MediaLightboxComponent implements OnInit, OnDestroy {
+  private readonly doc = inject(DOCUMENT);
+
   readonly images = input<LightboxImage[]>([]);
   readonly index = input<number>(0);
 
@@ -36,6 +42,15 @@ export class MediaLightboxComponent {
 
   readonly current = computed<LightboxImage | null>(() => this.images()[this.index()] ?? null);
   readonly hasMultiple = computed(() => this.images().length > 1);
+  readonly counter = computed(() => `${this.index() + 1} / ${this.images().length}`);
+
+  ngOnInit(): void {
+    this.doc.body.classList.add('cce-lightbox-open');
+  }
+
+  ngOnDestroy(): void {
+    this.doc.body.classList.remove('cce-lightbox-open');
+  }
 
   onClose(): void {
     this.closed.emit();

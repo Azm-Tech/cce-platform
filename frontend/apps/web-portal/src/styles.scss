@@ -850,6 +850,9 @@ body { min-height: 100vh; }
 }
 
 
+/* ─── Lightbox: prevent background scroll while open ────────────────────── */
+body.cce-lightbox-open { overflow: hidden; }
+
 /* ─── Dialog: no padding (evaluation + preferences) ─────────────────────── */
 .cce-dialog-no-padding .mat-mdc-dialog-container .mdc-dialog__surface {
   padding: 0;
