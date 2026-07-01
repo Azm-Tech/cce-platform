@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { LocaleService } from '@frontend/i18n';
 import { CountryApiService } from './country-api.service';
 import { ContentApiService } from '../content/content-api.service';
@@ -51,7 +51,7 @@ const ALLOWED_NDC_TYPES = ['application/pdf'];
     CommonModule, DatePipe, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule,
     MatIconModule, MatInputModule, MatProgressBarModule, TranslocoModule,
-    RichTextEditorComponent,
+    RichTextEditorComponent, TranslateFieldComponent,
   ],
   templateUrl: './country-detail.page.html',
   styleUrl: './countries.scss',

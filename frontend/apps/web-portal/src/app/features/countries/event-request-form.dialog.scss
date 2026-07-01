@@ -13,7 +13,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  align-items: end;
   @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.cce-event-request-form__field-stack {
+  display: flex;
+  flex-direction: column;
 }
 
 .cce-event-request-form__datetime-row {

@@ -23,20 +23,34 @@
             <mat-label>{{ 'countries.field.nameAr' | transloco }}</mat-label>
             <input matInput formControlName="nameAr" />
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.nameEn' | transloco }}</mat-label>
-            <input matInput formControlName="nameEn" />
-          </mat-form-field>
+          <div class="cce-country-detail__field-stack">
+            <cce-translate-field
+              [source]="countryForm.controls.nameAr.value"
+              [targetHasContent]="!!countryForm.controls.nameEn.value"
+              (translated)="countryForm.controls.nameEn.setValue($event)"
+            />
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'countries.field.nameEn' | transloco }}</mat-label>
+              <input matInput formControlName="nameEn" />
+            </mat-form-field>
+          </div>
         </div>
         <div class="cce-country-detail__row">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'countries.field.regionAr' | transloco }}</mat-label>
             <input matInput formControlName="regionAr" />
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'countries.field.regionEn' | transloco }}</mat-label>
-            <input matInput formControlName="regionEn" />
-          </mat-form-field>
+          <div class="cce-country-detail__field-stack">
+            <cce-translate-field
+              [source]="countryForm.controls.regionAr.value"
+              [targetHasContent]="!!countryForm.controls.regionEn.value"
+              (translated)="countryForm.controls.regionEn.setValue($event)"
+            />
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'countries.field.regionEn' | transloco }}</mat-label>
+              <input matInput formControlName="regionEn" />
+            </mat-form-field>
+          </div>
         </div>
         <mat-checkbox formControlName="isActive">{{ 'countries.field.isActive' | transloco }}</mat-checkbox>
       </form>
@@ -68,12 +82,20 @@
             dir="rtl"
             [label]="'countries.field.descriptionAr' | transloco"
           />
-          <cce-rich-text-editor
-            [imageUploader]="uploadImage"
-            formControlName="descriptionEn"
-            dir="ltr"
-            [label]="'countries.field.descriptionEn' | transloco"
-          />
+          <div class="cce-country-detail__field-stack">
+            <cce-translate-field
+              [source]="profileForm.controls.descriptionAr.value"
+              format="html"
+              [targetHasContent]="!!profileForm.controls.descriptionEn.value"
+              (translated)="profileForm.controls.descriptionEn.setValue($event)"
+            />
+            <cce-rich-text-editor
+              [imageUploader]="uploadImage"
+              formControlName="descriptionEn"
+              dir="ltr"
+              [label]="'countries.field.descriptionEn' | transloco"
+            />
+          </div>
         </div>
         <div class="cce-country-detail__row">
           <cce-rich-text-editor
@@ -82,12 +104,20 @@
             dir="rtl"
             [label]="'countries.field.keyInitiativesAr' | transloco"
           />
-          <cce-rich-text-editor
-            [imageUploader]="uploadImage"
-            formControlName="keyInitiativesEn"
-            dir="ltr"
-            [label]="'countries.field.keyInitiativesEn' | transloco"
-          />
+          <div class="cce-country-detail__field-stack">
+            <cce-translate-field
+              [source]="profileForm.controls.keyInitiativesAr.value"
+              format="html"
+              [targetHasContent]="!!profileForm.controls.keyInitiativesEn.value"
+              (translated)="profileForm.controls.keyInitiativesEn.setValue($event)"
+            />
+            <cce-rich-text-editor
+              [imageUploader]="uploadImage"
+              formControlName="keyInitiativesEn"
+              dir="ltr"
+              [label]="'countries.field.keyInitiativesEn' | transloco"
+            />
+          </div>
         </div>
         <div class="cce-country-detail__row">
           <cce-rich-text-editor
@@ -96,12 +126,20 @@
             dir="rtl"
             [label]="'countries.field.contactInfoAr' | transloco"
           />
-          <cce-rich-text-editor
-            [imageUploader]="uploadImage"
-            formControlName="contactInfoEn"
-            dir="ltr"
-            [label]="'countries.field.contactInfoEn' | transloco"
-          />
+          <div class="cce-country-detail__field-stack">
+            <cce-translate-field
+              [source]="profileForm.controls.contactInfoAr.value"
+              format="html"
+              [targetHasContent]="!!profileForm.controls.contactInfoEn.value"
+              (translated)="profileForm.controls.contactInfoEn.setValue($event)"
+            />
+            <cce-rich-text-editor
+              [imageUploader]="uploadImage"
+              formControlName="contactInfoEn"
+              dir="ltr"
+              [label]="'countries.field.contactInfoEn' | transloco"
+            />
+          </div>
         </div>
 
         <!-- Statistics -->

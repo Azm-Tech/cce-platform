@@ -31,11 +31,18 @@
                 <input matInput formControlName="titleAr" dir="rtl" />
                 <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
               </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>{{ 'policiesSettings.field.titleEn' | transloco }}</mat-label>
-                <input matInput formControlName="titleEn" />
-                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
-              </mat-form-field>
+              <div class="cce-policies-settings__field-stack">
+                <cce-translate-field
+                  [source]="sectionForm.controls.titleAr.value"
+                  [targetHasContent]="!!sectionForm.controls.titleEn.value"
+                  (translated)="sectionForm.controls.titleEn.setValue($event)"
+                />
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'policiesSettings.field.titleEn' | transloco }}</mat-label>
+                  <input matInput formControlName="titleEn" />
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                </mat-form-field>
+              </div>
             </div>
             <div class="cce-policies-settings__form-row">
               <mat-form-field appearance="outline">
@@ -43,11 +50,18 @@
                 <textarea matInput formControlName="contentAr" rows="6" dir="rtl"></textarea>
                 <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
               </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>{{ 'policiesSettings.field.contentEn' | transloco }}</mat-label>
-                <textarea matInput formControlName="contentEn" rows="6"></textarea>
-                <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
-              </mat-form-field>
+              <div class="cce-policies-settings__field-stack">
+                <cce-translate-field
+                  [source]="sectionForm.controls.contentAr.value"
+                  [targetHasContent]="!!sectionForm.controls.contentEn.value"
+                  (translated)="sectionForm.controls.contentEn.setValue($event)"
+                />
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'policiesSettings.field.contentEn' | transloco }}</mat-label>
+                  <textarea matInput formControlName="contentEn" rows="6"></textarea>
+                  <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+                </mat-form-field>
+              </div>
             </div>
             <div class="cce-policies-settings__form-actions">
               <button mat-flat-button color="primary" type="submit" [disabled]="saving()">{{ 'common.actions.save' | transloco }}</button>

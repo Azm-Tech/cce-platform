@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { RichTextEditorComponent } from '@frontend/ui-kit';
+import { RichTextEditorComponent, TranslateFieldComponent } from '@frontend/ui-kit';
 import { AssetUploadComponent } from './asset-upload.component';
 import { ContentApiService } from './content-api.service';
 import {
@@ -56,6 +56,7 @@ const DESCRIPTION_MAX = 500;
     ReactiveFormsModule,
     AssetUploadComponent,
     RichTextEditorComponent,
+    TranslateFieldComponent,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -89,6 +90,11 @@ const DESCRIPTION_MAX = 500;
     .cce-resource-form__full {
       width: 100%;
     }
+
+    /* Translate-action lives above the English field; bottom-align the row so
+       the two inputs stay level and the Arabic field doesn't stretch. */
+    .cce-resource-form__row--align-end { align-items: end; }
+    .cce-resource-form__field-stack { display: flex; flex-direction: column; }
 
     /* Compact the rich-text editors so two stacked ones don't blow past
        the dialog's max-height and trigger an outer scroll. */

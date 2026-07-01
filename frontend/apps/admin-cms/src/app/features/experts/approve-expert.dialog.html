@@ -36,6 +36,11 @@
       <mat-label>{{ 'experts.approve.titleAr' | transloco }}</mat-label>
       <input matInput formControlName="academicTitleAr" autocomplete="off" />
     </mat-form-field>
+    <cce-translate-field
+      [source]="form.controls.academicTitleAr.value"
+      [targetHasContent]="!!form.controls.academicTitleEn.value"
+      (translated)="form.controls.academicTitleEn.setValue($event)"
+    />
     <mat-form-field appearance="outline">
       <mat-label>{{ 'experts.approve.titleEn' | transloco }}</mat-label>
       <input matInput formControlName="academicTitleEn" autocomplete="off" />

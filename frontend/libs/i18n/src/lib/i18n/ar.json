@@ -323,7 +323,13 @@
       "edit": "تعديل",
       "delete": "حذف",
       "create": "إنشاء",
-      "back": "رجوع"
+      "back": "رجوع",
+      "translateFromArabic": "ترجمة من العربية"
+    },
+    "translate": {
+      "confirmTitle": "استبدال المحتوى الإنجليزي؟",
+      "confirmOverwrite": "يحتوي الحقل الإنجليزي على محتوى بالفعل. الترجمة ستستبدله.",
+      "confirmAction": "ترجمة"
     },
     "validation": {
       "required": "هذا الحقل مطلوب.",
@@ -375,6 +381,10 @@
     "ERR017": "عذراً، حدثت مشكلة أثناء إرسال الرد. يرجى المحاولة مرة أخرى.",
     "ERR032": "عذراً، حدثت مشكلة أثناء حذف المنشور. يرجى المحاولة مرة أخرى.",
     "fileType": "صيغة الملف غير مدعومة. الصيغ المسموحة: PDF أو Word.",
+    "fileTooLarge": "حجم الملف أكبر من الحد المسموح به.",
+    "imageTooLarge": "أبعاد الصورة أكبر من الحد المسموح به.",
+    "translateFailed": "تعذّرت الترجمة. حاول مرة أخرى.",
+    "translateNotConfigured": "ميزة الترجمة غير مُهيأة.",
     "ERR001": "حدث خطأ أثناء تحميل الصفحة.",
     "ERR025": "عذراً، حدثت مشكلة أثناء تحديث المحتوى."
   },
@@ -2849,7 +2859,7 @@
       "tab": { "library": "المكتبة", "upload": "رفع" },
       "searchPlaceholder": "ابحث عن أيقونة…",
       "searchEmpty": "لا توجد أيقونات تطابق بحثك.",
-      "uploadHint": "ارفع أيقونة مخصصة (SVG أو PNG).",
+      "uploadHint": "ارفع أيقونة مخصصة (SVG أو PNG، بحد أقصى 512 كيلوبايت و512×512 بكسل).",
       "useThisIcon": "استخدام هذه الأيقونة",
       "chooseIcon": "اختيار أيقونة",
       "change": "تغيير",
@@ -2899,15 +2909,20 @@
         "createTitle": "إضافة عنصر",
         "editTitle": "تعديل العنصر",
         "level": "المستوى",
+        "titleAr": "العنوان (عربي)",
+        "titleEn": "العنوان (إنجليزي)",
+        "descriptionAr": "الوصف (عربي)",
+        "descriptionEn": "الوصف (إنجليزي)",
         "iconKey": "الأيقونة",
         "category": "الفئة (رقم)",
         "categoryNameAr": "اسم الفئة (عربي)",
         "categoryNameEn": "اسم الفئة (إنجليزي)",
-        "parentId": "العنصر الأب",
-        "noParent": "لا يوجد (جذر)",
+        "parentId": "العنصر الرئيسي",
+        "noParent": "لا يوجد",
         "topicId": "الموضوع",
         "sectionIdentity": "الهوية",
-        "sectionHierarchy": "التسلسل الهرمي",
+        "sectionContent": "المحتوى",
+        "sectionHierarchy": "الموضع",
         "sectionClassification": "التصنيف",
         "sectionTopic": "الموضوع",
         "sectionStatus": "الحالة"

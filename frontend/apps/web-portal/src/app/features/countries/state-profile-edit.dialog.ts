@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { CountriesApiService } from './countries-api.service';
 import type { StateProfile } from './country.types';
@@ -39,6 +39,7 @@ interface EditProfileForm {
     MatProgressSpinnerModule,
     TranslocoModule,
     RichTextEditorComponent,
+    TranslateFieldComponent,
   ],
   templateUrl: './state-profile-edit.dialog.html',
   styleUrl: './state-profile-edit.dialog.scss',

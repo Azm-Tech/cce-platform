@@ -13,8 +13,12 @@
 .cce-country-detail__form { display: flex; flex-direction: column; gap: 0.75rem; }
 .cce-country-detail__row {
   display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  /* Translate action sits above the English field — bottom-align so the two
+     fields stay level and the Arabic field doesn't stretch to match. */
+  align-items: end;
   @media (max-width: 720px) { grid-template-columns: 1fr; }
 }
+.cce-country-detail__field-stack { display: flex; flex-direction: column; }
 
 /* Country profile — statistics row (3-up) + NDC upload zone */
 .cce-country-detail__stats {

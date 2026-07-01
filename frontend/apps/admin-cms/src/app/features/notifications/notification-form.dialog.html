@@ -22,20 +22,34 @@
         <mat-label>{{ 'notifications.field.subjectAr' | transloco }}</mat-label>
         <input matInput formControlName="subjectAr" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'notifications.field.subjectEn' | transloco }}</mat-label>
-        <input matInput formControlName="subjectEn" />
-      </mat-form-field>
+      <div class="cce-notification-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.subjectAr.value"
+          [targetHasContent]="!!form.controls.subjectEn.value"
+          (translated)="form.controls.subjectEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'notifications.field.subjectEn' | transloco }}</mat-label>
+          <input matInput formControlName="subjectEn" />
+        </mat-form-field>
+      </div>
     </div>
     <div class="cce-notification-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'notifications.field.bodyAr' | transloco }}</mat-label>
         <textarea matInput formControlName="bodyAr" rows="5"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'notifications.field.bodyEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="bodyEn" rows="5"></textarea>
-      </mat-form-field>
+      <div class="cce-notification-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.bodyAr.value"
+          [targetHasContent]="!!form.controls.bodyEn.value"
+          (translated)="form.controls.bodyEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'notifications.field.bodyEn' | transloco }}</mat-label>
+          <textarea matInput formControlName="bodyEn" rows="5"></textarea>
+        </mat-form-field>
+      </div>
     </div>
     <mat-form-field appearance="outline">
       <mat-label>{{ 'notifications.field.variableSchemaJson' | transloco }}</mat-label>

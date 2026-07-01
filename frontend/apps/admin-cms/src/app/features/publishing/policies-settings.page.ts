@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { ConfirmDialogService, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { PublishingApiService } from './publishing-api.service';
 import type { PolicySection } from './publishing.types';
 
@@ -32,6 +32,7 @@ interface SectionForm {
     MatProgressBarModule,
     MatTableModule,
     TranslocoModule,
+    TranslateFieldComponent,
   ],
   templateUrl: './policies-settings.page.html',
   styleUrl: './policies-settings.page.scss',

@@ -36,6 +36,11 @@
             <textarea matInput formControlName="objectiveAr" rows="4" dir="rtl"></textarea>
             <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
           </mat-form-field>
+          <cce-translate-field
+            [source]="form.controls.objectiveAr.value"
+            [targetHasContent]="!!form.controls.objectiveEn.value"
+            (translated)="form.controls.objectiveEn.setValue($event)"
+          />
           <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
             <mat-label>{{ 'homepageSettings.field.objectiveEn' | transloco }}</mat-label>
             <textarea matInput formControlName="objectiveEn" rows="4"></textarea>
@@ -54,6 +59,11 @@
             <textarea matInput formControlName="cceConceptsAr" rows="4" dir="rtl"></textarea>
             <mat-error>{{ 'common.validation.maxLength' | transloco: { max: 2000 } }}</mat-error>
           </mat-form-field>
+          <cce-translate-field
+            [source]="form.controls.cceConceptsAr.value"
+            [targetHasContent]="!!form.controls.cceConceptsEn.value"
+            (translated)="form.controls.cceConceptsEn.setValue($event)"
+          />
           <mat-form-field appearance="outline" class="cce-hp-settings__field--full">
             <mat-label>{{ 'homepageSettings.field.cceConceptsEn' | transloco }}</mat-label>
             <textarea matInput formControlName="cceConceptsEn" rows="4"></textarea>

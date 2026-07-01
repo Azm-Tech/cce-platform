@@ -1,0 +1,5 @@
+{
+  "_comment": "Copy this file to translation-config.json (gitignored) and fill in a Google AI Studio (Gemini) API key. Restrict the key by HTTP referrer in the Google Cloud console.",
+  "apiKey": "",
+  "model": "gemini-2.5-flash"
+}

@@ -17,10 +17,17 @@
         <mat-label>{{ 'interactiveMaps.form.nameAr' | transloco }}</mat-label>
         <input matInput formControlName="nameAr" dir="rtl" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
-        <input matInput formControlName="nameEn" />
-      </mat-form-field>
+      <div class="im-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.nameAr.value"
+          [targetHasContent]="!!form.controls.nameEn.value"
+          (translated)="form.controls.nameEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
+          <input matInput formControlName="nameEn" />
+        </mat-form-field>
+      </div>
     </div>
 
     <!-- Description row -->
@@ -29,10 +36,17 @@
         <mat-label>{{ 'interactiveMaps.form.descriptionAr' | transloco }}</mat-label>
         <textarea matInput formControlName="descriptionAr" rows="3" dir="rtl"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'interactiveMaps.form.descriptionEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
-      </mat-form-field>
+      <div class="im-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.descriptionAr.value"
+          [targetHasContent]="!!form.controls.descriptionEn.value"
+          (translated)="form.controls.descriptionEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.form.descriptionEn' | transloco }}</mat-label>
+          <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+        </mat-form-field>
+      </div>
     </div>
 
     @if (errorKind(); as kind) {

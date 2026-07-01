@@ -13,14 +13,21 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'newsEventRequest.form.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" dir="ltr" autocomplete="off" [maxlength]="260" />
-        <mat-hint align="end">{{ form.controls.titleEn.value.length }}/255</mat-hint>
-        @if (form.controls.titleEn.touched && form.controls.titleEn.hasError('required')) {
-          <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
-        }
-      </mat-form-field>
+      <div class="cce-news-request-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.titleAr.value"
+          [targetHasContent]="!!form.controls.titleEn.value"
+          (translated)="form.controls.titleEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'newsEventRequest.form.titleEn' | transloco }}</mat-label>
+          <input matInput formControlName="titleEn" dir="ltr" autocomplete="off" [maxlength]="260" />
+          <mat-hint align="end">{{ form.controls.titleEn.value.length }}/255</mat-hint>
+          @if (form.controls.titleEn.touched && form.controls.titleEn.hasError('required')) {
+            <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
     </div>
 
     <mat-form-field appearance="outline">
@@ -41,6 +48,12 @@
       dir="rtl"
     />
 
+    <cce-translate-field
+      [source]="form.controls.contentAr.value"
+      format="html"
+      [targetHasContent]="!!form.controls.contentEn.value"
+      (translated)="form.controls.contentEn.setValue($event)"
+    />
     <cce-rich-text-editor [imageUploader]="uploadImage"
       formControlName="contentEn"
       [label]="'newsEventRequest.form.contentEn' | transloco"

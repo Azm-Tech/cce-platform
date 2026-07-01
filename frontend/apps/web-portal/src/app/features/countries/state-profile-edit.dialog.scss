@@ -168,10 +168,18 @@ $muted:      rgba(var(--color-text-primary-rgb), 0.50);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    align-items: end;
 
     mat-form-field { width: 100%; }
 
     @media (max-width: 480px) { grid-template-columns: 1fr; }
+  }
+
+  &__field-stack {
+    display: flex;
+    flex-direction: column;
+
+    cce-rich-text-editor { width: 100%; }
   }
 }
 

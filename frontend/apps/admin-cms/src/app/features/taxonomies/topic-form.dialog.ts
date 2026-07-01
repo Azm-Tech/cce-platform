@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { TaxonomyApiService } from './taxonomy-api.service';
 import type { Topic } from './taxonomy.types';
 
@@ -36,9 +37,14 @@ interface TopicForm {
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   templateUrl: './topic-form.dialog.html',
+  styles: [`
+    .cce-topic-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-topic-form__field-stack { display: flex; flex-direction: column; }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopicFormDialogComponent {

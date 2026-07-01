@@ -25,6 +25,12 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-block-end: 0.25rem;
+    align-items: end;
+  }
+
+  &__field-stack {
+    display: flex;
+    flex-direction: column;
   }
 
   &__divider {

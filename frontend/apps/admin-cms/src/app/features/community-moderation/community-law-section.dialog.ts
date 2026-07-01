@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { CommunityModerationApiService } from './community-moderation-api.service';
 import type { CommunityLawSectionDto } from './admin-post.types';
 
@@ -30,6 +31,7 @@ interface LawForm {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   templateUrl: './community-law-section.dialog.html',

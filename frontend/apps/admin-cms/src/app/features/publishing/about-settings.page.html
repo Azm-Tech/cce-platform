@@ -20,11 +20,18 @@
           <textarea class="cce-about__input" formControlName="descriptionAr" rows="6" dir="rtl" maxlength="1000"></textarea>
           <span class="cce-about__hint">{{ descForm.controls.descriptionAr.value.length }}/1000</span>
         </label>
-        <label class="cce-about__group">
-          <span class="cce-about__label">{{ 'aboutSettings.field.descriptionEn' | transloco }}</span>
-          <textarea class="cce-about__input" formControlName="descriptionEn" rows="6" dir="ltr" maxlength="1000"></textarea>
-          <span class="cce-about__hint">{{ descForm.controls.descriptionEn.value.length }}/1000</span>
-        </label>
+        <div class="cce-about__field-stack">
+          <cce-translate-field
+            [source]="descForm.controls.descriptionAr.value"
+            [targetHasContent]="!!descForm.controls.descriptionEn.value"
+            (translated)="descForm.controls.descriptionEn.setValue($event)"
+          />
+          <label class="cce-about__group">
+            <span class="cce-about__label">{{ 'aboutSettings.field.descriptionEn' | transloco }}</span>
+            <textarea class="cce-about__input" formControlName="descriptionEn" rows="6" dir="ltr" maxlength="1000"></textarea>
+            <span class="cce-about__hint">{{ descForm.controls.descriptionEn.value.length }}/1000</span>
+          </label>
+        </div>
       </div>
       <label class="cce-about__group">
         <span class="cce-about__label">{{ 'aboutSettings.field.howToUseVideoUrl' | transloco }}</span>
@@ -66,20 +73,34 @@
               <span class="cce-about__label">{{ 'aboutSettings.glossary.field.termAr' | transloco }}</span>
               <input class="cce-about__input" formControlName="termAr" dir="rtl" maxlength="100" />
             </label>
-            <label class="cce-about__group">
-              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.termEn' | transloco }}</span>
-              <input class="cce-about__input" formControlName="termEn" dir="ltr" maxlength="100" />
-            </label>
+            <div class="cce-about__field-stack">
+              <cce-translate-field
+                [source]="glossaryForm.controls.termAr.value"
+                [targetHasContent]="!!glossaryForm.controls.termEn.value"
+                (translated)="glossaryForm.controls.termEn.setValue($event)"
+              />
+              <label class="cce-about__group">
+                <span class="cce-about__label">{{ 'aboutSettings.glossary.field.termEn' | transloco }}</span>
+                <input class="cce-about__input" formControlName="termEn" dir="ltr" maxlength="100" />
+              </label>
+            </div>
           </div>
           <div class="cce-about__row">
             <label class="cce-about__group">
               <span class="cce-about__label">{{ 'aboutSettings.glossary.field.definitionAr' | transloco }}</span>
               <textarea class="cce-about__input" formControlName="definitionAr" rows="3" dir="rtl" maxlength="1000"></textarea>
             </label>
-            <label class="cce-about__group">
-              <span class="cce-about__label">{{ 'aboutSettings.glossary.field.definitionEn' | transloco }}</span>
-              <textarea class="cce-about__input" formControlName="definitionEn" rows="3" dir="ltr" maxlength="1000"></textarea>
-            </label>
+            <div class="cce-about__field-stack">
+              <cce-translate-field
+                [source]="glossaryForm.controls.definitionAr.value"
+                [targetHasContent]="!!glossaryForm.controls.definitionEn.value"
+                (translated)="glossaryForm.controls.definitionEn.setValue($event)"
+              />
+              <label class="cce-about__group">
+                <span class="cce-about__label">{{ 'aboutSettings.glossary.field.definitionEn' | transloco }}</span>
+                <textarea class="cce-about__input" formControlName="definitionEn" rows="3" dir="ltr" maxlength="1000"></textarea>
+              </label>
+            </div>
           </div>
           <div class="cce-about__actions">
             <button type="button" class="cce-about__btn cce-about__btn--text" (click)="cancelTerm()" [disabled]="saving()">
@@ -150,20 +171,34 @@
               <span class="cce-about__label">{{ 'aboutSettings.partners.field.nameAr' | transloco }}</span>
               <input class="cce-about__input" formControlName="nameAr" dir="rtl" />
             </label>
-            <label class="cce-about__group">
-              <span class="cce-about__label">{{ 'aboutSettings.partners.field.nameEn' | transloco }}</span>
-              <input class="cce-about__input" formControlName="nameEn" dir="ltr" />
-            </label>
+            <div class="cce-about__field-stack">
+              <cce-translate-field
+                [source]="partnerForm.controls.nameAr.value"
+                [targetHasContent]="!!partnerForm.controls.nameEn.value"
+                (translated)="partnerForm.controls.nameEn.setValue($event)"
+              />
+              <label class="cce-about__group">
+                <span class="cce-about__label">{{ 'aboutSettings.partners.field.nameEn' | transloco }}</span>
+                <input class="cce-about__input" formControlName="nameEn" dir="ltr" />
+              </label>
+            </div>
           </div>
           <div class="cce-about__row">
             <label class="cce-about__group">
               <span class="cce-about__label">{{ 'aboutSettings.partners.field.descriptionAr' | transloco }}</span>
               <textarea class="cce-about__input" formControlName="descriptionAr" rows="2" dir="rtl"></textarea>
             </label>
-            <label class="cce-about__group">
-              <span class="cce-about__label">{{ 'aboutSettings.partners.field.descriptionEn' | transloco }}</span>
-              <textarea class="cce-about__input" formControlName="descriptionEn" rows="2" dir="ltr"></textarea>
-            </label>
+            <div class="cce-about__field-stack">
+              <cce-translate-field
+                [source]="partnerForm.controls.descriptionAr.value"
+                [targetHasContent]="!!partnerForm.controls.descriptionEn.value"
+                (translated)="partnerForm.controls.descriptionEn.setValue($event)"
+              />
+              <label class="cce-about__group">
+                <span class="cce-about__label">{{ 'aboutSettings.partners.field.descriptionEn' | transloco }}</span>
+                <textarea class="cce-about__input" formControlName="descriptionEn" rows="2" dir="ltr"></textarea>
+              </label>
+            </div>
           </div>
           <div class="cce-about__row">
             <label class="cce-about__group">

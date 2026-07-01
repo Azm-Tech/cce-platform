@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ConfirmDialogService, ToastService } from '@frontend/ui-kit';
+import { ConfirmDialogService, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { PublishingApiService } from './publishing-api.service';
 import type { AboutSettings, GlossaryTerm, KnowledgePartner } from './publishing.types';
 
@@ -37,6 +37,7 @@ interface PartnerForm {
     MatIconModule,
     MatProgressBarModule,
     TranslocoModule,
+    TranslateFieldComponent,
   ],
   templateUrl: './about-settings.page.html',
   styleUrl: './about-settings.page.scss',

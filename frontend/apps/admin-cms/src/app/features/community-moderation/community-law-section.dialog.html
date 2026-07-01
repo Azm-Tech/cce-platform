@@ -17,10 +17,17 @@
         <mat-label>{{ 'communityModeration.laws.titleAr' | transloco }}</mat-label>
         <input matInput formControlName="titleAr" dir="rtl" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'communityModeration.laws.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" />
-      </mat-form-field>
+      <div class="law-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.titleAr.value"
+          [targetHasContent]="!!form.controls.titleEn.value"
+          (translated)="form.controls.titleEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'communityModeration.laws.titleEn' | transloco }}</mat-label>
+          <input matInput formControlName="titleEn" />
+        </mat-form-field>
+      </div>
     </div>
 
     <!-- Content row -->
@@ -29,10 +36,17 @@
         <mat-label>{{ 'communityModeration.laws.contentAr' | transloco }}</mat-label>
         <textarea matInput formControlName="contentAr" rows="6" dir="rtl"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'communityModeration.laws.contentEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentEn" rows="6"></textarea>
-      </mat-form-field>
+      <div class="law-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.contentAr.value"
+          [targetHasContent]="!!form.controls.contentEn.value"
+          (translated)="form.controls.contentEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'communityModeration.laws.contentEn' | transloco }}</mat-label>
+          <textarea matInput formControlName="contentEn" rows="6"></textarea>
+        </mat-form-field>
+      </div>
     </div>
 
     @if (errorKind(); as kind) {

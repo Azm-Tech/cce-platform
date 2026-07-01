@@ -71,10 +71,18 @@
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: end;
 
   @media (max-width: 720px) {
     grid-template-columns: 1fr;
   }
+}
+
+/* Stacks the "translate from Arabic" action above an English field so the
+   Arabic/English inputs stay bottom-aligned within the row. */
+.cce-about__field-stack {
+  display: flex;
+  flex-direction: column;
 }
 
 .cce-about__group {

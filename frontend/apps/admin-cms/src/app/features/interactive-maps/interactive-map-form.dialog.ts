@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { InteractiveMapsApiService } from './interactive-maps-api.service';
 import type { InteractiveMapDto } from './interactive-maps.types';
 
@@ -30,6 +31,7 @@ interface MapForm {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   templateUrl: './interactive-map-form.dialog.html',

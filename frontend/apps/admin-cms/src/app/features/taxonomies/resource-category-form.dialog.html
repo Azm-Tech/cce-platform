@@ -8,10 +8,17 @@
         <mat-label>{{ 'taxonomies.field.nameAr' | transloco }}</mat-label>
         <input matInput formControlName="nameAr" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'taxonomies.field.nameEn' | transloco }}</mat-label>
-        <input matInput formControlName="nameEn" />
-      </mat-form-field>
+      <div class="cce-cat-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.nameAr.value"
+          [targetHasContent]="!!form.controls.nameEn.value"
+          (translated)="form.controls.nameEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'taxonomies.field.nameEn' | transloco }}</mat-label>
+          <input matInput formControlName="nameEn" />
+        </mat-form-field>
+      </div>
     </div>
     <div class="cce-cat-form__row">
       <mat-form-field appearance="outline">

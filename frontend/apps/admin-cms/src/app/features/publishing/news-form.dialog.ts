@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
 import type { News, TagDto, Topic } from './publishing.types';
@@ -49,12 +49,14 @@ interface NewsForm {
     MatProgressSpinnerModule,
     MatSelectModule,
     RichTextEditorComponent,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   templateUrl: './news-form.dialog.html',
   styles: [`
     .cce-news-form { display: flex; flex-direction: column; gap: 0.5rem; }
-    .cce-news-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .cce-news-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-news-form__field-stack { display: flex; flex-direction: column; }
     .cce-news-form__field--full { width: 100%; }
     .cce-news-form__image { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .cce-news-form__image-hint { font-size: 0.78rem; color: rgba(0,0,0,0.55); }

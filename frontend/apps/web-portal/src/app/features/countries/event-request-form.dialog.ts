@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { CommunityApiService } from '../community/community-api.service';
 import type { PublicTopic } from '../community/community.types';
 import { MediaApiService } from '../../core/media/media-api.service';
@@ -71,6 +71,7 @@ interface EventRequestForm {
     MatInputModule,
     MatProgressSpinnerModule,
     RichTextEditorComponent,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   providers: [provideNativeDateAdapter()],

@@ -113,11 +113,19 @@
             dir="rtl"
             [label]="'stateProfile.edit.descriptionAr' | transloco"
           />
-          <cce-rich-text-editor [imageUploader]="uploadImage"
-            formControlName="descriptionEn"
-            dir="ltr"
-            [label]="'stateProfile.edit.descriptionEn' | transloco"
-          />
+          <div class="cce-sp-edit__field-stack">
+            <cce-translate-field
+              [source]="form.controls.descriptionAr.value"
+              format="html"
+              [targetHasContent]="!!form.controls.descriptionEn.value"
+              (translated)="form.controls.descriptionEn.setValue($event)"
+            />
+            <cce-rich-text-editor [imageUploader]="uploadImage"
+              formControlName="descriptionEn"
+              dir="ltr"
+              [label]="'stateProfile.edit.descriptionEn' | transloco"
+            />
+          </div>
         </div>
       </div>
 
@@ -133,11 +141,19 @@
             dir="rtl"
             [label]="'stateProfile.edit.keyInitiativesAr' | transloco"
           />
-          <cce-rich-text-editor [imageUploader]="uploadImage"
-            formControlName="keyInitiativesEn"
-            dir="ltr"
-            [label]="'stateProfile.edit.keyInitiativesEn' | transloco"
-          />
+          <div class="cce-sp-edit__field-stack">
+            <cce-translate-field
+              [source]="form.controls.keyInitiativesAr.value"
+              format="html"
+              [targetHasContent]="!!form.controls.keyInitiativesEn.value"
+              (translated)="form.controls.keyInitiativesEn.setValue($event)"
+            />
+            <cce-rich-text-editor [imageUploader]="uploadImage"
+              formControlName="keyInitiativesEn"
+              dir="ltr"
+              [label]="'stateProfile.edit.keyInitiativesEn' | transloco"
+            />
+          </div>
         </div>
       </div>
 
@@ -153,11 +169,19 @@
             dir="rtl"
             [label]="'stateProfile.edit.contactInfoAr' | transloco"
           />
-          <cce-rich-text-editor [imageUploader]="uploadImage"
-            formControlName="contactInfoEn"
-            dir="ltr"
-            [label]="'stateProfile.edit.contactInfoEn' | transloco"
-          />
+          <div class="cce-sp-edit__field-stack">
+            <cce-translate-field
+              [source]="form.controls.contactInfoAr.value"
+              format="html"
+              [targetHasContent]="!!form.controls.contactInfoEn.value"
+              (translated)="form.controls.contactInfoEn.setValue($event)"
+            />
+            <cce-rich-text-editor [imageUploader]="uploadImage"
+              formControlName="contactInfoEn"
+              dir="ltr"
+              [label]="'stateProfile.edit.contactInfoEn' | transloco"
+            />
+          </div>
         </div>
       </div>
 

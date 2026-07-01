@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ToastService } from '@frontend/ui-kit';
+import { ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { CountryApiService } from '../countries/country-api.service';
 import type { Country } from '../countries/country.types';
 import { PublishingApiService } from './publishing-api.service';
@@ -35,6 +35,7 @@ interface SettingsForm {
     MatProgressBarModule,
     MatSelectModule,
     TranslocoModule,
+    TranslateFieldComponent,
   ],
   templateUrl: './homepage-settings.page.html',
   styleUrl: './homepage-settings.page.scss',

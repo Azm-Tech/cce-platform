@@ -4,7 +4,7 @@
 
 <mat-dialog-content>
   <form [formGroup]="form" class="cce-resource-form">
-    <div class="cce-resource-form__row">
+    <div class="cce-resource-form__row cce-resource-form__row--align-end">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'resources.field.titleAr' | transloco }}</mat-label>
         <input matInput formControlName="titleAr" autocomplete="off" [maxlength]="titleMax + 20" />
@@ -13,14 +13,21 @@
           <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
         }
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'resources.field.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" autocomplete="off" [maxlength]="titleMax + 20" />
-        <mat-hint align="end">{{ form.controls.titleEn.value.length }} / {{ titleMax }}</mat-hint>
-        @if (form.controls.titleEn.hasError('maxlength')) {
-          <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
-        }
-      </mat-form-field>
+      <div class="cce-resource-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.titleAr.value"
+          [targetHasContent]="!!form.controls.titleEn.value"
+          (translated)="form.controls.titleEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'resources.field.titleEn' | transloco }}</mat-label>
+          <input matInput formControlName="titleEn" autocomplete="off" [maxlength]="titleMax + 20" />
+          <mat-hint align="end">{{ form.controls.titleEn.value.length }} / {{ titleMax }}</mat-hint>
+          @if (form.controls.titleEn.hasError('maxlength')) {
+            <mat-error>{{ 'common.validation.maxLength' | transloco: { max: titleMax } }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
     </div>
 
     <cce-rich-text-editor [imageUploader]="uploadImage"
@@ -29,6 +36,12 @@
       [label]="'resources.field.descriptionAr' | transloco"
       [maxLength]="descriptionMax"
       dir="rtl"
+    />
+    <cce-translate-field
+      [source]="form.controls.descriptionAr.value"
+      format="html"
+      [targetHasContent]="!!form.controls.descriptionEn.value"
+      (translated)="form.controls.descriptionEn.setValue($event)"
     />
     <cce-rich-text-editor [imageUploader]="uploadImage"
       class="cce-resource-form__full"

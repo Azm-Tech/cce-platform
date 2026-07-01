@@ -5,6 +5,9 @@ dist
 tmp
 out-tsc
 
+# runtime secrets (Gemini key for the bilingual translate action) — never commit
+**/translation-config.json
+
 # dependencies
 node_modules
 

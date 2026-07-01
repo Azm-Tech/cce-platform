@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { ContentApiService } from '../content/content-api.service';
 import { PublishingApiService } from './publishing-api.service';
 import type { Event, TagDto, Topic } from './publishing.types';
@@ -104,13 +104,15 @@ interface EventForm {
     MatProgressSpinnerModule,
     MatSelectModule,
     RichTextEditorComponent,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './event-form.dialog.html',
   styles: [`
     .cce-event-form { display: flex; flex-direction: column; gap: 0.5rem; }
-    .cce-event-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .cce-event-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-event-form__field-stack { display: flex; flex-direction: column; }
     .cce-event-form__field--full { width: 100%; }
     .cce-event-form__datetime-row {
       display: grid;

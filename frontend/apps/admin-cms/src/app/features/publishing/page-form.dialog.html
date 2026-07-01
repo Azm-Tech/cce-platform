@@ -22,20 +22,34 @@
         <mat-label>{{ 'pages.field.titleAr' | transloco }}</mat-label>
         <input matInput formControlName="titleAr" />
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'pages.field.titleEn' | transloco }}</mat-label>
-        <input matInput formControlName="titleEn" />
-      </mat-form-field>
+      <div class="cce-page-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.titleAr.value"
+          [targetHasContent]="!!form.controls.titleEn.value"
+          (translated)="form.controls.titleEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'pages.field.titleEn' | transloco }}</mat-label>
+          <input matInput formControlName="titleEn" />
+        </mat-form-field>
+      </div>
     </div>
     <div class="cce-page-form__row">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'pages.field.contentAr' | transloco }}</mat-label>
         <textarea matInput formControlName="contentAr" rows="6"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'pages.field.contentEn' | transloco }}</mat-label>
-        <textarea matInput formControlName="contentEn" rows="6"></textarea>
-      </mat-form-field>
+      <div class="cce-page-form__field-stack">
+        <cce-translate-field
+          [source]="form.controls.contentAr.value"
+          [targetHasContent]="!!form.controls.contentEn.value"
+          (translated)="form.controls.contentEn.setValue($event)"
+        />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'pages.field.contentEn' | transloco }}</mat-label>
+          <textarea matInput formControlName="contentEn" rows="6"></textarea>
+        </mat-form-field>
+      </div>
     </div>
     @if (errorKind(); as kind) {
       <div class="cce-page-form__error" role="alert">{{ ('errors.' + kind) | transloco }}</div>

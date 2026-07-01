@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { PublishingApiService } from './publishing-api.service';
 import { PAGE_TYPES, type Page, type PageType } from './publishing.types';
 
@@ -35,9 +36,17 @@ interface PageForm {
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   templateUrl: './page-form.dialog.html',
+  styles: [`
+    .cce-page-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-page-form__field-stack { display: flex; flex-direction: column; }
+    @media (max-width: 600px) {
+      .cce-page-form__row { grid-template-columns: 1fr; }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageFormDialogComponent {

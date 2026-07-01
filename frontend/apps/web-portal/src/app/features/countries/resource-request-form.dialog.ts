@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { RichTextEditorComponent, ToastService } from '@frontend/ui-kit';
+import { RichTextEditorComponent, ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from '../account/account-api.service';
 import { CommunityApiService } from '../community/community-api.service';
@@ -50,6 +50,7 @@ interface ResourceRequestForm {
     MatProgressSpinnerModule,
     MatSelectModule,
     RichTextEditorComponent,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   templateUrl: './resource-request-form.dialog.html',

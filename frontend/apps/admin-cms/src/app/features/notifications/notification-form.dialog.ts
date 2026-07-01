@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { NotificationApiService } from './notification-api.service';
 import {
   NOTIFICATION_CHANNELS,
@@ -41,9 +42,18 @@ interface NotificationForm {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   templateUrl: './notification-form.dialog.html',
+  styles: [`
+    .cce-notification-form { display: flex; flex-direction: column; gap: 0.5rem; }
+    .cce-notification-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-notification-form__field-stack { display: flex; flex-direction: column; }
+    @media (max-width: 600px) {
+      .cce-notification-form__row { grid-template-columns: 1fr; }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationFormDialogComponent {

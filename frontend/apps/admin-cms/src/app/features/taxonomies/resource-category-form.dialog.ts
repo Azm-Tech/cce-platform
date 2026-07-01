@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { TaxonomyApiService } from './taxonomy-api.service';
 import type { ResourceCategory } from './taxonomy.types';
 
@@ -33,9 +34,14 @@ interface CategoryForm {
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    TranslateFieldComponent,
     TranslocoModule
 ],
   templateUrl: './resource-category-form.dialog.html',
+  styles: [`
+    .cce-cat-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
+    .cce-cat-form__field-stack { display: flex; flex-direction: column; }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourceCategoryFormDialogComponent {

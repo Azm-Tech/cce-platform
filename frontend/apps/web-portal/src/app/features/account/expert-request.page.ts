@@ -10,7 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LocaleService } from '@frontend/i18n';
-import { ToastService } from '@frontend/ui-kit';
+import { ToastService, TranslateFieldComponent } from '@frontend/ui-kit';
 import { MediaApiService } from '../../core/media/media-api.service';
 import { AccountApiService } from './account-api.service';
 import type { ExpertRequestStatus, InterestTopicOption, SubmitExpertRequestPayload } from './account.types';
@@ -26,7 +26,7 @@ interface ExpertFormShape {
   imports: [
     CommonModule, DatePipe, ReactiveFormsModule,
     MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressBarModule,
-    TranslocoModule,
+    TranslateFieldComponent, TranslocoModule,
   ],
   templateUrl: './expert-request.page.html',
   styleUrl: './expert-request.page.scss',

@@ -323,7 +323,13 @@
       "edit": "Edit",
       "delete": "Delete",
       "create": "Create",
-      "back": "Back"
+      "back": "Back",
+      "translateFromArabic": "Translate from Arabic"
+    },
+    "translate": {
+      "confirmTitle": "Replace English content?",
+      "confirmOverwrite": "The English field already has content. Translating will replace it.",
+      "confirmAction": "Translate"
     },
     "validation": {
       "required": "This field is required.",
@@ -375,6 +381,10 @@
     "ERR017": "Sorry, a problem occurred while sending the reply. Please try again.",
     "ERR032": "Sorry, a problem occurred while deleting the post. Please try again.",
     "fileType": "Unsupported file format. Allowed formats: PDF or Word.",
+    "fileTooLarge": "File exceeds the maximum allowed size.",
+    "imageTooLarge": "Image dimensions exceed the maximum allowed size.",
+    "translateFailed": "Translation failed. Please try again.",
+    "translateNotConfigured": "Translation is not configured.",
     "ERR001": "An error occurred while loading the page.",
     "ERR025": "Sorry, a problem occurred while updating the content."
   },
@@ -2849,7 +2859,7 @@
       "tab": { "library": "Library", "upload": "Upload" },
       "searchPlaceholder": "Search icons…",
       "searchEmpty": "No icons match your search.",
-      "uploadHint": "Upload a custom icon (SVG or PNG).",
+      "uploadHint": "Upload a custom icon (SVG or PNG, up to 512 KB and 512×512 px).",
       "useThisIcon": "Use this icon",
       "chooseIcon": "Choose icon",
       "change": "Change",
@@ -2899,15 +2909,20 @@
         "createTitle": "Add Element",
         "editTitle": "Edit Element",
         "level": "Level",
+        "titleAr": "Title (Arabic)",
+        "titleEn": "Title (English)",
+        "descriptionAr": "Description (Arabic)",
+        "descriptionEn": "Description (English)",
         "iconKey": "Icon",
         "category": "Category (number)",
         "categoryNameAr": "Category Name (AR)",
         "categoryNameEn": "Category Name (EN)",
-        "parentId": "Parent Element",
-        "noParent": "None (root)",
+        "parentId": "Main Element",
+        "noParent": "None",
         "topicId": "Topic",
         "sectionIdentity": "Identity",
-        "sectionHierarchy": "Hierarchy",
+        "sectionContent": "Content",
+        "sectionHierarchy": "Placement",
         "sectionClassification": "Classification",
         "sectionTopic": "Topic",
         "sectionStatus": "Status"

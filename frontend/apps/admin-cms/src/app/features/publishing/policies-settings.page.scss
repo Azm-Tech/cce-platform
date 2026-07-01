@@ -41,8 +41,15 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
+  align-items: end;
 
   mat-form-field { width: 100%; }
+}
+
+/* Stacks the "translate from Arabic" action above the English field. */
+.cce-policies-settings__field-stack {
+  display: flex;
+  flex-direction: column;
 }
 
 .cce-policies-settings__form-actions {

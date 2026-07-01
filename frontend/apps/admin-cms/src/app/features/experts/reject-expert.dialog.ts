@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TranslateFieldComponent } from '@frontend/ui-kit';
 import { ExpertApiService } from './expert-api.service';
 import type { ExpertRequest } from './expert.types';
 
@@ -40,6 +41,7 @@ interface RejectForm {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   templateUrl: './reject-expert.dialog.html',
