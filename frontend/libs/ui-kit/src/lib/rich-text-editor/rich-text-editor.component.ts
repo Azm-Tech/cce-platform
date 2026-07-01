@@ -157,6 +157,22 @@ const RICH_FORMATS: string[] = [
       text-align: right;
     }
 
+    /* Quill only flips list markers (bullets/numbers) to the right for lines
+       individually tagged RTL via the toolbar. Since we force the whole editor
+       to RTL, move the marker + its indent to the right for lines that aren't
+       individually RTL-tagged, so bullets sit next to the right-aligned Arabic
+       text instead of drifting to the far left. */
+    .cce-rte--rtl ::ng-deep .ql-editor li:not(.ql-direction-rtl) {
+      padding-right: 1.5em;
+      padding-left: 0;
+    }
+
+    .cce-rte--rtl ::ng-deep .ql-editor li:not(.ql-direction-rtl) > .ql-ui::before {
+      margin-right: -1.5em;
+      margin-left: 0.3em;
+      text-align: left;
+    }
+
     .cce-rte--ltr ::ng-deep .ql-editor {
       direction: ltr;
       text-align: left;
