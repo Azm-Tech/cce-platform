@@ -263,7 +263,9 @@ export class HeaderComponent implements OnDestroy {
         autoFocus: 'first-tabbable',
       },
     );
-    ref.componentInstance.unreadCountChange.subscribe((n) => this.unreadCount.set(n));
+    // The drawer only knows its current page, so it signals a change and we
+    // re-fetch the authoritative GLOBAL unread count for the badge.
+    ref.componentInstance.readStateChanged.subscribe(() => void this.refreshUnreadCount());
     this.drawerRef = ref;
     ref.afterClosed().subscribe(() => {
       if (this.drawerRef === ref) this.drawerRef = null;

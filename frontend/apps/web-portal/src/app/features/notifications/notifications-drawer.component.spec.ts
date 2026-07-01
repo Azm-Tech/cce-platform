@@ -29,7 +29,7 @@ describe('NotificationsDrawerComponent', () => {
   let markRead: jest.Mock;
   let markAllRead: jest.Mock;
   let toastSuccess: jest.Mock;
-  let unreadEmits: number[];
+  let readStateEmits: number;
 
   function ok<T>(value: T): Result<T> {
     return { ok: true, value };
@@ -66,34 +66,35 @@ describe('NotificationsDrawerComponent', () => {
 
     fixture = TestBed.createComponent(NotificationsDrawerComponent);
     component = fixture.componentInstance;
-    unreadEmits = [];
-    component.unreadCountChange.subscribe((n) => unreadEmits.push(n));
+    readStateEmits = 0;
+    component.readStateChanged.subscribe(() => readStateEmits++);
   });
 
-  it('refresh() loads rows and emits unread count', async () => {
+  it('refresh() loads rows WITHOUT touching the badge (no readStateChanged)', async () => {
     await component.refresh();
     expect(list).toHaveBeenCalledWith({ page: 1, pageSize: 10 });
     expect(component.rows()).toHaveLength(2);
-    expect(unreadEmits[unreadEmits.length - 1]).toBe(1);
+    // Opening/refreshing must not emit — the host owns the global count.
+    expect(readStateEmits).toBe(0);
   });
 
-  it('onMarkRead(id) marks the row Read locally + emits new unread', async () => {
+  it('onMarkRead(id) marks the row Read locally + signals readStateChanged', async () => {
     await component.refresh();
-    unreadEmits.length = 0;
+    readStateEmits = 0;
     await component.onMarkRead('n1');
     expect(markRead).toHaveBeenCalledWith('n1');
     expect(component.rows().find((r) => r.id === 'n1')?.status).toBe('Read');
-    expect(unreadEmits[unreadEmits.length - 1]).toBe(0);
+    expect(readStateEmits).toBe(1);
   });
 
-  it('onMarkAllRead transitions all unread rows to Read + emits 0', async () => {
+  it('onMarkAllRead transitions all unread rows to Read + signals readStateChanged', async () => {
     await component.refresh();
-    unreadEmits.length = 0;
+    readStateEmits = 0;
     await component.onMarkAllRead();
     expect(markAllRead).toHaveBeenCalled();
     expect(component.rows().every((r) => r.status === 'Read')).toBe(true);
     expect(toastSuccess).toHaveBeenCalledWith('notifications.markedToast', { n: 1 });
-    expect(unreadEmits[unreadEmits.length - 1]).toBe(0);
+    expect(readStateEmits).toBe(1);
   });
 
   it('onPage updates page+pageSize and re-fires list', async () => {

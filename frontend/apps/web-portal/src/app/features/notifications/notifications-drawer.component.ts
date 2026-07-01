@@ -14,9 +14,9 @@ import type { UserNotification } from './notification.types';
 /**
  * Drawer body for the notifications panel. Hosted by HeaderComponent
  * inside a `<mat-sidenav>` (or by NotificationsPage as a fixed-width
- * page). Emits `(unreadCountChange)` when the local mark-read /
- * mark-all-read actions mutate the count, so the host can keep its
- * badge in sync without re-fetching.
+ * page). Emits `(readStateChanged)` after a mark-read / mark-all-read so the
+ * host can re-fetch the authoritative GLOBAL unread count — the drawer only
+ * knows the current page, so it must not report an absolute count itself.
  */
 @Component({
   selector: 'cce-notifications-drawer',
@@ -38,8 +38,9 @@ export class NotificationsDrawerComponent {
   private readonly localeService = inject(LocaleService);
   private readonly toast = inject(ToastService);
 
-  /** Emits whenever local actions change the unread count. Host updates its badge. */
-  @Output() readonly unreadCountChange = new EventEmitter<number>();
+  /** Emits after a mark-read/mark-all-read so the host re-fetches the global
+   *  unread count (the drawer can't know the count beyond the current page). */
+  @Output() readonly readStateChanged = new EventEmitter<void>();
 
   readonly rows = signal<UserNotification[]>([]);
   readonly total = signal(0);
@@ -62,7 +63,6 @@ export class NotificationsDrawerComponent {
     if (res.ok) {
       this.rows.set(res.value.items);
       this.total.set(Number(res.value.total));
-      this.emitUnreadDelta();
     } else {
       this.errorKind.set(res.error.kind);
     }
@@ -78,7 +78,7 @@ export class NotificationsDrawerComponent {
             : r,
         ),
       );
-      this.emitUnreadDelta();
+      this.readStateChanged.emit();
     }
   }
 
@@ -91,7 +91,7 @@ export class NotificationsDrawerComponent {
         ),
       );
       this.toast.success('notifications.markedToast', { n: res.value });
-      this.unreadCountChange.emit(0);
+      this.readStateChanged.emit();
     }
   }
 
@@ -103,11 +103,5 @@ export class NotificationsDrawerComponent {
 
   retry(): void {
     void this.refresh();
-  }
-
-  /** Emits the local unread tally so the host badge stays in sync. */
-  private emitUnreadDelta(): void {
-    const unread = this.rows().filter((r) => r.status !== 'Read').length;
-    this.unreadCountChange.emit(unread);
   }
 }
