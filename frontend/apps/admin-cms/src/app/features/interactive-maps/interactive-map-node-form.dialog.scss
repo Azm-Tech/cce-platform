@@ -45,6 +45,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    align-items: end;
+  }
+
+  &__field-stack {
+    display: flex;
+    flex-direction: column;
   }
 
   &__error {
@@ -110,3 +116,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Full-width form field (e.g. the parent select after Level was removed). */
+.im-node-form__full { width: 100%; }

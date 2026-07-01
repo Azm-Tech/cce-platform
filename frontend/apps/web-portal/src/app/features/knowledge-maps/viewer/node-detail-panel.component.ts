@@ -91,14 +91,20 @@ export class NodeDetailPanelComponent {
     return this.locale() === 'ar' ? d.topic.nameAr : d.topic.nameEn;
   });
 
-  readonly resources = computed<NodeDetailResource[]>(() => this.details()?.resources ?? []);
+  /** Related sections are capped at 3 items each (Resources / News / Events). */
+  private static readonly MAX_RELATED = 3;
+
+  readonly resources = computed<NodeDetailResource[]>(
+    () => (this.details()?.resources ?? []).slice(0, NodeDetailPanelComponent.MAX_RELATED),
+  );
   readonly posts = computed<NodeDetailPost[]>(() => this.details()?.posts ?? []);
 
-  /** News then events, merged into one display list with a normalized date. */
+  /** News then events (each capped at 3), merged into one display list. */
   readonly newsEvents = computed<NewsEventRow[]>(() => {
     const d = this.details();
     if (!d) return [];
-    const news: NewsEventRow[] = d.news.map((n: NodeDetailNews) => ({
+    const cap = NodeDetailPanelComponent.MAX_RELATED;
+    const news: NewsEventRow[] = d.news.slice(0, cap).map((n: NodeDetailNews) => ({
       kind: 'news',
       id: n.id,
       titleAr: n.titleAr,
@@ -106,7 +112,7 @@ export class NodeDetailPanelComponent {
       date: n.publishedOn,
       featuredImageUrl: n.featuredImageUrl,
     }));
-    const events: NewsEventRow[] = d.events.map((e: NodeDetailEvent) => ({
+    const events: NewsEventRow[] = d.events.slice(0, cap).map((e: NodeDetailEvent) => ({
       kind: 'event',
       id: e.id,
       titleAr: e.titleAr,

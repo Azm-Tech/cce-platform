@@ -136,6 +136,38 @@ describe('NodeDetailPanelComponent', () => {
     expect(emitted).toEqual({ kind: 'news', id: 'nw1' });
   });
 
+  it('caps resources and news+events to 3 each', () => {
+    const many: NodeDetails = {
+      ...DETAILS,
+      resources: Array.from({ length: 5 }, (_, i) => ({
+        id: `r${i}`,
+        titleAr: 'مصدر', titleEn: `Source ${i}`,
+        resourceType: 'paper',
+        categoryNameAr: 'فئة', categoryNameEn: 'Category',
+        publishedOn: '2026-01-10T00:00:00Z',
+      })),
+      news: Array.from({ length: 5 }, (_, i) => ({
+        id: `nw${i}`,
+        titleAr: 'خبر', titleEn: `News ${i}`,
+        publishedOn: '2026-02-01T00:00:00Z',
+      })),
+      events: Array.from({ length: 5 }, (_, i) => ({
+        id: `ev${i}`,
+        titleAr: 'فعالية', titleEn: `Event ${i}`,
+        startsOn: '2026-03-01T00:00:00Z',
+        endsOn: '2026-03-02T00:00:00Z',
+      })),
+    };
+    fixture.componentRef.setInput('node', NODE);
+    fixture.componentRef.setInput('details', many);
+    fixture.detectChanges();
+    expect(component.resources().length).toBe(3);
+    // 3 news + 3 events merged.
+    expect(component.newsEvents().length).toBe(6);
+    expect(component.newsEvents().filter((r) => r.kind === 'news').length).toBe(3);
+    expect(component.newsEvents().filter((r) => r.kind === 'event').length).toBe(3);
+  });
+
   it('renders post rows and emits linkActivated(post) on click', () => {
     fixture.componentRef.setInput('node', NODE);
     fixture.componentRef.setInput('details', DETAILS);

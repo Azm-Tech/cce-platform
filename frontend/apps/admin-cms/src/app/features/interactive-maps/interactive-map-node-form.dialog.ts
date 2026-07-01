@@ -11,7 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { TranslocoModule } from '@jsverse/transloco';
-import { iconDataUri, isCustomIconUrl } from '@frontend/ui-kit';
+import { iconDataUri, isCustomIconUrl, TranslateFieldComponent } from '@frontend/ui-kit';
+import { LocaleService } from '@frontend/i18n';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
 import type { Topic } from '../taxonomies/taxonomy.types';
 import { InteractiveMapsApiService } from './interactive-maps-api.service';
@@ -30,8 +31,11 @@ export interface InteractiveMapNodeFormData {
 interface NodeForm {
   nameAr: FormControl<string>;
   nameEn: FormControl<string>;
+  titleAr: FormControl<string>;
+  titleEn: FormControl<string>;
+  descriptionAr: FormControl<string>;
+  descriptionEn: FormControl<string>;
   iconKey: FormControl<string>;
-  level: FormControl<number>;
   parentId: FormControl<string>;
   topicId: FormControl<string>;
   isActive: FormControl<boolean>;
@@ -51,6 +55,7 @@ interface NodeForm {
     MatSelectModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    TranslateFieldComponent,
     TranslocoModule,
   ],
   templateUrl: './interactive-map-node-form.dialog.html',
@@ -61,6 +66,7 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
   private readonly api = inject(InteractiveMapsApiService);
   private readonly taxonomyApi = inject(TaxonomyApiService);
   private readonly dialog = inject(MatDialog);
+  private readonly locale = inject(LocaleService).locale;
 
   readonly saving = signal(false);
   readonly errorKind = signal<string | null>(null);
@@ -83,8 +89,11 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
     this.form = new FormGroup<NodeForm>({
       nameAr: new FormControl(n?.nameAr ?? '', { nonNullable: true, validators: [Validators.required] }),
       nameEn: new FormControl(n?.nameEn ?? '', { nonNullable: true, validators: [Validators.required] }),
+      titleAr: new FormControl(n?.titleAr ?? '', { nonNullable: true }),
+      titleEn: new FormControl(n?.titleEn ?? '', { nonNullable: true }),
+      descriptionAr: new FormControl(n?.descriptionAr ?? '', { nonNullable: true }),
+      descriptionEn: new FormControl(n?.descriptionEn ?? '', { nonNullable: true }),
       iconKey: new FormControl(n?.iconKey ?? '', { nonNullable: true }),
-      level: new FormControl(n?.level ?? 0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
       parentId: new FormControl(n?.parentId ?? '', { nonNullable: true }),
       topicId: new FormControl(n?.topicId ?? '', { nonNullable: true, validators: [Validators.required] }),
       isActive: new FormControl(n?.isActive ?? true, { nonNullable: true }),
@@ -95,6 +104,13 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
     const res = await this.taxonomyApi.listTopics({ pageSize: 200, isActive: true });
     this.topicsLoading.set(false);
     if (res.ok) this.topics.set(res.value.items);
+  }
+
+  /** Parent-option label: the node name in the active language, falling back to
+   *  the other language, then a dash. */
+  parentLabel(node: InteractiveMapNodeDto): string {
+    const primary = this.locale() === 'ar' ? node.nameAr || node.nameEn : node.nameEn || node.nameAr;
+    return primary ?? '—';
   }
 
   // ── Icon picker ───────────────────────────────────────────────────────────
@@ -137,11 +153,19 @@ export class InteractiveMapNodeFormDialogComponent implements OnInit {
     this.saving.set(true);
     this.errorKind.set(null);
     const v = this.form.getRawValue();
+    // Level is no longer set in the UI (backend is dropping it) — derive it from
+    // the parent so the tree depth + viewer size tiers stay correct meanwhile.
+    const parent = this.data.existingNodes.find((nd) => nd.id === v.parentId);
+    const level = parent ? parent.level + 1 : 0;
     const payload = {
       nameAr: v.nameAr || null,
       nameEn: v.nameEn || null,
+      titleAr: v.titleAr || null,
+      titleEn: v.titleEn || null,
+      descriptionAr: v.descriptionAr || null,
+      descriptionEn: v.descriptionEn || null,
       iconKey: v.iconKey || null,
-      level: v.level,
+      level,
       // Category is unused metadata and no longer editable — always sent null.
       category: null,
       categoryNameAr: null,

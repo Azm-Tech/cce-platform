@@ -56,7 +56,12 @@
   } @else {
     <div class="icon-picker__upload">
       <p class="icon-picker__hint">{{ 'interactiveMaps.iconPicker.uploadHint' | transloco }}</p>
-      <cce-asset-upload accept=".svg,.png" (uploaded)="onUploaded($event)" />
+      <cce-asset-upload
+        accept=".svg,.png"
+        [maxSizeBytes]="524288"
+        [maxImageDimension]="512"
+        (uploaded)="onUploaded($event)"
+      />
 
       @if (uploadedUrl(); as url) {
         <div class="icon-picker__upload-preview">

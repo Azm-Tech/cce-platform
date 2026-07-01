@@ -20,32 +20,79 @@
           <mat-label>{{ 'interactiveMaps.form.nameAr' | transloco }}</mat-label>
           <input matInput formControlName="nameAr" dir="rtl" />
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
-          <input matInput formControlName="nameEn" />
-        </mat-form-field>
+        <div class="im-node-form__field-stack">
+          <cce-translate-field
+            [source]="form.controls.nameAr.value"
+            [targetHasContent]="!!form.controls.nameEn.value"
+            (translated)="form.controls.nameEn.setValue($event)"
+          />
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'interactiveMaps.form.nameEn' | transloco }}</mat-label>
+            <input matInput formControlName="nameEn" />
+          </mat-form-field>
+        </div>
       </div>
     </div>
 
-    <!-- ── Section: Hierarchy ────────────────────────── -->
+    <!-- ── Section: Content (title + description) ─────── -->
     <div class="im-node-section">
-      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionHierarchy' | transloco }}</h3>
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionContent' | transloco }}</h3>
+
+      <div class="im-node-form__lang-eyebrow" aria-hidden="true">
+        <span class="im-node-form__lang-tag" dir="rtl">العربية</span>
+        <span class="im-node-form__lang-tag">English</span>
+      </div>
 
       <div class="im-node-form__row">
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.level' | transloco }}</mat-label>
-          <input matInput type="number" formControlName="level" min="0" />
+          <mat-label>{{ 'interactiveMaps.nodes.form.titleAr' | transloco }}</mat-label>
+          <input matInput formControlName="titleAr" dir="rtl" />
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'interactiveMaps.nodes.form.parentId' | transloco }}</mat-label>
-          <mat-select formControlName="parentId">
-            <mat-option value="">— {{ 'interactiveMaps.nodes.form.noParent' | transloco }} —</mat-option>
-            @for (node of parentCandidates; track node.id) {
-              <mat-option [value]="node.id">{{ node.nameEn ?? node.nameAr }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <div class="im-node-form__field-stack">
+          <cce-translate-field
+            [source]="form.controls.titleAr.value"
+            [targetHasContent]="!!form.controls.titleEn.value"
+            (translated)="form.controls.titleEn.setValue($event)"
+          />
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'interactiveMaps.nodes.form.titleEn' | transloco }}</mat-label>
+            <input matInput formControlName="titleEn" />
+          </mat-form-field>
+        </div>
       </div>
+
+      <div class="im-node-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'interactiveMaps.nodes.form.descriptionAr' | transloco }}</mat-label>
+          <textarea matInput formControlName="descriptionAr" rows="3" dir="rtl"></textarea>
+        </mat-form-field>
+        <div class="im-node-form__field-stack">
+          <cce-translate-field
+            [source]="form.controls.descriptionAr.value"
+            [targetHasContent]="!!form.controls.descriptionEn.value"
+            (translated)="form.controls.descriptionEn.setValue($event)"
+          />
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'interactiveMaps.nodes.form.descriptionEn' | transloco }}</mat-label>
+            <textarea matInput formControlName="descriptionEn" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section: Placement (parent) ───────────────── -->
+    <div class="im-node-section">
+      <h3 class="im-node-section__title">{{ 'interactiveMaps.nodes.form.sectionHierarchy' | transloco }}</h3>
+
+      <mat-form-field appearance="outline" class="im-node-form__full">
+        <mat-label>{{ 'interactiveMaps.nodes.form.parentId' | transloco }}</mat-label>
+        <mat-select formControlName="parentId">
+          <mat-option value="">— {{ 'interactiveMaps.nodes.form.noParent' | transloco }} —</mat-option>
+          @for (node of parentCandidates; track node.id) {
+            <mat-option [value]="node.id">{{ parentLabel(node) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <!-- ── Section: Icon ─────────────────────────────── -->

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AssetUploadComponent } from './asset-upload.component';
 import { ContentApiService, type Result } from './content-api.service';
 import type { AssetFile } from './content.types';
@@ -43,7 +43,13 @@ describe('AssetUploadComponent', () => {
   beforeEach(async () => {
     uploadAsset = jest.fn();
     await TestBed.configureTestingModule({
-      imports: [AssetUploadComponent, TranslocoModule.forRoot()],
+      imports: [
+        AssetUploadComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {}, ar: {} },
+          translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideNoopAnimations(),
         { provide: ContentApiService, useValue: { uploadAsset } },
@@ -82,5 +88,20 @@ describe('AssetUploadComponent', () => {
     await component.onFile(makeChangeEvent(makeFile()));
     component.clear();
     expect(component.asset()).toBeNull();
+  });
+
+  it('rejects an oversized file before uploading', async () => {
+    component.maxSizeBytes = 4; // "hello" is 5 bytes
+    await component.onFile(makeChangeEvent(makeFile()));
+    expect(component.errorKind()).toBe('fileTooLarge');
+    expect(uploadAsset).not.toHaveBeenCalled();
+  });
+
+  it('skips the dimension check for SVG (uploads)', async () => {
+    uploadAsset.mockResolvedValueOnce(ok(ASSET));
+    component.maxImageDimension = 512;
+    const svg = new File(['<svg/>'], 'icon.svg', { type: 'image/svg+xml' });
+    await component.onFile(makeChangeEvent(svg));
+    expect(uploadAsset).toHaveBeenCalled();
   });
 });

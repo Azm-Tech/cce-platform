@@ -39,6 +39,13 @@ export class AssetUploadComponent {
    *  Empty = accept anything (default, backwards compatible). */
   @Input() accept = '';
 
+  /** Optional max file size in bytes; rejected with `fileTooLarge` if exceeded. */
+  @Input() maxSizeBytes?: number;
+
+  /** Optional max width/height (px) for RASTER images (png/jpg); rejected with
+   *  `imageTooLarge`. SVGs are skipped (no intrinsic raster size). */
+  @Input() maxImageDimension?: number;
+
   @Output() readonly uploaded = new EventEmitter<AssetFile>();
 
   async onFile(event: Event): Promise<void> {
@@ -50,6 +57,16 @@ export class AssetUploadComponent {
     if (this.accept && !this.isAllowed(file.name)) {
       input.value = '';
       this.errorKind.set('fileType');
+      return;
+    }
+    if (this.maxSizeBytes && file.size > this.maxSizeBytes) {
+      input.value = '';
+      this.errorKind.set('fileTooLarge');
+      return;
+    }
+    if (this.maxImageDimension && !(await this.dimensionsOk(file))) {
+      input.value = '';
+      this.errorKind.set('imageTooLarge');
       return;
     }
     this.uploading.set(true);
@@ -77,5 +94,21 @@ export class AssetUploadComponent {
       .split(',')
       .map((e) => e.trim().toLowerCase())
       .includes(ext);
+  }
+
+  /** True if the file is within `maxImageDimension`. Vector (SVG) files have no
+   *  intrinsic raster size, so they always pass. On decode failure, allow it
+   *  (let the server be the final authority). */
+  private async dimensionsOk(file: File): Promise<boolean> {
+    if (!this.maxImageDimension) return true;
+    if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) return true;
+    try {
+      const bitmap = await createImageBitmap(file);
+      const ok = bitmap.width <= this.maxImageDimension && bitmap.height <= this.maxImageDimension;
+      bitmap.close();
+      return ok;
+    } catch {
+      return true;
+    }
   }
 }

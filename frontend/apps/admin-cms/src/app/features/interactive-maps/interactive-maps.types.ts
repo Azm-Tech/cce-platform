@@ -12,6 +12,11 @@ export interface InteractiveMapNodeDto {
   interactiveMapId: string;
   nameAr: string | null;
   nameEn: string | null;
+  // New node content (backend pending) — optional until the API returns them.
+  titleAr?: string | null;
+  titleEn?: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
   iconKey: string | null;
   category: number | null;
   categoryNameAr: string | null;
@@ -48,6 +53,11 @@ export interface UpdateInteractiveMapRequest {
 export interface CreateInteractiveMapNodeRequest {
   nameAr: string | null;
   nameEn: string | null;
+  // New node content (backend pending) — sent now, ignored until the API adds them.
+  titleAr?: string | null;
+  titleEn?: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
   iconKey: string | null;
   category: number | null;
   categoryNameAr: string | null;
