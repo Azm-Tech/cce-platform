@@ -18,9 +18,7 @@
 @if (request(); as r) {
   <div class="cce-expert-detail__title-row">
     <h1 class="cce-expert-detail__title">{{ r.requestedByUserName ?? r.requestedById }}</h1>
-    <span class="cce-expert-detail__status cce-expert-detail__status--{{ r.status.toLowerCase() }}">
-      {{ ('experts.status.' + r.status) | transloco }}
-    </span>
+    <cce-status-badge [value]="r.status" [config]="statusBadges" />
   </div>
 
   <p class="cce-expert-detail__meta">

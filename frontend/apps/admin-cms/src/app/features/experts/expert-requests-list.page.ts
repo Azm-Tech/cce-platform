@@ -10,8 +10,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
+import { StatusBadgeComponent } from '@frontend/ui-kit';
 import { ExpertApiService } from './expert-api.service';
-import { EXPERT_STATUSES, type ExpertRegistrationStatus, type ExpertRequest } from './expert.types';
+import {
+  EXPERT_STATUSES,
+  EXPERT_STATUS_BADGES,
+  type ExpertRegistrationStatus,
+  type ExpertRequest,
+} from './expert.types';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
 import type { Topic } from '../taxonomies/taxonomy.types';
 
@@ -31,6 +37,7 @@ import type { Topic } from '../taxonomies/taxonomy.types';
     MatSelectModule,
     MatTableModule,
     TranslocoModule,
+    StatusBadgeComponent,
   ],
   templateUrl: './expert-requests-list.page.html',
   styleUrl: './expert-requests-list.page.scss',
@@ -42,6 +49,7 @@ export class ExpertRequestsListPage implements OnInit {
 
   readonly displayedColumns = ['user', 'submitted', 'tags', 'cv', 'status', 'actions'];
   readonly statuses = EXPERT_STATUSES;
+  readonly statusBadges = EXPERT_STATUS_BADGES;
 
   readonly statusFilter = signal<ExpertRegistrationStatus | ''>('');
   readonly page = signal(1);

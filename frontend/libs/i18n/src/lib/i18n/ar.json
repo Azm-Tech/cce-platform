@@ -603,9 +603,9 @@
   },
   "experts": {
     "status": {
-      "Pending": "قيد الانتظار",
-      "Approved": "معتمد",
-      "Rejected": "مرفوض"
+      "pending": "قيد الانتظار",
+      "approved": "معتمد",
+      "rejected": "مرفوض"
     },
     "requests": {
       "title": "طلبات الخبراء",

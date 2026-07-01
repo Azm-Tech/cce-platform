@@ -3,6 +3,7 @@
  * CCE.Application.Identity.Dtos.Expert{Request,Profile}Dto.
  */
 
+import type { StatusBadgeConfig } from '@frontend/ui-kit';
 import type { PagedResult } from '../identity/identity.types';
 
 export type ExpertRegistrationStatus = 'Pending' | 'Approved' | 'Rejected';
@@ -12,6 +13,14 @@ export const EXPERT_STATUSES: readonly ExpertRegistrationStatus[] = [
   'Approved',
   'Rejected',
 ];
+
+/** Badge colour + label per status. Keyed lowercase to match the API values;
+ *  the badge matches case-insensitively so the capitalized enum works too. */
+export const EXPERT_STATUS_BADGES: StatusBadgeConfig = {
+  pending: { tone: 'warning', labelKey: 'experts.status.pending' },
+  approved: { tone: 'success', labelKey: 'experts.status.approved' },
+  rejected: { tone: 'danger', labelKey: 'experts.status.rejected' },
+};
 
 export interface ExpertRequest {
   id: string;

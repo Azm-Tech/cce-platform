@@ -11,6 +11,7 @@ export * from './lib/http/server-error.interceptor';
 export * from './lib/http/api-envelope.interceptor';
 export * from './lib/validators/password.validators';
 export * from './lib/rich-text-editor/rich-text-editor.component';
+export * from './lib/status-badge/status-badge.component';
 export * from './lib/translation/translation.contracts';
 export * from './lib/translation/translation-config.service';
 export * from './lib/translation/gemini-translation.provider';

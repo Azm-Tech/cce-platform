@@ -603,9 +603,9 @@
   },
   "experts": {
     "status": {
-      "Pending": "Pending",
-      "Approved": "Approved",
-      "Rejected": "Rejected"
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
     },
     "requests": {
       "title": "Expert requests",

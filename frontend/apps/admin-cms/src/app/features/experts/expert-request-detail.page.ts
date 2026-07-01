@@ -8,10 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { ToastService } from '@frontend/ui-kit';
+import { StatusBadgeComponent, ToastService } from '@frontend/ui-kit';
 import { ApproveExpertDialogComponent, type ApproveExpertDialogData } from './approve-expert.dialog';
 import { ExpertApiService } from './expert-api.service';
-import type { ExpertRequest } from './expert.types';
+import { EXPERT_STATUS_BADGES, type ExpertRequest } from './expert.types';
 import { RejectExpertDialogComponent, type RejectExpertDialogData } from './reject-expert.dialog';
 import { TaxonomyApiService } from '../taxonomies/taxonomy-api.service';
 import type { Topic } from '../taxonomies/taxonomy.types';
@@ -26,6 +26,7 @@ import type { Topic } from '../taxonomies/taxonomy.types';
     MatIconModule,
     MatProgressBarModule,
     TranslocoModule,
+    StatusBadgeComponent,
   ],
   templateUrl: './expert-request-detail.page.html',
   styleUrl: './expert-request-detail.page.scss',
@@ -39,6 +40,7 @@ export class ExpertRequestDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
 
+  readonly statusBadges = EXPERT_STATUS_BADGES;
   readonly request = signal<ExpertRequest | null>(null);
   readonly loading = signal(false);
   readonly errorKind = signal<string | null>(null);

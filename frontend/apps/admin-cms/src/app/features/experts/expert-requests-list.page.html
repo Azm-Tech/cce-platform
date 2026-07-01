@@ -14,7 +14,7 @@
     >
       <mat-option value="">{{ 'experts.requests.filter.allStatuses' | transloco }}</mat-option>
       @for (s of statuses; track s) {
-        <mat-option [value]="s">{{ ('experts.status.' + s) | transloco }}</mat-option>
+        <mat-option [value]="s">{{ ('experts.status.' + s.toLowerCase()) | transloco }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -58,7 +58,9 @@
   </ng-container>
   <ng-container matColumnDef="status">
     <th mat-header-cell *matHeaderCellDef>{{ 'experts.requests.col.status' | transloco }}</th>
-    <td mat-cell *matCellDef="let row">{{ ('experts.status.' + row.status) | transloco }}</td>
+    <td mat-cell *matCellDef="let row">
+      <cce-status-badge [value]="row.status" [config]="statusBadges" />
+    </td>
   </ng-container>
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef></th>
